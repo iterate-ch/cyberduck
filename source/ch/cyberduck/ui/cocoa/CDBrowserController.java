@@ -1234,7 +1234,7 @@ public class CDBrowserController extends CDWindowController
                     if(null == selected) {
                         return false;
                     }
-                    return selected.isRenameSupported();
+                    return true;
                 }
             }
             return false;
@@ -1425,12 +1425,10 @@ public class CDBrowserController extends CDWindowController
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
                         Path selected = getSelectedPath();
-                        if(selected.isRenameSupported()) {
-                            CDBrowserController.this.browserOutlineView.editLocation(
-                                    CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                    CDBrowserController.this.browserOutlineView.selectedRow(),
-                                    null, true);
-                        }
+                        CDBrowserController.this.browserOutlineView.editLocation(
+                                CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                CDBrowserController.this.browserOutlineView.selectedRow(),
+                                null, true);
                     }
                 }
                 else {
@@ -1447,7 +1445,7 @@ public class CDBrowserController extends CDWindowController
                 if(item != null) {
                     if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
                         ((CDOutlineCell) cell).setIcon(browserOutlineModel.iconForPath(item));
-                        ((CDOutlineCell) cell).setEditable(item.isRenameSupported());
+                        ((CDOutlineCell) cell).setEditable(true);
                     }
                     if(cell instanceof NSTextFieldCell) {
                         if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
@@ -1571,12 +1569,10 @@ public class CDBrowserController extends CDWindowController
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(CDBrowserController.this.browserListView.numberOfSelectedRows() == 1) {
                         Path selected = getSelectedPath();
-                        if(selected.isRenameSupported()) {
-                            CDBrowserController.this.browserListView.editLocation(
-                                    CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                    CDBrowserController.this.browserListView.selectedRow(),
-                                    null, true);
-                        }
+                        CDBrowserController.this.browserListView.editLocation(
+                                CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                CDBrowserController.this.browserListView.selectedRow(),
+                                null, true);
                     }
                 }
                 else {
@@ -2530,34 +2526,11 @@ public class CDBrowserController extends CDWindowController
                     }
                     final Path source = (Path) sourcesIter.next();
                     final Path destination = (Path) destinationsIter.next();
-                    final Local local = new Local(NSPathUtilities.temporaryDirectory(),
-                            destination.getName());
-                    TransferOptions options = new TransferOptions();
-                    options.closeSession = false;
-                    try {
-                        source.setLocal(local);
-                        DownloadTransfer download = new DownloadTransfer(source);
-                        download.start(new TransferPrompt() {
-                            public TransferAction prompt() {
-                                return TransferAction.ACTION_OVERWRITE;
-                            }
-                        }, options);
-                        if(!isConnected()) {
-                            break;
-                        }
-                        destination.setLocal(local);
-                        UploadTransfer upload = new UploadTransfer(destination);
-                        upload.start(new TransferPrompt() {
-                            public TransferAction prompt() {
-                                return TransferAction.ACTION_OVERWRITE;
-                            }
-                        }, options);
-                        if(!isConnected()) {
-                            break;
-                        }
-                    }
-                    finally {
-                        local.delete();
+                    source.copy(destination);
+                    source.getParent().invalidate();
+                    destination.getParent().invalidate();
+                    if(!isConnected()) {
+                        break;
                     }
                 }
             }
@@ -2601,11 +2574,9 @@ public class CDBrowserController extends CDWindowController
                         break;
                     }
                     final Path original = (Path) originalIterator.next();
-                    if(original.isRenameSupported()) {
-                        original.getParent().invalidate();
-                        original.rename(((AbstractPath) renamedIterator.next()).getAbsolute());
-                        original.getParent().invalidate();
-                    }
+                    original.getParent().invalidate();
+                    original.rename(((AbstractPath) renamedIterator.next()).getAbsolute());
+                    original.getParent().invalidate();
                     if(!isConnected()) {
                         break;
                     }
@@ -4283,7 +4254,7 @@ public class CDBrowserController extends CDWindowController
                 if(null == selected) {
                     return false;
                 }
-                return selected.isRenameSupported();
+                return true;
             }
             return false;
         }

@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ThrottledInputStream;
@@ -571,6 +572,32 @@ public abstract class Path extends AbstractPath implements Serializable {
             getStatus().setCurrent(bytesTransferred);
         }
         out.flush();
+    }
+
+    public void copy(final Path copy) {
+        final Local local = new Local(NSPathUtilities.temporaryDirectory(),
+                copy.getName());
+        TransferOptions options = new TransferOptions();
+        options.closeSession = false;
+        try {
+            this.setLocal(local);
+            DownloadTransfer download = new DownloadTransfer(this);
+            download.start(new TransferPrompt() {
+                public TransferAction prompt() {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            }, options);
+            copy.setLocal(local);
+            UploadTransfer upload = new UploadTransfer(copy);
+            upload.start(new TransferPrompt() {
+                public TransferAction prompt() {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            }, options);
+        }
+        finally {
+            local.delete();
+        }
     }
 
     /**

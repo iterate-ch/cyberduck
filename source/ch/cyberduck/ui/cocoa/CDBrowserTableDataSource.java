@@ -124,11 +124,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
         log.debug("setObjectValueForItem:" + item);
         if(identifier.equals(FILENAME_COLUMN)) {
             if(!item.getName().equals(value) && StringUtils.hasText(value.toString())) {
-                if(item.isRenameSupported()) {
-                    final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                            item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
-                    controller.renamePath(item, renamed);
-                }
+                final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                        item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
+                controller.renamePath(item, renamed);
             }
         }
     }
@@ -272,7 +270,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         Transfer q = TransferFactory.create(dict, controller.getSession());
                         for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
                             final Path source = (Path) iter.next();
-                            final Path copy = PathFactory.createPath(source.getSession(), source.getAsDictionary());
+                            final Path copy = PathFactory.createPath(controller.getSession(), source.getAsDictionary());
                             copy.setPath(destination.getAbsolute(), source.getName());
                             files.put(source, copy);
                         }
@@ -330,9 +328,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
                             return NSDraggingInfo.DragOperationCopy;
                         }
-                        if(destination.isRenameSupported()) {
-                            return NSDraggingInfo.DragOperationMove;
-                        }
+                        return NSDraggingInfo.DragOperationMove;
                     }
                 }
             }
