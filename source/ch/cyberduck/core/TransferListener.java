@@ -29,42 +29,42 @@ public interface TransferListener {
     /**
      * The transfers are about to start transfering
      */
-    public abstract void transferWillStart();
+    abstract void transferWillStart();
 
     /**
      * The transfer is paused and waits for other transfers to finish first
      */
-    public abstract void transferQueued();
+    abstract void transferQueued();
 
     /**
      * 
      */
-    public abstract void transferPaused();
+    abstract void transferPaused();
 
     /**
      * The transfer has a slot in the queue allocated
      */
-    public abstract void transferResumed();
+    abstract void transferResumed();
 
     /**
      * All transfers did end
      */
-    public abstract void transferDidEnd();
+    abstract void transferDidEnd();
 
     /**
      * The path part of this transfer will be transferred
      * @param path
      */
-    public abstract void willTransferPath(Path path);
+    abstract void willTransferPath(Path path);
 
     /**
      * The path part of this transfer has been transferred
      * @param path
      */
-    public abstract void didTransferPath(Path path);
+    abstract void didTransferPath(Path path);
 
     /**
      * 
      */
-    public abstract void bandwidthChanged(BandwidthThrottle bandwidth);
+    abstract void bandwidthChanged(BandwidthThrottle bandwidth);
 }
