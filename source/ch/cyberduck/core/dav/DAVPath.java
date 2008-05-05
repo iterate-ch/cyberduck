@@ -88,7 +88,6 @@ public class DAVPath extends Path {
     }
 
     public void readSize() {
-        synchronized(session) {
             try {
                 session.check();
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
@@ -103,117 +102,109 @@ public class DAVPath extends Path {
             catch(IOException e) {
                 log.warn("Cannot read size:" + e);
             }
-        }
     }
 
     public void readTimestamp() {
-        synchronized(session) {
-            try {
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                    new Object[]{this.getName()}));
 
-                session.DAV.setPath(this.attributes.isDirectory() ?
-                        this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
+            session.DAV.setPath(this.attributes.isDirectory() ?
+                    this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
-                session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-                attributes.setModificationDate(session.DAV.getGetLastModified());
-            }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
-            }
+            session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
+            attributes.setModificationDate(session.DAV.getGetLastModified());
         }
-
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
     }
+
 
     public void readPermission() {
         ;
     }
 
     public void delete() {
-        synchronized(session) {
-            log.debug("delete:" + this.toString());
-            try {
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+        log.debug("delete:" + this.toString());
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                    new Object[]{this.getName()}));
 
-                session.DAV.deleteMethod(this.getAbsolute());
+            session.DAV.deleteMethod(this.getAbsolute());
+        }
+        catch(IOException e) {
+            if(this.attributes.isFile()) {
+                this.error("Cannot delete file", e);
             }
-            catch(IOException e) {
-                if(this.attributes.isFile()) {
-                    this.error("Cannot delete file", e);
-                }
-                if(this.attributes.isDirectory()) {
-                    this.error("Cannot delete folder", e);
-                }
+            if(this.attributes.isDirectory()) {
+                this.error("Cannot delete folder", e);
             }
         }
     }
 
     public AttributedList list(final ListParseListener listener) {
-        synchronized(session) {
-            AttributedList childs = new AttributedList() {
-                public boolean add(Object object) {
-                    boolean result = super.add(object);
-                    listener.parsed(this);
-                    return result;
-                }
-            };
-            try {
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
-                        new Object[]{this.getName()}));
-
-                session.setWorkdir(this);
-                session.DAV.setContentType("text/xml");
-                WebdavResource[] resources = session.DAV.listWebdavResources();
-
-                for(int i = 0; i < resources.length; i++) {
-                    Path p = new DAVPath(session, resources[i].getPath(),
-                            resources[i].getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    p.setParent(this);
-
-                    p.attributes.setOwner(resources[i].getOwner());
-                    p.attributes.setModificationDate(resources[i].getGetLastModified());
-                    p.attributes.setCreationDate(resources[i].getCreationDate());
-                    p.attributes.setSize(resources[i].getGetContentLength());
-
-                    childs.add(p);
-                }
+        AttributedList childs = new AttributedList() {
+            public boolean add(Object object) {
+                boolean result = super.add(object);
+                listener.parsed(this);
+                return result;
             }
-            catch(IOException e) {
-                childs.attributes().setReadable(false);
-                this.error("Listing directory failed", e);
+        };
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                    new Object[]{this.getName()}));
+
+            session.setWorkdir(this);
+            session.DAV.setContentType("text/xml");
+            WebdavResource[] resources = session.DAV.listWebdavResources();
+
+            for(int i = 0; i < resources.length; i++) {
+                Path p = new DAVPath(session, resources[i].getPath(),
+                        resources[i].getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                p.setParent(this);
+
+                p.attributes.setOwner(resources[i].getOwner());
+                p.attributes.setModificationDate(resources[i].getGetLastModified());
+                p.attributes.setCreationDate(resources[i].getCreationDate());
+                p.attributes.setSize(resources[i].getGetContentLength());
+
+                childs.add(p);
             }
-            return childs;
         }
+        catch(IOException e) {
+            childs.attributes().setReadable(false);
+            this.error("Listing directory failed", e);
+        }
+        return childs;
     }
 
-    public void mkdir(boolean recursive) {
-        synchronized(session) {
-            log.debug("mkdir:" + this.getName());
-            try {
-                if(recursive) {
-                    if(!this.getParent().exists()) {
-                        this.getParent().mkdir(recursive);
-                    }
-                }
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
-                        new Object[]{this.getName()}));
 
-                session.DAV.setContentType("text/xml");
-                session.DAV.mkcolMethod(this.getAbsolute());
+    public void mkdir(boolean recursive) {
+        log.debug("mkdir:" + this.getName());
+        try {
+            if(recursive) {
+                if(!this.getParent().exists()) {
+                    this.getParent().mkdir(recursive);
+                }
             }
-            catch(IOException e) {
-                this.error("Cannot create folder", e);
-            }
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+                    new Object[]{this.getName()}));
+
+            session.DAV.setContentType("text/xml");
+            session.DAV.mkcolMethod(this.getAbsolute());
         }
+        catch(IOException e) {
+            this.error("Cannot create folder", e);
+        }
+
     }
 
     public void writePermissions(Permission perm, boolean recursive) {
-//        synchronized(session) {
 //            log.debug("changePermissions:" + perm);
 //            try {
 //                session.check();
@@ -223,66 +214,132 @@ public class DAVPath extends Path {
 //            catch(IOException e) {
 //                this.error("Cannot change permissions", e);
 //            }
-//        }
     }
 
     public void rename(String absolute) {
-        synchronized(session) {
-            log.debug("rename:" + absolute);
-            try {
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
-                        new Object[]{this.getName(), absolute}));
+        log.debug("rename:" + absolute);
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+                    new Object[]{this.getName(), absolute}));
 
-                session.DAV.moveMethod(this.getAbsolute(), absolute);
-                this.setPath(absolute);
+            session.DAV.moveMethod(this.getAbsolute(), absolute);
+            this.setPath(absolute);
+        }
+        catch(IOException e) {
+            if(attributes.isFile()) {
+                this.error("Cannot rename file", e);
             }
-            catch(IOException e) {
-                if(attributes.isFile()) {
-                    this.error("Cannot rename file", e);
-                }
-                if(attributes.isDirectory()) {
-                    this.error("Cannot rename folder", e);
-                }
+            if(attributes.isDirectory()) {
+                this.error("Cannot rename folder", e);
             }
         }
+
     }
 
     public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
-        synchronized(session) {
-            if(attributes.isFile()) {
-                OutputStream out = null;
-                InputStream in = null;
-                try {
-                    if(check) {
-                        session.check();
-                    }
-                    session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
-                    if(this.getStatus().isResume()) {
-                        session.DAV.addRequestHeader("Range", "bytes=" + this.getStatus().getCurrent() + "-");
-                    }
-                    session.DAV.addRequestHeader("Accept-Encoding", "gzip");
-                    in = session.DAV.getMethodData(this.getAbsolute());
-                    if(null == in) {
-                        throw new IOException("Unable opening data stream");
-                    }
-                    if(!session.DAV.isResume()) {
-                        getStatus().setCurrent(0);
-                    }
-                    out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
+        if(attributes.isFile()) {
+            OutputStream out = null;
+            InputStream in = null;
+            try {
+                if(check) {
+                    session.check();
+                }
+                session.message(NSBundle.localizedString("Downloading", "Status", "") + " " + this.getName());
+                if(this.getStatus().isResume()) {
+                    session.DAV.addRequestHeader("Range", "bytes=" + this.getStatus().getCurrent() + "-");
+                }
+                session.DAV.addRequestHeader("Accept-Encoding", "gzip");
+                in = session.DAV.getMethodData(this.getAbsolute());
+                if(null == in) {
+                    throw new IOException("Unable opening data stream");
+                }
+                if(!session.DAV.isResume()) {
+                    getStatus().setCurrent(0);
+                }
+                out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
 
-                    this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener);
+            }
+            catch(IOException e) {
+                this.error("Download failed", e);
+            }
+            finally {
+                try {
+                    if(in != null) {
+                        in.close();
+                    }
+                    if(out != null) {
+                        out.close();
+                    }
                 }
                 catch(IOException e) {
-                    this.error("Download failed", e);
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        if(attributes.isDirectory()) {
+            this.getLocal().mkdir(true);
+        }
+
+    }
+
+    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
+        try {
+            if(check) {
+                session.check();
+            }
+            if(attributes.isFile()) {
+                session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
+
+                final InputStream in = new Local.InputStream(this.getLocal());
+                try {
+                    //Set the content-type to use for this resource, for PUTs
+                    session.DAV.setContentType(this.getLocal().getMimeType());
+                    if(this.getStatus().isResume()) {
+                        session.DAV.addRequestHeader("Content-Range", "bytes "
+                                + this.getStatus().getCurrent()
+                                + "-" + (this.getLocal().attributes.getSize() - 1)
+                                + "/" + this.getLocal().attributes.getSize()
+                        );
+                        long skipped = in.skip(getStatus().getCurrent());
+                        log.info("Skipping " + skipped + " bytes");
+                        if(skipped < getStatus().getCurrent()) {
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
+                        }
+                    }
+                    if(session.DAV.putMethod(this.getAbsolute(), new InputStream() {
+                        long bytesTransferred = getStatus().getCurrent();
+
+                        public int read() throws IOException {
+                            return read(new byte[1]);
+                        }
+
+                        public int read(byte buffer[], int offset, int length)
+                                throws IOException {
+                            if(getStatus().isCanceled()) {
+                                return -1;
+                            }
+                            int read = in.read(buffer, offset, length);
+                            if(-1 == read) {
+                                // End of file
+                                getStatus().setComplete(true);
+                            }
+                            if(read > 0) {
+                                listener.bytesSent(read);
+                                bytesTransferred += read;
+                                getStatus().setCurrent(bytesTransferred);
+                            }
+                            return read;
+                        }
+                    }, this.getLocal().attributes.getSize() - this.getStatus().getCurrent())) {
+                        // Upload successful
+                    }
                 }
                 finally {
                     try {
                         if(in != null) {
                             in.close();
-                        }
-                        if(out != null) {
-                            out.close();
                         }
                     }
                     catch(IOException e) {
@@ -291,82 +348,11 @@ public class DAVPath extends Path {
                 }
             }
             if(attributes.isDirectory()) {
-                this.getLocal().mkdir(true);
+                this.mkdir();
             }
         }
-    }
-
-    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
-        synchronized(session) {
-            try {
-                if(check) {
-                    session.check();
-                }
-                if(attributes.isFile()) {
-                    session.message(NSBundle.localizedString("Uploading", "Status", "") + " " + this.getName());
-
-                    final InputStream in = new Local.InputStream(this.getLocal());
-                    try {
-                        //Set the content-type to use for this resource, for PUTs
-                        session.DAV.setContentType(this.getLocal().getMimeType());
-                        if(this.getStatus().isResume()) {
-                            session.DAV.addRequestHeader("Content-Range", "bytes "
-                                    + this.getStatus().getCurrent()
-                                    + "-" + (this.getLocal().attributes.getSize() - 1)
-                                    + "/" + this.getLocal().attributes.getSize()
-                            );
-                            long skipped = in.skip(getStatus().getCurrent());
-                            log.info("Skipping " + skipped + " bytes");
-                            if(skipped < getStatus().getCurrent()) {
-                                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
-                            }
-                        }
-                        if(session.DAV.putMethod(this.getAbsolute(), new InputStream() {
-                            long bytesTransferred = getStatus().getCurrent();
-
-                            public int read() throws IOException {
-                                return read(new byte[1]);
-                            }
-
-                            public int read(byte buffer[], int offset, int length)
-                                    throws IOException {
-                                if(getStatus().isCanceled()) {
-                                    return -1;
-                                }
-                                int read = in.read(buffer, offset, length);
-                                if(-1 == read) {
-                                    // End of file
-                                    getStatus().setComplete(true);
-                                }
-                                if(read > 0) {
-                                    listener.bytesSent(read);
-                                    bytesTransferred += read;
-                                    getStatus().setCurrent(bytesTransferred);
-                                }
-                                return read;
-                            }
-                        }, this.getLocal().attributes.getSize() - this.getStatus().getCurrent())) {
-                            // Upload successful
-                        }
-                    }
-                    finally {
-                        try {
-                            if(in != null) {
-                                in.close();
-                            }
-                        }
-                        catch(IOException e) {
-                            log.error(e.getMessage());
-                        }
-                    }
-                }
-                if(attributes.isDirectory()) {
-                    this.mkdir();
-                }
-            }
-            catch(IOException e) {
-                this.error("Upload failed", e);
-            }
+        catch(IOException e) {
+            this.error("Upload failed", e);
         }
     }
 }

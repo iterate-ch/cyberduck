@@ -322,16 +322,7 @@ public abstract class AbstractPath extends NSObject {
     }
 
     /**
-     * Supports a rename command
-     *
-     * @return
+     * @param path Must be an absolute path
      */
-    public boolean isRenameSupported() {
-        return true;
-    }
-
-    /**
-     * @param absolute Must be an absolute path
-     */
-    public abstract void rename(String absolute);
+    public abstract void rename(String path);
 }
