@@ -68,7 +68,7 @@ public class CDProgressController extends CDBundleController {
      *
      * @see ch.cyberduck.core.ProgressListener#message(String)
      */
-    private String progressText;
+    private String messageText;
 
     public CDProgressController(final Transfer transfer) {
         this.transfer = transfer;
@@ -100,10 +100,10 @@ public class CDProgressController extends CDBundleController {
         this.loadBundle();
         this.transfer.getSession().addProgressListener(this.pl = new ProgressListener() {
             public void message(final String message) {
-                progressText = message;
+                messageText = message;
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
-                        setProgressText();
+                        setMessageText();
                     }
                 });
             }
@@ -125,6 +125,7 @@ public class CDProgressController extends CDBundleController {
                         progressBar.startAnimation(null);
                         progressBar.setNeedsDisplay(true);
                         statusIconView.setImage(YELLOW_ICON);
+                        setMessageText();
                         setProgressText();
                         setStatusText();
                     }
@@ -135,7 +136,8 @@ public class CDProgressController extends CDBundleController {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         // Do not display any progress text when transfer is stopped
-                        progressText = null;
+                        messageText = null;
+                        setMessageText();
                         setProgressText();
                         setStatusText();
                         progressBar.setIndeterminate(true);
@@ -179,6 +181,7 @@ public class CDProgressController extends CDBundleController {
                     public void run() {
                         CDMainApplication.invoke(new DefaultMainAction() {
                             public void run() {
+                                setMessageText();
                                 setProgressText();
                                 if(!transfer.isVirgin()) {
                                     progressBar.setIndeterminate(false);
@@ -211,17 +214,24 @@ public class CDProgressController extends CDBundleController {
      */
     public void awakeFromNib() {
         this.setProgressText();
+        this.setMessageText();
         this.setStatusText();
     }
 
-    private void setProgressText() {
-        StringBuffer b = new StringBuffer(meter.getProgress());
-        if(progressText != null) {
-            b.append(" \u2013 ");
-            b.append(progressText);
+    private void setMessageText() {
+        if(messageText != null) {
+            messageField.setAttributedStringValue(new NSAttributedString(
+                    messageText,
+                    TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
         }
+        else {
+            messageField.setStringValue("");
+        }
+    }
+
+    private void setProgressText() {
         progressField.setAttributedStringValue(new NSAttributedString(
-                b.toString(),
+                meter.getProgress(),
                 TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
     }
 
@@ -239,6 +249,7 @@ public class CDProgressController extends CDBundleController {
     public void setHighlighted(final boolean highlighted) {
         statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
         progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
+        messageField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         if(transfer.getRoot().getLocal().exists()) {
             filesPopup.itemAtIndex(0).setAttributedTitle(
                     new NSAttributedString(filesPopup.itemAtIndex(0).title(),
@@ -296,6 +307,15 @@ public class CDProgressController extends CDBundleController {
         this.statusField.setEditable(false);
         this.statusField.setSelectable(false);
         this.statusField.setTextColor(NSColor.darkGrayColor());
+    }
+
+    private NSTextField messageField; // IBOutlet
+
+    public void setMessageField(final NSTextField messageField) {
+        this.messageField = messageField;
+        this.messageField.setEditable(false);
+        this.messageField.setSelectable(false);
+        this.messageField.setTextColor(NSColor.darkGrayColor());
     }
 
     private NSProgressIndicator progressBar; // IBOutlet

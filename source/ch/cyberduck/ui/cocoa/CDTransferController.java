@@ -406,7 +406,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
-
+        this.transferTable.setRowHeight(82f);
         //selection properties
         this.transferTable.setAllowsMultipleSelection(true);
         this.transferTable.setAllowsEmptySelection(true);
