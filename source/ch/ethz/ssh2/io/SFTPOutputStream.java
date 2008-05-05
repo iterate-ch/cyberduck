@@ -17,7 +17,7 @@ public class SFTPOutputStream extends OutputStream
     /**
      * Offset (in bytes) in the file to write
      */
-    private int writeOffset = 0;
+    private long writeOffset = 0;
 
     public SFTPOutputStream(SFTPv3FileHandle handle)
     {
