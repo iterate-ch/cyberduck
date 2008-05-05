@@ -404,12 +404,14 @@ public class CDMainController extends CDController {
         }
         Rendezvous.instance().addListener(new RendezvousListener() {
             public void serviceResolved(final String identifier, final String hostname) {
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
-                                "rendezvous.icns");
-                    }
-                });
+                synchronized(Rendezvous.instance()) {
+                    CDMainApplication.invoke(new DefaultMainAction() {
+                        public void run() {
+                            Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
+                                    "rendezvous.icns");
+                        }
+                    });
+                }
             }
 
             public void serviceLost(String servicename) {
