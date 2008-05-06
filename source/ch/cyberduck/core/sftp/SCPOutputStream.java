@@ -1,4 +1,4 @@
-package ch.ethz.ssh2.io;
+package ch.cyberduck.core.sftp;
 
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.Session;

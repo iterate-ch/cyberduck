@@ -1,8 +1,8 @@
 
 package ch.ethz.ssh2;
 
-import ch.ethz.ssh2.io.SCPInputStream;
-import ch.ethz.ssh2.io.SCPOutputStream;
+import ch.cyberduck.core.sftp.SCPInputStream;
+import ch.cyberduck.core.sftp.SCPOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;

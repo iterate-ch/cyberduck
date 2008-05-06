@@ -34,8 +34,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.io.SFTPInputStream;
-import ch.ethz.ssh2.io.SFTPOutputStream;
 import ch.ethz.ssh2.sftp.SFTPException;
 import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
 import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
