@@ -684,8 +684,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 super.log(message);
             }
 
+            private final Object lock = new Object();
+
             public Object lock() {
-                return new Object();
+                // No synchronization with other tasks
+                return lock;
             }
         });
     }

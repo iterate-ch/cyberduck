@@ -3941,9 +3941,15 @@ public class CDBrowserController extends CDWindowController
                     return NSBundle.localizedString("Disconnecting", "Status", "");
                 }
 
+                public int retry() {
+                    return 0;
+                }
+
+                private final Object lock = new Object();
+
                 public Object lock() {
                     // No synchronization with other tasks
-                    return new Object();
+                    return lock;
                 }
             });
         }
