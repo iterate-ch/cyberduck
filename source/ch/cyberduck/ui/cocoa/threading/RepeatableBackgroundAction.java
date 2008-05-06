@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.List;
+import java.text.MessageFormat;
 
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
@@ -345,10 +346,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 }
                 final Session session = getSession();
                 if(session != null) {
-                    session.message(NSBundle.localizedString("Retry in", "Status", "")
-                            + " " + (delay) + " " + NSBundle.localizedString("seconds", "Status", "")
-                            + " (" + NSBundle.localizedString("Will try", "Status", "") + " " + retry()
-                            + " " + NSBundle.localizedString("more times", "Status", "") + ")");
+                    session.message(MessageFormat.format(
+                            NSBundle.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status", ""),
+                            new Object[]{String.valueOf(delay), String.valueOf(retry())}));
                 }
                 delay--;
             }

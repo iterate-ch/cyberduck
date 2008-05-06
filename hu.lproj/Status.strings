@@ -95,16 +95,7 @@
 "Resolving {0}" = "Resolving {0}";
 
 /* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
-"Retry in" = "Retry in";
-
-/* No comment provided by engineer. */
-"seconds" = "seconds";
-
-/* Will try n more times - Used to indicate how many times another connection attempt will be made */
-"Will try" = "Will try";
-
-/* No comment provided by engineer. */
-"more times" = "more times";
+"Retry again in {0} seconds ({1} more attempts)" = "Retry again in {0} seconds ({1} more attempts)";
 
 /* No comment provided by engineer. */
 "Transfer complete" = "Transfer complete";
