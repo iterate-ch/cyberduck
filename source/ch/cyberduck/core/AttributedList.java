@@ -126,19 +126,19 @@ public class AttributedList extends NSObject implements List {
         return attributes;
     }
 
-    public int size() {
+    public synchronized int size() {
         return this.content.count();
     }
 
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return this.size() == 0;
     }
 
-    public boolean contains(Object object) {
+    public synchronized boolean contains(Object object) {
         return this.content.containsObject(object);
     }
 
-    public Iterator iterator() {
+    public synchronized Iterator iterator() {
         return new Iterator() {
             private int pos = 0;
             private int size = AttributedList.this.size();
@@ -171,7 +171,7 @@ public class AttributedList extends NSObject implements List {
     /**
      * @return an array containing all of the elements in this collection
      */
-    public Object[] toArray() {
+    public synchronized Object[] toArray() {
         Object[] array = new Object[this.size()];
         int i = 0;
         for(Iterator iter = this.iterator(); iter.hasNext(); i++) {
@@ -180,7 +180,7 @@ public class AttributedList extends NSObject implements List {
         return array;
     }
 
-    public Object[] toArray(Object[] objects) {
+    public synchronized Object[] toArray(Object[] objects) {
         int size = this.size();
         if(objects.length < size) {
             objects = (Object[]) Array.newInstance(objects.getClass().getComponentType(), size);
@@ -199,7 +199,7 @@ public class AttributedList extends NSObject implements List {
      * @param object AbstractPath
      * @return true if this collection changed as a result of the call
      */
-    public boolean add(Object object) {
+    public synchronized boolean add(Object object) {
         this.content.addObject(object);
         return true;
     }
@@ -208,7 +208,7 @@ public class AttributedList extends NSObject implements List {
      * @param object Path
      * @return true if this collection changed as a result of the call
      */
-    public boolean remove(Object object) {
+    public synchronized boolean remove(Object object) {
         this.content.removeObject(object);
         return true;
     }
@@ -217,7 +217,7 @@ public class AttributedList extends NSObject implements List {
      * @param collection
      * @return true if this collection contains all of the elements in the specified collection
      */
-    public boolean containsAll(java.util.Collection collection) {
+    public synchronized boolean containsAll(java.util.Collection collection) {
         for(Iterator iter = collection.iterator(); iter.hasNext();) {
             if(!this.contains(iter.next())) {
                 return false;
@@ -230,12 +230,12 @@ public class AttributedList extends NSObject implements List {
      * @param collection
      * @return true if this collection changed as a result of the call
      */
-    public boolean addAll(java.util.Collection collection) {
+    public synchronized boolean addAll(java.util.Collection collection) {
         this.content.addObjectsFromArray(new NSArray(collection.toArray()));
         return true;
     }
 
-    public boolean addAll(int i, java.util.Collection collection) {
+    public synchronized boolean addAll(int i, java.util.Collection collection) {
         for(Iterator iter = collection.iterator(); iter.hasNext();) {
             this.content.insertObjectAtIndex(iter.next(), i);
             i++;
@@ -247,7 +247,7 @@ public class AttributedList extends NSObject implements List {
      * @param collection
      * @return true if this collection changed as a result of the call
      */
-    public boolean removeAll(java.util.Collection collection) {
+    public synchronized boolean removeAll(java.util.Collection collection) {
         this.content.removeObjectsInArray(new NSArray(collection.toArray()));
         return true;
     }
@@ -256,7 +256,7 @@ public class AttributedList extends NSObject implements List {
      * @param collection
      * @return true if this collection changed as a result of the call
      */
-    public boolean retainAll(java.util.Collection collection) {
+    public synchronized boolean retainAll(java.util.Collection collection) {
         boolean changed = false;
         for(Iterator iter = this.iterator(); iter.hasNext();) {
             if(!collection.contains(iter.next())) {
@@ -270,11 +270,11 @@ public class AttributedList extends NSObject implements List {
     /**
      * Removes all of the elements from this collection
      */
-    public void clear() {
+    public synchronized void clear() {
         this.content.removeAllObjects();
     }
 
-    public boolean equals(Object object) {
+    public synchronized boolean equals(Object object) {
         return this.content.equals(object);
     }
 
@@ -282,7 +282,7 @@ public class AttributedList extends NSObject implements List {
         return this.content.hashCode();
     }
 
-    public Object get(int i) {
+    public synchronized Object get(int i) {
         if(i >= this.size()) {
             return null;
         }
@@ -294,7 +294,7 @@ public class AttributedList extends NSObject implements List {
      * @param object
      * @return the element previously at the specified position.
      */
-    public Object set(int i, Object object) {
+    public synchronized Object set(int i, Object object) {
         Object previous = this.get(i);
         this.content.replaceObjectAtIndex(i, object);
         return previous;
@@ -308,7 +308,7 @@ public class AttributedList extends NSObject implements List {
      * @param i
      * @return the element previously at the specified position.
      */
-    public Object remove(int i) {
+    public synchronized Object remove(int i) {
         if(i >= this.size()) {
             return null;
         }
@@ -317,7 +317,7 @@ public class AttributedList extends NSObject implements List {
         return previous;
     }
 
-    public int indexOf(Object object) {
+    public synchronized int indexOf(Object object) {
         int i = this.content.indexOfObject(object);
         if(i == NSArray.NotFound) {
             return -1;
@@ -325,7 +325,7 @@ public class AttributedList extends NSObject implements List {
         return i;
     }
 
-    public int lastIndexOf(Object o) {
+    public synchronized int lastIndexOf(Object o) {
         int pos = size();
         ListIterator itr = listIterator(pos);
         while(--pos >= 0) {
@@ -340,7 +340,7 @@ public class AttributedList extends NSObject implements List {
      * @return a list iterator of the elements in this list (in proper sequence), starting at the specified
      *         position in this list.
      */
-    public ListIterator listIterator() {
+    public synchronized ListIterator listIterator() {
         return this.listIterator(0);
     }
 
@@ -349,7 +349,7 @@ public class AttributedList extends NSObject implements List {
      * @return a list iterator of the elements in this list (in proper sequence), starting at the specified
      * position in this list.
      */
-    public ListIterator listIterator(final int index) {
+    public synchronized ListIterator listIterator(final int index) {
         return new ListIterator() {
             private int position = index;
             private int lastReturned = -1;
