@@ -211,7 +211,7 @@ public abstract class CDTransferPromptModel extends CDController {
      */
     public Path outlineViewChildOfItem(final NSOutlineView view, int index, Path item) {
         if(null == item) {
-            return (Path)_roots.get(index);//todo
+            return (Path)_roots.get(index);
         }
         List childs = this.childs(item);
         if(childs.isEmpty()) {
