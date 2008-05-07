@@ -190,7 +190,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         return dict;
     }
 
-    private List listeners = new Vector();
+    private Set listeners = Collections.synchronizedSet(new HashSet());
 
     /**
      * @param listener
@@ -210,47 +210,37 @@ public abstract class Transfer extends NSObject implements Serializable {
         canceled = false;
         running = true;
         queued = false;
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].transferWillStart();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).transferWillStart();
         }
     }
 
     public void fireTransferQueued() {
         queued = true;
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].transferQueued();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).transferQueued();
         }
     }
 
     public void fireTransferPaused() {
         queued = true;
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].transferPaused();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).transferPaused();
         }
     }
 
     public void fireTransferResumed() {
         queued = false;
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].transferResumed();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).transferResumed();
         }
     }
 
     protected void fireTransferDidEnd() {
         running = false;
         queued = false;
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].transferDidEnd();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).transferDidEnd();
         }
         synchronized(queueLock) {
             queueLock.notify();
@@ -258,26 +248,14 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     protected void fireWillTransferPath(Path path) {
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].willTransferPath(path);
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).willTransferPath(path);
         }
     }
 
     protected void fireDidTransferPath(Path path) {
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].didTransferPath(path);
-        }
-    }
-
-    protected void fireBandwidthChanged(BandwidthThrottle bandwidth) {
-        TransferListener[] l = (TransferListener[]) listeners.toArray(
-                new TransferListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].bandwidthChanged(bandwidth);
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).didTransferPath(path);
         }
     }
 
@@ -292,7 +270,9 @@ public abstract class Transfer extends NSObject implements Serializable {
     public void setBandwidth(float bytesPerSecond) {
         log.debug("setBandwidth:" + bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
-        this.fireBandwidthChanged(bandwidth);
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((TransferListener) iter.next()).bandwidthChanged(bandwidth);
+        }
     }
 
     /**

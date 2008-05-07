@@ -18,20 +18,17 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Local;
-
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSNotification;
 import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSSelector;
 
+import ch.cyberduck.core.Local;
+
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FileWatcher extends NSObject {
     private static Logger log = Logger.getLogger(FileWatcher.class);
@@ -74,7 +71,7 @@ public class FileWatcher extends NSObject {
     /**
      * The listeners to get notified about file system changes
      */
-    private List listeners = new Collection();
+    private Set listeners = Collections.synchronizedSet(new HashSet());
 
     /**
      * 
@@ -85,26 +82,20 @@ public class FileWatcher extends NSObject {
     }
 
     public void fileWritten(NSNotification notification) {
-        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
-                new FileWatcherListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((FileWatcherListener)iter.next()).fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileRenamed(NSNotification notification) {
-        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
-                new FileWatcherListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((FileWatcherListener)iter.next()).fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileDeleted(NSNotification notification) {
-        FileWatcherListener[] l = (FileWatcherListener[])listeners.toArray(
-                new FileWatcherListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((FileWatcherListener)iter.next()).fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
         }
         removePath(file.getAbsolute());
     }

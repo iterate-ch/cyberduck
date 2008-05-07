@@ -18,10 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -37,22 +34,24 @@ public class Collection extends ArrayList implements CollectionListener {
     }
 
     public int indexOf(Object elem) {
-        for (int i = 0; i < this.size(); i++) {
-            if (this.get(i).equals(elem))
+        for(int i = 0; i < this.size(); i++) {
+            if(this.get(i).equals(elem)) {
                 return i;
+            }
         }
         return -1;
     }
 
     public int lastIndexOf(Object elem) {
-        for (int i = this.size() - 1; i >= 0; i--) {
-            if (this.get(i).equals(elem))
+        for(int i = this.size() - 1; i >= 0; i--) {
+            if(this.get(i).equals(elem)) {
                 return i;
+            }
         }
         return -1;
     }
 
-    private Set listeners = new HashSet();
+    private Set listeners = Collections.synchronizedSet(new HashSet());
 
     public void addListener(CollectionListener listener) {
         listeners.add(listener);
@@ -90,14 +89,13 @@ public class Collection extends ArrayList implements CollectionListener {
     }
 
     public void clear() {
-        for(Iterator iter = this.iterator(); iter.hasNext(); ) {
+        for(Iterator iter = this.iterator(); iter.hasNext();) {
             this.collectionItemRemoved(iter.next());
         }
         super.clear();
     }
 
     /**
-     *
      * @param row
      * @return the element that was removed from the list.
      */
@@ -114,26 +112,20 @@ public class Collection extends ArrayList implements CollectionListener {
     }
 
     public void collectionItemAdded(Object item) {
-        CollectionListener[] l = (CollectionListener[])listeners.toArray(
-                new CollectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].collectionItemAdded(item);
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((CollectionListener) iter.next()).collectionItemAdded(item);
         }
     }
 
     public void collectionItemRemoved(Object item) {
-        CollectionListener[] l = (CollectionListener[])listeners.toArray(
-                new CollectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].collectionItemRemoved(item);
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((CollectionListener) iter.next()).collectionItemRemoved(item);
         }
     }
 
     public void collectionItemChanged(Object item) {
-        CollectionListener[] l = (CollectionListener[])listeners.toArray(
-                new CollectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].collectionItemChanged(item);
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((CollectionListener) iter.next()).collectionItemChanged(item);
         }
     }
 }

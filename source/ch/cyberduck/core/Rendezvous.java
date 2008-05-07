@@ -89,22 +89,23 @@ public class Rendezvous
             String protocol = serviceTypes[i];
             log.info("Removing Rendezvous service listener for " + protocol);
             Object service = this.browsers.get(protocol);
-            if(null == service)
+            if(null == service) {
                 continue;
+            }
             ((DNSSDService) service).stop();
         }
     }
 
-    private Set listeners = new HashSet();
+    private Set listeners = Collections.synchronizedSet(new HashSet());
 
     private RendezvousListener notifier = new RendezvousListener() {
 
         public void serviceResolved(final String servicename, final String hostname) {
-            log.info("Service resolved:"+servicename);
+            log.info("Service resolved:" + servicename);
             if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
                 try {
                     if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
-                        log.info("Supressed Rendezvous notification for "+servicename);
+                        log.info("Supressed Rendezvous notification for " + servicename);
                         return;
                     }
                 }
@@ -112,25 +113,15 @@ public class Rendezvous
                     ; //Ignore
                 }
             }
-            RendezvousListener[] l;
-            synchronized(this) {
-                l = (RendezvousListener[]) listeners.toArray(
-                        new RendezvousListener[listeners.size()]);
-            }
-            for(int i = 0; i < l.length; i++) {
-                l[i].serviceResolved(servicename, hostname);
+            for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+                ((RendezvousListener) iter.next()).serviceResolved(servicename, hostname);
             }
         }
 
         public void serviceLost(final String servicename) {
-            log.info("Service lost:"+servicename);
-            RendezvousListener[] l;
-            synchronized(this) {
-                l = (RendezvousListener[]) listeners.toArray(
-                        new RendezvousListener[listeners.size()]);
-            }
-            for(int i = 0; i < l.length; i++) {
-                l[i].serviceLost(servicename);
+            log.info("Service lost:" + servicename);
+            for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+                ((RendezvousListener) iter.next()).serviceLost(servicename);
             }
         }
     };
@@ -218,7 +209,6 @@ public class Rendezvous
     }
 
     /**
-     *
      * @param browser
      * @param flags
      * @param ifIndex
@@ -238,7 +228,6 @@ public class Rendezvous
     }
 
     /**
-     *
      * @param browser
      * @param flags
      * @param ifIndex
@@ -264,7 +253,6 @@ public class Rendezvous
     }
 
     /**
-     *
      * @param resolver
      * @param errorCode
      */
@@ -274,7 +262,6 @@ public class Rendezvous
     }
 
     /**
-     *
      * @param resolver
      * @param flags
      * @param ifIndex

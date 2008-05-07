@@ -27,10 +27,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.text.MessageFormat;
 
 /**
@@ -290,7 +287,7 @@ public abstract class Session extends NSObject {
      */
     private Timer keepAliveTimer = null;
 
-    private Set listeners = new HashSet();
+    private Set listeners = Collections.synchronizedSet(new HashSet());
 
     public void addConnectionListener(ConnectionListener listener) {
         listeners.add(listener);
@@ -309,10 +306,8 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
-        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
-                new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionWillOpen();
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((ConnectionListener)iter.next()).connectionWillOpen();
         }
         // Configuring proxy if any
         Proxy.configure(this.host.getHostname());
@@ -343,11 +338,8 @@ public abstract class Session extends NSObject {
                     Preferences.instance().getInteger("connection.keepalive.interval"),
                     Preferences.instance().getInteger("connection.keepalive.interval"));
         }
-
-        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
-                new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionDidOpen();
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((ConnectionListener)iter.next()).connectionDidOpen();
         }
     }
 
@@ -359,10 +351,8 @@ public abstract class Session extends NSObject {
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
         this.message(NSBundle.localizedString("Disconnecting", "Status", ""));
-        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
-                new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionWillClose();
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((ConnectionListener)iter.next()).connectionWillClose();
         }
     }
 
@@ -378,10 +368,8 @@ public abstract class Session extends NSObject {
         }
         this.workdir = null;
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
-        ConnectionListener[] l = (ConnectionListener[]) listeners.toArray(
-                new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionDidClose();
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((ConnectionListener)iter.next()).connectionDidClose();
         }
     }
 
@@ -403,10 +391,8 @@ public abstract class Session extends NSObject {
      */
     public void log(final String message) {
         log.info(message);
-        TranscriptListener[] l = (TranscriptListener[]) transcriptListeners.toArray(
-                new TranscriptListener[transcriptListeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].log(message);
+        for(Iterator iter = transcriptListeners.iterator(); iter.hasNext(); ) {
+            ((TranscriptListener)iter.next()).log(message);
         }
     }
 
@@ -428,10 +414,8 @@ public abstract class Session extends NSObject {
      */
     public void message(final String message) {
         log.info(message);
-        ProgressListener[] l = (ProgressListener[]) progressListeners.toArray(
-                new ProgressListener[progressListeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].message(message);
+        for(Iterator iter = progressListeners.iterator(); iter.hasNext(); ) {
+            ((ProgressListener)iter.next()).message(message);
         }
     }
 
@@ -455,10 +439,8 @@ public abstract class Session extends NSObject {
     public void error(Path path, String message, Throwable e) {
         final BackgroundException failure = new BackgroundException(this, path, message, e);
         this.message(failure.getMessage());
-        ErrorListener[] l = (ErrorListener[]) errorListeners.toArray(
-                new ErrorListener[errorListeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].error(failure);
+        for(Iterator iter = errorListeners.iterator(); iter.hasNext(); ) {
+            ((ErrorListener)iter.next()).error(failure);
         }
     }
 
