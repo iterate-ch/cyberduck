@@ -22,6 +22,8 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * @version $Id:$
@@ -36,10 +38,8 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public void cancel() {
         canceled = true;
-        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
-                new BackgroundActionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].cancel(this);
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((BackgroundActionListener)iter.next()).cancel(this);
         }
     }
 
@@ -61,24 +61,20 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public boolean prepare() {
         running = true;
-        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
-                new BackgroundActionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].start(this);
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((BackgroundActionListener)iter.next()).start(this);
         }
         return true;
     }
 
     public void finish() {
         running = false;
-        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
-                new BackgroundActionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].stop(this);
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((BackgroundActionListener)iter.next()).stop(this);
         }
     }
 
-    protected Set listeners = new HashSet();
+    private Set listeners = Collections.synchronizedSet(new HashSet());
 
     public void addListener(BackgroundActionListener listener) {
         listeners.add(listener);
