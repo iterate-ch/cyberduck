@@ -2217,7 +2217,7 @@ zh_CN.lproj/Preferences.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Prompt.nib/data.dependency -text
 zh_CN.lproj/Prompt.nib/keyedobjects.nib -text
 zh_CN.lproj/Prompt.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/S3.strings -text
+zh_CN.lproj/S3.strings -text svneol=unset#unset
 zh_CN.lproj/Status.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Transfer.nib/classes.nib -text
 zh_CN.lproj/Transfer.nib/info.nib -text
