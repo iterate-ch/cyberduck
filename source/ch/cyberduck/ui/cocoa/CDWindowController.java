@@ -29,6 +29,8 @@ import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -131,7 +133,7 @@ public abstract class CDWindowController extends CDBundleController {
      */
     protected NSWindow window; // IBOutlet
 
-    private Set listeners = new HashSet();
+    private Set listeners = Collections.synchronizedSet(new HashSet());
 
     /**
      * @param listener
@@ -174,9 +176,8 @@ public abstract class CDWindowController extends CDBundleController {
      */
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
-        CDWindowListener[] l = (CDWindowListener[]) listeners.toArray(new CDWindowListener[]{});
-        for(int i = 0; i < l.length; i++) {
-            l[i].windowWillClose();
+        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
+            ((CDWindowListener)iter.next()).windowWillClose();
         }
         //If the window is closed it is assumed the controller object is no longer used
         this.invalidate();
