@@ -52,12 +52,10 @@ public class CDTransferTableDataSource extends CDController {
     public CDTransferTableDataSource() {
         TransferCollection.instance().addListener(new AbstractCollectionListener() {
             public void collectionItemAdded(Object item) {
-                assert item instanceof Transfer;
                 controllers.put(item, new CDProgressController((Transfer) item));
             }
 
             public void collectionItemRemoved(Object item) {
-                assert item instanceof Transfer;
                 controllers.remove(item);
             }
         });
