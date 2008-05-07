@@ -56,7 +56,8 @@ public class CDTransferTableDataSource extends CDController {
             }
 
             public void collectionItemRemoved(Object item) {
-                controllers.remove(item);
+                final CDProgressController controller = (CDProgressController)controllers.remove(item);
+                controller.invalidate();
             }
         });
         TransferCollection.instance().load();

@@ -82,7 +82,8 @@ public class CDActivityController extends CDWindowController {
                     CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                         public void run() {
                             log.debug("collectionItemRemoved" + action);
-                            tasks.remove(action);
+                            CDTaskController controller = (CDTaskController)tasks.remove(action);
+                            controller.invalidate();
                             reload();
                         }
                     });

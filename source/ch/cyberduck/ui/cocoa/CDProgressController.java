@@ -73,13 +73,6 @@ public class CDProgressController extends CDBundleController {
     public CDProgressController(final Transfer transfer) {
         this.transfer = transfer;
         this.meter = new Speedometer(transfer);
-        TransferCollection.instance().addListener(new AbstractCollectionListener() {
-            public void collectionItemRemoved(Object item) {
-                if(item.equals(transfer)) {
-                    CDProgressController.this.invalidate();
-                }
-            }
-        });
         this.init();
     }
 
