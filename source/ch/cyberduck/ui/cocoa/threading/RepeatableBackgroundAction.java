@@ -24,10 +24,8 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.CDErrorCell;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.CDSheetController;
-import ch.cyberduck.ui.cocoa.CDWindowController;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.ui.cocoa.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import org.apache.log4j.Logger;
@@ -35,10 +33,7 @@ import org.apache.log4j.Logger;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.List;
+import java.util.*;
 import java.text.MessageFormat;
 
 import com.enterprisedt.net.ftp.FTPNullReplyException;
@@ -217,6 +212,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     public void alert() {
         final CDSheetController c = new CDSheetController(controller) {
+
             protected String getBundleName() {
                 return "Alert";
             }
@@ -262,8 +258,14 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
             private NSTableView errorView;
 
+            private List errors;
+
             public void setErrorView(NSTableView errorView) {
                 this.errorView = errorView;
+                this.errors = new ArrayList();
+                for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
+                    errors.add(new CDErrorController((BackgroundException)iter.next()));
+                }
                 this.errorView.setDataSource(this);
                 this.errorView.setDelegate(this);
                 {
@@ -271,9 +273,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     c.setMinWidth(50f);
                     c.setWidth(400f);
                     c.setMaxWidth(1000f);
-                    c.setDataCell(new CDErrorCell());
+                    c.setDataCell(new CDControllerCell());
                     this.errorView.addTableColumn(c);
                 }
+                this.errorView.setRowHeight(77f);
             }
 
             public NSTextView transcriptView;
@@ -303,14 +306,14 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
              * @see NSTableView.DataSource
              */
             public int numberOfRowsInTableView(NSTableView view) {
-                return exceptions.size();
+                return errors.size();
             }
 
             /**
              * @see NSTableView.DataSource
              */
             public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-                return exceptions.get(row);
+                return errors.get(row);
             }
 
             /**

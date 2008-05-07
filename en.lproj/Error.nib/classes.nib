@@ -1,0 +1,21 @@
+{
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = "ch.cyberduck.ui.cocoa.CDErrorController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                descriptionField = NSTextField;
+                errorField = NSTextField;
+                hostField = NSTextField;
+                view = NSView;
+            };
+            SUPERCLASS = NSObject;
+        }
+    );
+    IBVersion = 1;
+}

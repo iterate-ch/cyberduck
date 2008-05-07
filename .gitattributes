@@ -612,6 +612,9 @@ en.lproj/Download.nib/keyedobjects.nib -text
 en.lproj/Download.strings -text svneol=unset#text/utf-16
 en.lproj/Duplicate.nib/keyedobjects.nib -text
 en.lproj/Duplicate.strings -text svneol=unset#text/utf-16
+en.lproj/Error.nib/classes.nib -text
+en.lproj/Error.nib/info.nib -text
+en.lproj/Error.nib/keyedobjects.nib -text
 en.lproj/Error.strings -text svneol=unset#text/utf-16
 en.lproj/File.nib/keyedobjects.nib -text
 en.lproj/File.strings -text svneol=unset#text/utf-16
@@ -1795,6 +1798,7 @@ source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/cocoa/BrowserBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/CDBundleController.java -text
+source/ch/cyberduck/ui/cocoa/CDErrorController.java -text
 source/ch/cyberduck/ui/cocoa/CDListDataSource.java -text
 source/ch/cyberduck/ui/cocoa/CDMainApplication.java -text
 source/ch/cyberduck/ui/cocoa/CDOutlineDataSource.java -text
