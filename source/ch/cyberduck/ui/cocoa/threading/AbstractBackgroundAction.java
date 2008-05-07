@@ -20,10 +20,9 @@ package ch.cyberduck.ui.cocoa.threading;
 
 import com.apple.cocoa.foundation.NSBundle;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * @version $Id:$
@@ -33,13 +32,15 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
     public void init() {
         ;
     }
-    
+
     private boolean canceled;
 
     public void cancel() {
         canceled = true;
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((BackgroundActionListener)iter.next()).cancel(this);
+        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+                new BackgroundActionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].cancel(this);
         }
     }
 
@@ -61,16 +62,20 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public boolean prepare() {
         running = true;
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((BackgroundActionListener)iter.next()).start(this);
+        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+                new BackgroundActionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].start(this);
         }
         return true;
     }
 
     public void finish() {
         running = false;
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((BackgroundActionListener)iter.next()).stop(this);
+        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+                new BackgroundActionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].stop(this);
         }
     }
 
@@ -83,7 +88,7 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
     public void removeListener(BackgroundActionListener listener) {
         listeners.remove(listener);
     }
-    
+
     public String getActivity() {
         return NSBundle.localizedString("Unknown", "");
     }
