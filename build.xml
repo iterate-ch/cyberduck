@@ -145,6 +145,7 @@
 				<include name="Alert.nib/**"/>
 				<include name="Activity.nib/**"/>
 				<include name="Task.nib/**"/>
+                <include name="Error.nib/**"/>
 			</fileset>
 		</copy>
 		<chmod perm="a+x" type="file">
