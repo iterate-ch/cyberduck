@@ -140,6 +140,7 @@
 		474B5BA40AEFB7F5009FD459 /* Alert.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474B5BA20AEFB7F5009FD459 /* Alert.nib */; };
 		4751799E097943FA008F671F /* Credentials.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4751799C097943FA008F671F /* Credentials.strings */; };
 		4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4754786A0A232C9A00CD6EAC /* cancel.tiff */; };
+		47586B0E0DD10BB100D2DFC1 /* Error.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47586B0C0DD10BB100D2DFC1 /* Error.nib */; };
 		4759C93D0A1476E500C5980A /* Progress.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4759C93B0A1476E500C5980A /* Progress.nib */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
 		475D17BA0805D54C00166B8A /* download7.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B00805D54C00166B8A /* download7.icns */; };
@@ -867,6 +868,7 @@
 		47562B8C081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Login.nib; sourceTree = "<group>"; };
 		47562B8D081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Preferences.nib; sourceTree = "<group>"; };
 		47562B8E081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Bookmark.nib; sourceTree = "<group>"; };
+		47586B0D0DD10BB100D2DFC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Error.nib; sourceTree = "<group>"; };
 		4759C93C0A1476E500C5980A /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Progress.nib; sourceTree = "<group>"; };
 		475D17AF0805D54C00166B8A /* download5.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download5.icns; sourceTree = "<group>"; };
 		475D17B00805D54C00166B8A /* download7.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download7.icns; sourceTree = "<group>"; };
@@ -1703,6 +1705,7 @@
 			isa = PBXGroup;
 			children = (
 				47911A170B84C4E8001A29AE /* Acknowledgments.rtf */,
+				47586B0C0DD10BB100D2DFC1 /* Error.nib */,
 				470244D60DBC995400B57C1E /* Task.nib */,
 				470244D30DBC994D00B57C1E /* Activity.nib */,
 				47E2D70B0D3226050018AF56 /* Transcript.nib */,
@@ -2564,6 +2567,7 @@
 				47B6074A0DA420880068282C /* Keychain.strings in Resources */,
 				470244D50DBC994D00B57C1E /* Activity.nib in Resources */,
 				470244D80DBC995400B57C1E /* Task.nib in Resources */,
+				47586B0E0DD10BB100D2DFC1 /* Error.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3559,6 +3563,14 @@
 				47B347710DACAF3200A51452 /* lv */,
 			);
 			name = Credentials.strings;
+			sourceTree = "<group>";
+		};
+		47586B0C0DD10BB100D2DFC1 /* Error.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				47586B0D0DD10BB100D2DFC1 /* en */,
+			);
+			name = Error.nib;
 			sourceTree = "<group>";
 		};
 		4759C93B0A1476E500C5980A /* Progress.nib */ = {
