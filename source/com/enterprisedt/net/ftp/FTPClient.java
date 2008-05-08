@@ -135,7 +135,7 @@ public class FTPClient {
     }
 
     /**
-     * 
+     *
      * @throws IOException
      */
     public void interrupt() throws IOException {
@@ -544,7 +544,7 @@ public class FTPClient {
         String replyCode = lastValidReply.getReplyCode();
         if(!replyCode.equals("450") && !replyCode.equals("550")) {
             // get a character input stream to read data from .
-            return new LineNumberReader(new InputStreamReader(data.getInputStream(), 
+            return new LineNumberReader(new InputStreamReader(data.getInputStream(),
                     Charset.forName(encoding)
             ));
         }
@@ -708,7 +708,7 @@ public class FTPClient {
      * Get modification time for a remote file
      *
      * @param remoteFile name of remote file
-     * @return modification time of file in milliseconds 
+     * @return modification time of file in milliseconds
      */
     public long modtime(String remoteFile, TimeZone timezone) throws IOException, FTPException {
         if(getModtimeSupported) {
@@ -861,6 +861,8 @@ public class FTPClient {
         }
     }
 
+    private boolean featSupported = true;
+
     /**
      * Get the server supplied features
      *
@@ -868,14 +870,22 @@ public class FTPClient {
      *         supported
      */
     public String[] features() throws IOException, FTPException {
-        if(null == features) {
-            FTPReply reply = control.sendCommand("FEAT");
-            lastValidReply = control.validateReply(reply, new String[]{"211", "500", "502"});
-            if(lastValidReply.getReplyCode().equals("211")) {
-                features = lastValidReply.getReplyData();
+        if(featSupported) {
+            try {
+                if(null == features) {
+                    FTPReply reply = control.sendCommand("FEAT");
+                    lastValidReply = control.validateReply(reply, new String[]{"211", "500", "502"});
+                    if(lastValidReply.getReplyCode().equals("211")) {
+                        features = lastValidReply.getReplyData();
+                    }
+                    else {
+                        throw new FTPException(reply);
+                    }
+                }
             }
-            else {
-                throw new FTPException(reply);
+            catch(FTPException e) {
+                featSupported = false;
+                throw e;
             }
         }
         if(null == features) {
