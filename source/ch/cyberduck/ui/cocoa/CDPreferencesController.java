@@ -252,7 +252,9 @@ public class CDPreferencesController extends CDWindowController {
 
     public void editorComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
-        Preferences.instance().setProperty("editor.bundleIdentifier", (String) EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.titleOfSelectedItem()));
+        final String selected = (String)EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.titleOfSelectedItem());
+        Preferences.instance().setProperty("editor.bundleIdentifier", selected);
+        EditorFactory.setSelectedEditor(selected);
         CDBrowserController.validateToolbarItems();
     }
 

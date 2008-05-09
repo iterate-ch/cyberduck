@@ -18,14 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.StringUtils;
-
 import com.apple.cocoa.application.NSButton;
 import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSWorkspace;
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.StringUtils;
+import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
 
@@ -45,8 +44,7 @@ public abstract class CDFileController extends CDSheetController {
 
     public void setEditButton(NSButton editButton) {
         this.editButton = editButton;
-        this.editButton.setEnabled(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                Preferences.instance().getProperty("editor.bundleIdentifier")) != null);
+        this.editButton.setEnabled(EditorFactory.defaultEditor() != null);
     }
 
     public CDFileController(final CDWindowController parent) {

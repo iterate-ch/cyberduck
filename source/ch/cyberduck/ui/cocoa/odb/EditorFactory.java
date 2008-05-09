@@ -69,6 +69,16 @@ public class EditorFactory {
         }
     }
 
+    public static String defaultEditor() {
+        if(null == NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                Preferences.instance().getProperty("editor.bundleIdentifier")
+        )) {
+            return null;
+        }
+        return Preferences.instance().getProperty("editor.bundleIdentifier");
+    }
+
+
     /**
      *
      * @param file
@@ -79,7 +89,7 @@ public class EditorFactory {
         final String defaultApplication = file.getDefaultEditor();
         if(null == defaultApplication) {
             // Use default editor
-            return Preferences.instance().getProperty("editor.bundleIdentifier");
+            return defaultEditor();
         }
         for(Iterator iter = INSTALLED_ODB_EDITORS.values().iterator(); iter.hasNext(); ) {
             final String identifier = (String) iter.next();
@@ -93,7 +103,7 @@ public class EditorFactory {
         }
         if(INSTALLED_ODB_EDITORS.containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
             // Use default editor
-            return Preferences.instance().getProperty("editor.bundleIdentifier");
+            return defaultEditor();
         }
         return null;
     }

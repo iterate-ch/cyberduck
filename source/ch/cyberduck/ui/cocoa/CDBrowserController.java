@@ -1347,9 +1347,8 @@ public class CDBrowserController extends CDWindowController
                 return;
             }
             if(p.attributes.isFile()) {
-                String editorBundleIdentifier = EditorFactory.editorBundleIdentifierForFile(
-                        p.getLocal());
-                EditorFactory.setSelectedEditor(editorBundleIdentifier);
+                EditorFactory.setSelectedEditor(EditorFactory.editorBundleIdentifierForFile(
+                        p.getLocal()));
             }
             final Collection selected = getSelectedPaths();
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
@@ -4340,13 +4339,13 @@ public class CDBrowserController extends CDWindowController
     public boolean validateToolbarItem(NSToolbarItem item) {
         String identifier = item.action().name();
         if(identifier.equals("editButtonClicked:")) {
-            final String editorBundleIdentifier = EditorFactory.getSelectedEditor();
-            if(null == editorBundleIdentifier) {
+            final String selectedEditor = EditorFactory.getSelectedEditor();
+            if(null == selectedEditor) {
                 item.setImage(NSImage.imageNamed("pencil.tiff"));
             }
             else {
                 item.setImage(NSWorkspace.sharedWorkspace().iconForFile(
-                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(editorBundleIdentifier))
+                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(selectedEditor))
                 );
             }
         }
