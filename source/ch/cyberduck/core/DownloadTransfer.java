@@ -380,7 +380,7 @@ public class DownloadTransfer extends Transfer {
                         NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
                     }
                 }
-            });
+            }, true);
         }
         super.fireTransferDidEnd();
     }    

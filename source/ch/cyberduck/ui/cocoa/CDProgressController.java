@@ -114,9 +114,9 @@ public class CDProgressController extends CDBundleController {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         progressBar.setIndeterminate(true);
+                        progressBar.setHidden(false);
                         progressBar.startAnimation(null);
                         statusIconView.setImage(YELLOW_ICON);
-                        setMessageText();
                         setProgressText();
                         setStatusText();
                     }
@@ -132,10 +132,11 @@ public class CDProgressController extends CDBundleController {
                         setProgressText();
                         setStatusText();
                         progressBar.stopAnimation(null);
+                        progressBar.setHidden(true);
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
                         filesPopup.itemAtIndex(0).setEnabled(transfer.getRoot().getLocal().exists());
                     }
-                });
+                }, true);
             }
 
             public void transferPaused() {
@@ -170,15 +171,11 @@ public class CDProgressController extends CDBundleController {
                     public void run() {
                         CDMainApplication.invoke(new DefaultMainAction() {
                             public void run() {
-                                setMessageText();
                                 setProgressText();
                                 if(!transfer.isVirgin()) {
                                     progressBar.setIndeterminate(false);
                                     progressBar.setMaxValue(transfer.getSize());
                                     progressBar.setDoubleValue(transfer.getTransferred());
-                                }
-                                else if(transfer.isRunning()) {
-                                    progressBar.setIndeterminate(true);
                                 }
                             }
                         });

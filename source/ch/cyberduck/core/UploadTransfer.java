@@ -316,7 +316,7 @@ public class UploadTransfer extends Transfer {
                 public void run() {
                     Growl.instance().notify("Upload complete", getName());
                 }
-            });
+            }, true);
         }
         super.fireTransferDidEnd();
     }    
