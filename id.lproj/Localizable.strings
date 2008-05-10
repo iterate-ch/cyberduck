@@ -297,6 +297,9 @@
 /* No comment provided by engineer. */
 "Review..." = "Review…";
 
+/* Toolbar item in Transfer Window. */
+"Search" = "Search";
+
 /* No comment provided by engineer. */
 "Server File" = "File Server";
 
