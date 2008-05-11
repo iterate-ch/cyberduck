@@ -561,6 +561,8 @@ public class CDBrowserController extends CDWindowController
         if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
             this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
         }
+
+        this.validateNavigationButtons();
     }
 
     protected Comparator getComparator() {
@@ -2314,7 +2316,7 @@ public class CDBrowserController extends CDWindowController
         pathPopupButton.lastItem().setImage(CDIconCache.instance().iconForPath(p, 16));
     }
 
-    private void updatePathPopupNavigation() {
+    private void validateNavigationButtons() {
         if(!this.isMounted()) {
             pathPopupButton.removeAllItems();
         }
@@ -2327,6 +2329,20 @@ public class CDBrowserController extends CDWindowController
                 p = (Path) p.getParent();
             }
             this.addPathToNavigation(p);
+        }
+
+        this.navigationButton.setEnabled(this.isMounted() && this.getBackHistory().size() > 1,
+                NAVIGATION_LEFT_SEGMENT_BUTTON);
+        this.navigationButton.setEnabled(this.isMounted() && this.getForwardHistory().size() > 0,
+                NAVIGATION_RIGHT_SEGMENT_BUTTON);
+        this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
+                NAVIGATION_UP_SEGMENT_BUTTON);
+
+        this.pathPopupButton.setEnabled(this.isMounted());
+        final boolean enabled = this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
+        this.searchField.setEnabled(enabled);
+        if(!enabled) {
+            this.searchField.setStringValue("");
         }
     }
 
@@ -3514,7 +3530,7 @@ public class CDBrowserController extends CDWindowController
         if(null == directory) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
-            updatePathPopupNavigation();
+            this.validateNavigationButtons();
             this.reloadData(false);
 
             return;
@@ -3555,7 +3571,7 @@ public class CDBrowserController extends CDWindowController
                     browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
                 }
 
-                updatePathPopupNavigation();
+                validateNavigationButtons();
 
                 // Mark the browser data source as dirty
                 reloadData(false);
@@ -3708,6 +3724,7 @@ public class CDBrowserController extends CDWindowController
                     public void run() {
                         getSelectedBrowserView().setNeedsDisplay();
                         bookmarkTable.setNeedsDisplay();
+
                         Growl.instance().notify("Connection opened", host.getHostname());
 
                         HistoryCollection.defaultCollection().add(host);
@@ -3725,23 +3742,18 @@ public class CDBrowserController extends CDWindowController
                 });
             }
 
-            public void connectionWillClose() {
-                ;
-            }
-
             public void connectionDidClose() {
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         getSelectedBrowserView().setNeedsDisplay();
                         bookmarkTable.setNeedsDisplay();
+
                         window.setDocumentEdited(false);
+
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
                         securityLabel.setEnabled(false);
                     }
                 });
-//                if(!CDBrowserController.this.isMounted()) {
-//                    CDBrowserController.this.unmount();
-//                }
             }
         });
         transcript.clear();
@@ -4034,23 +4046,6 @@ public class CDBrowserController extends CDWindowController
         });
     }
 
-    private void validateNavigationButtons() {
-        this.navigationButton.setEnabled(this.isMounted() && this.getBackHistory().size() > 1,
-                NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled(this.isMounted() && this.getForwardHistory().size() > 0,
-                NAVIGATION_RIGHT_SEGMENT_BUTTON);
-        this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
-                NAVIGATION_UP_SEGMENT_BUTTON);
-
-        this.pathPopupButton.setEnabled(this.isMounted());
-        final boolean enabled = this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
-        this.searchField.setEnabled(enabled);
-        if(!enabled) {
-            this.searchField.setStringValue("");
-        }
-        this.encodingPopup.setEnabled(!this.isActivityRunning());
-    }
-
     /**
      * @param item
      * @return true if the menu should be enabled
@@ -4328,7 +4323,6 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("openTerminalButtonClicked:")) {
             return this.isMounted() && this.getSession() instanceof SFTPSession;
         }
-        this.validateNavigationButtons();
         return true; // by default everything is enabled
     }
 
