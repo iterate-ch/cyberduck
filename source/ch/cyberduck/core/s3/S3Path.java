@@ -165,7 +165,7 @@ public class S3Path extends Path {
             if(!session.S3.isBucketAccessible(bucketname)) {
                 throw new S3ServiceException("Bucket not available: " + bucketname);
             }
-            final S3Bucket[] buckets = session.buckets;
+            final S3Bucket[] buckets = session.getBuckets(false);
             for(int i = 0; i < buckets.length; i++) {
                 if(buckets[i].getName().equals(bucketname)) {
                     _bucket = buckets[i];
@@ -488,7 +488,7 @@ public class S3Path extends Path {
 
             if(this.isRoot()) {
                 // List all buckets
-                final S3Bucket[] buckets = session.buckets;
+                final S3Bucket[] buckets = session.getBuckets(true);
                 for(int i = 0; i < buckets.length; i++) {
                     S3Path p = new S3Path(session, this.getAbsolute(), buckets[i].getName(),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);

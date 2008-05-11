@@ -135,7 +135,14 @@ public class S3Session extends Session implements SSLSession {
     /**
      * Caching the uses's buckets
      */
-    protected S3Bucket[] buckets = new S3Bucket[]{};
+    private S3Bucket[] buckets = new S3Bucket[]{};
+
+    protected S3Bucket[] getBuckets(boolean reload) throws S3ServiceException {
+        if(reload) {
+            this.buckets = this.S3.listAllBuckets();
+        }
+        return this.buckets;
+    }
 
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         synchronized(this) {
@@ -189,7 +196,8 @@ public class S3Session extends Session implements SSLSession {
                             authscheme.getSchemeName());
                 }
             }, configuration, hostConfiguration);
-            buckets = this.S3.listAllBuckets();
+
+            this.getBuckets(true);
         }
         catch(S3ServiceException e) {
             if(this.isLoginFailure(e)) {
