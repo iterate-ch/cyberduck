@@ -256,9 +256,6 @@ public class FTPSession extends Session {
         catch(FTPException e) {
             failure = e.getMessage();
         }
-        catch(FTPNullReplyException e) {
-            failure = e.getMessage();
-        }
         if(failure != null) {
             this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
             this.login.fail(host.getProtocol(), credentials, failure);
