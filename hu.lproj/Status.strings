@@ -73,6 +73,9 @@
 /* Renaming file status message; Renaming to <new filename>. */
 "Renaming {0} to {1}" = "Renaming {0} to {1}";
 
+/* Duplicate a file */
+"Copying {0} to {1}" = "Copying {0} to {1}";
+
 /* Changing the owner of a file */
 "Changing owner of {0} to {1}" = "Changing owner of {0} to {1}";
 
