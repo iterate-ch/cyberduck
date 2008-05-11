@@ -133,7 +133,9 @@ public class DAVPath extends Path {
             session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                     new Object[]{this.getName()}));
 
-            session.DAV.deleteMethod(this.getAbsolute());
+            if(!session.DAV.deleteMethod(this.getAbsolute())) {
+                throw new IOException(session.DAV.getStatusMessage());
+            }
         }
         catch(IOException e) {
             if(this.attributes.isFile()) {
@@ -196,7 +198,9 @@ public class DAVPath extends Path {
                     new Object[]{this.getName()}));
 
             session.DAV.setContentType("text/xml");
-            session.DAV.mkcolMethod(this.getAbsolute());
+            if(!session.DAV.mkcolMethod(this.getAbsolute())) {
+                throw new IOException(session.DAV.getStatusMessage());
+            }
         }
         catch(IOException e) {
             this.error("Cannot create folder", e);
@@ -223,7 +227,9 @@ public class DAVPath extends Path {
             session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
                     new Object[]{this.getName(), absolute}));
 
-            session.DAV.moveMethod(this.getAbsolute(), absolute);
+            if(!session.DAV.moveMethod(this.getAbsolute(), absolute)) {
+                throw new IOException(session.DAV.getStatusMessage());
+            }
             this.setPath(absolute);
         }
         catch(IOException e) {
@@ -234,7 +240,26 @@ public class DAVPath extends Path {
                 this.error("Cannot rename folder", e);
             }
         }
+    }
 
+    public void copy(Path copy) {
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
+                    new Object[]{this.getName(), copy}));
+            
+            if(!session.DAV.copyMethod(this.getAbsolute(), copy.getAbsolute())) {
+                throw new IOException(session.DAV.getStatusMessage());
+            }
+        }
+        catch(IOException e) {
+            if(this.attributes.isFile()) {
+                this.error("Cannot copy file", e);
+            }
+            if(this.attributes.isDirectory()) {
+                this.error("Cannot copy folder", e);
+            }
+        }
     }
 
     public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
@@ -308,32 +333,35 @@ public class DAVPath extends Path {
                             throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
                         }
                     }
-                    if(session.DAV.putMethod(this.getAbsolute(), new InputStream() {
+                    if(!session.DAV.putMethod(this.getAbsolute(), new InputStream() {
                         long bytesTransferred = getStatus().getCurrent();
 
                         public int read() throws IOException {
                             return read(new byte[1]);
                         }
 
+                        int read;
+
                         public int read(byte buffer[], int offset, int length)
                                 throws IOException {
                             if(getStatus().isCanceled()) {
                                 return -1;
-                            }
-                            int read = in.read(buffer, offset, length);
-                            if(-1 == read) {
-                                // End of file
-                                getStatus().setComplete(true);
                             }
                             if(read > 0) {
                                 listener.bytesSent(read);
                                 bytesTransferred += read;
                                 getStatus().setCurrent(bytesTransferred);
                             }
+                            read = in.read(buffer, offset, length);
+                            if(-1 == read) {
+                                // End of file
+                                getStatus().setComplete(true);
+                            }
                             return read;
                         }
                     }, this.getLocal().attributes.getSize() - this.getStatus().getCurrent())) {
-                        // Upload successful
+                        // Upload failed
+                        throw new IOException(session.DAV.getStatusMessage());
                     }
                 }
                 finally {
