@@ -722,15 +722,14 @@ public class S3Path extends Path {
         }
     }
 
-    public void copy(Path path) {
+    public void copy(Path copy) {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), path}));
+            session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
+                    new Object[]{this.getName(), copy}));
 
             session.S3.copyObject(this.getBucketName(), this.getKey(), this.getBucketName(),
-                    new S3Object(this.getBucket(), this.getKey(path.getAbsolute())), false);
-            this.setPath(path.getAbsolute());
+                    new S3Object(this.getBucket(), this.getKey(copy.getAbsolute())), false);
         }
         catch(S3ServiceException e) {
             if(this.attributes.isFile()) {
