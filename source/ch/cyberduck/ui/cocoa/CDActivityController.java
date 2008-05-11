@@ -83,7 +83,9 @@ public class CDActivityController extends CDWindowController {
                         public void run() {
                             log.debug("collectionItemRemoved" + action);
                             CDTaskController controller = (CDTaskController)tasks.remove(action);
-                            controller.invalidate();
+                            if(controller != null) {
+                                controller.invalidate();
+                            }
                             reload();
                         }
                     });
