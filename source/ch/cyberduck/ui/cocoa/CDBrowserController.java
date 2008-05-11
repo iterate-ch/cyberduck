@@ -1164,6 +1164,8 @@ public class CDBrowserController extends CDWindowController
             this.setBookmarkFilter(null);
         }
         Preferences.instance().setProperty("browser.bookmarkDrawer.isOpen", open);
+
+        this.validateNavigationButtons();
     }
 
     private NSSegmentedControl browserSwitchView;
