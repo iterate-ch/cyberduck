@@ -18,11 +18,33 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 /**
  * @version $Id$
  */
 public class HiddenFilesPathFilter implements PathFilter {
+    private static Logger log = Logger.getLogger(Proxy.class);
+
+    private Pattern HIDDEN_PATTERN;
+
+    public HiddenFilesPathFilter() {
+        try {
+            HIDDEN_PATTERN = Pattern.compile(
+                    Preferences.instance().getProperty("browser.hidden.regex"));
+        }
+        catch(PatternSyntaxException e) {
+            log.warn(e.getMessage());
+        }
+    }
+
     public boolean accept(AbstractPath file) {
-        return !(file.getName().charAt(0) == '.');
+        if(null == HIDDEN_PATTERN) {
+            return true;
+        }
+        return !HIDDEN_PATTERN.matcher(file.getName()).matches();
     }
 }

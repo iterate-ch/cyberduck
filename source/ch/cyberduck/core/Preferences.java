@@ -185,6 +185,8 @@ public abstract class Preferences {
         defaults.put("browser.view.autoexpand.useDelay", String.valueOf(true));
         defaults.put("browser.view.autoexpand.delay", "1.0"); // in seconds
 
+        defaults.put("browser.hidden.regex", "\\..*");
+
         defaults.put("browser.openUntitled", String.valueOf(true));
         defaults.put("browser.defaultBookmark", NSBundle.localizedString("None", ""));
 
