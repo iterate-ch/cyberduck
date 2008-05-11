@@ -6,6 +6,7 @@ Cyberduck is an open source SFTP (SSH Secure File Transfer) and FTP browser lice
 
 3.0 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
 - [Feature] Support for file renaming and copying (Amazon S3)
+- [Feature] Support for copying files (WebDAV)
 - [Bugfix] Transfers larger than 2GB fail (SFTP) [#1235]
 
 3.0b3 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
