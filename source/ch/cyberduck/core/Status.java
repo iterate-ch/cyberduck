@@ -55,9 +55,9 @@ public class Status {
      */
     private boolean complete = false;
 
-    public static final double KILO = 1024; //2^10
-    public static final double MEGA = 1048576; // 2^20
-    public static final double GIGA = 1073741824; // 2^30
+    public static final long KILO = 1024; //2^10
+    public static final long MEGA = 1048576; // 2^20
+    public static final long GIGA = 1073741824; // 2^30
 
     /**
      * Rounding mode to round towards "nearest neighbor" unless both
@@ -65,7 +65,7 @@ public class Status {
      *
      * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
      */
-    public static String getSizeAsString(double size) {
+    public static String getSizeAsString(long size) {
         if(-1 == size) {
             return NSBundle.localizedString("Unknown size", "");
         }
