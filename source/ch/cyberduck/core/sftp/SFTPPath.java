@@ -433,7 +433,6 @@ public class SFTPPath extends Path {
             }
             if(this.attributes.isFile()) {
                 out = new Local.OutputStream(this.getLocal(), getStatus().isResume());
-                this.getLocal().touch();
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                     in = new SFTPInputStream(handle);

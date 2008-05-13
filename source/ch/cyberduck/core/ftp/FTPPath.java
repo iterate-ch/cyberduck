@@ -460,7 +460,6 @@ public class FTPPath extends Path {
             }
             if(attributes.isFile()) {
                 session.setWorkdir((Path) this.getParent());
-                this.getLocal().touch();
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.downloadASCII(throttle, listener);
