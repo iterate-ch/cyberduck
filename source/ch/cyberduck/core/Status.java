@@ -65,7 +65,7 @@ public class Status {
      *
      * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
      */
-    public static String getSizeAsString(long size) {
+    public static String getSizeAsString(double size) {
         if(-1 == size) {
             return NSBundle.localizedString("Unknown size", "");
         }
