@@ -516,7 +516,7 @@ public class CDInfoController extends CDWindowController {
      * rading the cached size value in the attributes of the path
      */
     private void updateSize() {
-        int size = 0;
+        long size = 0;
         for(Iterator i = files.iterator(); i.hasNext();) {
             size += ((AbstractPath) i.next()).attributes.getSize();
         }
