@@ -3559,12 +3559,6 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                if(!directory.childs().attributes().isReadable()) {
-                    // the path given cannot be read either because it doesn't exist
-                    // or you don't have permission; don't update browser view
-                    return;
-                }
-
                 // Remove any custom file filter
                 setPathFilter(null);
 
