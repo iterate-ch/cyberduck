@@ -26,10 +26,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
-import java.util.Collections;
 import java.text.MessageFormat;
+import java.util.Collections;
 
 /**
  * @version $Id$
@@ -55,7 +54,7 @@ public class CDCreateFileController extends CDFileController {
 
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final CDBrowserController c = (CDBrowserController)parent;
-        c.background(new AbstractBackgroundAction() {
+        c.background(new BrowserBackgroundAction(c) {
             final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                     new Local(NSPathUtilities.temporaryDirectory(), filename));
 

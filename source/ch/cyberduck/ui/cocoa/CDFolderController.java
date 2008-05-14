@@ -22,12 +22,11 @@ import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.text.MessageFormat;
+import java.util.Collections;
 
 /**
  * @version $Id$
@@ -58,7 +57,7 @@ public class CDFolderController extends CDFileController {
 
     protected void createFolder(final Path workdir, final String filename) {
         final CDBrowserController c = (CDBrowserController)parent;
-        c.background(new AbstractBackgroundAction() {
+        c.background(new BrowserBackgroundAction(c) {
             final Path folder
                     = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                     filename, Path.DIRECTORY_TYPE);
