@@ -297,6 +297,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                         }
                         workdir.invalidate();
                     }
+                    exceptions.clear();
                     // Re-run the action with the previous lock used
                     controller.background(RepeatableBackgroundAction.this);
                 }
