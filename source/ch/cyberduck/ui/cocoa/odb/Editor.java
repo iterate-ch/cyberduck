@@ -23,16 +23,16 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.util.Enumeration;
 import java.text.MessageFormat;
+import java.util.Enumeration;
 
 /**
  * @version $Id$
@@ -93,8 +93,9 @@ public abstract class Editor extends CDController {
         }
         while(edited.getLocal().exists());
 
-        controller.background(new AbstractBackgroundAction() {
+        controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
+                edited.getStatus().setComplete(false);
                 edited.download(true);
             }
 
@@ -163,8 +164,9 @@ public abstract class Editor extends CDController {
      */
     protected void save() {
         log.debug("save");
-        controller.background(new AbstractBackgroundAction() {
+        controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
+                edited.getStatus().setComplete(false);
                 edited.upload();
             }
 
