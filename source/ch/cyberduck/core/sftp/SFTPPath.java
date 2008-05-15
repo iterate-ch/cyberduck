@@ -259,7 +259,8 @@ public class SFTPPath extends Path {
                 session.sftp().closeFile(handle);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                // Fail silently
+                log.error("Cannot read file attributes", e);
             }
             finally {
                 if(handle != null) {
@@ -288,7 +289,8 @@ public class SFTPPath extends Path {
                 session.sftp().closeFile(handle);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                // Fail silently
+                log.error("Cannot read file attributes", e);
             }
             finally {
                 if(handle != null) {
@@ -323,7 +325,8 @@ public class SFTPPath extends Path {
                 session.sftp().closeFile(handle);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                // Fail silently
+                log.error("Cannot read file attributes", e);
             }
             finally {
                 if(handle != null) {
@@ -419,7 +422,8 @@ public class SFTPPath extends Path {
             }
         }
         catch(IOException e) {
-            this.error("Cannot change permissions", e);
+            // Fail silently
+            log.error("Cannot change permissions", e);
         }
     }
 
