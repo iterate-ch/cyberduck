@@ -95,7 +95,7 @@ public abstract class Transfer extends NSObject implements Serializable {
     private boolean reset;
 
     public boolean isResumable() {
-        if(!this.isComplete() && !this.isVirgin()) {
+        if(!this.isComplete()) {
             if(this.getSession() instanceof SFTPSession) {
                 return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());
             }
