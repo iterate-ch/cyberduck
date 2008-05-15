@@ -303,11 +303,30 @@ public class UploadTransfer extends Transfer {
     }
 
     protected void _transferImpl(final Path p) {
+        Permission permission = null;
+        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+            permission = p.attributes.getPermission();
+            if(null == permission) {
+                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                    if(p.attributes.isFile()) {
+                        permission = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                    }
+                    if(p.attributes.isDirectory()) {
+                        permission = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                    }
+                }
+                else {
+                    permission = p.getLocal().attributes.getPermission();
+                }
+            }
+        }
         p.upload(bandwidth, new AbstractStreamListener() {
             public void bytesSent(long bytes) {
                 transferred += bytes;
             }
-        });
+        }, permission);
     }
 
     protected void fireTransferDidEnd() {

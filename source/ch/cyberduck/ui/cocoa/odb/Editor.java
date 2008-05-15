@@ -26,7 +26,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import org.apache.log4j.Logger;
 
@@ -95,18 +94,23 @@ public abstract class Editor extends CDController {
 
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
-                edited.getStatus().setComplete(false);
-                edited.download(true);
+                TransferOptions options = new TransferOptions();
+                options.closeSession = false;
+                Transfer download = new DownloadTransfer(edited);
+                download.start(new TransferPrompt() {
+                    public TransferAction prompt() {
+                        return TransferAction.ACTION_OVERWRITE;
+                    }
+                }, options);
             }
 
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
                         new Object[]{edited.getName()});
             }
-            
+
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
-                    edited.getSession().message(NSBundle.localizedString("Download complete", "Growl", "Growl Notification"));
                     final Permission permissions = edited.getLocal().attributes.getPermission();
                     if(null != permissions) {
                         permissions.getOwnerPermissions()[Permission.READ] = true;
@@ -166,8 +170,14 @@ public abstract class Editor extends CDController {
         log.debug("save");
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
-                edited.getStatus().setComplete(false);
-                edited.upload();
+                TransferOptions options = new TransferOptions();
+                options.closeSession = false;
+                Transfer upload = new UploadTransfer(edited);
+                upload.start(new TransferPrompt() {
+                    public TransferAction prompt() {
+                        return TransferAction.ACTION_OVERWRITE;
+                    }
+                }, options);
             }
 
             public String getActivity() {
@@ -177,7 +187,6 @@ public abstract class Editor extends CDController {
 
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
-                    Growl.instance().notify("Upload complete", edited.getName());
                     if(deferredDelete) {
                         delete();
                     }

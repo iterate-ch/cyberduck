@@ -442,25 +442,10 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener The stream listener to notify about bytes received and sent
      */
     public void upload(BandwidthThrottle throttle, StreamListener listener) {
-        Permission p = null;
-        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            p = attributes.getPermission();
-            if(null == p) {
-                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                    if(this.attributes.isFile()) {
-                        p = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                    }
-                    if(this.attributes.isDirectory()) {
-                        p = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                    }
-                }
-                else {
-                    p = this.getLocal().attributes.getPermission();
-                }
-            }
-        }
+        this.upload(throttle, listener, null);
+    }
+
+    public void upload(BandwidthThrottle throttle, StreamListener listener, Permission p) {
         this.upload(throttle, listener, p, false);
         this.getParent().invalidate();
     }
@@ -471,7 +456,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param p        The permission to set after uploading or null
      * @param check    Check for open connection and open if needed before transfer
      */
-    public abstract void upload(BandwidthThrottle throttle, StreamListener listener, Permission p, boolean check);
+    protected abstract void upload(BandwidthThrottle throttle, StreamListener listener, Permission p, boolean check);
 
     /**
      * Will copy from in to out. Will attempt to skip Status#getCurrent
@@ -486,7 +471,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @throws IOResumeException If the input stream fails to skip the appropriate
      *                           number of bytes
      */
-    public void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
+    protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
@@ -512,7 +497,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param l        The stream listener to notify about bytes received and sent
      * @throws IOException
      */
-    public void download(InputStream in, OutputStream out, BandwidthThrottle throttle, final StreamListener l) throws IOException {
+    protected void download(InputStream in, OutputStream out, BandwidthThrottle throttle, final StreamListener l) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }

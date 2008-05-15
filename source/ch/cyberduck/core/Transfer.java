@@ -603,6 +603,14 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     /**
+     * Use default transfer options
+     * @param prompt
+     */
+    public void start(TransferPrompt prompt) {
+        this.start(prompt, TransferOptions.DEFAULT);
+    }
+
+    /**
      * Calls #start with queueing off
      *
      * @param prompt
