@@ -76,4 +76,8 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         }
         return super.isCanceled();
     }
+
+    public Object lock() {
+        return controller.getSession();
+    }
 }
