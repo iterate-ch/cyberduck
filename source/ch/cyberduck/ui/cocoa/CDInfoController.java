@@ -259,11 +259,12 @@ public class CDInfoController extends CDWindowController {
     private void init() {
         this.applyButton.setEnabled(controller.isConnected());
 
-        if(this.numberOfFiles() > 0) {
+        final int count = this.numberOfFiles();
+        if(count > 0) {
             Path file = (Path) this.files.get(0);
-            this.filenameField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
+            this.filenameField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.getName());
-            this.filenameField.setEnabled(this.numberOfFiles() > 1);
+            this.filenameField.setEnabled(1 == count);
             if(file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getSymbolicLinkPath(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -272,9 +273,9 @@ public class CDInfoController extends CDWindowController {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            this.groupField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
+            this.groupField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
-            if(this.numberOfFiles() > 1) {
+            if(count > 1) {
                 this.kindField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
 //                this.mimeField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
@@ -284,7 +285,7 @@ public class CDInfoController extends CDWindowController {
 //                this.mimeField.setAttributedStringValue(new NSAttributedString(file.getMimeType(),
 //                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            if(this.numberOfFiles() > 1) {
+            if(count > 1) {
                 this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
@@ -300,7 +301,7 @@ public class CDInfoController extends CDWindowController {
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
             }
-            this.ownerField.setStringValue(this.numberOfFiles() > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
+            this.ownerField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getOwner());
             this.sizeButton.setEnabled(file.attributes.isDirectory());
             this.updateSize();
@@ -331,7 +332,7 @@ public class CDInfoController extends CDWindowController {
             }
 
             //		octalField.setStringValue(""+file.getOctalCode());
-            if(this.numberOfFiles() > 1) {
+            if(count > 1) {
                 this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")
                         + " | " + "(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
@@ -341,7 +342,7 @@ public class CDInfoController extends CDWindowController {
             }
 
             NSImage fileIcon = null;
-            if(this.numberOfFiles() > 1) {
+            if(count > 1) {
                 fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
             }
             else {
