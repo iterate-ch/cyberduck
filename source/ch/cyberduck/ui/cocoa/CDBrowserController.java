@@ -3863,27 +3863,41 @@ public class CDBrowserController extends CDWindowController
         return this.unmount(new CDSheetCallback() {
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    if(isActivityRunning()) {
-                        interrupt();
-                    }
-                    background(new BrowserBackgroundAction(CDBrowserController.this) {
-                        public void run() {
-                            unmount(true);
-                        }
-
-                        public void cleanup() {
-                            disconnected.run();
-                        }
-
-                        public String getActivity() {
-                            return NSBundle.localizedString("Disconnecting", "Status", "");
-                        }
-                    });
+                    unmountImpl(disconnected);
                 }
             }
         }, disconnected);
     }
 
+    /**
+     *
+     * @param disconnected
+     */
+    private void unmountImpl(final Runnable disconnected) {
+        if(this.isActivityRunning()) {
+            this.interrupt();
+        }
+        this.background(new BrowserBackgroundAction(this) {
+            public void run() {
+                unmount(true);
+            }
+
+            public void cleanup() {
+                disconnected.run();
+            }
+
+            public String getActivity() {
+                return NSBundle.localizedString("Disconnecting", "Status", "");
+            }
+        });
+    }
+
+    /**
+     *
+     * @param callback
+     * @param disconnected
+     * @return
+     */
     public boolean unmount(final CDSheetCallback callback, final Runnable disconnected) {
         log.debug("unmount");
         if(this.isConnected() || this.isActivityRunning()) {
@@ -3898,22 +3912,7 @@ public class CDBrowserController extends CDWindowController
                 // No unmount yet
                 return false;
             }
-            if(this.isActivityRunning()) {
-                this.interrupt();
-            }
-            this.background(new BrowserBackgroundAction(this) {
-                public void run() {
-                    unmount(true);
-                }
-
-                public void cleanup() {
-                    disconnected.run();
-                }
-
-                public String getActivity() {
-                    return NSBundle.localizedString("Disconnecting", "Status", "");
-                }
-            });
+            this.unmountImpl(disconnected);
             // Unmount in progress
             return true;
         }
@@ -3936,8 +3935,10 @@ public class CDBrowserController extends CDWindowController
             }
             this.background(new BrowserBackgroundAction(this) {
                 public void run() {
-                    // Aggressively close the connection to interrupt the current task
-                    session.interrupt();
+                    if(hasSession()) {
+                        // Aggressively close the connection to interrupt the current task
+                        session.interrupt();
+                    }
                 }
 
                 public void cleanup() {
