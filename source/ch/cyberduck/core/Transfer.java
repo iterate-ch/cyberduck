@@ -332,7 +332,7 @@ public abstract class Transfer extends NSObject implements Serializable {
     /**
      *
      */
-    private Map _existing = new HashMap();
+    private Map<AbstractPath,Boolean> _existing = new HashMap<AbstractPath,Boolean>();
 
     /**
      * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
@@ -344,9 +344,16 @@ public abstract class Transfer extends NSObject implements Serializable {
     public boolean exists(Path file) {
         if(!_existing.containsKey(file)) {
             log.debug("exists:" + file);
-            _existing.put(file, Boolean.valueOf(file.exists()));
+            final AbstractPath parent = file.getParent();
+            if(_existing.containsKey(parent) && !_existing.get(parent)) {
+                // Shortcut if parent file does not exist
+                _existing.put(file, false);
+            }
+            else {
+                _existing.put(file, file.exists());
+            }
         }
-        return ((Boolean) _existing.get(file)).booleanValue();
+        return _existing.get(file);
     }
 
     /**
@@ -359,9 +366,9 @@ public abstract class Transfer extends NSObject implements Serializable {
     public boolean exists(Local file) {
         if(!_existing.containsKey(file)) {
             log.debug("exists:" + file);
-            _existing.put(file, Boolean.valueOf(file.exists()));
+            _existing.put(file, file.exists());
         }
-        return ((Boolean) _existing.get(file)).booleanValue();
+        return _existing.get(file);
     }
 
     /**
