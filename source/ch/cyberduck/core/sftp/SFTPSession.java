@@ -136,30 +136,28 @@ public class SFTPSession extends Session {
     }
 
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
-        synchronized(this) {
-            if(this.isConnected()) {
-                return;
-            }
-            this.fireConnectionWillOpenEvent();
-
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
-                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
-
-            SSH = new Connection(this.host.getHostname(true), this.host.getPort());
-
-            final int timeout = this.timeout();
-            SSH.connect(verifier, timeout, timeout);
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName()}));
-            this.login();
-            if(!SSH.isAuthenticationComplete()) {
-                throw new LoginCanceledException();
-            }
-            this.fireConnectionDidOpenEvent();
+        if(this.isConnected()) {
+            return;
         }
+        this.fireConnectionWillOpenEvent();
+
+        this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
+                new Object[]{host.getProtocol().getName(), host.getHostname()}));
+
+        SSH = new Connection(this.host.getHostname(true), this.host.getPort());
+
+        final int timeout = this.timeout();
+        SSH.connect(verifier, timeout, timeout);
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+        this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                new Object[]{host.getProtocol().getName()}));
+        this.login();
+        if(!SSH.isAuthenticationComplete()) {
+            throw new LoginCanceledException();
+        }
+        this.fireConnectionDidOpenEvent();
     }
 
     protected void login() throws IOException, ConnectionCanceledException, LoginCanceledException {
@@ -201,8 +199,9 @@ public class SFTPSession extends Session {
                 FileReader fr = new FileReader(new File(key.getAbsolute()));
                 while(true) {
                     int len = fr.read(buff);
-                    if(len < 0)
+                    if(len < 0) {
                         break;
+                    }
                     cw.write(buff, 0, len);
                 }
                 fr.close();
@@ -284,19 +283,17 @@ public class SFTPSession extends Session {
     }
 
     public void close() {
-        synchronized(this) {
-            try {
-                this.fireConnectionWillCloseEvent();
-                if(SFTP != null) {
-                    SFTP.close();
-                }
-                if(SSH != null) {
-                    SSH.close();
-                }
+        try {
+            this.fireConnectionWillCloseEvent();
+            if(SFTP != null) {
+                SFTP.close();
             }
-            finally {
-                this.fireConnectionDidCloseEvent();
+            if(SSH != null) {
+                SSH.close();
             }
+        }
+        finally {
+            this.fireConnectionDidCloseEvent();
         }
     }
 
@@ -338,30 +335,25 @@ public class SFTPSession extends Session {
     }
 
     public Path workdir() throws IOException {
-        synchronized(this) {
-            if(!SFTP.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            if(null == workdir) {
-                // "." as referring to the current directory
-                workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."), Path.DIRECTORY_TYPE);
-            }
-            return workdir;
+        if(!SFTP.isConnected()) {
+            throw new ConnectionCanceledException();
         }
+        if(null == workdir) {
+            // "." as referring to the current directory
+            workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."), Path.DIRECTORY_TYPE);
+        }
+        return workdir;
     }
 
     public void setWorkdir(Path workdir) throws IOException {
-        synchronized(this) {
-            this.workdir = workdir;
-        }
+        this.workdir = workdir;
     }
 
     protected void noop() throws IOException {
-        synchronized(this) {
-            if(this.isConnected()) {
-                SSH.sendIgnorePacket();
-            }
+        if(this.isConnected()) {
+            SSH.sendIgnorePacket();
         }
+
     }
 
     public void sendCommand(String command) throws IOException {

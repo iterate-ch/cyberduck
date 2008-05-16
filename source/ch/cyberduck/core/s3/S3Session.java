@@ -35,8 +35,8 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
-import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
+import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.security.AWSCredentials;
 
 import javax.net.ssl.X509TrustManager;
@@ -145,27 +145,25 @@ public class S3Session extends Session implements SSLSession {
     }
 
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
-        synchronized(this) {
-            if(this.isConnected()) {
-                return;
-            }
-            this.fireConnectionWillOpenEvent();
-
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
-                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
-
-            // Configure connection options
-            this.configure(configuration = new Jets3tProperties());
-
-            // Prompt the login credentials first
-            this.login();
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName()}));
-            this.fireConnectionDidOpenEvent();
+        if(this.isConnected()) {
+            return;
         }
+        this.fireConnectionWillOpenEvent();
+
+        this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
+                new Object[]{host.getProtocol().getName(), host.getHostname()}));
+
+        // Configure connection options
+        this.configure(configuration = new Jets3tProperties());
+
+        // Prompt the login credentials first
+        this.login();
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+        this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                new Object[]{host.getProtocol().getName()}));
+        this.fireConnectionDidOpenEvent();
     }
 
     protected void login() throws IOException, LoginCanceledException {
@@ -221,29 +219,25 @@ public class S3Session extends Session implements SSLSession {
     }
 
     public void close() {
-        synchronized(this) {
-            try {
-                if(this.isConnected()) {
-                    this.fireConnectionWillCloseEvent();
-                }
+        try {
+            if(this.isConnected()) {
+                this.fireConnectionWillCloseEvent();
             }
-            finally {
-                S3 = null;
-                this.fireConnectionDidCloseEvent();
-            }
+        }
+        finally {
+            S3 = null;
+            this.fireConnectionDidCloseEvent();
         }
     }
 
     public Path workdir() throws IOException {
-        synchronized(this) {
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            if(null == workdir) {
-                workdir = PathFactory.createPath(this, Path.DELIMITER, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-            }
-            return workdir;
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
         }
+        if(null == workdir) {
+            workdir = PathFactory.createPath(this, Path.DELIMITER, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        }
+        return workdir;
     }
 
     public void setWorkdir(Path workdir) throws IOException {

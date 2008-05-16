@@ -132,22 +132,20 @@ public class FTPSession extends Session {
     }
 
     public void close() {
-        synchronized(this) {
-            try {
-                if(this.isConnected()) {
-                    this.fireConnectionWillCloseEvent();
-                    FTP.quit();
-                }
+        try {
+            if(this.isConnected()) {
+                this.fireConnectionWillCloseEvent();
+                FTP.quit();
             }
-            catch(FTPException e) {
-                log.error("FTP Error: " + e.getMessage());
-            }
-            catch(IOException e) {
-                log.error("IO Error: " + e.getMessage());
-            }
-            finally {
-                this.fireConnectionDidCloseEvent();
-            }
+        }
+        catch(FTPException e) {
+            log.error("FTP Error: " + e.getMessage());
+        }
+        catch(IOException e) {
+            log.error("IO Error: " + e.getMessage());
+        }
+        finally {
+            this.fireConnectionDidCloseEvent();
         }
     }
 
@@ -198,28 +196,26 @@ public class FTPSession extends Session {
     }
 
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
-        synchronized(this) {
-            if(this.isConnected()) {
-                return;
-            }
-            this.fireConnectionWillOpenEvent();
-
-            this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
-                    new Object[]{host.getProtocol().getName(), host.getHostname()}));
-
-            this.FTP = this.getClient();
-            this.FTP.setTimeout(this.timeout());
-            this.FTP.connect(host.getHostname(true), host.getPort());
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            this.FTP.setStrictReturnCodes(true);
-            this.FTP.setConnectMode(this.getConnectMode());
-            this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                    new Object[]{host.getProtocol().getName()}));
-            this.login();
-            this.fireConnectionDidOpenEvent();
+        if(this.isConnected()) {
+            return;
         }
+        this.fireConnectionWillOpenEvent();
+
+        this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
+                new Object[]{host.getProtocol().getName(), host.getHostname()}));
+
+        this.FTP = this.getClient();
+        this.FTP.setTimeout(this.timeout());
+        this.FTP.connect(host.getHostname(true), host.getPort());
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+        this.FTP.setStrictReturnCodes(true);
+        this.FTP.setConnectMode(this.getConnectMode());
+        this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+                new Object[]{host.getProtocol().getName()}));
+        this.login();
+        this.fireConnectionDidOpenEvent();
     }
 
     /**
@@ -264,15 +260,13 @@ public class FTPSession extends Session {
     }
 
     public Path workdir() throws IOException {
-        synchronized(this) {
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            if(null == workdir) {
-                workdir = PathFactory.createPath(this, this.FTP.pwd(), Path.DIRECTORY_TYPE);
-            }
-            return workdir;
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
         }
+        if(null == workdir) {
+            workdir = PathFactory.createPath(this, this.FTP.pwd(), Path.DIRECTORY_TYPE);
+        }
+        return workdir;
     }
 
     public void setWorkdir(Path workdir) throws IOException {
@@ -280,29 +274,23 @@ public class FTPSession extends Session {
             // Do not attempt to change the workdir if the same
             return;
         }
-        synchronized(this) {
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            this.FTP.chdir(workdir.getAbsolute());
-            // Workdir change succeeded
-            this.workdir = workdir;
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
         }
+        this.FTP.chdir(workdir.getAbsolute());
+        // Workdir change succeeded
+        this.workdir = workdir;
     }
 
     protected void noop() throws IOException {
-        synchronized(this) {
-            if(this.isConnected()) {
-                this.FTP.noop();
-            }
+        if(this.isConnected()) {
+            this.FTP.noop();
         }
     }
 
     public void sendCommand(String command) throws IOException {
-        synchronized(this) {
-            if(this.isConnected()) {
-                this.FTP.quote(command);
-            }
+        if(this.isConnected()) {
+            this.FTP.quote(command);
         }
     }
 }
