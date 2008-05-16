@@ -173,7 +173,7 @@ public abstract class Session extends NSObject {
             }
             Path home;
             if(workdir != null) {
-                if(workdir.startsWith(Path.DELIMITER)) {
+                if(workdir.startsWith(Path.DELIMITER) || workdir.equals(this.workdir().getName())) {
                     home = PathFactory.createPath(this, workdir,
                             workdir.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
                 }

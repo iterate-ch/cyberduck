@@ -81,8 +81,9 @@ public class DAVSession extends Session {
         WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
         this.DAV = new DAVResource(host.toURL());
-        if(StringUtils.hasText(host.getDefaultPath())) {
-            this.DAV.setPath(host.getDefaultPath());
+        final String workdir = host.getDefaultPath();
+        if(StringUtils.hasText(workdir)) {
+            this.DAV.setPath(workdir.startsWith(Path.DELIMITER) ? workdir : Path.DELIMITER + workdir);
         }
 
         this.configure();
