@@ -165,7 +165,8 @@ public abstract class Session extends NSObject {
      * @return null if we fail, the mounted working directory if we succeed
      */
     public Path mount(String workdir) {
-        this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname());
+        this.message(MessageFormat.format(NSBundle.localizedString("Mounting {0}", "Status", ""),
+                new Object[]{host.getHostname()}));
         try {
             this.check();
             if(!this.isConnected()) {
