@@ -9,6 +9,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Cannot edit filename in Info panel [#2049]
 - [Bugfix] External editor failures [#2041, #2039, #2052, #2058]
 - [Bugfix] Missing resume option in transfer prompt
+- [Bugfix] Removed keep connection active feature. [#2057]
 
 3.0 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
 - [Feature] Support for file renaming and copying (Amazon S3)
