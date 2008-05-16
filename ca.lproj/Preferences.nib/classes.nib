@@ -82,7 +82,6 @@
                 failInsecureDataChannelCheckbox = NSButton;
                 horizontalLinesCheckbox = NSButton;
                 infoWindowAsInspectorCheckbox = NSButton;
-                keepAliveCheckbox = NSButton;
                 keychainCheckbox = NSButton;
                 lineEndingCombobox = NSPopUpButton;
                 loginField = NSTextField;
