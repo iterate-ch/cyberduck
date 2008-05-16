@@ -430,11 +430,6 @@ public abstract class Preferences {
 
         defaults.put("connection.timeout.seconds", String.valueOf(30));
         /**
-         * Send no operation commands to the server
-         */
-        defaults.put("connection.keepalive", String.valueOf(false));
-        defaults.put("connection.keepalive.interval", String.valueOf(30000));
-        /**
          * Retry to connect after a I/O failure automatically
          */
         defaults.put("connection.retry", String.valueOf(1));

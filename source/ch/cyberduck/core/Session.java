@@ -27,8 +27,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.*;
 import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -165,44 +165,42 @@ public abstract class Session extends NSObject {
      * @return null if we fail, the mounted working directory if we succeed
      */
     public Path mount(String workdir) {
-        synchronized(this) {
-            this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname());
-            try {
-                this.check();
-                if(!this.isConnected()) {
-                    return null;
+        this.message(NSBundle.localizedString("Mounting", "Status", "") + " " + host.getHostname());
+        try {
+            this.check();
+            if(!this.isConnected()) {
+                return null;
+            }
+            Path home;
+            if(workdir != null) {
+                if(workdir.startsWith(Path.DELIMITER)) {
+                    home = PathFactory.createPath(this, workdir,
+                            workdir.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
                 }
-                Path home;
-                if(workdir != null) {
-                    if(workdir.startsWith(Path.DELIMITER)) {
-                        home = PathFactory.createPath(this, workdir,
-                                workdir.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
-                    }
-                    else if(workdir.startsWith(Path.HOME)) {
-                        // relative path to the home directory
-                        home = PathFactory.createPath(this,
-                                this.workdir().getAbsolute(), workdir.substring(1), Path.DIRECTORY_TYPE);
-                    }
-                    else {
-                        // relative path
-                        home = PathFactory.createPath(this,
-                                this.workdir().getAbsolute(), workdir, Path.DIRECTORY_TYPE);
-                    }
-                    if(!home.childs().attributes().isReadable()) {
-                        // the default path does not exist or is not readable due to permission issues
-                        home = this.workdir();
-                    }
+                else if(workdir.startsWith(Path.HOME)) {
+                    // relative path to the home directory
+                    home = PathFactory.createPath(this,
+                            this.workdir().getAbsolute(), workdir.substring(1), Path.DIRECTORY_TYPE);
                 }
                 else {
+                    // relative path
+                    home = PathFactory.createPath(this,
+                            this.workdir().getAbsolute(), workdir, Path.DIRECTORY_TYPE);
+                }
+                if(!home.childs().attributes().isReadable()) {
+                    // the default path does not exist or is not readable due to permission issues
                     home = this.workdir();
                 }
-                return home;
             }
-            catch(IOException e) {
-                this.interrupt();
+            else {
+                home = this.workdir();
             }
-            return null;
+            return home;
         }
+        catch(IOException e) {
+            this.interrupt();
+        }
+        return null;
     }
 
     /**
@@ -306,8 +304,8 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((ConnectionListener)iter.next()).connectionWillOpen();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((ConnectionListener) iter.next()).connectionWillOpen();
         }
         // Configuring proxy if any
         Proxy.configure(this.host.getHostname());
@@ -332,14 +330,8 @@ public abstract class Session extends NSObject {
         host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
                 host.getHostname(), host.getPort());
 
-        if(Preferences.instance().getBoolean("connection.keepalive")) {
-            this.keepAliveTimer = new Timer();
-            this.keepAliveTimer.scheduleAtFixedRate(new KeepAliveTask(),
-                    Preferences.instance().getInteger("connection.keepalive.interval"),
-                    Preferences.instance().getInteger("connection.keepalive.interval"));
-        }
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((ConnectionListener)iter.next()).connectionDidOpen();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((ConnectionListener) iter.next()).connectionDidOpen();
         }
     }
 
@@ -351,8 +343,8 @@ public abstract class Session extends NSObject {
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
         this.message(NSBundle.localizedString("Disconnecting", "Status", ""));
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((ConnectionListener)iter.next()).connectionWillClose();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((ConnectionListener) iter.next()).connectionWillClose();
         }
     }
 
@@ -368,8 +360,8 @@ public abstract class Session extends NSObject {
         }
         this.workdir = null;
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((ConnectionListener)iter.next()).connectionDidClose();
+        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
+            ((ConnectionListener) iter.next()).connectionDidClose();
         }
     }
 
@@ -391,8 +383,8 @@ public abstract class Session extends NSObject {
      */
     public void log(final String message) {
         log.info(message);
-        for(Iterator iter = transcriptListeners.iterator(); iter.hasNext(); ) {
-            ((TranscriptListener)iter.next()).log(message);
+        for(Iterator iter = transcriptListeners.iterator(); iter.hasNext();) {
+            ((TranscriptListener) iter.next()).log(message);
         }
     }
 
@@ -414,8 +406,8 @@ public abstract class Session extends NSObject {
      */
     public void message(final String message) {
         log.info(message);
-        for(Iterator iter = progressListeners.iterator(); iter.hasNext(); ) {
-            ((ProgressListener)iter.next()).message(message);
+        for(Iterator iter = progressListeners.iterator(); iter.hasNext();) {
+            ((ProgressListener) iter.next()).message(message);
         }
     }
 
@@ -439,26 +431,8 @@ public abstract class Session extends NSObject {
     public void error(Path path, String message, Throwable e) {
         final BackgroundException failure = new BackgroundException(this, path, message, e);
         this.message(failure.getMessage());
-        for(Iterator iter = errorListeners.iterator(); iter.hasNext(); ) {
-            ((ErrorListener)iter.next()).error(failure);
-        }
-    }
-
-    /**
-     * A task to send NOOP commands
-     */
-    private class KeepAliveTask extends TimerTask {
-        public void run() {
-            try {
-                log.info("Sending NOOP to keep connection alive");
-                Session.this.message(NSBundle.localizedString("Checking connection", "Status", ""));
-                Session.this.noop();
-            }
-            catch(IOException e) {
-                log.warn("Keep alive task failed. Connection closed.");
-                Session.this.interrupt();
-                this.cancel();
-            }
+        for(Iterator iter = errorListeners.iterator(); iter.hasNext();) {
+            ((ErrorListener) iter.next()).error(failure);
         }
     }
 
