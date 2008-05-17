@@ -129,7 +129,7 @@ public class CDConnectionController extends CDSheetController {
         for(Iterator iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
             Host h = (Host) iter.next();
             if(h.getNickname().equals(input)) {
-                this.hostChanged(h);
+                this.hostChanged(new Host(h.getAsDictionary()));
                 break;
             }
         }
