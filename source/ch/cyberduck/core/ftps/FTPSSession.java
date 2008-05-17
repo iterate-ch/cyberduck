@@ -81,6 +81,8 @@ public class FTPSSession extends FTPSession implements SSLSession {
     }
 
     protected FTPClient getClient() {
+        // AUTH command required before login
+        auth = true;
         return new FTPSClient(this.getEncoding(), new FTPMessageListener() {
             public void logCommand(String cmd) {
                 FTPSSession.this.log(cmd);
@@ -92,12 +94,18 @@ public class FTPSSession extends FTPSession implements SSLSession {
         }, this.getTrustManager());
     }
 
+    private boolean auth;
+
     public void login() throws IOException {
-        try {
-            ((FTPSClient) this.FTP).auth();
-        }
-        catch(SSLHandshakeException e) {
-            throw new ConnectionCanceledException(e.getMessage());
+        if(auth) {
+            // Only send AUTH before the first login attempt
+            try {
+                ((FTPSClient) this.FTP).auth();
+                auth = false;
+            }
+            catch(SSLHandshakeException e) {
+                throw new ConnectionCanceledException(e.getMessage());
+            }
         }
         super.login();
     }
