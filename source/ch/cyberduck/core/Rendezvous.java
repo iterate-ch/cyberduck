@@ -96,7 +96,8 @@ public class Rendezvous
         }
     }
 
-    private Set listeners = Collections.synchronizedSet(new HashSet());
+    private Set<RendezvousListener> listeners =
+            Collections.synchronizedSet(new HashSet<RendezvousListener>());
 
     private RendezvousListener notifier = new RendezvousListener() {
 
@@ -113,15 +114,19 @@ public class Rendezvous
                     ; //Ignore
                 }
             }
-            for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-                ((RendezvousListener) iter.next()).serviceResolved(servicename, hostname);
+            RendezvousListener[] l = listeners.toArray(
+                    new RendezvousListener[listeners.size()]);
+            for(int i = 0; i < l.length; i++) {
+                l[i].serviceResolved(servicename, hostname);
             }
         }
 
         public void serviceLost(final String servicename) {
             log.info("Service lost:" + servicename);
-            for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-                ((RendezvousListener) iter.next()).serviceLost(servicename);
+            RendezvousListener[] l = listeners.toArray(
+                    new RendezvousListener[listeners.size()]);
+            for(int i = 0; i < l.length; i++) {
+                l[i].serviceLost(servicename);
             }
         }
     };

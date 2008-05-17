@@ -51,7 +51,8 @@ public class Collection extends ArrayList implements CollectionListener {
         return -1;
     }
 
-    private Set listeners = Collections.synchronizedSet(new HashSet());
+    private Set<CollectionListener> listeners
+            = Collections.synchronizedSet(new HashSet<CollectionListener>());
 
     public void addListener(CollectionListener listener) {
         listeners.add(listener);
@@ -112,20 +113,26 @@ public class Collection extends ArrayList implements CollectionListener {
     }
 
     public void collectionItemAdded(Object item) {
-        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-            ((CollectionListener) iter.next()).collectionItemAdded(item);
+        CollectionListener[] l = listeners.toArray(
+                new CollectionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].collectionItemAdded(item);
         }
     }
 
     public void collectionItemRemoved(Object item) {
-        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-            ((CollectionListener) iter.next()).collectionItemRemoved(item);
+        CollectionListener[] l = listeners.toArray(
+                new CollectionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].collectionItemRemoved(item);
         }
     }
 
     public void collectionItemChanged(Object item) {
-        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-            ((CollectionListener) iter.next()).collectionItemChanged(item);
+        CollectionListener[] l = listeners.toArray(
+                new CollectionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].collectionItemChanged(item);
         }
     }
 }

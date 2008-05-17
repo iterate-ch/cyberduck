@@ -286,7 +286,8 @@ public abstract class Session extends NSObject {
      */
     private Timer keepAliveTimer = null;
 
-    private Set listeners = Collections.synchronizedSet(new HashSet());
+    private Set<ConnectionListener> listeners
+            = Collections.synchronizedSet(new HashSet<ConnectionListener>());
 
     public void addConnectionListener(ConnectionListener listener) {
         listeners.add(listener);
@@ -366,7 +367,8 @@ public abstract class Session extends NSObject {
         }
     }
 
-    private Set transcriptListeners = new HashSet();
+    private Set<TranscriptListener> transcriptListeners
+            = Collections.synchronizedSet(new HashSet<TranscriptListener>());
 
     public void addTranscriptListener(TranscriptListener listener) {
         transcriptListeners.add(listener);
@@ -389,7 +391,8 @@ public abstract class Session extends NSObject {
         }
     }
 
-    private Set progressListeners = new HashSet();
+    private Set<ProgressListener> progressListeners
+            = Collections.synchronizedSet(new HashSet<ProgressListener>());
 
     public void addProgressListener(ProgressListener listener) {
         progressListeners.add(listener);
@@ -412,7 +415,8 @@ public abstract class Session extends NSObject {
         }
     }
 
-    private Set errorListeners = new HashSet();
+    private Set<ErrorListener> errorListeners
+            = Collections.synchronizedSet(new HashSet<ErrorListener>());
 
     public void addErrorListener(ErrorListener listener) {
         errorListeners.add(listener);
