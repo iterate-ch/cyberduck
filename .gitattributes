@@ -1651,7 +1651,7 @@ pt_PT.lproj/Preferences.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Prompt.nib/data.dependency -text
 pt_PT.lproj/Prompt.nib/keyedobjects.nib -text
 pt_PT.lproj/Prompt.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/S3.strings -text
+pt_PT.lproj/S3.strings -text svneol=unset#unset
 pt_PT.lproj/Status.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Transfer.nib/classes.nib -text
 pt_PT.lproj/Transfer.nib/info.nib -text
