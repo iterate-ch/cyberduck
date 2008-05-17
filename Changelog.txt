@@ -5,6 +5,7 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 3.0.1 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.1]
+- [Feature] Added Taco HTML Edit to the list of supported editors (http://tacosw.com/htmledit/beta.php) [#188]
 - [Bugfix] Cannot connect to servers with unknown host key [#2044]
 - [Bugfix] Cannot edit filename in Info panel [#2049]
 - [Bugfix] External editor failures [#2041, #2039, #2052, #2058]
