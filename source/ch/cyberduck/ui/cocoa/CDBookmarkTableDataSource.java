@@ -238,7 +238,6 @@ public class CDBookmarkTableDataSource extends CDController {
                     }
                     try {
                         source.add(row, new Host(new Local(filename)));
-                        view.reloadData();
                         view.selectRow(row, false);
                         view.scrollRowToVisible(row);
                     }
@@ -257,10 +256,12 @@ public class CDBookmarkTableDataSource extends CDController {
                     roots.add(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
                 }
             }
-            final Transfer q = new UploadTransfer(roots);
-            // If anything has been added to the queue, then process the queue
-            if(q.numberOfRoots() > 0) {
-                CDTransferController.instance().startTransfer(q);
+            if(!roots.isEmpty()) {
+                final Transfer q = new UploadTransfer(roots);
+                // If anything has been added to the queue, then process the queue
+                if(q.numberOfRoots() > 0) {
+                    CDTransferController.instance().startTransfer(q);
+                }
             }
             return true;
         }
@@ -269,7 +270,6 @@ public class CDBookmarkTableDataSource extends CDController {
             for(int i = 0; i < promisedDragBookmarks.length; i++) {
                 source.remove(source.indexOf(promisedDragBookmarks[i]));
                 source.add(row, promisedDragBookmarks[i]);
-                view.reloadData();
                 view.selectRow(row, false);
                 view.scrollRowToVisible(row);
             }
