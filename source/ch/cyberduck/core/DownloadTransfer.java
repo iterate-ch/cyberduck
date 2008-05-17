@@ -217,7 +217,9 @@ public class DownloadTransfer extends Transfer {
 
     private final DownloadTransferFilter ACTION_RESUME = new DownloadTransferFilter() {
         public boolean accept(final AbstractPath p) {
-            if(((Path) p).getStatus().isComplete()) {
+            if(((Path) p).getStatus().isComplete() || ((Path) p).getLocal().attributes.getSize() == p.attributes.getSize()) {
+                // No need to resume completed transfers
+                ((Path)p).getStatus().setComplete(true);
                 return false;
             }
             if(p.attributes.isDirectory()) {

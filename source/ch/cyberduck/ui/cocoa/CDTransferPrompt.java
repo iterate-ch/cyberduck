@@ -470,6 +470,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 this.actionPopup.selectItem(actionPopup.lastItem());
             }
         }
+        this.action = (TransferAction)this.actionPopup.selectedItem().representedObject();
         this.actionPopup.setTarget(this);
         this.actionPopup.setAction(new NSSelector("actionPopupClicked", new Class[]{NSPopUpButton.class}));
     }
