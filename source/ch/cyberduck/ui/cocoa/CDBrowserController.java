@@ -2441,7 +2441,10 @@ public class CDBrowserController extends CDWindowController
 
     public void updateStatusLabel(String label) {
         if(null == label) {
-            label = this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
+            label = "";
+            if(this.isMounted()) {
+                label = this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
+            }
         }
         final String status = label;
         // Update the status label at the bottom of the browser window
