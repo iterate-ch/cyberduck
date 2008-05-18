@@ -874,47 +874,6 @@ public class CDPreferencesController extends CDWindowController {
         }
     }
 
-    private NSButton keepAliveCheckbox; //IBOutlet
-
-    public void setKeepAliveCheckbox(NSButton keepAliveCheckbox) {
-        this.keepAliveCheckbox = keepAliveCheckbox;
-        this.keepAliveCheckbox.setTarget(this);
-        this.keepAliveCheckbox.setAction(new NSSelector("keepAliveCheckboxClicked", new Class[]{NSButton.class}));
-        this.keepAliveCheckbox.setState(Preferences.instance().getBoolean("connection.keepalive") ? NSCell.OnState : NSCell.OffState);
-    }
-
-    public void keepAliveCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.OnState;
-        Preferences.instance().setProperty("connection.keepalive", enabled);
-    }
-
-    private NSTextField keepAliveIntervalField; //IBOutlet
-
-    public void setKeepAliveIntervalField(NSTextField keepAliveIntervalField) {
-        this.keepAliveIntervalField = keepAliveIntervalField;
-        try {
-            int i = Preferences.instance().getInteger("connection.keepalive.interval");
-            this.keepAliveIntervalField.setStringValue(String.valueOf(i));
-        }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
-        }
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("keepAliveIntervalFieldDidChange", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidChangeNotification,
-                this.keepAliveIntervalField);
-    }
-
-    public void keepAliveIntervalFieldDidChange(NSNotification sender) {
-        try {
-            int i = Integer.parseInt(this.keepAliveIntervalField.stringValue());
-            Preferences.instance().setProperty("connection.keepalive.interval", i);
-        }
-        catch (NumberFormatException e) {
-            log.error(e.getMessage());
-        }
-    }
-
     private NSTextField anonymousField; //IBOutlet
 
     public void setAnonymousField(NSTextField anonymousField) {
