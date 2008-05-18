@@ -119,7 +119,7 @@ public class HistoryCollection extends HostCollection {
     public synchronized void clear() {
         log.debug("Removing all bookmarks from " + file);
         for(Iterator iter = this.iterator(); iter.hasNext();) {
-            ((Host) iter.next()).getFile().delete();
+            ((Host) iter.next()).getFile().delete(false);
         }
         super.clear();
     }
