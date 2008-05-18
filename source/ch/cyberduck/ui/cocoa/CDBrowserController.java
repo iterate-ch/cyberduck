@@ -4537,7 +4537,7 @@ public class CDBrowserController extends CDWindowController
         }
         if(itemIdentifier.equals(TOOLBAR_WEBVIEW)) {
             item.setLabel(NSBundle.localizedString(TOOLBAR_WEBVIEW, "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_WEBVIEW, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString("Open in Web Browser", "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Open in Web Browser", "Toolbar item tooltip"));
             final String browser = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme("http");
             if(null == browser) {
