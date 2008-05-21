@@ -4427,7 +4427,6 @@ public class CDBrowserController extends CDWindowController
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_TRANSFERS, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Show Transfers window", "Toolbar item tooltip"));
             item.setImage(NSImage.imageNamed("queue.tiff"));
-            item.setTarget(this);
             item.setAction(new NSSelector("showTransferQueueClicked", new Class[]{Object.class}));
             return item;
         }
