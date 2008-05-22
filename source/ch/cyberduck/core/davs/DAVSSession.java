@@ -21,16 +21,15 @@ package ch.cyberduck.core.davs;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 
 import org.apache.commons.httpclient.HttpClient;
 
-import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 
 /**
  * @version $Id:$
