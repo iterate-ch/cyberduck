@@ -154,8 +154,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             }
 
             protected boolean validateInput() {
-                return StringUtils.hasLength(credentials.getUsername())
-                        && StringUtils.hasLength(credentials.getPassword());
+                return StringUtils.hasLength(credentials.getUsername());
             }
 
             public void callback(final int returncode) {
