@@ -85,7 +85,8 @@ public class ODBEditor extends Editor {
     public void didCloseFile() {
         if(!edited.getStatus().isComplete()) {
             deferredDelete = true;
-        } else {
+        }
+        else {
             this.delete();
         }
     }

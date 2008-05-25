@@ -168,6 +168,7 @@ public abstract class Editor extends CDController {
      */
     protected void save() {
         log.debug("save");
+        edited.getStatus().reset();
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 TransferOptions options = new TransferOptions();
