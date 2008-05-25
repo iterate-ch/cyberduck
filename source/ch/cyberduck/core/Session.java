@@ -306,8 +306,9 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
-        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-            ((ConnectionListener) iter.next()).connectionWillOpen();
+        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionWillOpen();
         }
         // Configuring proxy if any
         Proxy.configure(this.host.getHostname());
@@ -332,8 +333,9 @@ public abstract class Session extends NSObject {
         host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
                 host.getHostname(), host.getPort());
 
-        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-            ((ConnectionListener) iter.next()).connectionDidOpen();
+        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionDidOpen();
         }
     }
 
@@ -345,8 +347,9 @@ public abstract class Session extends NSObject {
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
         this.message(NSBundle.localizedString("Disconnecting", "Status", ""));
-        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-            ((ConnectionListener) iter.next()).connectionWillClose();
+        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionWillClose();
         }
     }
 
@@ -362,8 +365,9 @@ public abstract class Session extends NSObject {
         }
         this.workdir = null;
         this.message(NSBundle.localizedString("Disconnected", "Status", ""));
-        for(Iterator iter = listeners.iterator(); iter.hasNext();) {
-            ((ConnectionListener) iter.next()).connectionDidClose();
+        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
+        for(int i = 0; i < l.length; i++) {
+            l[i].connectionDidClose();
         }
     }
 
