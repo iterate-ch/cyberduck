@@ -817,7 +817,9 @@ public class CDBrowserController extends CDWindowController
                 break;
             }
             case SWITCH_OUTLINE_VIEW: {
-                item = (Path) this.browserOutlineView.itemAtRow(row);
+                if(row < this.browserOutlineView.numberOfRows()) {
+                    item = (Path) this.browserOutlineView.itemAtRow(row);
+                }
                 break;
             }
         }
