@@ -75,8 +75,13 @@ public abstract class CDBrowserTableDataSource extends CDController {
         // Check first if it hasn't been already requested so we don't spawn
         // a multitude of unecessary threads
         synchronized(isLoadingListingInBackground) {
+            final AttributedList cache
+                    = path.cache().get(path, controller.getComparator(), controller.getFileFilter());
             if(!isLoadingListingInBackground.contains(path)) {
-                if(!path.isCached() || path.cache().get(path).attributes().isDirty()) {
+                if(path.isCached()) {
+                    return cache;
+                }
+                else {
                     isLoadingListingInBackground.add(path);
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
@@ -105,13 +110,13 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         }
                     });
                 }
-                else {
-                    return path.childs(controller.getComparator(), controller.getFileFilter());
-                }
             }
+            if(null == cache) {
+                log.warn("No cached listing for " + path.getName());
+                return AttributedList.EMPTY_LIST;
+            }
+            return cache;
         }
-        log.warn("No cached listing for " + path.getName());
-        return AttributedList.EMPTY_LIST;
     }
 
     public int indexOf(NSView tableView, Path p) {

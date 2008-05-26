@@ -684,7 +684,7 @@ public class CDBrowserController extends CDWindowController
     protected void reloadData(final java.util.Collection selected) {
         log.debug("reloadData");
         if(this.isMounted()) {
-            if(!this.workdir().isCached() || this.workdir().cache().get(this.workdir()).attributes().isDirty()) {
+            if(!this.workdir().isCached()) {
                 this.background(new BrowserBackgroundAction(this) {
                     public void run() {
                         workdir().childs();
