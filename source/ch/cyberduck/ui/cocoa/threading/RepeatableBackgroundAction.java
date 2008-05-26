@@ -23,8 +23,8 @@ import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
 
-import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
@@ -33,8 +33,8 @@ import org.apache.log4j.Logger;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.*;
 import java.text.MessageFormat;
+import java.util.*;
 
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
@@ -87,10 +87,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     private StringBuffer transcript;
 
     /**
-     * @param message
-     * @see ch.cyberduck.core.TranscriptListener
+     * @param request
+     * @param message @see ch.cyberduck.core.TranscriptListener
      */
-    public void log(String message) {
+    public void log(boolean request, String message) {
         if(message.length() > transcript.capacity()) {
             final int newline = transcript.indexOf("\n");
             if(newline > 0) {
@@ -263,8 +263,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             public void setErrorView(NSTableView errorView) {
                 this.errorView = errorView;
                 this.errors = new ArrayList();
-                for(Iterator iter = exceptions.iterator(); iter.hasNext(); ) {
-                    errors.add(new CDErrorController((BackgroundException)iter.next()));
+                for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
+                    errors.add(new CDErrorController((BackgroundException) iter.next()));
                 }
                 this.errorView.setDataSource(this);
                 this.errorView.setDelegate(this);

@@ -87,7 +87,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         }
     }
 
-    public void log(final String message) {
+    public void log(boolean request, final String message) {
         CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
                 responseField.textStorage().replaceCharactersInRange(new NSRange(responseField.textStorage().length(), 0),

@@ -183,16 +183,18 @@ public class FTPSession extends Session {
         }
     }
 
-    protected FTPClient getClient() {
-        return new FTPClient(this.getEncoding(), new FTPMessageListener() {
-            public void logCommand(String cmd) {
-                FTPSession.this.log(cmd);
-            }
+    final protected FTPMessageListener messageListener = new FTPMessageListener() {
+        public void logCommand(String cmd) {
+            FTPSession.this.log(true, cmd);
+        }
 
-            public void logReply(String reply) {
-                FTPSession.this.log(reply);
-            }
-        });
+        public void logReply(String reply) {
+            FTPSession.this.log(false, reply);
+        }
+    };
+
+    protected FTPClient getClient() {
+        return new FTPClient(this.getEncoding(), messageListener);
     }
 
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {

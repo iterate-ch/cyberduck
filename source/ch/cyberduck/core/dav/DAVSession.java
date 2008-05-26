@@ -21,6 +21,7 @@ package ch.cyberduck.core.dav;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.http.HTTPSession;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -36,7 +37,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id: $
  */
-public class DAVSession extends Session {
+public class DAVSession extends HTTPSession {
     private static Logger log = Logger.getLogger(DAVSession.class);
 
     static {

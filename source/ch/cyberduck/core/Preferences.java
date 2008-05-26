@@ -143,8 +143,12 @@ public abstract class Preferences {
          */
         defaults.put("logging", "ERROR");
 
-        Logger.getLogger("ch.cyberduck").setLevel(Level.toLevel(
-                this.getProperty("logging")));
+        final Level level = Level.toLevel(this.getProperty("logging"));
+        Logger.getLogger("ch.cyberduck").setLevel(level);
+        Logger.getLogger("httpclient.wire.content").setLevel(level);
+
+        Logger.getLogger("httpclient.wire.header").setLevel(Level.DEBUG);
+
 
         defaults.put("version", 
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"));

@@ -673,15 +673,15 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.fireTransferResumed();
             }
 
-            public void log(final String message) {
+            public void log(final boolean request, final String message) {
                 if(logDrawer.state() == NSDrawer.OpenState) {
                     CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                         public void run() {
-                            transcript.write(message);
+                            transcript.log(request, message);
                         }
                     });
                 }
-                super.log(message);
+                super.log(request, message);
             }
 
             private final Object lock = new Object();

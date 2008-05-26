@@ -388,10 +388,10 @@ public abstract class Session extends NSObject {
      * @param message
      * @see TranscriptListener
      */
-    public void log(final String message) {
+    public void log(boolean request, final String message) {
         log.info(message);
         for(Iterator iter = transcriptListeners.iterator(); iter.hasNext();) {
-            ((TranscriptListener) iter.next()).log(message);
+            ((TranscriptListener) iter.next()).log(request, message);
         }
     }
 

@@ -83,15 +83,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
     protected FTPClient getClient() {
         // AUTH command required before login
         auth = true;
-        return new FTPSClient(this.getEncoding(), new FTPMessageListener() {
-            public void logCommand(String cmd) {
-                FTPSSession.this.log(cmd);
-            }
-
-            public void logReply(String reply) {
-                FTPSSession.this.log(reply);
-            }
-        }, this.getTrustManager());
+        return new FTPSClient(this.getEncoding(), messageListener, this.getTrustManager());
     }
 
     private boolean auth;

@@ -21,6 +21,7 @@ package ch.cyberduck.core.s3;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
@@ -46,7 +47,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id:$
  */
-public class S3Session extends Session implements SSLSession {
+public class S3Session extends HTTPSession implements SSLSession {
     private static Logger log = Logger.getLogger(S3Session.class);
 
     static {
