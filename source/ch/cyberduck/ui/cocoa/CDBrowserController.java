@@ -381,7 +381,7 @@ public class CDBrowserController extends CDWindowController
                     (String) args.objectForKey("Path"), Path.DIRECTORY_TYPE);
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
-                path.getLocal().setPath((String) localObj);
+                path.setLocal(new Local((String) localObj));
             }
             final Transfer q = new SyncTransfer(path);
             this.transfer(q, true, new TransferPrompt() {
@@ -416,11 +416,11 @@ public class CDBrowserController extends CDWindowController
             }
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
-                path.getLocal().setPath((String) localObj, path.getName());
+                path.setLocal(new Local((String) localObj, path.getName()));
             }
             Object nameObj = args.objectForKey("Name");
             if(nameObj != null) {
-                path.getLocal().setPath(path.getLocal().getParent().getAbsolute(), (String) nameObj);
+                path.setLocal(new Local(path.getLocal().getParent().getAbsolute(), (String) nameObj));
             }
             final Transfer q = new DownloadTransfer(path);
             this.transfer(q, true, new TransferPrompt() {
