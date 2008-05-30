@@ -22,6 +22,7 @@ import com.apple.cocoa.application.NSWorkspace;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 
 import org.apache.log4j.Logger;
@@ -109,8 +110,8 @@ public class EditorFactory {
         return null;
     }
 
-    public static Editor createEditor(CDBrowserController c, Local file) {
-        return createEditor(c, editorBundleIdentifierForFile(file));
+    public static Editor createEditor(CDBrowserController c, Local file, final Path path) {
+        return createEditor(c, editorBundleIdentifierForFile(file), path);
     }
 
     /**
@@ -118,11 +119,11 @@ public class EditorFactory {
      * @param c
      * @return
      */
-    public static Editor createEditor(CDBrowserController c) {
+    public static Editor createEditor(CDBrowserController c, final Path path) {
 //        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
 //            return createEditor(c, null);
 //        }
-        return createEditor(c, Preferences.instance().getProperty("editor.bundleIdentifier"));
+        return createEditor(c, Preferences.instance().getProperty("editor.bundleIdentifier"), path);
     }
 
     /**
@@ -130,8 +131,8 @@ public class EditorFactory {
      * @param bundleIdentifier
      * @return
      */
-    public static Editor createEditor(CDBrowserController c, String bundleIdentifier) {
-        return new ODBEditor(c, bundleIdentifier);
+    public static Editor createEditor(CDBrowserController c, String bundleIdentifier, final Path path) {
+        return new ODBEditor(c, bundleIdentifier, path);
 //        if(null == bundleIdentifier) {
 //            return new WatchEditor(c);
 //        }

@@ -22,6 +22,7 @@ import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
@@ -36,16 +37,16 @@ public class WatchEditor extends Editor {
     /**
      * @param c
      */
-    public WatchEditor(CDBrowserController c) {
-        this(c, null);
+    public WatchEditor(CDBrowserController c, Path path) {
+        this(c, null, path);
     }
 
     /**
      * @param c
      * @param bundleIdentifier
      */
-    public WatchEditor(CDBrowserController c, String bundleIdentifier) {
-        super(c, bundleIdentifier);
+    public WatchEditor(CDBrowserController c, String bundleIdentifier, Path path) {
+        super(c, bundleIdentifier, path);
     }
 
     /**

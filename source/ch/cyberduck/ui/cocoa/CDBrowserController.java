@@ -319,8 +319,8 @@ public class CDBrowserController extends CDWindowController
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"), Path.FILE_TYPE);
-            Editor editor = EditorFactory.createEditor(this, path.getLocal());
-            editor.open(path);
+            Editor editor = EditorFactory.createEditor(this, path.getLocal(), path);
+            editor.open();
         }
         BackgroundActionRegistry.instance().block();
         return null;
@@ -2561,8 +2561,9 @@ public class CDBrowserController extends CDWindowController
                 for(Iterator iter = normalized.values().iterator(); iter.hasNext();) {
                     Path duplicate = (Path) iter.next();
                     if(edit) {
-                        Editor editor = EditorFactory.createEditor(CDBrowserController.this, duplicate.getLocal());
-                        editor.open(duplicate);
+                        Editor editor = EditorFactory.createEditor(CDBrowserController.this, duplicate.getLocal(),
+                                duplicate);
+                        editor.open();
                     }
                     if(duplicate.getName().charAt(0) == '.') {
                         setShowHiddenFiles(true);
@@ -2883,8 +2884,9 @@ public class CDBrowserController extends CDWindowController
             final Path selected = (Path) i.next();
             Object identifier = EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.title());
             if(identifier != null) {
-                Editor editor = EditorFactory.createEditor(this, identifier.toString());
-                editor.open(selected);
+                Editor editor = EditorFactory.createEditor(
+                        this, identifier.toString(), selected);
+                editor.open();
             }
         }
     }
@@ -2892,8 +2894,8 @@ public class CDBrowserController extends CDWindowController
     public void editButtonClicked(final Object sender) {
         for(Iterator i = this.getSelectedPaths().iterator(); i.hasNext();) {
             final Path selected = (Path) i.next();
-            Editor editor = EditorFactory.createEditor(this, selected.getLocal());
-            editor.open(selected);
+            Editor editor = EditorFactory.createEditor(this, selected.getLocal(), selected);
+            editor.open();
         }
     }
 

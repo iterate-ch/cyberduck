@@ -61,17 +61,13 @@ public abstract class Editor extends CDController {
      * @param controller
      * @param bundleIdentifier
      */
-    public Editor(CDBrowserController controller, String bundleIdentifier) {
+    public Editor(CDBrowserController controller, String bundleIdentifier, Path path) {
         this.controller = controller;
         this.bundleIdentifier = bundleIdentifier;
+        this.edited = path;
     }
 
-    /**
-     * @param path
-     */
-    public void open(Path path) {
-        edited = PathFactory.createPath(path.getSession(), path.getAsDictionary());
-
+    public void open() {
         final Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(),
                 edited.getParent().getAbsolute()));
         folder.mkdir(true);
