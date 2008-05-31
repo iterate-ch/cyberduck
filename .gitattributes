@@ -74,12 +74,6 @@ build/DotMacKit.framework/Versions/Current/Resources/English.lproj/InfoPlist.str
 build/DotMacKit.framework/Versions/Current/Resources/English.lproj/locversion.plist -text
 build/DotMacKit.framework/Versions/Current/Resources/Info.plist -text
 build/DotMacKit.framework/Versions/Current/Resources/version.plist -text
-build/Growl.framework/Growl -text
-build/Growl.framework/Resources/Info.plist -text
-build/Growl.framework/Versions/A/Growl -text
-build/Growl.framework/Versions/A/Resources/Info.plist -text
-build/Growl.framework/Versions/Current/Growl -text
-build/Growl.framework/Versions/Current/Resources/Info.plist -text
 build/Keychain.framework/Headers -text
 build/Keychain.framework/Keychain -text
 build/Keychain.framework/PrivateHeaders -text
