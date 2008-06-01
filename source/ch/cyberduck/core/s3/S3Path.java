@@ -184,7 +184,7 @@ public class S3Path extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             attributes.setSize(this.getDetails().getContentLength());
         }
@@ -201,7 +201,7 @@ public class S3Path extends Path {
             try {
                 session.check();
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 attributes.setModificationDate(this.getDetails().getLastModifiedDate().getTime());
             }
@@ -218,7 +218,7 @@ public class S3Path extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             AccessControlList acl = null;
             if(this.isBucket()) {
@@ -340,7 +340,7 @@ public class S3Path extends Path {
                     session.check();
                 }
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 DownloadPackage download;
                 try {
@@ -358,7 +358,7 @@ public class S3Path extends Path {
                 }
 
                 in = session.S3.getObject(this.getBucket(), this.getKey(), null, null, null, null,
-                        status.isResume() ? new Long(status.getCurrent()) : null, null).getDataInputStream();
+                        status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
@@ -397,7 +397,7 @@ public class S3Path extends Path {
             }
             if(attributes.isFile()) {
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 final S3ServiceMulti multi = new S3ServiceMulti(session.S3,
                         new S3ServiceTransferEventAdaptor(listener)
@@ -457,25 +457,17 @@ public class S3Path extends Path {
         if(this.isBucket()) {
             return this.getBucketName();
         }
-        return this.getKey(this.getAbsolute());
-    }
-
-    /**
-     * @param path
-     * @return Return the substring of the path without the bucket name
-     */
-    private String getKey(String path) {
-        if(path.startsWith(Path.DELIMITER + this.getBucketName())) {
-            return path.substring(this.getBucketName().length() + 2);
+        if(this.getAbsolute().startsWith(Path.DELIMITER + this.getBucketName())) {
+            return this.getAbsolute().substring(this.getBucketName().length() + 2);
         }
-        return path;
+        return this.getAbsolute();
     }
 
     private static final int BUCKET_LIST_CHUNKING_SIZE = 1000;
 
-    public AttributedList list(final ListParseListener listener) {
-        AttributedList childs = new AttributedList() {
-            public boolean add(Object object) {
+    public AttributedList<Path> list(final ListParseListener listener) {
+        final AttributedList<Path> childs = new AttributedList<Path>() {
+            public boolean add(Path object) {
                 boolean result = super.add(object);
                 listener.parsed(this);
                 return result;
@@ -532,7 +524,7 @@ public class S3Path extends Path {
                     final S3Object[] objects = chunk.getObjects();
                     final S3Path[] paths = new S3Path[objects.length];
                     for(int i = 0; i < objects.length; i++) {
-                        paths[i] = (S3Path) PathFactory.createPath(session, bucket.getName(), objects[i].getKey(),
+                        paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(),
                                 Path.FILE_TYPE);
                         paths[i].setParent(this);
                         paths[i]._bucket = bucket;
@@ -547,7 +539,11 @@ public class S3Path extends Path {
 
                     final String[] prefixes = chunk.getCommonPrefixes();
                     for(int i = 0; i < prefixes.length; i++) {
-                        S3Path p = (S3Path) PathFactory.createPath(session, bucket.getName(), prefixes[i],
+                        if(prefixes[i].equals(Path.DELIMITER)) {
+                            log.warn("Skipping prefix " + prefixes[i]);
+                            continue;
+                        }
+                        S3Path p = new S3Path(session, bucket.getName(), prefixes[i],
                                 Path.DIRECTORY_TYPE);
                         p.setParent(this);
                         p._bucket = bucket;
@@ -588,7 +584,7 @@ public class S3Path extends Path {
             }
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
         }
@@ -609,7 +605,7 @@ public class S3Path extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), perm.getOctalString()}));
+                    this.getName(), perm.getOctalString()));
 
 
             AccessControlList acl = null;
@@ -669,17 +665,16 @@ public class S3Path extends Path {
             session.check();
             if(attributes.isFile()) {
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 session.S3.deleteObject(this.getBucketName(), this.getKey());
             }
             else if(attributes.isDirectory()) {
-                for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                for(Iterator<? extends AbstractPath> iter = this.childs().iterator(); iter.hasNext();) {
                     if(!session.isConnected()) {
                         break;
                     }
-                    Path file = (Path) iter.next();
-                    file.delete();
+                    iter.next().delete();
                 }
                 if(this.isBucket()) {
                     session.S3.deleteBucket(this.getBucketName());
@@ -699,15 +694,30 @@ public class S3Path extends Path {
         }
     }
 
-    public void rename(String path) {
+    public void rename(Path renamed) {
         try {
-            session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), path}));
+            if(attributes.isFile()) {
+                session.check();
+                session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+                        this.getName(), renamed));
 
-            session.S3.moveObject(this.getBucketName(), this.getKey(), this.getBucketName(),
-                    new S3Object(this.getBucket(), this.getKey(path)), false);
-            this.setPath(path);
+                session.S3.moveObject(this.getBucketName(), this.getKey(), this.getBucketName(),
+                        new S3Object(((S3Path) renamed).getKey()), false);
+                this.setPath(renamed.getAbsolute());
+                if(!this.getBucketName().equals(((S3Path) renamed).getBucketName())) {
+                    _bucket = null;
+                }
+            }
+            else if(attributes.isDirectory()) {
+                for(Iterator<? extends AbstractPath> iter = this.childs().iterator(); iter.hasNext();) {
+                    if(!session.isConnected()) {
+                        break;
+                    }
+                    final AbstractPath next = iter.next();
+                    next.rename(PathFactory.createPath(this.getSession(), renamed.getAbsolute(),
+                            next.getName(), next.attributes.getType()));
+                }
+            }
         }
         catch(S3ServiceException e) {
             if(this.attributes.isFile()) {
@@ -724,12 +734,24 @@ public class S3Path extends Path {
 
     public void copy(Path copy) {
         try {
-            session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), copy}));
+            if(attributes.isFile()) {
+                session.check();
+                session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
+                        this.getName(), copy));
 
-            session.S3.copyObject(this.getBucketName(), this.getKey(), this.getBucketName(),
-                    new S3Object(this.getBucket(), this.getKey(copy.getAbsolute())), false);
+                session.S3.copyObject(this.getBucketName(), this.getKey(), ((S3Path) copy).getBucketName(),
+                        new S3Object(((S3Path) copy).getKey()), false);
+            }
+            else if(attributes.isDirectory()) {
+                for(Iterator<? extends AbstractPath> iter = this.childs().iterator(); iter.hasNext();) {
+                    if(!session.isConnected()) {
+                        break;
+                    }
+                    final AbstractPath next = iter.next();
+                    next.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                            next.getName(), next.attributes.getType()));
+                }
+            }
         }
         catch(S3ServiceException e) {
             if(this.attributes.isFile()) {
