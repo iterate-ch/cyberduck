@@ -82,7 +82,7 @@ public class FTPSession extends Session {
         }
     }
 
-    private Map parsers = new HashMap(1);
+    private Map<FTPFileEntryParser, Boolean> parsers = new HashMap<FTPFileEntryParser, Boolean>(1);
 
     /**
      * @param p
@@ -104,13 +104,13 @@ public class FTPSession extends Session {
         }
         if(null == parsers.get(delegate)) {
             // Cache the value as it might get queried frequently
-            parsers.put(delegate, Boolean.valueOf(delegate instanceof UnixFTPEntryParser
+            parsers.put(delegate, delegate instanceof UnixFTPEntryParser
                     || delegate instanceof LaxUnixFTPEntryParser
                     || delegate instanceof NetwareFTPEntryParser
-                    || delegate instanceof RumpusFTPEntryParser)
+                    || delegate instanceof RumpusFTPEntryParser
             );
         }
-        return ((Boolean) parsers.get(delegate)).booleanValue();
+        return parsers.get(delegate);
     }
 
     public String getIdentification() {
@@ -204,7 +204,7 @@ public class FTPSession extends Session {
         this.fireConnectionWillOpenEvent();
 
         this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
-                new Object[]{host.getProtocol().getName(), host.getHostname()}));
+                host.getProtocol().getName(), host.getHostname()));
 
         this.FTP = this.getClient();
         this.FTP.setTimeout(this.timeout());
@@ -215,7 +215,7 @@ public class FTPSession extends Session {
         this.FTP.setStrictReturnCodes(true);
         this.FTP.setConnectMode(this.getConnectMode());
         this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                new Object[]{host.getProtocol().getName()}));
+                host.getProtocol().getName()));
         this.login();
         this.fireConnectionDidOpenEvent();
     }
@@ -246,7 +246,7 @@ public class FTPSession extends Session {
         String failure = null;
         try {
             this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                    new Object[]{credentials.getUsername()}));
+                    credentials.getUsername()));
 
             this.FTP.login(credentials.getUsername(), credentials.getPassword());
             this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
@@ -267,6 +267,9 @@ public class FTPSession extends Session {
         }
         if(null == workdir) {
             workdir = PathFactory.createPath(this, this.FTP.pwd(), Path.DIRECTORY_TYPE);
+            if(workdir.isRoot()) {
+                workdir.attributes.setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            }
         }
         return workdir;
     }
