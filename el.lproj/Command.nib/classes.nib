@@ -1,13 +1,24 @@
 {
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            ACTIONS = {closeSheet = id; sendButtonClicked = id; }; 
-            CLASS = "ch.cyberduck.ui.cocoa.CDCommandController"; 
-            LANGUAGE = Java; 
-            OUTLETS = {inputField = NSTextField; responseField = id; window = NSWindow; }; 
-            SUPERCLASS = NSObject; 
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            ACTIONS =             {
+                closeSheet = id;
+                sendButtonClicked = id;
+            };
+            CLASS = "ch.cyberduck.ui.cocoa.CDCommandController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                inputField = NSTextField;
+                responseField = id;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
         }
-    ); 
-    IBVersion = 1; 
+    );
+    IBVersion = 1;
 }
