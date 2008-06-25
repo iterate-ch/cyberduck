@@ -1,0 +1,26 @@
+{
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            ACTIONS =             {
+                closeSheet = id;
+                toggleTranscriptView = id;
+            };
+            CLASS = "ch.cyberduck.ui.cocoa.CDSheetController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                diagnosticsButton = NSButton;
+                errorView = NSTableView;
+                transcriptButton = NSButton;
+                transcriptView = NSTextView;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        }
+    );
+    IBVersion = 1;
+}
