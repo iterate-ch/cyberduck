@@ -114,11 +114,11 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
                 try {
                     double size = Double.parseDouble(filesize);
                     if(filesizeIndicator.equalsIgnoreCase("K")) {
-                        size = size * (long) Status.KILO;
+                        size = size * Status.KILO;
                     } else if(filesizeIndicator.equalsIgnoreCase("M")) {
-                        size = size * (long) Status.MEGA;
+                        size = size * Status.MEGA;
                     } else if(filesizeIndicator.equalsIgnoreCase("G")) {
-                        size = size * (long) Status.GIGA;
+                        size = size * Status.GIGA;
                     }
                     return this.parseFTPEntry(typeStr, usr, grp, (long) size, datestr, name, endtoken);
                 }
