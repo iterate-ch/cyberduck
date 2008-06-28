@@ -95,17 +95,17 @@ public class Status {
         StringBuffer b = new StringBuffer();
         if(remaining > 7200) { // More than two hours
             b.append(MessageFormat.format(NSBundle.localizedString("{0} hours remaining", "Status", ""),
-                    new Object[]{new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString()})
+                    new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString())
             );
         }
         else if(remaining > 120) { // More than two minutes
             b.append(MessageFormat.format(NSBundle.localizedString("{0} minutes remaining", "Status", ""),
-                    new Object[]{String.valueOf((int) (remaining / 60))})
+                    String.valueOf((int) (remaining / 60)))
             );
         }
         else {
             b.append(MessageFormat.format(NSBundle.localizedString("{0} seconds remaining", "Status", ""),
-                    new Object[]{String.valueOf((int) remaining)})
+                    String.valueOf((int) remaining))
             );
         }
         return b.toString();
