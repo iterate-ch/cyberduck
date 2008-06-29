@@ -85,7 +85,7 @@ public class CDCreateFileController extends CDFileController {
 
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
-                        new Object[]{file.getName()});
+                        file.getName());
             }
 
             public void cleanup() {

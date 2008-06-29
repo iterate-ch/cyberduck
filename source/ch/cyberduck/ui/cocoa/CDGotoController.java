@@ -51,7 +51,7 @@ public class CDGotoController extends CDSheetController {
         this.folderCombobox.setUsesDataSource(true);
         this.folderCombobox.setDataSource(this.folderComboboxModel = new NSObject()/*NSComboBox.DataSource*/ {
             final CDBrowserController c = (CDBrowserController) parent;
-            private final Comparator comparator = new NullComparator();
+            private final Comparator<Path> comparator = new NullComparator<Path>();
             private final PathFilter filter = new PathFilter() {
                 public boolean accept(AbstractPath p) {
                     return p.attributes.isDirectory();
@@ -72,11 +72,7 @@ public class CDGotoController extends CDSheetController {
              * @see NSComboBox.DataSource
              */
             public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
-                final List childs = c.workdir().childs(comparator, filter);
-                if(row < childs.size()) {
-                    return ((Path) childs.get(row)).getAbsolute();
-                }
-                return null;
+                return c.workdir().childs(comparator, filter).get(row);
             }
         });
         this.folderCombobox.setStringValue(((CDBrowserController) this.parent).workdir().getAbsolute());

@@ -52,7 +52,7 @@ public abstract class CDFileController extends CDSheetController {
     }
 
     protected Path getWorkdir() {
-        Path workdir = null;
+        Path workdir;
         if(((CDBrowserController)parent).getSelectionCount() == 1) {
             workdir = (Path)((CDBrowserController)parent).getSelectedPath().getParent();
         }

@@ -70,13 +70,13 @@ public class CDFolderController extends CDFileController {
                                 false);
                     }
                 }
-                folder.cache().put(folder, new AttributedList());
+                folder.cache().put(folder, new AttributedList<Path>());
                 folder.getParent().invalidate();
             }
 
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
-                        new Object[]{folder.getName()});
+                        folder.getName());
             }
 
             public void cleanup() {
