@@ -93,9 +93,9 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList list(final ListParseListener listener) {
-        AttributedList childs = new AttributedList() {
-            public boolean add(Object object) {
+    public AttributedList<Path> list(final ListParseListener listener) {
+        final AttributedList<Path> childs = new AttributedList<Path>() {
+            public boolean add(Path object) {
                 boolean result = super.add(object);
                 listener.parsed(this);
                 return result;
@@ -104,7 +104,7 @@ public class SFTPPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             List children = session.sftp().ls(this.getAbsolute());
             Iterator i = children.iterator();
@@ -121,7 +121,7 @@ public class SFTPPath extends Path {
                         p.attributes.setGroup(f.attributes.gid.toString());
                     }
                     if(null != f.attributes.size) {
-                        p.attributes.setSize(f.attributes.size.longValue());
+                        p.attributes.setSize(f.attributes.size);
                     }
                     if(null != f.attributes.mtime) {
                         p.attributes.setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
@@ -177,7 +177,7 @@ public class SFTPPath extends Path {
             }
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
             session.sftp().mkdir(this.getAbsolute(), new Integer(perm.getOctalNumber()).intValue());
@@ -190,14 +190,14 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void rename(String absolute) {
+    public void rename(Path renamed) {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), absolute}));
+                    this.getName(), renamed));
 
-            session.sftp().mv(this.getAbsolute(), absolute);
-            this.setPath(absolute);
+            session.sftp().mv(this.getAbsolute(), renamed.getAbsolute());
+            this.setPath(renamed.getAbsolute());
         }
         catch(SFTPException e) {
             if(this.attributes.isFile()) {
@@ -218,7 +218,7 @@ public class SFTPPath extends Path {
             session.check();
             if(this.attributes.isFile() || this.attributes.isSymbolicLink()) {
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 session.sftp().rm(this.getAbsolute());
             }
@@ -230,7 +230,7 @@ public class SFTPPath extends Path {
                     ((AbstractPath) iter.next()).delete();
                 }
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 session.sftp().rmdir(this.getAbsolute());
             }
@@ -253,9 +253,9 @@ public class SFTPPath extends Path {
                 handle = session.sftp().openFileRO(this.getAbsolute());
                 SFTPv3FileAttributes attr = session.sftp().fstat(handle);
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
-                this.attributes.setSize(attr.size.longValue());
+                this.attributes.setSize(attr.size);
                 session.sftp().closeFile(handle);
             }
             catch(IOException e) {
@@ -281,7 +281,7 @@ public class SFTPPath extends Path {
             try {
                 session.check();
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 handle = session.sftp().openFileRO(this.getAbsolute());
                 SFTPv3FileAttributes attr = session.sftp().fstat(handle);
@@ -311,7 +311,7 @@ public class SFTPPath extends Path {
             try {
                 session.check();
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 handle = session.sftp().openFileRO(this.getAbsolute());
                 SFTPv3FileAttributes attr = session.sftp().fstat(handle);
@@ -346,7 +346,7 @@ public class SFTPPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Changing owner of {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), owner}));
+                    this.getName(), owner));
 
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
@@ -376,7 +376,7 @@ public class SFTPPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Changing group of {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), group}));
+                    this.getName(), group));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.gid = new Integer(group);
@@ -405,7 +405,7 @@ public class SFTPPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), perm.getOctalString()}));
+                    this.getName(), perm.getOctalString()));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.permissions = new Integer(perm.getOctalNumber());
@@ -508,7 +508,7 @@ public class SFTPPath extends Path {
                         try {
                             log.info("Updating permissions:" + p.getOctalString());
                             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                            attr.permissions = new Integer(p.getOctalNumber());
+                            attr.permissions = p.getOctalNumber();
                             session.sftp().fsetstat(handle, attr);
                         }
                         catch(SFTPException e) {
@@ -532,7 +532,7 @@ public class SFTPPath extends Path {
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
                     SCPClient scp = session.openScp();
                     scp.setCharset(session.getEncoding());
-                    out = scp.put(this.getName(), (long) this.getLocal().attributes.getSize(),
+                    out = scp.put(this.getName(), this.getLocal().attributes.getSize(),
                             this.getParent().getAbsolute(),
                             "0" + p.getOctalString());
                 }
@@ -546,8 +546,8 @@ public class SFTPPath extends Path {
                         int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
                         // We must both set the accessed and modified time
                         // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-                        attrs.atime = new Integer(t);
-                        attrs.mtime = new Integer(t);
+                        attrs.atime = t;
+                        attrs.mtime = t;
                         try {
                             if(null == handle) {
                                 if(attributes.isFile()) {

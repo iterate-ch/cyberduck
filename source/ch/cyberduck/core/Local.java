@@ -329,14 +329,14 @@ public class Local extends AbstractPath {
         return false;
     }
 
-    private Cache cache = new Cache();
+    private Cache<Local> cache = new Cache<Local>();
 
-    public Cache cache() {
+    public Cache<Local> cache() {
         return this.cache;
     }
 
-    public AttributedList list(ListParseListener listener) {
-        final AttributedList childs = new AttributedList();
+    public AttributedList<Local> list(ListParseListener listener) {
+        final AttributedList<Local> childs = new AttributedList<Local>();
         File[] f = _impl.listFiles();
         if(null == f) {
             log.error("_impl.listFiles == null");
@@ -444,9 +444,13 @@ public class Local extends AbstractPath {
         });
     }
 
-    public void rename(String name) {
-        _impl.renameTo(new File(this.getParent().getAbsolute(), name));
-        this.setPath(this.getParent().getAbsolute(), name);
+    public void rename(Path renamed) {
+        _impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()));
+        this.setPath(this.getParent().getAbsolute(), renamed.getAbsolute());
+    }
+
+    public void copy(Path copy) {
+        throw new UnsupportedOperationException();
     }
 
     /**

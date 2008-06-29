@@ -23,9 +23,9 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public class NullComparator implements Comparator {
+public class NullComparator<V> implements Comparator<V> {
 
-    public int compare(Object x, Object y) {
+    public int compare(V x, V y) {
         return 0;
     }
 

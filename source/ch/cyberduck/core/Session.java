@@ -166,7 +166,7 @@ public abstract class Session extends NSObject {
      */
     public Path mount(String workdir) {
         this.message(MessageFormat.format(NSBundle.localizedString("Mounting {0}", "Status", ""),
-                new Object[]{host.getHostname()}));
+                host.getHostname()));
         try {
             this.check();
             if(!this.isConnected()) {
@@ -239,7 +239,7 @@ public abstract class Session extends NSObject {
         if(null == host.getMaxConnections()) {
             return Preferences.instance().getInteger("connection.host.max");
         }
-        return host.getMaxConnections().intValue();
+        return host.getMaxConnections();
     }
 
     /**
@@ -314,7 +314,7 @@ public abstract class Session extends NSObject {
         Proxy.configure(this.host.getHostname());
         this.resolver = new Resolver(this.host.getHostname(true));
         this.message(MessageFormat.format(NSBundle.localizedString("Resolving {0}", "Status", ""),
-                new Object[]{host.getHostname()}));
+                host.getHostname()));
 
         // Try to resolve the hostname first
         this.resolver.resolve();
@@ -390,8 +390,8 @@ public abstract class Session extends NSObject {
      */
     public void log(boolean request, final String message) {
         log.info(message);
-        for(Iterator iter = transcriptListeners.iterator(); iter.hasNext();) {
-            ((TranscriptListener) iter.next()).log(request, message);
+        for(Iterator<TranscriptListener> iter = transcriptListeners.iterator(); iter.hasNext();) {
+            iter.next().log(request, message);
         }
     }
 
@@ -414,8 +414,8 @@ public abstract class Session extends NSObject {
      */
     public void message(final String message) {
         log.info(message);
-        for(Iterator iter = progressListeners.iterator(); iter.hasNext();) {
-            ((ProgressListener) iter.next()).message(message);
+        for(Iterator<ProgressListener> iter = progressListeners.iterator(); iter.hasNext();) {
+            iter.next().message(message);
         }
     }
 
@@ -440,20 +440,20 @@ public abstract class Session extends NSObject {
     public void error(Path path, String message, Throwable e) {
         final BackgroundException failure = new BackgroundException(this, path, message, e);
         this.message(failure.getMessage());
-        for(Iterator iter = errorListeners.iterator(); iter.hasNext();) {
-            ((ErrorListener) iter.next()).error(failure);
+        for(Iterator<ErrorListener> iter = errorListeners.iterator(); iter.hasNext();) {
+            iter.next().error(failure);
         }
     }
 
     /**
      * Caching files listings of previously visited directories
      */
-    private Cache cache = new Cache();
+    private Cache<Path> cache = new Cache<Path>();
 
     /**
      * @return The directory listing cache
      */
-    public Cache cache() {
+    public Cache<Path> cache() {
         return this.cache;
     }
 

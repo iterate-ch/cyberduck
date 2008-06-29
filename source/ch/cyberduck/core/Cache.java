@@ -24,9 +24,11 @@ import java.util.*;
  * A cache for remote directory listings
  * @version $Id$
  */
-public class Cache {
+public class Cache<E extends AbstractPath> {
 
-    private Map _impl = new HashMap();
+    private Map<String, AttributedList<E>> _impl
+            = new HashMap<String, AttributedList<E>>();
+
     /**
      *
      */
@@ -35,7 +37,6 @@ public class Cache {
     }
 
     /**
-     *
      * @param path
      * @return True if the directory listing for this path is cached
      */
@@ -45,20 +46,22 @@ public class Cache {
 
     /**
      * Remotes the cached directory listing for this path
+     *
      * @param path
      * @return
      */
     public AttributedList remove(AbstractPath path) {
-        return (AttributedList)_impl.remove(path.getAbsolute());
+        return _impl.remove(path.getAbsolute());
     }
 
     /**
      * Get the childs of this path using the last sorting and filter used
+     *
      * @param path
      * @return null if no cached file listing is available
      */
-    public AttributedList get(AbstractPath path) {
-        return (AttributedList) _impl.get(path.getAbsolute());
+    public AttributedList<E> get(AbstractPath path) {
+        return _impl.get(path.getAbsolute());
     }
 
     /**
@@ -67,29 +70,29 @@ public class Cache {
      * @param filter
      * @return null if no cached file listing is available
      */
-    public AttributedList get(final AbstractPath path, final Comparator comparator, final PathFilter filter) {
-        AttributedList childs = (AttributedList) _impl.get(path.getAbsolute());
-        if (null == childs) {
+    public AttributedList<E> get(final E path, final Comparator<E> comparator, final PathFilter filter) {
+        AttributedList<E> childs = _impl.get(path.getAbsolute());
+        if(null == childs) {
             return null;
         }
         boolean needsSorting = !childs.attributes().get(AttributedList.COMPARATOR).equals(comparator);
         boolean needsFiltering = !childs.attributes().get(AttributedList.FILTER).equals(filter);
-        if (needsSorting) {
+        if(needsSorting) {
             //do not sort when the list has not been filtered yet
-            if (!needsFiltering) {
+            if(!needsFiltering) {
                 Collections.sort(childs, comparator);
             }
             //saving last sorting comparator
             childs.attributes().put(AttributedList.COMPARATOR, comparator);
         }
-        if (needsFiltering) {
+        if(needsFiltering) {
             //add previously hidden files to childs
             childs.addAll((Set) childs.attributes().get(AttributedList.HIDDEN));
             //clear the previously set of hidden files
             ((Set) childs.attributes().get(AttributedList.HIDDEN)).clear();
-            for (Iterator i = childs.iterator(); i.hasNext();) {
-                AbstractPath child = (AbstractPath) i.next();
-                if (!filter.accept(child)) {
+            for(Iterator<E> i = childs.iterator(); i.hasNext();) {
+                E child = i.next();
+                if(!filter.accept(child)) {
                     //child not accepted by filter; add to cached hidden files
                     childs.attributes().addHidden(child);
                     //remove hidden file from current file listing
@@ -104,16 +107,8 @@ public class Cache {
         return childs;
     }
 
-    public AttributedList put(AbstractPath path, AttributedList childs) {
-        return (AttributedList)_impl.put(path.getAbsolute(), childs);
-    }
-
-    public AttributedList[] values() {
-        return (AttributedList[])_impl.entrySet().toArray(new AttributedList[]{});
-    }
-
-    public AbstractPath[] keys() {
-        return (AbstractPath[])_impl.keySet().toArray(new AbstractPath[]{});
+    public AttributedList put(E path, AttributedList<E> childs) {
+        return _impl.put(path.getAbsolute(), childs);
     }
 
     public void clear() {

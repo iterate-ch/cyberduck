@@ -256,7 +256,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @return
      */
-    public Cache cache() {
+    public Cache<Path> cache() {
         return this.getSession().cache();
     }
 
@@ -476,7 +476,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
         this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
-                new Object[]{this.getName()}));
+                this.getName()));
 
         if(getStatus().isResume()) {
             long skipped = in.skip(getStatus().getCurrent());
@@ -502,7 +502,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
         this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
-                new Object[]{this.getName()}));
+                this.getName()));
 
         // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
         // overhead when transferring a large amount of files

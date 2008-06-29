@@ -77,7 +77,7 @@ public class DAVSession extends HTTPSession {
         this.fireConnectionWillOpenEvent();
 
         this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
-                new Object[]{host.getProtocol().getName(), host.getHostname()}));
+                host.getProtocol().getName(), host.getHostname()));
 
         WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
@@ -93,7 +93,7 @@ public class DAVSession extends HTTPSession {
         WebdavResource.setDefaultAction(WebdavResource.BASIC);
 
         this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                new Object[]{host.getProtocol().getName()}));
+                host.getProtocol().getName()));
 
         if(null == this.DAV.getResourceType() || !this.DAV.getResourceType().isCollection()) {
             throw new IOException("Listing directory failed");
@@ -110,7 +110,7 @@ public class DAVSession extends HTTPSession {
         }
         try {
             this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                    new Object[]{credentials.getUsername()}));
+                    credentials.getUsername()));
 
             if(!credentials.isAnonymousLogin()) {
                 this.DAV.setCredentials(

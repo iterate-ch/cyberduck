@@ -190,14 +190,14 @@ public class SyncTransfer extends Transfer {
         return super.filter(action);
     }
 
-    private final Cache _cache = new Cache();
+    private final Cache<Path> _cache = new Cache<Path>();
 
-    public AttributedList childs(final Path parent) {
+    public AttributedList<Path> childs(final Path parent) {
         if (!_cache.containsKey(parent)) {
-            Set childs = new HashSet();
+            Set<Path> childs = new HashSet<Path>();
             childs.addAll(_delegateDownload.childs(parent));
             childs.addAll(_delegateUpload.childs(parent));
-            _cache.put(parent, new AttributedList(childs));
+            _cache.put(parent, new AttributedList<Path>(childs));
         }
         return _cache.get(parent);
     }
@@ -264,7 +264,8 @@ public class SyncTransfer extends Transfer {
         super.reset();
     }
 
-    private final Map _comparisons = new HashMap();
+    private final Map<Path, Comparison> _comparisons
+            = new HashMap<Path, Comparison>();
 
     /**
      *
@@ -359,7 +360,7 @@ public class SyncTransfer extends Transfer {
             
             _comparisons.put(p, result);
         }
-        return (Comparison) _comparisons.get(p);
+        return _comparisons.get(p);
     }
 
     /**

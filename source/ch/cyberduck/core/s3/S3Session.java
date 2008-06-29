@@ -152,7 +152,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         this.fireConnectionWillOpenEvent();
 
         this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
-                new Object[]{host.getProtocol().getName(), host.getHostname()}));
+                host.getProtocol().getName(), host.getHostname()));
 
         // Configure connection options
         this.configure(configuration = new Jets3tProperties());
@@ -163,7 +163,7 @@ public class S3Session extends HTTPSession implements SSLSession {
             throw new ConnectionCanceledException();
         }
         this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                new Object[]{host.getProtocol().getName()}));
+                host.getProtocol().getName()));
         this.fireConnectionDidOpenEvent();
     }
 
@@ -173,7 +173,7 @@ public class S3Session extends HTTPSession implements SSLSession {
 
         try {
             this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                    new Object[]{credentials.getUsername()}));
+                    credentials.getUsername()));
 
 
             final HostConfiguration hostConfiguration = new StickyHostConfiguration();

@@ -72,12 +72,12 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
     }
 
     private static class EPLFEntryParserContext {
-        private Hashtable facts;
+        private Hashtable<String, String> facts;
         private FTPFile file = null;
 
         public EPLFEntryParserContext(FTPFile f) {
             super();
-            this.facts = new Hashtable();
+            this.facts = new Hashtable<String, String>();
             this.file = f;
         }
 
@@ -185,7 +185,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 
         private Permission createSpecifiedPermission() {
             try {
-                int perm = Integer.valueOf((String) facts.get("up"), 8).intValue();
+                int perm = Integer.valueOf(facts.get("up"), 8);
                 return new Permission(perm);
             }
             catch(NumberFormatException ignored) {

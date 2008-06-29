@@ -78,24 +78,25 @@ public abstract class AbstractPath extends NSObject {
     /**
      * @return
      */
-    public AttributedList list() {
+    public AttributedList<? extends AbstractPath> list() {
         return this.list(new NullListParseListener());
     }
 
     /**
      * Fetch the directory listing
      *
+     * @param listener Gets notified of every new child item parsed
      * @return
      */
-    public abstract AttributedList list(ListParseListener listener);
+    public abstract AttributedList<? extends AbstractPath> list(ListParseListener listener);
 
     /**
      * Get the cached directory listing if any or return #list instead
      *
      * @return
      */
-    public AttributedList childs() {
-        return this.childs(new NullComparator(), new NullPathFilter());
+    public AttributedList<? extends AbstractPath> childs() {
+        return this.childs(new NullComparator<AbstractPath>(), new NullPathFilter());
     }
 
     /**
@@ -106,7 +107,7 @@ public abstract class AbstractPath extends NSObject {
      * @param filter     The filter to exlude certain files
      * @return The children of this path or an empty list if it is not accessible for some reason
      */
-    public AttributedList childs(Comparator comparator, PathFilter filter) {
+    public AttributedList<? extends AbstractPath> childs(Comparator<? extends AbstractPath> comparator, PathFilter filter) {
         if(!this.isCached()) {
             this.cache().put(this, this.list());
         }
@@ -136,8 +137,9 @@ public abstract class AbstractPath extends NSObject {
      * Return a context-relative path, beginning with a "/", that represents
      * the canonical version of the specified path after ".." and "." elements
      * are resolved out.
-     * *
      *
+     * @param path     The path to parse
+     * @param absolute If the path is absolute
      * @return the normalized path.
      * @author Adapted from org.apache.webdav
      * @license http://www.apache.org/licenses/LICENSE-2.0
@@ -297,13 +299,13 @@ public abstract class AbstractPath extends NSObject {
     public abstract void mkdir(boolean recursive);
 
     /**
-     * @param perm
+     * @param perm      The permissions to apply
      * @param recursive Include subdirectories and files
      */
     public abstract void writePermissions(Permission perm, boolean recursive);
 
     /**
-     * @param millis
+     * @param millis Milliseconds since 1970
      */
     public void writeModificationDate(long millis) {
         throw new UnsupportedOperationException();
@@ -322,7 +324,13 @@ public abstract class AbstractPath extends NSObject {
     }
 
     /**
-     * @param path Must be an absolute path
+     * @param renamed Must be an absolute path
      */
-    public abstract void rename(String path);
+    public abstract void rename(Path renamed);
+
+    /**
+     *
+     * @param copy
+     */
+    public abstract void copy(Path copy);
 }

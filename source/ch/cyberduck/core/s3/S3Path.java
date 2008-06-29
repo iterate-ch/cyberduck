@@ -670,11 +670,11 @@ public class S3Path extends Path {
                 session.S3.deleteObject(this.getBucketName(), this.getKey());
             }
             else if(attributes.isDirectory()) {
-                for(Iterator<? extends AbstractPath> iter = this.childs().iterator(); iter.hasNext();) {
+                for(AbstractPath i : this.childs()) {
                     if(!session.isConnected()) {
                         break;
                     }
-                    iter.next().delete();
+                    i.delete();
                 }
                 if(this.isBucket()) {
                     session.S3.deleteBucket(this.getBucketName());
@@ -709,13 +709,12 @@ public class S3Path extends Path {
                 }
             }
             else if(attributes.isDirectory()) {
-                for(Iterator<? extends AbstractPath> iter = this.childs().iterator(); iter.hasNext();) {
+                for(AbstractPath i : this.childs()) {
                     if(!session.isConnected()) {
                         break;
                     }
-                    final AbstractPath next = iter.next();
-                    next.rename(PathFactory.createPath(this.getSession(), renamed.getAbsolute(),
-                            next.getName(), next.attributes.getType()));
+                    i.rename(PathFactory.createPath(this.getSession(), renamed.getAbsolute(),
+                            i.getName(), i.attributes.getType()));
                 }
             }
         }
@@ -743,13 +742,12 @@ public class S3Path extends Path {
                         new S3Object(((S3Path) copy).getKey()), false);
             }
             else if(attributes.isDirectory()) {
-                for(Iterator<? extends AbstractPath> iter = this.childs().iterator(); iter.hasNext();) {
+                for(AbstractPath i : this.childs()) {
                     if(!session.isConnected()) {
                         break;
                     }
-                    final AbstractPath next = iter.next();
-                    next.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                            next.getName(), next.attributes.getType()));
+                    i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                            i.getName(), i.attributes.getType()));
                 }
             }
         }

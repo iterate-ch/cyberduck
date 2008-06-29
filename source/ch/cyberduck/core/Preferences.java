@@ -25,7 +25,6 @@ import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -45,7 +44,7 @@ public abstract class Preferences {
 
     private static Preferences current = null;
 
-    private Map defaults;
+    private Map<String, String> defaults;
 
     /**
      * TTL for DNS queries
@@ -121,7 +120,7 @@ public abstract class Preferences {
      * setting the default prefs values
      */
     protected void setDefaults() {
-        this.defaults = new HashMap();
+        this.defaults = new HashMap<String, String>();
 
         File APP_SUPPORT_DIR = null;
         if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
@@ -151,7 +150,7 @@ public abstract class Preferences {
 
 
         defaults.put("version", 
-                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"));
+                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
         /**
          * How many times the application was launched
          */
@@ -306,13 +305,13 @@ public abstract class Preferences {
         /**
          * Action when duplicate file exists
          */
-        defaults.put("queue.download.fileExists", TransferAction.ACTION_CALLBACK);
-        defaults.put("queue.upload.fileExists", TransferAction.ACTION_CALLBACK);
+        defaults.put("queue.download.fileExists", TransferAction.ACTION_CALLBACK.toString());
+        defaults.put("queue.upload.fileExists", TransferAction.ACTION_CALLBACK.toString());
         /**
          * When triggered manually using 'Reload' in the Transfer window
          */
-        defaults.put("queue.download.reload.fileExists", TransferAction.ACTION_CALLBACK);
-        defaults.put("queue.upload.reload.fileExists", TransferAction.ACTION_CALLBACK);
+        defaults.put("queue.download.reload.fileExists", TransferAction.ACTION_CALLBACK.toString());
+        defaults.put("queue.upload.reload.fileExists", TransferAction.ACTION_CALLBACK.toString());
 
         defaults.put("queue.upload.changePermissions", String.valueOf(true));
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));

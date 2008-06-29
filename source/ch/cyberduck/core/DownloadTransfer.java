@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
@@ -47,13 +46,13 @@ public class DownloadTransfer extends Transfer {
         super(roots);
     }
 
-    protected void setRoots(List downloads) {
-        final List normalized = new Collection();
-        for(Iterator iter = downloads.iterator(); iter.hasNext();) {
-            final Path download = (Path) iter.next();
+    protected void setRoots(List<Path> downloads) {
+        final List<Path> normalized = new Collection<Path>();
+        for(Iterator<Path> iter = downloads.iterator(); iter.hasNext();) {
+            final Path download = iter.next();
             boolean duplicate = false;
-            for(Iterator normalizedIter = normalized.iterator(); normalizedIter.hasNext();) {
-                Path n = (Path) normalizedIter.next();
+            for(Iterator<Path> normalizedIter = normalized.iterator(); normalizedIter.hasNext();) {
+                Path n = normalizedIter.next();
                 if(download.isChild(n)) {
                     // The selected file is a child of a directory
                     // already included
@@ -175,12 +174,12 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
-    public AttributedList childs(final Path parent) {
+    public AttributedList<Path> childs(final Path parent) {
         if(!this.exists(parent)) {
             // Cannot fetch file listing of non existant file
-            return new AttributedList(Collections.EMPTY_LIST);
+            return new AttributedList<Path>(Collections.<Path>emptyList());
         }
-        final AttributedList childs = parent.childs(new NullComparator(), childFilter);
+        final AttributedList<Path> childs = (AttributedList<Path>)parent.childs(new NullComparator<AbstractPath>(), childFilter);
         // Change download path relative to parent local folder
         for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
             final Path download = (Path) iter.next();
@@ -292,8 +291,8 @@ public class DownloadTransfer extends Transfer {
             return ACTION_SKIP;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Iterator iter = this.getRoots().iterator(); iter.hasNext();) {
-                Path root = (Path) iter.next();
+            for(Iterator<Path> iter = this.getRoots().iterator(); iter.hasNext();) {
+                Path root = iter.next();
                 if(this.exists(root.getLocal())) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {

@@ -25,7 +25,7 @@ import java.util.Map;
 
 public abstract class PathFactory {
 
-    private static Map factories = new HashMap();
+    private static Map<Protocol, PathFactory> factories = new HashMap<Protocol, PathFactory>();
 
     protected abstract Path create(Session session, String path, int type);
 
@@ -45,7 +45,7 @@ public abstract class PathFactory {
      */
     public static Path createPath(Session session, String parent, String name, int type) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, name, type);
+        return (factories.get(session.getHost().getProtocol())).create(session, parent, name, type);
     }
 
     /**
@@ -53,7 +53,7 @@ public abstract class PathFactory {
      */
     public static Path createPath(Session session, String path, int type) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, path, type);
+        return (factories.get(session.getHost().getProtocol())).create(session, path, type);
     }
 
     /**
@@ -62,7 +62,7 @@ public abstract class PathFactory {
      */
     public static Path createPath(Session session, String parent, Local file) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, parent, file);
+        return (factories.get(session.getHost().getProtocol())).create(session, parent, file);
     }
 
     /**
@@ -71,7 +71,7 @@ public abstract class PathFactory {
      */
     public static Path createPath(Session session, NSDictionary dict) {
         loadClass(session.getHost().getProtocol());
-        return ((PathFactory) factories.get(session.getHost().getProtocol())).create(session, dict);
+        return (factories.get(session.getHost().getProtocol())).create(session, dict);
     }
 
     private static void loadClass(Protocol protocol) {

@@ -142,7 +142,7 @@ public class SFTPSession extends Session {
         this.fireConnectionWillOpenEvent();
 
         this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
-                new Object[]{host.getProtocol().getName(), host.getHostname()}));
+                host.getProtocol().getName(), host.getHostname()));
 
         SSH = new Connection(this.host.getHostname(true), this.host.getPort());
 
@@ -152,7 +152,7 @@ public class SFTPSession extends Session {
             throw new ConnectionCanceledException();
         }
         this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
-                new Object[]{host.getProtocol().getName()}));
+                host.getProtocol().getName()));
         this.login();
         if(!SSH.isAuthenticationComplete()) {
             throw new LoginCanceledException();
@@ -167,7 +167,7 @@ public class SFTPSession extends Session {
             throw new ConnectionCanceledException();
         }
         this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                new Object[]{credentials.getUsername()}));
+                credentials.getUsername()));
 
         if(credentials.usesPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(credentials)) {

@@ -35,7 +35,7 @@ import java.net.MalformedURLException;
 /**
  * @version $Id$
  */
-public class TransferCollection extends Collection {
+public class TransferCollection extends Collection<Transfer> {
     private static Logger log = Logger.getLogger(TransferCollection.class);
 
     private static TransferCollection instance;
@@ -62,7 +62,7 @@ public class TransferCollection extends Collection {
         QUEUE_FILE.getParent().mkdir();
     }
 
-    public synchronized boolean add(Object o) {
+    public synchronized boolean add(Transfer o) {
         boolean r = super.add(o);
         this.save();
         return r;
@@ -74,7 +74,7 @@ public class TransferCollection extends Collection {
      * @param o
      * @see #save()
      */
-    public synchronized void add(int row, Object o) {
+    public synchronized void add(int row, Transfer o) {
         super.add(row, o);
         this.save();
     }
@@ -85,7 +85,7 @@ public class TransferCollection extends Collection {
      * @return the element that was removed from the list.
      * @see #save()
      */
-    public synchronized Object remove(int row) {
+    public synchronized Transfer remove(int row) {
         return super.remove(row);
     }
 
@@ -99,7 +99,7 @@ public class TransferCollection extends Collection {
             if(Preferences.instance().getBoolean("queue.save")) {
                 NSMutableArray list = new NSMutableArray();
                 for(int i = 0; i < this.size(); i++) {
-                    list.addObject(((Transfer) this.get(i)).getAsDictionary());
+                    list.addObject((this.get(i)).getAsDictionary());
                 }
                 NSMutableData collection = new NSMutableData();
                 String[] errorString = new String[]{null};
@@ -171,8 +171,7 @@ public class TransferCollection extends Collection {
     public synchronized int numberOfRunningTransfers() {
         int running = 0;
         // Count the number of running transfers
-        for(Iterator iter = this.iterator(); iter.hasNext(); ) {
-            Transfer t = (Transfer) iter.next();
+        for(Transfer t: this) {
             if(null == t) {
                 continue;
             }
@@ -191,8 +190,7 @@ public class TransferCollection extends Collection {
     public synchronized int numberOfQueuedTransfers() {
         int queued = 0;
         // Count the number of queued transfers
-        for(Iterator iter = this.iterator(); iter.hasNext(); ) {
-            Transfer t = (Transfer) iter.next();
+        for(Transfer t: this) {
             if(null == t) {
                 continue;
             }

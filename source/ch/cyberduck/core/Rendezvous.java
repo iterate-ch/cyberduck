@@ -41,8 +41,8 @@ public class Rendezvous
             "_ftp._tcp."
     };
 
-    private Map services;
-    private Map browsers;
+    private Map<String, Host> services;
+    private Map<String, DNSSDService> browsers;
 
     private static Rendezvous instance;
 
@@ -59,8 +59,8 @@ public class Rendezvous
 
     private Rendezvous() {
         log.debug("Rendezvous");
-        this.services = new HashMap();
-        this.browsers = new HashMap();
+        this.services = new HashMap<String, Host>();
+        this.browsers = new HashMap<String, DNSSDService>();
     }
 
     /**
@@ -88,11 +88,11 @@ public class Rendezvous
         for(int i = 0; i < serviceTypes.length; i++) {
             String protocol = serviceTypes[i];
             log.info("Removing Rendezvous service listener for " + protocol);
-            Object service = this.browsers.get(protocol);
+            DNSSDService service = this.browsers.get(protocol);
             if(null == service) {
                 continue;
             }
-            ((DNSSDService) service).stop();
+            service.stop();
         }
     }
 
@@ -155,7 +155,7 @@ public class Rendezvous
      */
     public Host getServiceWithIdentifier(String identifier) {
         log.debug("getService:" + identifier);
-        return (Host) services.get(identifier);
+        return services.get(identifier);
     }
 
     /**
@@ -164,8 +164,8 @@ public class Rendezvous
      */
     public Host getServiceWithDisplayedName(String displayedName) {
         synchronized(this) {
-            for(Iterator iter = services.values().iterator(); iter.hasNext();) {
-                Host h = (Host) iter.next();
+            for(Iterator<Host> iter = services.values().iterator(); iter.hasNext();) {
+                Host h = iter.next();
                 if(h.getNickname().equals(displayedName)) {
                     return h;
                 }
@@ -184,7 +184,7 @@ public class Rendezvous
 
     public Host getService(int index) {
         synchronized(this) {
-            return ((Host[]) services.values().toArray(new Host[services.size()]))[index];
+            return services.values().toArray(new Host[services.size()])[index];
         }
     }
 
@@ -195,7 +195,7 @@ public class Rendezvous
     public String getDisplayedName(int index) {
         if(index < this.numberOfServices()) {
             synchronized(this) {
-                return ((Host[]) services.values().toArray(new Host[services.size()]))[index].getNickname();
+                return services.values().toArray(new Host[services.size()])[index].getNickname();
             }
         }
         return NSBundle.localizedString("Unknown", "");
@@ -206,11 +206,11 @@ public class Rendezvous
      * @return A nicely formatted informative string
      */
     public String getDisplayedName(String identifier) {
-        Object o = services.get(identifier);
-        if(null == o) {
+        Host host = services.get(identifier);
+        if(null == host) {
             return NSBundle.localizedString("Unknown", "");
         }
-        return ((Host) o).getNickname();
+        return host.getNickname();
     }
 
     /**

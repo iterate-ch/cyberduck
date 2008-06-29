@@ -36,8 +36,8 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
      * A set of all X509 certificates accepted by the user that contains
      * no duplicate elements
      */
-    private Set acceptedCertificates
-            = new HashSet();
+    private Set<X509Certificate> acceptedCertificates
+            = new HashSet<X509Certificate>();
 
     protected void acceptCertificate(final X509Certificate[] certs) {
         if(log.isDebugEnabled()) {
@@ -59,7 +59,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
      * @return All accepted certificates
      */
     public X509Certificate[] getAcceptedIssuers() {
-        return (X509Certificate[]) this.acceptedCertificates.toArray(
+        return this.acceptedCertificates.toArray(
                 new X509Certificate[this.acceptedCertificates.size()]);
     }
 }

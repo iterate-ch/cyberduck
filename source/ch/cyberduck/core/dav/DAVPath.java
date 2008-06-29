@@ -91,7 +91,7 @@ public class DAVPath extends Path {
             try {
                 session.check();
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 session.DAV.setPath(this.attributes.isDirectory() ?
                         this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
@@ -108,7 +108,7 @@ public class DAVPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             session.DAV.setPath(this.attributes.isDirectory() ?
                     this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
@@ -131,7 +131,7 @@ public class DAVPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             if(!session.DAV.deleteMethod(this.getAbsolute())) {
                 throw new IOException(session.DAV.getStatusMessage());
@@ -147,9 +147,9 @@ public class DAVPath extends Path {
         }
     }
 
-    public AttributedList list(final ListParseListener listener) {
-        AttributedList childs = new AttributedList() {
-            public boolean add(Object object) {
+    public AttributedList<Path> list(final ListParseListener listener) {
+        final AttributedList<Path> childs = new AttributedList<Path>() {
+            public boolean add(Path object) {
                 boolean result = super.add(object);
                 listener.parsed(this);
                 return result;
@@ -158,7 +158,7 @@ public class DAVPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             session.setWorkdir(this);
             session.DAV.setContentType("text/xml");
@@ -195,7 +195,7 @@ public class DAVPath extends Path {
             }
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
-                    new Object[]{this.getName()}));
+                    this.getName()));
 
             session.DAV.setContentType("text/xml");
             if(!session.DAV.mkcolMethod(this.getAbsolute())) {
@@ -220,17 +220,17 @@ public class DAVPath extends Path {
 //            }
     }
 
-    public void rename(String absolute) {
-        log.debug("rename:" + absolute);
+    public void rename(Path renamed) {
+        log.debug("rename:" + renamed);
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), absolute}));
+                    this.getName(), renamed.getName()));
 
-            if(!session.DAV.moveMethod(this.getAbsolute(), absolute)) {
+            if(!session.DAV.moveMethod(this.getAbsolute(), renamed.getAbsolute())) {
                 throw new IOException(session.DAV.getStatusMessage());
             }
-            this.setPath(absolute);
+            this.setPath(renamed.getAbsolute());
         }
         catch(IOException e) {
             if(attributes.isFile()) {
@@ -246,7 +246,7 @@ public class DAVPath extends Path {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
-                    new Object[]{this.getName(), copy}));
+                    this.getName(), copy));
             
             if(!session.DAV.copyMethod(this.getAbsolute(), copy.getAbsolute())) {
                 throw new IOException(session.DAV.getStatusMessage());
@@ -315,7 +315,7 @@ public class DAVPath extends Path {
             }
             if(attributes.isFile()) {
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
-                        new Object[]{this.getName()}));
+                        this.getName()));
 
                 final InputStream in = new Local.InputStream(this.getLocal());
                 try {

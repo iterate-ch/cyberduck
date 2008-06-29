@@ -29,7 +29,7 @@ import java.util.Iterator;
 /**
  * @version $Id$
  */
-public class HostCollection extends Collection {
+public class HostCollection extends Collection<Host> {
     private static Logger log = Logger.getLogger(HostCollection.class);
 
     /**
@@ -42,7 +42,7 @@ public class HostCollection extends Collection {
     /**
      * @return
      */
-    public static Collection defaultCollection() {
+    public static HostCollection defaultCollection() {
         return DEFAULT_COLLECTION;
     }
 
@@ -76,7 +76,7 @@ public class HostCollection extends Collection {
         return this.file;
     }
 
-    public synchronized Object get(int row) {
+    public synchronized Host get(int row) {
         return super.get(row);
     }
 
@@ -85,7 +85,7 @@ public class HostCollection extends Collection {
      * @return
      * @see Host
      */
-    public synchronized boolean add(Object host) {
+    public synchronized boolean add(Host host) {
         this.add(this.size(), host);
         return true;
     }
@@ -95,8 +95,8 @@ public class HostCollection extends Collection {
      * @param host
      * @see Host
      */
-    public synchronized void add(int row, Object host) {
-        super.add(row, this.unique((Host) host));
+    public synchronized void add(int row, Host host) {
+        super.add(row, this.unique(host));
         this.sort();
         this.save();
     }
@@ -119,8 +119,8 @@ public class HostCollection extends Collection {
      * @param row
      * @return the element that was removed from the list.
      */
-    public synchronized Object remove(int row) {
-        Object previous = super.remove(row);
+    public synchronized Host remove(int row) {
+        Host previous = super.remove(row);
         this.save();
         return previous;
     }
@@ -137,9 +137,7 @@ public class HostCollection extends Collection {
         if(Preferences.instance().getBoolean("favorites.save")) {
             try {
                 NSMutableArray list = new NSMutableArray();
-                Iterator i = this.iterator();
-                while(i.hasNext()) {
-                    Host bookmark = (Host) i.next();
+                for(Host bookmark : this) {
                     list.addObject(bookmark.getAsDictionary());
                 }
                 NSMutableData collection = new NSMutableData();
@@ -200,7 +198,7 @@ public class HostCollection extends Collection {
         }
     }
 
-    public void collectionItemChanged(Object item) {
+    public void collectionItemChanged(Host item) {
         this.save();
         super.collectionItemChanged(item);
     }

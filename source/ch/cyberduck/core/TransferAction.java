@@ -32,7 +32,7 @@ public abstract class TransferAction {
         actions.put(this.toString(), this);
     }
 
-    protected static Map actions = new HashMap();
+    protected static Map<String, TransferAction> actions = new HashMap<String, TransferAction>();
 
     public abstract String toString();
 
@@ -46,7 +46,7 @@ public abstract class TransferAction {
     public abstract String getLocalizableString();
 
     public static TransferAction forName(String name) {
-        return (TransferAction)actions.get(name);
+        return actions.get(name);
     }
 
     /**

@@ -39,7 +39,7 @@ public class HistoryCollection extends HostCollection {
      *
      * @return
      */
-    public static Collection defaultCollection() {
+    public static HistoryCollection defaultCollection() {
         return HISTORY_COLLECTION;
     }
 
@@ -53,18 +53,17 @@ public class HistoryCollection extends HostCollection {
         folder.mkdir(true);
     }
 
-    public synchronized void add(int row, Object bookmark) {
-        final Host h = (Host) bookmark;
-        h.setFile(new Local(file, h.getNickname() + ".duck"));
+    public synchronized void add(int row, Host bookmark) {
+        bookmark.setFile(new Local(file, bookmark.getNickname() + ".duck"));
         try {
-            h.write();
+            bookmark.write();
         }
         catch(IOException e) {
             log.error(e.getMessage());
             return;
         }
         if(!this.contains(bookmark)) {
-            super.add(row, h);
+            super.add(row, bookmark);
         }
         else {
             this.sort();
@@ -75,24 +74,24 @@ public class HistoryCollection extends HostCollection {
      * @param row
      * @return the element that was removed from the list.
      */
-    public synchronized Object remove(int row) {
-        final Host bookmark = (Host) this.get(row);
+    public synchronized Host remove(int row) {
+        final Host bookmark = this.get(row);
         bookmark.getFile().delete(false);
         return super.remove(row);
     }
 
     protected void load() {
         log.info("Reloading " + file);
-        final AttributedList bookmarks = file.childs(new NullComparator(),
-                new PathFilter() {
-                    public boolean accept(AbstractPath file) {
+        final AttributedList<Local> bookmarks = (AttributedList<Local>)file.childs(new NullComparator<Local>(),
+                new PathFilter<Local>() {
+                    public boolean accept(Local file) {
                         return file.getName().endsWith(".duck");
                     }
                 }
         );
-        for(Iterator iter = bookmarks.iterator(); iter.hasNext();) {
+        for(Iterator<Local> iter = bookmarks.iterator(); iter.hasNext();) {
             try {
-                super.add(this.size(), new Host((Local) iter.next()));
+                super.add(this.size(), new Host(iter.next()));
             }
             catch(IOException e) {
                 log.error(e.getMessage());
@@ -101,10 +100,10 @@ public class HistoryCollection extends HostCollection {
     }
 
     protected void sort() {
-        Collections.sort(this, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Local f1 = ((Host) o1).getFile();
-                Local f2 = ((Host) o2).getFile();
+        Collections.sort(this, new Comparator<Host>() {
+            public int compare(Host o1, Host o2) {
+                Local f1 = o1.getFile();
+                Local f2 = o2.getFile();
                 if(f1.attributes.getModificationDate() < f2.attributes.getModificationDate()) {
                     return 1;
                 }
@@ -118,8 +117,8 @@ public class HistoryCollection extends HostCollection {
 
     public synchronized void clear() {
         log.debug("Removing all bookmarks from " + file);
-        for(Iterator iter = this.iterator(); iter.hasNext();) {
-            ((Host) iter.next()).getFile().delete(false);
+        for(Iterator<Host> iter = this.iterator(); iter.hasNext();) {
+            iter.next().getFile().delete(false);
         }
         super.clear();
     }

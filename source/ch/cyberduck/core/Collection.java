@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public class Collection extends ArrayList implements CollectionListener {
+public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
 
     public Collection() {
         super();
@@ -51,33 +51,33 @@ public class Collection extends ArrayList implements CollectionListener {
         return -1;
     }
 
-    private Set<CollectionListener> listeners
-            = Collections.synchronizedSet(new HashSet<CollectionListener>());
+    private Set<CollectionListener<E>> listeners
+            = Collections.synchronizedSet(new HashSet<CollectionListener<E>>());
 
-    public void addListener(CollectionListener listener) {
+    public void addListener(CollectionListener<E> listener) {
         listeners.add(listener);
     }
 
-    public void removeListener(CollectionListener listener) {
+    public void removeListener(CollectionListener<E> listener) {
         listeners.remove(listener);
     }
 
-    public boolean add(Object object) {
+    public boolean add(E object) {
         super.add(object);
         this.collectionItemAdded(object);
         return true;
     }
 
-    public void add(int row, Object object) {
+    public void add(int row, E object) {
         super.add(row, object);
         this.collectionItemAdded(object);
     }
 
-    public Object get(int row) {
+    public E get(int row) {
         return super.get(row);
     }
 
-    public Iterator iterator() {
+    public Iterator<E> iterator() {
         return super.iterator();
     }
 
@@ -90,8 +90,8 @@ public class Collection extends ArrayList implements CollectionListener {
     }
 
     public void clear() {
-        for(Iterator iter = this.iterator(); iter.hasNext();) {
-            this.collectionItemRemoved(iter.next());
+        for(E o : this) {
+            this.collectionItemRemoved(o);
         }
         super.clear();
     }
@@ -100,36 +100,36 @@ public class Collection extends ArrayList implements CollectionListener {
      * @param row
      * @return the element that was removed from the list.
      */
-    public Object remove(int row) {
-        Object previous = super.remove(row);
+    public E remove(int row) {
+        E previous = super.remove(row);
         this.collectionItemRemoved(previous);
         return previous;
     }
 
-    public boolean remove(Object bookmark) {
-        boolean previous = super.remove(bookmark);
-        this.collectionItemRemoved(bookmark);
+    public boolean remove(Object item) {
+        boolean previous = super.remove(item);
+        this.collectionItemRemoved((E)item);
         return previous;
     }
 
-    public void collectionItemAdded(Object item) {
-        CollectionListener[] l = listeners.toArray(
+    public void collectionItemAdded(E item) {
+        CollectionListener<E>[] l = listeners.toArray(
                 new CollectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].collectionItemAdded(item);
         }
     }
 
-    public void collectionItemRemoved(Object item) {
-        CollectionListener[] l = listeners.toArray(
+    public void collectionItemRemoved(E item) {
+        CollectionListener<E>[] l = listeners.toArray(
                 new CollectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].collectionItemRemoved(item);
         }
     }
 
-    public void collectionItemChanged(Object item) {
-        CollectionListener[] l = listeners.toArray(
+    public void collectionItemChanged(E item) {
+        CollectionListener<E>[] l = listeners.toArray(
                 new CollectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].collectionItemChanged(item);

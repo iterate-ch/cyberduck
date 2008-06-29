@@ -34,7 +34,7 @@ import java.util.Locale;
  *
  * @version $Id:$
  */
-public class NaturalOrderComparator implements Comparator {
+public class NaturalOrderComparator implements Comparator<String> {
 
     private Collator collator = Collator.getInstance(Locale.getDefault());
 
@@ -71,13 +71,7 @@ public class NaturalOrderComparator implements Comparator {
         return chunk.toString();
     }
 
-    public int compare(Object o1, Object o2) {
-        if(!(o1 instanceof String) || !(o2 instanceof String)) {
-            return 0;
-        }
-        String s1 = (String) o1;
-        String s2 = (String) o2;
-
+    public int compare(String s1, String s2) {
         int thisMarker = 0;
         int thatMarker = 0;
         int s1Length = s1.length();

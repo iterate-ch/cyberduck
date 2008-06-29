@@ -21,13 +21,13 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public abstract class AbstractCollectionListener implements CollectionListener {
+public abstract class AbstractCollectionListener<L> implements CollectionListener<L> {
 
     /**
      *
      * @param item
      */
-    public void collectionItemAdded(Object item) {
+    public void collectionItemAdded(L item) {
 
     }
 
@@ -35,7 +35,7 @@ public abstract class AbstractCollectionListener implements CollectionListener {
      *
      * @param item
      */
-    public void collectionItemRemoved(Object item) {
+    public void collectionItemRemoved(L item) {
 
     }
 
@@ -43,7 +43,7 @@ public abstract class AbstractCollectionListener implements CollectionListener {
      *
      * @param item
      */
-    public void collectionItemChanged(Object item) {
+    public void collectionItemChanged(L item) {
 
     }
 }

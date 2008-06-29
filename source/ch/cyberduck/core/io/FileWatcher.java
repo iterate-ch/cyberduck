@@ -40,7 +40,7 @@ public class FileWatcher extends NSObject {
     /**
      *
      */
-    private static final Map instances = new HashMap();
+    private static final Map<Local, FileWatcher> instances = new HashMap<Local, FileWatcher>();
 
     static {
         // Ensure native odb library is loaded
@@ -60,7 +60,7 @@ public class FileWatcher extends NSObject {
         if(!instances.containsKey(path)) {
             instances.put(path, new FileWatcher(path));
         }
-        return (FileWatcher)instances.get(path);
+        return instances.get(path);
     }
 
     /**
@@ -71,7 +71,8 @@ public class FileWatcher extends NSObject {
     /**
      * The listeners to get notified about file system changes
      */
-    private Set listeners = Collections.synchronizedSet(new HashSet());
+    private Set<FileWatcherListener> listeners
+            = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
 
     /**
      * 
@@ -82,20 +83,20 @@ public class FileWatcher extends NSObject {
     }
 
     public void fileWritten(NSNotification notification) {
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((FileWatcherListener)iter.next()).fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(Iterator<FileWatcherListener> iter = listeners.iterator(); iter.hasNext(); ) {
+            iter.next().fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileRenamed(NSNotification notification) {
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((FileWatcherListener)iter.next()).fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(Iterator<FileWatcherListener> iter = listeners.iterator(); iter.hasNext(); ) {
+            iter.next().fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileDeleted(NSNotification notification) {
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((FileWatcherListener)iter.next()).fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(Iterator<FileWatcherListener> iter = listeners.iterator(); iter.hasNext(); ) {
+            iter.next().fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
         }
         removePath(file.getAbsolute());
     }

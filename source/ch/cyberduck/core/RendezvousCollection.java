@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id:$
  */
-public class RendezvousCollection extends Collection {
+public class RendezvousCollection extends Collection<Host> {
 
     private static RendezvousCollection RENDEZVOUS_COLLECTION
             = new RendezvousCollection();
@@ -30,11 +30,11 @@ public class RendezvousCollection extends Collection {
      *
      * @return
      */
-    public static Collection defaultCollection() {
+    public static Collection<Host> defaultCollection() {
         return RENDEZVOUS_COLLECTION;
     }
 
-    public Object get(int row) {
+    public Host get(int row) {
         return Rendezvous.instance().getService(row);
     }
 
@@ -42,7 +42,7 @@ public class RendezvousCollection extends Collection {
         return Rendezvous.instance().numberOfServices();
     }
 
-    public Object remove(int row) {
+    public Host remove(int row) {
         return null;
     }
 }

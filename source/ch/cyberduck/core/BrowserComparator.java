@@ -24,7 +24,7 @@ import java.util.Comparator;
  * The base class for comparators used to sort by column type in the browser
  * @version $Id$
  */
-public abstract class BrowserComparator implements Comparator {
+public abstract class BrowserComparator implements Comparator<Path> {
 
     protected boolean ascending;
 
@@ -59,7 +59,7 @@ public abstract class BrowserComparator implements Comparator {
         return false;
     }
 
-    public abstract int compare(Object o1, Object o2);
+    public abstract int compare(Path p1, Path p2);
 
     /**
      * @return An unique identifer for this comparator

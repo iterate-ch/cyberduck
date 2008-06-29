@@ -80,7 +80,7 @@ public class UploadTransfer extends Transfer {
             }
             if(p.attributes.isDirectory()) {
                 if(!UploadTransfer.this.exists(p)) {
-                    p.cache().put(p, AttributedList.EMPTY_LIST);
+                    p.cache().put(p, new AttributedList<Path>(Collections.<Path>emptyList()));
                 }
             }
         }
@@ -111,16 +111,16 @@ public class UploadTransfer extends Transfer {
         }
     };
 
-    private final Cache _cache = new Cache();
+    private final Cache<Path> _cache = new Cache<Path>();
 
-    public AttributedList childs(final Path parent) {
+    public AttributedList<Path> childs(final Path parent) {
         if(!this.exists(parent.getLocal())) {
             // Cannot fetch file listing of non existant file
-            _cache.put(parent, new AttributedList(Collections.EMPTY_LIST));
+            _cache.put(parent, new AttributedList<Path>(Collections.<Path>emptyList()));
         }
         if(!_cache.containsKey(parent)) {
-            AttributedList childs = new AttributedList();
-            for(Iterator iter = parent.getLocal().childs(new NullComparator(),
+            AttributedList<Path> childs = new AttributedList<Path>();
+            for(Iterator iter = parent.getLocal().childs(new NullComparator<Local>(),
                     childFilter).iterator(); iter.hasNext(); ) {
                 Path child = PathFactory.createPath(parent.getSession(),
                         parent.getAbsolute(),

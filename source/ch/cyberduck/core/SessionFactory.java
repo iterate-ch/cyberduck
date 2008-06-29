@@ -23,7 +23,7 @@ import java.util.Map;
 
 public abstract class SessionFactory {
 
-    private static Map factories = new HashMap();
+    private static Map<Protocol, SessionFactory> factories = new HashMap<Protocol, SessionFactory>();
 
     protected abstract Session create(Host h);
 
@@ -46,6 +46,6 @@ public abstract class SessionFactory {
                 throw new RuntimeException("No class for type: " + protocol);
             }
         }
-        return ((SessionFactory) factories.get(protocol)).create(h);
+        return (factories.get(protocol)).create(h);
     }
 }
