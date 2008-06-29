@@ -252,7 +252,7 @@ public class CDPreferencesController extends CDWindowController {
 
     public void editorComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
-        final String selected = (String)EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.titleOfSelectedItem());
+        final String selected = EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.titleOfSelectedItem());
         Preferences.instance().setProperty("editor.bundleIdentifier", selected);
         EditorFactory.setSelectedEditor(selected);
         CDBrowserController.validateToolbarItems();
@@ -316,23 +316,21 @@ public class CDPreferencesController extends CDWindowController {
         this.defaultBookmarkCombobox.removeAllItems();
         this.defaultBookmarkCombobox.addItem(NSBundle.localizedString("None", ""));
         this.defaultBookmarkCombobox.menu().addItem(new NSMenuItem().separatorItem());
-        Iterator iter = HostCollection.defaultCollection().iterator();
+        Iterator<Host> iter = HostCollection.defaultCollection().iterator();
         while(iter.hasNext()) {
-            Host bookmark = (Host) iter.next();
+            Host bookmark = iter.next();
             this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
             this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
         }
-        HostCollection.defaultCollection().addListener(new CollectionListener() {
-            public void collectionItemAdded(Object item) {
-                Host bookmark = (Host) item;
+        HostCollection.defaultCollection().addListener(new CollectionListener<Host>() {
+            public void collectionItemAdded(Host bookmark) {
                 CDPreferencesController.this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
                 CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
                 CDPreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
             }
 
-            public void collectionItemRemoved(Object item) {
-                Host bookmark = (Host) item;
+            public void collectionItemRemoved(Host bookmark) {
                 if(CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
                     Preferences.instance().deleteProperty("browser.defaultBookmark");
                 }
@@ -342,7 +340,7 @@ public class CDPreferencesController extends CDWindowController {
                 }
             }
 
-            public void collectionItemChanged(Object item) {
+            public void collectionItemChanged(Host bookmark) {
                 ;
             }
         });

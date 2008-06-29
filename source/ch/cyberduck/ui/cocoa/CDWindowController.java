@@ -133,7 +133,8 @@ public abstract class CDWindowController extends CDBundleController {
      */
     protected NSWindow window; // IBOutlet
 
-    private Set listeners = Collections.synchronizedSet(new HashSet());
+    private Set<CDWindowListener> listeners
+            = Collections.synchronizedSet(new HashSet<CDWindowListener>());
 
     /**
      * @param listener

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.nio.charset.Charset;
 
 /**
  * @version $Id$
@@ -62,7 +63,7 @@ public class CDMainController extends CDController {
 
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
-        Map columns = new HashMap();
+        Map<String,String> columns = new HashMap<String,String>();
         columns.put("browser.columnKind", NSBundle.localizedString("Kind", ""));
         columns.put("browser.columnSize", NSBundle.localizedString("Size", ""));
         columns.put("browser.columnModification", NSBundle.localizedString("Modified", ""));
@@ -91,7 +92,7 @@ public class CDMainController extends CDController {
     }
 
     public void historyMenuClicked(NSMenuItem sender) {
-        NSWorkspace.sharedWorkspace().openFile(((HistoryCollection) HistoryCollection.defaultCollection()).getFile().getAbsolute());
+        NSWorkspace.sharedWorkspace().openFile(HistoryCollection.defaultCollection().getFile().getAbsolute());
     }
 
     public void bugreportMenuClicked(final Object sender) {
@@ -478,7 +479,7 @@ public class CDMainController extends CDController {
     /**
      * Saved browsers
      */
-    private Collection sessions = new HistoryCollection(
+    private Collection<Host> sessions = new HistoryCollection(
             new Local(Preferences.instance().getProperty("application.support.path"), "Sessions"));
 
     /**
@@ -717,13 +718,13 @@ public class CDMainController extends CDController {
      * @return The available character sets available on this platform
      */
     protected String[] availableCharsets() {
-        List charsets = new Collection();
-        for(Iterator iter = java.nio.charset.Charset.availableCharsets().values().iterator(); iter.hasNext();) {
-            String name = ((java.nio.charset.Charset) iter.next()).displayName();
+        List<String> charsets = new Collection<String>();
+        for(Charset charset : Charset.availableCharsets().values()) {
+            final String name = charset.displayName();
             if(!(name.startsWith("IBM") || name.startsWith("x-"))) {
                 charsets.add(name);
             }
         }
-        return (String[]) charsets.toArray(new String[0]);
+        return charsets.toArray(new String[charsets.size()]);
     }
 }
