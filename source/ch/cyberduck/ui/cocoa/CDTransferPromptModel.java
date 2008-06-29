@@ -46,7 +46,7 @@ public abstract class CDTransferPromptModel extends CDController {
     /**
      * The root nodes to be included in the prompt dialog
      */
-    protected final List _roots = new Collection();
+    protected final List<Path> _roots = new Collection<Path>();
 
     /**
      *
@@ -66,14 +66,14 @@ public abstract class CDTransferPromptModel extends CDController {
         _roots.add(p);
     }
 
-    protected abstract class PromptFilter implements PathFilter {
-        public boolean accept(AbstractPath file) {
-            if(transfer.exists((Path)file)) {
+    protected abstract class PromptFilter implements PathFilter<Path> {
+        public boolean accept(Path file) {
+            if(transfer.exists(file)) {
                 if(file.attributes.getSize() == -1) {
-                    ((Path)file).readSize();
+                    file.readSize();
                 }
                 if(file.attributes.getModificationDate() == -1) {
-                    ((Path)file).readTimestamp();
+                    file.readTimestamp();
                 }
             }
             return true;
@@ -90,11 +90,11 @@ public abstract class CDTransferPromptModel extends CDController {
     /**
      * @see com.apple.cocoa.application.NSTableView.DataSource
      */
-    public void outlineViewSetObjectValueForItem(final NSOutlineView outlineView, Object value,
+    public void outlineViewSetObjectValueForItem(final NSOutlineView outlineView, Number value,
                                                  final NSTableColumn tableColumn, Path item) {
         String identifier = (String)tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            transfer.setSkipped(item, ((Number)value).intValue() == NSCell.OffState);
+            transfer.setSkipped(item, (value).intValue() == NSCell.OffState);
             if(item.attributes.isDirectory()) {
                 outlineView.setNeedsDisplay(true);
             }
@@ -106,17 +106,17 @@ public abstract class CDTransferPromptModel extends CDController {
      *
      * @return
      */
-    protected abstract PathFilter filter();
+    protected abstract PathFilter<Path> filter();
 
     /**
      * File listing cache for children of the root paths
      */
-    private final Cache cache = new Cache();
+    private final Cache<Path> cache = new Cache<Path>();
 
     /**
      * Container for all paths currently being listed in the background
      */
-    private final List isLoadingListingInBackground = new Collection();
+    private final List<Path> isLoadingListingInBackground = new Collection<Path>();
 
     /**
      * If no cached listing is available the loading is delayed until the listing is
@@ -126,7 +126,7 @@ public abstract class CDTransferPromptModel extends CDController {
      * @return The list of child items for the parent folder. The listing is filtered
      *         using the standard regex exclusion and the additional passed filter
      */
-    protected List childs(final Path path) {
+    protected AttributedList<Path> childs(final Path path) {
         synchronized(isLoadingListingInBackground) {
             if(!isLoadingListingInBackground.contains(path)) {
                 if(!transfer.isCached(path)) {
@@ -136,7 +136,7 @@ public abstract class CDTransferPromptModel extends CDController {
                             log.debug("childs#run");
                             cache.put(path, transfer.childs(path));
                             //Hack to filter the list first in the background thread
-                            cache.get(path, new NullComparator(), CDTransferPromptModel.this.filter());
+                            cache.get(path, new NullComparator<Path>(), CDTransferPromptModel.this.filter());
                         }
 
                         public void cleanup() {
@@ -156,7 +156,7 @@ public abstract class CDTransferPromptModel extends CDController {
             }
         }
         log.warn("No cached listing for " + path.getName());
-        return Collections.EMPTY_LIST;
+        return new AttributedList<Path>(Collections.<Path>emptyList());
     }
 
     protected static final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
@@ -169,7 +169,7 @@ public abstract class CDTransferPromptModel extends CDController {
                 // files
                 final boolean skipped = !transfer.isIncluded(item)
                         || ((CDTransferPrompt)controller).getAction().equals(TransferAction.ACTION_SKIP);
-                return skipped ? new Integer(NSCell.OffState) : new Integer(NSCell.OnState);
+                return skipped ? NSCell.OffState : NSCell.OnState;
             }
             if(identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(),
@@ -211,7 +211,7 @@ public abstract class CDTransferPromptModel extends CDController {
      */
     public Path outlineViewChildOfItem(final NSOutlineView view, int index, Path item) {
         if(null == item) {
-            return (Path)_roots.get(index);
+            return _roots.get(index);
         }
         List childs = this.childs(item);
         if(childs.isEmpty()) {

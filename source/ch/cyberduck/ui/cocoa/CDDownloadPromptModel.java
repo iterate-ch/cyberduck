@@ -35,16 +35,16 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
      * Filtering what files are displayed. Used to
      * decide which files to include in the prompt dialog
      */
-    private PathFilter filter;
+    private PathFilter<Path> filter;
 
-    protected PathFilter filter() {
+    protected PathFilter<Path> filter() {
         if(null == filter) {
             filter = new PromptFilter() {
-                public boolean accept(AbstractPath child) {
+                public boolean accept(Path child) {
                     log.debug("accept:" + child);
-                    if(transfer.exists(((Path)child).getLocal())) {
-                        if(((Path)child).attributes.isFile()) {
-                            if(((Path)child).getLocal().attributes.getSize() == 0) {
+                    if(transfer.exists(child.getLocal())) {
+                        if(child.attributes.isFile()) {
+                            if(child.getLocal().attributes.getSize() == 0) {
                                 // Do not prompt for zero sized files
                                 return false;
                             }
