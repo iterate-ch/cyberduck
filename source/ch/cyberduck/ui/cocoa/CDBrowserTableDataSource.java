@@ -53,7 +53,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
     /**
      * Container for all paths currently being listed in the background
      */
-    private final List isLoadingListingInBackground = new Collection();
+    private final List<Path> isLoadingListingInBackground 
+            = new Collection<Path>();
 
     protected CDBrowserController controller;
 
@@ -68,54 +69,52 @@ public abstract class CDBrowserTableDataSource extends CDController {
      * @return The cached or newly fetched file listing of the directory
      * @pre Call from the main thread
      */
-    protected AttributedList childs(final Path path) {
+    protected AttributedList<Path> childs(final Path path) {
         if(log.isDebugEnabled()) {
             log.debug("childs:" + path);
         }
         // Check first if it hasn't been already requested so we don't spawn
         // a multitude of unecessary threads
         synchronized(isLoadingListingInBackground) {
-            final AttributedList cache
+            final AttributedList<Path> cached
                     = path.cache().get(path, controller.getComparator(), controller.getFileFilter());
-            if(!isLoadingListingInBackground.contains(path)) {
-                if(path.isCached()) {
-                    return cache;
-                }
-                else {
-                    isLoadingListingInBackground.add(path);
-                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                    // Delay until path is cached in the background
+            if(path.isCached()) {
+                return cached;
+            }
+            else if(!isLoadingListingInBackground.contains(path)) {
+                isLoadingListingInBackground.add(path);
+                // Reloading a workdir that is not cached yet would cause the interface to freeze;
+                // Delay until path is cached in the background
 
-                    controller.background(new BrowserBackgroundAction(controller) {
-                        public void run() {
-                            path.childs();
-                        }
+                controller.background(new BrowserBackgroundAction(controller) {
+                    public void run() {
+                        path.childs();
+                    }
 
-                        public String getActivity() {
-                            return MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
-                                    new Object[]{path.getName()});
-                        }
+                    public String getActivity() {
+                        return MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                                path.getName());
+                    }
 
-                        public void cleanup() {
-                            synchronized(isLoadingListingInBackground) {
-                                isLoadingListingInBackground.remove(path);
-                                if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
-                                    if(controller.isConnected()) {
-                                        final Collection selected = controller.getSelectedPaths();
-                                        selected.add(path);
-                                        controller.reloadData(selected);
-                                    }
+                    public void cleanup() {
+                        synchronized(isLoadingListingInBackground) {
+                            isLoadingListingInBackground.remove(path);
+                            if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
+                                if(controller.isConnected()) {
+                                    final Collection<Path> selected = controller.getSelectedPaths();
+                                    selected.add(path);
+                                    controller.reloadData(selected);
                                 }
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
-            if(null == cache) {
+            if(null == cached) {
                 log.warn("No cached listing for " + path.getName());
-                return AttributedList.EMPTY_LIST;
+                return new AttributedList<Path>(Collections.<Path>emptyList());
             }
-            return cache;
+            return cached;
         }
     }
 
@@ -232,7 +231,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
             if(o != null) {
                 NSArray elements = (NSArray) o;
                 final Session session = controller.getTransferSession();
-                final List roots = new Collection();
+                final List<Path> roots = new Collection<Path>();
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             destination.getAbsolute(),
@@ -254,7 +253,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 if((info.draggingSourceOperationMask() & NSDraggingInfo.DragOperationMove)
                         == NSDraggingInfo.DragOperationMove) {
                     // The file should be renamed
-                    final Map files = new HashMap();
+                    final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict);
@@ -271,12 +270,12 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 }
                 if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
                     // The file should be duplicated
-                    final Map files = new HashMap();
+                    final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict, controller.getSession());
-                        for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                            final Path source = (Path) iter.next();
+                        for(Iterator<Path> iter = q.getRoots().iterator(); iter.hasNext();) {
+                            final Path source = iter.next();
                             final Path copy = PathFactory.createPath(controller.getSession(), source.getAsDictionary());
                             copy.setPath(destination.getAbsolute(), source.getName());
                             files.put(source, copy);
@@ -368,7 +367,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
-                final List roots = new Collection();
+                final List<Path> roots = new Collection<Path>();
                 final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
                     promisedDragPaths[i] = PathFactory.createPath(session, ((Path) items.objectAtIndex(i)).getAsDictionary());
@@ -448,7 +447,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     this.promisedDragPaths[0].getLocal().mkdir();
                 }
             }
-            final List roots = new Collection();
+            final List<Path> roots = new Collection<Path>();
             for(int i = 0; i < promisedDragPaths.length; i++) {
                 roots.add(promisedDragPaths[i]);
             }
