@@ -108,6 +108,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         if(childs.isEmpty()) {
             return null;
         }
+        if(childs.size() < index) {
+            return null;
+        }
         return (Path) childs.get(index);
     }
 
