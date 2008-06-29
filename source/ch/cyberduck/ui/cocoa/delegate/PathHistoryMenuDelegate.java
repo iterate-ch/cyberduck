@@ -47,7 +47,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        final List history = this.getHistory();
+        final List<Path> history = this.getHistory();
         if(history.size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
             return history.size() + 2;
@@ -55,16 +55,16 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
         return 0;
     }
 
-    public abstract List getHistory();
+    public abstract List<Path> getHistory();
 
     /**
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
-        final List history = this.getHistory();
+        final List<Path> history = this.getHistory();
         final int length = history.size();
         if(index < length) {
-            Path item = (Path) history.get(index);
+            Path item = history.get(index);
             // This is a hack. We insert a new NSMenuItem as NSMenu has
             // a bug caching old entries since we introduced the separator item below
             menu.removeItemAtIndex(index);

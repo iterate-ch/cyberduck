@@ -41,7 +41,7 @@ public class TransferMenuDelegate extends MenuDelegate {
     /**
      *
      */
-    private List roots;
+    private List<Path> roots;
 
     public TransferMenuDelegate(List roots) {
         this.roots = roots;
@@ -52,7 +52,7 @@ public class TransferMenuDelegate extends MenuDelegate {
     }
 
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-        Path path = ((Path) roots.get(index));
+        Path path = roots.get(index);
         item.setTitle(path.getName());
         if(path.getLocal().exists()) {
             item.setEnabled(true);

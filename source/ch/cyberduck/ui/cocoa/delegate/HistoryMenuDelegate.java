@@ -71,7 +71,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
             return false;
         }
         if(index < HistoryCollection.defaultCollection().size()) {
-            Host h = (Host) HistoryCollection.defaultCollection().get(index);
+            Host h = HistoryCollection.defaultCollection().get(index);
             // This is a hack. We insert a new NSMenuItem as NSMenu has
             // a bug caching old entries since we introduced the separator item below
             menu.removeItemAtIndex(index);

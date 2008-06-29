@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 import com.apple.cocoa.application.NSMenuItem;
 
 import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.core.Path;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class ForwardPathHistoryMenuDelegate extends PathHistoryMenuDelegate {
         super(controller);
     }
 
-    public List getHistory() {
+    public List<Path> getHistory() {
         return controller.getForwardHistory();
     }
 

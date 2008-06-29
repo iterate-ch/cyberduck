@@ -85,7 +85,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
             item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
         }
         if(index > 9) {
-            Host h = (Host) HostCollection.defaultCollection().get(index - 10);
+            Host h = HostCollection.defaultCollection().get(index - 10);
             item.setTitle(h.getNickname());
             item.setTarget(this);
             item.setImage(DOCUMENT_ICON_SMALL);
