@@ -36,7 +36,7 @@ import java.util.Map;
 public class CDInfoController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDInfoController.class);
 
-    private List files;
+    private List<Path> files;
 
     // ----------------------------------------------------------
     // Outlets
@@ -174,11 +174,11 @@ public class CDInfoController extends CDWindowController {
     // ----------------------------------------------------------
 
     public static class Factory {
-        private static Map open = new HashMap();
+        private static Map<List<Path>, CDInfoController> open = new HashMap<List<Path>, CDInfoController>();
 
-        public static CDInfoController create(final CDBrowserController controller, final List files) {
+        public static CDInfoController create(final CDBrowserController controller, final List<Path> files) {
             if(open.containsKey(files)) {
-                return (CDInfoController) open.get(files);
+                return open.get(files);
             }
             final CDInfoController c = new CDInfoController(controller, files) {
                 public void windowWillClose(NSNotification notification) {
@@ -193,7 +193,7 @@ public class CDInfoController extends CDWindowController {
 
     private CDBrowserController controller;
 
-    private CDInfoController(final CDBrowserController controller, List files) {
+    private CDInfoController(final CDBrowserController controller, List<Path> files) {
         this.controller = controller;
         this.controller.addListener(new CDWindowListener() {
             public void windowWillClose() {
@@ -211,7 +211,7 @@ public class CDInfoController extends CDWindowController {
         return "Info";
     }
 
-    public void setFiles(List files) {
+    public void setFiles(List<Path> files) {
         this.files = files;
         this.init();
     }
@@ -261,7 +261,7 @@ public class CDInfoController extends CDWindowController {
 
         final int count = this.numberOfFiles();
         if(count > 0) {
-            Path file = (Path) this.files.get(0);
+            Path file = this.files.get(0);
             this.filenameField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.getName());
             this.filenameField.setEnabled(1 == count);
@@ -307,8 +307,8 @@ public class CDInfoController extends CDWindowController {
             this.updateSize();
             this.initPermissionsCheckbox(false);
             Permission permission = null;
-            for(Iterator i = files.iterator(); i.hasNext();) {
-                permission = ((AbstractPath) i.next()).attributes.getPermission();
+            for(Path next : files) {
+                permission = next.attributes.getPermission();
                 log.debug("Permission:" + permission);
                 if(null == permission) {
                     this.initPermissionsCheckbox(false);
@@ -394,7 +394,7 @@ public class CDInfoController extends CDWindowController {
 
     public void filenameInputDidEndEditing(NSNotification sender) {
         if(this.numberOfFiles() == 1) {
-            final Path current = (Path) this.files.get(0);
+            final Path current = this.files.get(0);
             if(!this.filenameField.stringValue().equals(current.getName())) {
                 if(this.filenameField.stringValue().indexOf('/') == -1) {
                     final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
@@ -451,8 +451,7 @@ public class CDInfoController extends CDWindowController {
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
-                for(Iterator i = files.iterator(); i.hasNext();) {
-                    final AbstractPath next = (AbstractPath) i.next();
+                for(Path next : files) {
                     next.writePermissions(permission,
                             recursiveCheckbox.state() == NSCell.OnState);
                     if(!controller.isConnected()) {
@@ -477,8 +476,8 @@ public class CDInfoController extends CDWindowController {
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
-                for(Iterator i = files.iterator(); i.hasNext();) {
-                    this.calculateSize((Path) i.next());
+                for(Path next : files) {
+                    this.calculateSize(next);
                     if(!controller.isConnected()) {
                         break;
                     }
@@ -498,11 +497,11 @@ public class CDInfoController extends CDWindowController {
              * @return The size of the file or the sum of all containing files if a directory
              * @warn Potentially lengthy operation
              */
-            private double calculateSize(Path p) {
+            private double calculateSize(AbstractPath p) {
                 if(p.attributes.isDirectory()) {
                     long size = 0;
-                    for(Iterator iter = p.childs().iterator(); iter.hasNext();) {
-                        size += this.calculateSize((Path) iter.next());
+                    for(AbstractPath next : p.childs()) {
+                        size += this.calculateSize(next);
                     }
                     p.attributes.setSize(size);
                 }
@@ -517,8 +516,8 @@ public class CDInfoController extends CDWindowController {
      */
     private void updateSize() {
         long size = 0;
-        for(Iterator i = files.iterator(); i.hasNext();) {
-            size += ((AbstractPath) i.next()).attributes.getSize();
+        for(Path next : files) {
+            size += next.attributes.getSize();
         }
         this.sizeField.setAttributedStringValue(
                 new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",

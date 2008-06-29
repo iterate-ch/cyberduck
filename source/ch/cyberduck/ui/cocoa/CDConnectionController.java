@@ -104,7 +104,7 @@ public class CDConnectionController extends CDSheetController {
 
             public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
                 if(row < this.numberOfItemsInComboBox(sender)) {
-                    return ((Host) HostCollection.defaultCollection().get(row)).getNickname();
+                    return HostCollection.defaultCollection().get(row).getNickname();
                 }
                 return null;
             }
@@ -360,7 +360,8 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
     }
 
-    private static final Map controllers = new HashMap();
+    private static final Map<CDWindowController, CDConnectionController> controllers
+            = new HashMap<CDWindowController, CDConnectionController>();
 
     public static CDConnectionController instance(final CDWindowController parent) {
         if(!controllers.containsKey(parent)) {

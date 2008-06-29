@@ -269,12 +269,12 @@ public class CDBookmarkController extends CDWindowController {
         this.transferPopup = transferPopup;
         this.transferPopup.setTarget(this);
         this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
-        if(null == host.getMaxConnections()) {
+        if(0 == host.getMaxConnections()) {
             this.transferPopup.selectItemAtIndex(DEFAULT_INDEX);
         }
         else {
             this.transferPopup.selectItemAtIndex(
-                    host.getMaxConnections().intValue() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
+                    host.getMaxConnections() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
         }
     }
 
@@ -287,10 +287,10 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setMaxConnections(null);
         }
         else if(sender.indexOfSelectedItem() == USE_BROWSER_SESSION_INDEX) {
-            this.host.setMaxConnections(new Integer(1));
+            this.host.setMaxConnections(1);
         }
         else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
-            this.host.setMaxConnections(new Integer(-1));
+            this.host.setMaxConnections(-1);
         }
         this.itemChanged();
     }
@@ -384,11 +384,12 @@ public class CDBookmarkController extends CDWindowController {
      *
      */
     public static class Factory {
-        private static final Map open = new HashMap();
+        private static final Map<Host, CDBookmarkController> open
+                = new HashMap<Host, CDBookmarkController>();
 
         public static CDBookmarkController create(final Host host) {
             if(open.containsKey(host)) {
-                return (CDBookmarkController) open.get(host);
+                return open.get(host);
             }
             final CDBookmarkController c = new CDBookmarkController(host) {
                 public void windowWillClose(NSNotification notification) {
@@ -412,8 +413,8 @@ public class CDBookmarkController extends CDWindowController {
     private CDBookmarkController(final Host host) {
         this.host = host;
         // Register for bookmark delete event. Will close this window.
-        HostCollection.defaultCollection().addListener(new AbstractCollectionListener() {
-            public void collectionItemRemoved(Object item) {
+        HostCollection.defaultCollection().addListener(new AbstractCollectionListener<Host>() {
+            public void collectionItemRemoved(Host item) {
                 if(item.equals(host)) {
                     HostCollection.defaultCollection().removeListener(this);
                     final NSWindow window = window();
