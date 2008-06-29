@@ -113,7 +113,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             Queue.instance().notifyAll();
         }
     }
-        
+
     private NSTextField filterField; // IBOutlet
 
     public void setFilterField(NSTextField filterField) {
@@ -137,7 +137,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     private CDTranscriptController transcript;
-    
+
     private NSDrawer logDrawer;
 
     private NSDrawer.Notifications logDrawerNotifications = new NSDrawer.Notifications() {
@@ -224,7 +224,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     }
                 }
                 else {
-                    int bandwidth = (int)transfer.getBandwidth()/1024;
+                    int bandwidth = (int) transfer.getBandwidth() / 1024;
                     if(tag == bandwidth) {
                         item.setState(selected > 1 ? NSCell.MixedState : NSCell.OnState);
                         break;
@@ -241,8 +241,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public void bandwidthPopupChanged(NSPopUpButton sender) {
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         int bandwidth = BandwidthThrottle.UNLIMITED;
-        if(sender.selectedItem().tag() > 0 ) {
-            bandwidth = sender.selectedItem().tag()*1024; // from Kilobytes to Bytes
+        if(sender.selectedItem().tag() > 0) {
+            bandwidth = sender.selectedItem().tag() * 1024; // from Kilobytes to Bytes
         }
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
@@ -308,12 +308,19 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     private CDTransferTableDataSource transferModel;
     private NSTableView transferTable; // IBOutlet
-    private CDTableDelegate delegate;
+    private CDTableDelegate<Transfer> delegate;
 
     public void setQueueTable(NSTableView view) {
         this.transferTable = view;
         this.transferTable.setDataSource(this.transferModel = new CDTransferTableDataSource());
-        this.transferTable.setDelegate(this.delegate = new CDAbstractTableDelegate() {
+        this.transferTable.setDelegate(this.delegate = new CDAbstractTableDelegate<Transfer>() {
+            public String tooltip(Transfer t) {
+                return t.getName();
+            }
+
+            public String tooltip(int row) {
+                return this.tooltip(TransferCollection.instance().get(row));
+            }
 
             public void enterKeyPressed(final Object sender) {
                 this.tableRowDoubleClicked(sender);
@@ -329,31 +336,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             public void tableRowDoubleClicked(final Object sender) {
                 if(CDTransferController.this.transferTable.selectedRow() != -1) {
-                    Transfer item = (Transfer) TransferCollection.instance().get(CDTransferController.this.transferTable.selectedRow());
+                    Transfer item = TransferCollection.instance().get(CDTransferController.this.transferTable.selectedRow());
                     if(!item.isRunning()) {
                         reloadButtonClicked(sender);
                     }
                 }
-            }
-
-//            float tableViewHeightOfRow(NSTableView view, int row) {
-//                if(row < TransferCollection.instance().size()) {
-//                    Transfer item = (Transfer) TransferCollection.instance().get(row);
-//                    if(item.isRunning()) {
-//                        log.debug("tableViewHeightOfRow:" + row +" :"+67);
-//                        return 67f;
-//                    }
-//                }
-//                log.debug("tableViewHeightOfRow:" + row +" :"+50);
-//                return 50f;
-//            }
-
-            public String tableViewToolTipForCell(NSTableView view, NSCell cell, NSMutableRect rect,
-                                                  NSTableColumn tc, int row, NSPoint mouseLocation) {
-                if(row < TransferCollection.instance().size()) {
-                    TransferCollection.instance().get(row).toString();
-                }
-                return null;
             }
 
             public void selectionIsChanging(NSNotification notification) {
@@ -420,7 +407,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateHighlight() {
         boolean isKeyWindow = window().isKeyWindow();
         for(int i = 0; i < TransferCollection.instance().size(); i++) {
-            transferModel.setHighlighted((Transfer)TransferCollection.instance().get(i),
+            transferModel.setHighlighted(TransferCollection.instance().get(i),
                     transferTable.isRowSelected(i) && isKeyWindow);
         }
     }
@@ -473,7 +460,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             iconView.setImage(null);
             return;
         }
-        final Transfer transfer = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
+        final Transfer transfer = TransferCollection.instance().get(transferTable.selectedRow());
         // Draw file type icon
         if(transfer.numberOfRoots() == 1) {
             iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
@@ -493,7 +480,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            Transfer transfer = TransferCollection.instance().get(i);
             if(transfer instanceof SyncTransfer) {
                 // Currently we do not support bandwidth throtling for sync transfers due to
                 // the problem of mapping both download and upload rate in the GUI
@@ -536,7 +523,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     public void addTransfer(final Transfer transfer) {
         TransferCollection.instance().add(transfer);
-        final int row = TransferCollection.instance().size()-1;
+        final int row = TransferCollection.instance().size() - 1;
         this.reloadData();
         transferTable.selectRow(row, false);
         transferTable.scrollRowToVisible(row);
@@ -632,7 +619,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
-                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), options ,true);
+                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), options, true);
             }
 
             public void finish() {
@@ -818,7 +805,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            final Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            final Transfer transfer = TransferCollection.instance().get(i);
             if(transfer.isRunning() || transfer.isQueued()) {
                 this.background(new AbstractBackgroundAction() {
                     public void run() {
@@ -835,7 +822,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void stopAllButtonClicked(final Object sender) {
         for(int i = 0; i < TransferCollection.instance().size(); i++) {
-            final Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            final Transfer transfer = TransferCollection.instance().get(i);
             if(transfer.isRunning() || transfer.isQueued()) {
                 this.background(new AbstractBackgroundAction() {
                     public void run() {
@@ -854,7 +841,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            Transfer transfer = TransferCollection.instance().get(i);
             if(!transfer.isRunning()) {
                 this.startTransfer(transfer, !transfer.isVirgin(), false);
             }
@@ -865,7 +852,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            Transfer transfer = TransferCollection.instance().get(i);
             if(!transfer.isRunning() && !transfer.isQueued()) {
                 this.startTransfer(transfer, false, true);
             }
@@ -874,9 +861,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void openButtonClicked(final Object sender) {
         if(transferTable.numberOfSelectedRows() == 1) {
-            Transfer q = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
-            for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                Local l = ((Path) iter.next()).getLocal();
+            Transfer q = TransferCollection.instance().get(transferTable.selectedRow());
+            for(Path i : q.getRoots()) {
+                Local l = i.getLocal();
                 if(!NSWorkspace.sharedWorkspace().openFile(l.getAbsolute())) {
                     if(q.isComplete()) {
                         this.alert(NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Could not open the file", ""), //title
@@ -905,9 +892,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void revealButtonClicked(final Object sender) {
         if(transferTable.numberOfSelectedRows() == 1) {
-            Transfer q = (Transfer) TransferCollection.instance().get(transferTable.selectedRow());
-            for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                Local l = ((Path) iter.next()).getLocal();
+            Transfer q = TransferCollection.instance().get(transferTable.selectedRow());
+            for(Path i : q.getRoots()) {
+                Local l = i.getLocal();
                 // If a second path argument is specified, a new file viewer is opened. If you specify an
                 // empty string (@"") for this parameter, the file is selected in the main viewer.
                 if(!NSWorkspace.sharedWorkspace().selectFile(l.getAbsolute(), l.getParent().getAbsolute())) {
@@ -932,7 +919,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
                         ));
                     }
                 }
-                else break;
+                else {
+                    break;
+                }
             }
         }
     }
@@ -942,7 +931,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         int j = 0;
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer q = (Transfer) TransferCollection.instance().get(i - j);
+            Transfer q = TransferCollection.instance().get(i - j);
             if(!q.isRunning()) {
                 TransferCollection.instance().remove(i - j);
                 j++;
@@ -954,7 +943,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < TransferCollection.instance().size(); i++) {
-            Transfer t = (Transfer)TransferCollection.instance().get(i);
+            Transfer t = TransferCollection.instance().get(i);
             if(!t.isRunning() && t.isComplete()) {
                 TransferCollection.instance().remove(i);
                 i--;
@@ -968,10 +957,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer q = (Transfer) TransferCollection.instance().get(i);
+            Transfer q = TransferCollection.instance().get(i);
             if(!q.isRunning()) {
-                for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                    ((Path) iter.next()).getLocal().delete();
+                for(Path path : q.getRoots()) {
+                    path.getLocal().delete();
                 }
             }
         }
@@ -1034,9 +1023,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict);
-                        if(q.numberOfRoots() == 1)
+                        if(q.numberOfRoots() == 1) {
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item") + " \""
                                     + q.getRoot().getName() + "\"");
+                        }
                         else {
                             item.setTitle(NSBundle.localizedString("Paste", "Menu item")
                                     + " (" + q.numberOfRoots() + " " +
@@ -1104,8 +1094,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
                     if(!transfer.isRunning()) {
-                        for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
-                            if(((Path)iter.next()).getLocal().exists()) {
+                        for(Path i : transfer.getRoots()) {
+                            if(i.getLocal().exists()) {
                                 return true;
                             }
                         }
@@ -1117,8 +1107,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(identifier.equals("revealButtonClicked:")) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
-                    for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
-                        if(((Path)iter.next()).getLocal().exists()) {
+                    for(Path i : transfer.getRoots()) {
+                        if(i.getLocal().exists()) {
                             return true;
                         }
                     }
@@ -1134,6 +1124,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     /**
      * Validates the selected items in the transfer window against the toolbar validator
+     *
      * @param v The validator to use
      * @return True if one or more of the selected items passes the validation test
      */
@@ -1141,7 +1132,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+            Transfer transfer = TransferCollection.instance().get(i);
             if(v.validate(transfer)) {
                 return true;
             }

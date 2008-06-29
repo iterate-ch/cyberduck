@@ -47,16 +47,17 @@ public class CDTransferTableDataSource extends CDController {
     /**
      *
      */
-    private final Map controllers = new HashMap();
+    private final Map<Transfer, CDProgressController> controllers
+            = new HashMap<Transfer, CDProgressController>();
 
     public CDTransferTableDataSource() {
-        TransferCollection.instance().addListener(new AbstractCollectionListener() {
-            public void collectionItemAdded(Object item) {
-                controllers.put(item, new CDProgressController((Transfer) item));
+        TransferCollection.instance().addListener(new AbstractCollectionListener<Transfer>() {
+            public void collectionItemAdded(Transfer item) {
+                controllers.put(item, new CDProgressController(item));
             }
 
-            public void collectionItemRemoved(Object item) {
-                final CDProgressController controller = (CDProgressController)controllers.remove(item);
+            public void collectionItemRemoved(Transfer item) {
+                final CDProgressController controller = controllers.remove(item);
                 if(controller != null) {
                     controller.invalidate();
                 }
@@ -90,14 +91,13 @@ public class CDTransferTableDataSource extends CDController {
         }
     }
 
-    private Collection filter(Collection c) {
+    private Collection<Transfer> filter(Collection<Transfer> c) {
         if(null == filter) {
             return c;
         }
-        Collection filtered = new Collection(c);
-        Transfer t = null;
-        for(Iterator i = filtered.iterator(); i.hasNext();) {
-            if(!filter.accept(t = (Transfer) i.next())) {
+        Collection<Transfer> filtered = new Collection<Transfer>(c);
+        for(Iterator<Transfer> i = filtered.iterator(); i.hasNext();) {
+            if(!filter.accept(i.next())) {
                 //temporarly remove the t from the collection
                 i.remove();
             }
@@ -121,13 +121,13 @@ public class CDTransferTableDataSource extends CDController {
         if(row < numberOfRowsInTableView(view)) {
             final String identifier = (String) tableColumn.identifier();
             if(identifier.equals(ICON_COLUMN)) {
-                return (Transfer) this.filter(TransferCollection.instance()).get(row);
+                return this.filter(TransferCollection.instance()).get(row);
             }
             if(identifier.equals(PROGRESS_COLUMN)) {
-                return (CDProgressController) controllers.get(this.filter(TransferCollection.instance()).get(row));
+                return controllers.get(this.filter(TransferCollection.instance()).get(row));
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return ((Transfer) this.filter(TransferCollection.instance()).get(row)).getName();
+                return this.filter(TransferCollection.instance()).get(row).getName();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -201,6 +201,6 @@ public class CDTransferTableDataSource extends CDController {
     }
 
     public void setHighlighted(Transfer transfer, boolean highlighted) {
-        ((CDProgressController) controllers.get(transfer)).setHighlighted(highlighted);
+        controllers.get(transfer).setHighlighted(highlighted);
     }
 }
