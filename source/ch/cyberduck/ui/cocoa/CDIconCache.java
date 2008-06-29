@@ -34,7 +34,7 @@ import java.util.HashMap;
 /**
  * @version $Id$
  */
-public class CDIconCache extends HashMap {
+public class CDIconCache extends HashMap<String,NSImage> {
     private static CDIconCache instance;
 
     private static final Object lock = new Object();
@@ -48,14 +48,14 @@ public class CDIconCache extends HashMap {
         return instance;
     }
 
-    public void put(String extension, NSImage image) {
-        super.put(extension, image);
+    public NSImage put(String extension, NSImage image) {
+        return super.put(extension, image);
     }
 
-    public NSImage get(String key) {
-        NSImage img = (NSImage) super.get(key);
+    public NSImage get(Object key) {
+        NSImage img = super.get(key);
         if(null == img) {
-            this.put(key, img = NSWorkspace.sharedWorkspace().iconForFileType(key));
+            this.put(key.toString(), img = NSWorkspace.sharedWorkspace().iconForFileType(key.toString()));
         }
         return img;
     }
