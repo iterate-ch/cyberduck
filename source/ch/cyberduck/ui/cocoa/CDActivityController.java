@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -52,10 +52,8 @@ public class CDActivityController extends CDWindowController {
         }
     }
 
-    /**
-     *
-     */
-    private final Map tasks = new LinkedHashMap();
+    private final Map<BackgroundAction, CDTaskController> tasks
+            = Collections.synchronizedMap(new LinkedHashMap<BackgroundAction, CDTaskController>());
 
     private CDActivityController() {
         this.loadBundle();
@@ -64,40 +62,33 @@ public class CDActivityController extends CDWindowController {
     }
 
     private void init() {
-        BackgroundActionRegistry.instance().addListener(new AbstractCollectionListener() {
-            public void collectionItemAdded(final Object action) {
-                synchronized(tasks) {
-                    CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
-                        public void run() {
-                            log.debug("collectionItemAdded" + action);
-                            tasks.put(action, new CDTaskController(((BackgroundAction) action)));
-                            reload();
-                        }
-                    });
-                }
+        BackgroundActionRegistry.instance().addListener(new AbstractCollectionListener<BackgroundAction>() {
+            public void collectionItemAdded(final BackgroundAction action) {
+                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                    public void run() {
+                        log.debug("collectionItemAdded" + action);
+                        tasks.put(action, new CDTaskController(action));
+                        reload();
+                    }
+                });
             }
 
-            public void collectionItemRemoved(final Object action) {
-                synchronized(tasks) {
-                    CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
-                        public void run() {
-                            log.debug("collectionItemRemoved" + action);
-                            CDTaskController controller = (CDTaskController)tasks.remove(action);
-                            if(controller != null) {
-                                controller.invalidate();
-                            }
-                            reload();
+            public void collectionItemRemoved(final BackgroundAction action) {
+                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                    public void run() {
+                        log.debug("collectionItemRemoved" + action);
+                        final CDTaskController controller = tasks.remove(action);
+                        if(controller != null) {
+                            controller.invalidate();
                         }
-                    });
-                }
+                        reload();
+                    }
+                });
             }
         });
-        synchronized(tasks) {
-            // Add already running background actions
-            for(Iterator iter = BackgroundActionRegistry.instance().iterator(); iter.hasNext();) {
-                final BackgroundAction action = (BackgroundAction) iter.next();
-                tasks.put(action, new CDTaskController(action));
-            }
+        // Add already running background actions
+        for(final BackgroundAction action : BackgroundActionRegistry.instance()) {
+            tasks.put(action, new CDTaskController(action));
         }
     }
 
@@ -123,12 +114,16 @@ public class CDActivityController extends CDWindowController {
     }
 
     private NSTableView table;
-    private CDAbstractTableDelegate delegate;
+    private CDAbstractTableDelegate<CDTaskController> delegate;
 
     public void setTable(NSTableView table) {
         this.table = table;
         this.table.setDataSource(this);
-        this.table.setDelegate(this.delegate = new CDAbstractTableDelegate() {
+        this.table.setDelegate(this.delegate = new CDAbstractTableDelegate<CDTaskController>() {
+            public String tooltip(CDTaskController c) {
+                return null;
+            }
+
             public boolean tableViewShouldSelectRow(NSTableView view, int row) {
                 return false;
             }
@@ -194,13 +189,11 @@ public class CDActivityController extends CDWindowController {
      * @param row
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        synchronized(tasks) {
-            if(row < this.numberOfRowsInTableView(view)) {
-                final Collection values = tasks.values();
-                return values.toArray(new CDTaskController[values.size()])[row];
-            }
-            log.warn("tableViewObjectValueForLocation:" + row + " == null");
+        if(row < this.numberOfRowsInTableView(view)) {
+            final Collection<CDTaskController> values = tasks.values();
+            return values.toArray(new CDTaskController[values.size()])[row];
         }
+        log.warn("tableViewObjectValueForLocation:" + row + " == null");
         return null;
     }
 }
