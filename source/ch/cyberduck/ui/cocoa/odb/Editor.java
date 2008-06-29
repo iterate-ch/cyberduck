@@ -102,7 +102,7 @@ public abstract class Editor extends CDController {
 
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
-                        new Object[]{edited.getName()});
+                        edited.getName());
             }
 
             public void cleanup() {
@@ -179,7 +179,7 @@ public abstract class Editor extends CDController {
 
             public String getActivity() {
                 return MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
-                        new Object[]{edited.getName()});
+                        edited.getName());
             }
 
             public void cleanup() {

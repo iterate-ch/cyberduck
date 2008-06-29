@@ -37,8 +37,8 @@ import java.util.Map;
 public class EditorFactory {
     private static Logger log = Logger.getLogger(EditorFactory.class);
 
-    public static final Map SUPPORTED_ODB_EDITORS = new HashMap();
-    public static final Map INSTALLED_ODB_EDITORS = new HashMap();
+    public static final Map<String, String> SUPPORTED_ODB_EDITORS = new HashMap<String, String>();
+    public static final Map<String, String> INSTALLED_ODB_EDITORS = new HashMap<String, String>();
 
     static {
         SUPPORTED_ODB_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
@@ -60,11 +60,11 @@ public class EditorFactory {
         SUPPORTED_ODB_EDITORS.put("ForgEdit", "com.forgedit.ForgEdit");
         SUPPORTED_ODB_EDITORS.put("Taco HTML Edit", "com.tacosw.TacoHTMLEdit");
 
-        Iterator editorNames = SUPPORTED_ODB_EDITORS.keySet().iterator();
-        Iterator editorIdentifiers = SUPPORTED_ODB_EDITORS.values().iterator();
+        Iterator<String> editorNames = SUPPORTED_ODB_EDITORS.keySet().iterator();
+        Iterator<String> editorIdentifiers = SUPPORTED_ODB_EDITORS.values().iterator();
         while(editorNames.hasNext()) {
-            String editor = (String) editorNames.next();
-            String identifier = (String) editorIdentifiers.next();
+            String editor = editorNames.next();
+            String identifier = editorIdentifiers.next();
             if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
                 INSTALLED_ODB_EDITORS.put(editor, identifier);
             }
@@ -93,8 +93,8 @@ public class EditorFactory {
             // Use default editor
             return defaultEditor();
         }
-        for(Iterator iter = INSTALLED_ODB_EDITORS.values().iterator(); iter.hasNext(); ) {
-            final String identifier = (String) iter.next();
+        for(Iterator<String> iter = INSTALLED_ODB_EDITORS.values().iterator(); iter.hasNext(); ) {
+            final String identifier = iter.next();
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
             if(null == path) {
                 continue;
