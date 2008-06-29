@@ -2122,8 +2122,8 @@ public class CDBrowserController extends CDWindowController
         else {
             this.bookmarkModel.setFilter(new HostFilter() {
                 public boolean accept(Host host) {
-                    return host.getNickname().indexOf(searchString) != -1
-                            || host.getHostname().indexOf(searchString) != -1;
+                    return host.getNickname().toLowerCase().contains(searchString.toLowerCase())
+                            || host.getHostname().toLowerCase().contains(searchString.toLowerCase());
                 }
             });
         }
