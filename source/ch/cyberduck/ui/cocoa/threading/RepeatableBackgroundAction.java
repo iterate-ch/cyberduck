@@ -352,7 +352,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 if(session != null) {
                     session.message(MessageFormat.format(
                             NSBundle.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status", ""),
-                            new Object[]{String.valueOf(delay), String.valueOf(retry())}));
+                            String.valueOf(delay), String.valueOf(retry())));
                 }
                 delay--;
             }

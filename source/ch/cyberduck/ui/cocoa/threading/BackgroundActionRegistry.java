@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id:$
  */
-public class BackgroundActionRegistry extends Collection {
+public class BackgroundActionRegistry extends Collection<BackgroundAction> {
     private static Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
     private static BackgroundActionRegistry instance;
@@ -49,8 +49,8 @@ public class BackgroundActionRegistry extends Collection {
         return current;
     }
 
-    public boolean add(final Object action) {
-        ((BackgroundAction)action).addListener(new BackgroundActionListener() {
+    public boolean add(final BackgroundAction action) {
+        action.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
                 current = action;
                 if(!contains(action)) {

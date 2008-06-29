@@ -37,7 +37,7 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public void cancel() {
         canceled = true;
-        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+        BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].cancel(this);
@@ -62,7 +62,7 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public boolean prepare() {
         running = true;
-        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+        BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].start(this);
@@ -72,14 +72,15 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public void finish() {
         running = false;
-        BackgroundActionListener[] l = (BackgroundActionListener[]) listeners.toArray(
+        BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].stop(this);
         }
     }
 
-    private Set listeners = Collections.synchronizedSet(new HashSet());
+    private Set<BackgroundActionListener> listeners
+            = Collections.synchronizedSet(new HashSet<BackgroundActionListener>());
 
     public void addListener(BackgroundActionListener listener) {
         listeners.add(listener);
