@@ -18,23 +18,25 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-
+import com.apple.cocoa.application.NSCell;
 import com.apple.cocoa.application.NSOutlineView;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.foundation.NSMutableRect;
 import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.NSPoint;
+
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
-import java.text.Collator;
 import java.util.Comparator;
-import java.util.Locale;
 
 /**
  * @version $Id$
  */
-public abstract class CDAbstractTableDelegate extends CDController implements CDTableDelegate {
+public abstract class CDAbstractTableDelegate<E> extends CDController implements CDTableDelegate<E> {
     private static Logger log = Logger.getLogger(CDAbstractTableDelegate.class);
 
     private NSTableColumn selectedColumn;
@@ -55,15 +57,6 @@ public abstract class CDAbstractTableDelegate extends CDController implements CD
         }
         //return previously set custom sorting preference
         return (String) this.selectedColumn.identifier();
-    }
-
-    /**
-     * @return A tooltip string containing the size and modification date of the path
-     */
-    protected String tooltipForPath(Path p) {
-        return p.getAbsolute() + "\n"
-                + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                + CDDateFormatter.getLongFormat(p.attributes.getModificationDate(), p.getHost().getTimezone());
     }
 
     /**
@@ -168,16 +161,28 @@ public abstract class CDAbstractTableDelegate extends CDController implements CD
     public void selectionIsChanging(NSNotification notification) {
         ;
     }
-    
+
+    /**
+     * @see NSOutlineView.Delegate
+     */
+    public String outlineViewToolTipForCell(NSOutlineView view, NSCell cell, NSMutableRect rect, NSTableColumn tableColumn,
+                                            final E item, NSPoint mouseLocation) {
+        return this.tooltip(item);
+    }
+
     // ----------------------------------------------------------
     // Sorting
     // ----------------------------------------------------------
+
+    public Comparator<E> getSortingComparator() {
+        return new NullComparator<E>();
+    }
 
     private Boolean sortAscending;
 
     public void setSortedAscending(boolean sortAscending) {
         //cache custom sorting preference
-        this.sortAscending = Boolean.valueOf(sortAscending);
+        this.sortAscending = sortAscending;
         //set default value
         Preferences.instance().setProperty("browser.sort.ascending", this.sortAscending.booleanValue());
     }
@@ -187,183 +192,6 @@ public abstract class CDAbstractTableDelegate extends CDController implements CD
             //return default value
             return Preferences.instance().getBoolean("browser.sort.ascending");
         }
-        return this.sortAscending.booleanValue();
-    }
-
-    public Comparator getSortingComparator() {
-        final boolean ascending = this.isSortedAscending();
-        String identifier = this.selectedColumnIdentifier();
-        if(identifier.equals(CDBrowserTableDataSource.ICON_COLUMN)
-                || identifier.equals(CDBrowserTableDataSource.KIND_COLUMN)) {
-            return new FileTypeComparator(ascending);
-        }
-        else if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-            return new FilenameComparator(ascending);
-        }
-        else if(identifier.equals(CDBrowserTableDataSource.SIZE_COLUMN)) {
-            return new SizeComparator(ascending);
-        }
-        else if(identifier.equals(CDBrowserTableDataSource.MODIFIED_COLUMN)) {
-            return new TimestampComparator(ascending);
-        }
-        else if(identifier.equals(CDBrowserTableDataSource.OWNER_COLUMN)) {
-            return new OwnerComparator(ascending);
-        }
-        else if(identifier.equals(CDBrowserTableDataSource.PERMISSIONS_COLUMN)) {
-            return new PermissionsComparator(ascending);
-        }
-        log.error("Unknown column identifier:" + identifier);
-        return null;
-    }
-
-    private class FileTypeComparator extends BrowserComparator {
-        private Collator impl = Collator.getInstance(Locale.getDefault());
-
-        public FileTypeComparator(boolean ascending) {
-            super(ascending);
-        }
-
-        public int compare(Object o1, Object o2) {
-            Path p1 = (Path) o1;
-            Path p2 = (Path) o2;
-            if((p1.attributes.isDirectory() && p2.attributes.isDirectory())
-                    || p1.attributes.isFile() && p2.attributes.isFile()) {
-                if(ascending) {
-                    return impl.compare(p1.kind(), p2.kind());
-                }
-                return -impl.compare(p1.kind(), p2.kind());
-            }
-            if(p1.attributes.isFile()) {
-                return ascending ? 1 : -1;
-            }
-            return ascending ? -1 : 1;
-        }
-
-        public String toString() {
-            return CDBrowserTableDataSource.ICON_COLUMN;
-        }
-    }
-
-    private class FilenameComparator extends BrowserComparator {
-        private Comparator impl = new NaturalOrderComparator();
-
-        public FilenameComparator(boolean ascending) {
-            super(ascending);
-        }
-
-        public int compare(Object o1, Object o2) {
-            Path p1 = (Path) o1;
-            Path p2 = (Path) o2;
-            if(ascending) {
-                return impl.compare(p1.getName(), p2.getName());
-            }
-            return -impl.compare(p1.getName(), p2.getName());
-        }
-
-        public String toString() {
-            return CDBrowserTableDataSource.FILENAME_COLUMN;
-        }
-    }
-
-    private class SizeComparator extends BrowserComparator {
-
-        public SizeComparator(boolean ascending) {
-            super(ascending);
-        }
-
-        public int compare(Object o1, Object o2) {
-            double p1 = ((Path) o1).attributes.getSize();
-            double p2 = ((Path) o2).attributes.getSize();
-            if(p1 > p2) {
-                return ascending ? 1 : -1;
-            }
-            else if(p1 < p2) {
-                return ascending ? -1 : 1;
-            }
-            return 0;
-        }
-
-        public String toString() {
-            return CDBrowserTableDataSource.SIZE_COLUMN;
-        }
-    }
-
-    private class TimestampComparator extends BrowserComparator {
-
-        public TimestampComparator(boolean ascending) {
-            super(ascending);
-        }
-
-        public int compare(Object o1, Object o2) {
-            Path p1 = (Path) o1;
-            Path p2 = (Path) o2;
-            long d1 = p1.attributes.getModificationDate();
-            if(-1 == d1) {
-                return 0;
-            }
-            long d2 = p2.attributes.getModificationDate();
-            if(-1 == d2) {
-                return 0;
-            }
-            if(ascending) {
-                return d1 > d2 ? 1 : -1;
-            }
-            return d1 > d2 ? -1 : 1;
-        }
-
-        public String toString() {
-            return CDBrowserTableDataSource.MODIFIED_COLUMN;
-        }
-    }
-
-    private class OwnerComparator extends BrowserComparator {
-
-        public OwnerComparator(boolean ascending) {
-            super(ascending);
-        }
-
-        public int compare(Object o1, Object o2) {
-            Path p1 = (Path) o1;
-            Path p2 = (Path) o2;
-            if(ascending) {
-                return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-            }
-            return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
-        }
-
-        public String toString() {
-            return CDBrowserTableDataSource.OWNER_COLUMN;
-        }
-    }
-
-    private class PermissionsComparator extends BrowserComparator {
-
-        public PermissionsComparator(boolean ascending) {
-            super(ascending);
-        }
-
-        public int compare(Object o1, Object o2) {
-            Permission perm1 = ((Path) o1).attributes.getPermission();
-            if(null == perm1) {
-                perm1 = Permission.EMPTY;
-            }
-            Permission perm2 = ((Path) o2).attributes.getPermission();
-            if(null == perm2) {
-                perm2 = Permission.EMPTY;
-            }
-            int p1 = perm1.getOctalNumber();
-            int p2 = perm2.getOctalNumber();
-            if(p1 > p2) {
-                return ascending ? 1 : -1;
-            }
-            else if(p1 < p2) {
-                return ascending ? -1 : 1;
-            }
-            return 0;
-        }
-
-        public String toString() {
-            return CDBrowserTableDataSource.PERMISSIONS_COLUMN;
-        }
+        return this.sortAscending;
     }
 }

@@ -124,8 +124,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public TransferAction prompt() {
         log.debug("prompt:" + transfer);
-        for(Iterator iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
-            Path next = (Path) iter.next();
+        for(Iterator<Path> iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
+            Path next = iter.next();
             if(browserModel.filter().accept(next)) {
                 browserModel.add(next);
             }
@@ -149,21 +149,13 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
      */
     protected NSOutlineView browserView; // IBOutlet
     protected CDTransferPromptModel browserModel;
-    protected CDTableDelegate browserViewDelegate;
+    protected CDTableDelegate<Path> browserViewDelegate;
 
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
         this.browserView.setHeaderView(null);
         this.browserView.setDataSource(this.browserModel);
-        this.browserView.setDelegate(this.browserViewDelegate = new CDAbstractTableDelegate() {
-
-            /**
-             * @see NSOutlineView.Delegate
-             */
-            public String outlineViewToolTipForCell(NSOutlineView view, NSCell cell, NSMutableRect rect, NSTableColumn tableColumn,
-                                                    Path item, NSPoint mouseLocation) {
-                return this.tooltipForPath(item);
-            }
+        this.browserView.setDelegate(this.browserViewDelegate = new CDAbstractPathTableDelegate() {
 
             public void enterKeyPressed(final Object sender) {
                 ;

@@ -23,12 +23,14 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public interface CDTableDelegate {
+public interface CDTableDelegate<E> {
     abstract void enterKeyPressed(final Object sender);
 
     abstract void deleteKeyPressed(final Object sender);
 
     abstract boolean isSortedAscending();
 
-    abstract Comparator getSortingComparator();
+    abstract Comparator<E> getSortingComparator();
+
+    public String tooltip(E object);
 }
