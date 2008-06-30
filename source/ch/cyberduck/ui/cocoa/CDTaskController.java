@@ -84,6 +84,10 @@ public class CDTaskController extends CDBundleController {
 
     public CDTaskController(final BackgroundAction task) {
         this.task = task;
+        this.loadBundle();
+        if(this.task.isRunning()) {
+            progress.startAnimation(null);
+        }
         this.task.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
                 CDMainApplication.invoke(new DefaultMainAction() {
@@ -110,7 +114,6 @@ public class CDTaskController extends CDBundleController {
                 action.removeListener(this);
             }
         });
-        this.loadBundle();
     }
 
     public void awakeFromNib() {
