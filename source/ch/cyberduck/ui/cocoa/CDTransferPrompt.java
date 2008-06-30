@@ -124,8 +124,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public TransferAction prompt() {
         log.debug("prompt:" + transfer);
-        for(Iterator<Path> iter = transfer.getRoots().iterator(); iter.hasNext(); ) {
-            Path next = iter.next();
+        for(Path next: transfer.getRoots()) {
             if(browserModel.filter().accept(next)) {
                 browserModel.add(next);
             }

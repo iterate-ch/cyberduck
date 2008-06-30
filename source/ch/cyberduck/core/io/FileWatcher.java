@@ -83,20 +83,20 @@ public class FileWatcher extends NSObject {
     }
 
     public void fileWritten(NSNotification notification) {
-        for(Iterator<FileWatcherListener> iter = listeners.iterator(); iter.hasNext(); ) {
-            iter.next().fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(FileWatcherListener listener: listeners) {
+            listener.fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileRenamed(NSNotification notification) {
-        for(Iterator<FileWatcherListener> iter = listeners.iterator(); iter.hasNext(); ) {
-            iter.next().fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(FileWatcherListener listener: listeners) {
+            listener.fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileDeleted(NSNotification notification) {
-        for(Iterator<FileWatcherListener> iter = listeners.iterator(); iter.hasNext(); ) {
-            iter.next().fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
+        for(FileWatcherListener listener: listeners) {
+            listener.fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
         }
         removePath(file.getAbsolute());
     }

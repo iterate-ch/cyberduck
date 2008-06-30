@@ -324,8 +324,7 @@ public class CDMainController extends CDController {
         if(null == defaultBookmark) {
             return; //No default bookmark given
         }
-        for(Iterator iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
-            final Host bookmark = (Host) iter.next();
+        for(Host bookmark: HostCollection.defaultCollection()) {
             if(bookmark.getNickname().equals(defaultBookmark)) {
                 controller.mount(bookmark);
                 return;
@@ -426,8 +425,8 @@ public class CDMainController extends CDController {
                     this.openDefaultBookmark(this.newDocument());
                 }
             }
-            for(Iterator iter = sessions.iterator(); iter.hasNext();) {
-                this.newDocument(true).mount((Host) iter.next());
+            for(Host host: sessions) {
+                this.newDocument(true).mount(host);
             }
             sessions.clear();
         }

@@ -59,14 +59,14 @@ public class CDBookmarkTableDataSource extends CDController {
 
     protected CDBrowserController controller;
 
-    public CDBookmarkTableDataSource(CDBrowserController controller, Collection source) {
+    public CDBookmarkTableDataSource(CDBrowserController controller, Collection<Host> source) {
         this.controller = controller;
         this.source = source;
     }
 
-    private Collection source;
+    private Collection<Host> source;
 
-    public void setSource(final Collection source) {
+    public void setSource(final Collection<Host> source) {
         this.source = source;
         this.setFilter(null);
     }
@@ -86,7 +86,7 @@ public class CDBookmarkTableDataSource extends CDController {
     /**
      * Subset of the original source
      */
-    private Collection filtered;
+    private Collection<Host> filtered;
 
     /**
      * @return The filtered collection currently to be displayed within the constraints
@@ -98,19 +98,19 @@ public class CDBookmarkTableDataSource extends CDController {
             return source;
         }
         if(null == filtered) {
-            filtered = new Collection(source);
-            for(Iterator i = filtered.iterator(); i.hasNext();) {
-                if(!filter.accept((Host) i.next())) {
+            filtered = new Collection<Host>(source);
+            for(Iterator<Host> i = filtered.iterator(); i.hasNext();) {
+                if(!filter.accept(i.next())) {
                     //temporarly remove the bookmark from the collection
                     i.remove();
                 }
             }
-            filtered.addListener(new AbstractCollectionListener() {
-                public void collectionItemAdded(Object item) {
+            filtered.addListener(new AbstractCollectionListener<Host>() {
+                public void collectionItemAdded(Host item) {
                     source.add(item);
                 }
 
-                public void collectionItemRemoved(Object item) {
+                public void collectionItemRemoved(Host item) {
                     source.remove(item);
                 }
             });
@@ -224,7 +224,7 @@ public class CDBookmarkTableDataSource extends CDController {
             NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(
                     NSPasteboard.FilenamesPboardType);// get the filenames from pasteboard
             // If regular files are dropped, these will be uploaded to the dropped bookmark location
-            final List roots = new Collection();
+            final List<Path> roots = new Collection<Path>();
             Session session = null;
             for(int i = 0; i < filesList.count(); i++) {
                 String filename = (String) filesList.objectAtIndex(i);

@@ -177,8 +177,8 @@ public abstract class CDWindowController extends CDBundleController {
      */
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
-        for(Iterator iter = listeners.iterator(); iter.hasNext(); ) {
-            ((CDWindowListener)iter.next()).windowWillClose();
+        for(CDWindowListener listener: listeners) {
+            listener.windowWillClose();
         }
         //If the window is closed it is assumed the controller object is no longer used
         this.invalidate();

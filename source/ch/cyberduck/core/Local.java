@@ -422,8 +422,7 @@ public class Local extends AbstractPath {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
                 if(attributes.isDirectory() && recursive) {
-                    for(Iterator iter = childs().iterator(); iter.hasNext();) {
-                        Local child = (Local) iter.next();
+                    for(AbstractPath child: childs()) {
                         child.writePermissions(perm, recursive);
                     }
                 }

@@ -126,8 +126,7 @@ public class CDConnectionController extends CDSheetController {
         }
         input = input.trim();
         // First look for equivalent bookmarks
-        for(Iterator iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
-            Host h = (Host) iter.next();
+        for(Host h: HostCollection.defaultCollection()) {
             if(h.getNickname().equals(input)) {
                 this.hostChanged(new Host(h.getAsDictionary()));
                 break;

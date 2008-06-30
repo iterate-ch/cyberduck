@@ -335,11 +335,10 @@ public class FTPPath extends Path {
             }
             else if(attributes.isDirectory()) {
                 session.setWorkdir(this);
-                for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                for(AbstractPath file: this.childs()) {
                     if(!session.isConnected()) {
                         break;
                     }
-                    Path file = (Path) iter.next();
                     if(file.attributes.isFile() || file.attributes.isSymbolicLink()) {
                         session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                                 file.getName()));
@@ -438,11 +437,11 @@ public class FTPPath extends Path {
             else if(attributes.isDirectory()) {
                 session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
                 if(recursive) {
-                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                    for(AbstractPath child: this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
-                        ((AbstractPath) iter.next()).writePermissions(perm, recursive);
+                        child.writePermissions(perm, recursive);
                     }
                 }
             }

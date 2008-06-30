@@ -89,9 +89,9 @@ public class HistoryCollection extends HostCollection {
                     }
                 }
         );
-        for(Iterator<Local> iter = bookmarks.iterator(); iter.hasNext();) {
+        for(Local next: bookmarks) {
             try {
-                super.add(this.size(), new Host(iter.next()));
+                super.add(this.size(), new Host(next));
             }
             catch(IOException e) {
                 log.error(e.getMessage());
@@ -117,8 +117,8 @@ public class HistoryCollection extends HostCollection {
 
     public synchronized void clear() {
         log.debug("Removing all bookmarks from " + file);
-        for(Iterator<Host> iter = this.iterator(); iter.hasNext();) {
-            iter.next().getFile().delete(false);
+        for(Host next: this) {
+            next.getFile().delete(false);
         }
         super.clear();
     }

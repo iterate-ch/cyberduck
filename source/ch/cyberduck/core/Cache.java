@@ -70,7 +70,7 @@ public class Cache<E extends AbstractPath> {
      * @param filter
      * @return null if no cached file listing is available
      */
-    public AttributedList<E> get(final E path, final Comparator<E> comparator, final PathFilter filter) {
+    public AttributedList<E> get(final E path, final Comparator<E> comparator, final PathFilter<E> filter) {
         AttributedList<E> childs = _impl.get(path.getAbsolute());
         if(null == childs) {
             return null;

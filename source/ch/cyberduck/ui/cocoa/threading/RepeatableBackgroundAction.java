@@ -108,7 +108,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     public RepeatableBackgroundAction(CDWindowController controller) {
         this.controller = controller;
-        this.exceptions = new Collection();
+        this.exceptions = new Collection<BackgroundException>();
         this.transcript = new StringBuffer(100);
     }
 
@@ -144,8 +144,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     public int retry() {
         if(!this.isCanceled()) {
-            for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
-                Throwable cause = ((Throwable) iter.next()).getCause();
+            for(BackgroundException e: exceptions) {
+                final Throwable cause = e.getCause();
                 // Check for an exception we consider possibly temporary
                 if(cause instanceof SocketException
                         || cause instanceof SocketTimeoutException
@@ -163,7 +163,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * Contains all exceptions thrown while
      * this action was running
      */
-    protected List exceptions;
+    protected List<BackgroundException> exceptions;
 
     private boolean hasFailed() {
         return this.exceptions.size() > 0;
@@ -236,8 +236,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 this.diagnosticsButton.setTarget(this);
                 this.diagnosticsButton.setAction(new NSSelector("diagnosticsButtonClicked", new Class[]{NSButton.class}));
                 boolean hidden = true;
-                for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
-                    Throwable cause = ((Throwable) iter.next()).getCause();
+                for(BackgroundException e: exceptions) {
+                    final Throwable cause = e.getCause();
                     if(cause instanceof SocketException || cause instanceof UnknownHostException) {
                         hidden = false;
                         break;
@@ -258,13 +258,13 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
             private NSTableView errorView;
 
-            private List errors;
+            private List<CDErrorController> errors;
 
             public void setErrorView(NSTableView errorView) {
                 this.errorView = errorView;
-                this.errors = new ArrayList();
-                for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
-                    errors.add(new CDErrorController((BackgroundException) iter.next()));
+                this.errors = new ArrayList<CDErrorController>();
+                for(BackgroundException e: exceptions) {
+                    errors.add(new CDErrorController(e));
                 }
                 this.errorView.setDataSource(this);
                 this.errorView.setDelegate(this);
@@ -289,8 +289,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) { //Try Again
-                    for(Iterator iter = exceptions.iterator(); iter.hasNext();) {
-                        BackgroundException e = (BackgroundException) iter.next();
+                    for(BackgroundException e: exceptions) {
                         Path workdir = e.getPath();
                         if(null == workdir) {
                             continue;

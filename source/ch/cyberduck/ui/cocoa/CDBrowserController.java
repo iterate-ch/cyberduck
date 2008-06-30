@@ -1261,8 +1261,7 @@ public class CDBrowserController extends CDWindowController
         private void updateQuickLookSelection(final Collection<Path> selected) {
             if(QuickLook.isAvailable()) {
                 final Collection<Path> downloads = new Collection<Path>();
-                for(Iterator<Path> iter = selected.iterator(); iter.hasNext();) {
-                    final Path path = iter.next();
+                for(Path path: selected){
                     if(!path.attributes.isFile()) {
                         continue;
                     }
@@ -1275,11 +1274,10 @@ public class CDBrowserController extends CDWindowController
                 if(downloads.size() > 0) {
                     background(new BrowserBackgroundAction(CDBrowserController.this) {
                         public void run() {
-                            for(Iterator<Path> iter = downloads.iterator(); iter.hasNext();) {
+                            for(Path download: downloads) {
                                 if(this.isCanceled()) {
                                     break;
                                 }
-                                final Path download = iter.next();
                                 if(download.getLocal().attributes.getSize() != download.attributes.getSize()) {
                                     download.download(true);
                                 }
@@ -1288,8 +1286,7 @@ public class CDBrowserController extends CDWindowController
 
                         public void cleanup() {
                             final Collection<Local> previews = new Collection<Local>();
-                            for(Iterator<Path> iter = downloads.iterator(); iter.hasNext();) {
-                                final Path download = iter.next();
+                            for(Path download: downloads) {
                                 if(download.getStatus().isComplete()) {
                                     previews.add(download.getLocal());
                                 }

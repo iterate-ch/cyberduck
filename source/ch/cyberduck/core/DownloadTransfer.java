@@ -48,11 +48,9 @@ public class DownloadTransfer extends Transfer {
 
     protected void setRoots(List<Path> downloads) {
         final List<Path> normalized = new Collection<Path>();
-        for(Iterator<Path> iter = downloads.iterator(); iter.hasNext();) {
-            final Path download = iter.next();
+        for(Path download: downloads) {
             boolean duplicate = false;
-            for(Iterator<Path> normalizedIter = normalized.iterator(); normalizedIter.hasNext();) {
-                Path n = normalizedIter.next();
+            for(Path n: normalized) {
                 if(download.isChild(n)) {
                     // The selected file is a child of a directory
                     // already included
@@ -181,8 +179,7 @@ public class DownloadTransfer extends Transfer {
         }
         final AttributedList<Path> childs = (AttributedList<Path>)parent.childs(new NullComparator<AbstractPath>(), childFilter);
         // Change download path relative to parent local folder
-        for(Iterator iter = childs.iterator(); iter.hasNext(); ) {
-            final Path download = (Path) iter.next();
+        for(Path download: childs) {
             download.setLocal(new Local(parent.getLocal(), download.getName()));
             download.getStatus().setSkipped(parent.getStatus().isSkipped());
         }
@@ -291,8 +288,7 @@ public class DownloadTransfer extends Transfer {
             return ACTION_SKIP;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Iterator<Path> iter = this.getRoots().iterator(); iter.hasNext();) {
-                Path root = iter.next();
+            for(Path root: this.getRoots()) {
                 if(this.exists(root.getLocal())) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {

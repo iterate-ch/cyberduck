@@ -46,10 +46,9 @@ public class DAVResource extends WebdavResource {
      * with addRequestHeader to the method
      */
     protected void generateAdditionalHeaders(HttpMethod method) {
-        Iterator iterator = headers.keySet().iterator();
-        while(iterator.hasNext()) {
-            String header = (String)iterator.next();
-            method.setRequestHeader(header, (String)headers.get(header));
+        for(Object o : headers.keySet()) {
+            String header = (String) o;
+            method.setRequestHeader(header, (String) headers.get(header));
         }
     }
 

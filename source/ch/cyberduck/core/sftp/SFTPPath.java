@@ -223,11 +223,11 @@ public class SFTPPath extends Path {
                 session.sftp().rm(this.getAbsolute());
             }
             else if(this.attributes.isDirectory()) {
-                for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                for(AbstractPath child: this.childs()) {
                     if(!session.isConnected()) {
                         break;
                     }
-                    ((AbstractPath) iter.next()).delete();
+                    child.delete();
                 }
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                         this.getName()));
@@ -408,15 +408,15 @@ public class SFTPPath extends Path {
                     this.getName(), perm.getOctalString()));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            attr.permissions = new Integer(perm.getOctalNumber());
+            attr.permissions = perm.getOctalNumber();
             session.sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes.isDirectory()) {
                 if(recursive) {
-                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                    for(AbstractPath child: this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
-                        ((AbstractPath) iter.next()).writePermissions(perm, recursive);
+                        child.writePermissions(perm, recursive);
                     }
                 }
             }

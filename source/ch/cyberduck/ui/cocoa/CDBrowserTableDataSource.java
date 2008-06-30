@@ -257,8 +257,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict);
-                        for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                            final Path next = (Path) iter.next();
+                        for(Path next: q.getRoots()) {
                             Path original = PathFactory.createPath(controller.workdir().getSession(),
                                     next.getAbsolute(), next.attributes.getType());
                             Path renamed = PathFactory.createPath(controller.workdir().getSession(),
@@ -307,22 +306,21 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict);
-                        for(Iterator iter = q.getRoots().iterator(); iter.hasNext();) {
-                            Path item = (Path) iter.next();
-                            if(!item.getSession().equals(this.controller.getSession())) {
+                        for(Path next: q.getRoots()) {
+                            if(!next.getSession().equals(this.controller.getSession())) {
                                 // Don't allow dragging between two browser windows if not connected
                                 // to the same server using the same protocol
                                 return NSDraggingInfo.DragOperationNone;
                             }
-                            if(destination.equals(item)) {
+                            if(destination.equals(next)) {
                                 // Do not allow dragging onto myself
                                 return NSDraggingInfo.DragOperationNone;
                             }
-                            if(item.attributes.isDirectory() && destination.isChild(item)) {
+                            if(next.attributes.isDirectory() && destination.isChild(next)) {
                                 // Do not allow dragging a directory into its own containing items
                                 return NSDraggingInfo.DragOperationNone;
                             }
-                            if(item.getParent().equals(destination)) {
+                            if(next.getParent().equals(destination)) {
                                 // Moving to the same destination makes no sense
                                 return NSDraggingInfo.DragOperationNone;
                             }

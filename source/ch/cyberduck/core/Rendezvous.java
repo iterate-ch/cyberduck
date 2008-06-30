@@ -164,8 +164,7 @@ public class Rendezvous
      */
     public Host getServiceWithDisplayedName(String displayedName) {
         synchronized(this) {
-            for(Iterator<Host> iter = services.values().iterator(); iter.hasNext();) {
-                Host h = iter.next();
+            for(Host h: services.values()){
                 if(h.getNickname().equals(displayedName)) {
                     return h;
                 }

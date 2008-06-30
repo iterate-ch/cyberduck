@@ -170,8 +170,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
-        for(Iterator<Path> iter = this.roots.iterator(); iter.hasNext();) {
-            final Path root = iter.next();
+        for(Path root: this.roots) {
             final NSMutableDictionary rootDict = root.getAsDictionary();
             if(root.getStatus().isComplete()) {
                 rootDict.setObjectForKey(String.valueOf(true), "Complete");
@@ -211,37 +210,37 @@ public abstract class Transfer extends NSObject implements Serializable {
         canceled = false;
         running = true;
         queued = false;
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().transferWillStart();
+        for(TransferListener listener: listeners) {
+            listener.transferWillStart();
         }
     }
 
     public void fireTransferQueued() {
         queued = true;
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().transferQueued();
+        for(TransferListener listener: listeners) {
+            listener.transferQueued();
         }
     }
 
     public void fireTransferPaused() {
         queued = true;
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().transferPaused();
+        for(TransferListener listener: listeners) {
+            listener.transferPaused();
         }
     }
 
     public void fireTransferResumed() {
         queued = false;
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().transferResumed();
+        for(TransferListener listener: listeners) {
+            listener.transferResumed();
         }
     }
 
     protected void fireTransferDidEnd() {
         running = false;
         queued = false;
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().transferDidEnd();
+        for(TransferListener listener: listeners) {
+            listener.transferDidEnd();
         }
         synchronized(queueLock) {
             queueLock.notify();
@@ -249,14 +248,14 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     protected void fireWillTransferPath(Path path) {
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().willTransferPath(path);
+        for(TransferListener listener: listeners) {
+            listener.willTransferPath(path);
         }
     }
 
     protected void fireDidTransferPath(Path path) {
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().didTransferPath(path);
+        for(TransferListener listener: listeners) {
+            listener.didTransferPath(path);
         }
     }
 
@@ -271,8 +270,8 @@ public abstract class Transfer extends NSObject implements Serializable {
     public void setBandwidth(float bytesPerSecond) {
         log.debug("setBandwidth:" + bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
-        for(Iterator<TransferListener> iter = listeners.iterator(); iter.hasNext();) {
-            iter.next().bandwidthChanged(bandwidth);
+        for(TransferListener listener: listeners) {
+            listener.bandwidthChanged(bandwidth);
         }
     }
 
@@ -311,8 +310,8 @@ public abstract class Transfer extends NSObject implements Serializable {
      */
     public String getName() {
         String name = "";
-        for(Iterator<Path> iter = this.roots.iterator(); iter.hasNext();) {
-            name = name + iter.next().getLocal().getName() + " ";
+        for(Path next : this.roots) {
+            name = name + next.getLocal().getName() + " ";
         }
         return name;
     }
@@ -432,8 +431,8 @@ public abstract class Transfer extends NSObject implements Serializable {
         item.getStatus().setSkipped(skipped);
         if(item.attributes.isDirectory()) {
             if(this.isCached(item)) {
-                for(Iterator iter = this.childs(item).iterator(); iter.hasNext();) {
-                    this.setSkipped((Path) iter.next(), skipped);
+                for(Path child: this.childs(item)) {
+                    this.setSkipped(child, skipped);
                 }
             }
         }
@@ -471,8 +470,7 @@ public abstract class Transfer extends NSObject implements Serializable {
 
         if(p.attributes.isDirectory()) {
             boolean flag = false;
-            for(Iterator iter = this.childs(p).iterator(); iter.hasNext();) {
-                final Path child = (Path) iter.next();
+            for(Path child: this.childs(p)) {
                 this.transfer(child, filter);
                 if(!child.getStatus().isComplete()) {
                     flag = true;
@@ -542,13 +540,13 @@ public abstract class Transfer extends NSObject implements Serializable {
             this.reset();
 
             // Calculate some information about the files in advance to give some progress information
-            for(Iterator<Path> iter = roots.iterator(); iter.hasNext();) {
-                this.prepare(iter.next(), filter);
+            for(Path next: roots) {
+                this.prepare(next, filter);
             }
 
             // Transfer all files sequentially
-            for(Iterator<Path> iter = roots.iterator(); iter.hasNext();) {
-                this.transfer(iter.next(), filter);
+            for(Path next: roots) {
+                this.transfer(next, filter);
             }
         }
         finally {
@@ -582,9 +580,9 @@ public abstract class Transfer extends NSObject implements Serializable {
         }
 
         if(p.attributes.isDirectory()) {
-            for(Iterator<Path> iter = this.childs(p).iterator(); iter.hasNext();) {
-                // Call recursively for all childs
-                this.prepare(iter.next(), filter);
+            // Call recursively for all childs
+            for(Path child: this.childs(p)) {
+                this.prepare(child, filter);
             }
         }
     }
@@ -755,8 +753,8 @@ public abstract class Transfer extends NSObject implements Serializable {
                 return false;
             }
         }
-        for(Iterator<Path> iter = this.roots.iterator(); iter.hasNext();) {
-            if(!iter.next().getStatus().isComplete()) {
+        for(Path root: this.roots) {
+            if(!root.getStatus().isComplete()) {
                 return false;
             }
         }

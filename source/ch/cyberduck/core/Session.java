@@ -390,8 +390,8 @@ public abstract class Session extends NSObject {
      */
     public void log(boolean request, final String message) {
         log.info(message);
-        for(Iterator<TranscriptListener> iter = transcriptListeners.iterator(); iter.hasNext();) {
-            iter.next().log(request, message);
+        for(TranscriptListener listener: transcriptListeners) {
+            listener.log(request, message);
         }
     }
 
@@ -414,8 +414,8 @@ public abstract class Session extends NSObject {
      */
     public void message(final String message) {
         log.info(message);
-        for(Iterator<ProgressListener> iter = progressListeners.iterator(); iter.hasNext();) {
-            iter.next().message(message);
+        for(ProgressListener listener: progressListeners) {
+            listener.message(message);
         }
     }
 
@@ -440,8 +440,8 @@ public abstract class Session extends NSObject {
     public void error(Path path, String message, Throwable e) {
         final BackgroundException failure = new BackgroundException(this, path, message, e);
         this.message(failure.getMessage());
-        for(Iterator<ErrorListener> iter = errorListeners.iterator(); iter.hasNext();) {
-            iter.next().error(failure);
+        for(ErrorListener listener: errorListeners) {
+            listener.error(failure);
         }
     }
 

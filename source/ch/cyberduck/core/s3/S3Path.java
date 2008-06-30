@@ -642,11 +642,11 @@ public class S3Path extends Path {
             }
             if(attributes.isDirectory()) {
                 if(recursive) {
-                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                    for(AbstractPath child: this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
-                        ((AbstractPath) iter.next()).writePermissions(perm, recursive);
+                        child.writePermissions(perm, recursive);
                     }
                 }
             }

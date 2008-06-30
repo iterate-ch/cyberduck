@@ -120,11 +120,11 @@ public class UploadTransfer extends Transfer {
         }
         if(!_cache.containsKey(parent)) {
             AttributedList<Path> childs = new AttributedList<Path>();
-            for(Iterator iter = parent.getLocal().childs(new NullComparator<Local>(),
-                    childFilter).iterator(); iter.hasNext(); ) {
+            for(AbstractPath local: parent.getLocal().childs(new NullComparator<Local>(),
+                    childFilter)) {
                 Path child = PathFactory.createPath(parent.getSession(),
                         parent.getAbsolute(),
-                        new Local(((AbstractPath) iter.next()).getAbsolute()));
+                        new Local(local.getAbsolute()));
                 child.getStatus().setSkipped(parent.getStatus().isSkipped());
                 childs.add(child);
             }
@@ -261,8 +261,7 @@ public class UploadTransfer extends Transfer {
             };
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Iterator iter = this.getRoots().iterator(); iter.hasNext(); ) {
-                Path root = (Path)iter.next();
+            for(Path root: this.getRoots()) {
                 if(this.exists(root)) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.childs().size()) {
