@@ -235,10 +235,6 @@ public abstract class Preferences {
          */
         defaults.put("browser.editable", String.valueOf(true));
 
-        /**
-         * Bookmark drawer should be opened for new browser windows
-         */
-        defaults.put("browser.bookmarkDrawer.isOpen", String.valueOf(true));
         defaults.put("browser.bookmarkDrawer.smallItems", String.valueOf(false));
         /**
          * Close bookmark drawer upon opening a connection

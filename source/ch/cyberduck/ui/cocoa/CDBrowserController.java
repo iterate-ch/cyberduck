@@ -556,9 +556,9 @@ public class CDBrowserController extends CDWindowController
 
         this.window().makeFirstResponder(this.quickConnectPopup);
 
-        this.toggleBookmarks(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen"));
+        this.toggleBookmarks(true);
 
-        if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
+        if(this.getSelectedTabView() != TAB_BOOKMARKS) {
             this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
         }
 
@@ -1140,8 +1140,7 @@ public class CDBrowserController extends CDWindowController
         cell.setControlSize(NSCell.RegularControlSize);
         this.bookmarkSwitchView.setTarget(this);
         this.bookmarkSwitchView.setAction(new NSSelector("bookmarkSwitchClicked", new Class[]{Object.class}));
-        this.bookmarkSwitchView.setSelected(Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen"),
-                SWITCH_BOOKMARK_VIEW);
+        this.bookmarkSwitchView.setSelected(true, SWITCH_BOOKMARK_VIEW);
     }
 
     public void bookmarkSwitchClicked(final Object sender) {
@@ -1340,25 +1339,23 @@ public class CDBrowserController extends CDWindowController
         }
 
         public void selectionDidChange(NSNotification notification) {
-            final Path p = getSelectedPath();
-            if(null == p) {
-                return;
-            }
-            if(p.attributes.isFile()) {
-                EditorFactory.setSelectedEditor(EditorFactory.editorBundleIdentifierForFile(
-                        p.getLocal()));
-            }
             final Collection<Path> selected = getSelectedPaths();
+            if(1 == selected.size()) {
+                final Path p = selected.get(0);
+                if(p.attributes.isFile()) {
+                    EditorFactory.setSelectedEditor(EditorFactory.editorBundleIdentifierForFile(
+                            p.getLocal()));
+                }
+            }
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
                 if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
                     if(selected.size() > 0) {
                         background(new BrowserBackgroundAction(CDBrowserController.this) {
                             public void run() {
-                                for(Iterator<Path> iter = selected.iterator(); iter.hasNext();) {
+                                for(Path p : selected) {
                                     if(this.isCanceled()) {
                                         break;
                                     }
-                                    final Path p = iter.next();
                                     if(p.attributes.getPermission() == null) {
                                         p.readPermission();
                                     }
@@ -1370,8 +1367,7 @@ public class CDBrowserController extends CDWindowController
                             }
 
                             public String getActivity() {
-                                return MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
-                                        new Object[]{p.getName()});
+                                return MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""), null);
                             }
                         });
                     }
@@ -1421,7 +1417,6 @@ public class CDBrowserController extends CDWindowController
             public void enterKeyPressed(final Object sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
-                        Path selected = getSelectedPath();
                         CDBrowserController.this.browserOutlineView.editLocation(
                                 CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
                                 CDBrowserController.this.browserOutlineView.selectedRow(),
@@ -3255,6 +3250,9 @@ public class CDBrowserController extends CDWindowController
 
     public void insideButtonClicked(final Object sender) {
         final Path selected = this.getSelectedPath(); //last row selected
+        if(null == selected) {
+            return;
+        }
         if(selected.attributes.isDirectory()) {
             this.setWorkdir(selected);
         }
@@ -3797,7 +3795,7 @@ public class CDBrowserController extends CDWindowController
 
                     public String getActivity() {
                         return MessageFormat.format(NSBundle.localizedString("Mounting {0}", "Status", ""),
-                                new Object[]{host.getHostname()});
+                                host.getHostname());
                     }
                 });
             }
@@ -4086,14 +4084,14 @@ public class CDBrowserController extends CDWindowController
         }
         if(identifier.equals("cut:")) {
             if(this.isMounted()) {
-                if(this.getSelectionCount() == 1) {
-                    Path p = this.getSelectedPath();
-                    item.setTitle(NSBundle.localizedString("Cut", "Menu item") + " \"" + p.getName() + "\"");
-                }
-                else {
+                Path selected = this.getSelectedPath();
+                if(null == selected) {
                     item.setTitle(NSBundle.localizedString("Cut", "Menu item")
                             + " " + this.getSelectionCount() + " " +
                             NSBundle.localizedString("files", ""));
+                }
+                else {
+                    item.setTitle(NSBundle.localizedString("Cut", "Menu item") + " \"" + selected.getName() + "\"");
                 }
             }
             else {
