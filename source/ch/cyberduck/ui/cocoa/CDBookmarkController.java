@@ -269,7 +269,7 @@ public class CDBookmarkController extends CDWindowController {
         this.transferPopup = transferPopup;
         this.transferPopup.setTarget(this);
         this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
-        if(0 == host.getMaxConnections()) {
+        if(null == host.getMaxConnections()) {
             this.transferPopup.selectItemAtIndex(DEFAULT_INDEX);
         }
         else {
