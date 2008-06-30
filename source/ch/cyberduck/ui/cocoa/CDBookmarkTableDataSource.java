@@ -201,6 +201,7 @@ public class CDBookmarkTableDataSource extends CDController {
         }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
             if(index > -1 && index < view.numberOfRows()) {
+                view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
                 // We accept any file promise within the bounds
                 return NSDraggingInfo.DragOperationMove;
             }
