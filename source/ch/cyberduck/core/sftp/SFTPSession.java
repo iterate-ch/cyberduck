@@ -160,15 +160,7 @@ public class SFTPSession extends Session {
         this.fireConnectionDidOpenEvent();
     }
 
-    protected void login() throws IOException, ConnectionCanceledException, LoginCanceledException {
-        final Credentials credentials = host.getCredentials();
-        login.check(credentials, host.getProtocol(), host.getHostname());
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                credentials.getUsername()));
-
+    protected void login(final Credentials credentials) throws IOException {
         if(credentials.usesPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(credentials)) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));

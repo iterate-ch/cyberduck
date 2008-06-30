@@ -159,23 +159,13 @@ public class S3Session extends HTTPSession implements SSLSession {
 
         // Prompt the login credentials first
         this.login();
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
         this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
                 host.getProtocol().getName()));
         this.fireConnectionDidOpenEvent();
     }
 
-    protected void login() throws IOException, LoginCanceledException {
-        final Credentials credentials = host.getCredentials();
-        login.check(credentials, host.getProtocol(), host.getHostname());
-
+    protected void login(final Credentials credentials) throws IOException {
         try {
-            this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                    credentials.getUsername()));
-
-
             final HostConfiguration hostConfiguration = new StickyHostConfiguration();
             hostConfiguration.setHost(host.getHostname(), host.getPort(),
                     new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),

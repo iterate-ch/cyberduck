@@ -237,26 +237,14 @@ public class FTPSession extends Session {
 
     }
 
-    protected void login() throws IOException, LoginCanceledException {
-        final Credentials credentials = host.getCredentials();
-        login.check(credentials, host.getProtocol(), host.getHostname());
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        String failure = null;
+    protected void login(final Credentials credentials) throws IOException {
         try {
-            this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                    credentials.getUsername()));
-
             this.FTP.login(credentials.getUsername(), credentials.getPassword());
             this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
         }
         catch(FTPException e) {
-            failure = e.getMessage();
-        }
-        if(failure != null) {
             this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-            this.login.fail(host.getProtocol(), credentials, failure);
+            this.login.fail(host.getProtocol(), credentials, e.getMessage());
             this.login();
         }
     }

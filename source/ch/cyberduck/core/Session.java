@@ -28,7 +28,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Timer;
 
 /**
  * @version $Id$
@@ -143,6 +146,19 @@ public abstract class Session extends NSObject {
         this.login = loginController;
     }
 
+    protected void login() throws IOException {
+        final Credentials credentials = host.getCredentials();
+        login.check(credentials, host.getProtocol(), host.getHostname());
+
+        this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+                credentials.getUsername()));
+        this.login(credentials);
+
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+    }
+
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
@@ -150,7 +166,7 @@ public abstract class Session extends NSObject {
      * @throws LoginCanceledException
      * @see #connect
      */
-    protected abstract void login() throws IOException, LoginCanceledException;
+    protected abstract void login(Credentials credentials) throws IOException;
 
     public Path mount() {
         if(StringUtils.hasText(host.getDefaultPath())) {
@@ -248,6 +264,10 @@ public abstract class Session extends NSObject {
      */
     public abstract Path workdir() throws IOException;
 
+    /**
+     * @param workdir Change to the given working directory
+     * @throws IOException
+     */
     public abstract void setWorkdir(Path workdir) throws IOException;
 
     /**
@@ -390,7 +410,7 @@ public abstract class Session extends NSObject {
      */
     public void log(boolean request, final String message) {
         log.info(message);
-        for(TranscriptListener listener: transcriptListeners) {
+        for(TranscriptListener listener : transcriptListeners) {
             listener.log(request, message);
         }
     }
@@ -414,7 +434,7 @@ public abstract class Session extends NSObject {
      */
     public void message(final String message) {
         log.info(message);
-        for(ProgressListener listener: progressListeners) {
+        for(ProgressListener listener : progressListeners) {
             listener.message(message);
         }
     }
@@ -440,7 +460,7 @@ public abstract class Session extends NSObject {
     public void error(Path path, String message, Throwable e) {
         final BackgroundException failure = new BackgroundException(this, path, message, e);
         this.message(failure.getMessage());
-        for(ErrorListener listener: errorListeners) {
+        for(ErrorListener listener : errorListeners) {
             listener.error(failure);
         }
     }

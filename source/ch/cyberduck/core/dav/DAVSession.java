@@ -102,16 +102,8 @@ public class DAVSession extends HTTPSession {
         this.fireConnectionDidOpenEvent();
     }
 
-    protected void login() throws IOException, LoginCanceledException {
-        final Credentials credentials = host.getCredentials();
-        login.check(credentials, host.getProtocol(), host.getHostname());
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
+    protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
-            this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
-                    credentials.getUsername()));
-
             if(!credentials.isAnonymousLogin()) {
                 this.DAV.setCredentials(
                         new UsernamePasswordCredentials(credentials.getUsername(),

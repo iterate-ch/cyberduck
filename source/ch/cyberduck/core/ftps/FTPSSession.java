@@ -88,7 +88,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
 
     private boolean auth;
 
-    public void login() throws IOException {
+    public void login(final Credentials credentials) throws IOException {
         if(auth) {
             // Only send AUTH before the first login attempt
             try {
@@ -99,6 +99,6 @@ public class FTPSSession extends FTPSession implements SSLSession {
                 throw new ConnectionCanceledException(e.getMessage());
             }
         }
-        super.login();
+        super.login(credentials);
     }
 }
