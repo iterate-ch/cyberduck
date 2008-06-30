@@ -1144,11 +1144,8 @@ public class CDBrowserController extends CDWindowController
                 SWITCH_BOOKMARK_VIEW);
     }
 
-    public void bookmarkSwitchClicked(final NSSegmentedControl sender) {
-        this.toggleBookmarks(!Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen"));
-        if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.isOpen")) {
-            this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
-        }
+    public void bookmarkSwitchClicked(final Object sender) {
+        this.toggleBookmarks(this.getSelectedTabView() != TAB_BOOKMARKS);
     }
 
     /**
@@ -1164,9 +1161,8 @@ public class CDBrowserController extends CDWindowController
         }
         else {
             this.setBookmarkFilter(null);
+            this.browserTabView.selectTabViewItemAtIndex(Preferences.instance().getInteger("browser.view"));
         }
-        Preferences.instance().setProperty("browser.bookmarkDrawer.isOpen", open);
-
         this.validateNavigationButtons();
     }
 
