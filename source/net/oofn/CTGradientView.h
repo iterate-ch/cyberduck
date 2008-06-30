@@ -17,8 +17,4 @@
 	bool  isRadial;
 	}
 
-- (IBAction)changeType :(id)sender;
-- (IBAction)changeAngle:(id)sender;
-- (IBAction)changeStyle:(id)sender;
-
 @end
