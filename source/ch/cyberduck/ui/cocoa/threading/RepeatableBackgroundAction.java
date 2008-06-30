@@ -357,17 +357,23 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
 
             public boolean cancel() {
-                synchronized(lock()) {
-                    // Notifiy to return to caller from #pause()
-                    lock().notify();
+                final Object lock = lock();
+                if(lock != null) {
+                    synchronized(lock) {
+                        // Notifiy to return to caller from #pause()
+                        lock.notify();
+                    }
                 }
                 return super.cancel();
             }
         }, 0, 1000); // Schedule for immediate execusion with an interval of 1s
         try {
-            synchronized(lock()) {
-                // Wait for notify from wakeup timer
-                lock().wait();
+            final Object lock = lock();
+            if(lock != null) {
+                synchronized(lock) {
+                    // Wait for notify from wakeup timer
+                    lock.wait();
+                }
             }
         }
         catch(InterruptedException e) {
