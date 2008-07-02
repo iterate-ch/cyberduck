@@ -3095,9 +3095,12 @@ public class CDBrowserController extends CDWindowController
     public void uploadPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
         sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            Path workdir = this.getSelectedPath();
-            if(null == workdir || !workdir.attributes.isDirectory()) {
-                workdir = this.workdir();
+            Path destination = this.getSelectedPath();
+            if(null == destination) {
+                destination = this.workdir();
+            }
+            else if(!destination.attributes.isDirectory()) {
+                destination = (Path)destination.getParent();
             }
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
@@ -3106,11 +3109,11 @@ public class CDBrowserController extends CDWindowController
             final List<Path> roots = new Collection<Path>();
             while(iterator.hasMoreElements()) {
                 roots.add(PathFactory.createPath(session,
-                        workdir.getAbsolute(),
+                        destination.getAbsolute(),
                         new Local((String) iterator.nextElement())));
             }
             final Transfer q = new UploadTransfer(roots);
-            this.transfer(q, workdir);
+            this.transfer(q, destination);
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
         uploadPanel = null;
