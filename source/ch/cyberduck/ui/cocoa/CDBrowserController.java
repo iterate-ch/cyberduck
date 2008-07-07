@@ -2501,6 +2501,23 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
+     * Open a new browser with the current selected folder as the working directory
+     * @param sender
+     */
+    public void newBrowserButtonClicked(final Object sender) {
+        Path selected = this.getSelectedPath();
+        if(null == selected || !selected.attributes.isDirectory()) {
+            selected = this.workdir();
+        }
+        CDBrowserController c = new CDBrowserController();
+        c.cascade();
+        c.window().makeKeyAndOrderFront(null);
+        final Host host = new Host(this.getSession().getHost().getAsDictionary());
+        host.setDefaultPath(selected.getAbsolute());
+        c.mount(host);
+    }
+
+    /**
      * @param source      The original file to duplicate
      * @param destination The destination of the duplicated file
      * @param edit        Open the duplicated file in the external editor
@@ -3764,18 +3781,7 @@ public class CDBrowserController extends CDWindowController
      * @param h
      * @return The session to be used for any further operations
      */
-    public void mount(Host h) {
-        final List bookmarks = bookmarkModel.getSource();
-        if(bookmarks.contains(h)) {
-            // Use the bookmarked reference if any. Otherwise if a clone thereof is used
-            // it confuses the user, that settings to the bookmark will not affect the
-            // currently mounted browser
-            Host bookmark = (Host) bookmarks.get(bookmarks.indexOf(h));
-            if(h.toURL().equals(bookmark.toURL())) {
-                h = bookmark;
-            }
-        }
-        final Host host = h;
+    public void mount(final Host host) {
         log.debug("mount:" + host);
         this.unmount(new Runnable() {
             public void run() {
@@ -4240,6 +4246,9 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         if(identifier.equals("reloadButtonClicked:")) {
+            return this.isMounted();
+        }
+        if(identifier.equals("newBrowserButtonClicked:")) {
             return this.isMounted();
         }
         if(identifier.equals("uploadButtonClicked:")) {
