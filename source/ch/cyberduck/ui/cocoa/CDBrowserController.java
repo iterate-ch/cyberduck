@@ -4202,7 +4202,7 @@ public class CDBrowserController extends CDWindowController
             return false;
         }
         if(identifier.equals("quicklookButtonClicked:")) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return QuickLook.isAvailable() && this.isMounted() && this.getSelectionCount() > 0;
         }
         if(identifier.equals("openBrowserButtonClicked:")) {
             return this.isMounted();
