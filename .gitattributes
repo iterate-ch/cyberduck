@@ -674,13 +674,6 @@ el.lproj/Transfer.nib/classes.nib -text
 el.lproj/Transfer.nib/info.nib -text
 el.lproj/Transfer.nib/keyedobjects.nib -text
 el.lproj/Transfer.strings -text
-en.lproj/Activity.nib/classes.nib -text
-en.lproj/Activity.nib/info.nib -text
-en.lproj/Activity.nib/keyedobjects.nib -text
-en.lproj/Alert.nib/classes.nib -text
-en.lproj/Alert.nib/data.dependency -text
-en.lproj/Alert.nib/info.nib -text
-en.lproj/Alert.nib/keyedobjects.nib -text
 en.lproj/Alert.strings -text svneol=unset#text/utf-16
 en.lproj/Bookmark.nib/data.dependency -text
 en.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -701,9 +694,6 @@ en.lproj/Download.nib/keyedobjects.nib -text
 en.lproj/Download.strings -text svneol=unset#text/utf-16
 en.lproj/Duplicate.nib/keyedobjects.nib -text
 en.lproj/Duplicate.strings -text svneol=unset#text/utf-16
-en.lproj/Error.nib/classes.nib -text
-en.lproj/Error.nib/info.nib -text
-en.lproj/Error.nib/keyedobjects.nib -text
 en.lproj/Error.strings -text svneol=unset#text/utf-16
 en.lproj/File.nib/keyedobjects.nib -text
 en.lproj/File.strings -text svneol=unset#text/utf-16
@@ -724,20 +714,11 @@ en.lproj/Main.nib/keyedobjects.nib -text
 en.lproj/Main.strings -text svneol=unset#text/utf-16
 en.lproj/Preferences.nib/keyedobjects.nib -text
 en.lproj/Preferences.strings -text svneol=unset#text/utf-16
-en.lproj/Progress.nib/classes.nib -text
-en.lproj/Progress.nib/info.nib -text
-en.lproj/Progress.nib/keyedobjects.nib -text
 en.lproj/Prompt.nib/data.dependency -text
 en.lproj/Prompt.nib/keyedobjects.nib -text
 en.lproj/Prompt.strings -text svneol=unset#text/utf-16
 en.lproj/S3.strings -text svneol=unset#unset
 en.lproj/Status.strings -text svneol=unset#text/utf-16
-en.lproj/Task.nib/classes.nib -text
-en.lproj/Task.nib/info.nib -text
-en.lproj/Task.nib/keyedobjects.nib -text
-en.lproj/Transcript.nib/classes.nib -text
-en.lproj/Transcript.nib/info.nib -text
-en.lproj/Transcript.nib/keyedobjects.nib -text
 en.lproj/Transfer.nib/classes.nib -text
 en.lproj/Transfer.nib/info.nib -text
 en.lproj/Transfer.nib/keyedobjects.nib -text
@@ -1746,6 +1727,25 @@ pt_PT.lproj/Transfer.nib/classes.nib -text
 pt_PT.lproj/Transfer.nib/info.nib -text
 pt_PT.lproj/Transfer.nib/keyedobjects.nib -text
 pt_PT.lproj/Transfer.strings -text svneol=unset#text/utf-16
+resources/Activity.nib/classes.nib -text
+resources/Activity.nib/info.nib -text
+resources/Activity.nib/keyedobjects.nib -text
+resources/Alert.nib/classes.nib -text
+resources/Alert.nib/data.dependency -text
+resources/Alert.nib/info.nib -text
+resources/Alert.nib/keyedobjects.nib -text
+resources/Error.nib/classes.nib -text
+resources/Error.nib/info.nib -text
+resources/Error.nib/keyedobjects.nib -text
+resources/Progress.nib/classes.nib -text
+resources/Progress.nib/info.nib -text
+resources/Progress.nib/keyedobjects.nib -text
+resources/Task.nib/classes.nib -text
+resources/Task.nib/info.nib -text
+resources/Task.nib/keyedobjects.nib -text
+resources/Transcript.nib/classes.nib -text
+resources/Transcript.nib/info.nib -text
+resources/Transcript.nib/keyedobjects.nib -text
 ru.lproj/Alert.nib/classes.nib -text
 ru.lproj/Alert.nib/data.dependency -text
 ru.lproj/Alert.nib/info.nib -text
