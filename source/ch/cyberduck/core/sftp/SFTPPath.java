@@ -176,7 +176,7 @@ public class SFTPPath extends Path {
                 }
             }
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+            session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
             Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));

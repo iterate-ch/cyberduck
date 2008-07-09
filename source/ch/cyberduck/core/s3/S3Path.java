@@ -583,7 +583,7 @@ public class S3Path extends Path {
                 throw new S3ServiceException("Bucket can only be created at top level");
             }
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+            session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
             session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));

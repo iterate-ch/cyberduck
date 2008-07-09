@@ -199,7 +199,7 @@ public class FTPPath extends Path {
                 }
             }
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+            session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
             session.setWorkdir((Path) this.getParent());

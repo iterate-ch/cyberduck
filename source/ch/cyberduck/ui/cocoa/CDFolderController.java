@@ -75,7 +75,7 @@ public class CDFolderController extends CDFileController {
             }
 
             public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Make directory {0}", "Status", ""),
+                return MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                         folder.getName());
             }
 
