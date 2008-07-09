@@ -674,6 +674,10 @@ el.lproj/Transfer.nib/classes.nib -text
 el.lproj/Transfer.nib/info.nib -text
 el.lproj/Transfer.nib/keyedobjects.nib -text
 el.lproj/Transfer.strings -text
+en.lproj/Alert.nib/classes.nib -text
+en.lproj/Alert.nib/data.dependency -text
+en.lproj/Alert.nib/info.nib -text
+en.lproj/Alert.nib/keyedobjects.nib -text
 en.lproj/Alert.strings -text svneol=unset#text/utf-16
 en.lproj/Bookmark.nib/data.dependency -text
 en.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -1730,10 +1734,6 @@ pt_PT.lproj/Transfer.strings -text svneol=unset#text/utf-16
 resources/Activity.nib/classes.nib -text
 resources/Activity.nib/info.nib -text
 resources/Activity.nib/keyedobjects.nib -text
-resources/Alert.nib/classes.nib -text
-resources/Alert.nib/data.dependency -text
-resources/Alert.nib/info.nib -text
-resources/Alert.nib/keyedobjects.nib -text
 resources/Error.nib/classes.nib -text
 resources/Error.nib/info.nib -text
 resources/Error.nib/keyedobjects.nib -text
