@@ -373,12 +373,20 @@ public class DownloadTransfer extends Transfer {
             CDMainApplication.invoke(new DefaultMainAction() {
                 public void run() {
                     Growl.instance().notify("Download complete", getName());
-                    if(Preferences.instance().getBoolean("queue.postProcessItemWhenComplete")) {
+                    if(DownloadTransfer.this.shouldOpenWhenComplete()) {
                         NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
                     }
                 }
             }, true);
         }
         super.fireTransferDidEnd();
-    }    
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected boolean shouldOpenWhenComplete() {
+        return Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");
+    }
 }

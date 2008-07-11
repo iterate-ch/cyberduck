@@ -92,7 +92,11 @@ public abstract class Editor extends CDController {
             public void run() {
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
-                Transfer download = new DownloadTransfer(edited);
+                Transfer download = new DownloadTransfer(edited) {
+                    protected boolean shouldOpenWhenComplete() {
+                        return false;
+                    }
+                };
                 download.start(new TransferPrompt() {
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
