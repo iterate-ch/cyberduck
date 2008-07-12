@@ -181,6 +181,16 @@ public class CDBookmarkTableDataSource extends CDController {
             // Do not allow drags for non writable collections
             return NSDraggingInfo.DragOperationNone;
         }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.StringPboardType);
+            if(o != null) {
+                if(StringUtils.isURL(o.toString())) {
+                    view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
+                    return NSDraggingInfo.DragOperationCopy;
+                }
+            }
+            return NSDraggingInfo.DragOperationNone;
+        }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
@@ -218,6 +228,17 @@ public class CDBookmarkTableDataSource extends CDController {
      */
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewAcceptDrop:" + row);
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.StringPboardType);
+            if(o != null) {
+                final Host h = Host.parse(o.toString());
+                source.add(row, h);
+                view.selectRow(row, false);
+                view.scrollRowToVisible(row);
+                return true;
+            }
+            return false;
+        }
         if(info.draggingPasteboard().availableTypeFromArray(
                 new NSArray(NSPasteboard.FilenamesPboardType)) != null)
         {
