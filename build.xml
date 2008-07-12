@@ -138,16 +138,6 @@
 				<include name="**/${localization}.lproj/**"/>
 			</fileset>
 		</copy>
-		<copy todir="${app.bundle.loc}/Contents/Resources/${localization}.lproj">
-			<fileset dir="${app.resources}/en.lproj">
-				<include name="Progress.nib/**"/>
-				<include name="Security.nib/**"/>
-				<include name="Alert.nib/**"/>
-				<include name="Activity.nib/**"/>
-				<include name="Task.nib/**"/>
-                <include name="Error.nib/**"/>
-			</fileset>
-		</copy>
 		<chmod perm="a+x" type="file">
 			<fileset dir="${app.bundle.loc}">
 				<include name="**/*.framework/*"/>
