@@ -2425,7 +2425,12 @@ public class CDBrowserController extends CDWindowController
         if(null == label) {
             label = "";
             if(this.isMounted()) {
-                label = this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
+                if(this.isConnected()) {
+                    label = this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
+                }
+                else {
+                    label = NSBundle.localizedString("Disconnected", "Status", "");
+                }
             }
         }
         final String status = label;
