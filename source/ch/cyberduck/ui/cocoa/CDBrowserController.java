@@ -1162,6 +1162,7 @@ public class CDBrowserController extends CDWindowController
             this.setBookmarkFilter(null);
             this.browserTabView.selectTabViewItemAtIndex(Preferences.instance().getInteger("browser.view"));
         }
+        this.getFocus();
         this.validateNavigationButtons();
     }
 
@@ -1804,6 +1805,7 @@ public class CDBrowserController extends CDWindowController
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
                 {
+                        NSPasteboard.StringPboardType,
                         NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
                         NSPasteboard.FilesPromisePboardType,
                         "HostPBoardType" //moving bookmarks
@@ -3747,6 +3749,9 @@ public class CDBrowserController extends CDWindowController
                         getSelectedBrowserView().setNeedsDisplay();
                         bookmarkTable.setNeedsDisplay();
 
+                        if(!isMounted()) {
+                            window.setTitle((String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                        }
                         window.setDocumentEdited(false);
 
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
@@ -3827,12 +3832,6 @@ public class CDBrowserController extends CDWindowController
                 this.session.cache().clear();
                 this.session.getHost().getCredentials().setPassword(null);
                 this.session = null;
-                CDMainApplication.invoke(new WindowMainAction(this) {
-                    public void run() {
-                        window.setTitle((String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
-                    }
-                });
-
             }
         }
     }
