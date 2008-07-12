@@ -28,7 +28,6 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -66,8 +65,8 @@ public class UploadTransfer extends Transfer {
      *
      */
     private abstract class UploadTransferFilter extends TransferFilter {
-        public boolean accept(AbstractPath file) {
-            return UploadTransfer.this.exists(((Path) file).getLocal());
+        public boolean accept(final Path file) {
+            return UploadTransfer.this.exists(file.getLocal());
         }
 
         public void prepare(Path p) {
@@ -148,11 +147,11 @@ public class UploadTransfer extends Transfer {
         log.debug("filter:"+action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new UploadTransferFilter() {
-                public boolean accept(final AbstractPath p) {
+                public boolean accept(final Path p) {
                     if(super.accept(p)) {
                         if(p.attributes.isDirectory()) {
                             // Do not attempt to create a directory that already exists
-                            return !UploadTransfer.this.exists((Path)p);
+                            return !UploadTransfer.this.exists(p);
                         }
                         return true;
                     }
@@ -170,15 +169,15 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_RESUME)) {
             return new UploadTransferFilter() {
-                public boolean accept(final AbstractPath p) {
+                public boolean accept(final Path p) {
                     if(super.accept(p)) {
-                        if(((Path)p).getStatus().isComplete() || ((Path) p).getLocal().attributes.getSize() == p.attributes.getSize()) {
+                        if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
                             // No need to resume completed transfers
-                            ((Path)p).getStatus().setComplete(true);
+                            p.getStatus().setComplete(true);
                             return false;
                         }
                         if(p.attributes.isDirectory()) {
-                            return !UploadTransfer.this.exists((Path)p);
+                            return !UploadTransfer.this.exists(p);
                         }
                         return true;
                     }
@@ -216,7 +215,7 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
             return new UploadTransferFilter() {
-                public boolean accept(final AbstractPath p) {
+                public boolean accept(final Path p) {
                     // Rename every file
                     return super.accept(p);
                 }
@@ -250,9 +249,9 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return new UploadTransferFilter() {
-                public boolean accept(final AbstractPath p) {
+                public boolean accept(final Path p) {
                     if(super.accept(p)) {
-                        if(!UploadTransfer.this.exists((Path)p)) {
+                        if(!UploadTransfer.this.exists(p)) {
                             return true;
                         }
                     }

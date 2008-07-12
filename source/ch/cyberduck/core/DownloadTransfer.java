@@ -28,7 +28,6 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -42,7 +41,7 @@ public class DownloadTransfer extends Transfer {
         super(root);
     }
 
-    public DownloadTransfer(List roots) {
+    public DownloadTransfer(List<Path> roots) {
         super(roots);
     }
 
@@ -191,9 +190,9 @@ public class DownloadTransfer extends Transfer {
     }
 
     private final DownloadTransferFilter ACTION_OVERWRITE = new DownloadTransferFilter() {
-        public boolean accept(final AbstractPath p) {
+        public boolean accept(final Path p) {
             if(p.attributes.isDirectory()) {
-                return !DownloadTransfer.this.exists(((Path) p).getLocal());
+                return !DownloadTransfer.this.exists(p.getLocal());
             }
             return true;
         }
@@ -212,14 +211,14 @@ public class DownloadTransfer extends Transfer {
     };
 
     private final DownloadTransferFilter ACTION_RESUME = new DownloadTransferFilter() {
-        public boolean accept(final AbstractPath p) {
-            if(((Path) p).getStatus().isComplete() || ((Path) p).getLocal().attributes.getSize() == p.attributes.getSize()) {
+        public boolean accept(final Path p) {
+            if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
                 // No need to resume completed transfers
-                ((Path)p).getStatus().setComplete(true);
+                p.getStatus().setComplete(true);
                 return false;
             }
             if(p.attributes.isDirectory()) {
-                return !DownloadTransfer.this.exists(((Path) p).getLocal());
+                return !DownloadTransfer.this.exists(p.getLocal());
             }
             return true;
         }
@@ -237,7 +236,7 @@ public class DownloadTransfer extends Transfer {
     };
 
     private final DownloadTransferFilter ACTION_RENAME = new DownloadTransferFilter() {
-        public boolean accept(final AbstractPath p) {
+        public boolean accept(final Path p) {
             return true;
         }
 
@@ -268,8 +267,8 @@ public class DownloadTransfer extends Transfer {
     };
 
     private final DownloadTransferFilter ACTION_SKIP = new DownloadTransferFilter() {
-        public boolean accept(final AbstractPath p) {
-            return !DownloadTransfer.this.exists(((Path) p).getLocal());
+        public boolean accept(final Path p) {
+            return !DownloadTransfer.this.exists(p.getLocal());
         }
     };
 

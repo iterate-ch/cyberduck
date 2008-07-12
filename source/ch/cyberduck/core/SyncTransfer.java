@@ -161,8 +161,8 @@ public class SyncTransfer extends Transfer {
             }
         }
 
-        public boolean accept(AbstractPath p) {
-            final Comparison compare = SyncTransfer.this.compare((Path) p);
+        public boolean accept(Path p) {
+            final Comparison compare = SyncTransfer.this.compare(p);
             if (!COMPARISON_EQUAL.equals(compare)) {
                 if (compare.equals(COMPARISON_REMOTE_NEWER)) {
                     // Ask the download delegate for inclusion
