@@ -126,7 +126,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
             return this.convert(symlink, size);
         }
         if(item.attributes.isFile()) {
-            if(null == item.getExtension()) {
+            if(null == item.getExtension() && null != item.attributes.getPermission()) {
                 if(item.attributes.isExecutable()) {
                     return this.convert(NSImage.imageNamed("executable.tiff"), size);
                 }
@@ -137,7 +137,8 @@ public class CDIconCache extends HashMap<String, NSImage> {
             return this.convert(NSImage.imageNamed("disk.icns"), size);
         }
         if(item.attributes.isDirectory()) {
-            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")) {
+            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")
+                    && null != item.attributes.getPermission()) {
                 if(!item.attributes.isExecutable()
                         || (item.isCached() && !item.cache().get(item).attributes().isReadable())) {
                     NSImage folder = new NSImage(new NSSize(size, size));
