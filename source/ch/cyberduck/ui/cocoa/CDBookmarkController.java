@@ -269,13 +269,6 @@ public class CDBookmarkController extends CDWindowController {
         this.transferPopup = transferPopup;
         this.transferPopup.setTarget(this);
         this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
-        if(null == host.getMaxConnections()) {
-            this.transferPopup.selectItemAtIndex(DEFAULT_INDEX);
-        }
-        else {
-            this.transferPopup.selectItemAtIndex(
-                    host.getMaxConnections() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
-        }
     }
 
     private final int DEFAULT_INDEX = 0;
@@ -576,6 +569,13 @@ public class CDBookmarkController extends CDWindowController {
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
         }
         this.protocolPopup.selectItemWithTitle(this.host.getProtocol().getDescription());
+        if(null == host.getMaxConnections()) {
+            this.transferPopup.selectItemAtIndex(DEFAULT_INDEX);
+        }
+        else {
+            this.transferPopup.selectItemAtIndex(
+                    host.getMaxConnections() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
+        }
         this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)
                 || this.host.getProtocol().equals(Protocol.FTP_TLS));
         if(this.host.getProtocol().equals(Protocol.FTP)
