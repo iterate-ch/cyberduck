@@ -89,16 +89,10 @@ public abstract class Session extends NSObject {
                     this.noop();
                 }
                 catch(IOException e) {
-                    try {
-                        // Close the underlying socket first
-                        this.interrupt();
-                        // Try to reconnect once more
-                        this.connect();
-                        // Do not throw exception as we succeeded on second attempt
-                    }
-                    catch(IOException i) {
-                        throw i;
-                    }
+                    // Close the underlying socket first
+                    this.interrupt();
+                    // Try to reconnect once more
+                    this.connect();
                 }
             }
         }
