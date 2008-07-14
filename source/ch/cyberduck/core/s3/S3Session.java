@@ -221,6 +221,19 @@ public class S3Session extends HTTPSession implements SSLSession {
         }
     }
 
+    public void interrupt() {
+        try {
+            super.interrupt();
+            if(this.isConnected()) {
+                this.fireConnectionWillCloseEvent();
+            }
+        }
+        finally {
+            S3 = null;
+            this.fireConnectionDidCloseEvent();
+        }
+    }
+
     public Path workdir() throws IOException {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
