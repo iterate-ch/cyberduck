@@ -115,13 +115,13 @@ public abstract class Transfer extends NSObject implements Serializable {
      * @param root File or directory
      */
     public Transfer(Path root) {
-        this(new Collection(Collections.singletonList(root)));
+        this(new Collection<Path>(Collections.<Path>singletonList(root)));
     }
 
     /**
      * @param roots
      */
-    public Transfer(List roots) {
+    public Transfer(List<Path> roots) {
         this.setRoots(roots);
         this.session = this.getRoot().getSession();
         this.init();
@@ -316,7 +316,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         return name;
     }
 
-    protected abstract class TransferFilter implements PathFilter {
+    protected abstract class TransferFilter implements PathFilter<Path> {
         /**
          * Called before the file will actually get transferred. Should prepare for the transfer
          * such as calculating its size.
