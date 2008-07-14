@@ -194,8 +194,18 @@ public class CDProgressController extends CDBundleController {
     private void setStatusText() {
         StringBuffer b = new StringBuffer();
         if(!transfer.isRunning()) {
-            b.append(transfer.isComplete() ? NSBundle.localizedString("Transfer complete", "Status", "") :
-                    NSBundle.localizedString("Transfer incomplete", "Status", ""));
+            if(transfer instanceof DownloadTransfer) {
+                b.append(transfer.isComplete() ? NSBundle.localizedString("Download complete", "Growl", "") :
+                        NSBundle.localizedString("Transfer incomplete", "Status", ""));
+            }
+            if(transfer instanceof UploadTransfer) {
+                b.append(transfer.isComplete() ? NSBundle.localizedString("Upload complete", "Growl", "") :
+                        NSBundle.localizedString("Transfer incomplete", "Status", ""));
+            }
+            if(transfer instanceof SyncTransfer) {
+                b.append(transfer.isComplete() ? NSBundle.localizedString("Synchronization complete", "Growl", "") :
+                        NSBundle.localizedString("Transfer incomplete", "Status", ""));
+            }
         }
         statusField.setAttributedStringValue(new NSAttributedString(
                 b.toString(),
