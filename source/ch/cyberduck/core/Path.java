@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
+import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.log4j.Logger;
 
