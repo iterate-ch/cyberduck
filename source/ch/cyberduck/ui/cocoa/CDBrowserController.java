@@ -339,12 +339,8 @@ public class CDBrowserController extends CDWindowController
             Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"), Path.FILE_TYPE);
-            try {
-                session.setWorkdir(path);
+            if(path.list().attributes().isReadable()) {
                 path.attributes.setType(Path.DIRECTORY_TYPE);
-            }
-            catch(IOException e) {
-                ;
             }
             path.delete();
         }
@@ -407,12 +403,8 @@ public class CDBrowserController extends CDWindowController
             final Path path = PathFactory.createPath(this.session,
                     this.workdir().getAbsolute(),
                     (String) args.objectForKey("Path"), Path.FILE_TYPE);
-            try {
-                session.setWorkdir(path);
+            if(path.list().attributes().isReadable()) {
                 path.attributes.setType(Path.DIRECTORY_TYPE);
-            }
-            catch(IOException e) {
-                ;
             }
             Object localObj = args.objectForKey("Local");
             if(localObj != null) {
@@ -3005,18 +2997,19 @@ public class CDBrowserController extends CDWindowController
         downloadToPanel = null;
     }
 
+    private NSSavePanel downloadAsPanel;
 
     public void downloadAsButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
         for(Path selected: this.getSelectedPaths()) {
             Path path = PathFactory.createPath(session, selected.getAsDictionary());
-            NSSavePanel panel = NSSavePanel.savePanel();
-            panel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
-            panel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
-            panel.setPrompt(NSBundle.localizedString("Download", ""));
-            panel.setTitle(NSBundle.localizedString("Download", ""));
-            panel.setCanCreateDirectories(true);
-            panel.beginSheetForDirectory(null,
+            downloadAsPanel = NSSavePanel.savePanel();
+            downloadAsPanel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
+            downloadAsPanel.setNameFieldLabel(NSBundle.localizedString("Download As:", ""));
+            downloadAsPanel.setPrompt(NSBundle.localizedString("Download", ""));
+            downloadAsPanel.setTitle(NSBundle.localizedString("Download", ""));
+            downloadAsPanel.setCanCreateDirectories(true);
+            downloadAsPanel.beginSheetForDirectory(null,
                     path.getLocal().getName(),
                     this.window,
                     this,
@@ -3036,6 +3029,7 @@ public class CDBrowserController extends CDWindowController
                 this.transfer(q);
             }
         }
+        downloadAsPanel = null;
     }
 
     private NSOpenPanel syncPanel;
@@ -3544,7 +3538,6 @@ public class CDBrowserController extends CDWindowController
             this.workdir = null;
             this.validateNavigationButtons();
             this.reloadData(false);
-
             return;
         }
         this.background(new BrowserBackgroundAction(this) {
