@@ -337,10 +337,6 @@ public class SFTPSession extends Session {
         return workdir;
     }
 
-    public void setWorkdir(Path workdir) throws IOException {
-        this.workdir = workdir;
-    }
-
     protected void noop() throws IOException {
         if(this.isConnected()) {
             SSH.sendIgnorePacket();

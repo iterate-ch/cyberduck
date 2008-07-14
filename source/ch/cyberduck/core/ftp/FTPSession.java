@@ -262,7 +262,7 @@ public class FTPSession extends Session {
         return workdir;
     }
 
-    public void setWorkdir(Path workdir) throws IOException {
+    protected void setWorkdir(Path workdir) throws IOException {
         if(workdir.equals(this.workdir)) {
             // Do not attempt to change the workdir if the same
             return;

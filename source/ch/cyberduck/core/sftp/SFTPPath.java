@@ -107,10 +107,8 @@ public class SFTPPath extends Path {
             session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
                     this.getName()));
 
-            List children = session.sftp().ls(this.getAbsolute());
-            Iterator i = children.iterator();
-            while(i.hasNext()) {
-                SFTPv3DirectoryEntry f = (SFTPv3DirectoryEntry) i.next();
+            List<SFTPv3DirectoryEntry> children = session.sftp().ls(this.getAbsolute());
+            for(SFTPv3DirectoryEntry f : children) {
                 if(!f.filename.equals(".") && !f.filename.equals("..")) {
                     Path p = new SFTPPath(session, this.getAbsolute(),
                             f.filename, f.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);

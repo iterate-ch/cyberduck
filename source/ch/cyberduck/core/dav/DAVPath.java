@@ -161,7 +161,6 @@ public class DAVPath extends Path {
             session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
                     this.getName()));
 
-            session.setWorkdir(this);
             session.DAV.setContentType("text/xml");
             WebdavResource[] resources = session.DAV.listWebdavResources();
 

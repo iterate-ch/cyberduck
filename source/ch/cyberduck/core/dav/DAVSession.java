@@ -175,13 +175,6 @@ public class DAVSession extends HTTPSession {
         return workdir;
     }
 
-    public void setWorkdir(Path workdir) throws IOException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        DAV.setPath(workdir.isRoot() ? Path.DELIMITER : workdir.getAbsolute() + Path.DELIMITER);
-    }
-
     protected void noop() throws IOException {
         if(this.isConnected()) {
             DAV.getStatusMessage();

@@ -172,6 +172,7 @@ public abstract class Session extends NSObject {
     /**
      * Connect to the remote host and mount the home directory
      *
+     * @param workdir
      * @return null if we fail, the mounted working directory if we succeed
      */
     public Path mount(String workdir) {
@@ -257,12 +258,6 @@ public abstract class Session extends NSObject {
      * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */
     public abstract Path workdir() throws IOException;
-
-    /**
-     * @param workdir Change to the given working directory
-     * @throws IOException
-     */
-    public abstract void setWorkdir(Path workdir) throws IOException;
 
     /**
      * Send a 'no operation' command

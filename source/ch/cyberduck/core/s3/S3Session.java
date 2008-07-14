@@ -244,10 +244,6 @@ public class S3Session extends HTTPSession implements SSLSession {
         return workdir;
     }
 
-    public void setWorkdir(Path workdir) throws IOException {
-        ;
-    }
-
     protected void noop() throws IOException {
         ;
     }
