@@ -3756,6 +3756,7 @@ public class CDBrowserController extends CDWindowController
 
                         if(!isMounted()) {
                             window.setTitle((String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
+                            window.setRepresentedFilename("");
                         }
                         window.setDocumentEdited(false);
 
