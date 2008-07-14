@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.log4j.Logger;
 
