@@ -21,7 +21,7 @@
 		<key>848</key>
 		<string>696 477 527 560 0 0 1920 1178 </string>
 		<key>874</key>
-		<string>696 513 527 579 0 0 1920 1178 </string>
+		<string>696 463 527 579 0 0 1920 1178 </string>
 		<key>906</key>
 		<string>376 282 527 420 0 0 1280 778 </string>
 	</dict>
@@ -36,44 +36,44 @@
 		</array>
 		<key>11</key>
 		<array>
-			<string>1305</string>
 			<string>1303</string>
+			<string>1305</string>
 		</array>
 		<key>12</key>
 		<array>
-			<string>1306</string>
 			<string>1308</string>
+			<string>1306</string>
 		</array>
 		<key>13</key>
 		<array>
-			<string>1309</string>
 			<string>1311</string>
+			<string>1309</string>
 		</array>
 		<key>14</key>
 		<array>
 			<string>1392</string>
-			<string>1389</string>
 			<string>1391</string>
 			<string>1393</string>
+			<string>1389</string>
 		</array>
 		<key>4</key>
 		<array>
-			<string>1247</string>
 			<string>1270</string>
+			<string>1247</string>
 		</array>
 		<key>5</key>
 		<array>
 			<string>1242</string>
+			<string>1256</string>
+			<string>1262</string>
+			<string>1263</string>
+			<string>1260</string>
 			<string>1255</string>
 			<string>1245</string>
-			<string>1252</string>
-			<string>1262</string>
-			<string>1256</string>
-			<string>1263</string>
-			<string>1246</string>
-			<string>1253</string>
-			<string>1260</string>
 			<string>1244</string>
+			<string>1253</string>
+			<string>1252</string>
+			<string>1246</string>
 			<string>1267</string>
 		</array>
 		<key>6</key>
@@ -83,18 +83,18 @@
 		</array>
 		<key>7</key>
 		<array>
-			<string>1258</string>
-			<string>1268</string>
-			<string>1248</string>
-			<string>1257</string>
 			<string>1251</string>
 			<string>1266</string>
-			<string>1250</string>
-			<string>1269</string>
-			<string>1261</string>
-			<string>1241</string>
 			<string>1249</string>
 			<string>1243</string>
+			<string>1248</string>
+			<string>1269</string>
+			<string>1268</string>
+			<string>1250</string>
+			<string>1241</string>
+			<string>1258</string>
+			<string>1257</string>
+			<string>1261</string>
 		</array>
 		<key>8</key>
 		<array>
@@ -116,6 +116,6 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>9C7010</string>
+	<string>9E17</string>
 </dict>
 </plist>

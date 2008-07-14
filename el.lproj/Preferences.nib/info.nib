@@ -7,7 +7,7 @@
 	<key>IBEditorPositions</key>
 	<dict>
 		<key>1032</key>
-		<string>696 504 527 524 0 0 1920 1178 </string>
+		<string>376 204 527 524 0 0 1280 778 </string>
 		<key>1034</key>
 		<string>376 388 527 279 0 0 1280 778 </string>
 		<key>1035</key>
@@ -21,7 +21,7 @@
 		<key>848</key>
 		<string>696 477 527 560 0 0 1920 1178 </string>
 		<key>874</key>
-		<string>696 513 527 579 0 0 1920 1178 </string>
+		<string>696 463 527 579 0 0 1920 1178 </string>
 		<key>906</key>
 		<string>376 282 527 420 0 0 1280 778 </string>
 	</dict>
@@ -34,6 +34,6 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>9D34</string>
+	<string>9E17</string>
 </dict>
 </plist>
