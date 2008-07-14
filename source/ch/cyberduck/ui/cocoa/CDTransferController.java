@@ -619,6 +619,13 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.fireTransferResumed();
             }
 
+            public boolean isCanceled() {
+                if((transfer.isRunning() || transfer.isQueued()) && transfer.isCanceled()) {
+                    return true;
+                }
+                return super.isCanceled();
+            }
+
             public void log(final boolean request, final String message) {
                 if(logDrawer.state() == NSDrawer.OpenState) {
                     CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
