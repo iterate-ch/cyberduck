@@ -129,9 +129,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 browserModel.add(next);
             }
         }
-        this.transfer.fireTransferPaused();
         this.beginSheet();
-        this.transfer.fireTransferResumed();
         return action;
     }
 

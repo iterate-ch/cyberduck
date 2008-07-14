@@ -37,11 +37,6 @@ public interface TransferListener {
     abstract void transferQueued();
 
     /**
-     * 
-     */
-    abstract void transferPaused();
-
-    /**
      * The transfer has a slot in the queue allocated
      */
     abstract void transferResumed();
@@ -53,18 +48,20 @@ public interface TransferListener {
 
     /**
      * The path part of this transfer will be transferred
+     *
      * @param path
      */
     abstract void willTransferPath(Path path);
 
     /**
      * The path part of this transfer has been transferred
+     *
      * @param path
      */
     abstract void didTransferPath(Path path);
 
     /**
-     * 
+     *
      */
     abstract void bandwidthChanged(BandwidthThrottle bandwidth);
 }

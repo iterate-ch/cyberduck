@@ -31,9 +31,6 @@ public class TransferAdapter implements TransferListener {
     public void transferQueued() {
     }
 
-    public void transferPaused() {
-    }
-
     public void transferResumed() {
     }
 

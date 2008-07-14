@@ -30,8 +30,6 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
-import java.util.Iterator;
-
 /**
  * @version $Id$
  */
@@ -335,12 +333,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void tableRowDoubleClicked(final Object sender) {
-                if(CDTransferController.this.transferTable.selectedRow() != -1) {
-                    Transfer item = TransferCollection.instance().get(CDTransferController.this.transferTable.selectedRow());
-                    if(!item.isRunning()) {
-                        reloadButtonClicked(sender);
-                    }
-                }
+                reloadButtonClicked(sender);
             }
 
             public void selectionIsChanging(NSNotification notification) {
@@ -557,53 +550,19 @@ public class CDTransferController extends CDWindowController implements NSToolba
             public boolean prepare() {
                 transfer.addListener(tl = new TransferAdapter() {
                     public void transferQueued() {
-                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
-                            public void run() {
-                                window.toolbar().validateVisibleItems();
-                            }
-                        });
-                    }
-
-                    public void transferPaused() {
-                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
-                            public void run() {
-                                window.toolbar().validateVisibleItems();
-                            }
-                        });
+                        validateToolbar();
                     }
 
                     public void transferResumed() {
-                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
-                            public void run() {
-                                window.toolbar().validateVisibleItems();
-                            }
-                        });
+                        validateToolbar();
                     }
 
                     public void transferWillStart() {
-                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
-                            public void run() {
-//                                    transferTable.noteHeightOfRowsWithIndexesChanged(
-//                                            new NSIndexSet(new NSRange(TransferCollection.instance().indexOf(transfer),
-//                                                    TransferCollection.instance().size() - 1))
-//                                    );
-                                window.toolbar().validateVisibleItems();
-                                updateIcon();
-                            }
-                        });
+                        validateToolbar();
                     }
 
                     public void transferDidEnd() {
-                        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
-                            public void run() {
-//                                    transferTable.noteHeightOfRowsWithIndexesChanged(
-//                                            new NSIndexSet(new NSRange(TransferCollection.instance().indexOf(transfer),
-//                                                    TransferCollection.instance().size() - 1))
-//                                    );
-                                window.toolbar().validateVisibleItems();
-                                updateIcon();
-                            }
-                        });
+                        validateToolbar();
                     }
                 });
                 if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -616,10 +575,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void run() {
-                TransferOptions options = new TransferOptions();
+                final TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
-                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), options, true);
+                transfer.start(CDTransferPrompt.create(CDTransferController.this, transfer), options);
             }
 
             public void finish() {
@@ -655,7 +614,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void pause() {
-                transfer.fireTransferPaused();
+                transfer.fireTransferQueued();
                 super.pause();
                 transfer.fireTransferResumed();
             }
@@ -676,6 +635,15 @@ public class CDTransferController extends CDWindowController implements NSToolba
             public Object lock() {
                 // No synchronization with other tasks
                 return lock;
+            }
+        });
+    }
+
+    private void validateToolbar() {
+        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
+            public void run() {
+                window.toolbar().validateVisibleItems();
+                updateIcon();
             }
         });
     }
@@ -842,8 +810,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
             Transfer transfer = TransferCollection.instance().get(i);
-            if(!transfer.isRunning()) {
-                this.startTransfer(transfer, !transfer.isVirgin(), false);
+            if(!transfer.isRunning() && !transfer.isQueued()) {
+                this.startTransfer(transfer, true, false);
             }
         }
     }
@@ -931,8 +899,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         int j = 0;
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer q = TransferCollection.instance().get(i - j);
-            if(!q.isRunning()) {
+            Transfer transfer = TransferCollection.instance().get(i - j);
+            if(!transfer.isRunning() && !transfer.isQueued()) {
                 TransferCollection.instance().remove(i - j);
                 j++;
             }
@@ -943,8 +911,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void clearButtonClicked(final Object sender) {
         for(int i = 0; i < TransferCollection.instance().size(); i++) {
-            Transfer t = TransferCollection.instance().get(i);
-            if(!t.isRunning() && t.isComplete()) {
+            Transfer transfer = TransferCollection.instance().get(i);
+            if(!transfer.isRunning() && !transfer.isQueued() && transfer.isComplete()) {
                 TransferCollection.instance().remove(i);
                 i--;
             }
@@ -957,9 +925,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
         NSEnumerator iterator = transferTable.selectedRowEnumerator();
         while(iterator.hasMoreElements()) {
             int i = ((Number) iterator.nextElement()).intValue();
-            Transfer q = TransferCollection.instance().get(i);
-            if(!q.isRunning()) {
-                for(Path path : q.getRoots()) {
+            Transfer transfer = TransferCollection.instance().get(i);
+            if(!transfer.isRunning() && !transfer.isQueued()) {
+                for(Path path : transfer.getRoots()) {
                     path.getLocal().delete();
                 }
             }

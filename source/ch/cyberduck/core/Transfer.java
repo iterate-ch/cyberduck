@@ -23,6 +23,9 @@ import com.apple.cocoa.foundation.*;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 
@@ -170,7 +173,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
-        for(Path root: this.roots) {
+        for(Path root : this.roots) {
             final NSMutableDictionary rootDict = root.getAsDictionary();
             if(root.getStatus().isComplete()) {
                 rootDict.setObjectForKey(String.valueOf(true), "Complete");
@@ -210,22 +213,23 @@ public abstract class Transfer extends NSObject implements Serializable {
         canceled = false;
         running = true;
         queued = false;
-        for(TransferListener listener: listeners) {
+        reset = false;
+        for(TransferListener listener : listeners) {
             listener.transferWillStart();
         }
     }
 
     public void fireTransferQueued() {
+        final Session session = this.getSession();
+        CDMainApplication.invoke(new DefaultMainAction() {
+            public void run() {
+                Growl.instance().notify("Transfer queued", session.getHost().getHostname());
+            }
+        });
+        session.message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting", "Status", ""));
         queued = true;
         for(TransferListener listener: listeners) {
             listener.transferQueued();
-        }
-    }
-
-    public void fireTransferPaused() {
-        queued = true;
-        for(TransferListener listener: listeners) {
-            listener.transferPaused();
         }
     }
 
@@ -239,22 +243,22 @@ public abstract class Transfer extends NSObject implements Serializable {
     protected void fireTransferDidEnd() {
         running = false;
         queued = false;
-        for(TransferListener listener: listeners) {
+        for(TransferListener listener : listeners) {
             listener.transferDidEnd();
         }
-        synchronized(queueLock) {
-            queueLock.notify();
+        synchronized(Queue.instance()) {
+            Queue.instance().notify();
         }
     }
 
     protected void fireWillTransferPath(Path path) {
-        for(TransferListener listener: listeners) {
+        for(TransferListener listener : listeners) {
             listener.willTransferPath(path);
         }
     }
 
     protected void fireDidTransferPath(Path path) {
-        for(TransferListener listener: listeners) {
+        for(TransferListener listener : listeners) {
             listener.didTransferPath(path);
         }
     }
@@ -270,7 +274,7 @@ public abstract class Transfer extends NSObject implements Serializable {
     public void setBandwidth(float bytesPerSecond) {
         log.debug("setBandwidth:" + bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
-        for(TransferListener listener: listeners) {
+        for(TransferListener listener : listeners) {
             listener.bandwidthChanged(bandwidth);
         }
     }
@@ -332,7 +336,7 @@ public abstract class Transfer extends NSObject implements Serializable {
     /**
      *
      */
-    private Map<AbstractPath,Boolean> _existing = new HashMap<AbstractPath,Boolean>();
+    private Map<AbstractPath, Boolean> _existing = new HashMap<AbstractPath, Boolean>();
 
     /**
      * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
@@ -431,7 +435,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         item.getStatus().setSkipped(skipped);
         if(item.attributes.isDirectory()) {
             if(this.isCached(item)) {
-                for(Path child: this.childs(item)) {
+                for(Path child : this.childs(item)) {
                     this.setSkipped(child, skipped);
                 }
             }
@@ -470,7 +474,7 @@ public abstract class Transfer extends NSObject implements Serializable {
 
         if(p.attributes.isDirectory()) {
             boolean flag = false;
-            for(Path child: this.childs(p)) {
+            for(Path child : this.childs(p)) {
                 this.transfer(child, filter);
                 if(!child.getStatus().isComplete()) {
                     flag = true;
@@ -540,12 +544,12 @@ public abstract class Transfer extends NSObject implements Serializable {
             this.reset();
 
             // Calculate some information about the files in advance to give some progress information
-            for(Path next: roots) {
+            for(Path next : roots) {
                 this.prepare(next, filter);
             }
 
             // Transfer all files sequentially
-            for(Path next: roots) {
+            for(Path next : roots) {
                 this.transfer(next, filter);
             }
         }
@@ -581,7 +585,7 @@ public abstract class Transfer extends NSObject implements Serializable {
 
         if(p.attributes.isDirectory()) {
             // Call recursively for all childs
-            for(Path child: this.childs(p)) {
+            for(Path child : this.childs(p)) {
                 this.prepare(child, filter);
             }
         }
@@ -611,20 +615,11 @@ public abstract class Transfer extends NSObject implements Serializable {
 
     /**
      * Use default transfer options
+     *
      * @param prompt
      */
     public void start(TransferPrompt prompt) {
         this.start(prompt, TransferOptions.DEFAULT);
-    }
-
-    /**
-     * Calls #start with queueing off
-     *
-     * @param prompt
-     * @param options
-     */
-    public void start(TransferPrompt prompt, final TransferOptions options) {
-        this.start(prompt, options, false);
     }
 
     /**
@@ -633,55 +628,46 @@ public abstract class Transfer extends NSObject implements Serializable {
     protected TransferPrompt prompt;
 
     /**
-     * The lock used for queuing transfers
-     */
-    private static final Queue queueLock = Queue.instance();
-
-    /**
      * @param prompt
      * @param options
-     * @param queuing This transfer should respect the settings for maximum number of transfers
      */
-    public void start(TransferPrompt prompt, final TransferOptions options,
-                      final boolean queuing) {
+    public void start(TransferPrompt prompt, final TransferOptions options) {
         log.debug("start:" + prompt);
+        this.prompt = prompt;
         try {
             this.fireTransferWillStart();
-            if(queuing) {
-                // This transfer should respect the settings for maximum number of transfers
-                final TransferCollection q = TransferCollection.instance();
-                while(!this.isCanceled() && q.numberOfRunningTransfers()
-                        - q.numberOfQueuedTransfers() - (this.queued ? 0 : 1)
-                        >= (int) Preferences.instance().getDouble("queue.maxtransfers")) {
-                    log.info("Queuing " + this.toString());
-                    // The maximum number of transfers is already reached
-                    try {
-                        if(!this.queued) {
-                            // Notify if not queued already before
-                            this.fireTransferQueued();
-                            this.getSession().message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting", "Status", ""));
-                        }
-                        synchronized(queueLock) {
-                            // Wait for transfer slot
-                            queueLock.wait();
-                        }
-                    }
-                    catch(InterruptedException e) {
-                        log.error(e.getMessage());
-                    }
-                }
-                log.info(this.toString() + " released from queue");
-                this.fireTransferResumed();
-                if(this.isCanceled()) {
-                    // The transfer has been canceled while being queued
-                    return;
-                }
+            this.queue();
+            if(this.isCanceled()) {
+                // The transfer has been canceled while being queued
+                return;
             }
-            this.prompt = prompt;
             this.transfer(options);
         }
         finally {
             this.fireTransferDidEnd();
+        }
+    }
+
+    private void queue() {
+        final TransferCollection q = TransferCollection.instance();
+        // This transfer should respect the settings for maximum number of transfers
+        if(q.numberOfRunningTransfers() - q.numberOfQueuedTransfers() - 1
+                >= (int) Preferences.instance().getDouble("queue.maxtransfers"))
+        {
+            this.fireTransferQueued();
+            log.info("Queuing " + this.toString());
+            // The maximum number of transfers is already reached
+            try {
+                synchronized(Queue.instance()) {
+                    // Wait for transfer slot
+                    Queue.instance().wait();
+                }
+            }
+            catch(InterruptedException e) {
+                log.error(e.getMessage());
+            }
+            log.info(this.toString() + " released from queue");
+            this.fireTransferResumed();
         }
     }
 
@@ -710,8 +696,8 @@ public abstract class Transfer extends NSObject implements Serializable {
             }
             canceled = true;
         }
-        synchronized(queueLock) {
-            queueLock.notify();
+        synchronized(Queue.instance()) {
+            Queue.instance().notify();
         }
     }
 
@@ -733,27 +719,17 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     /**
-     * @return True if the transfer progress is zero and has presumably never
-     *         been started yet
-     */
-    public boolean isVirgin() {
-        return this.getTransferred() == 0;
-    }
-
-    /**
      * @return True if the bytes transferred equal the size of the queue and
      *         the bytes transfered is > 0
      */
     public boolean isComplete() {
         log.debug("isComplete");
-        if(this.isVirgin()) {
-            // No bytes transferred
-            if(!reset) {
-                // Not even attempted to transfer anything yet
-                return false;
-            }
+        // No bytes transferred
+        if(!reset) {
+            // Not even attempted to transfer anything yet
+            return false;
         }
-        for(Path root: this.roots) {
+        for(Path root : this.roots) {
             if(!root.getStatus().isComplete()) {
                 return false;
             }

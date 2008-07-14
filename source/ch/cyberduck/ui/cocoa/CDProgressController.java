@@ -28,7 +28,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
-import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
@@ -101,7 +100,7 @@ public class CDProgressController extends CDBundleController {
                 });
             }
         });
-        this.transfer.addListener(this.tl = new TransferListener() {
+        this.transfer.addListener(this.tl = new TransferAdapter() {
             /**
              * Timer to update the progress indicator
              */
@@ -111,11 +110,11 @@ public class CDProgressController extends CDBundleController {
             final long period = 500; //in milliseconds
 
             public void transferWillStart() {
+                progressBar.setIndeterminate(true);
+                progressBar.setHidden(false);
+                progressBar.startAnimation(null);
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
-                        progressBar.setIndeterminate(true);
-                        progressBar.setHidden(false);
-                        progressBar.startAnimation(null);
                         statusIconView.setImage(YELLOW_ICON);
                         setProgressText();
                         setStatusText();
@@ -124,6 +123,7 @@ public class CDProgressController extends CDBundleController {
             }
 
             public void transferDidEnd() {
+                progressBar.stopAnimation(null);
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         // Do not display any progress text when transfer is stopped
@@ -131,37 +131,11 @@ public class CDProgressController extends CDBundleController {
                         setMessageText();
                         setProgressText();
                         setStatusText();
-                        progressBar.stopAnimation(null);
                         progressBar.setHidden(true);
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
                         filesPopup.itemAtIndex(0).setEnabled(transfer.getRoot().getLocal().exists());
                     }
                 }, true);
-            }
-
-            public void transferPaused() {
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        progressBar.stopAnimation(null);
-                    }
-                });
-            }
-
-            public void transferQueued() {
-                this.transferPaused();
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        Growl.instance().notify("Transfer queued", transfer.getSession().getHost().getHostname());
-                    }
-                });
-            }
-
-            public void transferResumed() {
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        progressBar.startAnimation(null);
-                    }
-                });
             }
 
             public void willTransferPath(final Path path) {
@@ -172,11 +146,9 @@ public class CDProgressController extends CDBundleController {
                         CDMainApplication.invoke(new DefaultMainAction() {
                             public void run() {
                                 setProgressText();
-                                if(!transfer.isVirgin()) {
-                                    progressBar.setIndeterminate(false);
-                                    progressBar.setMaxValue(transfer.getSize());
-                                    progressBar.setDoubleValue(transfer.getTransferred());
-                                }
+                                progressBar.setIndeterminate(false);
+                                progressBar.setMaxValue(transfer.getSize());
+                                progressBar.setDoubleValue(transfer.getTransferred());
                             }
                         });
                     }
