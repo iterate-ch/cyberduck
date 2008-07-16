@@ -22,10 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.LoginController;
 
 import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSNotification;
+import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -144,13 +141,71 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.update();
             }
 
+            private NSTextField pkLabel;
+
+            public void setPkLabel(NSTextField pkLabel) {
+                this.pkLabel = pkLabel;
+            }
+
+            private NSButton pkCheckbox;
+
+            public void setPkCheckbox(NSButton pkCheckbox) {
+                this.pkCheckbox = pkCheckbox;
+                this.pkCheckbox.setTarget(this);
+                this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[]{Object.class}));
+            }
+
+            private NSOpenPanel publicKeyPanel;
+
+            public void pkCheckboxSelectionChanged(final NSButton sender) {
+                log.debug("pkCheckboxSelectionChanged");
+                if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
+                    publicKeyPanel = NSOpenPanel.openPanel();
+                    publicKeyPanel.setCanChooseDirectories(false);
+                    publicKeyPanel.setCanChooseFiles(true);
+                    publicKeyPanel.setAllowsMultipleSelection(false);
+                    publicKeyPanel.beginSheetForDirectory(NSPathUtilities.stringByExpandingTildeInPath("~/.ssh"), null, null, this.window(),
+                            this,
+                            new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+                }
+                else {
+                    credentials.setPrivateKeyFile(null);
+                    this.update();
+                }
+            }
+
+            public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returncode, Object context) {
+                log.debug("pkSelectionPanelDidEnd");
+                if(returncode == NSPanel.OKButton) {
+                    NSArray selected = sheet.filenames();
+                    java.util.Enumeration enumerator = selected.objectEnumerator();
+                    while(enumerator.hasMoreElements()) {
+                        String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
+                                (String) enumerator.nextElement());
+                        credentials.setPrivateKeyFile(pk);
+                    }
+                }
+                if(returncode == NSPanel.CancelButton) {
+                    credentials.setPrivateKeyFile(null);
+                }
+                publicKeyPanel = null;
+                this.update();
+            }
+
             private void update() {
-                this.userField.setEnabled(!credentials.isAnonymousLogin()
-                        && !credentials.usesPublicKeyAuthentication()
-                );
+                this.userField.setEnabled(!credentials.isAnonymousLogin());
                 this.passField.setEnabled(!credentials.isAnonymousLogin());
                 this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
+                this.pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
+                if(credentials.usesPublicKeyAuthentication()) {
+                    this.pkCheckbox.setState(NSCell.OnState);
+                    this.updateField(this.pkLabel, credentials.getPrivateKeyFile());
+                }
+                else {
+                    this.pkCheckbox.setState(NSCell.OffState);
+                    this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+                }
             }
 
             protected boolean validateInput() {
