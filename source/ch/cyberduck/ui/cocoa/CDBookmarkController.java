@@ -199,8 +199,7 @@ public class CDBookmarkController extends CDWindowController {
     public void setTimezonePopup(NSPopUpButton timezonePopup) {
         this.timezonePopup = timezonePopup;
         this.timezonePopup.setTarget(this);
-        final NSSelector action = new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class});
-        this.timezonePopup.setAction(action);
+        this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
         this.timezonePopup.removeAllItems();
         this.timezonePopup.addItem(DEFAULT);
         this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
@@ -223,7 +222,7 @@ public class CDBookmarkController extends CDWindowController {
         }
         else {
             String[] ids = TimeZone.getAvailableIDs();
-            TimeZone tz = null;
+            TimeZone tz;
             for(int i = 0; i < ids.length; i++) {
                 if((tz = TimeZone.getTimeZone(ids[i])).getDisplayName().equals(selected)) {
                     this.host.setTimezone(tz);
@@ -242,8 +241,7 @@ public class CDBookmarkController extends CDWindowController {
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
         this.connectmodePopup.setTarget(this);
-        final NSSelector action = new NSSelector("connectmodePopupClicked", new Class[]{NSPopUpButton.class});
-        this.connectmodePopup.setAction(action);
+        this.connectmodePopup.setAction(new NSSelector("connectmodePopupClicked", new Class[]{NSPopUpButton.class}));
         this.connectmodePopup.removeAllItems();
         this.connectmodePopup.addItem(DEFAULT);
         this.connectmodePopup.menu().addItem(new NSMenuItem().separatorItem());
@@ -265,24 +263,27 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSPopUpButton transferPopup; //IBOutlet
 
+    private static final String TRANSFER_NEWCONNECTION = NSBundle.localizedString("Open new connection", "");
+    private static final String TRANSFER_BROWSERCONNECTION = NSBundle.localizedString("Use browser connection", "");
+
     public void setTransferPopup(NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
         this.transferPopup.setTarget(this);
         this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.transferPopup.removeAllItems();
+        this.transferPopup.addItem(DEFAULT);
+        this.transferPopup.menu().addItem(new NSMenuItem().separatorItem());
+        this.transferPopup.addItemsWithTitles(new NSArray(new String[]{TRANSFER_NEWCONNECTION, TRANSFER_BROWSERCONNECTION}));
     }
 
-    private final int DEFAULT_INDEX = 0;
-    private final int USE_QUEUE_SESSION_INDEX = 2;
-    private final int USE_BROWSER_SESSION_INDEX = 3;
-
     public void transferPopupClicked(final NSPopUpButton sender) {
-        if(sender.indexOfSelectedItem() == DEFAULT_INDEX) {
+        if(sender.selectedItem().title().equals(DEFAULT)) {
             this.host.setMaxConnections(null);
         }
-        else if(sender.indexOfSelectedItem() == USE_BROWSER_SESSION_INDEX) {
+        else if(sender.selectedItem().title().equals(TRANSFER_BROWSERCONNECTION)) {
             this.host.setMaxConnections(1);
         }
-        else if(sender.indexOfSelectedItem() == USE_QUEUE_SESSION_INDEX) {
+        else if(sender.selectedItem().title().equals(TRANSFER_NEWCONNECTION)) {
             this.host.setMaxConnections(-1);
         }
         this.itemChanged();
@@ -570,11 +571,11 @@ public class CDBookmarkController extends CDWindowController {
         }
         this.protocolPopup.selectItemWithTitle(this.host.getProtocol().getDescription());
         if(null == host.getMaxConnections()) {
-            this.transferPopup.selectItemAtIndex(DEFAULT_INDEX);
+            this.transferPopup.selectItemWithTitle(DEFAULT);
         }
         else {
-            this.transferPopup.selectItemAtIndex(
-                    host.getMaxConnections() == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
+            this.transferPopup.selectItemWithTitle(
+                    host.getMaxConnections() == 1 ? TRANSFER_BROWSERCONNECTION : TRANSFER_NEWCONNECTION);
         }
         this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)
                 || this.host.getProtocol().equals(Protocol.FTP_TLS));
