@@ -162,14 +162,16 @@ public class SFTPSession extends Session {
 
     protected void login(final Credentials credentials) throws IOException {
         if(credentials.usesPublicKeyAuthentication()) {
-            if(this.loginUsingPublicKeyAuthentication(credentials)) {
+            if(this.loginUsingPublicKeyAuthentication(credentials)
+                    || this.loginUsingPasswordAuthentication(credentials)
+                    || this.loginUsingKBIAuthentication(credentials)) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                 return;
             }
         }
         else {
-            if(this.loginUsingPasswordAuthentication(credentials) ||
-                    this.loginUsingKBIAuthentication(credentials)) {
+            if(this.loginUsingPasswordAuthentication(credentials)
+                    || this.loginUsingKBIAuthentication(credentials)) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                 return;
             }
