@@ -12,9 +12,11 @@
             CLASS = "ch.cyberduck.ui.cocoa.CDLoginController";
             LANGUAGE = Java;
             OUTLETS =             {
-                anonymousCheckbox = id;
+                anonymousCheckbox = NSButton;
                 keychainCheckbox = NSButton;
                 passField = NSSecureTextField;
+                pkCheckbox = NSButton;
+                pkLabel = NSTextField;
                 textField = NSTextField;
                 titleField = NSTextField;
                 userField = NSTextField;
