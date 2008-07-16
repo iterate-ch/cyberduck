@@ -39,7 +39,6 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
