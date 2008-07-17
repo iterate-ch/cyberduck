@@ -84,14 +84,14 @@ public class CDTransferTableDataSource extends CDController {
             this.filter = new TransferFilter() {
                 public boolean accept(Transfer transfer) {
                     // Match for pathnames and hostname
-                    return transfer.getName().indexOf(searchString) != -1
-                            || transfer.getSession().getHost().getHostname().indexOf(searchString) != -1;
+                    return transfer.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1
+                            || transfer.getSession().getHost().getHostname().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
                 }
             };
         }
     }
 
-    private Collection<Transfer> filter(Collection<Transfer> c) {
+    public Collection<Transfer> filter(Collection<Transfer> c) {
         if(null == filter) {
             return c;
         }
