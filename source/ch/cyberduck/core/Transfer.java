@@ -213,7 +213,6 @@ public abstract class Transfer extends NSObject implements Serializable {
         canceled = false;
         running = true;
         queued = false;
-        reset = false;
         for(TransferListener listener : listeners) {
             listener.transferWillStart();
         }
@@ -712,6 +711,14 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     /**
+     *
+     * @return
+     */
+    public boolean isReset() {
+        return reset;
+    }
+
+    /**
      * @return The number of roots
      */
     public int numberOfRoots() {
@@ -724,11 +731,6 @@ public abstract class Transfer extends NSObject implements Serializable {
      */
     public boolean isComplete() {
         log.debug("isComplete");
-        // No bytes transferred
-        if(!reset) {
-            // Not even attempted to transfer anything yet
-            return false;
-        }
         for(Path root : this.roots) {
             if(!root.getStatus().isComplete()) {
                 return false;
