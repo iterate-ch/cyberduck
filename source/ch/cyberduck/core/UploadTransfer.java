@@ -329,7 +329,7 @@ public class UploadTransfer extends Transfer {
     }
 
     protected void fireTransferDidEnd() {
-        if(this.isReset() && this.isComplete() && !this.isCanceled()) {
+        if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
             CDMainApplication.invoke(new DefaultMainAction() {
                 public void run() {
                     Growl.instance().notify("Upload complete", getName());
