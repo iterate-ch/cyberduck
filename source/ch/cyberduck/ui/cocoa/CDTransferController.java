@@ -594,12 +594,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             public void cleanup() {
                 if(transfer.isComplete() && !transfer.isCanceled()) {
-                    if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                        removeTransfer(transfer);
-                    }
-                    if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                        if(!(TransferCollection.instance().numberOfRunningTransfers() > 0)) {
-                            window().close();
+                    if(transfer.isReset()) {
+                        if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                            removeTransfer(transfer);
+                        }
+                        if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                            if(!(TransferCollection.instance().numberOfRunningTransfers() > 0)) {
+                                window().close();
+                            }
                         }
                     }
                 }
