@@ -93,7 +93,7 @@ public class CDBookmarkTableDataSource extends CDController {
      *         given by the comparision with the HostFilter
      * @see HostFilter
      */
-    protected Collection getSource() {
+    protected Collection<Host> getSource() {
         if(null == filter) {
             return source;
         }
