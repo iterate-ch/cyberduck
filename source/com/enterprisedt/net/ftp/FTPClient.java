@@ -507,9 +507,12 @@ public class FTPClient {
 
     public BufferedReader dir(String encoding) throws IOException, FTPException {
         if(Preferences.instance().getBoolean("ftp.sendExtendedListCommand")) {
-            BufferedReader r = this.dir(encoding, "LIST -a");
-            if(null != r) {
-                return r;
+            try {
+                return this.dir(encoding, "LIST -a");
+            }
+            catch(FTPException e) {
+                log.error(e.getMessage());
+                // Option -a may not be recognized. Try standard list command instead
             }
         }
         // Option -a may not be recognized. Try standard list command instead
