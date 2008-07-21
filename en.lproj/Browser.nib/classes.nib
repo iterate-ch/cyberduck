@@ -22,6 +22,7 @@
         },
                 {
             ACTIONS =             {
+                addBookmarkButtonClicked = id;
                 copyURLButtonClicked = id;
                 createFileButtonClicked = id;
                 createFolderButtonClicked = id;
@@ -54,10 +55,6 @@
         },
                 {
             ACTIONS =             {
-                addBookmarkButtonClicked = id;
-                connectBookmarkButtonClicked = id;
-                deleteBookmarkButtonClicked = id;
-                editBookmarkButtonClicked = id;
             };
             CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController";
             LANGUAGE = Java;

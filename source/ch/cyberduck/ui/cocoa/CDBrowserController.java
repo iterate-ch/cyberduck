@@ -2140,8 +2140,12 @@ public class CDBrowserController extends CDWindowController
     public void addBookmarkButtonClicked(final Object sender) {
         final Host item;
         if(this.isMounted()) {
+            Path selected = this.getSelectedPath();
+            if(null == selected || !selected.attributes.isDirectory()) {
+                selected = this.workdir();
+            }
             item = new Host(this.session.getHost().getAsDictionary());
-            item.setDefaultPath(this.workdir().getAbsolute());
+            item.setDefaultPath(selected.getAbsolute());
         }
         else {
             item = new Host(Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
