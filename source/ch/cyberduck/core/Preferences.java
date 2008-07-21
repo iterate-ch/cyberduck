@@ -444,7 +444,7 @@ public abstract class Preferences {
          * Normalize path names
          */
         defaults.put("path.normalize", String.valueOf(true));
-        defaults.put("path.normalize.unicode", String.valueOf(true));
+        defaults.put("path.normalize.unicode", String.valueOf(false));
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
