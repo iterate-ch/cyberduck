@@ -303,8 +303,22 @@ public class CDInfoController extends CDWindowController {
             }
             this.ownerField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getOwner());
-            this.sizeButton.setEnabled(file.attributes.isDirectory());
+
+            boolean isDirectorySelected = false;
+            for(Path next : files) {
+                if(next.attributes.isDirectory()) {
+                    isDirectorySelected = true;
+                    break;
+                }
+            }
+            this.sizeButton.setEnabled(isDirectorySelected);
+            this.recursiveCheckbox.setEnabled(isDirectorySelected);
+            if(!isDirectorySelected) {
+                this.recursiveCheckbox.setState(NSCell.OffState);
+            }
+
             this.updateSize();
+
             this.initPermissionsCheckbox(false);
             Permission permission = null;
             for(Path next : files) {
@@ -341,7 +355,7 @@ public class CDInfoController extends CDWindowController {
                         + " | " + (null == permission ? NSBundle.localizedString("Unknown", "") :permission.toString()));
             }
 
-            NSImage fileIcon = null;
+            NSImage fileIcon;
             if(count > 1) {
                 fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
             }
