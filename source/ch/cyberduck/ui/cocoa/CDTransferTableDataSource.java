@@ -91,11 +91,14 @@ public class CDTransferTableDataSource extends CDController {
         }
     }
 
-    public Collection<Transfer> filter(Collection<Transfer> c) {
+    /**
+     * @return The filtered collection currently to be displayed within the constraints
+     */
+    protected Collection<Transfer> getSource() {
         if(null == filter) {
-            return c;
+            return TransferCollection.instance();
         }
-        Collection<Transfer> filtered = new Collection<Transfer>(c);
+        Collection<Transfer> filtered = new Collection<Transfer>(TransferCollection.instance());
         for(Iterator<Transfer> i = filtered.iterator(); i.hasNext();) {
             if(!filter.accept(i.next())) {
                 //temporarly remove the t from the collection
@@ -109,7 +112,7 @@ public class CDTransferTableDataSource extends CDController {
      * @param view
      */
     public int numberOfRowsInTableView(NSTableView view) {
-        return this.filter(TransferCollection.instance()).size();
+        return this.getSource().size();
     }
 
     /**
@@ -121,13 +124,13 @@ public class CDTransferTableDataSource extends CDController {
         if(row < numberOfRowsInTableView(view)) {
             final String identifier = (String) tableColumn.identifier();
             if(identifier.equals(ICON_COLUMN)) {
-                return this.filter(TransferCollection.instance()).get(row);
+                return this.getSource().get(row);
             }
             if(identifier.equals(PROGRESS_COLUMN)) {
-                return controllers.get(this.filter(TransferCollection.instance()).get(row));
+                return controllers.get(this.getSource().get(row));
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return this.filter(TransferCollection.instance()).get(row).getName();
+                return this.getSource().get(row).getName();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
