@@ -367,6 +367,8 @@ public abstract class Preferences {
          * Send LIST -a
          */
         defaults.put("ftp.sendExtendedListCommand", String.valueOf(true));
+        defaults.put("ftp.sendStatListCommand", String.valueOf(true));
+
         /**
          * Fallback to active or passive mode respectively
          */
