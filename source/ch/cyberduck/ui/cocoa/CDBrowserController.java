@@ -1151,7 +1151,7 @@ public class CDBrowserController extends CDWindowController
         }
         else {
             this.setBookmarkFilter(null);
-            this.browserTabView.selectTabViewItemAtIndex(Preferences.instance().getInteger("browser.view"));
+            this.selectBrowser(Preferences.instance().getInteger("browser.view"));
         }
         this.getFocus();
         this.validateNavigationButtons();
@@ -1188,6 +1188,14 @@ public class CDBrowserController extends CDWindowController
         // Close bookmarks
         this.toggleBookmarks(false);
         // Highlight selected browser view
+        this.selectBrowser(selected);
+        this.reloadData(false);
+        this.getFocus();
+        // Save selected browser view
+        Preferences.instance().setProperty("browser.view", selected);
+    }
+
+    private void selectBrowser(int selected) {
         this.browserSwitchView.setSelected(selected);
         switch(selected) {
             case SWITCH_LIST_VIEW:
@@ -1197,10 +1205,6 @@ public class CDBrowserController extends CDWindowController
                 this.browserTabView.selectTabViewItemAtIndex(TAB_OUTLINE_VIEW);
                 break;
         }
-        this.reloadData(false);
-        this.getFocus();
-        // Save selected browser view
-        Preferences.instance().setProperty("browser.view", selected);
     }
 
     private abstract class AbstractBrowserTableDelegate extends CDAbstractPathTableDelegate {
@@ -2152,6 +2156,9 @@ public class CDBrowserController extends CDWindowController
                     Preferences.instance().getProperty("connection.hostname.default"),
                     Preferences.instance().getInteger("connection.port.default"));
         }
+
+        this.toggleBookmarks(true);
+
         bookmarkModel.setFilter(null);
         bookmarkModel.getSource().add(item);
         final int index = bookmarkModel.getSource().lastIndexOf(item);
@@ -4363,6 +4370,7 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_EDIT = "Edit";
     private static final String TOOLBAR_DELETE = "Delete";
     private static final String TOOLBAR_NEW_FOLDER = "New Folder";
+    private static final String TOOLBAR_NEW_BOOKMARK = "New Bookmark";
     private static final String TOOLBAR_GET_INFO = "Get Info";
     private static final String TOOLBAR_WEBVIEW = "Open";
     private static final String TOOLBAR_DISCONNECT = "Disconnect";
@@ -4580,6 +4588,15 @@ public class CDBrowserController extends CDWindowController
             item.setAction(new NSSelector("createFolderButtonClicked", new Class[]{Object.class}));
             return item;
         }
+        if(itemIdentifier.equals(TOOLBAR_NEW_BOOKMARK)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_NEW_BOOKMARK, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NEW_BOOKMARK, "Toolbar item"));
+            item.setToolTip(NSBundle.localizedString("New Bookmark", "Toolbar item tooltip"));
+            item.setImage(NSImage.imageNamed("bookmark40.tiff"));
+            item.setTarget(this);
+            item.setAction(new NSSelector("addBookmarkButtonClicked", new Class[]{Object.class}));
+            return item;
+        }
         if(itemIdentifier.equals(TOOLBAR_DISCONNECT)) {
             item.setLabel(NSBundle.localizedString(TOOLBAR_DISCONNECT, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_DISCONNECT, "Toolbar item"));
@@ -4651,6 +4668,7 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_EDIT,
                 TOOLBAR_DELETE,
                 TOOLBAR_NEW_FOLDER,
+                TOOLBAR_NEW_BOOKMARK,
                 TOOLBAR_GET_INFO,
                 TOOLBAR_WEBVIEW,
                 TOOLBAR_TERMINAL,
