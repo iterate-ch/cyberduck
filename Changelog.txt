@@ -8,6 +8,7 @@ Changelog. Last modified: $Date$
 - [Localize] Greek Localization
 - [Feature] Added transcript (S3)
 - [Feature] Added transcript (WebDAV)
+- [Feature] Support for faster directory listings using STAT command on the control connection (FTP) [#683]
 - [Feature] Display bookmark view for new browser window [#2252]
 - [Feature] Option in browser context menu to open selected folder in new browser [#2036]
 - [Feature] Option in browser context menu to add bookmark for selected folder [#2222]
