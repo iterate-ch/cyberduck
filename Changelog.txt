@@ -5,15 +5,21 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 3.0.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.2]
-- [Localize] Arabic Localization
 - [Localize] Greek Localization
 - [Feature] Added transcript (S3)
 - [Feature] Added transcript (WebDAV)
+- [Feature] Display bookmark view for new browser window [#2252]
+- [Feature] Option in context menu to open folder in new browser [#2036]
+- [Feature] Cannot select private key in login prompt (SSH) [#2221]
+- [Feature] Authentication with both password and public key (SSH) [#2203]
 - [Bugfix] Moving or copying files to another bucket fails (S3) [#2157]
 - [Bugfix] Folders collapse in outline view when refreshing [#2033]
 - [Bugfix] Cannot connect with empty password [#2109]
 - [Bugfix] Saving when editor exits does not upload edited file [#2120]
-- [Bugfix] Updated Growl.framework
+- [Bugfix] Wrong selection with search filter in Transfer window [#2336]
+- [Bugfix] Stop button does not work during countdown to retry transfer [#2121]
+- [Bugfix] Transfers fail using AppleScript (SFTP) [#2244]
+- [Bugfix] Updated Growl.framework to 1.1.4
 
 3.0.1 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.1]
 - [Feature] Added Taco HTML Edit to the list of supported editors (http://tacosw.com/htmledit/beta.php) [#188]
