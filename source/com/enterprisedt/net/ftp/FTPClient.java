@@ -505,6 +505,42 @@ public class FTPClient {
         return reply.getReplyCode().equals("200");
     }
 
+    /**
+     * Issue the FTP STAT command to the server for a given pathname.  This
+     * should produce a listing of the file or directory.
+     *
+     * Popular FTP servers already support "STAT -l" command to
+     * transferring dir list via control channel.
+     *
+     * @throws IOException
+     * @throws FTPException
+     */
+    public String[] statl(String pathname) throws IOException, FTPException {
+        FTPReply reply = control.sendCommand("STAT " + pathname);
+
+        lastValidReply = control.validateReply(reply, new String[]{"211", "212", "213", "450"});
+
+        String[] result = new String[lastValidReply.getReplyData().length];
+        for(int i = 0; i < result.length; i++) {
+            //Some servers include the status code for every line.
+            final String line = lastValidReply.getReplyData()[i];
+            if(line.startsWith(lastValidReply.getReplyCode())) {
+                result[i] = line.substring(line.indexOf(lastValidReply.getReplyCode())+lastValidReply.getReplyCode().length()+1);
+            }
+            else {
+                result[i] = line;
+            }
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param encoding
+     * @return
+     * @throws IOException
+     * @throws FTPException
+     */
     public BufferedReader dir(String encoding) throws IOException, FTPException {
         if(Preferences.instance().getBoolean("ftp.sendExtendedListCommand")) {
             try {

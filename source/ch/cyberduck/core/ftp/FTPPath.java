@@ -98,6 +98,9 @@ public class FTPPath extends Path {
         return this.session;
     }
 
+    private boolean statListSupported
+            = Preferences.instance().getBoolean("ftp.sendStatListCommand");
+
     public AttributedList<Path> list(final ListParseListener listener) {
         final AttributedList<Path> childs = new AttributedList<Path>() {
             public boolean add(Path object) {
@@ -112,59 +115,44 @@ public class FTPPath extends Path {
                     this.getName()));
 
             final FTPFileEntryParser parser = session.getFileParser();
-            session.FTP.setTransferType(FTPTransferType.ASCII);
-            session.setWorkdir(this);
-            final BufferedReader reader = session.FTP.dir(this.session.getEncoding());
-            if(null == reader) {
-                // This is an empty directory
-                return childs;
+            if(statListSupported) {
+                try {
+                    final String[] lines = session.FTP.statl(this.getAbsolute());
+                    if(lines.length == 0) {
+                        // This is an educated guess
+                        statListSupported = false;
+                    }
+                    for(int i = 0; i < lines.length; i++) {
+                        final Path parsed = this.parse(parser, lines[i]);
+                        if(null == parsed) {
+                            continue;
+                        }
+                        childs.add(parsed);
+                    }
+                }
+                catch(FTPException e) {
+                    log.error(e.getMessage());
+                    statListSupported = false;
+                }
             }
-            String line;
-            while((line = parser.readNextEntry(reader)) != null) {
-                session.log(false, line);
-                FTPFile f = parser.parseFTPEntry(line);
-                if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
-                    continue;
+            if(!statListSupported) {
+                session.FTP.setTransferType(FTPTransferType.ASCII);
+                session.setWorkdir(this);
+                final BufferedReader reader = session.FTP.dir(this.session.getEncoding());
+                if(null == reader) {
+                    // This is an empty directory
+                    return childs;
                 }
-                Path p = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
-                p.setParent(this);
-                switch(f.getType()) {
-                    case FTPFile.SYMBOLIC_LINK_TYPE:
-                        p.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
-                        p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
-                        break;
-                    case FTPFile.DIRECTORY_TYPE:
-                        p.attributes.setType(Path.DIRECTORY_TYPE);
-                        break;
+                String line;
+                while((line = parser.readNextEntry(reader)) != null) {
+                    final Path parsed = this.parse(parser, line);
+                    if(null == parsed) {
+                        continue;
+                    }
+                    childs.add(parsed);
                 }
-                p.attributes.setSize(f.getSize());
-                p.attributes.setOwner(f.getUser());
-                p.attributes.setGroup(f.getGroup());
-                if(session.isPermissionSupported(parser)) {
-                    p.attributes.setPermission(new Permission(
-                            new boolean[][]{
-                                    {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
-                                            f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
-                                            f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                    },
-                                    {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
-                                            f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
-                                            f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                    },
-                                    {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
-                                            f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
-                                            f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                                    }
-                            }
-                    ));
-                }
-                final Calendar timestamp = f.getTimestamp();
-                if(timestamp != null) {
-                    p.attributes.setModificationDate(timestamp.getTimeInMillis());
-                }
-                childs.add(p);
+                session.FTP.finishDir();
             }
-            session.FTP.finishDir();
             boolean dirChanged = false;
             for(Iterator iter = childs.iterator(); iter.hasNext();) {
                 Path p = (Path) iter.next();
@@ -188,6 +176,51 @@ public class FTPPath extends Path {
             this.error("Listing directory failed", e);
         }
         return childs;
+    }
+
+    private Path parse(FTPFileEntryParser parser, String line) {
+        session.log(false, line);
+        FTPFile f = parser.parseFTPEntry(line);
+        if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
+            return null;
+        }
+        Path p = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
+        p.setParent(this);
+        switch(f.getType()) {
+            case FTPFile.SYMBOLIC_LINK_TYPE:
+                p.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
+                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
+                break;
+            case FTPFile.DIRECTORY_TYPE:
+                p.attributes.setType(Path.DIRECTORY_TYPE);
+                break;
+        }
+        p.attributes.setSize(f.getSize());
+        p.attributes.setOwner(f.getUser());
+        p.attributes.setGroup(f.getGroup());
+        if(session.isPermissionSupported(parser)) {
+            p.attributes.setPermission(new Permission(
+                    new boolean[][]{
+                            {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
+                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
+                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                            },
+                            {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
+                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
+                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                            },
+                            {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
+                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
+                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                            }
+                    }
+            ));
+        }
+        final Calendar timestamp = f.getTimestamp();
+        if(timestamp != null) {
+            p.attributes.setModificationDate(timestamp.getTimeInMillis());
+        }
+        return p;
     }
 
     public void mkdir(boolean recursive) {
