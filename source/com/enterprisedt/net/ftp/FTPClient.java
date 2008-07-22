@@ -505,6 +505,13 @@ public class FTPClient {
         return reply.getReplyCode().equals("200");
     }
 
+    private boolean statListSupported
+            = Preferences.instance().getBoolean("ftp.sendStatListCommand");
+
+    public boolean isStatListSupported() {
+        return statListSupported;
+    }
+
     /**
      * Issue the FTP STAT command to the server for a given pathname.  This
      * should produce a listing of the file or directory.
@@ -516,22 +523,46 @@ public class FTPClient {
      * @throws FTPException
      */
     public String[] statl(String pathname) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("STAT " + pathname);
+        if(statListSupported) {
+            try {
+                FTPReply reply = control.sendCommand("STAT " + pathname);
 
-        lastValidReply = control.validateReply(reply, new String[]{"211", "212", "213", "450"});
+                lastValidReply = control.validateReply(reply, new String[]{"211", "212", "213", "450"});
 
-        String[] result = new String[lastValidReply.getReplyData().length];
-        for(int i = 0; i < result.length; i++) {
-            //Some servers include the status code for every line.
-            final String line = lastValidReply.getReplyData()[i];
-            if(line.startsWith(lastValidReply.getReplyCode())) {
-                result[i] = line.substring(line.indexOf(lastValidReply.getReplyCode())+lastValidReply.getReplyCode().length()+1);
+                String[] result = new String[lastValidReply.getReplyData().length];
+                for(int i = 0; i < result.length; i++) {
+                    //Some servers include the status code for every line.
+                    final String line = lastValidReply.getReplyData()[i];
+                    if(line.startsWith(lastValidReply.getReplyCode())) {
+                        result[i] = line.substring(line.indexOf(lastValidReply.getReplyCode())+lastValidReply.getReplyCode().length()+1);
+                    }
+                    else {
+                        result[i] = line;
+                    }
+                }
+                if(result.length == 0) {
+                    // This is an educated guess
+                    statListSupported = false;
+                }
+                return result;
             }
-            else {
-                result[i] = line;
+            catch(FTPException e) {
+                statListSupported = false;
+                // STAT may not be supported for directory listings. Try standard LIST command instead
+                log.error(e.getMessage());
             }
         }
-        return result;
+        return new String[]{};
+    }
+
+    /**
+     * The server supports LIST -a
+     */
+    private boolean extendedListSupported
+            = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
+
+    public boolean isExtendedListSupported() {
+        return extendedListSupported;
     }
 
     /**
@@ -542,13 +573,14 @@ public class FTPClient {
      * @throws FTPException
      */
     public BufferedReader dir(String encoding) throws IOException, FTPException {
-        if(Preferences.instance().getBoolean("ftp.sendExtendedListCommand")) {
+        if(extendedListSupported) {
             try {
                 return this.dir(encoding, "LIST -a");
             }
             catch(FTPException e) {
-                log.error(e.getMessage());
+                extendedListSupported = false;
                 // Option -a may not be recognized. Try standard list command instead
+                log.error(e.getMessage());
             }
         }
         // Option -a may not be recognized. Try standard list command instead

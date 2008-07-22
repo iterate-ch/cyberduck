@@ -98,9 +98,6 @@ public class FTPPath extends Path {
         return this.session;
     }
 
-    private boolean statListSupported
-            = Preferences.instance().getBoolean("ftp.sendStatListCommand");
-
     public AttributedList<Path> list(final ListParseListener listener) {
         final AttributedList<Path> childs = new AttributedList<Path>() {
             public boolean add(Path object) {
@@ -115,27 +112,17 @@ public class FTPPath extends Path {
                     this.getName()));
 
             final FTPFileEntryParser parser = session.getFileParser();
-            if(statListSupported) {
-                try {
-                    final String[] lines = session.FTP.statl(this.getAbsolute());
-                    if(lines.length == 0) {
-                        // This is an educated guess
-                        statListSupported = false;
+            if(session.FTP.isStatListSupported()) {
+                final String[] lines = session.FTP.statl(this.getAbsolute());
+                for(int i = 0; i < lines.length; i++) {
+                    final Path parsed = this.parse(parser, lines[i]);
+                    if(null == parsed) {
+                        continue;
                     }
-                    for(int i = 0; i < lines.length; i++) {
-                        final Path parsed = this.parse(parser, lines[i]);
-                        if(null == parsed) {
-                            continue;
-                        }
-                        childs.add(parsed);
-                    }
-                }
-                catch(FTPException e) {
-                    log.error(e.getMessage());
-                    statListSupported = false;
+                    childs.add(parsed);
                 }
             }
-            if(!statListSupported) {
+            if(!session.FTP.isStatListSupported()) {
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 session.setWorkdir(this);
                 final BufferedReader reader = session.FTP.dir(this.session.getEncoding());
