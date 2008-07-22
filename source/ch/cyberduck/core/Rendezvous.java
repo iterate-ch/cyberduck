@@ -35,10 +35,13 @@ public class Rendezvous
 
     private static Logger log = Logger.getLogger(Rendezvous.class);
 
+    private static final String SERVICE_TYPE_SFTP = "_sftp._tcp.";
+    private static final String SERVICE_TYPE_SSH = "_ssh._tcp.";
+    private static final String SERVICE_TYPE_FTP = "_ftp._tcp.";
+    private static final String SERVICE_TYPE_WEBDAV = "_webdav._tcp";
+
     private static final String[] serviceTypes = new String[]{
-            "_sftp._tcp.",
-            "_ssh._tcp.",
-            "_ftp._tcp."
+            SERVICE_TYPE_SFTP, SERVICE_TYPE_SSH, SERVICE_TYPE_FTP, SERVICE_TYPE_WEBDAV
     };
 
     private Map<String, Host> services;
@@ -164,7 +167,7 @@ public class Rendezvous
      */
     public Host getServiceWithDisplayedName(String displayedName) {
         synchronized(this) {
-            for(Host h: services.values()){
+            for(Host h : services.values()) {
                 if(h.getNickname().equals(displayedName)) {
                     return h;
                 }
@@ -278,7 +281,7 @@ public class Rendezvous
                                 String fullname, String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + hostname);
         try {
-            final Host host = new Host(hostname, port);
+            final Host host = new Host(this.getProtocol(fullname, port), hostname, port);
             synchronized(this) {
                 this.services.put(fullname, host);
             }
@@ -289,5 +292,26 @@ public class Rendezvous
             // the resolve by calling DNSSDService.stop().
             resolver.stop();
         }
+    }
+
+    /**
+     * @param serviceType
+     * @return Null if no protocol can be found for the given Rendezvous service type.
+     * @see "http://developer.apple.com/qa/qa2001/qa1312.html"
+     */
+    public Protocol getProtocol(final String serviceType, final int port) {
+        if(serviceType.contains(SERVICE_TYPE_SFTP) || serviceType.contains(SERVICE_TYPE_SSH)) {
+            return Protocol.SFTP;
+        }
+        if(serviceType.contains(SERVICE_TYPE_FTP)) {
+            return Protocol.FTP;
+        }
+        if(serviceType.contains(SERVICE_TYPE_WEBDAV)) {
+            if(Protocol.WEBDAV_SSL.getDefaultPort() == port) {
+                return Protocol.WEBDAV_SSL;
+            }
+            return Protocol.WEBDAV;
+        }
+        return Protocol.getDefaultProtocol(port);
     }
 }
