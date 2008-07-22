@@ -106,17 +106,6 @@ public class Rendezvous
 
         public void serviceResolved(final String servicename, final String hostname) {
             log.info("Service resolved:" + servicename);
-            if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
-                try {
-                    if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
-                        log.info("Supressed Rendezvous notification for " + servicename);
-                        return;
-                    }
-                }
-                catch(UnknownHostException e) {
-                    ; //Ignore
-                }
-            }
             RendezvousListener[] l = listeners.toArray(
                     new RendezvousListener[listeners.size()]);
             for(int i = 0; i < l.length; i++) {

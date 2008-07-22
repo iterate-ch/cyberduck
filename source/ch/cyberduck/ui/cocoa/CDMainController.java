@@ -35,6 +35,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.nio.charset.Charset;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -404,6 +406,17 @@ public class CDMainController extends CDController {
         }
         Rendezvous.instance().addListener(new RendezvousListener() {
             public void serviceResolved(final String identifier, final String hostname) {
+                if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
+                    try {
+                        if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
+                            log.info("Supressed Rendezvous notification for " + hostname);
+                            return;
+                        }
+                    }
+                    catch(UnknownHostException e) {
+                        ; //Ignore
+                    }
+                }
                 synchronized(Rendezvous.instance()) {
                     CDMainApplication.invoke(new DefaultMainAction() {
                         public void run() {
