@@ -1922,7 +1922,7 @@ public class CDBrowserController extends CDWindowController
             }
 
             private void reloadBookmarks() {
-                if(bookmarkModel.getSource().equals(Rendezvous.instance())) {
+                if(bookmarkModel.getSource().equals(RendezvousCollection.defaultCollection())) {
                     bookmarkTable.deselectAll(null);
                     bookmarkTable.reloadData();
                 }
