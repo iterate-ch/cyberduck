@@ -132,6 +132,7 @@ public class FTPPath extends Path {
                 }
                 String line;
                 while((line = parser.readNextEntry(reader)) != null) {
+                    session.log(false, line);
                     final Path parsed = this.parse(parser, line);
                     if(null == parsed) {
                         continue;
@@ -166,7 +167,6 @@ public class FTPPath extends Path {
     }
 
     private Path parse(FTPFileEntryParser parser, String line) {
-        session.log(false, line);
         FTPFile f = parser.parseFTPEntry(line);
         if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
             return null;
