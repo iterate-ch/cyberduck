@@ -115,7 +115,7 @@ public class FTPPath extends Path {
             if(session.FTP.isStatListSupported()) {
                 final String[] lines = session.FTP.statl(this.getAbsolute());
                 for(int i = 0; i < lines.length; i++) {
-                    final Path parsed = this.parse(parser, lines[i]);
+                    final Path parsed = this.parse(parser, lines[i].trim());
                     if(null == parsed) {
                         continue;
                     }
