@@ -112,32 +112,17 @@ public class FTPPath extends Path {
                     this.getName()));
 
             final FTPFileEntryParser parser = session.getFileParser();
-            if(session.FTP.isStatListSupported()) {
-                final String[] lines = session.FTP.statl(this.getAbsolute());
-                for(int i = 0; i < lines.length; i++) {
-                    final Path parsed = this.parse(parser, lines[i].trim());
-                    if(null == parsed) {
-                        continue;
-                    }
-                    childs.add(parsed);
-                }
+            if(childs.isEmpty()) {
+                childs.addAll(this.parse(parser, session.FTP.stat(this.getAbsolute())));
             }
-            if(!session.FTP.isStatListSupported()) {
+            if(childs.isEmpty()) {
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 session.setWorkdir(this);
-                final BufferedReader reader = session.FTP.dir(this.session.getEncoding());
-                if(null == reader) {
-                    // This is an empty directory
-                    return childs;
-                }
-                String line;
-                while((line = parser.readNextEntry(reader)) != null) {
-                    session.log(false, line);
-                    final Path parsed = this.parse(parser, line);
-                    if(null == parsed) {
-                        continue;
-                    }
-                    childs.add(parsed);
+
+                childs.addAll(this.parse(parser, session.FTP.list(this.session.getEncoding(), true)));
+                if(childs.isEmpty()) {
+                    // Educated guess
+                    childs.addAll(this.parse(parser, session.FTP.list(this.session.getEncoding(), false)));
                 }
                 session.FTP.finishDir();
             }
@@ -166,6 +151,36 @@ public class FTPPath extends Path {
         return childs;
     }
 
+    /**
+     * Parse all lines from the reader.
+     * @param parser
+     * @param reader
+     * @return An empty list if no parsable lines are found
+     * @throws IOException
+     */
+    private AttributedList<Path> parse(FTPFileEntryParser parser, BufferedReader reader) throws IOException {
+        final AttributedList<Path> childs = new AttributedList<Path>();
+        if(null == reader) {
+            // This is an empty directory
+            return childs;
+        }
+        String line;
+        while((line = parser.readNextEntry(reader)) != null) {
+            final Path parsed = this.parse(parser, line);
+            if(null == parsed) {
+                continue;
+            }
+            childs.add(parsed);
+        }
+        return childs;
+    }
+
+    /**
+     * Parse the given line.
+     * @param parser
+     * @param line
+     * @return null if the line cannot be parsed
+     */
     private Path parse(FTPFileEntryParser parser, String line) {
         FTPFile f = parser.parseFTPEntry(line);
         if(null == f || f.getName().equals(".") || f.getName().equals("..")) {

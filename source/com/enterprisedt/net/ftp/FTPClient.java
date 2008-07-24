@@ -101,12 +101,15 @@ public class FTPClient {
      */
     protected FTPReply lastValidReply;
 
+    private FTPMessageListener listener;
+
     /**
      *
      * @param encoding
      * @param listener
      */
     public FTPClient(final String encoding, final FTPMessageListener listener) {
+        this.listener = listener;
         this.control = new FTPControlSocket(encoding, listener);
     }
 
@@ -505,12 +508,8 @@ public class FTPClient {
         return reply.getReplyCode().equals("200");
     }
 
-    private boolean statListSupported
+    private boolean statListSupportedEnabled
             = Preferences.instance().getBoolean("ftp.sendStatListCommand");
-
-    public boolean isStatListSupported() {
-        return statListSupported;
-    }
 
     /**
      * Issue the FTP STAT command to the server for a given pathname.  This
@@ -521,64 +520,70 @@ public class FTPClient {
      *
      * @throws IOException
      * @throws FTPException
+     * @return Null if there is no result returned from the command and the feature
+     * may be not supported
      */
-    public String[] statl(String pathname) throws IOException, FTPException {
-        if(statListSupported) {
+    public BufferedReader stat(String pathname) throws IOException, FTPException {
+        if(statListSupportedEnabled) {
             try {
                 FTPReply reply = control.sendCommand("STAT " + pathname);
-
                 lastValidReply = control.validateReply(reply, new String[]{"211", "212", "213", "450"});
-
-                String[] result = new String[lastValidReply.getReplyData().length];
-                for(int i = 0; i < result.length; i++) {
-                    //Some servers include the status code for every line.
-                    final String line = lastValidReply.getReplyData()[i];
-                    if(line.startsWith(lastValidReply.getReplyCode())) {
-                        result[i] = line.substring(line.indexOf(lastValidReply.getReplyCode())+lastValidReply.getReplyCode().length()+1);
-                    }
-                    else {
-                        result[i] = line;
-                    }
-                }
-                if(result.length == 0) {
+                if(0 == lastValidReply.getReplyData().length) {
                     // This is an educated guess
-                    statListSupported = false;
+                    statListSupportedEnabled = false;
                 }
-                return result;
+                else {
+                    StringBuilder result = new StringBuilder();
+                    for(int i = 0; i < lastValidReply.getReplyData().length; i++) {
+                        //Some servers include the status code for every line.
+                        final String line = lastValidReply.getReplyData()[i];
+                        if(line.startsWith(lastValidReply.getReplyCode())) {
+                            try {
+                                result.append(line.substring(line.indexOf(lastValidReply.getReplyCode())
+                                        + lastValidReply.getReplyCode().length() + 1).trim()).append('\n');
+                            }
+                            catch(IndexOutOfBoundsException e) {
+                                log.error("Failed parsing line '" + line + "':" + e.getMessage());
+                                continue;
+                            }
+                        }
+                        else {
+                            result.append(line.trim()).append('\n');
+                        }
+                    }
+                    return new BufferedReader(new StringReader(result.toString()));
+                }
             }
             catch(FTPException e) {
-                statListSupported = false;
+                statListSupportedEnabled = false;
                 // STAT may not be supported for directory listings. Try standard LIST command instead
                 log.error(e.getMessage());
             }
         }
-        return new String[]{};
+        return null;
     }
 
     /**
      * The server supports LIST -a
      */
-    private boolean extendedListSupported
+    private boolean extendedListEnabled
             = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
-
-    public boolean isExtendedListSupported() {
-        return extendedListSupported;
-    }
 
     /**
      *
      * @param encoding
-     * @return
+     * @param flag Try with -a flag first
+     * @return May return null for empty directory listing
      * @throws IOException
      * @throws FTPException
      */
-    public BufferedReader dir(String encoding) throws IOException, FTPException {
-        if(extendedListSupported) {
+    public BufferedReader list(String encoding, boolean flag) throws IOException, FTPException {
+        if(extendedListEnabled && flag) {
             try {
                 return this.dir(encoding, "LIST -a");
             }
             catch(FTPException e) {
-                extendedListSupported = false;
+                extendedListEnabled = false;
                 // Option -a may not be recognized. Try standard list command instead
                 log.error(e.getMessage());
             }
@@ -595,7 +600,7 @@ public class FTPClient {
      * name to obtain information about a file
      *
      * @param command the list command to use. E.g. LIST, LIST -a or NLST
-     * @return an array of directory listing strings
+     * @return May return null for empty directory listing
      */
     public BufferedReader dir(String encoding, String command) throws IOException, FTPException {
         this.pret(command);
@@ -615,9 +620,17 @@ public class FTPClient {
         String replyCode = lastValidReply.getReplyCode();
         if(!replyCode.equals("450") && !replyCode.equals("550")) {
             // get a character input stream to read data from .
-            return new LineNumberReader(new InputStreamReader(data.getInputStream(),
+            return new BufferedReader(new InputStreamReader(data.getInputStream(),
                     Charset.forName(encoding)
-            ));
+            )) {
+                public String readLine() throws IOException {
+                    String line = super.readLine();
+                    if(null != line) {
+                        listener.logReply(line);
+                    }
+                    return line;
+                }
+            };
         }
         // 450 or 550 - still need to close data socket
         this.closeDataSocket();
