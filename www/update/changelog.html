@@ -5,23 +5,9 @@
 <head>
 	<meta http-equiv="content-type" content="application/xhtml; charset=utf-8" />
 	<title>Release Notes</title>
-	<style type="text/css">
-p.note {
-	display: block;
-    padding: 3px 10px 3px 10px;
-    background-color: #fff3f3;
-    border: 1px solid red;
-    color: #cc0000;
-}
-	</style>
 </head>
 
 <body>
-	<p class="note">
-<strong>Note</strong>: You are required to run <strong>OS X 10.4</strong> (Tiger) or later to run Cyberduck 3.
-	</p>
-
-
     <div>
 		<strong><a href=
 		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=3.0.2">
@@ -35,7 +21,7 @@ p.note {
 <li>[Feature] Display bookmark view for new browser window [<a href="http://trac.cyberduck.ch/ticket/2252">#2252</a>]</li>
 <li>[Feature] Option in browser context menu to open selected folder in new browser [<a href="http://trac.cyberduck.ch/ticket/2036">#2036</a>]</li>
 <li>[Feature] Option in browser context menu to add bookmark for selected folder [<a href="http://trac.cyberduck.ch/ticket/2222">#2222</a>]</li>
-<li>[Feature] Add new bookmark toolbar button</li>
+<li>[Feature] 'Add new bookmark' toolbar button</li>
 <li>[Feature] Cannot select private key in login prompt (SSH) [<a href="http://trac.cyberduck.ch/ticket/2221">#2221</a>]</li>
 <li>[Feature] Authentication with both password and public key (SSH) [<a href="http://trac.cyberduck.ch/ticket/2203">#2203</a>]</li>
 <li>[Bugfix] Moving or copying files to another bucket fails (S3) [<a href="http://trac.cyberduck.ch/ticket/2157">#2157</a>]</li>
@@ -48,76 +34,5 @@ p.note {
 <li>[Bugfix] Update Growl.framework to 1.1.4</li>
         </ul>
     </div>
-
-    <div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=3.0.1">
-		3.0.1</a></strong> (Build 3999)<br />
-
-		<ul>
-<li>[Feature] Added Taco HTML Edit to the list of supported editors (<a href="http://tacosw.com/htmledit/beta.php">http://tacosw.com/htmledit/beta.php</a>) [<a href="http://trac.cyberduck.ch/ticket/188">#188</a>]</li>
-<li>[Bugfix] Cannot connect to servers with unknown host key [<a href="http://trac.cyberduck.ch/ticket/2044">#2044</a>]</li>
-<li>[Bugfix] Cannot edit filename in Info panel [<a href="http://trac.cyberduck.ch/ticket/2049">#2049</a>]</li>
-<li>[Bugfix] External editor failures [<a href="http://trac.cyberduck.ch/ticket/2041">#2041</a>,
-    <a href="http://trac.cyberduck.ch/ticket/2039">#2039</a>,
-    <a href="http://trac.cyberduck.ch/ticket/2052">#2052</a>,
-    <a href="http://trac.cyberduck.ch/ticket/2058">#2058</a>]
-</li>
-<li>[Bugfix] Missing resume option in transfer prompt</li>
-<li>[Bugfix] Removed keep connection active feature. [<a href="http://trac.cyberduck.ch/ticket/2057">#2057</a>]</li>
-        </ul>
-    </div>
-
-    <div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=3.0">
-		3.0</a></strong> (Build 3966)<br />
-
-		<ul>
-<li>[Feature] Support for file renaming and copying (Amazon S3)</li>
-<li>[Feature] Support for copying files (WebDAV)</li>
-<li>[Bugfix] Transfers larger than 2GB fail (SFTP) [<a href="http://trac.cyberduck.ch/ticket/1235">#1235</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=3.0">
-		3.0b3</a></strong> (Build 3901)<br />
-
-		<ul>
-<li>[Feature] Activity Window [<a href="http://trac.cyberduck.ch/ticket/">#1250</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=3.0">
-		3.0b2</a></strong> (Build 3793)<br />
-
-		<ul>
-<li>[Localize] Latvian Localization</li>
-<li>[Feature] Quick Look files in browser [<a href="http://trac.cyberduck.ch/ticket/1580">#1580</a>]</li>
-<li>[Feature] Set corresponding Web URL in bookmark. <i>Open in Browser</i> toolbar button [<a href="http://trac.cyberduck.ch/ticket/1098">#1098</a>]</li>
-<li>[Bugfix] APPE command broken (FTP) [<a href="http://trac.cyberduck.ch/ticket/1915">#1915</a>]</li>
-		</ul>
-	</div>
-
-	<div>
-		<strong><a href=
-		"http://trac.cyberduck.ch/query?status=closed&amp;milestone=3.0">
-		3.0b1</a></strong> (Build 3709)<br />
-
-		<ul>
-<li>[Feature] Amazon Simple Storage Service (S3) support (<a href="http://aws.amazon.com/s3">http://aws.amazon.com/s3</a>) [<a href="http://trac.cyberduck.ch/ticket/1725">#1725</a>]</li>
-<li>[Feature] WebDAV protocol support [<a href="http://trac.cyberduck.ch/ticket/464">#464</a>]</li>
-<li>[Feature] Search bookmarks [<a href="http://trac.cyberduck.ch/ticket/916">#916</a>]</li>
-<li>[Feature] Bookmark editor inside browser window instead of drawer</li>
-<li>[Feature] Read trust settings for certificates from Keychain</li>
-<li>[Feature] Different editors for different file types [<a href="http://trac.cyberduck.ch/ticket/146">#146</a>]
-<li>[Feature] Skip option not available in transfer prompt [<a href="http://trac.cyberduck.ch/ticket/1159">#1159</a>]</li>
-<li>[Bugfix] Type ahead works for child items in outline view [<a href="http://trac.cyberduck.ch/ticket/471">#471</a>]</li>
-		</ul>
-	</div>
 </body>
 </html>

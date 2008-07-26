@@ -12,7 +12,7 @@ Changelog. Last modified: $Date$
 - [Feature] Display bookmark view for new browser window [#2252]
 - [Feature] Option in browser context menu to open selected folder in new browser [#2036]
 - [Feature] Option in browser context menu to add bookmark for selected folder [#2222]
-- [Feature] Add new bookmark toolbar button
+- [Feature] 'Add new bookmark' toolbar button
 - [Feature] Cannot select private key in login prompt (SSH) [#2221]
 - [Feature] Authentication with both password and public key (SSH) [#2203]
 - [Bugfix] Moving or copying files to another bucket fails (S3) [#2157]
