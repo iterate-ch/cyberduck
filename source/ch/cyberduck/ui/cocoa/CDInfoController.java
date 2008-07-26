@@ -25,8 +25,8 @@ import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -480,6 +480,11 @@ public class CDInfoController extends CDWindowController {
                 applyButton.setEnabled(true);
                 permissionProgress.stopAnimation(null);
             }
+
+            public String getActivity() {
+                return MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
+                        files.get(0).getName(), permission);
+            }
         });
     }
 
@@ -520,6 +525,11 @@ public class CDInfoController extends CDWindowController {
                     p.attributes.setSize(size);
                 }
                 return p.attributes.getSize();
+            }
+
+            public String getActivity() {
+                return MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                        files.get(0).getName());
             }
         });
     }
