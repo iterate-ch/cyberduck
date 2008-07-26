@@ -112,17 +112,16 @@ public class FTPPath extends Path {
                     this.getName()));
 
             final FTPFileEntryParser parser = session.getFileParser();
-            childs.addAll(this.parse(parser, session.FTP.stat(this.getAbsolute())));
-            if(childs.isEmpty()) {
+            if(!this.parse(childs, parser, session.FTP.stat(this.getAbsolute()))) {
+                // STAT listing failed
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 session.setWorkdir(this);
-                childs.addAll(this.parse(parser, session.FTP.list(this.session.getEncoding(), true)));
-                session.FTP.finishDir();
-                if(childs.isEmpty()) {
-                    // Educated guess
-                    childs.addAll(this.parse(parser, session.FTP.list(this.session.getEncoding(), false)));
+                if(!this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), true))) {
+                    // LIST -a listing failed
                     session.FTP.finishDir();
+                    this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), false));
                 }
+                session.FTP.finishDir();
             }
             boolean dirChanged = false;
             for(Iterator iter = childs.iterator(); iter.hasNext();) {
@@ -151,76 +150,68 @@ public class FTPPath extends Path {
 
     /**
      * Parse all lines from the reader.
+     * @param childs
      * @param parser
      * @param reader
      * @return An empty list if no parsable lines are found
      * @throws IOException
      */
-    private AttributedList<Path> parse(FTPFileEntryParser parser, BufferedReader reader) throws IOException {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+    private boolean parse(final AttributedList<Path> childs, FTPFileEntryParser parser, BufferedReader reader)
+            throws IOException {
         if(null == reader) {
             // This is an empty directory
-            return childs;
+            return false;
         }
+        boolean success = false;
         String line;
         while((line = parser.readNextEntry(reader)) != null) {
-            final Path parsed = this.parse(parser, line);
-            if(null == parsed) {
+            final FTPFile f = parser.parseFTPEntry(line);
+            if(null == f) {
                 continue;
+            }
+            success = true; // At least one entry successfully parsed
+            if(f.getName().equals(".") || f.getName().equals("..")) {
+                continue;
+            }
+            final Path parsed = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
+            parsed.setParent(this);
+            switch(f.getType()) {
+                case FTPFile.SYMBOLIC_LINK_TYPE:
+                    parsed.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
+                    parsed.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
+                    break;
+                case FTPFile.DIRECTORY_TYPE:
+                    parsed.attributes.setType(Path.DIRECTORY_TYPE);
+                    break;
+            }
+            parsed.attributes.setSize(f.getSize());
+            parsed.attributes.setOwner(f.getUser());
+            parsed.attributes.setGroup(f.getGroup());
+            if(session.isPermissionSupported(parser)) {
+                parsed.attributes.setPermission(new Permission(
+                        new boolean[][]{
+                                {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
+                                        f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
+                                        f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                                },
+                                {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
+                                        f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
+                                        f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                                },
+                                {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
+                                        f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
+                                        f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
+                                }
+                        }
+                ));
+            }
+            final Calendar timestamp = f.getTimestamp();
+            if(timestamp != null) {
+                parsed.attributes.setModificationDate(timestamp.getTimeInMillis());
             }
             childs.add(parsed);
         }
-        return childs;
-    }
-
-    /**
-     * Parse the given line.
-     * @param parser
-     * @param line
-     * @return null if the line cannot be parsed
-     */
-    private Path parse(FTPFileEntryParser parser, String line) {
-        FTPFile f = parser.parseFTPEntry(line);
-        if(null == f || f.getName().equals(".") || f.getName().equals("..")) {
-            return null;
-        }
-        Path p = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
-        p.setParent(this);
-        switch(f.getType()) {
-            case FTPFile.SYMBOLIC_LINK_TYPE:
-                p.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
-                p.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
-                break;
-            case FTPFile.DIRECTORY_TYPE:
-                p.attributes.setType(Path.DIRECTORY_TYPE);
-                break;
-        }
-        p.attributes.setSize(f.getSize());
-        p.attributes.setOwner(f.getUser());
-        p.attributes.setGroup(f.getGroup());
-        if(session.isPermissionSupported(parser)) {
-            p.attributes.setPermission(new Permission(
-                    new boolean[][]{
-                            {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
-                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
-                                    f.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                            },
-                            {f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION),
-                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.WRITE_PERMISSION),
-                                    f.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                            },
-                            {f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION),
-                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.WRITE_PERMISSION),
-                                    f.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION)
-                            }
-                    }
-            ));
-        }
-        final Calendar timestamp = f.getTimestamp();
-        if(timestamp != null) {
-            p.attributes.setModificationDate(timestamp.getTimeInMillis());
-        }
-        return p;
+        return success;
     }
 
     public void mkdir(boolean recursive) {
