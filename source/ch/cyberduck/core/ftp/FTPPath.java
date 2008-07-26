@@ -112,19 +112,17 @@ public class FTPPath extends Path {
                     this.getName()));
 
             final FTPFileEntryParser parser = session.getFileParser();
-            if(childs.isEmpty()) {
-                childs.addAll(this.parse(parser, session.FTP.stat(this.getAbsolute())));
-            }
+            childs.addAll(this.parse(parser, session.FTP.stat(this.getAbsolute())));
             if(childs.isEmpty()) {
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 session.setWorkdir(this);
-
                 childs.addAll(this.parse(parser, session.FTP.list(this.session.getEncoding(), true)));
+                session.FTP.finishDir();
                 if(childs.isEmpty()) {
                     // Educated guess
                     childs.addAll(this.parse(parser, session.FTP.list(this.session.getEncoding(), false)));
+                    session.FTP.finishDir();
                 }
-                session.FTP.finishDir();
             }
             boolean dirChanged = false;
             for(Iterator iter = childs.iterator(); iter.hasNext();) {
