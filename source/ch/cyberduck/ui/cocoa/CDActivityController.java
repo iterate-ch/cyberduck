@@ -90,6 +90,7 @@ public class CDActivityController extends CDWindowController {
         for(final BackgroundAction action : BackgroundActionRegistry.instance()) {
             tasks.put(action, new CDTaskController(action));
         }
+        this.reload();
     }
 
     private void reload() {
