@@ -1361,10 +1361,6 @@ public class CDBrowserController extends CDWindowController
                             public void cleanup() {
                                 inspector.setFiles(selected);
                             }
-
-                            public String getActivity() {
-                                return MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""), null);
-                            }
                         });
                     }
                 }
@@ -2608,10 +2604,6 @@ public class CDBrowserController extends CDWindowController
                         break;
                     }
                 }
-            }
-
-            public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Renaming {0}", "Status", ""), "");
             }
 
             public void cleanup() {
@@ -3885,7 +3877,8 @@ public class CDBrowserController extends CDWindowController
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Disconnecting", "Status", "");
+                return MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
+                        session.getHost().getHostname());
             }
         });
     }
@@ -3943,7 +3936,8 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public String getActivity() {
-                    return NSBundle.localizedString("Disconnecting", "Status", "");
+                    return MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
+                            session.getHost().getHostname());
                 }
 
                 public int retry() {
@@ -3974,7 +3968,8 @@ public class CDBrowserController extends CDWindowController
             }
 
             public String getActivity() {
-                return NSBundle.localizedString("Disconnecting", "Status", "");
+                return MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
+                        session.getHost().getHostname());
             }
         });
     }
