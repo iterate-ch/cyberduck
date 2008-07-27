@@ -528,31 +528,29 @@ public class FTPClient {
             try {
                 FTPReply reply = control.sendCommand("STAT " + pathname);
                 lastValidReply = control.validateReply(reply, new String[]{"211", "212", "213", "450"});
-                if(0 == lastValidReply.getReplyData().length) {
-                    // This is an educated guess
+                if(null == lastValidReply.getReplyData() || 0 == lastValidReply.getReplyData().length) {
                     statListSupportedEnabled = false;
+                    return null;
                 }
-                else {
-                    StringBuilder result = new StringBuilder();
-                    for(int i = 0; i < lastValidReply.getReplyData().length; i++) {
-                        //Some servers include the status code for every line.
-                        final String line = lastValidReply.getReplyData()[i];
-                        if(line.startsWith(lastValidReply.getReplyCode())) {
-                            try {
-                                result.append(line.substring(line.indexOf(lastValidReply.getReplyCode())
-                                        + lastValidReply.getReplyCode().length() + 1).trim()).append('\n');
-                            }
-                            catch(IndexOutOfBoundsException e) {
-                                log.error("Failed parsing line '" + line + "':" + e.getMessage());
-                                continue;
-                            }
+                final StringBuilder result = new StringBuilder();
+                for(int i = 0; i < lastValidReply.getReplyData().length; i++) {
+                    //Some servers include the status code for every line.
+                    final String line = lastValidReply.getReplyData()[i];
+                    if(line.startsWith(lastValidReply.getReplyCode())) {
+                        try {
+                            result.append(line.substring(line.indexOf(lastValidReply.getReplyCode())
+                                    + lastValidReply.getReplyCode().length() + 1).trim()).append('\n');
                         }
-                        else {
-                            result.append(line.trim()).append('\n');
+                        catch(IndexOutOfBoundsException e) {
+                            log.error("Failed parsing line '" + line + "':" + e.getMessage());
+                            continue;
                         }
                     }
-                    return new BufferedReader(new StringReader(result.toString()));
+                    else {
+                        result.append(line.trim()).append('\n');
+                    }
                 }
+                return new BufferedReader(new StringReader(result.toString()));
             }
             catch(FTPException e) {
                 statListSupportedEnabled = false;
