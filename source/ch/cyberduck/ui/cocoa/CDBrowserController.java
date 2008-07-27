@@ -2380,7 +2380,8 @@ public class CDBrowserController extends CDWindowController
                 }
 
                 public String getActivity() {
-                    return NSBundle.localizedString("Disconnecting", "Status", "");
+                    return MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
+                            session.getHost().getHostname());
                 }
             });
         }
@@ -3806,6 +3807,10 @@ public class CDBrowserController extends CDWindowController
                     public void cleanup() {
                         // Set the working directory
                         setWorkdir(mount);
+                        if(!session.isConnected()) {
+                            // Connection attempt failed
+                            unmount(true);
+                        }
                     }
 
                     public String getActivity() {

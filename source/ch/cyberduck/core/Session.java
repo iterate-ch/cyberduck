@@ -355,7 +355,8 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
-        this.message(NSBundle.localizedString("Disconnecting", "Status", ""));
+        this.message(MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
+                this.getHost().getHostname()));
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionWillClose();
