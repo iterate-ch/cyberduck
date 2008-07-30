@@ -40,7 +40,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return True if the directory listing for this path is cached
      */
-    public boolean containsKey(AbstractPath path) {
+    public boolean containsKey(E path) {
         return _impl.containsKey(path.getAbsolute());
     }
 
@@ -50,7 +50,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return
      */
-    public AttributedList remove(AbstractPath path) {
+    public AttributedList remove(E path) {
         return _impl.remove(path.getAbsolute());
     }
 
@@ -60,7 +60,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return null if no cached file listing is available
      */
-    public AttributedList<E> get(AbstractPath path) {
+    public AttributedList<E> get(E path) {
         return _impl.get(path.getAbsolute());
     }
 
