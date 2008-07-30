@@ -21,10 +21,10 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public interface ListParseListener {
+public interface ListParseListener<T extends AbstractPath> {
     /**
      * Called repeatedly for every child parsed.
      * @param childs Always contains all childs parsed so far including the latest
      */
-    public abstract void parsed(AttributedList childs);
+    public abstract void parsed(AttributedList<T> childs);
 }

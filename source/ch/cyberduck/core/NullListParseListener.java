@@ -21,8 +21,8 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
 */
-class NullListParseListener implements ListParseListener {
-    public void parsed(AttributedList childs) {
+class NullListParseListener<T extends AbstractPath> implements ListParseListener<T> {
+    public void parsed(AttributedList<T> childs) {
         ;
     }
 }
