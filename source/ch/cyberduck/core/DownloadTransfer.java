@@ -47,9 +47,9 @@ public class DownloadTransfer extends Transfer {
 
     protected void setRoots(List<Path> downloads) {
         final List<Path> normalized = new Collection<Path>();
-        for(Path download: downloads) {
+        for(Path download : downloads) {
             boolean duplicate = false;
-            for(Path n: normalized) {
+            for(Path n : normalized) {
                 if(download.isChild(n)) {
                     // The selected file is a child of a directory
                     // already included
@@ -69,7 +69,8 @@ public class DownloadTransfer extends Transfer {
                         if(index != -1 && index != 0) {
                             proposal = filename.substring(0, index)
                                     + "-" + no + filename.substring(index);
-                        } else {
+                        }
+                        else {
                             proposal = filename + "-" + no;
                         }
                         download.setLocal(new Local(parent, proposal));
@@ -132,7 +133,8 @@ public class DownloadTransfer extends Transfer {
                         }
                         size += symlink.attributes.getSize();
                     }
-                } else {
+                }
+                else {
                     size += p.attributes.getSize();
                 }
                 if(p.getStatus().isResume()) {
@@ -176,11 +178,12 @@ public class DownloadTransfer extends Transfer {
             // Cannot fetch file listing of non existant file
             return new AttributedList<Path>(Collections.<Path>emptyList());
         }
-        final AttributedList<Path> childs = (AttributedList<Path>)parent.childs(new NullComparator<AbstractPath>(), childFilter);
+        AttributedList<Path> childs = new AttributedList<Path>();
         // Change download path relative to parent local folder
-        for(Path download: childs) {
+        for(Path download : (AttributedList<Path>) parent.childs(new NullComparator<Path>(), childFilter)) {
             download.setLocal(new Local(parent.getLocal(), download.getName()));
             download.getStatus().setSkipped(parent.getStatus().isSkipped());
+            childs.add(download);
         }
         return childs;
     }
@@ -255,7 +258,8 @@ public class DownloadTransfer extends Transfer {
                     if(index != -1 && index != 0) {
                         proposal = filename.substring(0, index)
                                 + "-" + no + filename.substring(index);
-                    } else {
+                    }
+                    else {
                         proposal = filename + "-" + no;
                     }
                     p.setLocal(new Local(parent, proposal));
@@ -287,7 +291,7 @@ public class DownloadTransfer extends Transfer {
             return ACTION_SKIP;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Path root: this.getRoots()) {
+            for(Path root : this.getRoots()) {
                 if(this.exists(root.getLocal())) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {
@@ -382,7 +386,6 @@ public class DownloadTransfer extends Transfer {
     }
 
     /**
-     *
      * @return
      */
     protected boolean shouldOpenWhenComplete() {
