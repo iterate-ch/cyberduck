@@ -47,15 +47,15 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
 
     public void tableViewSetObjectValueForLocation(NSTableView view, Object value, NSTableColumn tableColumn, int row) {
         if (controller.isMounted()) {
-            super.setObjectValueForItem((Path) this.childs(this.controller.workdir()).get(row), value, (String) tableColumn.identifier());
+            super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row), value, (String) tableColumn.identifier());
         }
     }
 
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if (controller.isMounted()) {
-            List childs = this.childs(this.controller.workdir());
+            List<Path> childs = this.childs(this.controller.workdir());
             if (row < childs.size()) {
-                return super.objectValueForItem((Path) childs.get(row), (String) tableColumn.identifier());
+                return super.objectValueForItem(childs.get(row), (String) tableColumn.identifier());
             }
         }
         return null;
@@ -71,7 +71,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
             final int draggingColumn = view.columnAtPoint(info.draggingLocation());
             if(0 == draggingColumn || 1 == draggingColumn) {
                 if (row != -1 && row < view.numberOfRows()) {
-                    Path p = ((Path) this.childs(this.controller.workdir()).get(row));
+                    Path p = this.childs(this.controller.workdir()).get(row);
                     if(p.attributes.isDirectory()) {
                         destination = p;
                     }
@@ -86,7 +86,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         if (controller.isMounted()) {
             Path destination = controller.workdir();
             if (row != -1 && row < view.numberOfRows()) {
-                destination = ((Path) this.childs(this.controller.workdir()).get(row));
+                destination = this.childs(this.controller.workdir()).get(row);
             }
             return super.acceptDrop(view, destination, info);
         }

@@ -104,14 +104,14 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         if(null == item) {
             item = controller.workdir();
         }
-        List childs = this.childs(item);
+        List<Path> childs = this.childs(item);
         if(childs.isEmpty()) {
             return null;
         }
         if(childs.size() < index) {
             return null;
         }
-        return (Path) childs.get(index);
+        return childs.get(index);
     }
 
     /**
