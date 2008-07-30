@@ -151,7 +151,7 @@ public abstract class CDTransferPromptModel extends CDController {
                     });
                 }
                 else {
-                    return cache.get(path, new NullComparator(), filter());
+                    return cache.get(path, new NullComparator<Path>(), filter());
                 }
             }
         }
