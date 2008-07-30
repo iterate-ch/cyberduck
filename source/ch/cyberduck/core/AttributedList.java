@@ -43,17 +43,17 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
      */
     private static final String READABLE = "READABLE";
 
-    private Attributes attributes;
+    private Attributes<E> attributes;
 
     /**
      * Initialize an attributed list with default attributes
      */
     public AttributedList() {
-        this.attributes = new Attributes();
+        this.attributes = new Attributes<E>();
     }
 
     public AttributedList(java.util.Collection<E> collection) {
-        this.attributes = new Attributes();
+        this.attributes = new Attributes<E>();
         this.addAll(collection);
     }
 
@@ -63,7 +63,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
      * @see PathFilter
      * @see BrowserComparator
      */
-    public class Attributes extends HashMap<String, Object> {
+    public class Attributes<E> extends HashMap<String, Object> {
         /**
          * Initialize with default values
          */
@@ -83,7 +83,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
             this.put(READABLE, Boolean.TRUE);
         }
 
-        public void addHidden(AbstractPath child) {
+        public void addHidden(E child) {
             ((Set) this.get(HIDDEN)).add(child);
         }
 
@@ -115,7 +115,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         }
     }
 
-    public Attributes attributes() {
+    public Attributes<E> attributes() {
         return attributes;
     }
 }
