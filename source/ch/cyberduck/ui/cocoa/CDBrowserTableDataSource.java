@@ -220,7 +220,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
         if(local) {
             return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
         }
-        return NSDraggingInfo.DragOperationCopy;
+        return NSDraggingInfo.DragOperationCopy | NSDraggingInfo.DragOperationDelete;
     }
 
     public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
@@ -366,9 +366,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 final List<Path> roots = new Collection<Path>();
-                final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
-                    promisedDragPaths[i] = PathFactory.createPath(session, ((Path) items.objectAtIndex(i)).getAsDictionary());
+                    promisedDragPaths[i] = (Path) items.objectAtIndex(i);
                     if(promisedDragPaths[i].attributes.isFile()) {
                         if(promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
@@ -409,6 +408,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
     //see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
         log.debug("finishedDraggingImage:" + operation);
+        if(NSDraggingInfo.DragOperationDelete == operation) {
+            for(int i = 0; i < promisedDragPaths.length; i++) {
+                controller.deletePaths(Arrays.asList(promisedDragPaths));
+            }
+        }
         this.promisedDragPaths = null;
     }
 
@@ -428,13 +432,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 for(int i = 0; i < this.promisedDragPaths.length; i++) {
                     this.promisedDragPaths[i].setLocal(new Local(d, this.promisedDragPaths[i].getName()));
                     promisedDragNames.addObject(this.promisedDragPaths[i].getName());
-                }
-                if(d.indexOf(NSPathUtilities.stringByExpandingTildeInPath("~/.Trash")) != -1) {
-                    for(int i = 0; i < promisedDragPaths.length; i++) {
-                        controller.deletePaths(Arrays.asList(promisedDragPaths));
-                    }
-                    promisedDragNames.removeAllObjects();
-                    return promisedDragNames;
                 }
             }
             if(this.promisedDragPaths.length == 1) {
