@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * @version $Id$
@@ -152,7 +153,7 @@ public class CDBookmarkTableDataSource extends CDController {
                     return NSImage.imageNamed("rendezvous.icns");
                 }
             }
-            final Object host = this.getSource().get(row);
+            final Host host = this.getSource().get(row);
             if(identifier.equals(BOOKMARK_COLUMN)) {
                 return host;
             }
@@ -171,7 +172,7 @@ public class CDBookmarkTableDataSource extends CDController {
                 return null;
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return ((Host) host).getNickname();
+                return host.getNickname();
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -276,7 +277,7 @@ public class CDBookmarkTableDataSource extends CDController {
                 }
                 else {
                     // The bookmark this file has been dropped onto
-                    Host h = (Host) this.getSource().get(row);
+                    Host h = this.getSource().get(row);
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
@@ -312,6 +313,9 @@ public class CDBookmarkTableDataSource extends CDController {
      */
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
         log.debug("finishedDraggingImage:" + operation);
+        if(NSDraggingInfo.DragOperationDelete == operation) {
+            controller.deleteBookmarkButtonClicked(null);
+        }
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
     }
 
@@ -322,9 +326,10 @@ public class CDBookmarkTableDataSource extends CDController {
      */
     public int draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
-        if(local)
+        if(local) {
             return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
-        return NSDraggingInfo.DragOperationCopy;
+        }
+        return NSDraggingInfo.DragOperationCopy | NSDraggingInfo.DragOperationDelete;
     }
 
     /**
@@ -347,7 +352,7 @@ public class CDBookmarkTableDataSource extends CDController {
             this.promisedDragBookmarks = new Host[rows.count()];
             for(int i = 0; i < rows.count(); i++) {
                 promisedDragBookmarks[i] =
-                        new Host(((Host) source.get(((Number) rows.objectAtIndex(i)).intValue())).getAsDictionary());
+                        new Host(source.get(((Number) rows.objectAtIndex(i)).intValue()).getAsDictionary());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
