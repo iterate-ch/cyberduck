@@ -23,14 +23,17 @@
                 {
             ACTIONS =             {
                 addBookmarkButtonClicked = id;
+                connectBookmarkButtonClicked = id;
                 copyURLButtonClicked = id;
                 createFileButtonClicked = id;
                 createFolderButtonClicked = id;
+                deleteBookmarkButtonClicked = id;
                 deleteFileButtonClicked = id;
                 downloadAsButtonClicked = id;
                 downloadButtonClicked = id;
                 downloadToButtonClicked = id;
                 duplicateFileButtonClicked = id;
+                editBookmarkButtonClicked = id;
                 editButtonClicked = id;
                 infoButtonClicked = id;
                 newBrowserButtonClicked = id;
