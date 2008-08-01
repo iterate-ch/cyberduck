@@ -158,8 +158,14 @@ public class CDBookmarkTableDataSource extends CDController {
             }
             if(identifier.equals(STATUS_COLUMN)) {
                 if(controller.hasSession()) {
-                    if(host.equals(controller.getSession().getHost())) {
-                        return controller.isConnected() ? GREEN_ICON : YELLOW_ICON;
+                    final Session session = controller.getSession();
+                    if(host.equals(session.getHost())) {
+                        if(session.isConnected()) {
+                            return GREEN_ICON;
+                        }
+                        if(session.isOpening()) {
+                            return YELLOW_ICON;
+                        }
                     }
                 }
                 return null;

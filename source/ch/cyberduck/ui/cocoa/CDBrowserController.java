@@ -3684,7 +3684,6 @@ public class CDBrowserController extends CDWindowController
     private Session init(final Host host) {
         if(this.hasSession()) {
             this.session.removeConnectionListener(listener);
-            this.session = null;
         }
         this.session = SessionFactory.createSession(host);
         if(this.session instanceof ch.cyberduck.core.sftp.SFTPSession) {
@@ -3837,7 +3836,6 @@ public class CDBrowserController extends CDWindowController
             if(forever) {
                 this.session.cache().clear();
                 this.session.getHost().getCredentials().setPassword(null);
-                this.session = null;
             }
         }
     }

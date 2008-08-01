@@ -291,9 +291,12 @@ public abstract class Session extends NSObject {
     public abstract boolean isConnected();
 
     /**
-     * A background task to keep a idling connection alive with the server
+     * If a connection attempt is currently being made.
+     * @return
      */
-    private Timer keepAliveTimer = null;
+    public boolean isOpening() {
+        return resolver != null;
+    }
 
     private Set<ConnectionListener> listeners
             = Collections.synchronizedSet(new HashSet<ConnectionListener>());
@@ -338,6 +341,7 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionDidOpenEvent() {
         log.debug("connectionDidOpen");
+        this.resolver = null;
 
         host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
                 host.getHostname(), host.getPort());
@@ -370,10 +374,10 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionDidCloseEvent() {
         log.debug("connectionDidClose");
-        if(this.keepAliveTimer != null) {
-            this.keepAliveTimer.cancel();
-        }
+
+        this.resolver = null;
         this.workdir = null;
+        
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionDidClose();
