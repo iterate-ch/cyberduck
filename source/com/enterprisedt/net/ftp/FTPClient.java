@@ -527,7 +527,7 @@ public class FTPClient {
         if(statListSupportedEnabled) {
             try {
                 FTPReply reply = control.sendCommand("STAT " + pathname);
-                lastValidReply = control.validateReply(reply, new String[]{"211", "212", "213", "450"});
+                lastValidReply = control.validateReply(reply, new String[]{"211", "212", "213"});
                 if(null == lastValidReply.getReplyData() || 0 == lastValidReply.getReplyData().length) {
                     statListSupportedEnabled = false;
                     return null;
