@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.MalformedURLException;
-import java.util.Iterator;
 
 import glguerin.io.FileForker;
 import glguerin.io.Pathname;
@@ -335,7 +334,7 @@ public class Local extends AbstractPath {
         return this.cache;
     }
 
-    public AttributedList<Local> list(ListParseListener listener) {
+    public AttributedList<Local> list() {
         final AttributedList<Local> childs = new AttributedList<Local>();
         File[] f = _impl.listFiles();
         if(null == f) {

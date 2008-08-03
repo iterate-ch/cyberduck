@@ -94,14 +94,8 @@ public class SFTPPath extends Path {
         return this.session;
     }
 
-    public AttributedList<Path> list(final ListParseListener listener) {
-        final AttributedList<Path> childs = new AttributedList<Path>() {
-            public boolean add(Path object) {
-                boolean result = super.add(object);
-                listener.parsed(this);
-                return result;
-            }
-        };
+    public AttributedList<Path> list() {
+        final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
@@ -179,7 +173,7 @@ public class SFTPPath extends Path {
                     this.getName()));
 
             Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-            session.sftp().mkdir(this.getAbsolute(), new Integer(perm.getOctalNumber()).intValue());
+            session.sftp().mkdir(this.getAbsolute(), perm.getOctalNumber());
         }
         catch(SFTPException e) {
             this.error("Cannot create folder", e);

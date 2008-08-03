@@ -148,14 +148,9 @@ public class DAVPath extends Path {
         }
     }
 
-    public AttributedList<Path> list(final ListParseListener listener) {
-        final AttributedList<Path> childs = new AttributedList<Path>() {
-            public boolean add(Path object) {
-                boolean result = super.add(object);
-                listener.parsed(this);
-                return result;
-            }
-        };
+
+    public AttributedList<Path> list() {
+        final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),

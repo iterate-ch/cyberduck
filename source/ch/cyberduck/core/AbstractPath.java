@@ -76,19 +76,11 @@ public abstract class AbstractPath extends NSObject {
     public abstract String toURL();
 
     /**
-     * @return
-     */
-    public AttributedList<? extends AbstractPath> list() {
-        return this.list(new NullListParseListener());
-    }
-
-    /**
      * Fetch the directory listing
      *
-     * @param listener Gets notified of every new child item parsed
      * @return
      */
-    public abstract AttributedList<? extends AbstractPath> list(ListParseListener listener);
+    public abstract AttributedList<? extends AbstractPath> list();
 
     /**
      * Get the cached directory listing if any or return #list instead
