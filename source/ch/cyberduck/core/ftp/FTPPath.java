@@ -144,6 +144,7 @@ public class FTPPath extends Path {
 
     /**
      * Parse all lines from the reader.
+     *
      * @param childs
      * @param parser
      * @param reader
@@ -324,21 +325,21 @@ public class FTPPath extends Path {
     }
 
     public void readPermission() {
-            try {
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
-                        this.getName()));
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
+                    this.getName()));
 
-                // Read the permission from the directory listing
-                List l = this.getParent().childs();
-                if(l.contains(this)) {
-                    attributes.setPermission(((AbstractPath) l.get(l.indexOf(this))).attributes.getPermission());
-                }
-            }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+            // Read the permission from the directory listing
+            List l = this.getParent().childs();
+            if(l.contains(this)) {
+                attributes.setPermission(((AbstractPath) l.get(l.indexOf(this))).attributes.getPermission());
             }
         }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+    }
 
     public void delete() {
         log.debug("delete:" + this.toString());
@@ -353,7 +354,7 @@ public class FTPPath extends Path {
             }
             else if(attributes.isDirectory()) {
                 session.setWorkdir(this);
-                for(AbstractPath file: this.childs()) {
+                for(AbstractPath file : this.childs()) {
                     if(!session.isConnected()) {
                         break;
                     }
@@ -455,7 +456,7 @@ public class FTPPath extends Path {
             else if(attributes.isDirectory()) {
                 session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
                 if(recursive) {
-                    for(AbstractPath child: this.childs()) {
+                    for(AbstractPath child : this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
