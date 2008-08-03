@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Arrays;
 
 /**
  * @version $Id$
@@ -247,8 +246,7 @@ public class CDBookmarkTableDataSource extends CDController {
             return false;
         }
         if(info.draggingPasteboard().availableTypeFromArray(
-                new NSArray(NSPasteboard.FilenamesPboardType)) != null)
-        {
+                new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             // We get a drag from another application e.g. Finder.app proposing some files
             NSArray filesList = (NSArray) info.draggingPasteboard().propertyListForType(
                     NSPasteboard.FilenamesPboardType);// get the filenames from pasteboard
