@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -147,7 +148,12 @@ public class CDBrowserController extends CDWindowController
                 }
             }
         }
-        this.setWorkdir(this.init(host).mount());
+        final Session session = this.init(host);
+        final Path workdir = session.mount();
+        if(session instanceof FTPSession) {
+            ((FTPSession)session).setStatListSupportedEnabled(false);
+        }
+        this.setWorkdir(workdir);
         BackgroundActionRegistry.instance().block();
         return null;
     }

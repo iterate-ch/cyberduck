@@ -511,6 +511,10 @@ public class FTPClient {
     private boolean statListSupportedEnabled
             = Preferences.instance().getBoolean("ftp.sendStatListCommand");
 
+    public void setStatListSupportedEnabled(boolean statListSupportedEnabled) {
+        this.statListSupportedEnabled = statListSupportedEnabled;
+    }
+
     /**
      * Issue the FTP STAT command to the server for a given pathname.  This
      * should produce a listing of the file or directory.
@@ -566,6 +570,10 @@ public class FTPClient {
      */
     private boolean extendedListEnabled
             = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
+
+    public void setExtendedListEnabled(boolean extendedListEnabled) {
+        this.extendedListEnabled = extendedListEnabled;
+    }
 
     /**
      *

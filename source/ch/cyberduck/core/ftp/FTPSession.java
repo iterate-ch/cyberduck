@@ -82,6 +82,14 @@ public class FTPSession extends Session {
         }
     }
 
+    public void setStatListSupportedEnabled(boolean statListSupportedEnabled) {
+        this.FTP.setStatListSupportedEnabled(statListSupportedEnabled);
+    }
+
+    public void setExtendedListEnabled(boolean extendedListEnabled) {
+        this.FTP.setExtendedListEnabled(extendedListEnabled);
+    }
+
     private Map<FTPFileEntryParser, Boolean> parsers = new HashMap<FTPFileEntryParser, Boolean>(1);
 
     /**
