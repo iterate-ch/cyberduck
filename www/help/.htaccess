@@ -1,2 +1,0 @@
-RewriteEngine  on
-RewriteRule ^$ http://cyberduck.ch/help/en/$1  [R=301,L]
