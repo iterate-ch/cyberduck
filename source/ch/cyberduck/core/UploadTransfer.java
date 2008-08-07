@@ -41,7 +41,7 @@ public class UploadTransfer extends Transfer {
         super(root);
     }
 
-    public UploadTransfer(List roots) {
+    public UploadTransfer(List<Path> roots) {
         super(roots);
     }
 
@@ -143,121 +143,129 @@ public class UploadTransfer extends Transfer {
         return super.isResumable();
     }
 
+    private final TransferFilter ACTION_OVERWRITE = new UploadTransferFilter() {
+        public boolean accept(final Path p) {
+            if(super.accept(p)) {
+                if(p.attributes.isDirectory()) {
+                    // Do not attempt to create a directory that already exists
+                    return !UploadTransfer.this.exists(p);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public void prepare(final Path p) {
+            if(p.attributes.isFile()) {
+                p.getStatus().setResume(false);
+            }
+            super.prepare(p);
+        }
+
+    };
+
+    private final TransferFilter ACTION_RESUME = new UploadTransferFilter() {
+        public boolean accept(final Path p) {
+            if(super.accept(p)) {
+                if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
+                    // No need to resume completed transfers
+                    p.getStatus().setComplete(true);
+                    return false;
+                }
+                if(p.attributes.isDirectory()) {
+                    return !UploadTransfer.this.exists(p);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        public void prepare(final Path p) {
+            if(UploadTransfer.this.exists(p)) {
+                if(p.attributes.getSize() == -1) {
+                    p.readSize();
+                }
+                if(p.attributes.getModificationDate() == -1) {
+                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                        p.readTimestamp();
+                    }
+                }
+                if(p.attributes.getPermission() == null) {
+                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                        p.readPermission();
+                    }
+                }
+            }
+            if(p.attributes.isFile()) {
+                // Append to file if size is not zero
+                final boolean resume = UploadTransfer.this.exists(p)
+                        && p.attributes.getSize() > 0;
+                p.getStatus().setResume(resume);
+                if(p.getStatus().isResume()) {
+                    p.getStatus().setCurrent(p.attributes.getSize());
+                }
+            }
+            super.prepare(p);
+        }
+    };
+
+    private final TransferFilter ACTION_RENAME = new UploadTransferFilter() {
+        public boolean accept(final Path p) {
+            // Rename every file
+            return super.accept(p);
+        }
+
+        public void prepare(final Path p) {
+            if(UploadTransfer.this.exists(p)) {
+                final String parent = p.getParent().getAbsolute();
+                final String filename = p.getName();
+                String proposal = filename;
+                int no = 0;
+                int index = filename.lastIndexOf(".");
+                while(p.exists()) { // Do not use cached value of exists!
+                    no++;
+                    if(index != -1 && index != 0) {
+                        proposal = filename.substring(0, index)
+                                + "-" + no + filename.substring(index);
+                    }
+                    else {
+                        proposal = filename + "-" + no;
+                    }
+                    p.setPath(parent, proposal);
+                }
+                log.info("Changed local name to:" + p.getName());
+            }
+            if(p.attributes.isFile()) {
+                p.getStatus().setResume(false);
+            }
+            super.prepare(p);
+        }
+    };
+
+    private final TransferFilter ACTION_SKIP = new UploadTransferFilter() {
+        public boolean accept(final Path p) {
+            if(super.accept(p)) {
+                if(!UploadTransfer.this.exists(p)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:"+action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return new UploadTransferFilter() {
-                public boolean accept(final Path p) {
-                    if(super.accept(p)) {
-                        if(p.attributes.isDirectory()) {
-                            // Do not attempt to create a directory that already exists
-                            return !UploadTransfer.this.exists(p);
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-
-                public void prepare(final Path p) {
-                    if(p.attributes.isFile()) {
-                        p.getStatus().setResume(false);
-                    }
-                    super.prepare(p);
-                }
-
-            };
+            return ACTION_OVERWRITE;
         }
         if(action.equals(TransferAction.ACTION_RESUME)) {
-            return new UploadTransferFilter() {
-                public boolean accept(final Path p) {
-                    if(super.accept(p)) {
-                        if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
-                            // No need to resume completed transfers
-                            p.getStatus().setComplete(true);
-                            return false;
-                        }
-                        if(p.attributes.isDirectory()) {
-                            return !UploadTransfer.this.exists(p);
-                        }
-                        return true;
-                    }
-                    return false;
-                }
-
-                public void prepare(final Path p) {
-                    if(UploadTransfer.this.exists(p)) {
-                        if(p.attributes.getSize() == -1) {
-                            p.readSize();
-                        }
-                        if(p.attributes.getModificationDate() == -1) {
-                            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                                p.readTimestamp();
-                            }
-                        }
-                        if(p.attributes.getPermission() == null) {
-                            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                                p.readPermission();
-                            }
-                        }
-                    }
-                    if(p.attributes.isFile()) {
-                        // Append to file if size is not zero
-                        final boolean resume = UploadTransfer.this.exists(p)
-                                && p.attributes.getSize() > 0;
-                        p.getStatus().setResume(resume);
-                        if(p.getStatus().isResume()) {
-                            p.getStatus().setCurrent(p.attributes.getSize());
-                        }
-                    }
-                    super.prepare(p);
-                }
-            };
+            return ACTION_RESUME;
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
-            return new UploadTransferFilter() {
-                public boolean accept(final Path p) {
-                    // Rename every file
-                    return super.accept(p);
-                }
-
-                public void prepare(final Path p) {
-                    if(UploadTransfer.this.exists(p)) {
-                        final String parent = p.getParent().getAbsolute();
-                        final String filename = p.getName();
-                        String proposal = filename;
-                        int no = 0;
-                        int index = filename.lastIndexOf(".");
-                        while(p.exists()) { // Do not use cached value of exists!
-                            no++;
-                            if(index != -1 && index != 0) {
-                                proposal = filename.substring(0, index)
-                                        + "-" + no + filename.substring(index);
-                            }
-                            else {
-                                proposal = filename + "-" + no;
-                            }
-                            p.setPath(parent, proposal);
-                        }
-                        log.info("Changed local name to:" + p.getName());
-                    }
-                    if(p.attributes.isFile()) {
-                        p.getStatus().setResume(false);
-                    }
-                    super.prepare(p);
-                }
-            };
+            return ACTION_RENAME;
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
-            return new UploadTransferFilter() {
-                public boolean accept(final Path p) {
-                    if(super.accept(p)) {
-                        if(!UploadTransfer.this.exists(p)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            };
+            return ACTION_SKIP;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path root: this.getRoots()) {

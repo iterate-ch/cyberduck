@@ -192,7 +192,7 @@ public class DownloadTransfer extends Transfer {
         return file.isCached();
     }
 
-    private final DownloadTransferFilter ACTION_OVERWRITE = new DownloadTransferFilter() {
+    private final TransferFilter ACTION_OVERWRITE = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
             if(p.attributes.isDirectory()) {
                 return !DownloadTransfer.this.exists(p.getLocal());
@@ -213,7 +213,7 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
-    private final DownloadTransferFilter ACTION_RESUME = new DownloadTransferFilter() {
+    private final TransferFilter ACTION_RESUME = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
             if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
                 // No need to resume completed transfers
@@ -238,7 +238,7 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
-    private final DownloadTransferFilter ACTION_RENAME = new DownloadTransferFilter() {
+    private final TransferFilter ACTION_RENAME = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
             return true;
         }

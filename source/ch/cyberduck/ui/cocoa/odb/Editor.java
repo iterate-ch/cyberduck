@@ -71,28 +71,15 @@ public abstract class Editor extends CDController {
         final Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(),
                 edited.getParent().getAbsolute()));
         folder.mkdir(true);
-
-        String filename = edited.getName();
-        String proposal = filename;
-        int no = 0;
-        int index = filename.lastIndexOf(".");
-        do {
-            edited.setLocal(new Local(folder, proposal));
-            no++;
-            if(index != -1 && index != 0) {
-                proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-            }
-            else {
-                proposal = filename + "-" + no;
-            }
-        }
-        while(edited.getLocal().exists());
-
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer download = new DownloadTransfer(edited) {
+                    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+                        return TransferAction.ACTION_RENAME;
+                    }
+
                     protected boolean shouldOpenWhenComplete() {
                         return false;
                     }
@@ -173,7 +160,11 @@ public abstract class Editor extends CDController {
             public void run() {
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
-                Transfer upload = new UploadTransfer(edited);
+                Transfer upload = new UploadTransfer(edited) {
+                    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+                        return TransferAction.ACTION_OVERWRITE;
+                    }
+                };
                 upload.start(new TransferPrompt() {
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
