@@ -19,6 +19,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Folders collapse in outline view when refreshing [#2033]
 - [Bugfix] Cannot connect with empty password [#2109]
 - [Bugfix] Saving when editor exits does not upload edited file [#2120]
+- [Bugfix] Crash when closing edited file before upload completes [#2377]
 - [Bugfix] Wrong selection with search filter in Transfer window [#2336]
 - [Bugfix] Stop button does not work during countdown to retry transfer [#2121]
 - [Bugfix] Transfers fail using AppleScript (SFTP) [#2244]
