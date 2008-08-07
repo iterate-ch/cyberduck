@@ -65,12 +65,12 @@ public abstract class Editor extends CDController {
         this.controller = controller;
         this.bundleIdentifier = bundleIdentifier;
         this.edited = path;
+        final Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(),
+                edited.getParent().getAbsolute()));
+        this.edited.setLocal(new Local(folder, edited.getName()));
     }
 
     public void open() {
-        final Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(),
-                edited.getParent().getAbsolute()));
-        folder.mkdir(true);
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 TransferOptions options = new TransferOptions();
@@ -137,18 +137,22 @@ public abstract class Editor extends CDController {
     protected void delete() {
         log.debug("delete");
         edited.getLocal().delete();
-        for(AbstractPath parent = edited.getLocal().getParent(); !parent.equals(TEMPORARY_DIRECTORY); parent = parent.getParent()) {
-            if(parent.isEmpty()) {
-                parent.delete();
-            }
-        }
         this.invalidate();
     }
 
     /**
      * The file has been closed in the editor while the upload was in progress
      */
-    protected boolean deferredDelete;
+    private boolean deferredDelete;
+
+
+    protected void setDeferredDelete(boolean deferredDelete) {
+        this.deferredDelete = deferredDelete;
+    }
+
+    public boolean isDeferredDelete() {
+        return deferredDelete;
+    }
 
     /**
      * Upload the edited file to the server
@@ -179,10 +183,11 @@ public abstract class Editor extends CDController {
 
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
-                    if(deferredDelete) {
-                        delete();
-                    }
                     controller.reloadData(true);
+                    if(Editor.this.isDeferredDelete()) {
+                        Editor.this.delete();
+                    }
+                    Editor.this.setDeferredDelete(false);
                 }
             }
         });
