@@ -354,17 +354,17 @@ public class SFTPSession extends Session {
         if(null == SSH) {
             return false;
         }
-        try {
-            SSH.getConnectionInfo();
-        }
-        catch(IllegalStateException e) {
-            log.debug("isConnected:" + e.getMessage());
-            return false;
-        }
-        catch(IOException e) {
-            log.debug("isConnected:" + e.getMessage());
-            return false;
-        }
+//        try {
+//            SSH.getConnectionInfo();
+//        }
+//        catch(IllegalStateException e) {
+//            log.debug("isConnected:" + e.getMessage());
+//            return false;
+//        }
+//        catch(IOException e) {
+//            log.debug("isConnected:" + e.getMessage());
+//            return false;
+//        }
         return true;
     }
 }
