@@ -287,6 +287,8 @@ public class SFTPSession extends Session {
             }
         }
         finally {
+            SFTP = null;
+            SSH = null;
             this.fireConnectionDidCloseEvent();
         }
     }
