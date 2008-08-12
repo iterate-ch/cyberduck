@@ -366,8 +366,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 // of files, only include the top directory in the array.
                 NSMutableArray fileTypes = new NSMutableArray();
                 final List<Path> roots = new Collection<Path>();
+                final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
-                    promisedDragPaths[i] = (Path) items.objectAtIndex(i);
+                    promisedDragPaths[i] = PathFactory.createPath(session, ((Path) items.objectAtIndex(i)).getAsDictionary());
                     if(promisedDragPaths[i].attributes.isFile()) {
                         if(promisedDragPaths[i].getExtension() != null) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
