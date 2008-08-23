@@ -108,7 +108,9 @@
 	// Select the preferences page the user last had selected when this window was opened:
 	key = [NSString stringWithFormat: @"%@.prefspanel.recentpage", autosaveName];
 	index = [[NSUserDefaults standardUserDefaults] integerForKey: key];
-	[tabView selectTabViewItemAtIndex: index];
+	if(index < [tabView numberOfTabViewItems]) {
+	    [tabView selectTabViewItemAtIndex: index];
+	}
 	
 	// Actually hook up our toolbar and the tabs:
 	[self mapTabsToToolbar];
