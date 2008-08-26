@@ -165,6 +165,12 @@ public class FTPPath extends Path {
             if(null == f) {
                 continue;
             }
+            if(f.getType() == FTPFile.SYMBOLIC_LINK_TYPE) {
+                if(this.getAbsolute().equals(f.getName())) {
+                    // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
+                    continue;
+                }
+            }
             success = true; // At least one entry successfully parsed
             if(f.getName().equals(".") || f.getName().equals("..")) {
                 continue;
