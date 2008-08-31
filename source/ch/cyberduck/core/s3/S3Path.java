@@ -358,7 +358,7 @@ public class S3Path extends Path {
                 }
 
                 in = session.S3.getObject(this.getBucket(), this.getKey(), null, null, null, null,
-                        status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
+                        this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
