@@ -26,7 +26,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * @version $Id$
  */
-public class HiddenFilesPathFilter implements PathFilter {
+public class HiddenFilesPathFilter<E extends AbstractPath> implements PathFilter<E> {
     private static Logger log = Logger.getLogger(Proxy.class);
 
     private Pattern HIDDEN_PATTERN;
@@ -41,7 +41,7 @@ public class HiddenFilesPathFilter implements PathFilter {
         }
     }
 
-    public boolean accept(AbstractPath file) {
+    public boolean accept(E file) {
         if(null == HIDDEN_PATTERN) {
             return true;
         }

@@ -571,20 +571,20 @@ public class CDBrowserController extends CDWindowController
      */
     private boolean showHiddenFiles;
 
-    private PathFilter filenameFilter;
+    private PathFilter<Path> filenameFilter;
 
     {
         if(Preferences.instance().getBoolean("browser.showHidden")) {
-            this.filenameFilter = new NullPathFilter();
+            this.filenameFilter = new NullPathFilter<Path>();
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new HiddenFilesPathFilter();
+            this.filenameFilter = new HiddenFilesPathFilter<Path>();
             this.showHiddenFiles = false;
         }
     }
 
-    protected PathFilter getFileFilter() {
+    protected PathFilter<Path> getFileFilter() {
         return this.filenameFilter;
     }
 
@@ -594,16 +594,16 @@ public class CDBrowserController extends CDWindowController
             this.searchField.setStringValue("");
             // Revert to the last used default filter
             if(this.getShowHiddenFiles()) {
-                this.filenameFilter = new NullPathFilter();
+                this.filenameFilter = new NullPathFilter<Path>();
             }
             else {
-                this.filenameFilter = new HiddenFilesPathFilter();
+                this.filenameFilter = new HiddenFilesPathFilter<Path>();
             }
         }
         else {
             // Setting up a custom filter for the directory listing
-            this.filenameFilter = new PathFilter() {
-                public boolean accept(AbstractPath file) {
+            this.filenameFilter = new PathFilter<Path>() {
+                public boolean accept(Path file) {
                     if(file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1) {
                         // Matching filename
                         return true;
@@ -621,11 +621,11 @@ public class CDBrowserController extends CDWindowController
 
     public void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
-            this.filenameFilter = new NullPathFilter();
+            this.filenameFilter = new NullPathFilter<Path>();
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new HiddenFilesPathFilter();
+            this.filenameFilter = new HiddenFilesPathFilter<Path>();
             this.showHiddenFiles = false;
         }
     }
