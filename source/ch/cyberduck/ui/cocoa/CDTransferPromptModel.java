@@ -127,36 +127,40 @@ public abstract class CDTransferPromptModel extends CDController {
      *         using the standard regex exclusion and the additional passed filter
      */
     protected AttributedList<Path> childs(final Path path) {
+        if(log.isDebugEnabled()) {
+            log.debug("childs:" + path);
+        }
         synchronized(isLoadingListingInBackground) {
+            // Check first if it hasn't been already requested so we don't spawn
+            // a multitude of unecessary threads
             if(!isLoadingListingInBackground.contains(path)) {
-                if(!transfer.isCached(path)) {
-                    isLoadingListingInBackground.add(path);
-                    controller.background(new AbstractBackgroundAction() {
-                        public void run() {
-                            log.debug("childs#run");
-                            cache.put(path, transfer.childs(path));
-                            //Hack to filter the list first in the background thread
-                            cache.get(path, new NullComparator<Path>(), CDTransferPromptModel.this.filter());
-                        }
-
-                        public void cleanup() {
-                            log.debug("childs#cleanup");
-                            synchronized(isLoadingListingInBackground) {
-                                isLoadingListingInBackground.remove(path);
-                                if(transfer.isCached(path) && isLoadingListingInBackground.isEmpty()) {
-                                    ((CDTransferPrompt)controller).reloadData();
-                                }
-                            }
-                        }
-                    });
-                }
-                else {
+                if(transfer.isCached(path)) {
                     return cache.get(path, new NullComparator<Path>(), filter());
                 }
+                isLoadingListingInBackground.add(path);
+                // Reloading a workdir that is not cached yet would cause the interface to freeze;
+                // Delay until path is cached in the background
+                controller.background(new AbstractBackgroundAction() {
+                    public void run() {
+                        cache.put(path, transfer.childs(path));
+                        //Hack to filter the list first in the background thread
+                        cache.get(path, new NullComparator<Path>(), CDTransferPromptModel.this.filter());
+                    }
+
+                    public void cleanup() {
+                        log.debug("childs#cleanup");
+                        synchronized(isLoadingListingInBackground) {
+                            isLoadingListingInBackground.remove(path);
+                            if(transfer.isCached(path) && isLoadingListingInBackground.isEmpty()) {
+                                ((CDTransferPrompt)controller).reloadData();
+                            }
+                        }
+                    }
+                });
             }
+            log.warn("No cached listing for " + path.getName());
+            return new AttributedList<Path>(Collections.<Path>emptyList());
         }
-        log.warn("No cached listing for " + path.getName());
-        return new AttributedList<Path>(Collections.<Path>emptyList());
     }
 
     protected static final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");

@@ -73,19 +73,16 @@ public abstract class CDBrowserTableDataSource extends CDController {
         if(log.isDebugEnabled()) {
             log.debug("childs:" + path);
         }
-        // Check first if it hasn't been already requested so we don't spawn
-        // a multitude of unecessary threads
         synchronized(isLoadingListingInBackground) {
-            final AttributedList<Path> cached
-                    = path.cache().get(path, controller.getComparator(), controller.getFileFilter());
-            if(path.isCached()) {
-                return cached;
-            }
-            else if(!isLoadingListingInBackground.contains(path)) {
+            // Check first if it hasn't been already requested so we don't spawn
+            // a multitude of unecessary threads
+            if(!isLoadingListingInBackground.contains(path)) {
+                if(path.isCached()) {
+                    return path.cache().get(path, controller.getComparator(), controller.getFileFilter());
+                }
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
-
                 controller.background(new BrowserBackgroundAction(controller) {
                     public void run() {
                         path.childs();
@@ -110,11 +107,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     }
                 });
             }
-            if(null == cached) {
-                log.warn("No cached listing for " + path.getName());
-                return new AttributedList<Path>(Collections.<Path>emptyList());
-            }
-            return cached;
+            log.warn("No cached listing for " + path.getName());
+            return new AttributedList<Path>(Collections.<Path>emptyList());
         }
     }
 
