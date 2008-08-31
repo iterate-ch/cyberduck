@@ -792,8 +792,12 @@ public class S3Path extends Path {
             while(t.hasMoreTokens()) {
                 b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
-            // Do not use java.net.URL because it doesn't know about SFTP!
-            return Protocol.S3.getScheme() + "://" + RestS3Service.generateS3HostnameForBucket(this.getBucketName()) + b.toString();
+            if(RestS3Service.isBucketNameValidDNSName(this.getBucketName())) {
+                return Protocol.S3.getScheme() + "://" + RestS3Service.generateS3HostnameForBucket(this.getBucketName()) + b.toString();
+            }
+            else {
+                return this.getSession().getHost().toURL() + Path.DELIMITER + this.getBucketName() + b.toString();
+            }
         }
         catch(UnsupportedEncodingException e) {
             log.error(e.getMessage());
