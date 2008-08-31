@@ -688,8 +688,10 @@ public class Host extends NSObject implements Serializable {
      * @return The URL of the remote host including user login hostname and port
      */
     public String toURL() {
-        return this.getProtocol().getScheme() + "://" +
-                this.getHostname(true) + ":" + this.getPort();
+        if(this.getPort() == this.getProtocol().getDefaultPort()) {
+            return this.getProtocol().getScheme() + "://" + this.getHostname(true);
+        }
+        return this.getProtocol().getScheme() + "://" + this.getHostname(true) + ":" + this.getPort();
     }
 
     public boolean equals(Object other) {
