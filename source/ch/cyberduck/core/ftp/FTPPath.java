@@ -171,10 +171,10 @@ public class FTPPath extends Path {
                     continue;
                 }
             }
-            success = true; // At least one entry successfully parsed
             if(f.getName().equals(".") || f.getName().equals("..")) {
                 continue;
             }
+            success = true; // At least one entry successfully parsed
             final Path parsed = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
