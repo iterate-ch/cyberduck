@@ -119,16 +119,15 @@ public class FTPPath extends Path {
                 session.FTP.finishDir();
             }
             boolean dirChanged = false;
-            for(Iterator iter = childs.iterator(); iter.hasNext();) {
-                Path p = (Path) iter.next();
-                if(p.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
+            for(Path child : childs) {
+                if(child.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
                     try {
-                        session.setWorkdir(p);
-                        p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                        session.setWorkdir(child);
+                        child.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                         dirChanged = true;
                     }
                     catch(FTPException e) {
-                        p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                        child.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     }
                 }
             }
@@ -146,7 +145,6 @@ public class FTPPath extends Path {
     /**
      * Parse all lines from the reader.
      *
-     * @param childs
      * @param parser
      * @param reader
      * @return An empty list if no parsable lines are found
@@ -165,16 +163,17 @@ public class FTPPath extends Path {
             if(null == f) {
                 continue;
             }
-            if(f.getType() == FTPFile.SYMBOLIC_LINK_TYPE) {
+            if(!success) {
+                // Workaround for #2410. STAT only returns ls of directory itself
+                // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
                 if(this.getAbsolute().equals(f.getName())) {
-                    // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
                     continue;
                 }
             }
+            success = true; // At least one entry successfully parsed
             if(f.getName().equals(".") || f.getName().equals("..")) {
                 continue;
             }
-            success = true; // At least one entry successfully parsed
             final Path parsed = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
