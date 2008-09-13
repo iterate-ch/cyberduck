@@ -751,12 +751,14 @@ public class CDBrowserController extends CDWindowController
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
-                        Path p = (Path) this.browserOutlineView.itemAtRow(i);
-                        if(null == p) {
-                            break;
+                        final Object o = this.browserOutlineView.itemAtRow(i);
+                        if(null == o) {
+                            continue;
                         }
-                        if(selected.contains(p)) {
-                            this.selectRow(p, true);
+                        if(o instanceof Path) {
+                            if(selected.contains(o)) {
+                                this.selectRow((Path) o, true);
+                            }
                         }
                     }
                     break;
