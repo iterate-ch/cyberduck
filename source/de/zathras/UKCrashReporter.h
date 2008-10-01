@@ -10,12 +10,9 @@
 //	Headers:
 // -----------------------------------------------------------------------------
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import "UKNibOwner.h"
 
-@interface UKCrashReporter : NSObject
-{
-
-}
 
 // -----------------------------------------------------------------------------
 //	Prototypes:
@@ -29,6 +26,44 @@
 	URLs for different locales that way, in case a crash is caused by an error
 	in a localized file.
 */
-- (void) checkForCrash;
+void	UKCrashReporterCheckForCrash();
+
+
+// -----------------------------------------------------------------------------
+//	Classes:
+// -----------------------------------------------------------------------------
+
+@interface UKCrashReporter : UKNibOwner
+{
+	IBOutlet NSWindow*				reportWindow;
+	IBOutlet NSTextView*			informationField;
+	IBOutlet NSTextView*			crashLogField;
+	IBOutlet NSTextField*			explanationField;
+	IBOutlet NSProgressIndicator*	progressIndicator;
+	IBOutlet NSButton*				sendButton;
+	IBOutlet NSButton*				remindButton;
+	IBOutlet NSButton*				discardButton;
+	IBOutlet NSTabView*				switchTabView;
+	NSURLConnection*				connection;
+	BOOL							feedbackMode;
+}
+
+-(id)		initWithLogString: (NSString*)theLog;
+-(id)		init;									// This gives you a feedback window instead of a crash reporter.
+
+-(IBAction)	sendCrashReport: (id)sender;
+-(IBAction)	remindMeLater: (id)sender;
+-(IBAction)	discardCrashReport: (id)sender;
+
+@end
+
+
+@interface UKFeedbackProvider : NSObject
+{
+	
+}
+
+-(IBAction) orderFrontFeedbackWindow: (id)sender;
+-(IBAction) orderFrontBugReportWindow: (id)sender;
 
 @end
