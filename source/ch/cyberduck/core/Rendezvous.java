@@ -271,6 +271,7 @@ public class Rendezvous
         log.debug("serviceResolved:" + hostname);
         try {
             final Host host = new Host(this.getProtocol(fullname, port), hostname, port);
+            host.setCredentials(new Credentials(null, null));
             synchronized(this) {
                 this.services.put(fullname, host);
             }
