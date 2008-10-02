@@ -45,15 +45,22 @@ public abstract class AbstractLoginController implements LoginController {
                         this.prompt(protocol, credentials,
                                 NSBundle.localizedString("Login with username and password", "Credentials", ""),
                                 NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
-                        return;
                     }
-                    credentials.setPassword(passFromKeychain);
-                    return;
+                    else {
+                        credentials.setPassword(passFromKeychain);
+                    }
+                }
+                else {
+                    this.prompt(protocol, credentials,
+                            NSBundle.localizedString("Login with username and password", "Credentials", ""),
+                            NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
                 }
             }
-            this.prompt(protocol, credentials,
-                    NSBundle.localizedString("Login with username and password", "Credentials", ""),
-                    NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
+            else {
+                this.prompt(protocol, credentials,
+                        NSBundle.localizedString("Login with username and password", "Credentials", ""),
+                        NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
+            }
         }
     }
 
