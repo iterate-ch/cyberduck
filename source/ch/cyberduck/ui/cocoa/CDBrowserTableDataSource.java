@@ -98,9 +98,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             isLoadingListingInBackground.remove(path);
                             if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
                                 if(controller.isConnected()) {
-                                    final Collection<Path> selected = controller.getSelectedPaths();
-                                    selected.add(path);
-                                    controller.reloadData(selected);
+                                    controller.reloadData(true);
                                 }
                             }
                         }
