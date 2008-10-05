@@ -2918,6 +2918,9 @@ public class CDBrowserController extends CDWindowController
             if(selected.startsWith(parent)) {
                 selected = selected.substring(parent.length());
             }
+            if(!selected.startsWith(Path.DELIMITER)) {
+                selected = Path.DELIMITER + selected;
+            }
             NSWorkspace.sharedWorkspace().openURL(
                     new URL(url + selected)
             );
