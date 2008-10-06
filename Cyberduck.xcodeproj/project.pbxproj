@@ -159,6 +159,7 @@
 		47649E0908E563C500207DC9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
 		47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */; };
 		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
+		476623520E9A68BD00DBB7EA /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476623510E9A68BD00DBB7EA /* AddressBook.framework */; };
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
 		476847090D99502A0090077B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476847080D99502A0090077B /* Security.framework */; };
 		476B03360D05CFA100CE8ADE /* UKFileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 476B03340D05CFA100CE8ADE /* UKFileWatcher.m */; };
@@ -178,6 +179,8 @@
 		477B1B820AF384350023BA7F /* SNDisclosureButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 477B1B7E0AF384350023BA7F /* SNDisclosureButton.h */; };
 		477B1B830AF384350023BA7F /* SNDisclosureButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B1B7F0AF384350023BA7F /* SNDisclosureButton.m */; };
 		477BB1A10824E95C0094BCF5 /* arrowDown16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477BB1A00824E95C0094BCF5 /* arrowDown16.tiff */; };
+		477FA95B0E9A7826009E7857 /* UKSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 477FA9590E9A7826009E7857 /* UKSystemInfo.h */; };
+		477FA95C0E9A7826009E7857 /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 477FA95A0E9A7826009E7857 /* UKSystemInfo.m */; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4784DAAB07AEFB5900A8FC38 /* transparent.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4784DAAA07AEFB5900A8FC38 /* transparent.tiff */; };
 		4785B6060806FC6500F4E71F /* download10.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4785B6050806FC6500F4E71F /* download10.icns */; };
@@ -932,6 +935,7 @@
 		4765652D098134B200633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4765652E098134B200633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4765652F098134D300633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Status.strings; sourceTree = "<group>"; };
+		476623510E9A68BD00DBB7EA /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		476774DD0B74CE750025093E /* trash.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = trash.tiff; sourceTree = "<group>"; };
 		476847080D99502A0090077B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		476B03340D05CFA100CE8ADE /* UKFileWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKFileWatcher.m; sourceTree = "<group>"; };
@@ -1011,6 +1015,8 @@
 		477C3A3D07FDFDA9000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Info.nib; sourceTree = "<group>"; };
 		477C3A3E07FDFDAE000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = hu; path = hu.lproj/Duplicate.nib; sourceTree = "<group>"; };
 		477C3A3F07FDFDB7000FD967 /* hu */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		477FA9590E9A7826009E7857 /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKSystemInfo.h; sourceTree = "<group>"; };
+		477FA95A0E9A7826009E7857 /* UKSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKSystemInfo.m; sourceTree = "<group>"; };
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
 		4784DAAA07AEFB5900A8FC38 /* transparent.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = transparent.tiff; sourceTree = "<group>"; };
 		4785B6050806FC6500F4E71F /* download10.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download10.icns; sourceTree = "<group>"; };
@@ -1419,6 +1425,7 @@
 				47649E0908E563C500207DC9 /* Security.framework in Frameworks */,
 				47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */,
 				47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */,
+				476623520E9A68BD00DBB7EA /* AddressBook.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1562,6 +1569,7 @@
 				471D2C5405A2505600675163 /* Info.plist */,
 				476847080D99502A0090077B /* Security.framework */,
 				475D461C0D9953CD009450C4 /* SecurityInterface.framework */,
+				476623510E9A68BD00DBB7EA /* AddressBook.framework */,
 			);
 			name = "cyberduck-cocoa";
 			sourceTree = "<group>";
@@ -1881,6 +1889,8 @@
 		47457F8B09980270002C93C3 /* zathras */ = {
 			isa = PBXGroup;
 			children = (
+				477FA9590E9A7826009E7857 /* UKSystemInfo.h */,
+				477FA95A0E9A7826009E7857 /* UKSystemInfo.m */,
 				475E53F509AD1B48007CFC2B /* UKPrefsPanel.h */,
 				475E53F609AD1B48007CFC2B /* UKPrefsPanel.m */,
 				47457F8C09980270002C93C3 /* UKCrashReporter.h */,
@@ -2007,6 +2017,7 @@
 				47AC356F0DA1025000CC1426 /* CTGradient.h in Headers */,
 				47AC35710DA1025000CC1426 /* CTGradientView.h in Headers */,
 				473240080DABC00800BF67D2 /* QLPreviewPanel.h in Headers */,
+				477FA95B0E9A7826009E7857 /* UKSystemInfo.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2716,6 +2727,7 @@
 				47152E200D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m in Sources */,
 				47AC35700DA1025000CC1426 /* CTGradient.m in Sources */,
 				47AC35720DA1025000CC1426 /* CTGradientView.m in Sources */,
+				477FA95C0E9A7826009E7857 /* UKSystemInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

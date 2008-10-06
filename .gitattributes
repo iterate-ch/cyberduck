@@ -1915,6 +1915,8 @@ source/ch/cyberduck/ui/cocoa/threading/WindowMainAction.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/com/snoize/SNDisclosureButton.m -text
 source/de/zathras/UKCrashReporter.m -text
+source/de/zathras/UKSystemInfo.h -text
+source/de/zathras/UKSystemInfo.m -text
 source/net/oofn/CTGradient.h -text
 source/net/oofn/CTGradient.m -text
 source/net/oofn/CTGradientView.h -text

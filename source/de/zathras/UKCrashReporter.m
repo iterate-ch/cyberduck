@@ -11,14 +11,31 @@
 // -----------------------------------------------------------------------------
 
 #import "UKCrashReporter.h"
-#import "UKSystemInfo.h"
-#import <AddressBook/AddressBook.h>
-
 
 NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString* crashLogsFolder );
 
+@implementation UKCrashReporter
+
+-(id) init
+{
+	if( self = [super init] )
+	{
+		[self checkForCrash];
+	}
+
+	return self;
+}
+
+-(void) dealloc
+{
+	[connection release];
+	connection = nil;
+
+	[super dealloc];
+}
+
 // -----------------------------------------------------------------------------
-//	UKCrashReporterCheckForCrash:
+//	checkForCrash:
 //		This submits the crash report to a CGI form as a POST request by
 //		passing it as the request variable "crashlog".
 //	
@@ -34,7 +51,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 //		application.
 // -----------------------------------------------------------------------------
 
-void	UKCrashReporterCheckForCrash()
+- (void) checkForCrash
 {
 	NSAutoreleasePool*	pool = [[NSAutoreleasePool alloc] init];
 	
@@ -63,7 +80,7 @@ void	UKCrashReporterCheckForCrash()
 			crashLogPath = UKCrashReporterFindTenFiveCrashReportPath( appName, crashLogsFolder );
 		NSDictionary*	fileAttrs = [[NSFileManager defaultManager] fileAttributesAtPath: crashLogPath traverseLink: YES];
 		NSDate*			lastTimeCrashLogged = (fileAttrs == nil) ? nil : [fileAttrs fileModificationDate];
-		NSTimeInterval	lastCrashReportInterval = [[NSUserDefaults standardUserDefaults] floatForKey: @"UKCrashReporterLastCrashReportDate"];
+		NSTimeInterval	lastCrashReportInterval = [[NSUserDefaults standardUserDefaults] floatForKey: @"crashreport.date"];
 		NSDate*			lastTimeCrashReported = [NSDate dateWithTimeIntervalSince1970: lastCrashReportInterval];
 		
 		if( lastTimeCrashLogged )	// We have a crash log file and its mod date? Means we crashed sometime in the past.
@@ -71,22 +88,43 @@ void	UKCrashReporterCheckForCrash()
 			// If we never before reported a crash or the last report lies before the last crash:
 			if( [lastTimeCrashReported compare: lastTimeCrashLogged] == NSOrderedAscending )
 			{
-				// Fetch the newest report from the log:
-				NSString*			crashLog = [NSString stringWithContentsOfFile: crashLogPath];
-				NSArray*			separateReports = [crashLog componentsSeparatedByString: @"\n\n**********\n\n"];
-				NSString*			currentReport = [separateReports count] > 0 ? [separateReports objectAtIndex: [separateReports count] -1] : @"*** Couldn't read Report ***";	// 1 since report 0 is empty (file has a delimiter at the top).
-				unsigned			numCores = UKCountCores();
-				NSString*			numCPUsString = (numCores == 1) ? @"" : [NSString stringWithFormat: @"%dx ",numCores];
-				
-				// Create a string containing Mac and CPU info, crash log and prefs:
-				currentReport = [NSString stringWithFormat:
-									@"Model: %@\nCPU Speed: %@%.2f GHz\n%@\n\nPreferences:\n%@",
-									UKMachineName(), numCPUsString, ((float)UKClockSpeed()) / 1000.0f,
-									currentReport,
-									[[NSUserDefaults standardUserDefaults] persistentDomainForName: [[NSBundle mainBundle] bundleIdentifier]]];
-				
-				// Now show a crash reporter window so the user can edit the info to send:
-				[[UKCrashReporter alloc] initWithLogString: currentReport];
+				//NSLog(@"New crash log found! Running alert panel");
+				if( NSRunAlertPanel( NSLocalizedStringFromTable( @"Do you want to report the last crash?", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"Send", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"Don't Send", @"Crash", @"" ),
+									@"", appName ) )
+				{
+                    // Fetch the newest report from the log:
+                    NSString*			crashLog = [NSString stringWithContentsOfFile: crashLogPath];
+                    NSArray*			separateReports = [crashLog componentsSeparatedByString: @"\n\n**********\n\n"];
+                    NSString*			currentReport = [separateReports count] > 0 ? [separateReports objectAtIndex: [separateReports count] -1] : @"*** Couldn't read Report ***";	// 1 since report 0 is empty (file has a delimiter at the top).
+					NSData*				crashReport = [currentReport dataUsingEncoding: NSUTF8StringEncoding];	// 1 since report 0 is empty (file has a delimiter at the top).
+
+                    NSString            *boundary = @"0xKhTmLbOuNdArY";
+
+                    // Prepare a request:
+                    NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL:[NSURL URLWithString: @"http://crash.cyberduck.ch/report/"]];
+                    NSString            *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
+                    NSString			*agent = [NSString stringWithFormat:@"Cyberduck (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
+
+                    // Add form trappings to crashReport:
+                    NSData*			header = [[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"crashlog\"\r\n\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding];
+                    NSMutableData*	formData = [[header mutableCopy] autorelease];
+                    [formData appendData: crashReport];
+                    [formData appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+
+                    // setting the headers:
+                    [postRequest setHTTPMethod: @"POST"];
+                    [postRequest setValue: contentType forHTTPHeaderField: @"Content-Type"];
+                    [postRequest setValue: agent forHTTPHeaderField: @"User-Agent"];
+                    NSString *contentLength = [NSString stringWithFormat:@"%lu", [formData length]];
+                    [postRequest setValue: contentLength forHTTPHeaderField: @"Content-Length"];
+                    [postRequest setHTTPBody: formData];
+
+                    // Go into progress mode and kick off the HTTP post:
+                    connection = [[NSURLConnection connectionWithRequest: postRequest delegate: self] retain];
+               }
 			}
 		}
 	NS_HANDLER
@@ -133,200 +171,14 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 		return [crashLogsFolder stringByAppendingPathComponent: foundName];
 }
 
-
-NSString*	gCrashLogString = nil;
-
-
-@implementation UKCrashReporter
-
--(id)	initWithLogString: (NSString*)theLog
-{
-	// In super init the awakeFromNib method gets called, so we can not
-	//	use ivars to transfer the log, and use a global instead:
-	gCrashLogString = [theLog retain];
-	
-	self = [super init];
-	return self;
-}
-
-
--(id)	init
-{
-	self = [super init];
-	if( self )
-	{
-		feedbackMode = YES;
-	}
-	return self;
-}
-
-
--(void) dealloc
-{
-	[connection release];
-	connection = nil;
-	
-	[super dealloc];
-}
-
-
--(void)	awakeFromNib
-{
-	// Insert the app name into the explanation message:
-	NSString*			appName = [[NSFileManager defaultManager] displayNameAtPath: [[NSBundle mainBundle] bundlePath]];
-	NSMutableString*	expl = nil;
-	if( gCrashLogString )
-		expl = [[[explanationField stringValue] mutableCopy] autorelease];
-	else
-		expl = [[NSLocalizedStringFromTable(@"FEEDBACK_EXPLANATION_TEXT",@"UKCrashReporter",@"") mutableCopy] autorelease];
-	[expl replaceOccurrencesOfString: @"%%APPNAME" withString: appName
-				options: 0 range: NSMakeRange(0, [expl length])];
-	[explanationField setStringValue: expl];
-	
-	// Insert user name and e-mail address into the information field:
-	NSMutableString*	userMessage = nil;
-	if( gCrashLogString )
-		userMessage = [[[informationField string] mutableCopy] autorelease];
-	else
-		userMessage = [[NSLocalizedStringFromTable(@"FEEDBACK_MESSAGE_TEXT",@"UKCrashReporter",@"") mutableCopy] autorelease];
-	[userMessage replaceOccurrencesOfString: @"%%LONGUSERNAME" withString: NSFullUserName()
-				options: 0 range: NSMakeRange(0, [userMessage length])];
-	ABMultiValue*	emailAddresses = [[[ABAddressBook sharedAddressBook] me] valueForProperty: kABEmailProperty];
-	NSString*		emailAddr = NSLocalizedStringFromTable(@"MISSING_EMAIL_ADDRESS",@"UKCrashReporter",@"");
-	if( emailAddresses )
-	{
-		NSString*		defaultKey = [emailAddresses primaryIdentifier];
-		if( defaultKey )
-		{
-			unsigned int	defaultIndex = [emailAddresses indexForIdentifier: defaultKey];
-			if( defaultIndex >= 0 )
-				emailAddr = [emailAddresses valueAtIndex: defaultIndex];
-		}
-	}
-	[userMessage replaceOccurrencesOfString: @"%%EMAILADDRESS" withString: emailAddr
-				options: 0 range: NSMakeRange(0, [userMessage length])];
-	[informationField setString: userMessage];
-	
-	// Show the crash log to the user:
-	if( gCrashLogString )
-	{
-		[crashLogField setString: gCrashLogString];
-		[gCrashLogString release];
-		gCrashLogString = nil;
-	}
-	else
-	{
-		[remindButton setHidden: YES];
-		
-		int				itemIndex = [switchTabView indexOfTabViewItemWithIdentifier: @"de.zathras.ukcrashreporter.crashlog-tab"];
-		NSTabViewItem*	crashLogItem = [switchTabView tabViewItemAtIndex: itemIndex];
-		unsigned		numCores = UKCountCores();
-		NSString*		numCPUsString = (numCores == 1) ? @"" : [NSString stringWithFormat: @"%dx ",numCores];
-		[crashLogItem setLabel: NSLocalizedStringFromTable(@"SYSTEM_INFO_TAB_NAME",@"UKCrashReporter",@"")];
-		
-		NSString*	systemInfo = [NSString stringWithFormat: @"Application: %@ %@\nModel: %@\nCPU Speed: %@%.2f GHz\nSystem Version: %@\n\nPreferences:\n%@",
-									appName, [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleVersion"],
-									UKMachineName(), numCPUsString, ((float)UKClockSpeed()) / 1000.0f,
-									UKSystemVersionString(),
-									[[NSUserDefaults standardUserDefaults] persistentDomainForName: [[NSBundle mainBundle] bundleIdentifier]]];
-		[crashLogField setString: systemInfo];
-	}
-	
-	// Show the window:
-	[reportWindow makeKeyAndOrderFront: self];
-}
-
-
--(IBAction)	sendCrashReport: (id)sender
-{
-	NSString            *boundary = @"0xKhTmLbOuNdArY";
-	NSMutableString*	crashReportString = [NSMutableString string];
-	[crashReportString appendString: [informationField string]];
-	[crashReportString appendString: @"\n==========\n"];
-	[crashReportString appendString: [crashLogField string]];
-	[crashReportString replaceOccurrencesOfString: boundary withString: @"USED_TO_BE_KHTMLBOUNDARY" options: 0 range: NSMakeRange(0, [crashReportString length])];
-	NSData*				crashReport = [crashReportString dataUsingEncoding: NSUTF8StringEncoding];
-	
-	// Prepare a request:
-	NSMutableURLRequest *postRequest = [NSMutableURLRequest requestWithURL: [NSURL URLWithString: NSLocalizedStringFromTable( @"CRASH_REPORT_CGI_URL", @"UKCrashReporter", @"" )]];
-	NSString            *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
-	NSString			*agent = @"UKCrashReporter";
-	
-	// Add form trappings to crashReport:
-	NSData*			header = [[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"crashlog\"\r\n\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding];
-	NSMutableData*	formData = [[header mutableCopy] autorelease];
-	[formData appendData: crashReport];
-	[formData appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-	
-	// setting the headers:
-	[postRequest setHTTPMethod: @"POST"];
-	[postRequest setValue: contentType forHTTPHeaderField: @"Content-Type"];
-	[postRequest setValue: agent forHTTPHeaderField: @"User-Agent"];
-	NSString *contentLength = [NSString stringWithFormat:@"%lu", [formData length]];
-	[postRequest setValue: contentLength forHTTPHeaderField: @"Content-Length"];
-	[postRequest setHTTPBody: formData];
-	
-	// Go into progress mode and kick off the HTTP post:
-	[progressIndicator startAnimation: self];
-	[sendButton setEnabled: NO];
-	[remindButton setEnabled: NO];
-	[discardButton setEnabled: NO];
-	
-	connection = [[NSURLConnection connectionWithRequest: postRequest delegate: self] retain];
-}
-
-
--(IBAction)	remindMeLater: (id)sender
-{
-	[reportWindow orderOut: self];
-}
-
-
--(IBAction)	discardCrashReport: (id)sender
-{
-	// Remember we already did this crash, so we don't ask twice:
-	if( !feedbackMode )
-	{
-		[[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"UKCrashReporterLastCrashReportDate"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
-
-	[reportWindow orderOut: self];
-}
-
-
--(void)	showFinishedMessage: (NSError*)errMsg
-{
-	if( errMsg )
-	{
-		NSString*		errTitle = nil;
-		if( feedbackMode )
-			errTitle = NSLocalizedStringFromTable( @"COULDNT_SEND_FEEDBACK_ERROR",@"UKCrashReporter",@"");
-		else
-			errTitle = NSLocalizedStringFromTable( @"COULDNT_SEND_CRASH_REPORT_ERROR",@"UKCrashReporter",@"");
-		
-		NSRunAlertPanel( errTitle, @"%@", NSLocalizedStringFromTable( @"COULDNT_SEND_CRASH_REPORT_ERROR_OK",@"UKCrashReporter",@""), @"", @"",
-						 [errMsg localizedDescription] );
-	}
-	
-	[reportWindow orderOut: self];
-	[self autorelease];
-}
-
-
 -(void)	connectionDidFinishLoading:(NSURLConnection *)conn
 {
 	[connection release];
 	connection = nil;
 	
 	// Now that we successfully sent this crash, don't report it again:
-	if( !feedbackMode )
-	{
-		[[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"UKCrashReporterLastCrashReportDate"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
-	
-	[self performSelectorOnMainThread: @selector(showFinishedMessage:) withObject: nil waitUntilDone: NO];
+    [[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"crashreport.date"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
@@ -334,24 +186,6 @@ NSString*	gCrashLogString = nil;
 {
 	[connection release];
 	connection = nil;
-	
-	[self performSelectorOnMainThread: @selector(showFinishedMessage:) withObject: error waitUntilDone: NO];
-}
-
-@end
-
-
-@implementation UKFeedbackProvider
-
--(IBAction) orderFrontFeedbackWindow: (id)sender
-{
-	[[UKCrashReporter alloc] init];
-}
-
-
--(IBAction) orderFrontBugReportWindow: (id)sender
-{
-	[[UKCrashReporter alloc] init];
 }
 
 @end
