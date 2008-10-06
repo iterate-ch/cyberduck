@@ -247,12 +247,23 @@ public abstract class AbstractPath extends NSObject {
 
     public abstract void setPath(String name);
 
+    /**
+     *
+     * @param parent Absolute path to the symbolic link
+     * @param name Target of the symbolic link name. Absolute or relative pathname
+     */
     public void setSymbolicLinkPath(String parent, String name) {
-        if(parent.endsWith(DELIMITER)) {
-            this.setSymbolicLinkPath(parent + name);
+        if(name.startsWith(DELIMITER)) {
+            // Symbolic link target may be an absolute path
+            this.setSymbolicLinkPath(name);
         }
         else {
-            this.setSymbolicLinkPath(parent + DELIMITER + name);
+            if(parent.endsWith(DELIMITER)) {
+                this.setSymbolicLinkPath(parent + name);
+            }
+            else {
+                this.setSymbolicLinkPath(parent + DELIMITER + name);
+            }
         }
     }
 

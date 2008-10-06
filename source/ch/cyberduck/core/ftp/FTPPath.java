@@ -106,8 +106,7 @@ public class FTPPath extends Path {
                     this.getName()));
 
             final FTPFileEntryParser parser = session.getFileParser();
-            if(!this.parse(childs, parser, session.FTP.stat(
-                    this.attributes.isSymbolicLink() ? this.getSymbolicLinkPath() : this.getAbsolute()))) {
+            if(!this.parse(childs, parser, session.FTP.stat(this.getAbsolute()))) {
                 // STAT listing failed
                 session.FTP.setTransferType(FTPTransferType.ASCII);
                 session.setWorkdir(this);
