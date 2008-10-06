@@ -582,14 +582,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
 
             public void finish() {
+                super.finish();
                 if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
                     ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(null);
                 }
                 transfer.getSession().setLoginController(null);
-
                 transfer.removeListener(tl);
-
-                super.finish();
             }
 
             public void cleanup() {
