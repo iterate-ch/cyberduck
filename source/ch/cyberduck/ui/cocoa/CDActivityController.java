@@ -87,7 +87,9 @@ public class CDActivityController extends CDWindowController {
             }
         });
         // Add already running background actions
-        for(final BackgroundAction action : BackgroundActionRegistry.instance()) {
+        final BackgroundAction[] actions = BackgroundActionRegistry.instance().toArray(
+                new BackgroundAction[BackgroundActionRegistry.instance().size()]);
+        for(final BackgroundAction action : actions) {
             tasks.put(action, new CDTaskController(action));
         }
         this.reload();
