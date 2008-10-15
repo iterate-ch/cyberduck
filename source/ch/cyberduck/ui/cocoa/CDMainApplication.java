@@ -53,6 +53,9 @@ public class CDMainApplication extends NSApplication {
             }
             finally {
                 this.remove(String.valueOf(event.subtype()));
+                if(log.isDebugEnabled()) {
+                    System.gc();
+                }
             }
             return;
         }
