@@ -60,7 +60,7 @@ public abstract class AbstractPath extends NSObject {
                 && !this.cache().get(this).attributes().isDirty();
     }
 
-    public abstract Cache cache();
+    public abstract <T extends AbstractPath> Cache<T> cache();
 
     /**
      * Clear cached listing
@@ -80,15 +80,15 @@ public abstract class AbstractPath extends NSObject {
      *
      * @return
      */
-    public abstract AttributedList<? extends AbstractPath> list();
+    public abstract <T extends AbstractPath> AttributedList<T> list();
 
     /**
      * Get the cached directory listing if any or return #list instead
      *
      * @return
      */
-    public AttributedList<? extends AbstractPath> childs() {
-        return this.childs(new NullComparator<AbstractPath>(), new NullPathFilter());
+    public <T extends AbstractPath> AttributedList<T> childs() {
+        return this.childs(new NullComparator<T>(), new NullPathFilter<T>());
     }
 
     /**
@@ -99,11 +99,11 @@ public abstract class AbstractPath extends NSObject {
      * @param filter     The filter to exlude certain files
      * @return The children of this path or an empty list if it is not accessible for some reason
      */
-    public AttributedList<? extends AbstractPath> childs(Comparator<? extends AbstractPath> comparator, PathFilter filter) {
+    public <T extends AbstractPath> AttributedList<T> childs(Comparator<T> comparator, PathFilter<T> filter) {
         if(!this.isCached()) {
             this.cache().put(this, this.list());
         }
-        return this.cache().get(this, comparator, filter);
+        return this.<T>cache().get((T)this, comparator, filter);
     }
 
     /**
