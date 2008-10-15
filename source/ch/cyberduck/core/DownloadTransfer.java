@@ -178,14 +178,16 @@ public class DownloadTransfer extends Transfer {
             // Cannot fetch file listing of non existant file
             return new AttributedList<Path>(Collections.<Path>emptyList());
         }
-        AttributedList<Path> childs = new AttributedList<Path>();
-        // Change download path relative to parent local folder
-        for(Path download : (AttributedList<Path>) parent.childs(new NullComparator<Path>(), childFilter)) {
+        AttributedList<Path> downloads = new AttributedList<Path>();
+        final AttributedList<Path> list = (AttributedList<Path>) parent.childs(new NullComparator<Path>(), childFilter);
+        for(Path download : list) {
+            // Change download path relative to parent local folder
             download.setLocal(new Local(parent.getLocal(), download.getName()));
             download.getStatus().setSkipped(parent.getStatus().isSkipped());
-            childs.add(download);
+            downloads.add(download);
         }
-        return childs;
+        downloads.attributes().setReadable(list.attributes().isReadable());
+        return downloads;
     }
 
     public boolean isCached(Path file) {
