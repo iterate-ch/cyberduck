@@ -3579,10 +3579,8 @@ public class CDBrowserController extends CDWindowController
                 // Remove any custom file filter
                 setPathFilter(null);
 
-                if(Preferences.instance().getBoolean("browser.closeDrawer")) {
-                    // Change to last selected browser view
-                    browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
-                }
+                // Change to last selected browser view
+                browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
 
                 validateNavigationButtons();
 
