@@ -472,14 +472,18 @@ public abstract class Transfer extends NSObject implements Serializable {
         }
 
         if(p.attributes.isDirectory()) {
-            boolean flag = false;
-            for(Path child : this.childs(p)) {
+            boolean failure = false;
+            final AttributedList<Path> childs = this.childs(p);
+            if(!childs.attributes().isReadable()) {
+                failure = true;
+            }
+            for(Path child : childs) {
                 this.transfer(child, filter);
                 if(!child.getStatus().isComplete()) {
-                    flag = true;
+                    failure = true;
                 }
             }
-            if(!flag) {
+            if(!failure) {
                 p.getStatus().setComplete(true);
             }
         }
@@ -488,8 +492,6 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     private void cleanup(final Path p) {
-        // Save memory
-        p.cache().remove(p);
         // Remove from the _existing hashmap
         _existing.remove(p);
     }
@@ -556,8 +558,8 @@ public abstract class Transfer extends NSObject implements Serializable {
             this.clear();
             if(options.closeSession) {
                 session.close();
+                session.cache().clear();
             }
-            session.cache().clear();
         }
     }
 
