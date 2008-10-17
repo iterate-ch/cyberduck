@@ -100,8 +100,8 @@ public class UploadTransfer extends Transfer {
         }
     }
 
-    private final PathFilter childFilter = new PathFilter() {
-        public boolean accept(AbstractPath child) {
+    private final PathFilter<Local> childFilter = new PathFilter<Local>() {
+        public boolean accept(Local child) {
             if(Preferences.instance().getBoolean("queue.upload.skip.enable")
                     && UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                 return false;
