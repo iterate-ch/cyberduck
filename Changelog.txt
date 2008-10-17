@@ -4,6 +4,11 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.0.3 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.3]
+- [Bugfix] Arbitrary Crashes [#2142]
+- [Bugfix] Symbolic links not parsed properly for some STAT listings (FTP) [#2435]
+- [Bugfix] Open Web URL fails [#2466]
+
 3.0.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.2]
 - [Localize] Greek Localization
 - [Feature] Added transcript (S3)
