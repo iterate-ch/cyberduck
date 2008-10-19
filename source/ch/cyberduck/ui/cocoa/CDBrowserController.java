@@ -1226,6 +1226,11 @@ public class CDBrowserController extends CDWindowController
         public AbstractBrowserTableDelegate() {
             CDBrowserController.this.addListener(new CDWindowListener() {
                 public void windowWillClose() {
+                    if(QuickLook.isAvailable()) {
+                        if(QuickLook.isOpen()) {
+                            QuickLook.close();
+                        }
+                    }
                     temporaryQuickLookFiles.clear();
                 }
             });
