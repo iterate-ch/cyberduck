@@ -246,15 +246,15 @@ public class SyncTransfer extends Transfer {
         return super.exists(file);
     }
 
-    protected void clear() {
+    protected void clear(final TransferOptions options) {
         _comparisons.clear();
 
-        _delegateDownload.clear();
-        _delegateUpload.clear();
+        _delegateDownload.clear(options);
+        _delegateUpload.clear(options);
 
         _cache.clear();
 
-        super.clear();
+        super.clear(options);
     }
 
     protected void reset() {

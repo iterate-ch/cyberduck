@@ -119,9 +119,9 @@ public class UploadTransfer extends Transfer {
         }
         if(!_cache.containsKey(parent)) {
             AttributedList<Path> childs = new AttributedList<Path>();
-            for(AbstractPath local: parent.getLocal().childs(new NullComparator<Local>(),
+            for(AbstractPath local : parent.getLocal().childs(new NullComparator<Local>(),
                     childFilter)) {
-                Path child = PathFactory.createPath(parent.getSession(),
+                final Path child = PathFactory.createPath(parent.getSession(),
                         parent.getAbsolute(),
                         new Local(local.getAbsolute()));
                 child.getStatus().setSkipped(parent.getStatus().isSkipped());
@@ -287,9 +287,9 @@ public class UploadTransfer extends Transfer {
         return super.filter(action);
     }
 
-    protected void clear() {
+    protected void clear(final TransferOptions options) {
         _cache.clear();
-        super.clear();
+        super.clear(options);
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {

@@ -531,7 +531,7 @@ public abstract class Transfer extends NSObject implements Serializable {
                 return;
             }
 
-            this.clear();
+            this.clear(options);
 
             // Get the transfer filter from the concret transfer class
             final TransferFilter filter = this.filter(action);
@@ -555,10 +555,9 @@ public abstract class Transfer extends NSObject implements Serializable {
             }
         }
         finally {
-            this.clear();
+            this.clear(options);
             if(options.closeSession) {
                 session.close();
-                session.cache().clear();
             }
         }
     }
@@ -609,8 +608,11 @@ public abstract class Transfer extends NSObject implements Serializable {
     /**
      * Clear all cached values
      */
-    protected void clear() {
+    protected void clear(final TransferOptions options) {
         log.debug("clear");
+        if(options.closeSession) {
+            session.cache().clear();
+        }
         _existing.clear();
     }
 
