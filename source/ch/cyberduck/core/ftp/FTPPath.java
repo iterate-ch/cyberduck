@@ -162,18 +162,21 @@ public class FTPPath extends Path {
             if(null == f) {
                 continue;
             }
+            final String name = f.getName();
             if(!success) {
                 // Workaround for #2410. STAT only returns ls of directory itself
                 // Workaround for #2434. STAT of symbolic link directory only lists the directory itself.
-                if(this.getAbsolute().equals(f.getName())) {
+                if(this.getAbsolute().equals(name)) {
                     continue;
                 }
             }
             success = true; // At least one entry successfully parsed
-            if(f.getName().equals(".") || f.getName().equals("..")) {
+            if(name.equals(".") || name.equals("..")) {
                 continue;
             }
-            final Path parsed = new FTPPath(session, this.getAbsolute(), f.getName(), Path.FILE_TYPE);
+            // The filename should never contain a delimiter
+            final Path parsed = new FTPPath(session, this.getAbsolute(),
+                    name.substring(name.lastIndexOf(DELIMITER) + 1), Path.FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
