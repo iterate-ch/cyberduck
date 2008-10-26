@@ -47,7 +47,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
     public boolean prepare() {
         CDMainApplication.invoke(new WindowMainAction(controller) {
             public void run() {
-                controller.spinner.startAnimation(this);
+                controller.spinner.startAnimation(null);
             }
         });
         return super.prepare();
@@ -64,7 +64,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         super.finish();
         CDMainApplication.invoke(new WindowMainAction(controller) {
             public void run() {
-                controller.spinner.stopAnimation(this);
+                controller.spinner.stopAnimation(null);
                 controller.updateStatusLabel(null);
             }
         });
