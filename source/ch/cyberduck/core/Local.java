@@ -310,10 +310,16 @@ public class Local extends AbstractPath {
     public void delete(final boolean trash) {
         if(this.exists()) {
             if(trash) {
-                if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
-                        this.getParent().getAbsolute(), "", new NSArray(this.getName()))) {
-                    log.warn("Failed to move " + this.getAbsolute() + " to Trash");
-                }
+                final Local file = this;
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        log.debug("Move " + file + " to Trash");
+                        if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
+                                file.getParent().getAbsolute(), "", new NSArray(file.getName()))) {
+                            log.warn("Failed to move " + file.getAbsolute() + " to Trash");
+                        }
+                    }
+                }, true);
             }
             else {
                 _impl.delete();
