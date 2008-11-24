@@ -37,6 +37,7 @@
                 editButtonClicked = id;
                 infoButtonClicked = id;
                 newBrowserButtonClicked = id;
+                openBrowserButtonClicked = id;
                 reloadButtonClicked = id;
                 renameFileButtonClicked = id;
                 syncButtonClicked = id;
