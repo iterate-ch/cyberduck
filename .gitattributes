@@ -1082,8 +1082,6 @@ img/DropFolderBadgeIcon.icns -text
 img/NewFolderBadgeIcon.icns -text
 img/PrivateFolderBadgeIcon.icns -text
 img/ReadOnlyFolderBadgeIcon.icns -text
-img/SNDisclosureArrowDown.tiff -text svneol=unset#image/tiff
-img/SNDisclosureArrowRight.tiff -text svneol=unset#image/tiff
 img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
 img/advanced.tiff -text svneol=unset#image/tiff
@@ -1913,7 +1911,6 @@ source/ch/cyberduck/ui/cocoa/threading/MainAction.java -text
 source/ch/cyberduck/ui/cocoa/threading/RepeatableBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/threading/WindowMainAction.java -text
 source/com/snoize/SNDisclosableView.m -text
-source/com/snoize/SNDisclosureButton.m -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text
 source/de/zathras/UKSystemInfo.m -text
