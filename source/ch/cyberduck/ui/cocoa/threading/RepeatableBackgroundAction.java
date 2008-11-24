@@ -72,9 +72,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
         CDMainApplication.invoke(new DefaultMainAction() {
             public void run() {
-                Growl.instance().notify(exception.getMessage(),
-                        null == exception.getPath() ? exception.getSession().getHost().getHostname()
-                                : exception.getPath().getName());
+                final String description = null == exception.getPath() ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
+                Growl.instance().notify(exception.getMessage(), description);
             }
         });
         exceptions.add(exception);
