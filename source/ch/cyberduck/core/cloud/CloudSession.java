@@ -1,5 +1,4 @@
-package ch.cyberduck.core.s3;
-
+package ch.cyberduck.core.cloud;
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -18,29 +17,9 @@ package ch.cyberduck.core.s3;
  *  dkocher@cyberduck.ch
  */
 
-import org.jets3t.service.S3ServiceException;
-import org.jets3t.service.CloudFrontServiceException;
-
-import java.io.IOException;
-
 /**
  * @version $Id:$
  */
-public class S3Exception extends IOException {
+public interface CloudSession {
 
-    private Throwable cause;
-
-    public S3Exception(String message, S3ServiceException cause) {
-        super(message);
-        this.cause = cause;
-    }
-
-    public S3Exception(String message, CloudFrontServiceException cause) {
-        super(message);
-        this.cause = cause;
-    }
-
-    public Throwable getCause() {
-        return this.cause;
-    }
 }

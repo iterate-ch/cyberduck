@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.log4j.Logger;
@@ -35,6 +36,7 @@ import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.cloudfront.Distribution;
 import org.jets3t.service.multithread.*;
 import org.jets3t.service.utils.ObjectUtils;
 
@@ -46,7 +48,7 @@ import java.util.*;
 /**
  * @version $Id:$
  */
-public class S3Path extends Path {
+public class S3Path extends CloudPath {
     private static Logger log = Logger.getLogger(S3Path.class);
 
     static {
@@ -144,24 +146,16 @@ public class S3Path extends Path {
 
     private S3Bucket _bucket;
 
-    private String getBucketName() {
-        AbstractPath bucketname = this;
-        while(!bucketname.getParent().isRoot()) {
-            bucketname = bucketname.getParent();
-        }
-        return bucketname.getName();
-    }
-
     /**
      * @return
      * @throws S3ServiceException
      */
-    private S3Bucket getBucket() throws S3ServiceException {
+    protected S3Bucket getBucket() throws S3ServiceException {
         if(null == _bucket) {
             if(this.isRoot()) {
                 return null;
             }
-            final String bucketname = this.getBucketName();
+            final String bucketname = this.getContainerName();
             if(!session.S3.isBucketAccessible(bucketname)) {
                 throw new S3ServiceException("Bucket not available: " + bucketname);
             }
@@ -455,10 +449,10 @@ public class S3Path extends Path {
      */
     private String getKey() {
         if(this.isBucket()) {
-            return this.getBucketName();
+            return this.getContainerName();
         }
-        if(this.getAbsolute().startsWith(Path.DELIMITER + this.getBucketName())) {
-            return this.getAbsolute().substring(this.getBucketName().length() + 2);
+        if(this.getAbsolute().startsWith(Path.DELIMITER + this.getContainerName())) {
+            return this.getAbsolute().substring(this.getContainerName().length() + 2);
         }
         return this.getAbsolute();
     }
@@ -567,7 +561,6 @@ public class S3Path extends Path {
             ;
         }
         return childs;
-
     }
 
     public void mkdir() {
@@ -595,7 +588,7 @@ public class S3Path extends Path {
     }
 
     public void writePermissions(Permission perm, boolean recursive) {
-        log.debug("changePermissions:" + perm);
+        log.debug("writePermissions:" + perm);
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
@@ -628,15 +621,15 @@ public class S3Path extends Path {
                     acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
                 }
                 if(this.isBucket()) {
-                    session.S3.putBucketAcl(this.getBucketName(), acl);
+                    session.S3.putBucketAcl(this.getContainerName(), acl);
                 }
                 else if(attributes.isFile()) {
-                    session.S3.putObjectAcl(this.getBucketName(), this.getKey(), acl);
+                    session.S3.putObjectAcl(this.getContainerName(), this.getKey(), acl);
                 }
             }
             if(attributes.isDirectory()) {
                 if(recursive) {
-                    for(AbstractPath child: this.childs()) {
+                    for(AbstractPath child : this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
@@ -661,7 +654,7 @@ public class S3Path extends Path {
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                         this.getName()));
 
-                session.S3.deleteObject(this.getBucketName(), this.getKey());
+                session.S3.deleteObject(this.getContainerName(), this.getKey());
             }
             else if(attributes.isDirectory()) {
                 for(AbstractPath i : this.childs()) {
@@ -671,7 +664,7 @@ public class S3Path extends Path {
                     i.delete();
                 }
                 if(this.isBucket()) {
-                    session.S3.deleteBucket(this.getBucketName());
+                    session.S3.deleteBucket(this.getContainerName());
                 }
             }
         }
@@ -695,10 +688,10 @@ public class S3Path extends Path {
                 session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
                         this.getName(), renamed));
 
-                session.S3.moveObject(this.getBucketName(), this.getKey(), this.getBucketName(),
+                session.S3.moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
                         new S3Object(((S3Path) renamed).getKey()), false);
                 this.setPath(renamed.getAbsolute());
-                if(!this.getBucketName().equals(((S3Path) renamed).getBucketName())) {
+                if(!this.getContainerName().equals(((S3Path) renamed).getContainerName())) {
                     _bucket = null;
                 }
             }
@@ -721,7 +714,7 @@ public class S3Path extends Path {
             }
         }
         catch(IOException e) {
-
+            ;
         }
     }
 
@@ -732,7 +725,7 @@ public class S3Path extends Path {
                 session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
                         this.getName(), copy));
 
-                session.S3.copyObject(this.getBucketName(), this.getKey(), ((S3Path) copy).getBucketName(),
+                session.S3.copyObject(this.getContainerName(), this.getKey(), ((S3Path) copy).getContainerName(),
                         new S3Object(((S3Path) copy).getKey()), false);
             }
             else if(attributes.isDirectory()) {
@@ -754,7 +747,7 @@ public class S3Path extends Path {
             }
         }
         catch(IOException e) {
-
+            ;
         }
     }
 
@@ -775,7 +768,7 @@ public class S3Path extends Path {
             try {
                 session.check();
                 return S3Service.createSignedUrl("GET",
-                        this.getBucketName(), this.getName(), null,
+                        this.getContainerName(), this.getName(), null,
                         null, session.S3.getAWSCredentials(), secondsSinceEpoch, false);
             }
             catch(S3ServiceException e) {
@@ -792,11 +785,11 @@ public class S3Path extends Path {
             while(t.hasMoreTokens()) {
                 b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
-            if(RestS3Service.isBucketNameValidDNSName(this.getBucketName())) {
-                return Protocol.S3.getScheme() + "://" + RestS3Service.generateS3HostnameForBucket(this.getBucketName()) + b.toString();
+            if(RestS3Service.isBucketNameValidDNSName(this.getContainerName())) {
+                return Protocol.S3.getScheme() + "://" + RestS3Service.generateS3HostnameForBucket(this.getContainerName()) + b.toString();
             }
             else {
-                return this.getSession().getHost().toURL() + Path.DELIMITER + this.getBucketName() + b.toString();
+                return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + b.toString();
             }
         }
         catch(UnsupportedEncodingException e) {
@@ -807,5 +800,51 @@ public class S3Path extends Path {
 
     public boolean isMkdirSupported() {
         return this.isRoot();
+    }
+
+    /**
+     * @return
+     */
+    public Distribution readDistribution() {
+        try {
+            for(Distribution distribution : session.listDistributions()) {
+                if(distribution.getOrigin().equals(RestS3Service.generateS3HostnameForBucket(this.getContainerName()))) {
+                    return distribution;
+                }
+            }
+        }
+        catch(S3Exception e) {
+            this.error(e.getMessage(), e);
+        }
+        catch(IOException e) {
+            this.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    /**
+     * Amazon CloudFront Extension
+     *
+     * @param enabled
+     * @param cnames
+     */
+    public void writeDistribution(final boolean enabled, final String[] cnames) {
+        try {
+            final String bucket = this.getContainerName();
+            for(Distribution distribution : session.listDistributions()) {
+                if(distribution.getOrigin().equals(bucket)) {
+                    session.updateDistribution(enabled, distribution, cnames);
+                    return;
+                }
+            }
+            // Create new configuration
+            session.createDistribution(enabled, bucket, cnames);
+        }
+        catch(S3Exception e) {
+            this.error(e.getMessage(), e);
+        }
+        catch(IOException e) {
+            this.error(e.getMessage(), e);
+        }
     }
 }
