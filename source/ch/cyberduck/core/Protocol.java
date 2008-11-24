@@ -230,6 +230,32 @@ public abstract class Protocol {
         }
     };
 
+    public static final Protocol MOSSO = new Protocol() {
+        public String getDescription() {
+            return NSBundle.localizedString("Mosso Cloud Files", "Mosso", "");
+        }
+
+        public String getIdentifier() {
+            return "mosso";
+        }
+
+        public int getDefaultPort() {
+            return 443;
+        }
+
+        public String getScheme() {
+            return "https";
+        }
+
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "mosso", "cloudfiles"};
+        }
+
+        public boolean isSecure() {
+            return true;
+        }
+    };
+
     /**
      * @param port
      * @return The standard protocol for this port number
@@ -290,6 +316,6 @@ public abstract class Protocol {
 
     public static Protocol[] getKnownProtocols() {
         return new Protocol[]{
-                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, S3};
+                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, S3, MOSSO};
     }
 }

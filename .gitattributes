@@ -1880,6 +1880,9 @@ source/ch/cyberduck/core/io/UKFileWatcher.h -text
 source/ch/cyberduck/core/io/UKFileWatcher.m -text
 source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
+source/ch/cyberduck/core/mosso/MossoException.java -text
+source/ch/cyberduck/core/mosso/MossoPath.java -text
+source/ch/cyberduck/core/mosso/MossoSession.java -text
 source/ch/cyberduck/core/s3/S3Exception.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
