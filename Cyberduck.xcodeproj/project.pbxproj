@@ -172,12 +172,8 @@
 		477839340BA1BE8E0037E145 /* statusGreen.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839310BA1BE8E0037E145 /* statusGreen.tiff */; };
 		477839350BA1BE8E0037E145 /* statusRed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839320BA1BE8E0037E145 /* statusRed.tiff */; };
 		477839360BA1BE8E0037E145 /* statusYellow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839330BA1BE8E0037E145 /* statusYellow.tiff */; };
-		477B1B790AF383DC0023BA7F /* SNDisclosureArrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */; };
-		477B1B7A0AF383DC0023BA7F /* SNDisclosureArrowRight.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */; };
 		477B1B800AF384350023BA7F /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 477B1B7C0AF384350023BA7F /* SNDisclosableView.h */; };
 		477B1B810AF384350023BA7F /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B1B7D0AF384350023BA7F /* SNDisclosableView.m */; };
-		477B1B820AF384350023BA7F /* SNDisclosureButton.h in Headers */ = {isa = PBXBuildFile; fileRef = 477B1B7E0AF384350023BA7F /* SNDisclosureButton.h */; };
-		477B1B830AF384350023BA7F /* SNDisclosureButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B1B7F0AF384350023BA7F /* SNDisclosureButton.m */; };
 		477BB1A10824E95C0094BCF5 /* arrowDown16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477BB1A00824E95C0094BCF5 /* arrowDown16.tiff */; };
 		477FA95B0E9A7826009E7857 /* UKSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 477FA9590E9A7826009E7857 /* UKSystemInfo.h */; };
 		477FA95C0E9A7826009E7857 /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 477FA95A0E9A7826009E7857 /* UKSystemInfo.m */; };
@@ -992,12 +988,8 @@
 		477839310BA1BE8E0037E145 /* statusGreen.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusGreen.tiff; sourceTree = "<group>"; };
 		477839320BA1BE8E0037E145 /* statusRed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusRed.tiff; sourceTree = "<group>"; };
 		477839330BA1BE8E0037E145 /* statusYellow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusYellow.tiff; sourceTree = "<group>"; };
-		477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SNDisclosureArrowDown.tiff; sourceTree = "<group>"; };
-		477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = SNDisclosureArrowRight.tiff; sourceTree = "<group>"; };
 		477B1B7C0AF384350023BA7F /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNDisclosableView.h; sourceTree = "<group>"; };
 		477B1B7D0AF384350023BA7F /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SNDisclosableView.m; sourceTree = "<group>"; };
-		477B1B7E0AF384350023BA7F /* SNDisclosureButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNDisclosureButton.h; sourceTree = "<group>"; };
-		477B1B7F0AF384350023BA7F /* SNDisclosureButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SNDisclosureButton.m; sourceTree = "<group>"; };
 		477BB1A00824E95C0094BCF5 /* arrowDown16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowDown16.tiff; sourceTree = "<group>"; };
 		477C3A2A07FDFD43000FD967 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text; name = hu; path = hu.lproj/License.txt; sourceTree = "<group>"; };
 		477C3A2B07FDFD4C000FD967 /* hu */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1795,8 +1787,6 @@
 				4719A5D40BD961AE0068CCFD /* bandwidth16.tiff */,
 				476774DD0B74CE750025093E /* trash.tiff */,
 				472759640AF3BE6000EBE267 /* update.tiff */,
-				477B1B770AF383DC0023BA7F /* SNDisclosureArrowDown.tiff */,
-				477B1B780AF383DC0023BA7F /* SNDisclosureArrowRight.tiff */,
 				47905BE10AE3D6FF00F9E193 /* unlocked.tiff */,
 				47905BE20AE3D6FF00F9E193 /* locked.tiff */,
 				4754786A0A232C9A00CD6EAC /* cancel.tiff */,
@@ -1914,8 +1904,6 @@
 			children = (
 				477B1B7C0AF384350023BA7F /* SNDisclosableView.h */,
 				477B1B7D0AF384350023BA7F /* SNDisclosableView.m */,
-				477B1B7E0AF384350023BA7F /* SNDisclosureButton.h */,
-				477B1B7F0AF384350023BA7F /* SNDisclosureButton.m */,
 			);
 			path = snoize;
 			sourceTree = "<group>";
@@ -2011,7 +1999,6 @@
 				47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */,
 				475E53F709AD1B48007CFC2B /* UKPrefsPanel.h in Headers */,
 				477B1B800AF384350023BA7F /* SNDisclosableView.h in Headers */,
-				477B1B820AF384350023BA7F /* SNDisclosureButton.h in Headers */,
 				47152E1D0D9F2586003D8AE4 /* SKWSegmentedControl.h in Headers */,
 				47152E1F0D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.h in Headers */,
 				47AC356F0DA1025000CC1426 /* CTGradient.h in Headers */,
@@ -2577,8 +2564,6 @@
 				473779A50AE5365600F73905 /* stop16.tiff in Resources */,
 				474B5BA40AEFB7F5009FD459 /* Alert.nib in Resources */,
 				47AA19690AF09F810059C736 /* Error.strings in Resources */,
-				477B1B790AF383DC0023BA7F /* SNDisclosureArrowDown.tiff in Resources */,
-				477B1B7A0AF383DC0023BA7F /* SNDisclosureArrowRight.tiff in Resources */,
 				472759650AF3BE6000EBE267 /* update.tiff in Resources */,
 				476774DE0B74CE750025093E /* trash.tiff in Resources */,
 				47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */,
@@ -2722,7 +2707,6 @@
 				47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */,
 				475E53F809AD1B48007CFC2B /* UKPrefsPanel.m in Sources */,
 				477B1B810AF384350023BA7F /* SNDisclosableView.m in Sources */,
-				477B1B830AF384350023BA7F /* SNDisclosureButton.m in Sources */,
 				47152E1E0D9F2586003D8AE4 /* SKWSegmentedControl.m in Sources */,
 				47152E200D9F2586003D8AE4 /* SKWSegmentedControlWindowProxy.m in Sources */,
 				47AC35700DA1025000CC1426 /* CTGradient.m in Sources */,
