@@ -7,6 +7,21 @@
         },
                 {
             ACTIONS =             {
+                hide = id;
+                show = id;
+                toggleDisclosure = id;
+            };
+            CLASS = SNDisclosableView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
+        },
+                {
+            CLASS = SNDisclosureButton;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSButton;
+        },
+                {
+            ACTIONS =             {
                 closeSheet = id;
             };
             CLASS = "ch.cyberduck.ui.cocoa.CDConnectionController";
