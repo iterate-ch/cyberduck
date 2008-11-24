@@ -93,9 +93,6 @@ public class S3Session extends HTTPSession implements SSLSession {
         }
     }
 
-    private final String ua = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "/"
-            + Preferences.instance().getProperty("version");
-
     private Jets3tProperties configuration;
 
     protected void configure(Jets3tProperties configuration) {
@@ -119,7 +116,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         }
         configuration.setProperty("httpclient.connection-timeout-ms", String.valueOf(this.timeout()));
         configuration.setProperty("httpclient.socket-timeout-ms", String.valueOf(this.timeout()));
-        configuration.setProperty("httpclient.useragent", ua);
+        configuration.setProperty("httpclient.useragent", this.getUserAgent());
 
 //        final String cipher = Preferences.instance().getProperty("s3.crypto.algorithm");
 //        if(EncryptionUtil.isCipherAvailableForUse(cipher)) {
@@ -173,7 +170,7 @@ public class S3Session extends HTTPSession implements SSLSession {
             );
 
             this.S3 = new RestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
-                    credentials.getPassword()), ua, new CredentialsProvider() {
+                    credentials.getPassword()), this.getUserAgent(), new CredentialsProvider() {
                 /**
                  * Implementation method for the CredentialsProvider interface
                  * @throws CredentialsNotAvailableException

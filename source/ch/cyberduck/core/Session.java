@@ -65,6 +65,13 @@ public abstract class Session extends NSObject {
         }
     }
 
+    private final String ua = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "/"
+            + Preferences.instance().getProperty("version");
+
+    public String getUserAgent() {
+        return ua;
+    }
+
     /**
      * Used for the hostname resolution in the background
      */

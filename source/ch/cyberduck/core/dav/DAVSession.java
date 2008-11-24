@@ -56,13 +56,10 @@ public class DAVSession extends HTTPSession {
         super(h);
     }
 
-    private final String ua = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "/"
-            + Preferences.instance().getProperty("version");
-
     protected void configure() throws IOException {
         final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
         client.getHostConfiguration().getParams().setParameter(
-                "http.useragent", ua
+                "http.useragent", this.getUserAgent()
         );
         if(Proxy.isHTTPProxyEnabled()) {
             this.DAV.setProxy(Proxy.getHTTPProxyHost(), Proxy.getHTTPProxyPort());
