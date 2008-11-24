@@ -29,7 +29,6 @@ import org.jets3t.service.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Iterator;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
@@ -62,17 +61,25 @@ public class CDConnectionController extends CDSheetController {
         log.debug("protocolSelectionDidChange:" + sender);
         final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
         this.portField.setIntValue(protocol.getDefaultPort());
-        if(protocol.equals(Protocol.S3)) {
+        if(protocol.equals(Protocol.S3) || protocol.equals(Protocol.MOSSO)) {
             this.hostField.setEnabled(false);
-            this.hostField.setStringValue(Constants.S3_HOSTNAME);
-            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("Access Key ID", "S3")
-            );
-            ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("Secret Access Key", "S3")
-            );
             this.portField.setEnabled(false);
             this.encodingPopup.selectItemWithTitle(DEFAULT);
+            if(protocol.equals(Protocol.S3)) {
+                this.hostField.setStringValue(Constants.S3_HOSTNAME);
+                ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
+                        NSBundle.localizedString("Access Key ID", "S3")
+                );
+                ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
+                        NSBundle.localizedString("Secret Access Key", "S3")
+                );
+            }
+            else {
+                this.hostField.setStringValue("storage.clouddrive.com");
+                ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
+                        NSBundle.localizedString("API Access Key", "Mosso")
+                );
+            }
         }
         else {
             this.hostField.setEnabled(true);
@@ -126,7 +133,7 @@ public class CDConnectionController extends CDSheetController {
         }
         input = input.trim();
         // First look for equivalent bookmarks
-        for(Host h: HostCollection.defaultCollection()) {
+        for(Host h : HostCollection.defaultCollection()) {
             if(h.getNickname().equals(input)) {
                 this.hostChanged(new Host(h.getAsDictionary()));
                 break;

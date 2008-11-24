@@ -716,6 +716,7 @@ en.lproj/Login.nib/keyedobjects.nib -text
 en.lproj/Login.strings -text svneol=unset#text/utf-16
 en.lproj/Main.nib/keyedobjects.nib -text
 en.lproj/Main.strings -text svneol=unset#text/utf-16
+en.lproj/Mosso.strings -text
 en.lproj/Preferences.nib/keyedobjects.nib -text
 en.lproj/Preferences.strings -text svneol=unset#text/utf-16
 en.lproj/Prompt.nib/data.dependency -text
