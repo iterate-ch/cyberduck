@@ -55,4 +55,10 @@ public abstract class CloudPath extends Path {
         }
         return bucketname.getName();
     }
+
+    /**
+     *
+     * @return Absolute path without the container name
+     */
+    public abstract String getKey();
 }

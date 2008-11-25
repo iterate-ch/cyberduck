@@ -102,6 +102,10 @@ public class MossoPath extends CloudPath {
         return _container;
     }
 
+    public String getKey() {
+        return this.getName();
+    }
+
     protected boolean isContainer() {
         return this.getParent().isRoot();
     }

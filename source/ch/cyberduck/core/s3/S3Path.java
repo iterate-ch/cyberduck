@@ -447,7 +447,7 @@ public class S3Path extends CloudPath {
      *
      * @return
      */
-    private String getKey() {
+    public String getKey() {
         if(this.isBucket()) {
             return this.getContainerName();
         }
