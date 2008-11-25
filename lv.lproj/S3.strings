@@ -5,3 +5,9 @@
 
 /* Since your Access Key ID is not encrypted in requests to AWS, it could be discovered and used by anyone. Services that are not free require you to provide additional information, a request signature, to verify that a request containing your unique Access Key ID could only have come from you. */
 "Secret Access Key" = "Slepenais piekļuves kods";
+
+/* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
+"InProgress" = "In Progress";
+
+/* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
+"Deployed" = "Deployed";
