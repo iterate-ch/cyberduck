@@ -832,7 +832,7 @@ public class S3Path extends CloudPath {
         try {
             final String bucket = this.getContainerName();
             for(Distribution distribution : session.listDistributions()) {
-                if(distribution.getOrigin().equals(bucket)) {
+                if(distribution.getOrigin().equals(RestS3Service.generateS3HostnameForBucket(this.getContainerName()))) {
                     session.updateDistribution(enabled, distribution, cnames);
                     return;
                 }
