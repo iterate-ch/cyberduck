@@ -807,10 +807,9 @@ public class S3Path extends CloudPath {
      */
     public Distribution readDistribution() {
         try {
-            for(Distribution distribution : session.listDistributions()) {
-                if(distribution.getOrigin().equals(RestS3Service.generateS3HostnameForBucket(this.getContainerName()))) {
-                    return distribution;
-                }
+            for(Distribution distribution : session.listDistributions(this.getContainerName())) {
+                // We currently only support one distribution per bucket
+                return distribution;
             }
         }
         catch(S3Exception e) {
@@ -831,11 +830,9 @@ public class S3Path extends CloudPath {
     public void writeDistribution(final boolean enabled, final String[] cnames) {
         try {
             final String bucket = this.getContainerName();
-            for(Distribution distribution : session.listDistributions()) {
-                if(distribution.getOrigin().equals(RestS3Service.generateS3HostnameForBucket(this.getContainerName()))) {
-                    session.updateDistribution(enabled, distribution, cnames);
-                    return;
-                }
+            for(Distribution distribution : session.listDistributions(this.getContainerName())) {
+                session.updateDistribution(enabled, distribution, cnames);
+                return;
             }
             // Create new configuration
             session.createDistribution(enabled, bucket, cnames);

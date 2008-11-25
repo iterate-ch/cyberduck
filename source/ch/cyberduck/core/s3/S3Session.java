@@ -301,9 +301,9 @@ public class S3Session extends HTTPSession implements SSLSession {
      *
      * @return All distributions for the given AWS Credentials
      */
-    public Distribution[] listDistributions() throws IOException {
+    public Distribution[] listDistributions(String bucket) throws IOException {
         try {
-            return this.createCloudFrontService().listDistributions();
+            return this.createCloudFrontService().listDistributions(bucket);
         }
         catch(CloudFrontServiceException e) {
             throw new S3Exception(e.getMessage(), e);
