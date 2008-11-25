@@ -654,7 +654,30 @@ public class Host extends NSObject implements Serializable {
         if(null == webURL) {
             return this.getDefaultWebURL();
         }
+        final String protocol = "http://";
+        if(!webURL.startsWith(protocol)) {
+            webURL = protocol + webURL;
+        }
         return webURL;
+    }
+
+    /**
+     *
+     * @param path
+     * @return
+     */
+    public String getWebURL(Path path) {
+        String absolute = path.getAbsolute();
+        if(StringUtils.hasText(this.getDefaultPath())) {
+            if(absolute.startsWith(this.getDefaultPath())) {
+                absolute = absolute.substring(this.getDefaultPath().length());
+            }
+        }
+        if(!absolute.startsWith(Path.DELIMITER)) {
+            absolute = Path.DELIMITER + absolute;
+        }
+        return this.getWebURL() + absolute;
+
     }
 
     public String getDefaultWebURL() {

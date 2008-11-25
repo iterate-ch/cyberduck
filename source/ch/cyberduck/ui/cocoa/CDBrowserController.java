@@ -2907,32 +2907,22 @@ public class CDBrowserController extends CDWindowController
 
     public void openBrowserButtonClicked(final Object sender) {
         try {
-            String url = this.session.getHost().getWebURL();
-            final String protocol = "http://";
-            if(!url.startsWith(protocol)) {
-                url = protocol + url;
-            }
-            String selected;
-            final String parent = this.session.getHost().getDefaultPath();
-            if(this.getSelectionCount() == 1) {
-                selected = this.getSelectedPath().getAbsolute();
-            }
-            else {
-                selected = this.workdir().getAbsolute();
-            }
-            if(selected.startsWith(parent)) {
-                selected = selected.substring(parent.length());
-            }
-            if(!selected.startsWith(Path.DELIMITER)) {
-                selected = Path.DELIMITER + selected;
-            }
-            NSWorkspace.sharedWorkspace().openURL(
-                    new URL(url + selected)
-            );
+            NSWorkspace.sharedWorkspace().openURL(new URL(this.getSelectedPathWebUrl()));
         }
         catch(MalformedURLException e) {
             log.error("Cannot open in web browser:" + e.getMessage());
         }
+    }
+
+    protected String getSelectedPathWebUrl() {
+        Path selected;
+        if(this.getSelectionCount() == 1) {
+            selected = this.getSelectedPath();
+        }
+        else {
+            selected = this.workdir();
+        }
+        return this.session.getHost().getWebURL(selected);
     }
 
     private CDInfoController inspector = null;
@@ -3475,6 +3465,14 @@ public class CDBrowserController extends CDWindowController
         NSPasteboard pboard = NSPasteboard.generalPasteboard();
         pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
         if(!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
+            log.error("Error writing URL to NSPasteboard.StringPboardType.");
+        }
+    }
+
+    public void copyWebURLButtonClicked(final Object sender) {
+        NSPasteboard pboard = NSPasteboard.generalPasteboard();
+        pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+        if(!pboard.setStringForType(this.getSelectedPathWebUrl(), NSPasteboard.StringPboardType)) {
             log.error("Error writing URL to NSPasteboard.StringPboardType.");
         }
     }
@@ -4309,7 +4307,7 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("forwardButtonClicked:")) {
             return this.isMounted() && this.getForwardHistory().size() > 0;
         }
-        if(identifier.equals("copyURLButtonClicked:")) {
+        if(identifier.equals("copyURLButtonClicked:") || identifier.equals("copyWebURLButtonClicked:")) {
             return this.isMounted();
         }
         if(identifier.equals("printDocument:")) {

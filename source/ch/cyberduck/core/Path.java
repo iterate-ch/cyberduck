@@ -323,6 +323,14 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * 
+     * @return
+     */
+    public String getWebURL() {
+        return this.getSession().getHost().getWebURL(this);
+    }
+
+    /**
      * Set the local equivalent of this path
      *
      * @param file Send <code>null</code> to reset the local path to the default value
