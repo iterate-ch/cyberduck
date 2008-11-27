@@ -288,10 +288,13 @@ public class CFPath extends CloudPath {
                     throw new IOException("Unable opening data stream");
                 }
 
+                getStatus().setCurrent(0);
+                out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
+
                 this.download(in, out, throttle, listener);
             }
             catch(IOException e) {
-                ;
+                this.error("Download failed", e);
             }
             finally {
                 try {
@@ -306,9 +309,9 @@ public class CFPath extends CloudPath {
                     log.error(e.getMessage());
                 }
             }
-            if(attributes.isDirectory()) {
-                this.getLocal().mkdir(true);
-            }
+        }
+        if(attributes.isDirectory()) {
+            this.getLocal().mkdir(true);
         }
     }
 
