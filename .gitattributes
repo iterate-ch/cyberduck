@@ -363,6 +363,7 @@ ca.lproj/Login.nib/keyedobjects.nib -text
 ca.lproj/Login.strings -text svneol=unset#text/utf-16
 ca.lproj/Main.nib/keyedobjects.nib -text
 ca.lproj/Main.strings -text svneol=unset#text/utf-16
+ca.lproj/Mosso.strings -text
 ca.lproj/Preferences.nib/keyedobjects.nib -text
 ca.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ca.lproj/Prompt.nib/data.dependency -text
@@ -416,6 +417,7 @@ cs.lproj/Login.nib/keyedobjects.nib -text
 cs.lproj/Login.strings -text svneol=unset#text/utf-16
 cs.lproj/Main.nib/keyedobjects.nib -text
 cs.lproj/Main.strings -text svneol=unset#text/utf-16
+cs.lproj/Mosso.strings -text
 cs.lproj/Preferences.nib/keyedobjects.nib -text
 cs.lproj/Preferences.strings -text svneol=unset#text/utf-16
 cs.lproj/Prompt.nib/data.dependency -text
@@ -469,6 +471,7 @@ cy.lproj/Login.nib/keyedobjects.nib -text
 cy.lproj/Login.strings -text svneol=unset#text/utf-16
 cy.lproj/Main.nib/keyedobjects.nib -text
 cy.lproj/Main.strings -text svneol=unset#text/utf-16
+cy.lproj/Mosso.strings -text
 cy.lproj/Preferences.nib/keyedobjects.nib -text
 cy.lproj/Preferences.strings -text svneol=unset#text/utf-16
 cy.lproj/Prompt.nib/data.dependency -text
@@ -526,6 +529,7 @@ da.lproj/Login.nib/keyedobjects.nib -text
 da.lproj/Login.strings -text svneol=unset#text/utf-16
 da.lproj/Main.nib/keyedobjects.nib -text
 da.lproj/Main.strings -text svneol=unset#text/utf-16
+da.lproj/Mosso.strings -text
 da.lproj/Preferences.nib/keyedobjects.nib -text
 da.lproj/Preferences.strings -text svneol=unset#text/utf-16
 da.lproj/Prompt.nib/data.dependency -text
@@ -579,6 +583,7 @@ de.lproj/Login.nib/keyedobjects.nib -text
 de.lproj/Login.strings -text svneol=unset#text/utf-16
 de.lproj/Main.nib/keyedobjects.nib -text
 de.lproj/Main.strings -text svneol=unset#text/utf-16
+de.lproj/Mosso.strings -text
 de.lproj/Preferences.nib/keyedobjects.nib -text
 de.lproj/Preferences.strings -text svneol=unset#text/utf-16
 de.lproj/Prompt.nib/data.dependency -text
@@ -659,6 +664,7 @@ el.lproj/Main.nib/classes.nib -text
 el.lproj/Main.nib/info.nib -text
 el.lproj/Main.nib/keyedobjects.nib -text
 el.lproj/Main.strings -text
+el.lproj/Mosso.strings -text
 el.lproj/Preferences.nib/classes.nib -text
 el.lproj/Preferences.nib/info.nib -text
 el.lproj/Preferences.nib/keyedobjects.nib -text
@@ -770,6 +776,7 @@ es.lproj/Login.nib/keyedobjects.nib -text
 es.lproj/Login.strings -text svneol=unset#text/utf-16
 es.lproj/Main.nib/keyedobjects.nib -text
 es.lproj/Main.strings -text svneol=unset#text/utf-16
+es.lproj/Mosso.strings -text
 es.lproj/Preferences.nib/keyedobjects.nib -text
 es.lproj/Preferences.strings -text svneol=unset#text/utf-16
 es.lproj/Prompt.nib/data.dependency -text
@@ -823,6 +830,7 @@ fi.lproj/Login.nib/keyedobjects.nib -text
 fi.lproj/Login.strings -text svneol=unset#text/utf-16
 fi.lproj/Main.nib/keyedobjects.nib -text
 fi.lproj/Main.strings -text svneol=unset#text/utf-16
+fi.lproj/Mosso.strings -text
 fi.lproj/Preferences.nib/keyedobjects.nib -text
 fi.lproj/Preferences.strings -text svneol=unset#text/utf-16
 fi.lproj/Prompt.nib/data.dependency -text
@@ -876,6 +884,7 @@ fr.lproj/Login.nib/keyedobjects.nib -text
 fr.lproj/Login.strings -text svneol=unset#text/utf-16
 fr.lproj/Main.nib/keyedobjects.nib -text
 fr.lproj/Main.strings -text svneol=unset#text/utf-16
+fr.lproj/Mosso.strings -text
 fr.lproj/Preferences.nib/keyedobjects.nib -text
 fr.lproj/Preferences.strings -text svneol=unset#text/utf-16
 fr.lproj/Prompt.nib/data.dependency -text
@@ -957,6 +966,7 @@ he.lproj/Main.nib/classes.nib -text
 he.lproj/Main.nib/info.nib -text
 he.lproj/Main.nib/keyedobjects.nib -text
 he.lproj/Main.strings -text svneol=unset#text/utf-16
+he.lproj/Mosso.strings -text
 he.lproj/Preferences.nib/classes.nib -text
 he.lproj/Preferences.nib/info.nib -text
 he.lproj/Preferences.nib/keyedobjects.nib -text
@@ -1014,6 +1024,7 @@ hu.lproj/Login.nib/keyedobjects.nib -text
 hu.lproj/Login.strings -text svneol=unset#text/utf-16
 hu.lproj/Main.nib/keyedobjects.nib -text
 hu.lproj/Main.strings -text svneol=unset#text/utf-16
+hu.lproj/Mosso.strings -text
 hu.lproj/Preferences.nib/keyedobjects.nib -text
 hu.lproj/Preferences.strings -text svneol=unset#text/utf-16
 hu.lproj/Prompt.nib/data.dependency -text
@@ -1067,6 +1078,7 @@ id.lproj/Login.nib/keyedobjects.nib -text
 id.lproj/Login.strings -text svneol=unset#text/utf-16
 id.lproj/Main.nib/keyedobjects.nib -text
 id.lproj/Main.strings -text svneol=unset#text/utf-16
+id.lproj/Mosso.strings -text
 id.lproj/Preferences.nib/keyedobjects.nib -text
 id.lproj/Preferences.strings -text svneol=unset#text/utf-16
 id.lproj/Prompt.nib/data.dependency -text
@@ -1214,6 +1226,7 @@ it.lproj/Login.nib/keyedobjects.nib -text
 it.lproj/Login.strings -text svneol=unset#text/utf-16
 it.lproj/Main.nib/keyedobjects.nib -text
 it.lproj/Main.strings -text svneol=unset#text/utf-16
+it.lproj/Mosso.strings -text
 it.lproj/Preferences.nib/keyedobjects.nib -text
 it.lproj/Preferences.strings -text svneol=unset#text/utf-16
 it.lproj/Prompt.nib/data.dependency -text
@@ -1268,6 +1281,7 @@ ja.lproj/Login.nib/keyedobjects.nib -text
 ja.lproj/Login.strings -text svneol=unset#text/utf-16
 ja.lproj/Main.nib/keyedobjects.nib -text
 ja.lproj/Main.strings -text svneol=unset#text/utf-16
+ja.lproj/Mosso.strings -text
 ja.lproj/Preferences.nib/keyedobjects.nib -text
 ja.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ja.lproj/Prompt.nib/data.dependency -text
@@ -1321,6 +1335,7 @@ ko.lproj/Login.nib/keyedobjects.nib -text
 ko.lproj/Login.strings -text svneol=unset#text/utf-16
 ko.lproj/Main.nib/keyedobjects.nib -text
 ko.lproj/Main.strings -text svneol=unset#text/utf-16
+ko.lproj/Mosso.strings -text
 ko.lproj/Preferences.nib/keyedobjects.nib -text
 ko.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ko.lproj/Prompt.nib/data.dependency -text
@@ -1419,6 +1434,7 @@ lv.lproj/Main.nib/classes.nib -text
 lv.lproj/Main.nib/info.nib -text
 lv.lproj/Main.nib/keyedobjects.nib -text
 lv.lproj/Main.strings -text svneol=unset#text/utf-16
+lv.lproj/Mosso.strings -text
 lv.lproj/Preferences.nib/classes.nib -text
 lv.lproj/Preferences.nib/info.nib -text
 lv.lproj/Preferences.nib/keyedobjects.nib -text
@@ -1477,6 +1493,7 @@ nl.lproj/Login.nib/keyedobjects.nib -text
 nl.lproj/Login.strings -text svneol=unset#text/utf-16
 nl.lproj/Main.nib/keyedobjects.nib -text
 nl.lproj/Main.strings -text svneol=unset#text/utf-16
+nl.lproj/Mosso.strings -text
 nl.lproj/Preferences.nib/keyedobjects.nib -text
 nl.lproj/Preferences.strings -text svneol=unset#text/utf-16
 nl.lproj/Prompt.nib/data.dependency -text
@@ -1530,6 +1547,7 @@ no.lproj/Login.nib/keyedobjects.nib -text
 no.lproj/Login.strings -text svneol=unset#text/utf-16
 no.lproj/Main.nib/keyedobjects.nib -text
 no.lproj/Main.strings -text svneol=unset#text/utf-16
+no.lproj/Mosso.strings -text
 no.lproj/Preferences.nib/keyedobjects.nib -text
 no.lproj/Preferences.strings -text svneol=unset#text/utf-16
 no.lproj/Prompt.nib/data.dependency -text
@@ -1584,6 +1602,7 @@ pl.lproj/Login.nib/keyedobjects.nib -text
 pl.lproj/Login.strings -text svneol=unset#text/utf-16
 pl.lproj/Main.nib/keyedobjects.nib -text
 pl.lproj/Main.strings -text svneol=unset#text/utf-16
+pl.lproj/Mosso.strings -text
 pl.lproj/Preferences.nib/keyedobjects.nib -text
 pl.lproj/Preferences.strings -text svneol=unset#text/utf-16
 pl.lproj/Prompt.nib/data.dependency -text
@@ -1663,6 +1682,7 @@ pt_BR.lproj/Main.nib/classes.nib -text
 pt_BR.lproj/Main.nib/info.nib -text
 pt_BR.lproj/Main.nib/keyedobjects.nib -text
 pt_BR.lproj/Main.strings -text svneol=unset#text/utf-16
+pt_BR.lproj/Mosso.strings -text
 pt_BR.lproj/Preferences.nib/classes.nib -text
 pt_BR.lproj/Preferences.nib/info.nib -text
 pt_BR.lproj/Preferences.nib/keyedobjects.nib -text
@@ -1723,6 +1743,7 @@ pt_PT.lproj/Login.nib/keyedobjects.nib -text
 pt_PT.lproj/Login.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Main.nib/keyedobjects.nib -text
 pt_PT.lproj/Main.strings -text svneol=unset#text/utf-16
+pt_PT.lproj/Mosso.strings -text
 pt_PT.lproj/Preferences.nib/keyedobjects.nib -text
 pt_PT.lproj/Preferences.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Prompt.nib/data.dependency -text
@@ -1791,6 +1812,7 @@ ru.lproj/Login.nib/keyedobjects.nib -text
 ru.lproj/Login.strings -text svneol=unset#text/utf-16
 ru.lproj/Main.nib/keyedobjects.nib -text
 ru.lproj/Main.strings -text svneol=unset#text/utf-16
+ru.lproj/Mosso.strings -text
 ru.lproj/Preferences.nib/keyedobjects.nib -text
 ru.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ru.lproj/Prompt.nib/data.dependency -text
@@ -1844,6 +1866,7 @@ sk.lproj/Login.nib/keyedobjects.nib -text
 sk.lproj/Login.strings -text svneol=unset#text/utf-16
 sk.lproj/Main.nib/keyedobjects.nib -text
 sk.lproj/Main.strings -text svneol=unset#text/utf-16
+sk.lproj/Mosso.strings -text
 sk.lproj/Preferences.nib/keyedobjects.nib -text
 sk.lproj/Preferences.strings -text svneol=unset#text/utf-16
 sk.lproj/Prompt.nib/data.dependency -text
@@ -1970,6 +1993,7 @@ sv.lproj/Login.nib/keyedobjects.nib -text
 sv.lproj/Login.strings -text svneol=unset#text/utf-16
 sv.lproj/Main.nib/keyedobjects.nib -text
 sv.lproj/Main.strings -text svneol=unset#text/utf-16
+sv.lproj/Mosso.strings -text
 sv.lproj/Preferences.nib/keyedobjects.nib -text
 sv.lproj/Preferences.strings -text svneol=unset#text/utf-16
 sv.lproj/Prompt.nib/data.dependency -text
@@ -2056,6 +2080,7 @@ th.lproj/Main.nib/classes.nib -text
 th.lproj/Main.nib/info.nib -text
 th.lproj/Main.nib/keyedobjects.nib -text
 th.lproj/Main.strings -text svneol=unset#text/utf-16
+th.lproj/Mosso.strings -text
 th.lproj/Preferences.nib/classes.nib -text
 th.lproj/Preferences.nib/info.nib -text
 th.lproj/Preferences.nib/keyedobjects.nib -text
@@ -2139,6 +2164,7 @@ tr.lproj/Main.nib/classes.nib -text
 tr.lproj/Main.nib/info.nib -text
 tr.lproj/Main.nib/keyedobjects.nib -text
 tr.lproj/Main.strings -text svneol=unset#text/utf-16
+tr.lproj/Mosso.strings -text
 tr.lproj/Preferences.nib/classes.nib -text
 tr.lproj/Preferences.nib/info.nib -text
 tr.lproj/Preferences.nib/keyedobjects.nib -text
@@ -2314,6 +2340,7 @@ zh_CN.lproj/Login.nib/keyedobjects.nib -text
 zh_CN.lproj/Login.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Main.nib/keyedobjects.nib -text
 zh_CN.lproj/Main.strings -text svneol=unset#text/utf-16
+zh_CN.lproj/Mosso.strings -text
 zh_CN.lproj/Preferences.nib/keyedobjects.nib -text
 zh_CN.lproj/Preferences.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Prompt.nib/data.dependency -text
@@ -2367,6 +2394,7 @@ zh_TW.lproj/Login.nib/keyedobjects.nib -text
 zh_TW.lproj/Login.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Main.nib/keyedobjects.nib -text
 zh_TW.lproj/Main.strings -text svneol=unset#text/utf-16
+zh_TW.lproj/Mosso.strings -text
 zh_TW.lproj/Preferences.nib/keyedobjects.nib -text
 zh_TW.lproj/Preferences.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Prompt.nib/data.dependency -text
