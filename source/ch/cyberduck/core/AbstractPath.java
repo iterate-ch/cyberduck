@@ -301,6 +301,10 @@ public abstract class AbstractPath extends NSObject {
      */
     public abstract void mkdir(boolean recursive);
 
+    public boolean isWritePermissionsSupported() {
+        return true;
+    }
+
     /**
      * @param perm      The permissions to apply
      * @param recursive Include subdirectories and files
@@ -324,6 +328,10 @@ public abstract class AbstractPath extends NSObject {
      */
     public boolean isEmpty() {
         return this.childs().size() == 0;
+    }
+
+    public boolean isRenameSupported() {
+        return true;
     }
 
     /**
