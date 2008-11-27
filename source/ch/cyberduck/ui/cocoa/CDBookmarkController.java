@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
@@ -178,6 +179,8 @@ public class CDBookmarkController extends CDWindowController {
         ((NSTextFieldCell) this.webURLField.cell()).setPlaceholderString(
                 host.getDefaultWebURL()
         );
+        final boolean cloud = host.getProtocol().equals(Protocol.S3) || host.getProtocol().equals(Protocol.MOSSO);
+        this.webURLField.setEnabled(!cloud);
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("webURLInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -563,7 +566,7 @@ public class CDBookmarkController extends CDWindowController {
         this.updateField(this.usernameField, this.host.getCredentials().getUsername());
         if(this.host.getProtocol().equals(Protocol.S3)) {
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("Access Key ID", "S3")
+                    NSBundle.localizedString("Access Key ID", "S3", "")
             );
         }
         else {
