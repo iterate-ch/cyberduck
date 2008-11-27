@@ -45,7 +45,7 @@ public class CDBookmarkCell extends CDTableCell {
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
-        if (bookmark != null) {
+        if(bookmark != null) {
             NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),
                     boldFont),
                     new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 1,
@@ -55,8 +55,7 @@ public class CDBookmarkCell extends CDTableCell {
                         tinyFont),
                         new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));
-                NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getProtocol()
-                        + "://" + bookmark.getHostname()
+                NSGraphics.drawAttributedString(new NSAttributedString(bookmark.toURL()
                         + (StringUtils.hasText(bookmark.getDefaultPath()) ? Path.normalize(bookmark.getDefaultPath()) : ""),
                         tinyFont),
                         new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 27,
