@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.log4j.Logger;
@@ -36,7 +37,6 @@ import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.cloudfront.Distribution;
 import org.jets3t.service.multithread.*;
 import org.jets3t.service.utils.ObjectUtils;
 
@@ -215,7 +215,7 @@ public class S3Path extends CloudPath {
                     this.getName()));
 
             AccessControlList acl = null;
-            if(this.isBucket()) {
+            if(this.isContainer()) {
                 acl = session.S3.getBucketAcl(this.getBucket());
             }
             else if(attributes.isFile()) {
@@ -424,7 +424,7 @@ public class S3Path extends CloudPath {
                 multi.putObjects(this.getBucket(), new S3Object[]{object});
             }
             if(attributes.isDirectory()) {
-                if(this.isBucket()) {
+                if(this.isContainer()) {
                     // Create bucket
                     this.mkdir();
                 }
@@ -438,17 +438,13 @@ public class S3Path extends CloudPath {
         }
     }
 
-    protected boolean isBucket() {
-        return this.getParent().isRoot();
-    }
-
     /**
      * The absolute path minus the bucket part
      *
      * @return
      */
     public String getKey() {
-        if(this.isBucket()) {
+        if(this.isContainer()) {
             return this.getContainerName();
         }
         if(this.getAbsolute().startsWith(Path.DELIMITER + this.getContainerName())) {
@@ -487,7 +483,7 @@ public class S3Path extends CloudPath {
                 // a special character that delimits hierarchy, you can use the list
                 // operation to select and browse keys hierarchically
                 String prefix = "";
-                if(!this.isBucket()) {
+                if(!this.isContainer()) {
                     // estricts the response to only contain results that begin with the
                     // specified prefix. If you omit this optional argument, the value
                     // of Prefix for your query will be the empty string.
@@ -566,7 +562,7 @@ public class S3Path extends CloudPath {
     public void mkdir() {
         log.debug("mkdir:" + this.getName());
         try {
-            if(!this.isBucket()) {
+            if(!this.isContainer()) {
                 throw new S3ServiceException("Bucket can only be created at top level");
             }
             session.check();
@@ -596,7 +592,7 @@ public class S3Path extends CloudPath {
 
 
             AccessControlList acl = null;
-            if(this.isBucket()) {
+            if(this.isContainer()) {
                 acl = session.S3.getBucketAcl(this.getBucket());
             }
             else if(attributes.isFile()) {
@@ -620,7 +616,7 @@ public class S3Path extends CloudPath {
                 if(perm.getOtherPermissions()[Permission.WRITE]) {
                     acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
                 }
-                if(this.isBucket()) {
+                if(this.isContainer()) {
                     session.S3.putBucketAcl(this.getContainerName(), acl);
                 }
                 else if(attributes.isFile()) {
@@ -663,7 +659,7 @@ public class S3Path extends CloudPath {
                     }
                     i.delete();
                 }
-                if(this.isBucket()) {
+                if(this.isContainer()) {
                     session.S3.deleteBucket(this.getContainerName());
                 }
             }
@@ -751,6 +747,10 @@ public class S3Path extends CloudPath {
         }
     }
 
+    public String getWebURL() {
+        return this.toURL();
+    }
+
     /**
      * Overwritten to provide publicy accessible URL of given object
      *
@@ -807,9 +807,11 @@ public class S3Path extends CloudPath {
      */
     public Distribution readDistribution() {
         try {
-            for(Distribution distribution : session.listDistributions(this.getContainerName())) {
+            for(org.jets3t.service.model.cloudfront.Distribution d : session.listDistributions(this.getContainerName())) {
                 // We currently only support one distribution per bucket
-                return distribution;
+                return new Distribution(d.isEnabled(),
+                        "http://" + RestS3Service.generateS3HostnameForBucket(this.getContainerName()),
+                        d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3"), d.getCNAMEs());
             }
         }
         catch(S3Exception e) {
@@ -828,9 +830,38 @@ public class S3Path extends CloudPath {
      * @param cnames
      */
     public void writeDistribution(final boolean enabled, final String[] cnames) {
+        final String container = this.getContainerName();
         try {
-            final String bucket = this.getContainerName();
-            for(Distribution distribution : session.listDistributions(this.getContainerName())) {
+            if(enabled) {
+                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
+                        container));
+            }
+            else {
+                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
+                        container));
+            }
+            // Make sure to set the access control on the object so it's publicly readable.
+            AccessControlList acl;
+            if(this.isContainer()) {
+                acl = session.S3.getBucketAcl(this.getBucket());
+            }
+            else {
+                acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+            }
+            acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+            if(this.isContainer()) {
+                session.S3.putBucketAcl(container, acl);
+            }
+            else {
+                session.S3.putObjectAcl(container, this.getKey(), acl);
+            }
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot change permissions", e);
+        }
+        try {
+            final String bucket = container;
+            for(org.jets3t.service.model.cloudfront.Distribution distribution : session.listDistributions(container)) {
                 session.updateDistribution(enabled, distribution, cnames);
                 return;
             }
