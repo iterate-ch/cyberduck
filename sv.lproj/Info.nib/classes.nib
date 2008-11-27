@@ -1,37 +1,50 @@
 {
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            CLASS = "ch.cyberduck.ui.cocoa.CDInfoController"; 
-            LANGUAGE = Java; 
-            OUTLETS = {
-                applyButton = NSButton; 
-                filenameField = NSTextField; 
-                groupField = NSTextField; 
-                groupr = NSButton; 
-                groupw = NSButton; 
-                groupx = NSButton; 
-                iconImageView = NSImageView; 
-                kindField = NSTextField; 
-                modifiedField = NSTextField; 
-                otherr = NSButton; 
-                otherw = NSButton; 
-                otherx = NSButton; 
-                ownerField = NSTextField; 
-                ownerr = NSButton; 
-                ownerw = NSButton; 
-                ownerx = NSButton; 
-                pathField = NSTextField; 
-                permissionProgress = NSProgressIndicator; 
-                permissionsBox = NSBox; 
-                recursiveCheckbox = NSButton; 
-                sizeButton = NSButton; 
-                sizeField = NSTextField; 
-                sizeProgress = NSProgressIndicator; 
-                window = NSWindow; 
-            }; 
-            SUPERCLASS = NSObject; 
+    IBClasses =     (
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = "ch.cyberduck.ui.cocoa.CDInfoController";
+            LANGUAGE = Java;
+            OUTLETS =             {
+                distributionApplyButton = id;
+                distributionCnameField = id;
+                distributionCnameUrlField = id;
+                distributionEnableButton = id;
+                distributionProgress = id;
+                distributionStatusButton = id;
+                distributionStatusField = id;
+                distributionUrlField = id;
+                filenameField = id;
+                groupField = id;
+                groupr = id;
+                groupw = id;
+                groupx = id;
+                iconImageView = id;
+                kindField = id;
+                modifiedField = id;
+                otherr = id;
+                otherw = id;
+                otherx = id;
+                ownerField = id;
+                ownerr = id;
+                ownerw = id;
+                ownerx = id;
+                pathField = id;
+                permissionApplyButton = id;
+                permissionProgress = id;
+                permissionsBox = id;
+                recursiveCheckbox = id;
+                sizeButton = id;
+                sizeField = id;
+                sizeProgress = id;
+                webUrlField = id;
+                window = id;
+            };
+            SUPERCLASS = "java.lang.Object";
         }
-    ); 
-    IBVersion = 1; 
+    );
+    IBVersion = 1;
 }
