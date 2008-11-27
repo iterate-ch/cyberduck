@@ -78,11 +78,8 @@ public abstract class PathFactory {
         if (!factories.containsKey(protocol)) {
             try {
                 // Load dynamically
-                String identifier = org.apache.commons.lang.StringUtils.capitalize(protocol.getIdentifier());
-                if(identifier.length() < 4) {
-                    identifier = identifier.toUpperCase();
-                }
-                Class.forName("ch.cyberduck.core." + protocol.getIdentifier() + "." + identifier + "Path");
+                Class.forName("ch.cyberduck.core." + protocol.getIdentifier() + "." 
+                        + protocol.getIdentifier().toUpperCase() + "Path");
             }
             catch (ClassNotFoundException e) {
                 throw new RuntimeException("No class for type: " + protocol);
