@@ -636,6 +636,7 @@ public class CDInfoController extends CDWindowController {
      */
     public void permissionApplyButtonClicked(final Object sender) {
         this.enablePermissionSettings(false);
+        this.permissionProgress.startAnimation(null);
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
@@ -653,6 +654,7 @@ public class CDInfoController extends CDWindowController {
             public void cleanup() {
                 controller.reloadData(true);
                 enablePermissionSettings(true);
+                permissionProgress.stopAnimation(null);
             }
 
             public String getActivity() {
@@ -682,29 +684,6 @@ public class CDInfoController extends CDWindowController {
         otherr.setEnabled(enabled);
         otherw.setEnabled(enabled);
         otherx.setEnabled(enabled);
-    }
-
-    /**
-     * @param sender
-     */
-    public void permissionReadButtonClicked(final Object sender) {
-        controller.background(new BrowserBackgroundAction(controller) {
-            public void run() {
-                for(Iterator<Path> iter = files.iterator(); iter.hasNext();) {
-                    if(this.isCanceled()) {
-                        break;
-                    }
-                    final Path selected = iter.next();
-                    if(selected.attributes.getPermission() == null) {
-                        selected.readPermission();
-                    }
-                }
-            }
-
-            public void cleanup() {
-
-            }
-        });
     }
 
     /**
@@ -769,10 +748,6 @@ public class CDInfoController extends CDWindowController {
             public void cleanup() {
                 enableDistributionSettings(true);
 
-                if(null == distribution) {
-                    // No distribution for current bucket
-                    return;
-                }
                 distributionEnableButton.setState(distribution.isEnabled() ? NSCell.OnState : NSCell.OffState);
                 distributionStatusField.setStringValue(distribution.getStatus());
 
@@ -792,6 +767,10 @@ public class CDInfoController extends CDWindowController {
                     distributionCnameUrlField.setStringValue("http://" + cname + key);
                     // We only support one CNAME for now
                     break;
+                }
+                if(0 == cnames.length) {
+                    distributionCnameField.setStringValue("");
+                    distributionCnameUrlField.setStringValue("");
                 }
             }
         });
