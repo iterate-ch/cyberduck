@@ -86,7 +86,7 @@ static BOOL showSubviewsWhileResizing = NO;
     if ([self autoresizingMask] & NSViewHeightSizable)
         NSLog(@"Warning: SNDisclosableView: You probably don't want this view to be resizeable vertically. I suggest turning that off in the inspector in IB.");
 
-	[self setIsShown:[[NSUserDefaults standardUserDefaults] boolForKey:@"disclosure.visible"]];
+	[self setIsShown:NO];
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder;
@@ -111,8 +111,6 @@ static BOOL showSubviewsWhileResizing = NO;
 
 - (void)setIsShown:(BOOL)value;
 {
-	[[NSUserDefaults standardUserDefaults] setBool:value forKey:@"disclosure.visible"];
-
     if (value)
         [self show:nil];
     else
