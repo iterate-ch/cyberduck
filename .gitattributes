@@ -1890,6 +1890,7 @@ source/ch/cyberduck/core/Speedometer.java -text
 source/ch/cyberduck/core/StringUtils.java -text
 source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
+source/ch/cyberduck/core/cloud/Distribution.java -text
 source/ch/cyberduck/core/dav/DAVPath.java -text
 source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
