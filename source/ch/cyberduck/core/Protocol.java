@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.Constants;
 
 /**
  * @version $Id$
@@ -69,6 +70,14 @@ public abstract class Protocol {
      */
     public boolean isSecure() {
         return false;
+    }
+
+    public boolean isConfigurable() {
+        return true;
+    }
+
+    public String getDefaultHostname() {
+        return Preferences.instance().getProperty("connection.hostname.default");
     }
 
     /**
@@ -149,6 +158,10 @@ public abstract class Protocol {
     };
 
     public static final Protocol S3 = new Protocol() {
+        public String getName() {
+            return "S3";
+        }
+
         public String getDescription() {
             return NSBundle.localizedString("S3 (Amazon Simple Storage Service)", "S3", "");
         }
@@ -171,6 +184,14 @@ public abstract class Protocol {
 
         public boolean isSecure() {
             return true;
+        }
+
+        public boolean isConfigurable() {
+            return false;
+        }
+
+        public String getDefaultHostname() {
+            return Constants.S3_HOSTNAME;
         }
     };
 
@@ -231,6 +252,10 @@ public abstract class Protocol {
     };
 
     public static final Protocol MOSSO = new Protocol() {
+        public String getName() {
+            return "Cloud Files";
+        }
+
         public String getDescription() {
             return NSBundle.localizedString("Mosso Cloud Files", "Mosso", "");
         }
@@ -253,6 +278,14 @@ public abstract class Protocol {
 
         public boolean isSecure() {
             return true;
+        }
+
+        public boolean isConfigurable() {
+            return false;
+        }
+
+        public String getDefaultHostname() {
+            return "storage.clouddrive.com";
         }
     };
 

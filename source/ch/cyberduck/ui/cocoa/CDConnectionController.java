@@ -61,12 +61,12 @@ public class CDConnectionController extends CDSheetController {
         log.debug("protocolSelectionDidChange:" + sender);
         final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
         this.portField.setIntValue(protocol.getDefaultPort());
-        if(protocol.equals(Protocol.S3) || protocol.equals(Protocol.MOSSO)) {
+        if(!protocol.isConfigurable()) {
             this.hostField.setEnabled(false);
             this.portField.setEnabled(false);
             this.encodingPopup.selectItemWithTitle(DEFAULT);
+            this.hostField.setStringValue(protocol.getDefaultHostname());
             if(protocol.equals(Protocol.S3)) {
-                this.hostField.setStringValue(Constants.S3_HOSTNAME);
                 ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
                         NSBundle.localizedString("Access Key ID", "S3", "")
                 );
@@ -74,26 +74,29 @@ public class CDConnectionController extends CDSheetController {
                         NSBundle.localizedString("Secret Access Key", "S3", "")
                 );
             }
-            else {
-                this.hostField.setStringValue("storage.clouddrive.com");
+            if(protocol.equals(Protocol.MOSSO)) {
+                ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
                 ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
                         NSBundle.localizedString("API Access Key", "Mosso", "")
                 );
             }
         }
         else {
-            this.hostField.setEnabled(true);
-            if(Constants.S3_HOSTNAME.equals(this.hostField.stringValue())) {
+            if(!this.hostField.isEnabled()) {
+                // Was previously configured with a static hostname
                 this.hostField.setStringValue("");
             }
+            this.hostField.setEnabled(true);
             this.portField.setEnabled(true);
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
             ((NSTextFieldCell) this.passField.cell()).setPlaceholderString("");
         }
         this.connectmodePopup.setEnabled(protocol.equals(Protocol.FTP)
                 || protocol.equals(Protocol.FTP_TLS));
+        this.encodingPopup.setEnabled(protocol.isConfigurable());
         this.pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
         this.updateURLLabel(null);
+        this.reachable();
     }
 
     private NSComboBox hostField;

@@ -22,11 +22,9 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,17 +56,18 @@ public class CDBookmarkController extends CDWindowController {
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
         final Protocol selected = (Protocol) protocolPopup.selectedItem().representedObject();
-        this.host.setProtocol(selected);
         this.host.setPort(selected.getDefaultPort());
-        if(selected.equals(Protocol.S3)) {
-            this.host.setHostname(Constants.S3_HOSTNAME);
-        }
-        else {
-            if(Constants.S3_HOSTNAME.equals(this.host.getHostname())) {
-                this.host.setHostname(Preferences.instance().getProperty("connection.hostname.default"));
+        if(selected.isConfigurable()) {
+            if(host.getProtocol().getDefaultHostname().equals(this.host.getHostname())) {
+                this.host.setHostname(selected.getDefaultHostname());
             }
         }
+        else {
+            this.host.setHostname(selected.getDefaultHostname());
+        }
+        this.host.setProtocol(selected);
         this.itemChanged();
+        this.reachable();
     }
 
     private NSPopUpButton encodingPopup; // IBOutlet
@@ -179,8 +178,7 @@ public class CDBookmarkController extends CDWindowController {
         ((NSTextFieldCell) this.webURLField.cell()).setPlaceholderString(
                 host.getDefaultWebURL()
         );
-        final boolean cloud = host.getProtocol().equals(Protocol.S3) || host.getProtocol().equals(Protocol.MOSSO);
-        this.webURLField.setEnabled(!cloud);
+        this.webURLField.setEnabled(host.getProtocol().isConfigurable());
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("webURLInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -492,6 +490,10 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setHostname(hostField.stringValue());
         }
         this.itemChanged();
+        this.reachable();
+    }
+
+    private void reachable() {
         this.background(new AbstractBackgroundAction() {
             boolean reachable = false;
 
@@ -552,7 +554,7 @@ public class CDBookmarkController extends CDWindowController {
     private void init() {
         this.window.setTitle(this.host.getNickname());
         this.updateField(this.hostField, this.host.getHostname());
-        this.hostField.setEnabled(!this.host.getProtocol().equals(Protocol.S3));
+        this.hostField.setEnabled(this.host.getProtocol().isConfigurable());
         this.updateField(this.nicknameField, this.host.getNickname());
         if(StringUtils.hasText(this.host.getDefaultPath())) {
             this.updateField(this.urlField, this.host.toURL() + Path.normalize(this.host.getDefaultPath()));
@@ -561,7 +563,7 @@ public class CDBookmarkController extends CDWindowController {
             this.updateField(this.urlField, this.host.toURL());
         }
         this.updateField(this.portField, String.valueOf(this.host.getPort()));
-        this.portField.setEnabled(!this.host.getProtocol().equals(Protocol.S3));
+        this.portField.setEnabled(this.host.getProtocol().isConfigurable());
         this.updateField(this.pathField, this.host.getDefaultPath());
         this.updateField(this.usernameField, this.host.getCredentials().getUsername());
         if(this.host.getProtocol().equals(Protocol.S3)) {
@@ -582,6 +584,7 @@ public class CDBookmarkController extends CDWindowController {
         }
         this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)
                 || this.host.getProtocol().equals(Protocol.FTP_TLS));
+        this.encodingPopup.setEnabled(this.host.getProtocol().isConfigurable());
         if(this.host.getProtocol().equals(Protocol.FTP)
                 || this.host.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null == host.getFTPConnectMode()) {
