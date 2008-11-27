@@ -1,4 +1,4 @@
-package ch.cyberduck.core.mosso;
+package ch.cyberduck.core.cf;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.log4j.Logger;
@@ -37,10 +38,12 @@ import java.text.MessageFormat;
 import com.mosso.client.cloudfiles.*;
 
 /**
+ * Mosso Cloud Files Implementation
+ *
  * @version $Id:$
  */
-public class MossoPath extends CloudPath {
-    private static Logger log = Logger.getLogger(MossoPath.class);
+public class CFPath extends CloudPath {
+    private static Logger log = Logger.getLogger(CFPath.class);
 
     static {
         PathFactory.addFactory(Protocol.MOSSO, new Factory());
@@ -48,40 +51,40 @@ public class MossoPath extends CloudPath {
 
     private static class Factory extends PathFactory {
         protected Path create(Session session, String path, int type) {
-            return new MossoPath((MossoSession) session, path, type);
+            return new CFPath((CFSession) session, path, type);
         }
 
         protected Path create(Session session, String parent, String name, int type) {
-            return new MossoPath((MossoSession) session, parent, name, type);
+            return new CFPath((CFSession) session, parent, name, type);
         }
 
         protected Path create(Session session, String path, Local file) {
-            return new MossoPath((MossoSession) session, path, file);
+            return new CFPath((CFSession) session, path, file);
         }
 
         protected Path create(Session session, NSDictionary dict) {
-            return new MossoPath((MossoSession) session, dict);
+            return new CFPath((CFSession) session, dict);
         }
     }
 
-    private final MossoSession session;
+    private final CFSession session;
 
-    protected MossoPath(MossoSession s, String parent, String name, int type) {
+    protected CFPath(CFSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected MossoPath(MossoSession s, String path, int type) {
+    protected CFPath(CFSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected MossoPath(MossoSession s, String parent, Local file) {
+    protected CFPath(CFSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected MossoPath(MossoSession s, NSDictionary dict) {
+    protected CFPath(CFSession s, NSDictionary dict) {
         super(dict);
         this.session = s;
     }
@@ -97,7 +100,7 @@ public class MossoPath extends CloudPath {
      */
     private FilesContainer getContainer() {
         if(null == _container) {
-            _container = new FilesContainer(this.getContainerName(), session.CLOUD);
+            _container = new FilesContainer(this.getContainerName(), session.CF);
         }
         return _container;
     }
@@ -106,8 +109,69 @@ public class MossoPath extends CloudPath {
         return this.getName();
     }
 
-    protected boolean isContainer() {
-        return this.getParent().isRoot();
+    /**
+     * @param enabled Enable content distribution for the container
+     * @param cnames  Currently ignored
+     */
+    public void writeDistribution(boolean enabled, String[] cnames) {
+        final String container = this.getContainer().getName();
+        try {
+            if(enabled) {
+                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
+                        container));
+            }
+            else {
+                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
+                        container));
+            }
+            try {
+                if(enabled) {
+                    final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
+                    if(null == info) {
+                        // Not found.
+                        session.CF.cdnEnableContainer(container);
+                    }
+                    else {
+                        // Enable content distribution for the container without changing the TTL expiration
+                        session.CF.cdnUpdateContainer(container, -1, true);
+                    }
+                }
+                else {
+                    // Disable content distribution for the container
+                    session.CF.cdnUpdateContainer(container, -1, false);
+                }
+            }
+            catch(FilesAuthorizationException e) {
+                throw new MossoException(e.getHttpStatusMessage(), e);
+            }
+        }
+        catch(IOException e) {
+            this.error("Cannot change permissions", e);
+        }
+    }
+
+    public Distribution readDistribution() {
+        try {
+            final FilesCDNContainer info;
+            try {
+                info = session.CF.getCDNContainerInfo(this.getContainer().getName());
+            }
+            catch(FilesAuthorizationException e) {
+                throw new MossoException(e.getMessage(), e);
+            }
+            if(null == info) {
+                // Not found.
+                return new Distribution(false, this.getContainerName(),
+                        null, NSBundle.localizedString("CDN Disabled", "Mosso"));
+            }
+            return new Distribution(info.isEnabled(),
+                    this.getContainerName(), info.getCdnURL(),
+                    info.isEnabled() ? NSBundle.localizedString("CDN Enabled", "Mosso") : NSBundle.localizedString("CDN Disabled", "Mosso"));
+        }
+        catch(IOException e) {
+            this.error(e.getMessage(), e);
+        }
+        return new Distribution(false);
     }
 
     public boolean exists() {
@@ -116,7 +180,7 @@ public class MossoPath extends CloudPath {
         }
         try {
             if(this.isContainer()) {
-                return session.CLOUD.containerExists(this.getName());
+                return session.CF.containerExists(this.getName());
             }
         }
         catch(IOException e) {
@@ -132,7 +196,7 @@ public class MossoPath extends CloudPath {
                     this.getName()));
 
             attributes.setSize(
-                    Long.valueOf(session.CLOUD.getObjectMetaData(this.getContainer().getName(), this.getName()).getContentLength())
+                    Long.valueOf(session.CF.getObjectMetaData(this.getContainer().getName(), this.getName()).getContentLength())
             );
         }
         catch(IOException e) {
@@ -145,60 +209,20 @@ public class MossoPath extends CloudPath {
     }
 
     public void readPermission() {
-        try {
-            if(this.isContainer()) {
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
-                        this.getName()));
-                try {
-                    boolean[][] p = new boolean[3][3];
+        ;
+    }
 
-                    p[Permission.OWNER][Permission.READ] = true;
-                    p[Permission.OWNER][Permission.WRITE] = true;
-                    p[Permission.OWNER][Permission.EXECUTE] = this.attributes.isDirectory();
-                    p[Permission.GROUP][Permission.READ] = false;
-                    p[Permission.GROUP][Permission.WRITE] = false;
-                    final FilesCDNContainer info = session.CLOUD.getCDNContainerInfo(this.getContainer().getName());
-                    if(null == info) {
-                        // Not found.
-                        p[Permission.OTHER][Permission.READ] = false;
-                    }
-                    else {
-                        p[Permission.OTHER][Permission.READ] = info.isEnabled();
-                    }
-                    p[Permission.OTHER][Permission.WRITE] = false;
-
-                    attributes.setPermission(new Permission(p));
-                }
-                catch(FilesAuthorizationException e) {
-                    throw new MossoException(e.getHttpStatusMessage(), e);
-                }
-            }
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
-        }
+    /**
+     * Only content distribution is possible but no fine grained grants
+     *
+     * @return Always false
+     */
+    public boolean isWritePermissionsSupported() {
+        return false;
     }
 
     public void writePermissions(Permission perm, boolean recursive) {
-        log.debug("writePermissions:" + perm);
-        try {
-            session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
-                    this.getName(), perm.getOctalString()));
-
-            if(this.isContainer()) {
-                try {
-                    session.CLOUD.cdnEnableContainer(this.getContainer().getName());
-                }
-                catch(FilesAuthorizationException e) {
-                    throw new MossoException(e.getHttpStatusMessage(), e);
-                }
-            }
-        }
-        catch(IOException e) {
-            this.error("Cannot change permissions", e);
-        }
+        throw new UnsupportedOperationException();
     }
 
     public AttributedList<Path> list() {
@@ -210,13 +234,13 @@ public class MossoPath extends CloudPath {
 
             if(this.isRoot()) {
                 // List all containers
-                for(FilesContainer container : session.CLOUD.listContainers()) {
-                    MossoPath p = new MossoPath(session, this.getAbsolute(), container.getName(),
+                for(FilesContainer container : session.CF.listContainers()) {
+                    CFPath p = new CFPath(session, this.getAbsolute(), container.getName(),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     p._container = container;
 
                     p.attributes.setSize(container.getInfo().getTotalSize());
-                    p.attributes.setOwner(session.CLOUD.getUserName());
+                    p.attributes.setOwner(session.CF.getUserName());
 
                     childs.add(p);
                 }
@@ -224,7 +248,7 @@ public class MossoPath extends CloudPath {
             else {
                 final FilesContainer container = this.getContainer();
                 for(FilesObject object : container.getObjects()) {
-                    final MossoPath child = new MossoPath(session, container.getName(), object.getName(),
+                    final CFPath child = new CFPath(session, container.getName(), object.getName(),
                             Path.FILE_TYPE);
                     child.setParent(this);
                     child._container = container;
@@ -258,7 +282,7 @@ public class MossoPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
                         this.getName()));
 
-                in = this.session.CLOUD.getObjectAsStream(this.getContainer().getName(), this.getName());
+                in = this.session.CF.getObjectAsStream(this.getContainer().getName(), this.getName());
 
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
@@ -301,7 +325,7 @@ public class MossoPath extends CloudPath {
                 this.getStatus().setCurrent(0);
 
                 try {
-                    final int result = session.CLOUD.storeObject(this.getContainer().getName(), new File(this.getLocal().getAbsolute()),
+                    final int result = session.CF.storeObject(this.getContainer().getName(), new File(this.getLocal().getAbsolute()),
                             this.getLocal().getMimeType());
                     if(result != FilesConstants.OBJECT_CREATED) {
                         throw new MossoException(String.valueOf(result));
@@ -339,7 +363,7 @@ public class MossoPath extends CloudPath {
             session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
-            final int result = session.CLOUD.createContainer(this.getName());
+            final int result = session.CF.createContainer(this.getName());
             if(result != FilesConstants.CONTAINER_CREATED) {
                 throw new MossoException(String.valueOf(result));
             }
@@ -357,7 +381,7 @@ public class MossoPath extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                         this.getName()));
 
-                final int result = session.CLOUD.deleteObject(this.getContainer().getName(), this.getName());
+                final int result = session.CF.deleteObject(this.getContainer().getName(), this.getName());
                 if(result != FilesConstants.OBJECT_DELETED) {
                     throw new MossoException(String.valueOf(result));
                 }
@@ -370,7 +394,7 @@ public class MossoPath extends CloudPath {
                     i.delete();
                 }
                 if(this.isContainer()) {
-                    final int result = session.CLOUD.deleteContainer(this.getContainer().getName());
+                    final int result = session.CF.deleteContainer(this.getContainer().getName());
                     if(result != FilesConstants.CONTAINER_DELETED) {
                         throw new MossoException(String.valueOf(result));
                     }
@@ -387,8 +411,17 @@ public class MossoPath extends CloudPath {
         }
     }
 
+    public boolean isRenameSupported() {
+        return false;
+    }
+
     public void rename(Path renamed) {
         throw new UnsupportedOperationException();
+    }
+
+
+    public String getWebURL() {
+        return this.toURL();
     }
 
     /**
@@ -399,7 +432,12 @@ public class MossoPath extends CloudPath {
     public String toURL() {
         try {
             StringBuffer b = new StringBuffer();
-            b.append(this.session.CLOUD.getCDNContainerInfo(this.getContainer().getName()).getCdnURL());
+            final FilesCDNContainer info = session.CF.getCDNContainerInfo(this.getContainer().getName());
+            if(null == info) {
+                // Not found.
+                return super.toURL();
+            }
+            b.append(info.getCdnURL());
             b.append(Path.DELIMITER);
             b.append(this.getName());
             return b.toString();

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.mosso;
+package ch.cyberduck.core.cf;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -34,10 +34,12 @@ import java.text.MessageFormat;
 import com.mosso.client.cloudfiles.FilesClient;
 
 /**
+ * Mosso Cloud Files Implementation
+ *
  * @version $Id:$
  */
-public class MossoSession extends Session implements SSLSession {
-    private static Logger log = Logger.getLogger(MossoSession.class);
+public class CFSession extends Session implements SSLSession {
+    private static Logger log = Logger.getLogger(CFSession.class);
 
     static {
         SessionFactory.addFactory(Protocol.MOSSO, new Factory());
@@ -45,7 +47,7 @@ public class MossoSession extends Session implements SSLSession {
 
     private static class Factory extends SessionFactory {
         protected Session create(Host h) {
-            return new MossoSession(h);
+            return new CFSession(h);
         }
     }
 
@@ -70,9 +72,9 @@ public class MossoSession extends Session implements SSLSession {
         this.trustManager = trustManager;
     }
 
-    protected FilesClient CLOUD;
+    protected FilesClient CF;
 
-    protected MossoSession(Host h) {
+    protected CFSession(Host h) {
         super(h);
         if(Preferences.instance().getBoolean("s3.tls.acceptAnyCertificate")) {
             this.setTrustManager(new IgnoreX509TrustManager());
@@ -100,12 +102,12 @@ public class MossoSession extends Session implements SSLSession {
     }
 
     protected void login(Credentials credentials) throws IOException {
-        this.CLOUD = new FilesClient(credentials.getUsername(), credentials.getPassword(),
+        this.CF = new FilesClient(credentials.getUsername(), credentials.getPassword(),
                 null, this.timeout());
-        this.CLOUD.setUserAgent(this.getUserAgent());
+        this.CF.setUserAgent(this.getUserAgent());
 //        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
-        if(!this.CLOUD.login()) {
+        if(!this.CF.login()) {
             this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
             this.login.fail(host.getProtocol(), credentials,
                     NSBundle.localizedString("Login with username and password", "Credentials", ""));
@@ -120,7 +122,20 @@ public class MossoSession extends Session implements SSLSession {
             }
         }
         finally {
-            CLOUD = null;
+            CF = null;
+            this.fireConnectionDidCloseEvent();
+        }
+    }
+
+    public void interrupt() {
+        try {
+            super.interrupt();
+            if(this.isConnected()) {
+                this.fireConnectionWillCloseEvent();
+            }
+        }
+        finally {
+            CF = null;
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -144,6 +159,6 @@ public class MossoSession extends Session implements SSLSession {
     }
 
     public boolean isConnected() {
-        return CLOUD != null;
+        return CF != null;
     }
 }

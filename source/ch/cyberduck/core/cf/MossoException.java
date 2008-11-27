@@ -1,4 +1,4 @@
-package ch.cyberduck.core.mosso;
+package ch.cyberduck.core.cf;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -23,6 +23,8 @@ import java.io.IOException;
 import com.mosso.client.cloudfiles.FilesAuthorizationException;
 
 /**
+ * Mosso Cloud Files Implementation
+ * 
  * @version $Id:$
  */
 public class MossoException extends IOException {
