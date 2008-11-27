@@ -4,6 +4,10 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.1 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1]
+- [Feature] Amazon CloudFront Support (S3)
+- [Feature] Cloud Files Support [#2745] (Mosso)
+
 3.0.3 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.3]
 - [Bugfix] Arbitrary Crashes [#2142]
 - [Bugfix] Various compatibility fixes for STAT listings (FTP) [#2445, #2435]
