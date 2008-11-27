@@ -541,13 +541,13 @@ public class CDInfoController extends CDWindowController {
         this.distributionCnameField.setEnabled(amazon);
         if(amazon) {
             this.distributionEnableButton.setTitle(
-                    NSBundle.localizedString("Enable Amazon CloudFront Distribution", "S3"));
+                    NSBundle.localizedString("Enable Amazon CloudFront Distribution", "S3", ""));
         }
         // Mosso only
         final boolean mosso = file instanceof CFPath;
         if(mosso) {
             this.distributionEnableButton.setTitle(
-                    NSBundle.localizedString("Enable Mosso Cloud Files Distribution", "Mosso"));
+                    NSBundle.localizedString("Enable Mosso Cloud Files Distribution", "Mosso", ""));
         }
     }
 

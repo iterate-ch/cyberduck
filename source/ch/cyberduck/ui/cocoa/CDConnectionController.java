@@ -68,16 +68,16 @@ public class CDConnectionController extends CDSheetController {
             if(protocol.equals(Protocol.S3)) {
                 this.hostField.setStringValue(Constants.S3_HOSTNAME);
                 ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
-                        NSBundle.localizedString("Access Key ID", "S3")
+                        NSBundle.localizedString("Access Key ID", "S3", "")
                 );
                 ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
-                        NSBundle.localizedString("Secret Access Key", "S3")
+                        NSBundle.localizedString("Secret Access Key", "S3", "")
                 );
             }
             else {
                 this.hostField.setStringValue("storage.clouddrive.com");
                 ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
-                        NSBundle.localizedString("API Access Key", "Mosso")
+                        NSBundle.localizedString("API Access Key", "Mosso", "")
                 );
             }
         }

@@ -64,7 +64,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.updateField(this.userField, credentials.getUsername());
                 if(protocol.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.userField.cell()).setPlaceholderString(
-                            NSBundle.localizedString("Access Key ID", "S3")
+                            NSBundle.localizedString("Access Key ID", "S3", "")
                     );
                 }
                 NSNotificationCenter.defaultCenter().addObserver(this,
@@ -92,7 +92,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.updateField(this.passField, credentials.getPassword());
                 if(protocol.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
-                            NSBundle.localizedString("Secret Access Key", "S3")
+                            NSBundle.localizedString("Secret Access Key", "S3", "")
                     );
                 }
                 NSNotificationCenter.defaultCenter().addObserver(this,
