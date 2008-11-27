@@ -22,11 +22,16 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cf.CFPath;
+import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.cloud.Distribution;
+import ch.cyberduck.core.s3.S3Path;
 
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -54,26 +59,26 @@ public class CDInfoController extends CDWindowController {
 
     private NSTextField groupField; //IBOutlet
 
-    public void setGroupField(NSTextField groupField) {
-        this.groupField = groupField;
+    public void setGroupField(NSTextField t) {
+        this.groupField = t;
     }
 
     private NSTextField kindField; //IBOutlet
 
-    public void setKindField(NSTextField kindField) {
-        this.kindField = kindField;
+    public void setKindField(NSTextField t) {
+        this.kindField = t;
     }
 
 //    private NSTextField mimeField; //IBOutlet
 //
-//    public void setMimeField(NSTextField mimeField) {
-//        this.mimeField = mimeField;
+//    public void setMimeField(NSTextField t) {
+//        this.mimeField = t;
 //    }
 
     private NSTextField modifiedField; //IBOutlet
 
-    public void setModifiedField(NSTextField modifiedField) {
-        this.modifiedField = modifiedField;
+    public void setModifiedField(NSTextField t) {
+        this.modifiedField = t;
     }
 
     private NSTextField ownerField; //IBOutlet
@@ -94,25 +99,47 @@ public class CDInfoController extends CDWindowController {
         this.pathField = pathField;
     }
 
-    private NSBox permissionsBox; //IBOutlet
+    private NSTextField webUrlField; //IBOutlet
 
-    public void setPermissionsBox(NSBox permissionsBox) {
-        this.permissionsBox = permissionsBox;
+    public void setWebUrlField(NSTextField webUrlField) {
+        this.webUrlField = webUrlField;
+    }
+
+    private NSTextField permissionsBox; //IBOutlet
+
+    public void setPermissionsBox(NSTextField t) {
+        this.permissionsBox = t;
     }
 
     private NSButton recursiveCheckbox;
 
-    public void setRecursiveCheckbox(NSButton recursiveCheckbox) {
-        this.recursiveCheckbox = recursiveCheckbox;
+    public void setRecursiveCheckbox(NSButton b) {
+        this.recursiveCheckbox = b;
         this.recursiveCheckbox.setState(NSCell.OffState);
     }
 
-    private NSButton applyButton;
+    private NSButton permissionApplyButton;
 
-    public void setApplyButton(NSButton applyButton) {
-        this.applyButton = applyButton;
-        this.applyButton.setTarget(this);
-        this.applyButton.setAction(new NSSelector("applyButtonClicked", new Class[]{Object.class}));
+    public void setPermissionApplyButton(NSButton b) {
+        this.permissionApplyButton = b;
+        this.permissionApplyButton.setTarget(this);
+        this.permissionApplyButton.setAction(new NSSelector("permissionApplyButtonClicked", new Class[]{Object.class}));
+    }
+
+    private NSButton distributionApplyButton;
+
+    public void setDistributionApplyButton(NSButton b) {
+        this.distributionApplyButton = b;
+        this.distributionApplyButton.setTarget(this);
+        this.distributionApplyButton.setAction(new NSSelector("distributionApplyButtonClicked", new Class[]{Object.class}));
+    }
+
+    private NSButton distributionStatusButton;
+
+    public void setDistributionStatusButton(NSButton b) {
+        this.distributionStatusButton = b;
+        this.distributionStatusButton.setTarget(this);
+        this.distributionStatusButton.setAction(new NSSelector("distributionStatusButtonClicked", new Class[]{Object.class}));
     }
 
     private NSButton sizeButton;
@@ -125,18 +152,65 @@ public class CDInfoController extends CDWindowController {
 
     private NSProgressIndicator sizeProgress; // IBOutlet
 
-    public void setSizeProgress(final NSProgressIndicator sizeProgress) {
-        this.sizeProgress = sizeProgress;
+    public void setSizeProgress(final NSProgressIndicator p) {
+        this.sizeProgress = p;
         this.sizeProgress.setDisplayedWhenStopped(false);
         this.sizeProgress.setStyle(NSProgressIndicator.ProgressIndicatorSpinningStyle);
     }
 
     private NSProgressIndicator permissionProgress; // IBOutlet
 
-    public void setPermissionProgress(final NSProgressIndicator permissionProgress) {
-        this.permissionProgress = permissionProgress;
+    public void setPermissionProgress(final NSProgressIndicator p) {
+        this.permissionProgress = p;
         this.permissionProgress.setDisplayedWhenStopped(false);
         this.permissionProgress.setStyle(NSProgressIndicator.ProgressIndicatorSpinningStyle);
+    }
+
+    private NSProgressIndicator distributionProgress; // IBOutlet
+
+    public void setDistributionProgress(final NSProgressIndicator p) {
+        this.distributionProgress = p;
+        this.distributionProgress.setDisplayedWhenStopped(false);
+        this.distributionProgress.setStyle(NSProgressIndicator.ProgressIndicatorSpinningStyle);
+    }
+
+    private NSButton distributionEnableButton;
+
+    public void setDistributionEnableButton(NSButton b) {
+        this.distributionEnableButton = b;
+    }
+
+    private NSTextField distributionCnameField;
+
+    public void setCloudfrontCnameField(NSTextField t) {
+        this.distributionCnameField = t;
+        ((NSTextFieldCell) this.distributionCnameField.cell()).setPlaceholderString(
+                NSBundle.localizedString("Unknown", "")
+        );
+    }
+
+    private NSTextField distributionStatusField;
+
+    public void setCloudfrontStatusField(NSTextField t) {
+        this.distributionStatusField = t;
+        this.distributionStatusField.setStringValue(
+                NSBundle.localizedString("Unknown", "")
+        );
+    }
+
+    private NSTextField distributionUrlField;
+
+    public void setDistributionUrlField(NSTextField t) {
+        this.distributionUrlField = t;
+        this.distributionUrlField.setStringValue(
+                NSBundle.localizedString("Unknown", "")
+        );
+    }
+
+    private NSTextField distributionCnameUrlField;
+
+    public void setDistributionCnameUrlField(NSTextField t) {
+        this.distributionCnameUrlField = t;
     }
 
     public NSButton ownerr; //IBOutlet
@@ -193,6 +267,10 @@ public class CDInfoController extends CDWindowController {
 
     private CDBrowserController controller;
 
+    /**
+     * @param controller
+     * @param files
+     */
     private CDInfoController(final CDBrowserController controller, List<Path> files) {
         this.controller = controller;
         this.controller.addListener(new CDWindowListener() {
@@ -257,7 +335,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     private void init() {
-        this.applyButton.setEnabled(controller.isConnected());
+        this.permissionApplyButton.setEnabled(controller.isConnected());
 
         final int count = this.numberOfFiles();
         if(count > 0) {
@@ -273,17 +351,16 @@ public class CDInfoController extends CDWindowController {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
+            this.webUrlField.setAttributedStringValue(new NSAttributedString(file.getWebURL(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES));
             this.groupField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
             if(count > 1) {
                 this.kindField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
-//                this.mimeField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
             }
             else {
                 this.kindField.setAttributedStringValue(new NSAttributedString(file.kind(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
-//                this.mimeField.setAttributedStringValue(new NSAttributedString(file.getMimeType(),
-//                        TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             if(count > 1) {
                 this.modifiedField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
@@ -317,91 +394,180 @@ public class CDInfoController extends CDWindowController {
                 this.recursiveCheckbox.setState(NSCell.OffState);
             }
 
-            this.updateSize();
-
-            this.initPermissionsCheckbox(false);
-            Permission permission = null;
-            for(Path next : files) {
-                permission = next.attributes.getPermission();
-                log.debug("Permission:" + permission);
-                if(null == permission) {
-                    this.initPermissionsCheckbox(false);
-                    applyButton.setEnabled(false);
-                    recursiveCheckbox.setEnabled(false);
-                    break;
-                }
-                else {
-                    this.updatePermisssionsCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
-                    this.updatePermisssionsCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
-                    this.updatePermisssionsCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
-
-                    this.updatePermisssionsCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
-                    this.updatePermisssionsCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
-                    this.updatePermisssionsCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
-
-                    this.updatePermisssionsCheckbox(otherr, permission.getOtherPermissions()[Permission.READ]);
-                    this.updatePermisssionsCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
-                    this.updatePermisssionsCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
-                }
-            }
-
-            //		octalField.setStringValue(""+file.getOctalCode());
-            if(count > 1) {
-                this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")
-                        + " | " + "(" + NSBundle.localizedString("Multiple files", "") + ")");
-            }
-            else {
-                this.permissionsBox.setTitle(NSBundle.localizedString("Permissions", "")
-                        + " | " + (null == permission ? NSBundle.localizedString("Unknown", "") :permission.toString()));
-            }
-
-            NSImage fileIcon;
-            if(count > 1) {
-                fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
-            }
-            else {
-                fileIcon = CDIconCache.instance().iconForPath(file, 32);
-            }
-            this.iconImageView.setImage(fileIcon);
+            this.initSize();
+            this.initPermissions();
+            this.initIcon(count, file);
+            this.initDistribution(file);
         }
     }
 
-    private void initPermissionsCheckbox(boolean enabled) {
-        ownerr.setEnabled(enabled);
+    /**
+     *
+     */
+    private void initPermissions() {
+        // Clear all rwx checkboxes
+        this.initPermissionsCheckboxes();
+
+        // Disable Apply button and start progress indicator
+        this.enablePermissionSettings(false);
+        this.permissionProgress.startAnimation(null);
+
+        controller.background(new BrowserBackgroundAction(controller) {
+            public void run() {
+                for(Path next : files) {
+                    if(this.isCanceled()) {
+                        break;
+                    }
+                    if(null == next.attributes.getPermission()) {
+                        // Read permission of every selected path
+                        next.readPermission();
+                    }
+                }
+            }
+
+            public void cleanup() {
+                try {
+                    Permission permission = null;
+                    for(Path next : files) {
+                        permission = next.attributes.getPermission();
+                        if(null == permission) {
+                            // Clear all rwx checkboxes
+                            initPermissionsCheckboxes();
+
+                            enablePermissionSettings(false);
+                            return;
+                        }
+                        else {
+                            this.updatePermisssionsCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
+                            this.updatePermisssionsCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
+                            this.updatePermisssionsCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
+
+                            this.updatePermisssionsCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
+                            this.updatePermisssionsCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
+                            this.updatePermisssionsCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
+
+                            this.updatePermisssionsCheckbox(otherr, permission.getOtherPermissions()[Permission.READ]);
+                            this.updatePermisssionsCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
+                            this.updatePermisssionsCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
+                        }
+                    }
+                    if(numberOfFiles() > 1) {
+                        permissionsBox.setStringValue(NSBundle.localizedString("Permissions", "")
+                                + " | " + "(" + NSBundle.localizedString("Multiple files", "") + ")");
+                    }
+                    else {
+                        permissionsBox.setStringValue(NSBundle.localizedString("Permissions", "")
+                                + " | " + (null == permission ? NSBundle.localizedString("Unknown", "") : permission.toString()));
+                    }
+                    enablePermissionSettings(true);
+                }
+                finally {
+                    permissionProgress.stopAnimation(null);
+                }
+            }
+
+            /**
+             *
+             * @param checkbox
+             * @param condition
+             */
+            private void updatePermisssionsCheckbox(NSButton checkbox, boolean condition) {
+//                if(null == condition) {
+//                    checkbox.setEnabled(false);
+//                    checkbox.setState(NSCell.OffState);
+//                    return;
+//                }
+                // Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState.
+                // If necessary, this method also redraws the receiver.
+                if((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition) {
+                    checkbox.setState(NSCell.OffState);
+                }
+                else if((checkbox.state() == NSCell.OnState || !checkbox.isEnabled()) && condition) {
+                    checkbox.setState(NSCell.OnState);
+                }
+                else {
+                    checkbox.setState(NSCell.MixedState);
+                }
+                checkbox.setEnabled(true);
+            }
+        });
+    }
+
+    /**
+     * @param enabled
+     */
+    private void initPermissionsCheckboxes() {
         ownerr.setState(NSCell.OffState);
-        ownerw.setEnabled(enabled);
         ownerw.setState(NSCell.OffState);
-        ownerx.setEnabled(enabled);
         ownerx.setState(NSCell.OffState);
-        groupr.setEnabled(enabled);
         groupr.setState(NSCell.OffState);
-        groupw.setEnabled(enabled);
         groupw.setState(NSCell.OffState);
-        groupx.setEnabled(enabled);
         groupx.setState(NSCell.OffState);
-        otherr.setEnabled(enabled);
         otherr.setState(NSCell.OffState);
-        otherw.setEnabled(enabled);
         otherw.setState(NSCell.OffState);
-        otherx.setEnabled(enabled);
         otherx.setState(NSCell.OffState);
     }
 
-    private void updatePermisssionsCheckbox(NSButton checkbox, boolean condition) {
-        // Sets the cell's state to value, which can be NSCell.OnState, NSCell.OffState, or NSCell.MixedState.
-        // If necessary, this method also redraws the receiver.
-        if((checkbox.state() == NSCell.OffState || !checkbox.isEnabled()) && !condition) {
-            checkbox.setState(NSCell.OffState);
-        }
-        else if((checkbox.state() == NSCell.OnState || !checkbox.isEnabled()) && condition) {
-            checkbox.setState(NSCell.OnState);
+    /**
+     * @param count
+     * @param file
+     */
+    private void initIcon(int count, Path file) {
+        NSImage fileIcon;
+        if(count > 1) {
+            fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
         }
         else {
-            checkbox.setState(NSCell.MixedState);
+            fileIcon = CDIconCache.instance().iconForPath(file, 32);
         }
-        checkbox.setEnabled(true);
+        this.iconImageView.setImage(fileIcon);
     }
 
+    /**
+     * @param file
+     */
+    private void initDistribution(Path file) {
+        final boolean cloud = file instanceof CloudPath;
+        this.distributionEnableButton.setEnabled(cloud);
+        this.distributionStatusButton.setEnabled(cloud);
+        this.distributionApplyButton.setEnabled(cloud);
+        this.distributionUrlField.setEnabled(cloud);
+        this.distributionStatusField.setEnabled(cloud);
+        if(cloud) {
+            this.distributionStatusButtonClicked(null);
+        }
+        // Amazon S3 only
+        final boolean amazon = file instanceof S3Path;
+        this.distributionCnameField.setEnabled(amazon);
+        if(amazon) {
+            this.distributionEnableButton.setTitle(
+                    NSBundle.localizedString("Enable Amazon CloudFront Distribution", "S3"));
+        }
+        // Mosso only
+        final boolean mosso = file instanceof CFPath;
+        if(mosso) {
+            this.distributionEnableButton.setTitle(
+                    NSBundle.localizedString("Enable Mosso Cloud Files Distribution", "Mosso"));
+        }
+    }
+
+    /**
+     * Updates the size field by iterating over all files and
+     * rading the cached size value in the attributes of the path
+     */
+    private void initSize() {
+        long size = 0;
+        for(Path next : files) {
+            size += next.attributes.getSize();
+        }
+        this.sizeField.setAttributedStringValue(
+                new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
+    }
+
+    /**
+     * @return
+     */
     private int numberOfFiles() {
         return null == files ? 0 : files.size();
     }
@@ -431,6 +597,9 @@ public class CDInfoController extends CDWindowController {
         }
     }
 
+    /**
+     * @return
+     */
     private Permission getPermissionFromSelection() {
         boolean[][] p = new boolean[3][3];
 
@@ -449,18 +618,24 @@ public class CDInfoController extends CDWindowController {
         return new Permission(p);
     }
 
+    /**
+     * @param sender
+     */
     public void permissionSelectionChanged(final NSButton sender) {
         if(sender.state() == NSCell.MixedState) {
             sender.setState(NSCell.OnState);
         }
         final Permission permission = this.getPermissionFromSelection();
-        permissionsBox.setTitle(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
+        permissionsBox.setStringValue(NSBundle.localizedString("Permissions", "") + " | " + permission.toString());
     }
 
-    public void applyButtonClicked(final Object sender) {
-        log.debug("applyButtonClicked");
-        this.applyButton.setEnabled(false);
-        this.permissionProgress.startAnimation(null);
+    /**
+     * Write altered permissions to the server
+     *
+     * @param sender
+     */
+    public void permissionApplyButtonClicked(final Object sender) {
+        this.enablePermissionSettings(false);
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
@@ -477,8 +652,7 @@ public class CDInfoController extends CDWindowController {
 
             public void cleanup() {
                 controller.reloadData(true);
-                applyButton.setEnabled(true);
-                permissionProgress.stopAnimation(null);
+                enablePermissionSettings(true);
             }
 
             public String getActivity() {
@@ -488,6 +662,144 @@ public class CDInfoController extends CDWindowController {
         });
     }
 
+    /**
+     * @param enabled
+     */
+    private void enablePermissionSettings(boolean enabled) {
+        for(Path next : files) {
+            if(!next.isWritePermissionsSupported()) {
+                enabled = false;
+            }
+        }
+        permissionApplyButton.setEnabled(enabled);
+        recursiveCheckbox.setEnabled(enabled);
+        ownerr.setEnabled(enabled);
+        ownerw.setEnabled(enabled);
+        ownerx.setEnabled(enabled);
+        groupr.setEnabled(enabled);
+        groupw.setEnabled(enabled);
+        groupx.setEnabled(enabled);
+        otherr.setEnabled(enabled);
+        otherw.setEnabled(enabled);
+        otherx.setEnabled(enabled);
+    }
+
+    /**
+     * @param sender
+     */
+    public void permissionReadButtonClicked(final Object sender) {
+        controller.background(new BrowserBackgroundAction(controller) {
+            public void run() {
+                for(Iterator<Path> iter = files.iterator(); iter.hasNext();) {
+                    if(this.isCanceled()) {
+                        break;
+                    }
+                    final Path selected = iter.next();
+                    if(selected.attributes.getPermission() == null) {
+                        selected.readPermission();
+                    }
+                }
+            }
+
+            public void cleanup() {
+
+            }
+        });
+    }
+
+    /**
+     * @param enable
+     */
+    private void enableDistributionSettings(boolean enable) {
+        this.distributionStatusButton.setEnabled(enable);
+        this.distributionApplyButton.setEnabled(enable);
+        this.distributionEnableButton.setEnabled(enable);
+        if(enable) {
+            this.distributionProgress.stopAnimation(null);
+        }
+        else {
+            this.distributionProgress.startAnimation(null);
+        }
+    }
+
+    /**
+     * @param sender
+     */
+    public void distributionApplyButtonClicked(final Object sender) {
+        this.enableDistributionSettings(false);
+        controller.background(new BrowserBackgroundAction(controller) {
+            public void run() {
+                for(Path next : files) {
+                    if(StringUtils.hasText(distributionCnameField.stringValue())) {
+                        ((CloudPath) next).writeDistribution(distributionEnableButton.state() == NSCell.OnState,
+                                new String[]{distributionCnameField.stringValue()});
+                    }
+                    else {
+                        ((CloudPath) next).writeDistribution(distributionEnableButton.state() == NSCell.OnState,
+                                new String[]{});
+                    }
+                    break;
+                }
+            }
+
+            public void cleanup() {
+                enableDistributionSettings(true);
+                // Refresh the current distribution status
+                distributionStatusButtonClicked(sender);
+            }
+        });
+    }
+
+    /**
+     * @param sender
+     */
+    public void distributionStatusButtonClicked(final Object sender) {
+        this.enableDistributionSettings(false);
+        controller.background(new BrowserBackgroundAction(controller) {
+            Distribution distribution;
+
+            public void run() {
+                for(Path next : files) {
+                    // We only support one distribution per bucket for the sake of simplicity
+                    distribution = ((CloudPath) next).readDistribution();
+                    break;
+                }
+            }
+
+            public void cleanup() {
+                enableDistributionSettings(true);
+
+                if(null == distribution) {
+                    // No distribution for current bucket
+                    return;
+                }
+                distributionEnableButton.setState(distribution.isEnabled() ? NSCell.OnState : NSCell.OffState);
+                distributionStatusField.setStringValue(distribution.getStatus());
+
+                final CloudPath file = ((CloudPath) files.get(0));
+                // Concatenate URLs
+                final String key = file.getURLEncodedKey();
+                if(numberOfFiles() > 1) {
+                    distributionUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
+                    distributionCnameUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
+                }
+                else {
+                    distributionUrlField.setStringValue(distribution.getUrl() + key);
+                }
+                final String[] cnames = distribution.getCNAMEs();
+                for(String cname : cnames) {
+                    distributionCnameField.setStringValue(cname);
+                    distributionCnameUrlField.setStringValue("http://" + cname + key);
+                    // We only support one CNAME for now
+                    break;
+                }
+            }
+        });
+    }
+
+    /**
+     * @param sender
+     */
     public void sizeButtonClicked(final Object sender) {
         log.debug("sizeButtonClicked");
         this.sizeButton.setEnabled(false);
@@ -505,7 +817,7 @@ public class CDInfoController extends CDWindowController {
 
             public void cleanup() {
                 controller.reloadData(true);
-                updateSize();
+                initSize();
                 sizeButton.setEnabled(true);
                 sizeProgress.stopAnimation(null);
             }
@@ -532,19 +844,5 @@ public class CDInfoController extends CDWindowController {
                         files.get(0).getName());
             }
         });
-    }
-
-    /**
-     * Updates the size field by iterating over all files and
-     * rading the cached size value in the attributes of the path
-     */
-    private void updateSize() {
-        long size = 0;
-        for(Path next : files) {
-            size += next.attributes.getSize();
-        }
-        this.sizeField.setAttributedStringValue(
-                new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 }
