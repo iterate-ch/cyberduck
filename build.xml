@@ -355,6 +355,7 @@
 				<include name="glguerin/**/*.class"/>
 			</fileset>
 			<fileset dir="${lib}">
+                <include name="cloudfiles.properties"/>
                 <include name="mime.types"/>
                 <include name="log4j.xml"/>
             </fileset>
