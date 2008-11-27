@@ -23,7 +23,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class Protocol {
     private static Logger log = Logger.getLogger(Protocol.class);
@@ -236,7 +236,7 @@ public abstract class Protocol {
         }
 
         public String getIdentifier() {
-            return "mosso";
+            return "cf";
         }
 
         public int getDefaultPort() {
@@ -248,7 +248,7 @@ public abstract class Protocol {
         }
 
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "mosso", "cloudfiles"};
+            return new String[]{this.getScheme(), "mosso", "cloudfiles", "cf"};
         }
 
         public boolean isSecure() {
