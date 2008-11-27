@@ -811,7 +811,7 @@ public class S3Path extends CloudPath {
                 // We currently only support one distribution per bucket
                 return new Distribution(d.isEnabled(),
                         "http://" + RestS3Service.generateS3HostnameForBucket(this.getContainerName()),
-                        d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3"), d.getCNAMEs());
+                        d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs());
             }
         }
         catch(S3Exception e) {

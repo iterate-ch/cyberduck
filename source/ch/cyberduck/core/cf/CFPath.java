@@ -40,7 +40,7 @@ import com.mosso.client.cloudfiles.*;
 /**
  * Mosso Cloud Files Implementation
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class CFPath extends CloudPath {
     private static Logger log = Logger.getLogger(CFPath.class);
@@ -162,11 +162,11 @@ public class CFPath extends CloudPath {
             if(null == info) {
                 // Not found.
                 return new Distribution(false, this.getContainerName(),
-                        null, NSBundle.localizedString("CDN Disabled", "Mosso"));
+                        null, NSBundle.localizedString("CDN Disabled", "Mosso", ""));
             }
             return new Distribution(info.isEnabled(),
                     this.getContainerName(), info.getCdnURL(),
-                    info.isEnabled() ? NSBundle.localizedString("CDN Enabled", "Mosso") : NSBundle.localizedString("CDN Disabled", "Mosso"));
+                    info.isEnabled() ? NSBundle.localizedString("CDN Enabled", "Mosso", "") : NSBundle.localizedString("CDN Disabled", "Mosso", ""));
         }
         catch(IOException e) {
             this.error(e.getMessage(), e);
