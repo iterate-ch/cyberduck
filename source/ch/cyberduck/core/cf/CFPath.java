@@ -115,15 +115,15 @@ public class CFPath extends CloudPath {
      */
     public void writeDistribution(boolean enabled, String[] cnames) {
         final String container = this.getContainer().getName();
+        if(enabled) {
+            session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
+                    container));
+        }
+        else {
+            session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
+                    container));
+        }
         try {
-            if(enabled) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
-                        container));
-            }
-            else {
-                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
-                        container));
-            }
             try {
                 if(enabled) {
                     final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
@@ -142,7 +142,7 @@ public class CFPath extends CloudPath {
                 }
             }
             catch(FilesAuthorizationException e) {
-                throw new MossoException(e.getHttpStatusMessage(), e);
+                throw new MossoException(e);
             }
         }
         catch(IOException e) {
@@ -157,7 +157,7 @@ public class CFPath extends CloudPath {
                 info = session.CF.getCDNContainerInfo(this.getContainer().getName());
             }
             catch(FilesAuthorizationException e) {
-                throw new MossoException(e.getMessage(), e);
+                throw new MossoException(e);
             }
             if(null == info) {
                 // Not found.
@@ -200,7 +200,7 @@ public class CFPath extends CloudPath {
             );
         }
         catch(IOException e) {
-            log.warn("Cannot read size:" + e.getMessage());
+            this.error("Cannot read file attributes", e);
         }
     }
 

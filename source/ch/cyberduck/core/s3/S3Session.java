@@ -193,7 +193,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                 this.login();
             }
             else {
-                throw new S3Exception(e.getMessage(), e);
+                throw new S3Exception(e);
             }
         }
     }

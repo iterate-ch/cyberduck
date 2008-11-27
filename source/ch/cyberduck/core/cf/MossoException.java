@@ -25,7 +25,7 @@ import com.mosso.client.cloudfiles.FilesAuthorizationException;
 /**
  * Mosso Cloud Files Implementation
  * 
- * @version $Id:$
+ * @version $Id$
  */
 public class MossoException extends IOException {
 
@@ -35,8 +35,8 @@ public class MossoException extends IOException {
         super(message);
     }
 
-    public MossoException(String message, FilesAuthorizationException cause) {
-        super(message);
+    public MossoException(FilesAuthorizationException cause) {
+        super(cause.getMessage());
         this.cause = cause;
     }
 

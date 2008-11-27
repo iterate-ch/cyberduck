@@ -89,20 +89,20 @@ public class DAVPath extends Path {
     }
 
     public void readSize() {
-            try {
-                session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
-                        this.getName()));
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                    this.getName()));
 
-                session.DAV.setPath(this.attributes.isDirectory() ?
-                        this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
+            session.DAV.setPath(this.attributes.isDirectory() ?
+                    this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
-                session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-                attributes.setSize(session.DAV.getGetContentLength());
-            }
-            catch(IOException e) {
-                log.warn("Cannot read size:" + e);
-            }
+            session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
+            attributes.setSize(session.DAV.getGetContentLength());
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
     }
 
     public void readTimestamp() {
@@ -243,7 +243,7 @@ public class DAVPath extends Path {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
                     this.getName(), copy));
-            
+
             if(!session.DAV.copyMethod(this.getAbsolute(), copy.getAbsolute())) {
                 throw new IOException(session.DAV.getStatusMessage());
             }

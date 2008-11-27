@@ -30,8 +30,12 @@ public class S3Exception extends IOException {
 
     private Throwable cause;
 
-    public S3Exception(String message, S3ServiceException cause) {
+    public S3Exception(String message) {
         super(message);
+    }
+
+    public S3Exception(S3ServiceException cause) {
+        super(cause.getMessage());
         this.cause = cause;
     }
 

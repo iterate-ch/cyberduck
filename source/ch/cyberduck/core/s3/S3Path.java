@@ -124,7 +124,7 @@ public class S3Path extends CloudPath {
         try {
             this.getDetails();
         }
-        catch(S3ServiceException e) {
+        catch(S3Exception e) {
             return false;
         }
         return true;
@@ -136,10 +136,15 @@ public class S3Path extends CloudPath {
      * @return
      * @throws S3ServiceException
      */
-    private S3Object getDetails() throws S3ServiceException {
+    private S3Object getDetails() throws S3Exception {
         if(null == this._details || !_details.isMetadataComplete()) {
             log.debug("getDetails");
-            this._details = session.S3.getObjectDetails(this.getBucket(), this.getKey());
+            try {
+                this._details = session.S3.getObjectDetails(this.getBucket(), this.getKey());
+            }
+            catch(S3ServiceException e) {
+                throw new S3Exception(e);
+            }
         }
         return this._details;
     }
@@ -150,21 +155,26 @@ public class S3Path extends CloudPath {
      * @return
      * @throws S3ServiceException
      */
-    protected S3Bucket getBucket() throws S3ServiceException {
+    protected S3Bucket getBucket() throws S3Exception {
         if(null == _bucket) {
             if(this.isRoot()) {
                 return null;
             }
             final String bucketname = this.getContainerName();
-            if(!session.S3.isBucketAccessible(bucketname)) {
-                throw new S3ServiceException("Bucket not available: " + bucketname);
-            }
-            final S3Bucket[] buckets = session.getBuckets(false);
-            for(int i = 0; i < buckets.length; i++) {
-                if(buckets[i].getName().equals(bucketname)) {
-                    _bucket = buckets[i];
-                    break;
+            try {
+                if(!session.S3.isBucketAccessible(bucketname)) {
+                    throw new S3Exception("Bucket not available: " + bucketname);
                 }
+                final S3Bucket[] buckets = session.getBuckets(false);
+                for(int i = 0; i < buckets.length; i++) {
+                    if(buckets[i].getName().equals(bucketname)) {
+                        _bucket = buckets[i];
+                        break;
+                    }
+                }
+            }
+            catch(S3ServiceException e) {
+                throw new S3Exception(e);
             }
             if(null == _bucket) {
                 log.warn("Bucket not found with name:" + bucketname);
@@ -182,11 +192,8 @@ public class S3Path extends CloudPath {
 
             attributes.setSize(this.getDetails().getContentLength());
         }
-        catch(S3ServiceException e) {
-            log.warn("Cannot read size:" + e.getMessage());
-        }
         catch(IOException e) {
-            ;
+            this.error("Cannot read file attributes", e);
         }
     }
 
@@ -199,11 +206,8 @@ public class S3Path extends CloudPath {
 
                 attributes.setModificationDate(this.getDetails().getLastModifiedDate().getTime());
             }
-            catch(S3ServiceException e) {
-                log.warn("Cannot read timestamp:" + e.getMessage());
-            }
             catch(IOException e) {
-                ;
+                this.error("Cannot read file attributes", e);
             }
         }
     }
@@ -213,26 +217,27 @@ public class S3Path extends CloudPath {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
                     this.getName()));
-
-            AccessControlList acl = null;
-            if(this.isContainer()) {
-                acl = session.S3.getBucketAcl(this.getBucket());
+            try {
+                AccessControlList acl = null;
+                if(this.isContainer()) {
+                    acl = session.S3.getBucketAcl(this.getBucket());
+                }
+                else if(attributes.isFile()) {
+                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+                }
+                if(null == acl) {
+                    attributes.setPermission(Permission.EMPTY);
+                }
+                else {
+                    attributes.setPermission(this.readPermissions(acl.getGrants()));
+                }
             }
-            else if(attributes.isFile()) {
-                acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+            catch(S3ServiceException e) {
+                throw new S3Exception(e);
             }
-            if(null == acl) {
-                attributes.setPermission(Permission.EMPTY);
-            }
-            else {
-                attributes.setPermission(this.readPermissions(acl.getGrants()));
-            }
-        }
-        catch(S3ServiceException e) {
-            log.warn("Cannot read file attributes", e);
         }
         catch(IOException e) {
-            ;
+            this.error("Cannot read file attributes", e);
         }
 
     }
@@ -414,7 +419,7 @@ public class S3Path extends CloudPath {
                     }
                 }
                 catch(Exception e) {
-                    throw new S3ServiceException(e.getMessage(), e);
+                    throw new S3Exception(e.getMessage());
                 }
 
                 // No Content-Range support
@@ -429,9 +434,6 @@ public class S3Path extends CloudPath {
                     this.mkdir();
                 }
             }
-        }
-        catch(S3ServiceException e) {
-            this.error("Upload failed", e);
         }
         catch(IOException e) {
             this.error("Upload failed", e);
@@ -462,99 +464,101 @@ public class S3Path extends CloudPath {
             session.message(NSBundle.localizedString("Listing directory", "Status", "") + " "
                     + this.getAbsolute());
 
-            if(this.isRoot()) {
-                // List all buckets
-                final S3Bucket[] buckets = session.getBuckets(true);
-                for(int i = 0; i < buckets.length; i++) {
-                    S3Path p = new S3Path(session, this.getAbsolute(), buckets[i].getName(),
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    p._bucket = buckets[i];
+            try {
+                if(this.isRoot()) {
+                    // List all buckets
+                    final S3Bucket[] buckets = session.getBuckets(true);
+                    for(int i = 0; i < buckets.length; i++) {
+                        S3Path p = new S3Path(session, this.getAbsolute(), buckets[i].getName(),
+                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        p._bucket = buckets[i];
 
-                    p.attributes.setOwner(buckets[i].getOwner().getDisplayName());
-                    p.attributes.setCreationDate(buckets[i].getCreationDate().getTime());
+                        p.attributes.setOwner(buckets[i].getOwner().getDisplayName());
+                        p.attributes.setCreationDate(buckets[i].getCreationDate().getTime());
 
-                    childs.add(p);
-                }
-            }
-            else {
-                final S3Bucket bucket = this.getBucket();
-                // Keys can be listed by prefix. By choosing a common prefix
-                // for the names of related keys and marking these keys with
-                // a special character that delimits hierarchy, you can use the list
-                // operation to select and browse keys hierarchically
-                String prefix = "";
-                if(!this.isContainer()) {
-                    // estricts the response to only contain results that begin with the
-                    // specified prefix. If you omit this optional argument, the value
-                    // of Prefix for your query will be the empty string.
-                    // In other words, the results will be not be restricted by prefix.
-                    prefix = this.getKey() + Path.DELIMITER;
-                }
-                // If this optional, Unicode string parameter is included with your request,
-                // then keys that contain the same string between the prefix and the first
-                // occurrence of the delimiter will be rolled up into a single result
-                // element in the CommonPrefixes collection. These rolled-up keys are
-                // not returned elsewhere in the response.
-                final String delimiter = Path.DELIMITER;
-                // Null if listing is complete
-                String priorLastKey = null;
-                do {
-                    // Read directory listing in chunks. List results are always returned
-                    // in lexicographic (alphabetical) order.
-                    S3ObjectsChunk chunk = session.S3.listObjectsChunked(
-                            bucket.getName(), prefix, delimiter,
-                            BUCKET_LIST_CHUNKING_SIZE, priorLastKey);
-
-                    final S3Object[] objects = chunk.getObjects();
-                    final S3Path[] paths = new S3Path[objects.length];
-                    for(int i = 0; i < objects.length; i++) {
-                        paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(),
-                                Path.FILE_TYPE);
-                        paths[i].setParent(this);
-                        paths[i]._bucket = bucket;
-
-                        paths[i].attributes.setSize(objects[i].getContentLength());
-                        paths[i].attributes.setModificationDate(objects[i].getLastModifiedDate().getTime());
-                        if(null != bucket.getOwner()) {
-                            paths[i].attributes.setOwner(bucket.getOwner().getDisplayName());
-                        }
-                    }
-                    childs.addAll(Arrays.asList(paths));
-
-                    final String[] prefixes = chunk.getCommonPrefixes();
-                    for(int i = 0; i < prefixes.length; i++) {
-                        if(prefixes[i].equals(Path.DELIMITER)) {
-                            log.warn("Skipping prefix " + prefixes[i]);
-                            continue;
-                        }
-                        S3Path p = new S3Path(session, bucket.getName(), prefixes[i],
-                                Path.DIRECTORY_TYPE);
-                        p.setParent(this);
-                        p._bucket = bucket;
-
-                        if(null != bucket.getOwner()) {
-                            p.attributes.setOwner(bucket.getOwner().getDisplayName());
-                        }
-                        boolean[][] access = new boolean[3][3];
-                        access[Permission.OWNER][Permission.READ] = true;
-                        access[Permission.OWNER][Permission.EXECUTE] = true;
-                        access[Permission.OTHER][Permission.READ] = true;
-                        access[Permission.OTHER][Permission.EXECUTE] = true;
-                        p.attributes.setPermission(new Permission(access));
                         childs.add(p);
                     }
-
-                    priorLastKey = chunk.getPriorLastKey();
                 }
-                while(priorLastKey != null && !getStatus().isCanceled());
+                else {
+                    final S3Bucket bucket = this.getBucket();
+                    // Keys can be listed by prefix. By choosing a common prefix
+                    // for the names of related keys and marking these keys with
+                    // a special character that delimits hierarchy, you can use the list
+                    // operation to select and browse keys hierarchically
+                    String prefix = "";
+                    if(!this.isContainer()) {
+                        // estricts the response to only contain results that begin with the
+                        // specified prefix. If you omit this optional argument, the value
+                        // of Prefix for your query will be the empty string.
+                        // In other words, the results will be not be restricted by prefix.
+                        prefix = this.getKey() + Path.DELIMITER;
+                    }
+                    // If this optional, Unicode string parameter is included with your request,
+                    // then keys that contain the same string between the prefix and the first
+                    // occurrence of the delimiter will be rolled up into a single result
+                    // element in the CommonPrefixes collection. These rolled-up keys are
+                    // not returned elsewhere in the response.
+                    final String delimiter = Path.DELIMITER;
+                    // Null if listing is complete
+                    String priorLastKey = null;
+                    do {
+                        // Read directory listing in chunks. List results are always returned
+                        // in lexicographic (alphabetical) order.
+                        S3ObjectsChunk chunk = session.S3.listObjectsChunked(
+                                bucket.getName(), prefix, delimiter,
+                                BUCKET_LIST_CHUNKING_SIZE, priorLastKey);
+
+                        final S3Object[] objects = chunk.getObjects();
+                        final S3Path[] paths = new S3Path[objects.length];
+                        for(int i = 0; i < objects.length; i++) {
+                            paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(),
+                                    Path.FILE_TYPE);
+                            paths[i].setParent(this);
+                            paths[i]._bucket = bucket;
+
+                            paths[i].attributes.setSize(objects[i].getContentLength());
+                            paths[i].attributes.setModificationDate(objects[i].getLastModifiedDate().getTime());
+                            if(null != bucket.getOwner()) {
+                                paths[i].attributes.setOwner(bucket.getOwner().getDisplayName());
+                            }
+                        }
+                        childs.addAll(Arrays.asList(paths));
+
+                        final String[] prefixes = chunk.getCommonPrefixes();
+                        for(int i = 0; i < prefixes.length; i++) {
+                            if(prefixes[i].equals(Path.DELIMITER)) {
+                                log.warn("Skipping prefix " + prefixes[i]);
+                                continue;
+                            }
+                            S3Path p = new S3Path(session, bucket.getName(), prefixes[i],
+                                    Path.DIRECTORY_TYPE);
+                            p.setParent(this);
+                            p._bucket = bucket;
+
+                            if(null != bucket.getOwner()) {
+                                p.attributes.setOwner(bucket.getOwner().getDisplayName());
+                            }
+                            boolean[][] access = new boolean[3][3];
+                            access[Permission.OWNER][Permission.READ] = true;
+                            access[Permission.OWNER][Permission.EXECUTE] = true;
+                            access[Permission.OTHER][Permission.READ] = true;
+                            access[Permission.OTHER][Permission.EXECUTE] = true;
+                            p.attributes.setPermission(new Permission(access));
+                            childs.add(p);
+                        }
+
+                        priorLastKey = chunk.getPriorLastKey();
+                    }
+                    while(priorLastKey != null && !getStatus().isCanceled());
+                }
+            }
+            catch(S3ServiceException e) {
+                throw new S3Exception(e);
             }
         }
-        catch(S3ServiceException e) {
+        catch(IOException e) {
             childs.attributes().setReadable(false);
             this.error("Listing directory failed", e);
-        }
-        catch(IOException e) {
-            ;
         }
         return childs;
     }
@@ -563,19 +567,21 @@ public class S3Path extends CloudPath {
         log.debug("mkdir:" + this.getName());
         try {
             if(!this.isContainer()) {
-                throw new S3ServiceException("Bucket can only be created at top level");
+                throw new S3Exception("Bucket can only be created at top level");
             }
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
-            session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot create folder", e);
+            try {
+                session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
+            }
+            catch(S3ServiceException e) {
+                throw new S3Exception(e);
+            }
         }
         catch(IOException e) {
-            ;
+            this.error("Cannot create folder", e);
         }
     }
 
@@ -591,54 +597,56 @@ public class S3Path extends CloudPath {
                     this.getName(), perm.getOctalString()));
 
 
-            AccessControlList acl = null;
-            if(this.isContainer()) {
-                acl = session.S3.getBucketAcl(this.getBucket());
-            }
-            else if(attributes.isFile()) {
-                acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
-            }
-            if(acl != null) {
-                final CanonicalGrantee ownerGrantee = new CanonicalGrantee(acl.getOwner().getId());
-                acl.revokeAllPermissions(ownerGrantee);
-                if(perm.getOwnerPermissions()[Permission.READ]) {
-                    acl.grantPermission(ownerGrantee,
-                            org.jets3t.service.acl.Permission.PERMISSION_READ);
-                }
-                if(perm.getOwnerPermissions()[Permission.WRITE]) {
-                    acl.grantPermission(ownerGrantee,
-                            org.jets3t.service.acl.Permission.PERMISSION_WRITE);
-                }
-                acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
-                if(perm.getOtherPermissions()[Permission.READ]) {
-                    acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
-                }
-                if(perm.getOtherPermissions()[Permission.WRITE]) {
-                    acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
-                }
+            try {
+                AccessControlList acl = null;
                 if(this.isContainer()) {
-                    session.S3.putBucketAcl(this.getContainerName(), acl);
+                    acl = session.S3.getBucketAcl(this.getBucket());
                 }
                 else if(attributes.isFile()) {
-                    session.S3.putObjectAcl(this.getContainerName(), this.getKey(), acl);
+                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
                 }
-            }
-            if(attributes.isDirectory()) {
-                if(recursive) {
-                    for(AbstractPath child : this.childs()) {
-                        if(!session.isConnected()) {
-                            break;
+                if(acl != null) {
+                    final CanonicalGrantee ownerGrantee = new CanonicalGrantee(acl.getOwner().getId());
+                    acl.revokeAllPermissions(ownerGrantee);
+                    if(perm.getOwnerPermissions()[Permission.READ]) {
+                        acl.grantPermission(ownerGrantee,
+                                org.jets3t.service.acl.Permission.PERMISSION_READ);
+                    }
+                    if(perm.getOwnerPermissions()[Permission.WRITE]) {
+                        acl.grantPermission(ownerGrantee,
+                                org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                    }
+                    acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
+                    if(perm.getOtherPermissions()[Permission.READ]) {
+                        acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
+                    }
+                    if(perm.getOtherPermissions()[Permission.WRITE]) {
+                        acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                    }
+                    if(this.isContainer()) {
+                        session.S3.putBucketAcl(this.getContainerName(), acl);
+                    }
+                    else if(attributes.isFile()) {
+                        session.S3.putObjectAcl(this.getContainerName(), this.getKey(), acl);
+                    }
+                }
+                if(attributes.isDirectory()) {
+                    if(recursive) {
+                        for(AbstractPath child : this.childs()) {
+                            if(!session.isConnected()) {
+                                break;
+                            }
+                            child.writePermissions(perm, recursive);
                         }
-                        child.writePermissions(perm, recursive);
                     }
                 }
             }
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot change permissions", e);
+            catch(S3ServiceException e) {
+                throw new S3Exception(e);
+            }
         }
         catch(IOException e) {
-            ;
+            this.error("Cannot change permissions", e);
         }
     }
 
@@ -646,34 +654,36 @@ public class S3Path extends CloudPath {
         log.debug("delete:" + this.toString());
         try {
             session.check();
-            if(attributes.isFile()) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
-                        this.getName()));
+            try {
+                if(attributes.isFile()) {
+                    session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                            this.getName()));
 
-                session.S3.deleteObject(this.getContainerName(), this.getKey());
-            }
-            else if(attributes.isDirectory()) {
-                for(AbstractPath i : this.childs()) {
-                    if(!session.isConnected()) {
-                        break;
+                    session.S3.deleteObject(this.getContainerName(), this.getKey());
+                }
+                else if(attributes.isDirectory()) {
+                    for(AbstractPath i : this.childs()) {
+                        if(!session.isConnected()) {
+                            break;
+                        }
+                        i.delete();
                     }
-                    i.delete();
+                    if(this.isContainer()) {
+                        session.S3.deleteBucket(this.getContainerName());
+                    }
                 }
-                if(this.isContainer()) {
-                    session.S3.deleteBucket(this.getContainerName());
-                }
+            }
+            catch(S3ServiceException e) {
+                throw new S3Exception(e);
             }
         }
-        catch(S3ServiceException e) {
+        catch(IOException e) {
             if(this.attributes.isFile()) {
                 this.error("Cannot delete file", e);
             }
             if(this.attributes.isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
-        }
-        catch(IOException e) {
-            ;
         }
     }
 
@@ -684,8 +694,13 @@ public class S3Path extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
                         this.getName(), renamed));
 
-                session.S3.moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
-                        new S3Object(((S3Path) renamed).getKey()), false);
+                try {
+                    session.S3.moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
+                            new S3Object(((S3Path) renamed).getKey()), false);
+                }
+                catch(S3ServiceException e) {
+                    throw new S3Exception(e);
+                }
                 this.setPath(renamed.getAbsolute());
                 if(!this.getContainerName().equals(((S3Path) renamed).getContainerName())) {
                     _bucket = null;
@@ -701,16 +716,13 @@ public class S3Path extends CloudPath {
                 }
             }
         }
-        catch(S3ServiceException e) {
+        catch(IOException e) {
             if(this.attributes.isFile()) {
                 this.error("Cannot rename file", e);
             }
             if(this.attributes.isDirectory()) {
                 this.error("Cannot rename folder", e);
             }
-        }
-        catch(IOException e) {
-            ;
         }
     }
 
@@ -721,8 +733,13 @@ public class S3Path extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
                         this.getName(), copy));
 
-                session.S3.copyObject(this.getContainerName(), this.getKey(), ((S3Path) copy).getContainerName(),
-                        new S3Object(((S3Path) copy).getKey()), false);
+                try {
+                    session.S3.copyObject(this.getContainerName(), this.getKey(), ((S3Path) copy).getContainerName(),
+                            new S3Object(((S3Path) copy).getKey()), false);
+                }
+                catch(S3ServiceException e) {
+                    throw new S3Exception(e);
+                }
             }
             else if(attributes.isDirectory()) {
                 for(AbstractPath i : this.childs()) {
@@ -734,16 +751,13 @@ public class S3Path extends CloudPath {
                 }
             }
         }
-        catch(S3ServiceException e) {
+        catch(IOException e) {
             if(this.attributes.isFile()) {
                 this.error("Cannot copy file", e);
             }
             if(this.attributes.isDirectory()) {
                 this.error("Cannot copy folder", e);
             }
-        }
-        catch(IOException e) {
-            ;
         }
     }
 
@@ -820,7 +834,7 @@ public class S3Path extends CloudPath {
         catch(IOException e) {
             this.error(e.getMessage(), e);
         }
-        return null;
+        return new Distribution(false);
     }
 
     /**
@@ -831,45 +845,21 @@ public class S3Path extends CloudPath {
      */
     public void writeDistribution(final boolean enabled, final String[] cnames) {
         final String container = this.getContainerName();
-        try {
-            if(enabled) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
-                        container));
-            }
-            else {
-                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
-                        container));
-            }
-            // Make sure to set the access control on the object so it's publicly readable.
-            AccessControlList acl;
-            if(this.isContainer()) {
-                acl = session.S3.getBucketAcl(this.getBucket());
-            }
-            else {
-                acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
-            }
-            acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
-            if(this.isContainer()) {
-                session.S3.putBucketAcl(container, acl);
-            }
-            else {
-                session.S3.putObjectAcl(container, this.getKey(), acl);
-            }
+        if(enabled) {
+            session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
+                    container));
         }
-        catch(S3ServiceException e) {
-            this.error("Cannot change permissions", e);
+        else {
+            session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
+                    container));
         }
         try {
-            final String bucket = container;
             for(org.jets3t.service.model.cloudfront.Distribution distribution : session.listDistributions(container)) {
                 session.updateDistribution(enabled, distribution, cnames);
                 return;
             }
             // Create new configuration
-            session.createDistribution(enabled, bucket, cnames);
-        }
-        catch(S3Exception e) {
-            this.error(e.getMessage(), e);
+            session.createDistribution(enabled, container, cnames);
         }
         catch(IOException e) {
             this.error(e.getMessage(), e);

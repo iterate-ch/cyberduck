@@ -150,12 +150,9 @@ public class SFTPPath extends Path {
                 }
             }
         }
-        catch(SFTPException e) {
+        catch(IOException e) {
             childs.attributes().setReadable(false);
             this.error("Listing directory failed", e);
-        }
-        catch(IOException e) {
-            session.interrupt();
         }
         return childs;
     }
@@ -175,11 +172,8 @@ public class SFTPPath extends Path {
             Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
             session.sftp().mkdir(this.getAbsolute(), perm.getOctalNumber());
         }
-        catch(SFTPException e) {
-            this.error("Cannot create folder", e);
-        }
         catch(IOException e) {
-            session.interrupt();
+            this.error("Cannot create folder", e);
         }
     }
 
@@ -192,16 +186,13 @@ public class SFTPPath extends Path {
             session.sftp().mv(this.getAbsolute(), renamed.getAbsolute());
             this.setPath(renamed.getAbsolute());
         }
-        catch(SFTPException e) {
+        catch(IOException e) {
             if(this.attributes.isFile()) {
                 this.error("Cannot rename file", e);
             }
             if(this.attributes.isDirectory()) {
                 this.error("Cannot rename folder", e);
             }
-        }
-        catch(IOException e) {
-
         }
     }
 
@@ -253,7 +244,7 @@ public class SFTPPath extends Path {
             }
             catch(IOException e) {
                 // Fail silently
-                log.error("Cannot read file attributes", e);
+                this.error("Cannot read file attributes", e);
             }
             finally {
                 if(handle != null) {
@@ -282,8 +273,7 @@ public class SFTPPath extends Path {
                 session.sftp().closeFile(handle);
             }
             catch(IOException e) {
-                // Fail silently
-                log.error("Cannot read file attributes", e);
+                this.error("Cannot read file attributes", e);
             }
             finally {
                 if(handle != null) {
@@ -318,8 +308,7 @@ public class SFTPPath extends Path {
                 session.sftp().closeFile(handle);
             }
             catch(IOException e) {
-                // Fail silently
-                log.error("Cannot read file attributes", e);
+                this.error("Cannot read file attributes", e);
             }
             finally {
                 if(handle != null) {
@@ -415,8 +404,7 @@ public class SFTPPath extends Path {
             }
         }
         catch(IOException e) {
-            // Fail silently
-            log.error("Cannot change permissions", e);
+            this.error("Cannot change permissions", e);
         }
     }
 
