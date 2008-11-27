@@ -1438,11 +1438,11 @@ public class CDBrowserController extends CDWindowController
              */
             public void outlineViewWillDisplayCell(NSOutlineView outlineView, NSCell cell,
                                                    NSTableColumn tableColumn, Path item) {
-                String identifier = (String) tableColumn.identifier();
+                final String identifier = (String) tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
+                        cell.setEditable(item.isRenameSupported());
                         ((CDOutlineCell) cell).setIcon(browserOutlineModel.iconForPath(item));
-                        ((CDOutlineCell) cell).setEditable(true);
                     }
                     if(cell instanceof NSTextFieldCell) {
                         if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
@@ -1519,7 +1519,6 @@ public class CDBrowserController extends CDWindowController
                 }
             };
             {
-                cell.setEditable(true);
                 cell.setTarget(browserOutlineView.target());
                 cell.setAction(browserOutlineView.action());
             }
@@ -1569,6 +1568,11 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void tableViewWillDisplayCell(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, int row) {
+                final String identifier = (String) tableColumn.identifier();
+                if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
+                    final Path item = browserListModel.childs(CDBrowserController.this.workdir()).get(row);
+                    cell.setEditable(item.isRenameSupported());
+                }
                 if(cell instanceof NSTextFieldCell) {
                     if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
                         cell.setTextColor(NSColor.disabledControlTextColor());
@@ -2930,35 +2934,19 @@ public class CDBrowserController extends CDWindowController
     public void infoButtonClicked(final Object sender) {
         if(this.getSelectionCount() > 0) {
             final List<Path> selected = this.getSelectedPaths();
-            this.background(new BrowserBackgroundAction(this) {
-                public void run() {
-                    for(Iterator<Path> iter = selected.iterator(); iter.hasNext();) {
-                        if(this.isCanceled()) {
-                            break;
-                        }
-                        final Path selected = iter.next();
-                        if(selected.attributes.getPermission() == null) {
-                            selected.readPermission();
-                        }
-                    }
+            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+                if(null == inspector || null == inspector.window()) {
+                    inspector = CDInfoController.Factory.create(CDBrowserController.this, selected);
                 }
-
-                public void cleanup() {
-                    if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                        if(null == inspector || null == inspector.window()) {
-                            inspector = CDInfoController.Factory.create(CDBrowserController.this, selected);
-                        }
-                        else {
-                            inspector.setFiles(selected);
-                        }
-                        inspector.window().makeKeyAndOrderFront(null);
-                    }
-                    else {
-                        CDInfoController c = CDInfoController.Factory.create(CDBrowserController.this, selected);
-                        c.window().makeKeyAndOrderFront(null);
-                    }
+                else {
+                    inspector.setFiles(selected);
                 }
-            });
+                inspector.window().makeKeyAndOrderFront(null);
+            }
+            else {
+                CDInfoController c = CDInfoController.Factory.create(CDBrowserController.this, selected);
+                c.window().makeKeyAndOrderFront(null);
+            }
         }
     }
 
