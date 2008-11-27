@@ -363,7 +363,7 @@ public class S3Path extends CloudPath {
                 this.error("Download failed", e);
             }
             catch(IOException e) {
-                ;
+                this.error("Download failed", e);
             }
             finally {
                 try {
@@ -378,9 +378,9 @@ public class S3Path extends CloudPath {
                     log.error(e.getMessage());
                 }
             }
-            if(attributes.isDirectory()) {
-                this.getLocal().mkdir(true);
-            }
+        }
+        if(attributes.isDirectory()) {
+            this.getLocal().mkdir(true);
         }
     }
 
@@ -434,7 +434,7 @@ public class S3Path extends CloudPath {
             this.error("Upload failed", e);
         }
         catch(IOException e) {
-            ;
+            this.error("Upload failed", e);
         }
     }
 
