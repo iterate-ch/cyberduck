@@ -115,15 +115,16 @@ public class CFPath extends CloudPath {
      */
     public void writeDistribution(boolean enabled, String[] cnames) {
         final String container = this.getContainer().getName();
-        if(enabled) {
-            session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
-                    container));
-        }
-        else {
-            session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
-                    container));
-        }
         try {
+            session.check();
+            if(enabled) {
+                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
+                        container));
+            }
+            else {
+                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
+                        container));
+            }
             try {
                 if(enabled) {
                     final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
@@ -154,6 +155,7 @@ public class CFPath extends CloudPath {
         try {
             final FilesCDNContainer info;
             try {
+                session.check();
                 info = session.CF.getCDNContainerInfo(this.getContainer().getName());
             }
             catch(FilesAuthorizationException e) {

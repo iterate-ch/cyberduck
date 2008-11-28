@@ -821,6 +821,7 @@ public class S3Path extends CloudPath {
      */
     public Distribution readDistribution() {
         try {
+            session.check();
             for(org.jets3t.service.model.cloudfront.Distribution d : session.listDistributions(this.getContainerName())) {
                 // We currently only support one distribution per bucket
                 return new Distribution(d.isEnabled(),
@@ -845,15 +846,16 @@ public class S3Path extends CloudPath {
      */
     public void writeDistribution(final boolean enabled, final String[] cnames) {
         final String container = this.getContainerName();
-        if(enabled) {
-            session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
-                    container));
-        }
-        else {
-            session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
-                    container));
-        }
         try {
+            session.check();
+            if(enabled) {
+                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
+                        container));
+            }
+            else {
+                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
+                        container));
+            }
             for(org.jets3t.service.model.cloudfront.Distribution distribution : session.listDistributions(container)) {
                 session.updateDistribution(enabled, distribution, cnames);
                 return;
