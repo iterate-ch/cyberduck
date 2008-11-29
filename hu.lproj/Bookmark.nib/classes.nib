@@ -21,6 +21,7 @@
                 pkLabel = NSTextField;
                 portField = NSTextField;
                 protocolPopup = NSPopUpButton;
+                toggleOptionsButton = NSButton;
                 transferPopup = NSPopUpButton;
                 urlField = NSTextField;
                 usernameField = NSTextField;
