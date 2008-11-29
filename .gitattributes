@@ -1906,6 +1906,8 @@ source/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParser.java -text
 source/ch/cyberduck/core/http/HTTPSession.java -text
 source/ch/cyberduck/core/http/StickyHostConfiguration.java -text
+source/ch/cyberduck/core/idisk/IDISKPath.java -text
+source/ch/cyberduck/core/idisk/IDISKSession.java -text
 source/ch/cyberduck/core/io/AbstractFileWatcherListener.java -text
 source/ch/cyberduck/core/io/FileWatcher.m -text
 source/ch/cyberduck/core/io/UKFileWatcher.h -text

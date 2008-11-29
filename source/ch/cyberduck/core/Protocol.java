@@ -251,6 +251,44 @@ public abstract class Protocol {
         }
     };
 
+    public static final Protocol IDISK = new Protocol() {
+        public String getName() {
+            return "MobileMe iDisk";
+        }
+
+        public String getDescription() {
+            return NSBundle.localizedString("MobileMe iDisk (WebDAV)", "");
+        }
+
+        public String getIdentifier() {
+            return "idisk";
+        }
+
+        public int getDefaultPort() {
+            return 443;
+        }
+
+        public String getScheme() {
+            return "https";
+        }
+
+        public boolean isSecure() {
+            return true;
+        }
+
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "idisk"};
+        }
+
+        public boolean isConfigurable() {
+            return false;
+        }
+
+        public String getDefaultHostname() {
+            return "idisk.mac.com";
+        }
+    };
+
     public static final Protocol MOSSO = new Protocol() {
         public String getName() {
             return "Cloud Files";
@@ -349,6 +387,6 @@ public abstract class Protocol {
 
     public static Protocol[] getKnownProtocols() {
         return new Protocol[]{
-                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, S3, MOSSO};
+                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, IDISK, S3, MOSSO};
     }
 }
