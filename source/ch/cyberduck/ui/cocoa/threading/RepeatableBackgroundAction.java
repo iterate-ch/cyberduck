@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
+import com.apple.cocoa.foundation.NSNotification;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.*;
@@ -217,15 +218,14 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
 
             public void awakeFromNib() {
-                boolean enabled = transcript.length() > 0;
-                if(!enabled) {
-                    if(this.transcriptButton.state() == NSCell.OnState) {
-                        log.debug("Closing transcript view");
-                        this.transcriptButton.performClick(null);
-                    }
-                }
-                this.transcriptButton.setEnabled(enabled);
+                this.setState(this.transcriptButton,
+                        transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
                 super.awakeFromNib();
+            }
+
+            public void invalidate() {
+                Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
+                super.invalidate();
             }
 
             private NSButton diagnosticsButton;
@@ -246,7 +246,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
 
             public void diagnosticsButtonClicked(final NSButton sender) {
-                ((BackgroundException) exceptions.get(exceptions.size() - 1)).getSession().getHost().diagnose();
+                exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
             }
 
             private NSButton transcriptButton;

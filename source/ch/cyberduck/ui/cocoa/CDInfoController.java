@@ -68,12 +68,6 @@ public class CDInfoController extends CDWindowController {
         this.kindField = t;
     }
 
-//    private NSTextField mimeField; //IBOutlet
-//
-//    public void setMimeField(NSTextField t) {
-//        this.mimeField = t;
-//    }
-
     private NSTextField modifiedField; //IBOutlet
 
     public void setModifiedField(NSTextField t) {
@@ -228,6 +222,18 @@ public class CDInfoController extends CDWindowController {
         this.iconImageView = iconImageView;
     }
 
+    private NSButton distributionToggle;
+
+    public void setDistributionToggle(NSButton b) {
+        this.distributionToggle = b;
+    }
+
+    private NSButton permissionToggle;
+
+    public void setPermissionToggle(NSButton t) {
+        this.permissionToggle = t;
+    }
+
     public void setWindow(NSWindow window) {
         super.setWindow(window);
         this.window.setReleasedWhenClosed(false);
@@ -235,6 +241,8 @@ public class CDInfoController extends CDWindowController {
 
     public void windowWillClose(NSNotification notification) {
         this.window().endEditingForObject(null);
+        Preferences.instance().setProperty("info.toggle.permission", this.permissionToggle.state());
+        Preferences.instance().setProperty("info.toggle.distribution", this.distributionToggle.state());
         if(Preferences.instance().getBoolean("browser.info.isInspector")) {
             //Do not mark this controller as invalid if it should be used again 
             return;
@@ -331,6 +339,9 @@ public class CDInfoController extends CDWindowController {
         this.otherx.setTarget(this);
         this.otherx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
         this.otherx.setAllowsMixedState(true);
+
+        this.setState(this.permissionToggle, Preferences.instance().getBoolean("info.toggle.permission"));
+        this.setState(this.distributionToggle, Preferences.instance().getBoolean("info.toggle.distribution"));
     }
 
     private void init() {

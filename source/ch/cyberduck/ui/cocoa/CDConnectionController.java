@@ -449,11 +449,14 @@ public class CDConnectionController extends CDSheetController {
 
         this.protocolSelectionDidChange(null);
 
-        if(Preferences.instance().getBoolean("connection.toggle.options")) {
-            this.toggleOptionsButton.performClick(this.toggleOptionsButton);
-        }
+        this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
 
         super.awakeFromNib();
+    }
+
+    public void windowWillClose(NSNotification notification) {
+        Preferences.instance().setProperty("connection.toggle.options", this.toggleOptionsButton.state());
+        super.windowWillClose(notification);
     }
 
     /**

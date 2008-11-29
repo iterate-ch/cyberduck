@@ -200,44 +200,44 @@ public class CDBookmarkController extends CDWindowController {
                 this.commentField);
     }
 
-    private NSPopUpButton timezonePopup; //IBOutlet
-
-    public void setTimezonePopup(NSPopUpButton timezonePopup) {
-        this.timezonePopup = timezonePopup;
-        this.timezonePopup.setTarget(this);
-        this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
-        this.timezonePopup.removeAllItems();
-        this.timezonePopup.addItem(DEFAULT);
-        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
-        String[] ids = TimeZone.getAvailableIDs();
-        for(int i = 0; i < ids.length; i++) {
-            this.timezonePopup.addItem(TimeZone.getTimeZone(ids[i]).getDisplayName());
-        }
-        if(this.host.getTimezone().equals(TimeZone.getDefault())) {
-            this.timezonePopup.setTitle(DEFAULT);
-        }
-        else {
-            this.timezonePopup.setTitle(this.host.getTimezone().getDisplayName());
-        }
-    }
-
-    public void timezonePopupClicked(NSPopUpButton sender) {
-        String selected = sender.selectedItem().title();
-        if(selected.equals(DEFAULT)) {
-            this.host.setTimezone(null);
-        }
-        else {
-            String[] ids = TimeZone.getAvailableIDs();
-            TimeZone tz;
-            for(int i = 0; i < ids.length; i++) {
-                if((tz = TimeZone.getTimeZone(ids[i])).getDisplayName().equals(selected)) {
-                    this.host.setTimezone(tz);
-                    break;
-                }
-            }
-        }
-        this.itemChanged();
-    }
+//    private NSPopUpButton timezonePopup; //IBOutlet
+//
+//    public void setTimezonePopup(NSPopUpButton timezonePopup) {
+//        this.timezonePopup = timezonePopup;
+//        this.timezonePopup.setTarget(this);
+//        this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
+//        this.timezonePopup.removeAllItems();
+//        this.timezonePopup.addItem(DEFAULT);
+//        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+//        String[] ids = TimeZone.getAvailableIDs();
+//        for(int i = 0; i < ids.length; i++) {
+//            this.timezonePopup.addItem(TimeZone.getTimeZone(ids[i]).getDisplayName());
+//        }
+//        if(this.host.getTimezone().equals(TimeZone.getDefault())) {
+//            this.timezonePopup.setTitle(DEFAULT);
+//        }
+//        else {
+//            this.timezonePopup.setTitle(this.host.getTimezone().getDisplayName());
+//        }
+//    }
+//
+//    public void timezonePopupClicked(NSPopUpButton sender) {
+//        String selected = sender.selectedItem().title();
+//        if(selected.equals(DEFAULT)) {
+//            this.host.setTimezone(null);
+//        }
+//        else {
+//            String[] ids = TimeZone.getAvailableIDs();
+//            TimeZone tz;
+//            for(int i = 0; i < ids.length; i++) {
+//                if((tz = TimeZone.getTimeZone(ids[i])).getDisplayName().equals(selected)) {
+//                    this.host.setTimezone(tz);
+//                    break;
+//                }
+//            }
+//        }
+//        this.itemChanged();
+//    }
 
     private NSPopUpButton connectmodePopup; //IBOutlet
 
@@ -380,6 +380,12 @@ public class CDBookmarkController extends CDWindowController {
         this.itemChanged();
     }
 
+    private NSButton toggleOptionsButton;
+
+    public void setToggleOptionsButton(NSButton toggleOptionsButton) {
+        this.toggleOptionsButton = toggleOptionsButton;
+    }
+
     /**
      *
      */
@@ -427,6 +433,11 @@ public class CDBookmarkController extends CDWindowController {
         this.loadBundle();
     }
 
+    public void windowWillClose(NSNotification notification) {
+        Preferences.instance().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
+        super.windowWillClose(notification);
+    }
+
     protected String getBundleName() {
         return "Bookmark";
     }
@@ -434,6 +445,7 @@ public class CDBookmarkController extends CDWindowController {
     public void awakeFromNib() {
         this.cascade();
         this.init();
+        this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("bookmark.toggle.options"));
     }
 
     private NSTextField pkLabel;

@@ -211,6 +211,18 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     /**
+     *
+     * @param toggle
+     * @param open
+     */
+    protected void setState(NSButton toggle, boolean open) {
+        if(open) {
+            toggle.performClick(null);
+        }
+        toggle.setState(open ? NSCell.OnState : NSCell.OffState);
+    }
+
+    /**
      * @return True if this window has a sheet attached
      */
     public boolean hasSheet() {

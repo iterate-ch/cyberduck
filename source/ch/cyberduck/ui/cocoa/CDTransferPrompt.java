@@ -26,8 +26,6 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
-import java.util.Iterator;
-
 /**
  * @version $Id$
  */
@@ -56,12 +54,24 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         return "Prompt";
     }
 
+    private NSButton toggleDetailsButton;
+
+    public void setToggleDetailsButton(NSButton toggleDetailsButton) {
+        this.toggleDetailsButton = toggleDetailsButton;
+    }
+
     public void awakeFromNib() {
         this.transfer.getSession().addProgressListener(l);
         this.reloadData();
         if(browserView.numberOfRows() > 0) {
             browserView.selectRow(0, false);
         }
+        this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
+    }
+
+    public void windowWillClose(NSNotification notification) {
+        Preferences.instance().setProperty("transfer.toggle.details", this.toggleDetailsButton.state());
+        super.windowWillClose(notification);
     }
 
     public void invalidate() {

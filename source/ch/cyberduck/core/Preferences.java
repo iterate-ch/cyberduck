@@ -244,6 +244,16 @@ public abstract class Preferences {
         defaults.put("browser.logDrawer.isOpen", String.valueOf(false));
         defaults.put("browser.logDrawer.size.height", String.valueOf(200));
 
+        defaults.put("info.toggle.permission", String.valueOf(1));
+        defaults.put("info.toggle.distribution", String.valueOf(0));
+
+        defaults.put("connection.toggle.options", String.valueOf(0));
+        defaults.put("bookmark.toggle.options", String.valueOf(0));
+
+        defaults.put("alert.toggle.transcript", String.valueOf(0));
+
+        defaults.put("transfer.toggle.details", String.valueOf(1));
+        
         /**
          * Default editor
          */
@@ -503,8 +513,14 @@ public abstract class Preferences {
         if(value.equalsIgnoreCase(String.valueOf(false))) {
             return false;
         }
+        if(value.equalsIgnoreCase(String.valueOf(1))) {
+            return true;
+        }
+        if(value.equalsIgnoreCase(String.valueOf(0))) {
+            return false;
+        }
         try {
-            return value.equalsIgnoreCase("yes") || Integer.parseInt(value) == 1;
+            return value.equalsIgnoreCase("yes");
         }
         catch(NumberFormatException e) {
             return false;
