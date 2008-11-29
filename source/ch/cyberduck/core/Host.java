@@ -650,6 +650,10 @@ public class Host extends NSObject implements Serializable {
         return this.comment;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getWebURL() {
         if(null == webURL) {
             return this.getDefaultWebURL();
@@ -663,23 +667,8 @@ public class Host extends NSObject implements Serializable {
 
     /**
      *
-     * @param path
      * @return
      */
-    public String getWebURL(Path path) {
-        String absolute = path.getAbsolute();
-        if(StringUtils.hasText(this.getDefaultPath())) {
-            if(absolute.startsWith(this.getDefaultPath())) {
-                absolute = absolute.substring(this.getDefaultPath().length());
-            }
-        }
-        if(!absolute.startsWith(Path.DELIMITER)) {
-            absolute = Path.DELIMITER + absolute;
-        }
-        return this.getWebURL() + absolute;
-
-    }
-
     public String getDefaultWebURL() {
         return "http://" + this.getHostname();
     }
@@ -701,6 +690,10 @@ public class Host extends NSObject implements Serializable {
         }
     }
 
+    /**
+     * @see #toURL() 
+     * @return
+     */
     public String toString() {
         return this.toURL();
     }

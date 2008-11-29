@@ -40,10 +40,15 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.multithread.*;
 import org.jets3t.service.utils.ObjectUtils;
 
-import java.io.*;
-import java.net.URLEncoder;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @version $Id:$
@@ -761,7 +766,7 @@ public class S3Path extends CloudPath {
         }
     }
 
-    public String getWebURL() {
+    public String toHttpURL() {
         return this.toURL();
     }
 
@@ -793,22 +798,13 @@ public class S3Path extends CloudPath {
                 log.error(e.getMessage());
             }
         }
-        try {
-            StringBuffer b = new StringBuffer();
-            StringTokenizer t = new StringTokenizer(this.getKey(), "/");
-            while(t.hasMoreTokens()) {
-                b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
-            }
-            if(RestS3Service.isBucketNameValidDNSName(this.getContainerName())) {
-                return Protocol.S3.getScheme() + "://" + RestS3Service.generateS3HostnameForBucket(this.getContainerName()) + b.toString();
-            }
-            else {
-                return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + b.toString();
-            }
+        if(RestS3Service.isBucketNameValidDNSName(this.getContainerName())) {
+            return Protocol.S3.getScheme() + "://"
+                    + RestS3Service.generateS3HostnameForBucket(this.getContainerName()) + this.encode(this.getKey());
         }
-        catch(UnsupportedEncodingException e) {
-            log.error(e.getMessage());
-            return null;
+        else {
+            return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName()
+                    + this.encode(this.getKey());
         }
     }
 
