@@ -161,7 +161,7 @@ public class DAVPath extends Path {
             WebdavResource[] resources = session.DAV.listWebdavResources();
 
             for(int i = 0; i < resources.length; i++) {
-                Path p = new DAVPath(session, resources[i].getPath(),
+                Path p = PathFactory.createPath(session, resources[i].getPath(),
                         resources[i].getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 p.setParent(this);
 

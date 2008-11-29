@@ -175,7 +175,7 @@ public class FTPPath extends Path {
                 continue;
             }
             // The filename should never contain a delimiter
-            final Path parsed = new FTPPath(session, this.getAbsolute(),
+            final Path parsed = PathFactory.createPath(session, this.getAbsolute(),
                     name.substring(name.lastIndexOf(DELIMITER) + 1), Path.FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
