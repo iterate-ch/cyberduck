@@ -21,11 +21,14 @@ package ch.cyberduck.core.cf;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.httpclient.HostConfiguration;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
@@ -36,7 +39,7 @@ import com.mosso.client.cloudfiles.FilesClient;
 /**
  * Mosso Cloud Files Implementation
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class CFSession extends Session implements SSLSession {
     private static Logger log = Logger.getLogger(CFSession.class);
@@ -104,6 +107,12 @@ public class CFSession extends Session implements SSLSession {
     protected void login(Credentials credentials) throws IOException {
         this.CF = new FilesClient(credentials.getUsername(), credentials.getPassword(),
                 null, this.timeout());
+        final HostConfiguration hostConfiguration = new StickyHostConfiguration();
+        hostConfiguration.setHost(host.getHostname(), host.getPort(),
+                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+        );
+        this.CF.setHostConfiguration(hostConfiguration);
         this.CF.setUserAgent(this.getUserAgent());
 //        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 

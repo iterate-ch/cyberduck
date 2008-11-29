@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public class DAVSession extends HTTPSession {
     private static Logger log = Logger.getLogger(DAVSession.class);
