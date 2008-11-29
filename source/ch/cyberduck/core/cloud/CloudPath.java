@@ -26,10 +26,6 @@ import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
-import java.net.URLEncoder;
-import java.util.StringTokenizer;
-import java.io.UnsupportedEncodingException;
-
 /**
  * @version $Id:$
  */
@@ -73,32 +69,12 @@ public abstract class CloudPath extends Path {
     public abstract String getKey();
 
     /**
-     * @return
-     */
-    public String getURLEncodedKey() {
-        try {
-            StringBuffer b = new StringBuffer();
-            StringTokenizer t = new StringTokenizer(this.getKey(), "/");
-            while(t.hasMoreTokens()) {
-                b.append(Path.DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
-            }
-            return b.toString();
-        }
-        catch(UnsupportedEncodingException e) {
-            log.error(e);
-        }
-        return null;
-    }
-
-    /**
-     * 
      * @param enabled
      * @param cnames
      */
     public abstract void writeDistribution(final boolean enabled, final String[] cnames);
 
     /**
-     *
      * @return
      */
     public abstract Distribution readDistribution();

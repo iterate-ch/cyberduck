@@ -261,7 +261,7 @@ public abstract class Protocol {
         }
 
         public String getIdentifier() {
-            return "idisk";
+            return "me";
         }
 
         public int getDefaultPort() {
@@ -285,7 +285,7 @@ public abstract class Protocol {
         }
 
         public String getDefaultHostname() {
-            return "idisk.mac.com";
+            return "idisk.me.com";
         }
     };
 

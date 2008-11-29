@@ -1,4 +1,4 @@
-package ch.cyberduck.core.idisk;
+package ch.cyberduck.core.me;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -27,7 +27,7 @@ import ch.cyberduck.core.davs.DAVSSession;
 /**
  * @version $Id:$
  */
-public class IDISKSession extends DAVSSession {
+public class MESession extends DAVSSession {
 
     static {
         SessionFactory.addFactory(Protocol.IDISK, new Factory());
@@ -35,11 +35,11 @@ public class IDISKSession extends DAVSSession {
 
     private static class Factory extends SessionFactory {
         protected Session create(Host h) {
-            return new IDISKSession(h);
+            return new MESession(h);
         }
     }
 
-    protected IDISKSession(Host h) {
+    protected MESession(Host h) {
         super(h);
     }
 }

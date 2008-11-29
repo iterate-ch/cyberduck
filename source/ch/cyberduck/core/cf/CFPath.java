@@ -425,7 +425,7 @@ public class CFPath extends CloudPath {
     }
 
 
-    public String getWebURL() {
+    public String toHttpURL() {
         return this.toURL();
     }
 

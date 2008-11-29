@@ -323,14 +323,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * 
-     * @return
-     */
-    public String getWebURL() {
-        return this.getSession().getHost().getWebURL(this);
-    }
-
-    /**
      * Set the local equivalent of this path
      *
      * @param file Send <code>null</code> to reset the local path to the default value
@@ -640,22 +632,58 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return Null if there is a encoding failure
+     * URL encode a path
+     * @see URLEncoder#encode(String, String) 
+     * @param p
+     * @return
      */
-    public String toURL() {
+    public String encode(final String p) {
         try {
             StringBuffer b = new StringBuffer();
-            StringTokenizer t = new StringTokenizer(this.getAbsolute(), "/");
+            StringTokenizer t = new StringTokenizer(p, "/");
             while(t.hasMoreTokens()) {
                 b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
-            // Do not use java.net.URL because it doesn't know about SFTP!
-            return this.getSession().getHost().toURL() + b.toString();
+            return b.toString();
         }
         catch(UnsupportedEncodingException e) {
             log.error(e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * @return Null if there is a encoding failure
+     */
+    public String toURL() {
+        // Do not use java.net.URL because it doesn't know about custom protocols!
+        return this.getHost().toURL() + this.encode(this.getAbsolute());
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String toHttpURL() {
+        return this.toHttpURL(this.getHost().getWebURL());
+    }
+
+    /**
+     *
+     * @param host
+     * @return
+     */
+    protected String toHttpURL(String host) {
+        String absolute = this.encode(this.getAbsolute());
+        if(StringUtils.hasText(this.getHost().getDefaultPath())) {
+            if(absolute.startsWith(this.getHost().getDefaultPath())) {
+                absolute = absolute.substring(this.getHost().getDefaultPath().length());
+            }
+        }
+        if(!absolute.startsWith(Path.DELIMITER)) {
+            absolute = Path.DELIMITER + absolute;
+        }
+        return host + absolute;
     }
 
     protected void finalize() throws java.lang.Throwable {
