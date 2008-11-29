@@ -166,7 +166,7 @@ public class S3Session extends HTTPSession implements SSLSession {
             final HostConfiguration hostConfiguration = new StickyHostConfiguration();
             hostConfiguration.setHost(host.getHostname(), host.getPort(),
                     new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            new CustomTrustSSLProtocolSocketFactory(S3Session.this.getTrustManager()), host.getPort())
+                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
             );
 
             this.S3 = new RestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
