@@ -22,6 +22,7 @@ import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.StickyHostConfiguration;
+import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -41,7 +42,7 @@ import com.mosso.client.cloudfiles.FilesClient;
  *
  * @version $Id$
  */
-public class CFSession extends Session implements SSLSession {
+public class CFSession extends HTTPSession implements SSLSession {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     static {
@@ -114,7 +115,6 @@ public class CFSession extends Session implements SSLSession {
         );
         this.CF.setHostConfiguration(hostConfiguration);
         this.CF.setUserAgent(this.getUserAgent());
-//        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager());
 
         if(!this.CF.login()) {
             this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
