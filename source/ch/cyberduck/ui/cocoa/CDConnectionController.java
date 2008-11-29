@@ -454,11 +454,6 @@ public class CDConnectionController extends CDSheetController {
         super.awakeFromNib();
     }
 
-    public void windowWillClose(NSNotification notification) {
-        Preferences.instance().setProperty("connection.toggle.options", this.toggleOptionsButton.state());
-        super.windowWillClose(notification);
-    }
-
     /**
      * Updating the password field with the actual password if any
      * is avaialble for this hostname
@@ -521,5 +516,6 @@ public class CDConnectionController extends CDSheetController {
             }
             ((CDBrowserController) parent).mount(host);
         }
+        Preferences.instance().setProperty("connection.toggle.options", this.toggleOptionsButton.state());
     }
 }

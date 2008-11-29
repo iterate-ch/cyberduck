@@ -223,11 +223,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 super.awakeFromNib();
             }
 
-            public void invalidate() {
-                Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
-                super.invalidate();
-            }
-
             private NSButton diagnosticsButton;
 
             public void setDiagnosticsButton(NSButton diagnosticsButton) {
@@ -299,6 +294,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     // Re-run the action with the previous lock used
                     controller.background(RepeatableBackgroundAction.this);
                 }
+                Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
             }
 
             /**

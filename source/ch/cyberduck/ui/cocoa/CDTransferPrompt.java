@@ -69,11 +69,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
     }
 
-    public void windowWillClose(NSNotification notification) {
-        Preferences.instance().setProperty("transfer.toggle.details", this.toggleDetailsButton.state());
-        super.windowWillClose(notification);
-    }
-
     public void invalidate() {
         this.transfer.getSession().removeProgressListener(l);
         super.invalidate();
@@ -117,6 +112,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
         }
+        Preferences.instance().setProperty("transfer.toggle.details", this.toggleDetailsButton.state());
     }
 
     /**
