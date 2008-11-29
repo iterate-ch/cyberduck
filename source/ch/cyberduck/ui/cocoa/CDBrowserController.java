@@ -2926,7 +2926,7 @@ public class CDBrowserController extends CDWindowController
         else {
             selected = this.workdir();
         }
-        return this.session.getHost().getWebURL(selected);
+        return selected.toHttpURL();
     }
 
     private CDInfoController inspector = null;
