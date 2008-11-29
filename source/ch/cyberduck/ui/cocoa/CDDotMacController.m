@@ -40,6 +40,11 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_getAccountName(JNIEnv *env, jobject this) {
+	CDDotMacController *c = [[CDDotMacController alloc] init];
+    return (*env)->NewStringUTF(env, [[[c account] name] UTF8String]);
+}
+
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBookmarks(JNIEnv *env, jobject this, jstring file)
 {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
@@ -59,7 +64,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 	[super dealloc];
 }
 
-- (DMMemberAccount*)getUserAccount
+- (DMMemberAccount*)account
 {
 	DMMemberAccount* account = [DMMemberAccount accountFromPreferencesWithApplicationID:@"CYCK"];
 	[account setApplicationName:@"Cyberduck"];
@@ -80,7 +85,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 	tmpBookmarkFile = sender;
 	
 	NS_DURING
-		NSData *data = [self downloadFromDotMac:@"/Documents/Cyberduck/Favorites.plist" usingAccount:[self getUserAccount]];
+		NSData *data = [self downloadFromDotMac:@"/Documents/Cyberduck/Favorites.plist" usingAccount:[self account]];
 		if(data) {
 			//		NSString *localPath = [[[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"] stringByAppendingPathComponent:@"Application Support"] stringByAppendingPathComponent:@"Cyberduck"] stringByAppendingPathComponent:@"Favorites.plist"];
 			NSString *localPath = tmpBookmarkFile;
@@ -159,7 +164,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 	if (returncode == NSAlertDefaultReturn) {
 		NS_DURING
 			[self uploadToDotMac:[[[[NSHomeDirectory() stringByAppendingPathComponent:@"Library"]
-        stringByAppendingPathComponent:@"Application Support"] stringByAppendingPathComponent:@"Cyberduck"] stringByAppendingPathComponent:@"Favorites.plist"] usingAccount:[self getUserAccount]];
+        stringByAppendingPathComponent:@"Application Support"] stringByAppendingPathComponent:@"Cyberduck"] stringByAppendingPathComponent:@"Favorites.plist"] usingAccount:[self account]];
 			NSRunInformationalAlertPanel(NSLocalizedStringFromTable(@"Upload successful", @"IDisk", @""), 
 										 NSLocalizedStringFromTable(@"Successfully uploaded bookmarks to the iDisk", @"IDisk", @""), 
 										 NSLocalizedString(@"OK", @""),

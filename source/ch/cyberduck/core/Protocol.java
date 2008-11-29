@@ -253,7 +253,7 @@ public abstract class Protocol {
 
     public static final Protocol IDISK = new Protocol() {
         public String getName() {
-            return "MobileMe iDisk";
+            return "MobileMe";
         }
 
         public String getDescription() {

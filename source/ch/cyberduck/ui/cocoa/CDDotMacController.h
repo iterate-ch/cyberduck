@@ -55,7 +55,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookm
 	NSException *e;
 }
 
-- (DMMemberAccount*)getUserAccount;
+- (DMMemberAccount*)account;
 
 - (IBAction)downloadBookmarksFromDotMacAction:(id)sender;
 - (IBAction)uploadBookmarksToDotMacAction:(id)sender;

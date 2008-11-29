@@ -25,7 +25,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,14 +79,35 @@ public class CDConnectionController extends CDSheetController {
                         NSBundle.localizedString("API Access Key", "Mosso", "")
                 );
             }
+            if(protocol.equals(Protocol.IDISK)) {
+                CDDotMacController controller = new CDDotMacController();
+                final String member = controller.getAccountName();
+                controller.invalidate();
+                ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
+                        NSBundle.localizedString("MobileMe Member Name", "IDisk", "")
+                );
+                if(null != member) {
+                    // Account name configured in System Preferences
+                    this.usernameField.setStringValue(member);
+                    this.usernameField.setEnabled(false);
+                    this.pathField.setStringValue(Path.DELIMITER + member);
+                    this.pathField.setEnabled(false);
+                }
+            }
         }
         else {
             if(!this.hostField.isEnabled()) {
-                // Was previously configured with a static hostname
+                // Was previously configured with a static configuration
                 this.hostField.setStringValue("");
             }
+            if(!this.pathField.isEnabled()) {
+                // Was previously configured with a static configuration
+                this.pathField.setStringValue("");
+            }
+            this.usernameField.setEnabled(true);
             this.hostField.setEnabled(true);
             this.portField.setEnabled(true);
+            this.pathField.setEnabled(true);
             ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
             ((NSTextFieldCell) this.passField.cell()).setPlaceholderString("");
         }
@@ -369,6 +389,12 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
     }
 
+    private NSButton toggleOptionsButton;
+
+    public void setToggleOptionsButton(NSButton b) {
+        this.toggleOptionsButton = b;
+    }
+
     private static final Map<CDWindowController, CDConnectionController> controllers
             = new HashMap<CDWindowController, CDConnectionController>();
 
@@ -422,6 +448,10 @@ public class CDConnectionController extends CDSheetController {
                 this.usernameField);
 
         this.protocolSelectionDidChange(null);
+
+        if(Preferences.instance().getBoolean("connection.toggle.options")) {
+            this.toggleOptionsButton.performClick(this.toggleOptionsButton);
+        }
 
         super.awakeFromNib();
     }

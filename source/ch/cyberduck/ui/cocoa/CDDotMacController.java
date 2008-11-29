@@ -50,10 +50,21 @@ public class CDDotMacController extends CDController {
         }
     }
 
+    /**
+     *
+     * @return Member name of the MobileMe account configured in System Preferences
+     */
+    public native String getAccountName();
+
+    /**
+     *
+     * @param path
+     */
     private native void downloadBookmarks(String path);
 
-    public native void uploadBookmarks();
-
+    /**
+     *
+     */
     public void downloadBookmarks() {
         File f = new File(NSPathUtilities.temporaryDirectory(), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolutePath());
@@ -95,4 +106,9 @@ public class CDDotMacController extends CDController {
         }
         f.delete();
     }
+
+    /**
+     *
+     */
+    public native void uploadBookmarks();
 }

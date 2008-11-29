@@ -57,13 +57,19 @@ public class CDBookmarkController extends CDWindowController {
         log.debug("protocolSelectionChanged:" + sender);
         final Protocol selected = (Protocol) protocolPopup.selectedItem().representedObject();
         this.host.setPort(selected.getDefaultPort());
-        if(selected.isConfigurable()) {
-            if(host.getProtocol().getDefaultHostname().equals(this.host.getHostname())) {
-                this.host.setHostname(selected.getDefaultHostname());
+        this.host.setHostname(selected.getDefaultHostname());
+        if(!selected.isConfigurable()) {
+            this.host.setWebURL(null);
+            if(selected == Protocol.IDISK) {
+                CDDotMacController controller = new CDDotMacController();
+                final String member = controller.getAccountName();
+                controller.invalidate();
+                if(null != member) {
+                    // Account name configured in System Preferences
+                    this.host.getCredentials().setUsername(member);
+                    this.host.setDefaultPath(Path.DELIMITER + member);
+                }
             }
-        }
-        else {
-            this.host.setHostname(selected.getDefaultHostname());
         }
         this.host.setProtocol(selected);
         this.itemChanged();
@@ -178,7 +184,6 @@ public class CDBookmarkController extends CDWindowController {
         ((NSTextFieldCell) this.webURLField.cell()).setPlaceholderString(
                 host.getDefaultWebURL()
         );
-        this.webURLField.setEnabled(host.getProtocol().isConfigurable());
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("webURLInputDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
@@ -606,6 +611,7 @@ public class CDBookmarkController extends CDWindowController {
             this.pkCheckbox.setState(NSCell.OffState);
             this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
+        this.webURLField.setEnabled(this.host.getProtocol().isConfigurable());
         if(!this.host.getWebURL().equals(this.host.getDefaultWebURL())) {
             this.updateField(this.webURLField, this.host.getWebURL());
         }
