@@ -16,6 +16,7 @@
                 distributionProgress = id;
                 distributionStatusButton = id;
                 distributionStatusField = id;
+                distributionToggle = id;
                 distributionUrlField = id;
                 filenameField = id;
                 groupField = id;
@@ -35,6 +36,7 @@
                 pathField = id;
                 permissionApplyButton = id;
                 permissionProgress = id;
+                permissionToggle = id;
                 permissionsBox = id;
                 recursiveCheckbox = id;
                 sizeButton = id;
