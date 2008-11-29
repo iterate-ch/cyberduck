@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -351,7 +350,7 @@ public class CDInfoController extends CDWindowController {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            this.webUrlField.setAttributedStringValue(new NSAttributedString(file.getWebURL(),
+            this.webUrlField.setAttributedStringValue(new NSAttributedString(file.toHttpURL(),
                     TRUNCATE_MIDDLE_ATTRIBUTES));
             this.groupField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
@@ -753,7 +752,7 @@ public class CDInfoController extends CDWindowController {
 
                 final CloudPath file = ((CloudPath) files.get(0));
                 // Concatenate URLs
-                final String key = file.getURLEncodedKey();
+                final String key = file.encode(file.getKey());
                 if(numberOfFiles() > 1) {
                     distributionUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
                     distributionCnameUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
