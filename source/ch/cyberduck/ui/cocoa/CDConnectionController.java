@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
+import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
 
@@ -366,6 +367,8 @@ public class CDConnectionController extends CDSheetController {
 
     public void setUrlLabel(NSTextField urlLabel) {
         this.urlLabel = urlLabel;
+        this.urlLabel.setAllowsEditingTextAttributes(true);
+        this.urlLabel.setSelectable(true);
     }
 
     private NSPopUpButton encodingPopup; // IBOutlet
@@ -474,12 +477,20 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
+    /**
+     *
+     * @param sender
+     */
     private void updateURLLabel(final NSNotification sender) {
         if(StringUtils.hasText(hostField.stringValue())) {
             final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
-            urlLabel.setStringValue(protocol.getScheme() + "://" + usernameField.stringValue()
+            final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
-                    + Path.normalize(pathField.stringValue()));
+                    + Path.normalize(pathField.stringValue());
+            urlLabel.setAttributedStringValue(
+                    HyperlinkAttributedStringFactory.create(
+                            new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+            );
         }
         else {
             urlLabel.setStringValue(hostField.stringValue());

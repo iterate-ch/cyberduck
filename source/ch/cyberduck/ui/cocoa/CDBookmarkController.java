@@ -23,12 +23,12 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
+import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
@@ -165,6 +165,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
+        this.urlField.setAllowsEditingTextAttributes(true);
+        this.urlField.setSelectable(true);
     }
 
     private NSTextField usernameField; // IBOutlet
@@ -578,12 +580,17 @@ public class CDBookmarkController extends CDWindowController {
         this.updateField(this.hostField, this.host.getHostname());
         this.hostField.setEnabled(this.host.getProtocol().isConfigurable());
         this.updateField(this.nicknameField, this.host.getNickname());
+        final String url;
         if(StringUtils.hasText(this.host.getDefaultPath())) {
-            this.updateField(this.urlField, this.host.toURL() + Path.normalize(this.host.getDefaultPath()));
+            url = this.host.toURL() + Path.normalize(this.host.getDefaultPath());
         }
         else {
-            this.updateField(this.urlField, this.host.toURL());
+            url = this.host.toURL();
         }
+        this.urlField.setAttributedStringValue(
+                HyperlinkAttributedStringFactory.create(
+                        new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+        );
         this.updateField(this.portField, String.valueOf(this.host.getPort()));
         this.portField.setEnabled(this.host.getProtocol().isConfigurable());
         this.updateField(this.pathField, this.host.getDefaultPath());
