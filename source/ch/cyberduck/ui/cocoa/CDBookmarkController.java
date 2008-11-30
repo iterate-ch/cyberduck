@@ -511,17 +511,22 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     private void reachable() {
-        this.background(new AbstractBackgroundAction() {
-            boolean reachable = false;
+        if(StringUtils.hasText(host.getHostname())) {
+            this.background(new AbstractBackgroundAction() {
+                boolean reachable = false;
 
-            public void run() {
-                reachable = host.isReachable();
-            }
+                public void run() {
+                    reachable = host.isReachable();
+                }
 
-            public void cleanup() {
-                alertIcon.setHidden(reachable);
-            }
-        });
+                public void cleanup() {
+                    alertIcon.setHidden(reachable);
+                }
+            });
+        }
+        else {
+            alertIcon.setHidden(true);
+        }
     }
 
     public void portInputDidEndEditing(final NSNotification sender) {

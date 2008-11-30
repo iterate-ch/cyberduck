@@ -187,17 +187,22 @@ public class CDConnectionController extends CDSheetController {
      */
     private void reachable() {
         final String hostname = hostField.stringValue();
-        this.background(new AbstractBackgroundAction() {
-            boolean reachable = false;
+        if(StringUtils.hasText(hostname)) {
+            this.background(new AbstractBackgroundAction() {
+                boolean reachable = false;
 
-            public void run() {
-                reachable = new Host(hostname).isReachable();
-            }
+                public void run() {
+                    reachable = new Host(hostname).isReachable();
+                }
 
-            public void cleanup() {
-                alertIcon.setHidden(reachable);
-            }
-        });
+                public void cleanup() {
+                    alertIcon.setHidden(reachable);
+                }
+            });
+        }
+        else {
+            alertIcon.setHidden(true);
+        }
     }
 
     private NSButton alertIcon; // IBOutlet
