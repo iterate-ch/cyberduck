@@ -27,10 +27,9 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * @version $Id$
@@ -56,30 +55,20 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     protected static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = new NSDictionary(
-            new Object[]{lineBreakByTruncatingMiddleParagraph},
-            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-
-    protected static final NSDictionary TRUNCATE_MIDDLE_BOLD_RED_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{lineBreakByTruncatingMiddleParagraph, NSFont.boldSystemFontOfSize(10.0f), NSColor.redColor()},
-            new Object[]{NSAttributedString.ParagraphStyleAttributeName, NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName}
-    );
+            new Object[]{NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), lineBreakByTruncatingMiddleParagraph},
+            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
 
     protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{NSFont.userFixedPitchFontOfSize(9.0f)},
+            new Object[]{NSFont.userFixedPitchFontOfSize(NSFont.smallSystemFontSize())},
             new Object[]{NSAttributedString.FontAttributeName}
-    );
-
-    protected static final NSDictionary BOLD_RED_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{NSFont.boldSystemFontOfSize(10.0f), NSColor.redColor()},
-            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName}
     );
 
     /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.
      *
-     * @return Will return immediatly but not run the runnable before the lock of the runnable is acquired.
      * @param runnable The runnable to execute in a secondary Thread
+     * @return Will return immediatly but not run the runnable before the lock of the runnable is acquired.
      * @see java.lang.Thread
      * @see ch.cyberduck.ui.cocoa.threading.BackgroundAction#lock()
      */
@@ -177,7 +166,7 @@ public abstract class CDWindowController extends CDBundleController {
      */
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
-        for(CDWindowListener listener: listeners) {
+        for(CDWindowListener listener : listeners) {
             listener.windowWillClose();
         }
         //If the window is closed it is assumed the controller object is no longer used
@@ -211,7 +200,6 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     /**
-     *
      * @param toggle
      * @param open
      */

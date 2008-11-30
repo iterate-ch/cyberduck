@@ -201,12 +201,16 @@ public class CDInfoController extends CDWindowController {
         this.distributionUrlField.setStringValue(
                 NSBundle.localizedString("Unknown", "")
         );
+        this.distributionUrlField.setAllowsEditingTextAttributes(true);
+        this.distributionUrlField.setSelectable(true);
     }
 
     private NSTextField distributionCnameUrlField;
 
     public void setDistributionCnameUrlField(NSTextField t) {
         this.distributionCnameUrlField = t;
+        this.distributionCnameUrlField.setAllowsEditingTextAttributes(true);
+        this.distributionCnameUrlField.setSelectable(true);
     }
 
     public NSButton ownerr; //IBOutlet
@@ -364,11 +368,9 @@ public class CDInfoController extends CDWindowController {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            this.webUrlField.setStringValue(file.toHttpURL());
             this.webUrlField.setAttributedStringValue(
                     HyperlinkAttributedStringFactory.create(
-                            new NSMutableAttributedString(this.webUrlField.attributedStringValue()), file.toHttpURL()
-                    )
+                            new NSMutableAttributedString(new NSAttributedString(file.toHttpURL(), TRUNCATE_MIDDLE_ATTRIBUTES)), file.toHttpURL())
             );
             this.groupField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
@@ -776,12 +778,20 @@ public class CDInfoController extends CDWindowController {
                     distributionCnameUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
                 }
                 else {
-                    distributionUrlField.setStringValue(distribution.getUrl() + key);
+                    final String url = distribution.getUrl() + key;
+                    distributionUrlField.setAttributedStringValue(
+                            HyperlinkAttributedStringFactory.create(
+                                    new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+                    );
                 }
                 final String[] cnames = distribution.getCNAMEs();
                 for(String cname : cnames) {
                     distributionCnameField.setStringValue(cname);
-                    distributionCnameUrlField.setStringValue("http://" + cname + key);
+                    final String url = "http://" + cname + key;
+                    distributionCnameUrlField.setAttributedStringValue(
+                            HyperlinkAttributedStringFactory.create(
+                                    new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+                    );
                     // We only support one CNAME for now
                     break;
                 }

@@ -51,7 +51,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3Path extends CloudPath {
     private static Logger log = Logger.getLogger(S3Path.class);
@@ -822,7 +822,7 @@ public class S3Path extends CloudPath {
                 // We currently only support one distribution per bucket
                 return new Distribution(d.isEnabled(),
                         "http://" + RestS3Service.generateS3HostnameForBucket(this.getContainerName()),
-                        d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs());
+                        "http://" + d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs());
             }
         }
         catch(S3Exception e) {
