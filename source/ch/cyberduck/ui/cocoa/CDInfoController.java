@@ -26,6 +26,7 @@ import ch.cyberduck.core.cf.CFPath;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Path;
+import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
 
@@ -96,6 +97,8 @@ public class CDInfoController extends CDWindowController {
 
     public void setWebUrlField(NSTextField webUrlField) {
         this.webUrlField = webUrlField;
+        this.webUrlField.setAllowsEditingTextAttributes(true);
+        this.webUrlField.setSelectable(true);
     }
 
     private NSTextField permissionsBox; //IBOutlet
@@ -361,8 +364,12 @@ public class CDInfoController extends CDWindowController {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            this.webUrlField.setAttributedStringValue(new NSAttributedString(file.toHttpURL(),
-                    TRUNCATE_MIDDLE_ATTRIBUTES));
+            this.webUrlField.setStringValue(file.toHttpURL());
+            this.webUrlField.setAttributedStringValue(
+                    HyperlinkAttributedStringFactory.create(
+                            new NSMutableAttributedString(this.webUrlField.attributedStringValue()), file.toHttpURL()
+                    )
+            );
             this.groupField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
             if(count > 1) {
