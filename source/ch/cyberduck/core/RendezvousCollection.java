@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSImage;
+
 /**
  * @version $Id$
  */
@@ -56,5 +58,9 @@ public class RendezvousCollection extends BookmarkCollection {
 
     public boolean allowsEdit() {
         return false;
+    }
+
+    public NSImage getIcon() {
+        return NSImage.imageNamed("rendezvous.icns");
     }
 }

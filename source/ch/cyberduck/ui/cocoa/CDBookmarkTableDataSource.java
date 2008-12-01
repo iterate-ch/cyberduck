@@ -35,16 +35,6 @@ import java.util.List;
 public class CDBookmarkTableDataSource extends CDController {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
-    private static final NSImage DOCUMENT_ICON;
-    private static final NSImage DOCUMENT_ICON_SMALL;
-
-    static {
-        DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
-        DOCUMENT_ICON.setSize(new NSSize(40, 40));
-        DOCUMENT_ICON_SMALL = NSImage.imageNamed("bookmark16.tiff");
-        DOCUMENT_ICON_SMALL.setSize(new NSSize(16, 16));
-    }
-
     private static final NSImage GREEN_ICON
             = NSImage.imageNamed("statusGreen.tiff");
 
@@ -98,7 +88,24 @@ public class CDBookmarkTableDataSource extends CDController {
             return source;
         }
         if(null == filtered) {
-            filtered = new BookmarkCollection(source);
+            filtered = new BookmarkCollection(source) {
+                public boolean allowsAdd() {
+                    return source.allowsAdd();
+                }
+
+                public boolean allowsDelete() {
+                    return source.allowsDelete();
+                }
+
+                public boolean allowsEdit() {
+                    return source.allowsEdit();
+                }
+
+                public NSImage getIcon() {
+                    return source.getIcon();
+                }
+
+            };
             for(Iterator<Host> i = filtered.iterator(); i.hasNext();) {
                 if(!filter.accept(i.next())) {
                     //temporarly remove the bookmark from the collection
@@ -132,18 +139,7 @@ public class CDBookmarkTableDataSource extends CDController {
         if(row < this.numberOfRowsInTableView(view)) {
             String identifier = (String) tableColumn.identifier();
             if(identifier.equals(ICON_COLUMN)) {
-                if(source == HostCollection.defaultCollection()) {
-                    if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
-                        return DOCUMENT_ICON_SMALL;
-                    }
-                    return DOCUMENT_ICON;
-                }
-                if(source == HistoryCollection.defaultCollection()) {
-                    return NSImage.imageNamed("history.tiff");
-                }
-                if(source == RendezvousCollection.defaultCollection()) {
-                    return NSImage.imageNamed("rendezvous.icns");
-                }
+                return source.getIcon();
             }
             final Host host = this.getSource().get(row);
             if(identifier.equals(BOOKMARK_COLUMN)) {

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.application.NSImage;
 
 import org.apache.log4j.Logger;
 
@@ -201,5 +202,22 @@ public class HostCollection extends BookmarkCollection {
     public void collectionItemChanged(Host item) {
         this.save();
         super.collectionItemChanged(item);
+    }
+
+    private static final NSImage DOCUMENT_ICON;
+    private static final NSImage DOCUMENT_ICON_SMALL;
+
+    static {
+        DOCUMENT_ICON = NSImage.imageNamed("bookmark40.tiff");
+        DOCUMENT_ICON.setSize(new NSSize(40, 40));
+        DOCUMENT_ICON_SMALL = NSImage.imageNamed("bookmark16.tiff");
+        DOCUMENT_ICON_SMALL.setSize(new NSSize(16, 16));
+    }
+
+    public NSImage getIcon() {
+        if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
+            return DOCUMENT_ICON_SMALL;
+        }
+        return DOCUMENT_ICON;
     }
 }

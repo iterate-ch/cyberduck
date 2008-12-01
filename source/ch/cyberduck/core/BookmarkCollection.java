@@ -18,10 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSImage;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class BookmarkCollection extends Collection<Host> {
+public abstract class BookmarkCollection extends Collection<Host> {
 
     public BookmarkCollection() {
         super();
@@ -33,6 +35,7 @@ public class BookmarkCollection extends Collection<Host> {
 
     /**
      * Add new bookmark to the collection
+     *
      * @return
      */
     public boolean allowsAdd() {
@@ -41,6 +44,7 @@ public class BookmarkCollection extends Collection<Host> {
 
     /**
      * Remove a bookmark from the collection
+     *
      * @return
      */
     public boolean allowsDelete() {
@@ -49,9 +53,12 @@ public class BookmarkCollection extends Collection<Host> {
 
     /**
      * Edit the bookmark configuration
+     *
      * @return
      */
     public boolean allowsEdit() {
         return true;
     }
+
+    public abstract NSImage getIcon();
 }

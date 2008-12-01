@@ -25,6 +25,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.io.IOException;
 
+import com.apple.cocoa.application.NSImage;
+
 /**
  * @version $Id$
  */
@@ -82,7 +84,7 @@ public class HistoryCollection extends HostCollection {
 
     protected void load() {
         log.info("Reloading " + file);
-        final AttributedList<Local> bookmarks = (AttributedList<Local>)file.childs(new NullComparator<Local>(),
+        final AttributedList<Local> bookmarks = file.childs(new NullComparator<Local>(),
                 new PathFilter<Local>() {
                     public boolean accept(Local file) {
                         return file.getName().endsWith(".duck");
@@ -137,5 +139,9 @@ public class HistoryCollection extends HostCollection {
 
     public boolean allowsEdit() {
         return false;
+    }
+
+    public NSImage getIcon() {
+        return NSImage.imageNamed("history.tiff");
     }
 }
