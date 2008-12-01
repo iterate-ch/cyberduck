@@ -46,15 +46,19 @@ public class CDBookmarkCell extends CDTableCell {
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
         if(bookmark != null) {
-            NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),
-                    boldFont),
-                    new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 1,
-                            cellFrame.size().width() - 5, cellFrame.size().height()));
-            if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
-                NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(),
-                        tinyFont),
-                        new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14,
+            if(StringUtils.hasText(bookmark.getNickname())) {
+                NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),
+                        boldFont),
+                        new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 1,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));
+            }
+            if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
+                if(StringUtils.hasText(bookmark.getCredentials().getUsername())) {
+                    NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(),
+                            tinyFont),
+                            new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14,
+                                    cellFrame.size().width() - 5, cellFrame.size().height()));
+                }
                 NSGraphics.drawAttributedString(new NSAttributedString(bookmark.toURL()
                         + (StringUtils.hasText(bookmark.getDefaultPath()) ? Path.normalize(bookmark.getDefaultPath()) : ""),
                         tinyFont),

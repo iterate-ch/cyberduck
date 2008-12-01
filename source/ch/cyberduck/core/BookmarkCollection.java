@@ -29,7 +29,7 @@ public abstract class BookmarkCollection extends Collection<Host> {
         super();
     }
 
-    public BookmarkCollection(java.util.Collection c) {
+    public BookmarkCollection(java.util.Collection<Host> c) {
         super(c);
     }
 

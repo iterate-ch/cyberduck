@@ -29,7 +29,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         super();
     }
 
-    public Collection(java.util.Collection c) {
+    public Collection(java.util.Collection<E> c) {
         super(c);
     }
 

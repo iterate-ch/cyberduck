@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.application.NSImage;
 
+import java.util.Iterator;
+
 /**
  * @version $Id$
  */
@@ -46,6 +48,15 @@ public class RendezvousCollection extends BookmarkCollection {
 
     public Host remove(int row) {
         return null;
+    }
+
+    public Object[] toArray() {
+        Host[] content = new Host[this.size()];
+        int i = 0;
+        for(Iterator<Host> iter = this.iterator(); iter.hasNext(); ) {
+            content[i] = iter.next();
+        }
+        return content;
     }
 
     public boolean allowsAdd() {

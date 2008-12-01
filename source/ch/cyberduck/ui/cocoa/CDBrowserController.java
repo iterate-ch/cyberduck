@@ -1797,7 +1797,9 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void deleteKeyPressed(final Object sender) {
-                CDBrowserController.this.deleteBookmarkButtonClicked(sender);
+                if(bookmarkModel.getSource().allowsDelete()) {
+                    CDBrowserController.this.deleteBookmarkButtonClicked(sender);
+                }
             }
 
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
@@ -1805,10 +1807,10 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void selectionDidChange(NSNotification notification) {
-                addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit());
-                editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit()
-                        && bookmarkTable.numberOfSelectedRows() == 1);
-                deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != -1);
+                addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsAdd());
+                final int selected = bookmarkTable.numberOfSelectedRows();
+                editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit() && selected == 1);
+                deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete() && selected > 0);
             }
         });
         // receive drag events from types
@@ -2117,7 +2119,6 @@ public class CDBrowserController extends CDWindowController
             });
         }
         this.bookmarkTable.reloadData();
-
     }
 
     // ----------------------------------------------------------

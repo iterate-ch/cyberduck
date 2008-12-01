@@ -88,7 +88,7 @@ public class CDBookmarkTableDataSource extends CDController {
             return source;
         }
         if(null == filtered) {
-            filtered = new BookmarkCollection(source) {
+            filtered = new BookmarkCollection() {
                 public boolean allowsAdd() {
                     return source.allowsAdd();
                 }
@@ -104,12 +104,11 @@ public class CDBookmarkTableDataSource extends CDController {
                 public NSImage getIcon() {
                     return source.getIcon();
                 }
-
             };
-            for(Iterator<Host> i = filtered.iterator(); i.hasNext();) {
-                if(!filter.accept(i.next())) {
-                    //temporarly remove the bookmark from the collection
-                    i.remove();
+            for(Iterator<Host> i = source.iterator(); i.hasNext();) {
+                final Host bookmark = i.next();
+                if(filter.accept(bookmark)) {
+                    filtered.add(bookmark);
                 }
             }
             filtered.addListener(new AbstractCollectionListener<Host>() {
