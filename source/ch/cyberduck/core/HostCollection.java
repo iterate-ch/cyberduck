@@ -29,7 +29,7 @@ import java.util.Iterator;
 /**
  * @version $Id$
  */
-public class HostCollection extends Collection<Host> {
+public class HostCollection extends BookmarkCollection {
     private static Logger log = Logger.getLogger(HostCollection.class);
 
     /**

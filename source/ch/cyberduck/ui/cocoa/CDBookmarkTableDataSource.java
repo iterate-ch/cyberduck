@@ -59,14 +59,14 @@ public class CDBookmarkTableDataSource extends CDController {
 
     protected CDBrowserController controller;
 
-    public CDBookmarkTableDataSource(CDBrowserController controller, Collection<Host> source) {
+    public CDBookmarkTableDataSource(CDBrowserController controller, BookmarkCollection source) {
         this.controller = controller;
         this.source = source;
     }
 
-    private Collection<Host> source;
+    private BookmarkCollection source;
 
-    public void setSource(final Collection<Host> source) {
+    public void setSource(final BookmarkCollection source) {
         this.source = source;
         this.setFilter(null);
     }
@@ -86,19 +86,19 @@ public class CDBookmarkTableDataSource extends CDController {
     /**
      * Subset of the original source
      */
-    private Collection<Host> filtered;
+    private BookmarkCollection filtered;
 
     /**
      * @return The filtered collection currently to be displayed within the constraints
      *         given by the comparision with the HostFilter
      * @see HostFilter
      */
-    protected Collection<Host> getSource() {
+    protected BookmarkCollection getSource() {
         if(null == filter) {
             return source;
         }
         if(null == filtered) {
-            filtered = new Collection<Host>(source);
+            filtered = new BookmarkCollection(source);
             for(Iterator<Host> i = filtered.iterator(); i.hasNext();) {
                 if(!filter.accept(i.next())) {
                     //temporarly remove the bookmark from the collection
@@ -116,13 +116,6 @@ public class CDBookmarkTableDataSource extends CDController {
             });
         }
         return filtered;
-    }
-
-    /**
-     * @return
-     */
-    public boolean isEditable() {
-        return source.equals(HostCollection.defaultCollection());
     }
 
     /**
@@ -183,7 +176,7 @@ public class CDBookmarkTableDataSource extends CDController {
      * @see NSTableView.DataSource
      */
     public int tableViewValidateDrop(NSTableView view, NSDraggingInfo info, int index, int operation) {
-        if(!this.isEditable()) {
+        if(!this.getSource().allowsEdit()) {
             // Do not allow drags for non writable collections
             return NSDraggingInfo.DragOperationNone;
         }

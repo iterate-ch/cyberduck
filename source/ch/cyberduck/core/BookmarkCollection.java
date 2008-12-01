@@ -19,42 +19,39 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class RendezvousCollection extends BookmarkCollection {
+public class BookmarkCollection extends Collection<Host> {
 
-    private static RendezvousCollection RENDEZVOUS_COLLECTION
-            = new RendezvousCollection();
+    public BookmarkCollection() {
+        super();
+    }
+
+    public BookmarkCollection(java.util.Collection c) {
+        super(c);
+    }
 
     /**
-     *
+     * Add new bookmark to the collection
      * @return
      */
-    public static RendezvousCollection defaultCollection() {
-        return RENDEZVOUS_COLLECTION;
-    }
-
-    public Host get(int row) {
-        return Rendezvous.instance().getService(row);
-    }
-
-    public int size() {
-        return Rendezvous.instance().numberOfServices();
-    }
-
-    public Host remove(int row) {
-        return null;
-    }
-
     public boolean allowsAdd() {
-        return false;
+        return true;
     }
 
+    /**
+     * Remove a bookmark from the collection
+     * @return
+     */
     public boolean allowsDelete() {
-        return false;
+        return true;
     }
 
+    /**
+     * Edit the bookmark configuration
+     * @return
+     */
     public boolean allowsEdit() {
-        return false;
+        return true;
     }
 }

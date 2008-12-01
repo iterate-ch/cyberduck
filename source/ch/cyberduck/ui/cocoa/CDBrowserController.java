@@ -1119,7 +1119,9 @@ public class CDBrowserController extends CDWindowController
         else if(bookmarkButton.state() == NSCell.OnState) {
             bookmarkModel.setSource(HostCollection.defaultCollection());
         }
-        addBookmarkButton.setEnabled(bookmarkModel.isEditable());
+        addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsAdd());
+        editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit());
+        deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete());
         this.setBookmarkFilter(null);
         bookmarkTable.deselectAll(null);
         bookmarkTable.reloadData();
@@ -1803,11 +1805,10 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void selectionDidChange(NSNotification notification) {
-                addBookmarkButton.setEnabled(bookmarkModel.isEditable());
-                editBookmarkButton.setEnabled(bookmarkModel.isEditable()
+                addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit());
+                editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit()
                         && bookmarkTable.numberOfSelectedRows() == 1);
-                deleteBookmarkButton.setEnabled(bookmarkModel.isEditable()
-                        && bookmarkTable.selectedRow() != -1);
+                deleteBookmarkButton.setEnabled(bookmarkTable.selectedRow() != -1);
             }
         });
         // receive drag events from types
@@ -2194,34 +2195,32 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void deleteBookmarkButtonClicked(final Object sender) {
-        if(bookmarkModel.isEditable()) {
-            final NSEnumerator iterator = bookmarkTable.selectedRowEnumerator();
-            int[] indexes = new int[bookmarkTable.numberOfSelectedRows()];
-            int i = 0;
-            while(iterator.hasMoreElements()) {
-                indexes[i] = ((Number) iterator.nextElement()).intValue();
-                i++;
-            }
-            bookmarkTable.deselectAll(null);
-            int j = 0;
-            for(i = 0; i < indexes.length; i++) {
-                int row = indexes[i] - j;
-                bookmarkTable.selectRow(row, false);
-                bookmarkTable.scrollRowToVisible(row);
-                Host host = (Host) bookmarkModel.getSource().get(row);
-                switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
-                        NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
-                                + " (" + host.getNickname() + ")",
-                        NSBundle.localizedString("Delete", ""),
-                        NSBundle.localizedString("Cancel", ""),
-                        null)) {
-                    case CDSheetCallback.DEFAULT_OPTION:
-                        bookmarkModel.getSource().remove(row);
-                        j++;
-                }
-            }
-            bookmarkTable.deselectAll(null);
+        final NSEnumerator iterator = bookmarkTable.selectedRowEnumerator();
+        int[] indexes = new int[bookmarkTable.numberOfSelectedRows()];
+        int i = 0;
+        while(iterator.hasMoreElements()) {
+            indexes[i] = ((Number) iterator.nextElement()).intValue();
+            i++;
         }
+        bookmarkTable.deselectAll(null);
+        int j = 0;
+        for(i = 0; i < indexes.length; i++) {
+            int row = indexes[i] - j;
+            bookmarkTable.selectRow(row, false);
+            bookmarkTable.scrollRowToVisible(row);
+            Host host = (Host) bookmarkModel.getSource().get(row);
+            switch(NSAlertPanel.runCriticalAlert(NSBundle.localizedString("Delete Bookmark", ""),
+                    NSBundle.localizedString("Do you want to delete the selected bookmark?", "")
+                            + " (" + host.getNickname() + ")",
+                    NSBundle.localizedString("Delete", ""),
+                    NSBundle.localizedString("Cancel", ""),
+                    null)) {
+                case CDSheetCallback.DEFAULT_OPTION:
+                    bookmarkModel.getSource().remove(row);
+                    j++;
+            }
+        }
+        bookmarkTable.deselectAll(null);
     }
 
     // ----------------------------------------------------------
@@ -4175,11 +4174,14 @@ public class CDBrowserController extends CDWindowController
         if(identifier.equals("connectBookmarkButtonClicked:")) {
             return bookmarkTable.numberOfSelectedRows() == 1;
         }
+        if(identifier.equals("addBookmarkButtonClicked:")) {
+            return bookmarkModel.getSource().allowsAdd();
+        }
         if(identifier.equals("deleteBookmarkButtonClicked:")) {
-            return bookmarkTable.selectedRow() != -1;
+            return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow() != -1;
         }
         if(identifier.equals("editBookmarkButtonClicked:")) {
-            return bookmarkModel.isEditable() && bookmarkTable.numberOfSelectedRows() == 1;
+            return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows() == 1;
         }
         if(identifier.equals("editButtonClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {

@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HistoryCollection extends HostCollection {
     private static Logger log = Logger.getLogger(HistoryCollection.class);
@@ -129,5 +129,13 @@ public class HistoryCollection extends HostCollection {
 
     protected Host unique(Host bookmark) {
         return bookmark;
+    }
+
+    public boolean allowsAdd() {
+        return false;
+    }
+
+    public boolean allowsEdit() {
+        return false;
     }
 }
