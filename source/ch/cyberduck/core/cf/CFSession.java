@@ -21,21 +21,23 @@ package ch.cyberduck.core.cf;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.http.StickyHostConfiguration;
+import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.HTTPSession;
+import ch.cyberduck.core.http.StickyHostConfiguration;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
-import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.text.MessageFormat;
 
 import com.mosso.client.cloudfiles.FilesClient;
+import com.mosso.client.cloudfiles.FilesAuthorizationException;
 
 /**
  * Mosso Cloud Files Implementation
@@ -88,6 +90,14 @@ public class CFSession extends HTTPSession implements SSLSession {
         }
     }
 
+    protected void check() throws IOException {
+        super.check();
+
+        // Session tokens will automatically expire after 5 minutes of inactivity.
+        // Get new authentication token with cached credentials
+        this.login(host.getCredentials());
+    }
+
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         if(this.isConnected()) {
             return;
@@ -95,6 +105,15 @@ public class CFSession extends HTTPSession implements SSLSession {
         this.fireConnectionWillOpenEvent();
         this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
                 host.getProtocol().getName(), host.getHostname()));
+
+        this.CF = new FilesClient();
+        final HostConfiguration hostConfiguration = new StickyHostConfiguration();
+        hostConfiguration.setHost(host.getHostname(), host.getPort(),
+                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+        );
+        this.CF.setHostConfiguration(hostConfiguration);
+        this.CF.setUserAgent(this.getUserAgent());
 
         // Prompt the login credentials first
         this.login();
@@ -106,16 +125,8 @@ public class CFSession extends HTTPSession implements SSLSession {
     }
 
     protected void login(Credentials credentials) throws IOException {
-        this.CF = new FilesClient(credentials.getUsername(), credentials.getPassword(),
-                null, this.timeout());
-        final HostConfiguration hostConfiguration = new StickyHostConfiguration();
-        hostConfiguration.setHost(host.getHostname(), host.getPort(),
-                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
-        );
-        this.CF.setHostConfiguration(hostConfiguration);
-        this.CF.setUserAgent(this.getUserAgent());
-
+        this.CF.setUserName(credentials.getUsername());
+        this.CF.setPassword(credentials.getPassword());
         if(!this.CF.login()) {
             this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
             this.login.fail(host.getProtocol(), credentials,
@@ -131,6 +142,7 @@ public class CFSession extends HTTPSession implements SSLSession {
             }
         }
         finally {
+            // No logout required
             CF = null;
             this.fireConnectionDidCloseEvent();
         }
@@ -159,7 +171,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         return workdir;
     }
 
-    protected void noop() throws IOException {
+    protected void noop() {
         ;
     }
 

@@ -175,7 +175,7 @@ public class FTPSession extends Session {
         }
     }
 
-    public void check() throws IOException {
+    protected void check() throws IOException {
         try {
             super.check();
         }

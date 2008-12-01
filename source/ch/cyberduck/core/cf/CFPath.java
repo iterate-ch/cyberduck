@@ -143,6 +143,7 @@ public class CFPath extends CloudPath {
                 }
             }
             catch(FilesAuthorizationException e) {
+                session.interrupt();
                 throw new MossoException(e);
             }
         }
@@ -159,6 +160,7 @@ public class CFPath extends CloudPath {
                 info = session.CF.getCDNContainerInfo(this.getContainer().getName());
             }
             catch(FilesAuthorizationException e) {
+                session.interrupt();
                 throw new MossoException(e);
             }
             if(null == info) {
@@ -236,15 +238,21 @@ public class CFPath extends CloudPath {
 
             if(this.isRoot()) {
                 // List all containers
-                for(FilesContainer container : session.CF.listContainers()) {
-                    CFPath p = new CFPath(session, this.getAbsolute(), container.getName(),
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    p._container = container;
+                try {
+                    for(FilesContainer container : session.CF.listContainers()) {
+                        CFPath p = new CFPath(session, this.getAbsolute(), container.getName(),
+                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        p._container = container;
 
-                    p.attributes.setSize(container.getInfo().getTotalSize());
-                    p.attributes.setOwner(session.CF.getUserName());
+                        p.attributes.setSize(container.getInfo().getTotalSize());
+                        p.attributes.setOwner(session.CF.getUserName());
 
-                    childs.add(p);
+                        childs.add(p);
+                    }
+                }
+                catch(FilesAuthorizationException e) {
+                    session.interrupt();
+                    throw new MossoException(e);
                 }
             }
             else {
@@ -261,10 +269,6 @@ public class CFPath extends CloudPath {
                     childs.add(child);
                 }
             }
-        }
-        catch(FilesAuthorizationException e) {
-            childs.attributes().setReadable(false);
-            this.error("Listing directory failed", e);
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);

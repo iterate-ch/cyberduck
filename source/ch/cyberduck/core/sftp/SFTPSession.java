@@ -309,11 +309,16 @@ public class SFTPSession extends Session {
         }
     }
 
-    public void check() throws IOException {
+    protected void check() throws IOException {
         this.check(true);
     }
 
-    public void check(final boolean sftp) throws IOException {
+    /**
+     *
+     * @param sftp
+     * @throws IOException
+     */
+    private void check(final boolean sftp) throws IOException {
         try {
             super.check();
         }

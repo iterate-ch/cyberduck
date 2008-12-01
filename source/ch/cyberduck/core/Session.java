@@ -83,7 +83,7 @@ public abstract class Session extends NSObject {
      *
      * @throws IOException The connection to the remote host failed.
      */
-    public void check() throws IOException {
+    protected void check() throws IOException {
         try {
             if(!this.isConnected()) {
                 // If not connected anymore, reconnect the session
