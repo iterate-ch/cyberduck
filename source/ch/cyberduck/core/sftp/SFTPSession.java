@@ -309,7 +309,7 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected void check() throws IOException {
+    public void check() throws IOException {
         this.check(true);
     }
 

@@ -90,7 +90,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         }
     }
 
-    protected void check() throws IOException {
+    public void check() throws IOException {
         super.check();
 
         // Session tokens will automatically expire after 5 minutes of inactivity.
