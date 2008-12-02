@@ -27,7 +27,7 @@ import ch.cyberduck.core.Path;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CloudPath extends Path {
     private static Logger log = Logger.getLogger(CloudPath.class);
@@ -56,6 +56,9 @@ public abstract class CloudPath extends Path {
      * @return The parent container/bucket of this file
      */
     public String getContainerName() {
+        if(this.isRoot()) {
+            return null;
+        }
         AbstractPath bucketname = this;
         while(!bucketname.getParent().isRoot()) {
             bucketname = bucketname.getParent();

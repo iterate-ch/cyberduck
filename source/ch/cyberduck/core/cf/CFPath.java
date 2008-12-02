@@ -27,6 +27,7 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.text.ParseException;
 
 import com.mosso.client.cloudfiles.*;
 
@@ -93,18 +95,6 @@ public class CFPath extends CloudPath {
         return this.session;
     }
 
-    private FilesContainer _container;
-
-    /**
-     * @return
-     */
-    private FilesContainer getContainer() {
-        if(null == _container) {
-            _container = new FilesContainer(this.getContainerName(), session.CF);
-        }
-        return _container;
-    }
-
     public String getKey() {
         return this.getName();
     }
@@ -114,7 +104,7 @@ public class CFPath extends CloudPath {
      * @param cnames  Currently ignored
      */
     public void writeDistribution(boolean enabled, String[] cnames) {
-        final String container = this.getContainer().getName();
+        final String container = this.getContainerName();
         try {
             session.check();
             if(enabled) {
@@ -157,7 +147,7 @@ public class CFPath extends CloudPath {
             final FilesCDNContainer info;
             try {
                 session.check();
-                info = session.CF.getCDNContainerInfo(this.getContainer().getName());
+                info = session.CF.getCDNContainerInfo(this.getContainerName());
             }
             catch(FilesAuthorizationException e) {
                 session.interrupt();
@@ -200,7 +190,7 @@ public class CFPath extends CloudPath {
                     this.getName()));
 
             attributes.setSize(
-                    Long.valueOf(session.CF.getObjectMetaData(this.getContainer().getName(), this.getName()).getContentLength())
+                    Long.valueOf(session.CF.getObjectMetaData(this.getContainerName(), this.getName()).getContentLength())
             );
         }
         catch(IOException e) {
@@ -240,11 +230,12 @@ public class CFPath extends CloudPath {
                 // List all containers
                 try {
                     for(FilesContainer container : session.CF.listContainers()) {
-                        CFPath p = new CFPath(session, this.getAbsolute(), container.getName(),
+                        CFPath p = (CFPath) PathFactory.createPath(session, this.getAbsolute(), container.getName(),
                                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                        p._container = container;
+                        p._cdnUrl = p.readDistribution().getUrl();
 
-                        p.attributes.setSize(container.getInfo().getTotalSize());
+                        final FilesContainerInfo info = container.getInfo();
+                        p.attributes.setSize(info.getTotalSize());
                         p.attributes.setOwner(session.CF.getUserName());
 
                         childs.add(p);
@@ -256,16 +247,23 @@ public class CFPath extends CloudPath {
                 }
             }
             else {
-                final FilesContainer container = this.getContainer();
-                for(FilesObject object : container.getObjects()) {
-                    final CFPath child = new CFPath(session, container.getName(), object.getName(),
+                for(FilesObject object : session.CF.listObjects(this.getContainerName())) {
+                    final CFPath child = (CFPath) PathFactory.createPath(session, this.getContainerName(), object.getName(),
                             Path.FILE_TYPE);
                     child.setParent(this);
-                    child._container = container;
-                    child.attributes.setSize(object.getSize());
-//                    child.attributes.setModificationDate(object.getMetaData().getLastModified());
-                    child.attributes.setOwner(this.attributes.getOwner());
+                    child._cdnUrl = this._cdnUrl;
 
+                    final FilesObjectMetaData meta = object.getMetaData();
+                    child.attributes.setSize(Long.parseLong(meta.getContentLength()));
+                    try {
+                        child.attributes.setModificationDate(
+                                ServiceUtils.parseRfc822Date(object.getMetaData().getLastModified()).getTime()
+                        );
+                    }
+                    catch(ParseException e) {
+                        log.warn(e.getMessage());
+                    }
+                    child.attributes.setOwner(this.attributes.getOwner());
                     childs.add(child);
                 }
             }
@@ -288,7 +286,7 @@ public class CFPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
                         this.getName()));
 
-                in = this.session.CF.getObjectAsStream(this.getContainer().getName(), this.getName());
+                in = this.session.CF.getObjectAsStream(this.getContainerName(), this.getName());
 
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
@@ -334,7 +332,7 @@ public class CFPath extends CloudPath {
                 this.getStatus().setCurrent(0);
 
                 try {
-                    final int result = session.CF.storeObject(this.getContainer().getName(), new File(this.getLocal().getAbsolute()),
+                    final int result = session.CF.storeObject(this.getContainerName(), new File(this.getLocal().getAbsolute()),
                             this.getLocal().getMimeType());
                     if(result != FilesConstants.OBJECT_CREATED) {
                         throw new MossoException(String.valueOf(result));
@@ -390,7 +388,7 @@ public class CFPath extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                         this.getName()));
 
-                final int result = session.CF.deleteObject(this.getContainer().getName(), this.getName());
+                final int result = session.CF.deleteObject(this.getContainerName(), this.getName());
                 if(result != FilesConstants.OBJECT_DELETED) {
                     throw new MossoException(String.valueOf(result));
                 }
@@ -403,7 +401,7 @@ public class CFPath extends CloudPath {
                     i.delete();
                 }
                 if(this.isContainer()) {
-                    final int result = session.CF.deleteContainer(this.getContainer().getName());
+                    final int result = session.CF.deleteContainer(this.getContainerName());
                     if(result != FilesConstants.CONTAINER_DELETED) {
                         throw new MossoException(String.valueOf(result));
                     }
@@ -434,29 +432,20 @@ public class CFPath extends CloudPath {
     }
 
     /**
+     * Cloud distribution base URL
+     */
+    private String _cdnUrl;
+
+    /**
      * Overwritten to provide publicy accessible URL of given object
      *
      * @return
      */
     public String toURL() {
-        try {
-            StringBuffer b = new StringBuffer();
-            final FilesCDNContainer info = session.CF.getCDNContainerInfo(this.getContainer().getName());
-            if(null == info) {
-                // Not found.
-                return super.toURL();
-            }
-            b.append(info.getCdnURL());
-            b.append(Path.DELIMITER);
-            b.append(this.getName());
-            return b.toString();
-        }
-        catch(FilesAuthorizationException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        return super.toURL();
+        StringBuffer b = new StringBuffer();
+        b.append(this._cdnUrl);
+        b.append(Path.DELIMITER);
+        b.append(this.getKey());
+        return b.toString();
     }
 }
