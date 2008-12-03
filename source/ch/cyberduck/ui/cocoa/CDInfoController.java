@@ -28,6 +28,7 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -558,16 +559,17 @@ public class CDInfoController extends CDWindowController {
         // Amazon S3 only
         final boolean amazon = file instanceof S3Path;
         this.distributionCnameField.setEnabled(amazon);
+        String servicename = "";
         if(amazon) {
-            this.distributionEnableButton.setTitle(
-                    NSBundle.localizedString("Enable Amazon CloudFront Distribution", "S3", ""));
+            servicename = NSBundle.localizedString("Amazon CloudFront", "S3", "");
         }
         // Mosso only
         final boolean mosso = file instanceof CFPath;
         if(mosso) {
-            this.distributionEnableButton.setTitle(
-                    NSBundle.localizedString("Enable Mosso Cloud Files Distribution", "Mosso", ""));
+            servicename = NSBundle.localizedString("Mosso Cloud Files", "Mosso", "");
         }
+        this.distributionEnableButton.setTitle(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
+                servicename));
     }
 
     /**
@@ -600,7 +602,7 @@ public class CDInfoController extends CDWindowController {
                             current.getParent().getAbsolute(), this.filenameField.stringValue(), current.attributes.getType());
                     controller.renamePath(current, renamed);
                 }
-                else if(!StringUtils.hasText(filenameField.stringValue())) {
+                else if(!StringUtils.isNotBlank(filenameField.stringValue())) {
                     this.filenameField.setStringValue(current.getName());
                 }
                 else {
@@ -728,9 +730,9 @@ public class CDInfoController extends CDWindowController {
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 for(Path next : files) {
-                    if(StringUtils.hasText(distributionCnameField.stringValue())) {
+                    if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
                         ((CloudPath) next).writeDistribution(distributionEnableButton.state() == NSCell.OnState,
-                                new String[]{distributionCnameField.stringValue()});
+                                StringUtils.split(distributionCnameField.stringValue()));
                     }
                     else {
                         ((CloudPath) next).writeDistribution(distributionEnableButton.state() == NSCell.OnState,
