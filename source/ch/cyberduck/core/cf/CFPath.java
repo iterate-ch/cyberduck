@@ -108,12 +108,12 @@ public class CFPath extends CloudPath {
         try {
             session.check();
             if(enabled) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
-                        container));
+                session.message(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
+                        NSBundle.localizedString("Mosso Cloud Files", "Mosso", "")));
             }
             else {
-                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
-                        container));
+                session.message(MessageFormat.format(NSBundle.localizedString("Disable {0} Distribution", "Status", ""),
+                        NSBundle.localizedString("Mosso Cloud Files", "Mosso", "")));
             }
             try {
                 if(enabled) {

@@ -845,12 +845,12 @@ public class S3Path extends CloudPath {
         try {
             session.check();
             if(enabled) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Enable distribution for {0}", "Status", ""),
-                        container));
+                session.message(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
+                        NSBundle.localizedString("Amazon CloudFront", "S3", "")));
             }
             else {
-                session.message(MessageFormat.format(NSBundle.localizedString("Disable distribution for {0}", "Status", ""),
-                        container));
+                session.message(MessageFormat.format(NSBundle.localizedString("Disable {0} Distribution", "Status", ""),
+                        NSBundle.localizedString("Amazon CloudFront", "S3", "")));
             }
             for(org.jets3t.service.model.cloudfront.Distribution distribution : session.listDistributions(container)) {
                 session.updateDistribution(enabled, distribution, cnames);
