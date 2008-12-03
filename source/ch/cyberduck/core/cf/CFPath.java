@@ -180,6 +180,10 @@ public class CFPath extends CloudPath {
         catch(IOException e) {
             return false;
         }
+        if(!this.isCached()) {
+            // Optimization
+            return this.list(false).contains(this);
+        }
         return super.exists();
     }
 
@@ -246,6 +250,14 @@ public class CFPath extends CloudPath {
     }
 
     public AttributedList<Path> list() {
+        return this.list(true);
+    }
+
+    /**
+     * @param metadata Read additional metadata
+     * @return
+     */
+    public AttributedList<Path> list(final boolean metadata) {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
@@ -260,8 +272,10 @@ public class CFPath extends CloudPath {
                                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                         p._cdnUrl = p.readDistribution().getUrl();
 
-                        final FilesContainerInfo info = container.getInfo();
-                        p.attributes.setSize(info.getTotalSize());
+                        if(metadata) {
+                            final FilesContainerInfo info = container.getInfo();
+                            p.attributes.setSize(info.getTotalSize());
+                        }
                         p.attributes.setOwner(session.CF.getUserName());
 
                         childs.add(p);
@@ -279,15 +293,17 @@ public class CFPath extends CloudPath {
                     child.setParent(this);
                     child._cdnUrl = this._cdnUrl;
 
-                    final FilesObjectMetaData meta = object.getMetaData();
-                    child.attributes.setSize(Long.parseLong(meta.getContentLength()));
-                    try {
-                        child.attributes.setModificationDate(
-                                ServiceUtils.parseRfc822Date(object.getMetaData().getLastModified()).getTime()
-                        );
-                    }
-                    catch(ParseException e) {
-                        log.error(e);
+                    if(metadata) {
+                        final FilesObjectMetaData meta = object.getMetaData();
+                        child.attributes.setSize(Long.parseLong(meta.getContentLength()));
+                        try {
+                            child.attributes.setModificationDate(
+                                    ServiceUtils.parseRfc822Date(object.getMetaData().getLastModified()).getTime()
+                            );
+                        }
+                        catch(ParseException e) {
+                            log.error(e);
+                        }
                     }
                     child.attributes.setOwner(this.attributes.getOwner());
 
@@ -365,7 +381,9 @@ public class CFPath extends CloudPath {
                         throw new MossoException(String.valueOf(result));
                     }
                     // Manually mark as complete
-                    this.getStatus().setCurrent(this.getLocal().attributes.getSize());
+                    final long size = this.getLocal().attributes.getSize();
+                    this.getStatus().setCurrent(size);
+                    listener.bytesSent(size);
                     this.getStatus().setComplete(true);
                 }
                 catch(NoSuchAlgorithmException e) {
