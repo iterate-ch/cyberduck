@@ -107,24 +107,11 @@ public class CDMainController extends CDController {
         }
     }
 
-    /**
-     * @return The preferred locale of all available in this application bundle
-     *         for the currently logged in user
-     */
-    private String locale() {
-        String locale = "en";
-        NSArray preferredLocalizations = NSBundle.preferredLocalizations(
-                NSBundle.mainBundle().localizations());
-        if(preferredLocalizations.count() > 0) {
-            locale = (String) preferredLocalizations.objectAtIndex(0);
-        }
-        return locale;
-    }
-
     public void helpMenuClicked(final Object sender) {
         try {
             NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(Preferences.instance().getProperty("website.help") + this.locale() + "/"));
+                    new java.net.URL(Preferences.instance().getProperty("website.help"))
+            );
         }
         catch(java.net.MalformedURLException e) {
             log.error(e.getMessage());

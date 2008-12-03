@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSArray;
 
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
@@ -167,7 +168,7 @@ public abstract class Preferences {
         defaults.put("website.donate", "http://cyberduck.ch/donate/");
         defaults.put("website.home", "http://cyberduck.ch/");
         defaults.put("website.forum", "http://forum.cyberduck.ch/");
-        defaults.put("website.help", "http://cyberduck.ch/help/");
+        defaults.put("website.help", "http://help.cyberduck.ch/" + this.locale());
         defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
@@ -536,4 +537,18 @@ public abstract class Preferences {
      * Overriding the default values with prefs from the last session.
      */
     protected abstract void load();
+
+    /**
+     * @return The preferred locale of all available in this application bundle
+     *         for the currently logged in user
+     */
+    private String locale() {
+        String locale = "en";
+        NSArray preferredLocalizations = NSBundle.preferredLocalizations(
+                NSBundle.mainBundle().localizations());
+        if(preferredLocalizations.count() > 0) {
+            locale = (String) preferredLocalizations.objectAtIndex(0);
+        }
+        return locale;
+    }
 }

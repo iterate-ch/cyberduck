@@ -25,8 +25,8 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -398,10 +398,18 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
     }
 
-    private NSButton toggleOptionsButton;
+    private NSButton toggleOptionsButton; //IBOutlet
 
     public void setToggleOptionsButton(NSButton b) {
         this.toggleOptionsButton = b;
+    }
+
+    private NSButton helpButton; //IBOutlet
+
+    public void setHelpButton(NSButton helpButton) {
+        this.helpButton = helpButton;
+        this.helpButton.setTarget(this);
+        this.helpButton.setAction(new NSSelector("helpButtonClicked", new Class[]{Object.class}));
     }
 
     private static final Map<CDWindowController, CDConnectionController> controllers
@@ -479,7 +487,6 @@ public class CDConnectionController extends CDSheetController {
     }
 
     /**
-     *
      * @param sender
      */
     private void updateURLLabel(final NSNotification sender) {
@@ -495,6 +502,18 @@ public class CDConnectionController extends CDSheetController {
         }
         else {
             urlLabel.setStringValue(hostField.stringValue());
+        }
+    }
+
+    public void helpButtonClicked(final Object sender) {
+        try {
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(Preferences.instance().getProperty("website.help")
+                            + "/" + ((Protocol) protocolPopup.selectedItem().representedObject()).getIdentifier())
+            );
+        }
+        catch(java.net.MalformedURLException e) {
+            log.error(e.getMessage());
         }
     }
 
