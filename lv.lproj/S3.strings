@@ -11,5 +11,3 @@
 
 /* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
 "Deployed" = "Deployed";
-
-"Enable Amazon CloudFront Distribution" = "Enable Amazon CloudFront Distribution";
