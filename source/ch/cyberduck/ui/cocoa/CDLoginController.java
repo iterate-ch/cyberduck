@@ -25,6 +25,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -209,7 +210,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             }
 
             protected boolean validateInput() {
-                return StringUtils.hasLength(credentials.getUsername());
+                return StringUtils.isNotEmpty(credentials.getUsername());
             }
 
             public void callback(final int returncode) {

@@ -25,6 +25,7 @@ import com.apple.cocoa.foundation.NSObject;
 import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -93,7 +94,7 @@ public class CDGotoController extends CDSheetController {
     }
 
     protected boolean validateInput() {
-        return StringUtils.hasText(folderCombobox.stringValue());
+        return StringUtils.isNotBlank(folderCombobox.stringValue());
     }
 
     protected void gotoFolder(final Path workdir, final String filename) {

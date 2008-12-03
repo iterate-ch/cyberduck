@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
@@ -80,7 +81,7 @@ public class DAVSession extends HTTPSession {
 
         this.DAV = new DAVResource(host.toURL());
         final String workdir = host.getDefaultPath();
-        if(StringUtils.hasText(workdir)) {
+        if(StringUtils.isNotBlank(workdir)) {
             this.DAV.setPath(workdir.startsWith(Path.DELIMITER) ? workdir : Path.DELIMITER + workdir);
         }
 

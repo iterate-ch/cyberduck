@@ -38,6 +38,7 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -590,7 +591,7 @@ public class CDBrowserController extends CDWindowController
 
     protected void setPathFilter(final String searchString) {
         log.debug("setPathFilter:" + searchString);
-        if(!StringUtils.hasText(searchString)) {
+        if(!StringUtils.isNotBlank(searchString)) {
             this.searchField.setStringValue("");
             // Revert to the last used default filter
             if(this.getShowHiddenFiles()) {
@@ -1994,7 +1995,7 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         String input = (sender).stringValue();
-        if(!StringUtils.hasText(input)) {
+        if(!StringUtils.isNotBlank(input)) {
             return;
         }
         input = input.trim();
@@ -2106,7 +2107,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     private void setBookmarkFilter(final String searchString) {
-        if(!StringUtils.hasText(searchString)) {
+        if(!StringUtils.isNotBlank(searchString)) {
             this.searchField.setStringValue("");
             this.bookmarkModel.setFilter(null);
         }
@@ -3707,7 +3708,7 @@ public class CDBrowserController extends CDWindowController
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         bookmarkTable.setNeedsDisplay();
-                        if(StringUtils.hasText(host.getCredentials().getUsername())) {
+                        if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
                             window.setTitle(host.getProtocol().getScheme() + ":" + host.getCredentials().getUsername()
                                     + "@" + host.getHostname());
                         }

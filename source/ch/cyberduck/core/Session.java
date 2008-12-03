@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -170,7 +171,7 @@ public abstract class Session extends NSObject {
     protected abstract void login(Credentials credentials) throws IOException;
 
     public Path mount() {
-        if(StringUtils.hasText(host.getDefaultPath())) {
+        if(StringUtils.isNotBlank(host.getDefaultPath())) {
             return this.mount(host.getDefaultPath());
         }
         return this.mount(null);

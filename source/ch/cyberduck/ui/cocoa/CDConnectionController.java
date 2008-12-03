@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -152,7 +153,7 @@ public class CDConnectionController extends CDSheetController {
 
     public void hostPopupSelectionDidChange(final NSControl sender) {
         String input = sender.stringValue();
-        if(!StringUtils.hasText(input)) {
+        if(!StringUtils.isNotBlank(input)) {
             return;
         }
         input = input.trim();
@@ -167,7 +168,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
-        if(StringUtils.isURL(hostField.stringValue())) {
+        if(Protocol.isURL(hostField.stringValue())) {
             final Host parsed = Host.parse(hostField.stringValue());
             this.hostChanged(parsed);
         }
@@ -188,7 +189,7 @@ public class CDConnectionController extends CDSheetController {
      */
     private void reachable() {
         final String hostname = hostField.stringValue();
-        if(StringUtils.hasText(hostname)) {
+        if(StringUtils.isNotBlank(hostname)) {
             this.background(new AbstractBackgroundAction() {
                 boolean reachable = false;
 
@@ -482,7 +483,7 @@ public class CDConnectionController extends CDSheetController {
      * @param sender
      */
     private void updateURLLabel(final NSNotification sender) {
-        if(StringUtils.hasText(hostField.stringValue())) {
+        if(StringUtils.isNotBlank(hostField.stringValue())) {
             final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()

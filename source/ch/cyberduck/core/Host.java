@@ -22,6 +22,7 @@ import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -213,20 +214,20 @@ public class Host extends NSObject implements Serializable {
         if(!this.getNickname().equals(this.getDefaultNickname())) {
             dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         }
-        if(StringUtils.hasText(this.hostname)) {
+        if(StringUtils.isNotBlank(this.hostname)) {
             dict.setObjectForKey(this.hostname, Host.HOSTNAME);
         }
         dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
-        if(StringUtils.hasText(this.getCredentials().getUsername())) {
+        if(StringUtils.isNotBlank(this.getCredentials().getUsername())) {
             dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
         }
-        if(StringUtils.hasText(this.defaultpath)) {
+        if(StringUtils.isNotBlank(this.defaultpath)) {
             dict.setObjectForKey(this.defaultpath, Host.PATH);
         }
-        if(StringUtils.hasText(this.encoding)) {
+        if(StringUtils.isNotBlank(this.encoding)) {
             dict.setObjectForKey(this.encoding, Host.ENCODING);
         }
-        if(StringUtils.hasText(this.getCredentials().getPrivateKeyFile())) {
+        if(StringUtils.isNotBlank(this.getCredentials().getPrivateKeyFile())) {
             dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
         }
         if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
@@ -240,16 +241,16 @@ public class Host extends NSObject implements Serializable {
         if(null != this.maxConnections) {
             dict.setObjectForKey(String.valueOf(this.maxConnections), Host.MAXCONNECTIONS);
         }
-        if(StringUtils.hasText(this.downloadFolder)) {
+        if(StringUtils.isNotBlank(this.downloadFolder)) {
             dict.setObjectForKey(this.downloadFolder, Host.DOWNLOADFOLDER);
         }
         if(null != this.timezone) {
             dict.setObjectForKey(this.timezone.getID(), Host.TIMEZONE);
         }
-        if(StringUtils.hasText(this.comment)) {
+        if(StringUtils.isNotBlank(this.comment)) {
             dict.setObjectForKey(this.comment, Host.COMMENT);
         }
-        if(StringUtils.hasText(this.webURL)) {
+        if(StringUtils.isNotBlank(this.webURL)) {
             dict.setObjectForKey(this.webURL, Host.WEBURL);
         }
         return dict;
@@ -352,7 +353,7 @@ public class Host extends NSObject implements Serializable {
             }
         }
         String hostname = Preferences.instance().getProperty("connection.hostname.default");
-        if(StringUtils.hasText(input)) {
+        if(StringUtils.isNotBlank(input)) {
             hostname = input.substring(begin, input.length());
         }
         String path = null;
@@ -407,7 +408,7 @@ public class Host extends NSObject implements Serializable {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(String defaultpath) {
-        this.defaultpath = StringUtils.hasText(defaultpath) ? defaultpath : null;
+        this.defaultpath = StringUtils.isNotBlank(defaultpath) ? defaultpath : null;
     }
 
     /**
@@ -804,7 +805,7 @@ public class Host extends NSObject implements Serializable {
                         NSPropertyListSerialization.PropertyListImmutable,
                         new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
                         errorString);
-        if(StringUtils.hasText(errorString[0])) {
+        if(StringUtils.isNotBlank(errorString[0])) {
             throw new IOException("Problem reading bookmark file:" + errorString[0]);
         }
         if(propertyListFromXMLData instanceof NSDictionary) {
@@ -828,7 +829,7 @@ public class Host extends NSObject implements Serializable {
         collection.appendData(NSPropertyListSerialization.dataFromPropertyList(this.getAsDictionary(),
                 NSPropertyListSerialization.PropertyListXMLFormat,
                 errorString));
-        if(StringUtils.hasText(errorString[0])) {
+        if(StringUtils.isNotBlank(errorString[0])) {
             throw new IOException("Problem writing bookmark file:" + errorString[0]);
         }
         try {

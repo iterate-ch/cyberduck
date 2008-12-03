@@ -23,10 +23,10 @@ import com.apple.cocoa.application.NSTextField;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.StringUtils;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -66,7 +66,7 @@ public abstract class CDFileController extends CDSheetController {
         if (filenameField.stringValue().indexOf('/') != -1) {
             return false;
         }
-        if(StringUtils.hasText(filenameField.stringValue())) {
+        if(StringUtils.isNotBlank(filenameField.stringValue())) {
             Path file = PathFactory.createPath(this.getWorkdir().getSession(), this.getWorkdir().getAbsolute(),
                     filenameField.stringValue(), Path.FILE_TYPE);
             return !file.exists();

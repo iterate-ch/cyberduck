@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -131,7 +132,7 @@ public class Credentials {
      */
     public void addInternetPasswordToKeychain(Protocol protocol, String hostname, int port) {
         if(this.usesKeychain() && !this.isAnonymousLogin()) {
-            if(StringUtils.hasLength(this.getUsername()) && StringUtils.hasLength(this.getPassword())) {
+            if(StringUtils.isNotEmpty(this.getUsername()) && StringUtils.isNotEmpty(this.getPassword())) {
                 if(log.isInfoEnabled()) {
                     log.debug("addInternetPasswordToKeychain:" + protocol + "," + hostname + "," + this.getUsername());
                 }
@@ -171,7 +172,7 @@ public class Credentials {
     private void init(String username, String password) {
         this.user = username;
         this.pass = password;
-        if(!StringUtils.hasLength(password)) {
+        if(StringUtils.isEmpty(password)) {
             this.pass = this.isAnonymousLogin() ? Preferences.instance().getProperty("connection.login.anon.pass") : password;
         }
     }
@@ -214,6 +215,6 @@ public class Credentials {
         if(this.usesPublicKeyAuthentication()) {
             return true;
         }
-        return StringUtils.hasLength(this.getUsername()) && StringUtils.hasLength(this.getPassword());
+        return StringUtils.isNotEmpty(this.getUsername()) && StringUtils.isNotEmpty(this.getPassword());
     }
 }

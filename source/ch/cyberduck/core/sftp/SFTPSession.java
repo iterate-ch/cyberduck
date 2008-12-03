@@ -24,6 +24,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.CharArrayWriter;
 import java.io.File;
@@ -202,7 +203,7 @@ public class SFTPSession extends Session {
                 String passphrase = null;
                 if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
                     passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
-                    if(!StringUtils.hasLength(passphrase)) {
+                    if(StringUtils.isEmpty(passphrase)) {
                         login.prompt(host.getProtocol(), host.getCredentials(),
                                 NSBundle.localizedString("Private key password protected", "Credentials", ""),
                                 NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")

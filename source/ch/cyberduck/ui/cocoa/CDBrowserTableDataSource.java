@@ -25,6 +25,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -121,7 +122,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public void setObjectValueForItem(final Path item, final Object value, final String identifier) {
         log.debug("setObjectValueForItem:" + item);
         if(identifier.equals(FILENAME_COLUMN)) {
-            if(!item.getName().equals(value) && StringUtils.hasText(value.toString())) {
+            if(!item.getName().equals(value) && StringUtils.isNotBlank(value.toString())) {
                 final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                         item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
                 controller.renamePath(item, renamed);

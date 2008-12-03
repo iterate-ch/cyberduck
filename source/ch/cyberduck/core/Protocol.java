@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.Constants;
 
 /**
@@ -295,7 +296,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("Mosso Cloud Files", "Mosso", "");
+            return "Mosso Cloud Files";
         }
 
         public String getIdentifier() {
@@ -388,5 +389,25 @@ public abstract class Protocol {
     public static Protocol[] getKnownProtocols() {
         return new Protocol[]{
                 FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, IDISK, S3, MOSSO};
+    }
+
+    /**
+     *
+     * @param str
+     * @return
+     */
+    public static boolean isURL(String str) {
+        if(StringUtils.isNotBlank(str)) {
+            Protocol[] protocols = getKnownProtocols();
+            for(int i = 0; i < protocols.length; i++) {
+                String[] schemes = protocols[i].getSchemes();
+                for(int k = 0; k < schemes.length; k++) {
+                    if(str.startsWith(schemes[k])) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

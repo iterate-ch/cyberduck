@@ -21,11 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import ch.cyberduck.core.StringUtils;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -252,10 +252,10 @@ public abstract class CDWindowController extends CDBundleController {
 
 
     protected void updateField(final NSTextView f, final String value) {
-        f.setString(StringUtils.hasText(value) ? value : "");
+        f.setString(StringUtils.isNotBlank(value) ? value : "");
     }
 
     protected void updateField(final NSTextField f, final String value) {
-        f.setStringValue(StringUtils.hasText(value) ? value : "");
+        f.setStringValue(StringUtils.isNotBlank(value) ? value : "");
     }
 }

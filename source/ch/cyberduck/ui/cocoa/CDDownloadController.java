@@ -25,6 +25,7 @@ import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.net.MalformedURLException;
 
@@ -69,6 +70,6 @@ public class CDDownloadController extends CDSheetController {
 
     protected boolean validateInput() {
         Host host = Host.parse(urlField.stringValue());
-        return StringUtils.hasText(host.getDefaultPath());
+        return StringUtils.isNotBlank(host.getDefaultPath());
     }
 }

@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -502,7 +503,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void hostFieldDidChange(final NSNotification sender) {
-        if(StringUtils.isURL(hostField.stringValue())) {
+        if(Protocol.isURL(hostField.stringValue())) {
             this.host.init(Host.parse(hostField.stringValue()).getAsDictionary());
         }
         else {
@@ -513,7 +514,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     private void reachable() {
-        if(StringUtils.hasText(host.getHostname())) {
+        if(StringUtils.isNotBlank(host.getHostname())) {
             this.background(new AbstractBackgroundAction() {
                 boolean reachable = false;
 
@@ -581,7 +582,7 @@ public class CDBookmarkController extends CDWindowController {
         this.hostField.setEnabled(this.host.getProtocol().isConfigurable());
         this.updateField(this.nicknameField, this.host.getNickname());
         final String url;
-        if(StringUtils.hasText(this.host.getDefaultPath())) {
+        if(StringUtils.isNotBlank(this.host.getDefaultPath())) {
             url = this.host.toURL() + Path.normalize(this.host.getDefaultPath());
         }
         else {

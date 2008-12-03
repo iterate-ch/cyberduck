@@ -23,9 +23,10 @@ import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSRange;
 
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.StringUtils;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 
@@ -74,7 +75,7 @@ public class CDCommandController extends CDSheetController implements Transcript
 
     public void sendButtonClicked(final NSButton sender) {
         String command = this.inputField.stringValue();
-        if(StringUtils.hasText(command)) {
+        if(StringUtils.isNotBlank(command)) {
             try {
                 session.sendCommand(command);
             }

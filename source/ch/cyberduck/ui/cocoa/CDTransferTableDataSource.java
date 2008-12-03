@@ -28,6 +28,7 @@ import com.apple.cocoa.foundation.NSDictionary;
 import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,7 +76,7 @@ public class CDTransferTableDataSource extends CDController {
      * @param searchString
      */
     public void setFilter(final String searchString) {
-        if(!StringUtils.hasText(searchString)) {
+        if(!StringUtils.isNotBlank(searchString)) {
             // Revert to the default filter
             this.filter = new NullTransferFilter();
         }
@@ -172,7 +173,7 @@ public class CDTransferTableDataSource extends CDController {
         }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
-            if(StringUtils.hasText(droppedText)) {
+            if(StringUtils.isNotBlank(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
                 CDDownloadController c = new CDDownloadController(CDTransferController.instance(), droppedText);
                 c.beginSheet();

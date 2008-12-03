@@ -178,7 +178,7 @@ public class CDBookmarkTableDataSource extends CDController {
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.StringPboardType);
             if(o != null) {
-                if(StringUtils.isURL(o.toString())) {
+                if(Protocol.isURL(o.toString())) {
                     view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
                     return NSDraggingInfo.DragOperationCopy;
                 }

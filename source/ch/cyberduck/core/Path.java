@@ -29,6 +29,7 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,7 +130,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(local != null) {
             dict.setObjectForKey(local.toString(), LOCAL);
         }
-        if(StringUtils.hasText(this.getSymbolicLinkPath())) {
+        if(StringUtils.isNotBlank(this.getSymbolicLinkPath())) {
             dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
         }
         dict.setObjectForKey(((PathAttributes)this.attributes).getAsDictionary(), ATTRIBUTES);
@@ -675,7 +676,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     protected String toHttpURL(String host) {
         String absolute = this.encode(this.getAbsolute());
-        if(StringUtils.hasText(this.getHost().getDefaultPath())) {
+        if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
             if(absolute.startsWith(this.getHost().getDefaultPath())) {
                 absolute = absolute.substring(this.getHost().getDefaultPath().length());
             }

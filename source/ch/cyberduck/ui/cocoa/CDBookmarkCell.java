@@ -26,7 +26,8 @@ import com.apple.cocoa.foundation.NSRect;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.StringUtils;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -46,21 +47,21 @@ public class CDBookmarkCell extends CDTableCell {
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         super.drawInteriorWithFrameInView(cellFrame, controlView);
         if(bookmark != null) {
-            if(StringUtils.hasText(bookmark.getNickname())) {
+            if(StringUtils.isNotBlank(bookmark.getNickname())) {
                 NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),
                         boldFont),
                         new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 1,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));
             }
             if(!Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
-                if(StringUtils.hasText(bookmark.getCredentials().getUsername())) {
+                if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
                     NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getCredentials().getUsername(),
                             tinyFont),
                             new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 14,
                                     cellFrame.size().width() - 5, cellFrame.size().height()));
                 }
                 NSGraphics.drawAttributedString(new NSAttributedString(bookmark.toURL()
-                        + (StringUtils.hasText(bookmark.getDefaultPath()) ? Path.normalize(bookmark.getDefaultPath()) : ""),
+                        + (StringUtils.isNotBlank(bookmark.getDefaultPath()) ? Path.normalize(bookmark.getDefaultPath()) : ""),
                         tinyFont),
                         new NSRect(cellFrame.origin().x(), cellFrame.origin().y() + 27,
                                 cellFrame.size().width() - 5, cellFrame.size().height()));

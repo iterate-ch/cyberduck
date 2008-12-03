@@ -21,9 +21,10 @@ package ch.cyberduck.core;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
@@ -37,11 +38,11 @@ public abstract class AbstractLoginController implements LoginController {
     public void check(final Credentials credentials, final Protocol protocol, final String hostname)
             throws LoginCanceledException {
         if(!credentials.isValid()) {
-            if(StringUtils.hasText(credentials.getUsername())) {
+            if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     log.info("Searching keychain for password...");
                     String passFromKeychain = credentials.getInternetPasswordFromKeychain(protocol, hostname);
-                    if(!StringUtils.hasText(passFromKeychain)) {
+                    if(!StringUtils.isNotBlank(passFromKeychain)) {
                         this.prompt(protocol, credentials,
                                 NSBundle.localizedString("Login with username and password", "Credentials", ""),
                                 NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
