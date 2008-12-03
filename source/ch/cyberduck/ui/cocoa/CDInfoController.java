@@ -298,6 +298,9 @@ public class CDInfoController extends CDWindowController {
         });
         this.loadBundle();
         this.setFiles(files);
+        this.setState(this.permissionToggle, Preferences.instance().getBoolean("info.toggle.permission"));
+        this.setState(this.distributionToggle, (this.files.get(0) instanceof CloudPath)
+                && Preferences.instance().getBoolean("info.toggle.distribution"));
     }
 
     protected String getBundleName() {
@@ -347,9 +350,6 @@ public class CDInfoController extends CDWindowController {
         this.otherx.setTarget(this);
         this.otherx.setAction(new NSSelector("permissionSelectionChanged", new Class[]{Object.class}));
         this.otherx.setAllowsMixedState(true);
-
-        this.setState(this.permissionToggle, Preferences.instance().getBoolean("info.toggle.permission"));
-        this.setState(this.distributionToggle, Preferences.instance().getBoolean("info.toggle.distribution"));
     }
 
     private void init() {
@@ -548,6 +548,7 @@ public class CDInfoController extends CDWindowController {
      */
     private void initDistribution(Path file) {
         final boolean cloud = file instanceof CloudPath;
+        this.distributionToggle.setEnabled(cloud);
         this.distributionEnableButton.setEnabled(cloud);
         this.distributionStatusButton.setEnabled(cloud);
         this.distributionApplyButton.setEnabled(cloud);
