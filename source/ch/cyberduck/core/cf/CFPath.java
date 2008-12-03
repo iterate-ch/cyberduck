@@ -189,9 +189,16 @@ public class CFPath extends CloudPath {
             session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
                     this.getName()));
 
-            attributes.setSize(
-                    Long.valueOf(session.CF.getObjectMetaData(this.getContainerName(), this.getName()).getContentLength())
-            );
+            if(this.isContainer()) {
+                attributes.setSize(
+                        Long.valueOf(session.CF.getContainerInfo(this.getContainerName()).getTotalSize())
+                );
+            }
+            else {
+                attributes.setSize(
+                        Long.valueOf(session.CF.getObjectMetaData(this.getContainerName(), this.getName()).getContentLength())
+                );
+            }
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
@@ -199,7 +206,26 @@ public class CFPath extends CloudPath {
     }
 
     public void readTimestamp() {
-        ;
+        try {
+            session.check();
+            session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                    this.getName()));
+
+            if(!this.isContainer()) {
+                try {
+                    attributes.setModificationDate(
+                            ServiceUtils.parseRfc822Date(session.CF.getObjectMetaData(this.getContainerName(), this.getName()).getLastModified()).getTime()
+                    );
+                }
+                catch(ParseException e) {
+                    log.error(e);
+                }
+
+            }
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
     }
 
     public void readPermission() {
@@ -261,9 +287,10 @@ public class CFPath extends CloudPath {
                         );
                     }
                     catch(ParseException e) {
-                        log.warn(e.getMessage());
+                        log.error(e);
                     }
                     child.attributes.setOwner(this.attributes.getOwner());
+
                     childs.add(child);
                 }
             }
@@ -338,6 +365,7 @@ public class CFPath extends CloudPath {
                         throw new MossoException(String.valueOf(result));
                     }
                     // Manually mark as complete
+                    this.getStatus().setCurrent(this.getLocal().attributes.getSize());
                     this.getStatus().setComplete(true);
                 }
                 catch(NoSuchAlgorithmException e) {
