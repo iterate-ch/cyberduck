@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.RepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
 
@@ -84,6 +85,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
+        this.urlField.setAllowsEditingTextAttributes(true);
+        this.urlField.setSelectable(true);
     }
 
     private NSTextField localField; // IBOutlet
@@ -425,9 +428,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(1 == selected) {
             final Transfer transfer = (Transfer) transferModel.getSource().get(transferTable.selectedRow());
             // Draw text fields at the bottom
-            urlField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getHost().toURL()
-                    + transfer.getRoot().getParent().getAbsolute(),
-                    TRUNCATE_MIDDLE_ATTRIBUTES));
+            final String url = transfer.getRoot().toURL();
+            urlField.setAttributedStringValue(
+                    HyperlinkAttributedStringFactory.create(
+                            new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+            );
             if(transfer.numberOfRoots() == 1) {
                 localField.setAttributedStringValue(new NSAttributedString(transfer.getRoot().getLocal().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
