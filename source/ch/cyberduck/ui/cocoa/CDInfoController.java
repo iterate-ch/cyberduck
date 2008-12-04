@@ -788,19 +788,21 @@ public class CDInfoController extends CDWindowController {
                     );
                 }
                 final String[] cnames = distribution.getCNAMEs();
-                for(String cname : cnames) {
-                    distributionCnameField.setStringValue(cname);
-                    final String url = "http://" + cname + key;
-                    distributionCnameUrlField.setAttributedStringValue(
-                            HyperlinkAttributedStringFactory.create(
-                                    new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
-                    );
-                    // We only support one CNAME for now
-                    break;
-                }
                 if(0 == cnames.length) {
                     distributionCnameField.setStringValue("");
                     distributionCnameUrlField.setStringValue("");
+                }
+                else {
+                    distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
+                    for(String cname : cnames) {
+                        final String url = "http://" + cname + key;
+                        distributionCnameUrlField.setAttributedStringValue(
+                                HyperlinkAttributedStringFactory.create(
+                                        new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+                        );
+                        // We only support one CNAME URL
+                        break;
+                    }
                 }
             }
         });
