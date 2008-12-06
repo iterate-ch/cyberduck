@@ -25,8 +25,8 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,9 @@ public class CDBookmarkController extends CDWindowController {
         log.debug("protocolSelectionChanged:" + sender);
         final Protocol selected = (Protocol) protocolPopup.selectedItem().representedObject();
         this.host.setPort(selected.getDefaultPort());
-        this.host.setHostname(selected.getDefaultHostname());
+        if(this.host.getProtocol().getDefaultHostname().equals(this.host.getHostname())) {
+            this.host.setHostname(selected.getDefaultHostname());
+        }
         if(!selected.isConfigurable()) {
             this.host.setWebURL(null);
             if(selected == Protocol.IDISK) {
@@ -300,7 +302,7 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSPopUpButton downloadPathPopup; //IBOutlet
 
-    private static final String CHOOSE = NSBundle.localizedString("Choose", "")+"...";
+    private static final String CHOOSE = NSBundle.localizedString("Choose", "") + "...";
 
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
@@ -323,21 +325,21 @@ public class CDBookmarkController extends CDWindowController {
         // Choose another folder
         this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
         this.downloadPathPopup.menu().addItem(CHOOSE, action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this);
     }
 
     private void addDownloadPath(NSSelector action, Local f) {
         if(f.exists()) {
             this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
                     f.getAbsolute()), action, "");
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setTarget(this);
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setImage(
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this);
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
                     CDIconCache.instance().iconForPath(f, 16)
             );
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems()-1).setRepresentedObject(
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
                     f.getAbsolute());
             if(host.getDownloadFolder().equals(f)) {
-                this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems()-1);
+                this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems() - 1);
             }
         }
     }
@@ -364,7 +366,7 @@ public class CDBookmarkController extends CDWindowController {
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             NSArray selected = sheet.filenames();
             String filename;
-            if ((filename = (String) selected.lastObject()) != null) {
+            if((filename = (String) selected.lastObject()) != null) {
                 host.setDownloadFolder(
                         NSPathUtilities.stringByAbbreviatingWithTildeInPath(filename));
             }
