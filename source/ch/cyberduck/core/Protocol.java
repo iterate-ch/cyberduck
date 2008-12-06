@@ -20,8 +20,8 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSBundle;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 
 /**
@@ -392,7 +392,6 @@ public abstract class Protocol {
     }
 
     /**
-     *
      * @param str
      * @return
      */
@@ -402,7 +401,7 @@ public abstract class Protocol {
             for(int i = 0; i < protocols.length; i++) {
                 String[] schemes = protocols[i].getSchemes();
                 for(int k = 0; k < schemes.length; k++) {
-                    if(str.startsWith(schemes[k])) {
+                    if(str.startsWith(schemes[k] + "://")) {
                         return true;
                     }
                 }
