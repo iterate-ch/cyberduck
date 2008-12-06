@@ -65,7 +65,7 @@
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>
-		<string>1.4+</string>
+		<string>1.5*</string>
 		<key>VMOptions</key>
 		<string>-enableassertions -verbose:gc -verbose:jni -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</string>
 	</dict>

@@ -65,7 +65,7 @@
 	<key>Java</key>
 	<dict>
 		<key>JVMVersion</key>
-		<string>1.5</string>
+		<string>1.5*</string>
 	</dict>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
