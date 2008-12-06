@@ -20,11 +20,10 @@ import com.apple.cocoa.foundation.NSBundle;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class Distribution {
 
-    private String origin;
     private boolean enabled;
     private String url;
     private String status;
@@ -35,14 +34,9 @@ public class Distribution {
      * @param origin
      * @param url
      * @param status
-     * @param cnames
      */
-    public Distribution(boolean enabled, String origin, String url, String status, String[] cnames) {
-        this.enabled = enabled;
-        this.origin = origin;
-        this.url = url;
-        this.status = status;
-        this.cnames = cnames;
+    public Distribution(boolean enabled, String url, String status) {
+        this(enabled, url, status, new String[]{});
     }
 
     /**
@@ -50,36 +44,35 @@ public class Distribution {
      * @param origin
      * @param url
      * @param status
+     * @param cnames
      */
-    public Distribution(boolean enabled, String origin, String url, String status) {
+    public Distribution(boolean enabled, String url, String status, String[] cnames) {
         this.enabled = enabled;
-        this.origin = origin;
         this.url = url;
         this.status = status;
+        this.cnames = cnames;
     }
 
-    public Distribution(boolean enabled) {
-        this.enabled = enabled;
-    }
-
+    /**
+     *
+     * @return True if distribution is enabled
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
-    public String getOrigin() {
-        if(null == origin) {
-            return NSBundle.localizedString("Unknown", "");
-        }
-        return origin;
-    }
-
+    /**
+     *
+     * @return Null if not available
+     */
     public String getUrl() {
-        if(null == url) {
-            return NSBundle.localizedString("Unknown", "");
-        }
         return url;
     }
 
+    /**
+     *
+     * @return "Unknown" if distribution status is not known
+     */
     public String getStatus() {
         if(null == status) {
             return NSBundle.localizedString("Unknown", "");
@@ -88,7 +81,7 @@ public class Distribution {
     }
 
     /**
-     * @return May return null
+     * @return Empty array if no CNAMEs configured for this distribution
      */
     public String[] getCNAMEs() {
         if(null == cnames) {
