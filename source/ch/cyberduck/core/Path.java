@@ -645,7 +645,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             while(t.hasMoreTokens()) {
                 b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
-            return b.toString();
+            return b.toString().replaceAll("\\+", "%20");
         }
         catch(UnsupportedEncodingException e) {
             log.error(e.getMessage());
