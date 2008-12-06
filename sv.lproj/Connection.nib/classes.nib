@@ -31,6 +31,7 @@
                 anonymousCheckbox = NSButton;
                 connectmodePopup = NSPopUpButton;
                 encodingPopup = NSPopUpButton;
+                helpButton = NSButton;
                 hostPopup = NSComboBox;
                 keychainCheckbox = NSButton;
                 passField = NSSecureTextField;
