@@ -362,7 +362,7 @@ public class CFPath extends CloudPath {
         }
     }
 
-    protected void upload(BandwidthThrottle throttle, StreamListener listener, Permission p, boolean check) {
+    protected void upload(BandwidthThrottle throttle, final StreamListener listener, Permission p, boolean check) {
         try {
             if(check) {
                 session.check();
@@ -374,17 +374,42 @@ public class CFPath extends CloudPath {
                 // No Content-Range support
                 this.getStatus().setCurrent(0);
 
+                final InputStream in = new Local.InputStream(this.getLocal());
                 try {
+                    session.CF.storeObjectAs(this.getContainerName(), this.getName(), new InputStream() {
+                        long bytesTransferred = getStatus().getCurrent();
+
+                        public int read() throws IOException {
+                            return read(new byte[1]);
+                        }
+
+                        int read;
+
+                        public int read(byte buffer[], int offset, int length)
+                                throws IOException {
+                            if(getStatus().isCanceled()) {
+                                return -1;
+                            }
+                            if(read > 0) {
+                                listener.bytesSent(read);
+                                bytesTransferred += read;
+                                getStatus().setCurrent(bytesTransferred);
+                            }
+                            read = in.read(buffer, offset, length);
+                            if(-1 == read) {
+                                // End of file
+                                getStatus().setComplete(true);
+                            }
+                            return read;
+                        }
+                    }, this.getLocal().attributes.getSize(), this.getLocal().getMimeType(), FilesClient.md5sum(new Local.InputStream(this.getLocal())));
+
+
                     final int result = session.CF.storeObject(this.getContainerName(), new File(this.getLocal().getAbsolute()),
                             this.getLocal().getMimeType());
                     if(result != FilesConstants.OBJECT_CREATED) {
                         throw new MossoException(String.valueOf(result));
                     }
-                    // Manually mark as complete
-                    final long size = this.getLocal().attributes.getSize();
-                    this.getStatus().setCurrent(size);
-                    listener.bytesSent(size);
-                    this.getStatus().setComplete(true);
                 }
                 catch(NoSuchAlgorithmException e) {
                     throw new MossoException(e.getMessage());

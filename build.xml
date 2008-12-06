@@ -360,6 +360,16 @@
                 <include name="log4j.xml"/>
             </fileset>
 		</jar>
+        <jar jarfile="${build}/cloudfiles.jar"
+            update="yes"
+            manifest="${build}/MANIFEST.MF">
+            <fileset dir="${build.classes}">
+                <include name="com/mosso/**/*.class"/>
+            </fileset>
+            <fileset dir="${lib}">
+                <include name="cloudfiles.properties"/>
+            </fileset>
+        </jar>
 		<jar jarfile="${build}/ganymed.jar"
 			update="yes"
 			manifest="${build}/MANIFEST.MF">
