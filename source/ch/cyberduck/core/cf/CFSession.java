@@ -107,6 +107,7 @@ public class CFSession extends HTTPSession implements SSLSession {
                 host.getProtocol().getName(), host.getHostname()));
 
         this.CF = new FilesClient();
+        this.CF.setConnectionTimeOut(this.timeout());
         final HostConfiguration hostConfiguration = new StickyHostConfiguration();
         hostConfiguration.setHost(host.getHostname(), host.getPort(),
                 new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
