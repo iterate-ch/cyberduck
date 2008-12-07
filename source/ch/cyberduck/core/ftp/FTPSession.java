@@ -289,6 +289,10 @@ public class FTPSession extends Session {
         }
     }
 
+    public boolean isSendCommandSupported() {
+        return true;
+    }
+
     public void sendCommand(String command) throws IOException {
         if(this.isConnected()) {
             this.FTP.quote(command);

@@ -23,13 +23,10 @@ import com.apple.cocoa.foundation.NSBundle;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
-import java.io.CharArrayWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.MessageFormat;
 
 import ch.ethz.ssh2.*;
@@ -315,7 +312,6 @@ public class SFTPSession extends Session {
     }
 
     /**
-     *
      * @param sftp
      * @throws IOException
      */
@@ -354,8 +350,38 @@ public class SFTPSession extends Session {
 
     }
 
+    public boolean isSendCommandSupported() {
+        return true;
+    }
+
     public void sendCommand(String command) throws IOException {
-        throw new UnsupportedOperationException();
+        final ch.ethz.ssh2.Session sess = SSH.openSession();
+        try {
+            sess.execCommand(command, host.getEncoding());
+
+            BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
+            BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
+
+            // Here is the output from stdout
+            while(true) {
+                String line = stdoutReader.readLine();
+                if(null == line) {
+                    break;
+                }
+                this.log(false, line);
+            }
+            // Here is the output from stderr
+            while(true) {
+                String line = stderrReader.readLine();
+                if(null == line) {
+                    break;
+                }
+                this.log(false, line);
+            }
+        }
+        finally {
+            sess.close();
+        }
     }
 
     public boolean isConnected() {

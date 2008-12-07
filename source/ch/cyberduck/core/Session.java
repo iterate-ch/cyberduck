@@ -286,6 +286,10 @@ public abstract class Session extends NSObject {
         this.resolver.cancel();
     }
 
+    public boolean isSendCommandSupported() {
+        return false;
+    }
+
     /**
      * Sends an arbitrary command to the server
      *
