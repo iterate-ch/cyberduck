@@ -199,9 +199,6 @@ public class CDInfoController extends CDWindowController {
 
     public void setDistributionUrlField(NSTextField t) {
         this.distributionUrlField = t;
-        this.distributionUrlField.setStringValue(
-                NSBundle.localizedString("Unknown", "")
-        );
         this.distributionUrlField.setAllowsEditingTextAttributes(true);
         this.distributionUrlField.setSelectable(true);
     }
@@ -569,18 +566,23 @@ public class CDInfoController extends CDWindowController {
      */
     private void initDistribution(Path file) {
         final boolean cloud = file instanceof CloudPath;
+
         distributionToggle.setEnabled(cloud);
-        distributionEnableButton.setEnabled(cloud);
         distributionStatusButton.setEnabled(cloud);
         distributionApplyButton.setEnabled(cloud);
+
+        distributionUrlField.setStringValue(NSBundle.localizedString("Unknown", ""));
         distributionUrlField.setEnabled(cloud);
+
+        distributionStatusField.setStringValue(NSBundle.localizedString("Unknown", ""));
         distributionStatusField.setEnabled(cloud);
-        if(cloud) {
-            distributionStatusButtonClicked(null);
-        }
+
         // Amazon S3 only
         final boolean amazon = file instanceof S3Path;
+
+        distributionCnameField.setStringValue(NSBundle.localizedString("Unknown", ""));
         distributionCnameField.setEnabled(amazon);
+
         String servicename = "";
         if(amazon) {
             servicename = NSBundle.localizedString("Amazon CloudFront", "S3", "");
@@ -590,8 +592,13 @@ public class CDInfoController extends CDWindowController {
         if(mosso) {
             servicename = NSBundle.localizedString("Mosso Cloud Files", "Mosso", "");
         }
+        distributionEnableButton.setEnabled(cloud);
         distributionEnableButton.setTitle(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
                 servicename));
+
+        if(cloud) {
+            distributionStatusButtonClicked(null);
+        }
     }
 
     /**
