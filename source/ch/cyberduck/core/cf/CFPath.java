@@ -29,7 +29,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -115,26 +114,20 @@ public class CFPath extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Disable {0} Distribution", "Status", ""),
                         NSBundle.localizedString("Mosso Cloud Files", "Mosso", "")));
             }
-            try {
-                if(enabled) {
-                    final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
-                    if(null == info) {
-                        // Not found.
-                        session.CF.cdnEnableContainer(container);
-                    }
-                    else {
-                        // Enable content distribution for the container without changing the TTL expiration
-                        session.CF.cdnUpdateContainer(container, -1, true);
-                    }
+            if(enabled) {
+                final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
+                if(null == info) {
+                    // Not found.
+                    session.CF.cdnEnableContainer(container);
                 }
                 else {
-                    // Disable content distribution for the container
-                    session.CF.cdnUpdateContainer(container, -1, false);
+                    // Enable content distribution for the container without changing the TTL expiration
+                    session.CF.cdnUpdateContainer(container, -1, true);
                 }
             }
-            catch(FilesAuthorizationException e) {
-                session.interrupt();
-                throw new MossoException(e);
+            else {
+                // Disable content distribution for the container
+                session.CF.cdnUpdateContainer(container, -1, false);
             }
         }
         catch(IOException e) {
@@ -144,28 +137,19 @@ public class CFPath extends CloudPath {
 
     public Distribution readDistribution() {
         try {
-            final FilesCDNContainer info;
-            try {
-                session.check();
-                info = session.CF.getCDNContainerInfo(this.getContainerName());
-            }
-            catch(FilesAuthorizationException e) {
-                session.interrupt();
-                throw new MossoException(e);
-            }
+            session.check();
+            final FilesCDNContainer info = session.CF.getCDNContainerInfo(this.getContainerName());
             if(null == info) {
                 // Not found.
-                return new Distribution(false, this.getContainerName(),
-                        null, NSBundle.localizedString("CDN Disabled", "Mosso", ""));
+                return new Distribution(false, null, NSBundle.localizedString("CDN Disabled", "Mosso", ""));
             }
-            return new Distribution(info.isEnabled(),
-                    this.getContainerName(), info.getCdnURL(),
+            return new Distribution(info.isEnabled(), info.getCdnURL(),
                     info.isEnabled() ? NSBundle.localizedString("CDN Enabled", "Mosso", "") : NSBundle.localizedString("CDN Disabled", "Mosso", ""));
         }
         catch(IOException e) {
             this.error(e.getMessage(), e);
         }
-        return new Distribution(false);
+        return new Distribution(false, null, null);
     }
 
     public boolean exists() {
@@ -218,7 +202,8 @@ public class CFPath extends CloudPath {
             if(!this.isContainer()) {
                 try {
                     attributes.setModificationDate(
-                            ServiceUtils.parseRfc822Date(session.CF.getObjectMetaData(this.getContainerName(), this.getName()).getLastModified()).getTime()
+                            ServiceUtils.parseRfc822Date(session.CF.getObjectMetaData(this.getContainerName(),
+                                    this.getName()).getLastModified()).getTime()
                     );
                 }
                 catch(ParseException e) {
@@ -266,24 +251,16 @@ public class CFPath extends CloudPath {
 
             if(this.isRoot()) {
                 // List all containers
-                try {
-                    for(FilesContainer container : session.CF.listContainers()) {
-                        CFPath p = (CFPath) PathFactory.createPath(session, this.getAbsolute(), container.getName(),
-                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                        p._cdnUrl = p.readDistribution().getUrl();
-
-                        if(metadata) {
-                            final FilesContainerInfo info = container.getInfo();
-                            p.attributes.setSize(info.getTotalSize());
-                        }
-                        p.attributes.setOwner(session.CF.getUserName());
-
-                        childs.add(p);
+                for(FilesContainer container : session.CF.listContainers()) {
+                    CFPath p = (CFPath) PathFactory.createPath(session, this.getAbsolute(), container.getName(),
+                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                    if(metadata) {
+                        final FilesContainerInfo info = container.getInfo();
+                        p.attributes.setSize(info.getTotalSize());
                     }
-                }
-                catch(FilesAuthorizationException e) {
-                    session.interrupt();
-                    throw new MossoException(e);
+                    p.attributes.setOwner(session.CF.getUserName());
+
+                    childs.add(p);
                 }
             }
             else {
@@ -291,8 +268,6 @@ public class CFPath extends CloudPath {
                     final CFPath child = (CFPath) PathFactory.createPath(session, this.getContainerName(), object.getName(),
                             Path.FILE_TYPE);
                     child.setParent(this);
-                    child._cdnUrl = this._cdnUrl;
-
                     if(metadata) {
                         final FilesObjectMetaData meta = object.getMetaData();
                         child.attributes.setSize(Long.parseLong(meta.getContentLength()));
@@ -376,7 +351,7 @@ public class CFPath extends CloudPath {
 
                 final InputStream in = new Local.InputStream(this.getLocal());
                 try {
-                    session.CF.storeObjectAs(this.getContainerName(), this.getName(), new InputStream() {
+                    final int result = session.CF.storeObjectAs(this.getContainerName(), this.getName(), new InputStream() {
                         long bytesTransferred = getStatus().getCurrent();
 
                         public int read() throws IOException {
@@ -403,16 +378,9 @@ public class CFPath extends CloudPath {
                             return read;
                         }
                     }, this.getLocal().attributes.getSize(), this.getLocal().getMimeType(), FilesClient.md5sum(new Local.InputStream(this.getLocal())));
-
-
-                    final int result = session.CF.storeObject(this.getContainerName(), new File(this.getLocal().getAbsolute()),
-                            this.getLocal().getMimeType());
-                    if(result != FilesConstants.OBJECT_CREATED) {
-                        throw new MossoException(String.valueOf(result));
-                    }
                 }
                 catch(NoSuchAlgorithmException e) {
-                    throw new MossoException(e.getMessage());
+                    throw new IOException(e.getMessage());
                 }
             }
             if(attributes.isDirectory()) {
@@ -427,24 +395,14 @@ public class CFPath extends CloudPath {
         }
     }
 
-    public boolean isMkdirSupported() {
-        return this.isRoot();
-    }
-
     public void mkdir(boolean recursive) {
         log.debug("mkdir:" + this.getName());
         try {
-            if(!this.isContainer()) {
-                throw new MossoException("Container can only be created at top level");
-            }
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
             final int result = session.CF.createContainer(this.getName());
-            if(result != FilesConstants.CONTAINER_CREATED) {
-                throw new MossoException(String.valueOf(result));
-            }
         }
         catch(IOException e) {
             this.error("Cannot create folder", e);
@@ -460,9 +418,6 @@ public class CFPath extends CloudPath {
                         this.getName()));
 
                 final int result = session.CF.deleteObject(this.getContainerName(), this.getName());
-                if(result != FilesConstants.OBJECT_DELETED) {
-                    throw new MossoException(String.valueOf(result));
-                }
             }
             else if(attributes.isDirectory()) {
                 for(AbstractPath i : this.childs()) {
@@ -473,9 +428,6 @@ public class CFPath extends CloudPath {
                 }
                 if(this.isContainer()) {
                     final int result = session.CF.deleteContainer(this.getContainerName());
-                    if(result != FilesConstants.CONTAINER_DELETED) {
-                        throw new MossoException(String.valueOf(result));
-                    }
                 }
             }
         }
@@ -497,26 +449,17 @@ public class CFPath extends CloudPath {
         throw new UnsupportedOperationException();
     }
 
-
+    /**
+     * @return Publicy accessible URL of given object
+     */
     public String toHttpURL() {
-        return this.toURL();
-    }
-
-    /**
-     * Cloud distribution base URL
-     */
-    private String _cdnUrl;
-
-    /**
-     * Overwritten to provide publicy accessible URL of given object
-     *
-     * @return
-     */
-    public String toURL() {
+        final Distribution distribution = this.readDistribution();
+        if(null == distribution.getUrl()) {
+            return super.toHttpURL();
+        }
         StringBuffer b = new StringBuffer();
-        b.append(this._cdnUrl);
-        b.append(Path.DELIMITER);
-        b.append(this.getKey());
+        b.append(distribution.getUrl());
+        b.append(this.encode(this.getKey()));
         return b.toString();
     }
 }

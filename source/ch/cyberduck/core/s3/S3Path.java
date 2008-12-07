@@ -808,10 +808,6 @@ public class S3Path extends CloudPath {
         }
     }
 
-    public boolean isMkdirSupported() {
-        return this.isRoot();
-    }
-
     /**
      * @return
      */
@@ -821,7 +817,6 @@ public class S3Path extends CloudPath {
             for(org.jets3t.service.model.cloudfront.Distribution d : session.listDistributions(this.getContainerName())) {
                 // We currently only support one distribution per bucket
                 return new Distribution(d.isEnabled(),
-                        "http://" + RestS3Service.generateS3HostnameForBucket(this.getContainerName()),
                         "http://" + d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs());
             }
         }
@@ -831,7 +826,7 @@ public class S3Path extends CloudPath {
         catch(IOException e) {
             this.error(e.getMessage(), e);
         }
-        return new Distribution(false);
+        return new Distribution(false, null, null);
     }
 
     /**

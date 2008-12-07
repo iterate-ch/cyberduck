@@ -81,4 +81,12 @@ public abstract class CloudPath extends Path {
      * @return
      */
     public abstract Distribution readDistribution();
+
+    /**
+     *
+     * @return
+     */
+    public boolean isMkdirSupported() {
+        return this.isRoot();
+    }
 }
