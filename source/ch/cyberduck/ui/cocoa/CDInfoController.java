@@ -144,7 +144,7 @@ public class CDInfoController extends CDWindowController {
     public void setSizeButton(NSButton sizeButton) {
         this.sizeButton = sizeButton;
         this.sizeButton.setTarget(this);
-        this.sizeButton.setAction(new NSSelector("sizeButtonClicked", new Class[]{Object.class}));
+        this.sizeButton.setAction(new NSSelector("calculateSizeButtonClicked", new Class[]{Object.class}));
     }
 
     private NSProgressIndicator sizeProgress; // IBOutlet
@@ -360,7 +360,7 @@ public class CDInfoController extends CDWindowController {
             Path file = this.files.get(0);
             this.filenameField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.getName());
-            this.filenameField.setEnabled(1 == count);
+            this.filenameField.setEnabled(1 == count && file.isRenameSupported());
             if(file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getSymbolicLinkPath(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -369,10 +369,6 @@ public class CDInfoController extends CDWindowController {
                 this.pathField.setAttributedStringValue(new NSAttributedString(file.getParent().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
-            this.webUrlField.setAttributedStringValue(
-                    HyperlinkAttributedStringFactory.create(
-                            new NSMutableAttributedString(new NSAttributedString(file.toHttpURL(), TRUNCATE_MIDDLE_ATTRIBUTES)), file.toHttpURL())
-            );
             this.groupField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getGroup());
             if(count > 1) {
@@ -414,10 +410,37 @@ public class CDInfoController extends CDWindowController {
                 this.recursiveCheckbox.setState(NSCell.OffState);
             }
 
+            // Sum of files
             this.initSize();
+            // Read HTTP URL
+            this.initWebUrl();
+            // Read permissions
             this.initPermissions();
-            this.initIcon(count, file);
+            // 
+            this.initIcon();
             this.initDistribution(file);
+        }
+    }
+
+    private void initWebUrl() {
+        if(this.numberOfFiles() > 1) {
+            this.webUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
+        }
+        else {
+            controller.background(new BrowserBackgroundAction(controller) {
+                String url;
+
+                public void run() {
+                    url = files.get(0).toHttpURL();
+                }
+
+                public void cleanup() {
+                    webUrlField.setAttributedStringValue(
+                            HyperlinkAttributedStringFactory.create(
+                                    new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+                    );
+                }
+            });
         }
     }
 
@@ -430,7 +453,7 @@ public class CDInfoController extends CDWindowController {
 
         // Disable Apply button and start progress indicator
         this.enablePermissionSettings(false);
-        this.permissionProgress.startAnimation(null);
+        permissionProgress.startAnimation(null);
 
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
@@ -532,15 +555,13 @@ public class CDInfoController extends CDWindowController {
      * @param count
      * @param file
      */
-    private void initIcon(int count, Path file) {
-        NSImage fileIcon;
-        if(count > 1) {
-            fileIcon = NSImage.imageNamed("multipleDocuments32.tiff");
+    private void initIcon() {
+        if(this.numberOfFiles() > 1) {
+            iconImageView.setImage(NSImage.imageNamed("multipleDocuments32.tiff"));
         }
         else {
-            fileIcon = CDIconCache.instance().iconForPath(file, 32);
+            iconImageView.setImage(CDIconCache.instance().iconForPath(files.get(0), 32));
         }
-        this.iconImageView.setImage(fileIcon);
     }
 
     /**
@@ -548,18 +569,18 @@ public class CDInfoController extends CDWindowController {
      */
     private void initDistribution(Path file) {
         final boolean cloud = file instanceof CloudPath;
-        this.distributionToggle.setEnabled(cloud);
-        this.distributionEnableButton.setEnabled(cloud);
-        this.distributionStatusButton.setEnabled(cloud);
-        this.distributionApplyButton.setEnabled(cloud);
-        this.distributionUrlField.setEnabled(cloud);
-        this.distributionStatusField.setEnabled(cloud);
+        distributionToggle.setEnabled(cloud);
+        distributionEnableButton.setEnabled(cloud);
+        distributionStatusButton.setEnabled(cloud);
+        distributionApplyButton.setEnabled(cloud);
+        distributionUrlField.setEnabled(cloud);
+        distributionStatusField.setEnabled(cloud);
         if(cloud) {
-            this.distributionStatusButtonClicked(null);
+            distributionStatusButtonClicked(null);
         }
         // Amazon S3 only
         final boolean amazon = file instanceof S3Path;
-        this.distributionCnameField.setEnabled(amazon);
+        distributionCnameField.setEnabled(amazon);
         String servicename = "";
         if(amazon) {
             servicename = NSBundle.localizedString("Amazon CloudFront", "S3", "");
@@ -569,7 +590,7 @@ public class CDInfoController extends CDWindowController {
         if(mosso) {
             servicename = NSBundle.localizedString("Mosso Cloud Files", "Mosso", "");
         }
-        this.distributionEnableButton.setTitle(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
+        distributionEnableButton.setTitle(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
                 servicename));
     }
 
@@ -578,13 +599,25 @@ public class CDInfoController extends CDWindowController {
      * rading the cached size value in the attributes of the path
      */
     private void initSize() {
-        long size = 0;
-        for(Path next : files) {
-            size += next.attributes.getSize();
-        }
-        this.sizeField.setAttributedStringValue(
-                new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+        sizeProgress.startAnimation(null);
+        controller.background(new BrowserBackgroundAction(controller) {
+            long size = 0;
+            public void run() {
+                for(Path next : files) {
+                    if(-1 == next.attributes.getSize()) {
+                        next.readSize();
+                    }
+                    size += next.attributes.getSize();
+                }
+            }
+
+            public void cleanup() {
+                sizeField.setAttributedStringValue(
+                        new NSAttributedString(Status.getSizeAsString(size) + " (" + size + " bytes)",
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                sizeProgress.stopAnimation(null);
+            }
+        });
     }
 
     /**
@@ -596,15 +629,15 @@ public class CDInfoController extends CDWindowController {
 
     public void filenameInputDidEndEditing(NSNotification sender) {
         if(this.numberOfFiles() == 1) {
-            final Path current = this.files.get(0);
-            if(!this.filenameField.stringValue().equals(current.getName())) {
-                if(this.filenameField.stringValue().indexOf('/') == -1) {
+            final Path current = files.get(0);
+            if(!filenameField.stringValue().equals(current.getName())) {
+                if(filenameField.stringValue().indexOf('/') == -1) {
                     final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                            current.getParent().getAbsolute(), this.filenameField.stringValue(), current.attributes.getType());
+                            current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes.getType());
                     controller.renamePath(current, renamed);
                 }
                 else if(!StringUtils.isNotBlank(filenameField.stringValue())) {
-                    this.filenameField.setStringValue(current.getName());
+                    filenameField.setStringValue(current.getName());
                 }
                 else {
                     this.alert(NSAlertPanel.informationalAlertPanel(
@@ -658,7 +691,7 @@ public class CDInfoController extends CDWindowController {
      */
     public void permissionApplyButtonClicked(final Object sender) {
         this.enablePermissionSettings(false);
-        this.permissionProgress.startAnimation(null);
+        permissionProgress.startAnimation(null);
         final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
@@ -712,14 +745,14 @@ public class CDInfoController extends CDWindowController {
      * @param enable
      */
     private void enableDistributionSettings(boolean enable) {
-        this.distributionStatusButton.setEnabled(enable);
-        this.distributionApplyButton.setEnabled(enable);
-        this.distributionEnableButton.setEnabled(enable);
+        distributionStatusButton.setEnabled(enable);
+        distributionApplyButton.setEnabled(enable);
+        distributionEnableButton.setEnabled(enable);
         if(enable) {
-            this.distributionProgress.stopAnimation(null);
+            distributionProgress.stopAnimation(null);
         }
         else {
-            this.distributionProgress.startAnimation(null);
+            distributionProgress.startAnimation(null);
         }
     }
 
@@ -781,11 +814,14 @@ public class CDInfoController extends CDWindowController {
                     distributionCnameUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
                 }
                 else {
-                    final String url = distribution.getUrl() + key;
-                    distributionUrlField.setAttributedStringValue(
-                            HyperlinkAttributedStringFactory.create(
-                                    new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
-                    );
+                    if(null == distribution.getUrl()) {
+                        distributionUrlField.setStringValue(NSBundle.localizedString("Unknown", ""));
+                    }
+                    else {
+                        final String url = distribution.getUrl() + key;
+                        distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(new NSMutableAttributedString(
+                                new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url));
+                    }
                 }
                 final String[] cnames = distribution.getCNAMEs();
                 if(0 == cnames.length) {
@@ -811,10 +847,10 @@ public class CDInfoController extends CDWindowController {
     /**
      * @param sender
      */
-    public void sizeButtonClicked(final Object sender) {
-        log.debug("sizeButtonClicked");
-        this.sizeButton.setEnabled(false);
-        this.sizeProgress.startAnimation(null);
+    public void calculateSizeButtonClicked(final Object sender) {
+        log.debug("calculateSizeButtonClicked");
+        sizeButton.setEnabled(false);
+        sizeProgress.startAnimation(null);
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
