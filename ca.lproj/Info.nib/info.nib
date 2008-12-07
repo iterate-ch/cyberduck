@@ -8,6 +8,10 @@
 	<string>489.0</string>
 	<key>IBOldestOS</key>
 	<integer>3</integer>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>21</integer>
+	</array>
 	<key>IBSystem Version</key>
 	<string>9F2114</string>
 	<key>targetFramework</key>
