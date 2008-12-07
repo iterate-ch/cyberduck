@@ -593,6 +593,34 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     *
+     * @return True if a known file extension for compressed archives
+     */
+    public boolean isArchive() {
+        return this.getName().endsWith("zip")
+                || this.getName().endsWith("tar")
+                || this.getName().endsWith("tar.bz2")
+                || this.getName().endsWith("tar.gz")
+                || this.getName().endsWith("tgz");
+    }
+
+    /**
+     * Create ompressed archive.
+     * @throws UnsupportedOperationException
+     */
+    public void archive() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Unpack compressed archive
+     * @throws UnsupportedOperationException
+     */
+    public void unarchive() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * @return true if the path exists (or is cached!)
      */
     public boolean exists() {

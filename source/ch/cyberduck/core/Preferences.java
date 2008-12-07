@@ -470,6 +470,14 @@ public abstract class Preferences {
         defaults.put("ssh.publickey", "ssh-rsa");
         defaults.put("ssh.compression", "none"); //zlib
 
+        defaults.put("archive.command", "tar -czpPfv {0}.tar.gz {0}");
+
+        defaults.put("unarchive.command.zip", "unzip {0} -d {1}");
+        defaults.put("unarchive.command.tar", "tar -xvpPf {0} -C {1}");
+        defaults.put("unarchive.command.tgz", "tar -xzvpPf {0} -C {1}");
+        defaults.put("unarchive.command.tar.gz", "tar -xzvpPf {0} -C {1}");
+        defaults.put("unarchive.command.tar.bz2", "tar -xjvpPf {0} -C {1}");
+
         defaults.put("update.check", String.valueOf(true));
         final int DAY = 60*60*24;
         defaults.put("update.check.interval", String.valueOf(DAY)); // periodic update check in seconds

@@ -207,7 +207,7 @@ public class SFTPPath extends Path {
                 session.sftp().rm(this.getAbsolute());
             }
             else if(this.attributes.isDirectory()) {
-                for(AbstractPath child: this.childs()) {
+                for(AbstractPath child : this.childs()) {
                     if(!session.isConnected()) {
                         break;
                     }
@@ -394,7 +394,7 @@ public class SFTPPath extends Path {
             session.sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes.isDirectory()) {
                 if(recursive) {
-                    for(AbstractPath child: this.childs()) {
+                    for(AbstractPath child : this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
@@ -570,6 +570,58 @@ public class SFTPPath extends Path {
             catch(IOException e) {
                 log.error(e.getMessage());
             }
+        }
+    }
+
+    public void archive() {
+        try {
+            session.check();
+
+            final String archive = this.getName() + ".tar.gz";
+            session.message(MessageFormat.format(NSBundle.localizedString("Create Archive {0}", "Status", ""), archive));
+            final String command = MessageFormat.format(Preferences.instance().getProperty("archive.command"), this.getAbsolute());
+            session.sendCommand(command);
+        }
+        catch(IOException e) {
+            this.error("Cannot create archive", e);
+        }
+    }
+
+    public void unarchive() {
+        try {
+            session.check();
+
+            String command = null;
+            if(this.getName().endsWith("zip")) {
+                command = MessageFormat.format(Preferences.instance().getProperty("unarchive.command.zip"),
+                        this.getAbsolute(), this.getParent().getAbsolute());
+            }
+            else if(this.getName().endsWith("tar")) {
+                command = MessageFormat.format(Preferences.instance().getProperty("unarchive.command.tar"),
+                        this.getAbsolute(), this.getParent().getAbsolute());
+            }
+            else if(this.getName().endsWith("tar.bz2")) {
+                command = MessageFormat.format(Preferences.instance().getProperty("unarchive.command.tar.bz2"),
+                        this.getAbsolute(), this.getParent().getAbsolute());
+            }
+            else if(this.getName().endsWith("tar.gz")) {
+                command = MessageFormat.format(Preferences.instance().getProperty("unarchive.command.tar.gz"),
+                        this.getAbsolute(), this.getParent().getAbsolute());
+            }
+            else if(this.getName().endsWith("tgz")) {
+                command = MessageFormat.format(Preferences.instance().getProperty("unarchive.command.tgz"),
+                        this.getAbsolute(), this.getParent().getAbsolute());
+            }
+            if(null == command) {
+                log.error("No archive extension");
+                return;
+            }
+
+            session.message(MessageFormat.format(NSBundle.localizedString("Expand Archive {0}", "Status", ""), this.getName()));
+            session.sendCommand(command);
+        }
+        catch(IOException e) {
+            this.error("Cannot create archive", e);
         }
     }
 }
