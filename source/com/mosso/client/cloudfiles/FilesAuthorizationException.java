@@ -6,8 +6,9 @@ package com.mosso.client.cloudfiles;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.StatusLine;
+import org.apache.commons.httpclient.HttpException;
 
-public class FilesAuthorizationException extends Exception
+public class FilesAuthorizationException extends HttpException
 {
     private Header [] httpHeaders;
     private StatusLine httpStatusLine;
