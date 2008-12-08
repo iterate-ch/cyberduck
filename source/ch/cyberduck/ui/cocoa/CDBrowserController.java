@@ -29,6 +29,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -1831,9 +1832,9 @@ public class CDBrowserController extends CDWindowController
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
             c.headerCell().setStringValue("");
-            c.setMinWidth(32f);
-            c.setWidth(32f);
-            c.setMaxWidth(32f);
+            c.setMinWidth(40f);
+            c.setWidth(40f);
+            c.setMaxWidth(40f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
@@ -3506,18 +3507,76 @@ public class CDBrowserController extends CDWindowController
         );
     }
 
-    public void archiveButtonClicked(final Object sender) {
-        for(Path selected: this.getSelectedPaths()) {
-            selected.archive();
-        }
-        this.reloadButtonClicked(null);
+    /**
+     *
+     * @param sender
+     */
+    public void archiveMenuClicked(final NSMenuItem sender) {
+        final Archive archive = (Archive)sender.representedObject();
+        this.archive(archive);
     }
 
+    /**
+     *
+     * @param sender
+     */
+    public void archiveButtonClicked(final NSToolbarItem sender) {
+        final Archive archive = Archive.TARGZ;
+        archive(archive);
+    }
+
+    private void archive(final Archive archive) {
+        this.background(new BrowserBackgroundAction(this) {
+            Path current;
+
+            public void run() {
+                for(Path selected: getSelectedPaths()) {
+                    current = selected;
+                    selected.archive(archive);
+                }
+            }
+
+            public void cleanup() {
+                reloadButtonClicked(null);
+            }
+
+            public String getActivity() {
+                return MessageFormat.format(NSBundle.localizedString("Archiving {0}", "Status", ""),
+                    archive.getTitle(current));
+            }
+        });
+    }
+
+    /**
+     * 
+     * @param sender
+     */
     public void unarchiveButtonClicked(final Object sender) {
-        for(Path selected: this.getSelectedPaths()) {
-            selected.unarchive();
-        }
-        this.reloadButtonClicked(null);
+        this.background(new BrowserBackgroundAction(this) {
+            Path current;
+            Archive archive;
+
+            public void run() {
+                for(Path selected: getSelectedPaths()) {
+                    current = selected;
+                    archive = Archive.forName(selected.getName());
+                    if(null == archive) {
+                        continue;
+                    }
+                    selected.unarchive(archive);
+                }
+            }
+
+            public void cleanup() {
+                reloadButtonClicked(sender);
+            }
+
+
+            public String getActivity() {
+                return MessageFormat.format(NSBundle.localizedString("Unarchiving {0}", "Status", ""),
+                    archive.getTitle(current));
+            }
+        });
     }
 
     /**
@@ -4084,7 +4143,7 @@ public class CDBrowserController extends CDWindowController
                 item.setTitle(NSBundle.localizedString("Paste from Finder", "Menu item"));
             }
         }
-        if(action.equals("paste:")) {
+        else if(action.equals("paste:")) {
             boolean valid = false;
             if(this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
@@ -4113,26 +4172,26 @@ public class CDBrowserController extends CDWindowController
                 item.setTitle(NSBundle.localizedString("Paste", "Menu item"));
             }
         }
-        if(action.equals("cut:")) {
-            if(this.isMounted()) {
-                Path selected = this.getSelectedPath();
-                if(null == selected) {
+        else if(action.equals("cut:")) {
+            int count = this.getSelectionCount();
+            if(this.isMounted() && count > 0) {
+                if(count > 1) {
                     item.setTitle(NSBundle.localizedString("Cut", "Menu item")
                             + " " + this.getSelectionCount() + " " +
                             NSBundle.localizedString("files", ""));
                 }
                 else {
-                    item.setTitle(NSBundle.localizedString("Cut", "Menu item") + " \"" + selected.getName() + "\"");
+                    item.setTitle(NSBundle.localizedString("Cut", "Menu item") + " \"" + this.getSelectedPath().getName() + "\"");
                 }
             }
             else {
                 item.setTitle(NSBundle.localizedString("Cut", "Menu item"));
             }
         }
-        if(action.equals("showHiddenFilesClicked:")) {
+        else if(action.equals("showHiddenFilesClicked:")) {
             item.setState(this.getFileFilter() instanceof NullPathFilter ? NSCell.OnState : NSCell.OffState);
         }
-        if(action.equals("encodingMenuClicked:")) {
+        else if(action.equals("encodingMenuClicked:")) {
             if(this.isMounted()) {
                 item.setState(this.session.getEncoding().equalsIgnoreCase(
                         item.title()) ? NSCell.OnState : NSCell.OffState);
@@ -4142,12 +4201,27 @@ public class CDBrowserController extends CDWindowController
                         item.title()) ? NSCell.OnState : NSCell.OffState);
             }
         }
-        if(action.equals("browserSwitchMenuClicked:")) {
+        else if(action.equals("browserSwitchMenuClicked:")) {
             if(item.tag() == Preferences.instance().getInteger("browser.view")) {
                 item.setState(NSCell.OnState);
             }
             else {
                 item.setState(NSCell.OffState);
+            }
+        }
+        else if(action.equals("archiveMenuClicked:")) {
+            final Archive archive = (Archive)item.representedObject();
+            int count = this.getSelectionCount();
+            if(this.isMounted() && count > 0) {
+                if(count > 1) {
+                    item.setTitle(archive.getExtensions() + " " + count + " " + NSBundle.localizedString("files", ""));
+                }
+                else {
+                    item.setTitle(archive.getTitle(this.getSelectedPath()));
+                }
+            }
+            else {
+                item.setTitle(archive.getIdentifier());
             }
         }
         return this.validateItem(action);
@@ -4233,7 +4307,7 @@ public class CDBrowserController extends CDWindowController
             return this.isMounted();
         }
         if(action.equals("sendCustomCommandClicked:")) {
-            return this.session.isSendCommandSupported();
+            return this.isMounted() && this.getSession().isSendCommandSupported();
         }
         if(action.equals("gotoButtonClicked:")) {
             return this.isMounted();
@@ -4335,18 +4409,19 @@ public class CDBrowserController extends CDWindowController
         if(action.equals("openTerminalButtonClicked:")) {
             return this.isMounted() && this.getSession() instanceof SFTPSession;
         }
-        if(action.equals("archiveButtonClicked:")) {
+        if(action.equals("archiveButtonClicked:") || action.equals("archiveMenuClicked:")) {
             if(this.isMounted()) {
                 if(this.getSelectionCount() > 0) {
-                    if(this.getSession() instanceof SFTPSession) {
-                        for(Path selected: this.getSelectedPaths()) {
-                            if(selected.attributes.isFile() && selected.isArchive()) {
-                                // At least one file selected is already an archive. No distinct action possible
-                                return false;
-                            }
+                    for(Path selected: this.getSelectedPaths()) {
+                        if(!selected.isArchiveSupported()) {
+                            return false;
                         }
-                        return true;
+                        if(selected.attributes.isFile() && Archive.isArchive(selected.getName())) {
+                            // At least one file selected is already an archive. No distinct action possible
+                            return false;
+                        }
                     }
+                    return true;
                 }
             }
             return false;
@@ -4354,14 +4429,15 @@ public class CDBrowserController extends CDWindowController
         if(action.equals("unarchiveButtonClicked:")) {
             if(this.isMounted()) {
                 if(this.getSelectionCount() > 0) {
-                    if(this.getSession() instanceof SFTPSession) {
-                        for(Path selected: this.getSelectedPaths()) {
-                            if(selected.attributes.isFile() && !selected.isArchive()) {
-                                return false;
-                            }
+                    for(Path selected: this.getSelectedPaths()) {
+                        if(!selected.isUnarchiveSupported()) {
+                            return false;
                         }
-                        return true;
+                        if(selected.attributes.isFile() && !Archive.isArchive(selected.getName())) {
+                            return false;
+                        }
                     }
+                    return true;
                 }
             }
             return false;
@@ -4402,13 +4478,13 @@ public class CDBrowserController extends CDWindowController
         if(item.itemIdentifier().equals(TOOLBAR_ARCHIVE)) {
             final Path selected = this.getSelectedPath();
             if(null != selected) {
-                if(selected.isArchive()) {
-                    item.setLabel(NSBundle.localizedString("Unarchive", "Toolbar item"));
+                if(Archive.isArchive(selected.getName())) {
+                    item.setLabel(NSBundle.localizedString("Unarchive", "Archive", "Toolbar item"));
                     item.setPaletteLabel(NSBundle.localizedString("Unarchive", "Toolbar item"));
                     item.setAction(new NSSelector("unarchiveButtonClicked", new Class[]{Object.class}));
                 }
                 else {
-                    item.setLabel(NSBundle.localizedString("Archive", "Toolbar item"));
+                    item.setLabel(NSBundle.localizedString("Archive", "Archive", "Toolbar item"));
                     item.setPaletteLabel(NSBundle.localizedString("Archive", "Toolbar item"));
                     item.setAction(new NSSelector("archiveButtonClicked", new Class[]{Object.class}));
                 }
@@ -4445,6 +4521,9 @@ public class CDBrowserController extends CDWindowController
      */
     private final EditMenuDelegate editMenuDelegate
             = new EditMenuDelegate();
+
+    private final ArchiveMenuDelegate archiveMenuDelegate
+            = new ArchiveMenuDelegate();
 
     public NSToolbarItem toolbarItemForItemIdentifier(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
         final NSToolbarItem item = new NSToolbarItem(itemIdentifier);
@@ -4688,8 +4767,8 @@ public class CDBrowserController extends CDWindowController
         }
         if(itemIdentifier.equals(TOOLBAR_ARCHIVE)) {
             final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.archiveutility");
-            item.setLabel(NSBundle.localizedString("Archive", "Toolbar item"));
-            item.setPaletteLabel(NSBundle.localizedString("Archive", "Toolbar item"));
+            item.setLabel(NSBundle.localizedString("Archive", "Archive", "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString("Archive", "Archive", "Toolbar item"));
             item.setImage(CDIconCache.instance().iconForPath(new Local(t), 128));
             item.setTarget(this);
             item.setAction(new NSSelector("archiveButtonClicked", new Class[]{Object.class}));
