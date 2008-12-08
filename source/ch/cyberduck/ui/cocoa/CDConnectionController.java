@@ -57,6 +57,7 @@ public class CDConnectionController extends CDSheetController {
                 continue;
             }
             icon.setCacheMode(NSImage.ImageCacheNever);
+            icon.setScalesWhenResized(true);
             icon.setSize(new NSSize(16, 16));
             item.setImage(icon);
         }
