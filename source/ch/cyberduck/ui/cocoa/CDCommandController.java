@@ -27,6 +27,7 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -36,9 +37,11 @@ import com.enterprisedt.net.ftp.FTPException;
  * @version $Id$
  */
 public class CDCommandController extends CDSheetController implements TranscriptListener {
+    private static Logger log = Logger.getLogger(CDCommandController.class);
 
     private NSTextField inputField; //IBOutlet
     private NSTextView responseField; //IBOUtltet
+    private NSProgressIndicator progress;
 
     public void setInputField(NSTextField inputField) {
         this.inputField = inputField;
@@ -53,6 +56,11 @@ public class CDCommandController extends CDSheetController implements Transcript
         this.responseField.layoutManager().setDelegate(this);
     }
 
+    public void setProgress(NSProgressIndicator progress) {
+        this.progress = progress;
+        this.progress.setDisplayedWhenStopped(false);
+    }
+
     public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
                                                                NSTextContainer textContainer,
                                                                boolean finished) {
@@ -63,6 +71,10 @@ public class CDCommandController extends CDSheetController implements Transcript
 
     private Session session;
 
+    /**
+     * @param parent
+     * @param session
+     */
     public CDCommandController(final CDWindowController parent, final Session session) {
         super(parent);
         this.session = session;
@@ -73,18 +85,37 @@ public class CDCommandController extends CDSheetController implements Transcript
         return "Command";
     }
 
+    /**
+     * @param sender
+     */
     public void sendButtonClicked(final NSButton sender) {
-        String command = this.inputField.stringValue();
+        final String command = this.inputField.stringValue();
         if(StringUtils.isNotBlank(command)) {
-            try {
-                session.sendCommand(command);
-            }
-            catch(FTPException e) {
-                ; //ignore
-            }
-            catch(IOException e) {
-                this.closeSheet(sender);
-            }
+            progress.startAnimation(sender);
+            sender.setEnabled(false);
+            parent.background(new BrowserBackgroundAction((CDBrowserController) parent) {
+                boolean close;
+
+                public void run() {
+                    try {
+                        session.sendCommand(command);
+                    }
+                    catch(FTPException e) {
+                        ; //ignore
+                    }
+                    catch(IOException e) {
+                        log.warn(e.getMessage());
+                    }
+                }
+
+                public void cleanup() {
+                    progress.stopAnimation(sender);
+                    sender.setEnabled(true);
+                    if(close) {
+                        closeSheet(sender);
+                    }
+                }
+            });
         }
     }
 
