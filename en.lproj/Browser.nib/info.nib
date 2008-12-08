@@ -11,9 +11,9 @@
 		<key>1189</key>
 		<string>594 547 91 66 0 0 1280 778 </string>
 		<key>511</key>
-		<string>438 520 404 103 0 0 1280 778 </string>
+		<string>438 519 404 103 0 0 1280 778 </string>
 		<key>953</key>
-		<string>104 323 194 446 0 0 1280 778 </string>
+		<string>881 405 194 527 0 0 1920 1178 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>489.0</string>
@@ -24,6 +24,6 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>9F33</string>
+	<string>9F2114</string>
 </dict>
 </plist>

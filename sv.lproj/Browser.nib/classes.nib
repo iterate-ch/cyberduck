@@ -23,6 +23,7 @@
                 {
             ACTIONS =             {
                 addBookmarkButtonClicked = id;
+                archiveButtonClicked = id;
                 connectBookmarkButtonClicked = id;
                 copyURLButtonClicked = id;
                 createFileButtonClicked = id;
@@ -41,6 +42,7 @@
                 reloadButtonClicked = id;
                 renameFileButtonClicked = id;
                 syncButtonClicked = id;
+                unarchiveButtonClicked = id;
                 uploadButtonClicked = id;
             };
             CLASS = FirstResponder;
@@ -86,6 +88,11 @@
                 upButton = NSSegmentedControl;
                 window = NSWindow;
             };
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = "ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate";
+            LANGUAGE = Java;
             SUPERCLASS = NSObject;
         },
                 {
