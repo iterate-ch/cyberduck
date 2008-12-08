@@ -3,6 +3,7 @@
                 {
             ACTIONS =             {
                 addBookmarkButtonClicked = id;
+                archiveButtonClicked = id;
                 backButtonClicked = id;
                 bookmarkSwitchClicked = id;
                 browserSwitchMenuClicked = id;
@@ -35,6 +36,7 @@
                 showTransferQueueClicked = id;
                 syncButtonClicked = id;
                 toggleLogDrawer = id;
+                unarchiveButtonClicked = id;
                 upButtonClicked = id;
                 uploadButtonClicked = id;
             };
