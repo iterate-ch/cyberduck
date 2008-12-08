@@ -48,7 +48,15 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup.addItemsWithTitles(new NSArray(Protocol.getProtocolDescriptions()));
         final Protocol[] protocols = Protocol.getKnownProtocols();
         for(int i = 0; i < protocols.length; i++) {
-            this.protocolPopup.itemWithTitle(protocols[i].getDescription()).setRepresentedObject(protocols[i]);
+            final NSMenuItem item = this.protocolPopup.itemWithTitle(protocols[i].getDescription());
+            item.setRepresentedObject(protocols[i]);
+            final NSImage icon = protocols[i].icon();
+            if(null == icon) {
+                continue;
+            }
+            icon.setCacheMode(NSImage.ImageCacheNever);
+            icon.setSize(new NSSize(16, 16));
+            item.setImage(icon);
         }
         this.protocolPopup.setTarget(this);
         this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
