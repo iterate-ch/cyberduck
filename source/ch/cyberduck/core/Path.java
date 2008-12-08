@@ -24,22 +24,22 @@ import com.apple.cocoa.foundation.NSMutableDictionary;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.io.IOResumeException;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -120,7 +120,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         Object attributesObj = dict.objectForKey(ATTRIBUTES);
         if(attributesObj != null) {
-            this.attributes = new PathAttributes((NSDictionary)attributesObj);
+            this.attributes = new PathAttributes((NSDictionary) attributesObj);
         }
     }
 
@@ -133,7 +133,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(StringUtils.isNotBlank(this.getSymbolicLinkPath())) {
             dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
         }
-        dict.setObjectForKey(((PathAttributes)this.attributes).getAsDictionary(), ATTRIBUTES);
+        dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), ATTRIBUTES);
         return dict;
     }
 
@@ -527,7 +527,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 else {
                     l.bytesReceived(bytes);
                     if(updateIcon) {
-                        int fraction = (int)(getStatus().getCurrent() / attributes.getSize() * 10);
+                        int fraction = (int) (getStatus().getCurrent() / attributes.getSize() * 10);
                         // An integer between 0 and 9
                         if(fraction > step) {
                             // Another 10 percent of the file has been transferred
@@ -594,30 +594,54 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      *
-     * @return True if a known file extension for compressed archives
+     * @return False
      */
-    public boolean isArchive() {
-        return this.getName().endsWith("zip")
-                || this.getName().endsWith("tar")
-                || this.getName().endsWith("tar.bz2")
-                || this.getName().endsWith("tar.gz")
-                || this.getName().endsWith("tgz");
+    public boolean isArchiveSupported() {
+        return false;
     }
 
     /**
      * Create ompressed archive.
-     * @throws UnsupportedOperationException
+     *
+     * @param archive
      */
-    public void archive() {
-        throw new UnsupportedOperationException();
+    public void archive(final Archive archive) {
+        try {
+            this.getSession().check();
+
+            this.getSession().message(MessageFormat.format(NSBundle.localizedString("Archiving {0}", "Status", ""),
+                    archive.getTitle(this)));
+            this.getSession().sendCommand(archive.getCompressCommand(this));
+        }
+        catch(IOException e) {
+            this.error("Cannot create archive", e);
+        }
+    }
+
+    /**
+     *
+     * @return False
+     */
+    public boolean isUnarchiveSupported() {
+        return false;
     }
 
     /**
      * Unpack compressed archive
-     * @throws UnsupportedOperationException
+     *
+     * @param archive
      */
-    public void unarchive() {
-        throw new UnsupportedOperationException();
+    public void unarchive(final Archive archive) {
+        try {
+            this.getSession().check();
+
+            this.getSession().message(MessageFormat.format(NSBundle.localizedString("Unarchiving {0}", "Status", ""),
+                    archive.getTitle(this)));
+            this.getSession().sendCommand(archive.getDecompressCommand(this));
+        }
+        catch(IOException e) {
+            this.error("Cannot expand archive", e);
+        }
     }
 
     /**
@@ -648,7 +672,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         if(other instanceof Path) {
             //BUG: returns the wrong result on case-insensitive systems, e.g. NT!
-            return this.getAbsolute().equals(((AbstractPath)other).getAbsolute());
+            return this.getAbsolute().equals(((AbstractPath) other).getAbsolute());
         }
         return false;
     }
@@ -662,9 +686,10 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      * URL encode a path
-     * @see URLEncoder#encode(String, String) 
+     *
      * @param p
      * @return
+     * @see URLEncoder#encode(String, String)
      */
     public String encode(final String p) {
         try {
@@ -690,7 +715,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
      * @return
      */
     public String toHttpURL() {
@@ -698,7 +722,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
      * @param host
      * @return
      */

@@ -23,8 +23,8 @@ import com.apple.cocoa.foundation.NSObject;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -32,7 +32,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Timer;
 
 /**
  * @version $Id$
@@ -304,6 +303,7 @@ public abstract class Session extends NSObject {
 
     /**
      * If a connection attempt is currently being made.
+     *
      * @return
      */
     public boolean isOpening() {
@@ -389,7 +389,7 @@ public abstract class Session extends NSObject {
 
         this.resolver = null;
         this.workdir = null;
-        
+
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
             l[i].connectionDidClose();
