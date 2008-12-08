@@ -72,17 +72,17 @@ public class BookmarkMenuDelegate extends MenuDelegate {
         }
         if(index == 6) {
             item.setEnabled(true);
-            NSImage icon = NSImage.imageNamed("idisk.tiff");
+            NSImage icon = NSImage.imageNamed("me");
             icon.setSize(new NSSize(16f, 16f));
             item.setImage(icon);
         }
         if(index == 7) {
             item.setEnabled(true);
-            item.setImage(NSImage.imageNamed("history.tiff"));
+            item.setImage(NSImage.imageNamed("history"));
         }
         if(index == 8) {
             item.setEnabled(true);
-            item.setImage(NSImage.imageNamed("rendezvous16.tiff"));
+            item.setImage(NSImage.imageNamed("rendezvous16"));
         }
         if(index > 9) {
             Host h = HostCollection.defaultCollection().get(index - 10);
