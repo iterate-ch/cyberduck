@@ -4433,7 +4433,10 @@ public class CDBrowserController extends CDWindowController
                         if(!selected.isUnarchiveSupported()) {
                             return false;
                         }
-                        if(selected.attributes.isFile() && !Archive.isArchive(selected.getName())) {
+                        if(selected.attributes.isDirectory()) {
+                            return false;
+                        }
+                        if(!Archive.isArchive(selected.getName())) {
                             return false;
                         }
                     }
