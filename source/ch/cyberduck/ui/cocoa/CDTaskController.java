@@ -47,7 +47,6 @@ public class CDTaskController extends CDBundleController {
 
     public void setText(NSTextField text) {
         this.text = text;
-        this.text.setStringValue(task.getActivity());
     }
 
     private NSProgressIndicator progress;
@@ -93,6 +92,7 @@ public class CDTaskController extends CDBundleController {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         progress.startAnimation(null);
+                        text.setStringValue(task.getActivity());
                     }
                 });
             }
