@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +65,17 @@ public abstract class Protocol {
 
     public String toString() {
         return this.getIdentifier();
+    }
+
+    /**
+     *
+     * @return A small icon to display
+     */
+    public NSImage icon() {
+        if(this.isSecure()) {
+            return NSImage.imageNamed("secureprotocol");
+        }
+        return NSImage.imageNamed("protocol");
     }
 
     /**
@@ -194,6 +206,10 @@ public abstract class Protocol {
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
+
+        public NSImage icon() {
+            return NSImage.imageNamed(this.getIdentifier());
+        }
     };
 
     public static final Protocol WEBDAV = new Protocol() {
@@ -288,6 +304,10 @@ public abstract class Protocol {
         public String getDefaultHostname() {
             return "idisk.me.com";
         }
+
+        public NSImage icon() {
+            return NSImage.imageNamed(this.getIdentifier());
+        }
     };
 
     public static final Protocol MOSSO = new Protocol() {
@@ -325,6 +345,10 @@ public abstract class Protocol {
 
         public String getDefaultHostname() {
             return "storage.clouddrive.com";
+        }
+
+        public NSImage icon() {
+            return NSImage.imageNamed(this.getIdentifier());
         }
     };
 
