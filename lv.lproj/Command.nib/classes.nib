@@ -14,7 +14,8 @@
             LANGUAGE = Java;
             OUTLETS =             {
                 inputField = NSTextField;
-                responseField = id;
+                progress = NSProgressIndicator;
+                responseField = NSTextView;
                 window = NSWindow;
             };
             SUPERCLASS = NSObject;
