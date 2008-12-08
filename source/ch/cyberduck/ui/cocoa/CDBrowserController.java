@@ -4345,9 +4345,11 @@ public class CDBrowserController extends CDWindowController
                                 return false;
                             }
                         }
+                        return true;
                     }
                 }
             }
+            return false;
         }
         if(action.equals("unarchiveButtonClicked:")) {
             if(this.isMounted()) {
@@ -4358,9 +4360,11 @@ public class CDBrowserController extends CDWindowController
                                 return false;
                             }
                         }
+                        return true;
                     }
                 }
             }
+            return false;
         }
         return true; // by default everything is enabled
     }

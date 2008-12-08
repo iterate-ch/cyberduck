@@ -470,7 +470,7 @@ public abstract class Preferences {
         defaults.put("ssh.publickey", "ssh-rsa");
         defaults.put("ssh.compression", "none"); //zlib
 
-        defaults.put("archive.command", "tar -czpPfv {0}.tar.gz {0}");
+        defaults.put("archive.command", "tar -czvpPf {0}.tar.gz {0}");
 
         defaults.put("unarchive.command.zip", "unzip {0} -d {1}");
         defaults.put("unarchive.command.tar", "tar -xvpPf {0} -C {1}");
