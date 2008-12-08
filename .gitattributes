@@ -326,6 +326,7 @@ ca.lproj/Alert.nib/data.dependency -text
 ca.lproj/Alert.nib/info.nib -text
 ca.lproj/Alert.nib/keyedobjects.nib -text
 ca.lproj/Alert.strings -text svneol=unset#text/utf-16
+ca.lproj/Archive.strings -text svneol=unset#text/utf-16
 ca.lproj/Bookmark.nib/data.dependency -text
 ca.lproj/Bookmark.nib/keyedobjects.nib -text
 ca.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -380,6 +381,7 @@ cs.lproj/Alert.nib/data.dependency -text
 cs.lproj/Alert.nib/info.nib -text
 cs.lproj/Alert.nib/keyedobjects.nib -text
 cs.lproj/Alert.strings -text svneol=unset#text/utf-16
+cs.lproj/Archive.strings -text svneol=unset#text/utf-16
 cs.lproj/Bookmark.nib/data.dependency -text
 cs.lproj/Bookmark.nib/keyedobjects.nib -text
 cs.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -434,6 +436,7 @@ cy.lproj/Alert.nib/data.dependency -text
 cy.lproj/Alert.nib/info.nib -text
 cy.lproj/Alert.nib/keyedobjects.nib -text
 cy.lproj/Alert.strings -text svneol=unset#text/utf-16
+cy.lproj/Archive.strings -text svneol=unset#text/utf-16
 cy.lproj/Bookmark.nib/data.dependency -text
 cy.lproj/Bookmark.nib/keyedobjects.nib -text
 cy.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -492,6 +495,7 @@ da.lproj/Alert.nib/data.dependency -text
 da.lproj/Alert.nib/info.nib -text
 da.lproj/Alert.nib/keyedobjects.nib -text
 da.lproj/Alert.strings -text svneol=unset#text/utf-16
+da.lproj/Archive.strings -text svneol=unset#text/utf-16
 da.lproj/Bookmark.nib/data.dependency -text
 da.lproj/Bookmark.nib/keyedobjects.nib -text
 da.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -546,6 +550,7 @@ de.lproj/Alert.nib/data.dependency -text
 de.lproj/Alert.nib/info.nib -text
 de.lproj/Alert.nib/keyedobjects.nib -text
 de.lproj/Alert.strings -text svneol=unset#text/utf-16
+de.lproj/Archive.strings -text svneol=unset#text/utf-16
 de.lproj/Bookmark.nib/data.dependency -text
 de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -600,6 +605,7 @@ el.lproj/Alert.nib/data.dependency -text
 el.lproj/Alert.nib/info.nib -text
 el.lproj/Alert.nib/keyedobjects.nib -text
 el.lproj/Alert.strings -text
+el.lproj/Archive.strings -text svneol=unset#text/utf-16
 el.lproj/Bookmark.nib/classes.nib -text
 el.lproj/Bookmark.nib/data.dependency -text
 el.lproj/Bookmark.nib/info.nib -text
@@ -685,6 +691,7 @@ en.lproj/Alert.nib/data.dependency -text
 en.lproj/Alert.nib/info.nib -text
 en.lproj/Alert.nib/keyedobjects.nib -text
 en.lproj/Alert.strings -text svneol=unset#text/utf-16
+en.lproj/Archive.strings -text svneol=unset#text/utf-16
 en.lproj/Bookmark.nib/data.dependency -text
 en.lproj/Bookmark.nib/keyedobjects.nib -text
 en.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -739,6 +746,7 @@ es.lproj/Alert.nib/data.dependency -text
 es.lproj/Alert.nib/info.nib -text
 es.lproj/Alert.nib/keyedobjects.nib -text
 es.lproj/Alert.strings -text svneol=unset#text/utf-16
+es.lproj/Archive.strings -text svneol=unset#text/utf-16
 es.lproj/Bookmark.nib/data.dependency -text
 es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -793,6 +801,7 @@ fi.lproj/Alert.nib/data.dependency -text
 fi.lproj/Alert.nib/info.nib -text
 fi.lproj/Alert.nib/keyedobjects.nib -text
 fi.lproj/Alert.strings -text svneol=unset#text/utf-16
+fi.lproj/Archive.strings -text svneol=unset#text/utf-16
 fi.lproj/Bookmark.nib/data.dependency -text
 fi.lproj/Bookmark.nib/keyedobjects.nib -text
 fi.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -847,6 +856,7 @@ fr.lproj/Alert.nib/data.dependency -text
 fr.lproj/Alert.nib/info.nib -text
 fr.lproj/Alert.nib/keyedobjects.nib -text
 fr.lproj/Alert.strings -text svneol=unset#text/utf-16
+fr.lproj/Archive.strings -text svneol=unset#text/utf-16
 fr.lproj/Bookmark.nib/data.dependency -text
 fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -903,6 +913,7 @@ he.lproj/Alert.nib/data.dependency -text
 he.lproj/Alert.nib/info.nib -text
 he.lproj/Alert.nib/keyedobjects.nib -text
 he.lproj/Alert.strings -text svneol=unset#text/utf-16
+he.lproj/Archive.strings -text svneol=unset#text/utf-16
 he.lproj/Bookmark.nib/classes.nib -text
 he.lproj/Bookmark.nib/data.dependency -text
 he.lproj/Bookmark.nib/info.nib -text
@@ -987,6 +998,7 @@ hu.lproj/Alert.nib/data.dependency -text
 hu.lproj/Alert.nib/info.nib -text
 hu.lproj/Alert.nib/keyedobjects.nib -text
 hu.lproj/Alert.strings -text svneol=unset#text/utf-16
+hu.lproj/Archive.strings -text svneol=unset#text/utf-16
 hu.lproj/Bookmark.nib/data.dependency -text
 hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1041,6 +1053,7 @@ id.lproj/Alert.nib/data.dependency -text
 id.lproj/Alert.nib/info.nib -text
 id.lproj/Alert.nib/keyedobjects.nib -text
 id.lproj/Alert.strings -text svneol=unset#text/utf-16
+id.lproj/Archive.strings -text svneol=unset#text/utf-16
 id.lproj/Bookmark.nib/data.dependency -text
 id.lproj/Bookmark.nib/keyedobjects.nib -text
 id.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1189,6 +1202,7 @@ it.lproj/Alert.nib/data.dependency -text
 it.lproj/Alert.nib/info.nib -text
 it.lproj/Alert.nib/keyedobjects.nib -text
 it.lproj/Alert.strings -text svneol=unset#text/utf-16
+it.lproj/Archive.strings -text svneol=unset#text/utf-16
 it.lproj/Bookmark.nib/data.dependency -text
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1243,6 +1257,7 @@ ja.lproj/Alert.nib/data.dependency -text
 ja.lproj/Alert.nib/info.nib -text
 ja.lproj/Alert.nib/keyedobjects.nib -text
 ja.lproj/Alert.strings -text svneol=unset#text/utf-16
+ja.lproj/Archive.strings -text svneol=unset#text/utf-16
 ja.lproj/Bookmark.nib/data.dependency -text
 ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1298,6 +1313,7 @@ ko.lproj/Alert.nib/data.dependency -text
 ko.lproj/Alert.nib/info.nib -text
 ko.lproj/Alert.nib/keyedobjects.nib -text
 ko.lproj/Alert.strings -text svneol=unset#text/utf-16
+ko.lproj/Archive.strings -text svneol=unset#text/utf-16
 ko.lproj/Bookmark.nib/data.dependency -text
 ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1369,6 +1385,7 @@ lv.lproj/Alert.nib/data.dependency -text
 lv.lproj/Alert.nib/info.nib -text
 lv.lproj/Alert.nib/keyedobjects.nib -text
 lv.lproj/Alert.strings -text svneol=unset#text/utf-16
+lv.lproj/Archive.strings -text svneol=unset#text/utf-16
 lv.lproj/Bookmark.nib/classes.nib -text
 lv.lproj/Bookmark.nib/data.dependency -text
 lv.lproj/Bookmark.nib/info.nib -text
@@ -1455,6 +1472,7 @@ nl.lproj/Alert.nib/data.dependency -text
 nl.lproj/Alert.nib/info.nib -text
 nl.lproj/Alert.nib/keyedobjects.nib -text
 nl.lproj/Alert.strings -text svneol=unset#text/utf-16
+nl.lproj/Archive.strings -text svneol=unset#text/utf-16
 nl.lproj/Bookmark.nib/data.dependency -text
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1509,6 +1527,7 @@ no.lproj/Alert.nib/data.dependency -text
 no.lproj/Alert.nib/info.nib -text
 no.lproj/Alert.nib/keyedobjects.nib -text
 no.lproj/Alert.strings -text svneol=unset#text/utf-16
+no.lproj/Archive.strings -text svneol=unset#text/utf-16
 no.lproj/Bookmark.nib/data.dependency -text
 no.lproj/Bookmark.nib/keyedobjects.nib -text
 no.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1563,6 +1582,7 @@ pl.lproj/Alert.nib/data.dependency -text
 pl.lproj/Alert.nib/info.nib -text
 pl.lproj/Alert.nib/keyedobjects.nib -text
 pl.lproj/Alert.strings -text svneol=unset#text/utf-16
+pl.lproj/Archive.strings -text svneol=unset#text/utf-16
 pl.lproj/Bookmark.nib/data.dependency -text
 pl.lproj/Bookmark.nib/keyedobjects.nib -text
 pl.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1618,6 +1638,7 @@ pt_BR.lproj/Alert.nib/data.dependency -text
 pt_BR.lproj/Alert.nib/info.nib -text
 pt_BR.lproj/Alert.nib/keyedobjects.nib -text
 pt_BR.lproj/Alert.strings -text svneol=unset#text/utf-16
+pt_BR.lproj/Archive.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Bookmark.nib/classes.nib -text
 pt_BR.lproj/Bookmark.nib/data.dependency -text
 pt_BR.lproj/Bookmark.nib/info.nib -text
@@ -1705,6 +1726,7 @@ pt_PT.lproj/Alert.nib/data.dependency -text
 pt_PT.lproj/Alert.nib/info.nib -text
 pt_PT.lproj/Alert.nib/keyedobjects.nib -text
 pt_PT.lproj/Alert.strings -text svneol=unset#text/utf-16
+pt_PT.lproj/Archive.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Bookmark.nib/data.dependency -text
 pt_PT.lproj/Bookmark.nib/keyedobjects.nib -text
 pt_PT.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1774,6 +1796,7 @@ ru.lproj/Alert.nib/data.dependency -text
 ru.lproj/Alert.nib/info.nib -text
 ru.lproj/Alert.nib/keyedobjects.nib -text
 ru.lproj/Alert.strings -text svneol=unset#text/utf-16
+ru.lproj/Archive.strings -text svneol=unset#text/utf-16
 ru.lproj/Bookmark.nib/data.dependency -text
 ru.lproj/Bookmark.nib/keyedobjects.nib -text
 ru.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1828,6 +1851,7 @@ sk.lproj/Alert.nib/data.dependency -text
 sk.lproj/Alert.nib/info.nib -text
 sk.lproj/Alert.nib/keyedobjects.nib -text
 sk.lproj/Alert.strings -text svneol=unset#text/utf-16
+sk.lproj/Archive.strings -text svneol=unset#text/utf-16
 sk.lproj/Bookmark.nib/data.dependency -text
 sk.lproj/Bookmark.nib/keyedobjects.nib -text
 sk.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -1957,6 +1981,7 @@ sv.lproj/Alert.nib/data.dependency -text
 sv.lproj/Alert.nib/info.nib -text
 sv.lproj/Alert.nib/keyedobjects.nib -text
 sv.lproj/Alert.strings -text svneol=unset#text/utf-16
+sv.lproj/Archive.strings -text svneol=unset#text/utf-16
 sv.lproj/Bookmark.nib/data.dependency -text
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -2018,6 +2043,7 @@ th.lproj/Alert.nib/data.dependency -text
 th.lproj/Alert.nib/info.nib -text
 th.lproj/Alert.nib/keyedobjects.nib -text
 th.lproj/Alert.strings -text svneol=unset#text/utf-16
+th.lproj/Archive.strings -text svneol=unset#text/utf-16
 th.lproj/Bookmark.nib/classes.nib -text
 th.lproj/Bookmark.nib/data.dependency -text
 th.lproj/Bookmark.nib/info.nib -text
@@ -2102,6 +2128,7 @@ tr.lproj/Alert.nib/data.dependency -text
 tr.lproj/Alert.nib/info.nib -text
 tr.lproj/Alert.nib/keyedobjects.nib -text
 tr.lproj/Alert.strings -text svneol=unset#text/utf-16
+tr.lproj/Archive.strings -text svneol=unset#text/utf-16
 tr.lproj/Bookmark.nib/classes.nib -text
 tr.lproj/Bookmark.nib/data.dependency -text
 tr.lproj/Bookmark.nib/info.nib -text
@@ -2304,6 +2331,7 @@ zh_CN.lproj/Alert.nib/data.dependency -text
 zh_CN.lproj/Alert.nib/info.nib -text
 zh_CN.lproj/Alert.nib/keyedobjects.nib -text
 zh_CN.lproj/Alert.strings -text svneol=unset#text/utf-16
+zh_CN.lproj/Archive.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Bookmark.nib/data.dependency -text
 zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings -text svneol=unset#text/utf-16
@@ -2358,6 +2386,7 @@ zh_TW.lproj/Alert.nib/data.dependency -text
 zh_TW.lproj/Alert.nib/info.nib -text
 zh_TW.lproj/Alert.nib/keyedobjects.nib -text
 zh_TW.lproj/Alert.strings -text svneol=unset#text/utf-16
+zh_TW.lproj/Archive.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Bookmark.nib/data.dependency -text
 zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings -text svneol=unset#text/utf-16
