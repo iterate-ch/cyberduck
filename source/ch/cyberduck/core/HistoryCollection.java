@@ -140,8 +140,4 @@ public class HistoryCollection extends HostCollection {
     public boolean allowsEdit() {
         return false;
     }
-
-    public NSImage getIcon() {
-        return NSImage.imageNamed("history.tiff");
-    }
 }

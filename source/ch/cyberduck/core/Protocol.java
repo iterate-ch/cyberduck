@@ -72,10 +72,7 @@ public abstract class Protocol {
      * @return A small icon to display
      */
     public NSImage icon() {
-        if(this.isSecure()) {
-            return NSImage.imageNamed("secureprotocol");
-        }
-        return NSImage.imageNamed("protocol");
+        return NSImage.imageNamed("disk");
     }
 
     /**

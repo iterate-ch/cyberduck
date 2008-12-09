@@ -70,8 +70,4 @@ public class RendezvousCollection extends BookmarkCollection {
     public boolean allowsEdit() {
         return false;
     }
-
-    public NSImage getIcon() {
-        return NSImage.imageNamed("rendezvous.icns");
-    }
 }
