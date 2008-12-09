@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		470168310EED9EA8005E2CCF /* Archive.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168130EED9EA7005E2CCF /* Archive.strings */; };
 		470168500EED9EB7005E2CCF /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
-		470168530EEDAB3F005E2CCF /* secureprotocol.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 470168510EEDAB3E005E2CCF /* secureprotocol.tiff */; };
-		470168540EEDAB3F005E2CCF /* protocol.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 470168520EEDAB3F005E2CCF /* protocol.tiff */; };
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
 		470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */ = {isa = PBXBuildFile; fileRef = 470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */; };
@@ -422,8 +420,6 @@
 		4701684D0EED9EB7005E2CCF /* da */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Mosso.strings; sourceTree = "<group>"; };
 		4701684E0EED9EB7005E2CCF /* cy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Mosso.strings; sourceTree = "<group>"; };
 		4701684F0EED9EB7005E2CCF /* ca */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Mosso.strings; sourceTree = "<group>"; };
-		470168510EEDAB3E005E2CCF /* secureprotocol.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = secureprotocol.tiff; sourceTree = "<group>"; };
-		470168520EEDAB3F005E2CCF /* protocol.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = protocol.tiff; sourceTree = "<group>"; };
 		47026427087DC91C008837FD /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4702642B087DC92C008837FD /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4702642C087DC937008837FD /* nl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/IDisk.strings; sourceTree = "<group>"; };
@@ -1844,8 +1840,6 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
-				470168510EEDAB3E005E2CCF /* secureprotocol.tiff */,
-				470168520EEDAB3F005E2CCF /* protocol.tiff */,
 				473D6C650EED5007008F3B04 /* s3.png */,
 				474BA1FE0EED9284005928F5 /* cf.png */,
 				473D6C670EED5134008F3B04 /* me.png */,
@@ -2663,8 +2657,6 @@
 				474BA1FF0EED9284005928F5 /* cf.png in Resources */,
 				470168310EED9EA8005E2CCF /* Archive.strings in Resources */,
 				470168500EED9EB7005E2CCF /* Mosso.strings in Resources */,
-				470168530EEDAB3F005E2CCF /* secureprotocol.tiff in Resources */,
-				470168540EEDAB3F005E2CCF /* protocol.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
