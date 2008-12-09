@@ -27,8 +27,8 @@ Compiling:
 
 - Type 'make' in <CYBERDUCK_HOME>
 
------
-Branches:
------
+---------
+Releases:
+---------
 
 Cyberduck releases are branched in SVN such as 'release-2-6'. Checkout using 'svn co http://svn.cyberduck.ch/branches/release-2-6'.
