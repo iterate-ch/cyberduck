@@ -61,7 +61,7 @@ public abstract class BookmarkCollection extends Collection<Host> {
         return true;
     }
 
-    public NSImage icon(Host host) {
+    public NSImage getIcon(Host host) {
         final NSImage icon = host.getProtocol().icon();
         icon.setScalesWhenResized(true);
         icon.setCacheMode(NSImage.ImageCacheNever);
