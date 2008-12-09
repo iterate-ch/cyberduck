@@ -6,8 +6,13 @@ Changelog. Last modified: $Date$
 
 3.1 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1]
 - [Feature] Amazon CloudFront Support (S3)
-- [Feature] Cloud Files Support [#2745] (Mosso)
+- [Feature] Cloud Files Support (Mosso) [#2745]
 - [Feature] Pre-configured protocol settings for MobileMe iDisk (WebDAV)
+- [Feature] Send arbitrary commands over SSH using the 'Send Command...' interface (SFTP) [#3]
+- [Feature] Archive and unarchive files and folders (ZIP, TAR etc.) (SFTP) [#2376]
+- [Feature] Clickable URL fields
+- [Feature] Display distinguished icon per protocol for bookmarks
+- [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
 
 3.0.3 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.3]
 - [Bugfix] Arbitrary Crashes [#2142]
