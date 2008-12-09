@@ -136,7 +136,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
 
     private static final NSAttributedString UNKNOWN_STRING = new NSAttributedString(
             NSBundle.localizedString("Unknown", ""),
-            CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+            CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
 
     protected Object objectValueForItem(Path item, String identifier) {
         if(null != item) {
@@ -145,27 +145,27 @@ public abstract class CDBrowserTableDataSource extends CDController {
             }
             if(identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(),
-                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                        CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(SIZE_COLUMN)) {
                 return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
-                        CDTableCell.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
+                        CDTableCellAttributes.PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT);
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
                 if(item.attributes.getModificationDate() != -1) {
                     return new NSAttributedString(CDDateFormatter.getShortFormat(item.attributes.getModificationDate(),
                             item.getHost().getTimezone()),
-                            CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                            CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
                 }
                 return UNKNOWN_STRING;
             }
             if(identifier.equals(OWNER_COLUMN)) {
                 return new NSAttributedString(item.attributes.getOwner(),
-                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                        CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(GROUP_COLUMN)) {
                 return new NSAttributedString(item.attributes.getGroup(),
-                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                        CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {
                 Permission permission = item.attributes.getPermission();
@@ -173,11 +173,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     return UNKNOWN_STRING;
                 }
                 return new NSAttributedString(permission.toString(),
-                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                        CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(KIND_COLUMN)) {
                 return new NSAttributedString(item.kind(),
-                        CDTableCell.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                        CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
                 return item.getName();

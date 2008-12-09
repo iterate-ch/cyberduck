@@ -19,12 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.NSCell;
 import com.apple.cocoa.foundation.NSRect;
 
 /**
  * @version $Id$
  */
-public class CDControllerCell extends CDTableCell {
+public class CDControllerCell extends NSCell {
 
     public CDControllerCell() {
         super();

@@ -101,8 +101,8 @@ public class CDBookmarkTableDataSource extends CDController {
                     return source.allowsEdit();
                 }
 
-                public NSImage getIcon() {
-                    return source.getIcon();
+                public NSImage getIcon(Host host) {
+                    return source.getIcon(host);
                 }
             };
             for(Iterator<Host> i = source.iterator(); i.hasNext();) {
@@ -136,11 +136,11 @@ public class CDBookmarkTableDataSource extends CDController {
      */
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < this.numberOfRowsInTableView(view)) {
-            String identifier = (String) tableColumn.identifier();
-            if(identifier.equals(ICON_COLUMN)) {
-                return source.getIcon();
-            }
+            final String identifier = (String) tableColumn.identifier();
             final Host host = this.getSource().get(row);
+            if(identifier.equals(ICON_COLUMN)) {
+                return source.getIcon(host);
+            }
             if(identifier.equals(BOOKMARK_COLUMN)) {
                 return host;
             }

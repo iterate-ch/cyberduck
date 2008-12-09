@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSGraphics;
-import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @version $Id$
  */
-public class CDBookmarkCell extends CDTableCell {
+public class CDBookmarkCell extends NSImageCell {
 
     private Host bookmark;
 
@@ -45,8 +45,22 @@ public class CDBookmarkCell extends CDTableCell {
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        super.drawInteriorWithFrameInView(cellFrame, controlView);
         if(bookmark != null) {
+            boolean highlighted = this.isHighlighted()
+                    && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(
+                    NSColor.secondarySelectedControlColor()
+            );
+
+            NSDictionary boldFont;
+            NSDictionary tinyFont;
+            if(highlighted) { // cell is selected (white font)
+                boldFont = CDTableCellAttributes.BOLD_FONT_HIGHLIGHTED;
+                tinyFont = CDTableCellAttributes.TINY_FONT_HIGHLIGHTED;
+            }
+            else { // cell is not selected (black font)
+                boldFont = CDTableCellAttributes.BOLD_FONT;
+                tinyFont = CDTableCellAttributes.TINY_FONT;
+            }
             if(StringUtils.isNotBlank(bookmark.getNickname())) {
                 NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),
                         boldFont),

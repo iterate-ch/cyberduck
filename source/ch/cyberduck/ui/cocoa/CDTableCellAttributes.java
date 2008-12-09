@@ -1,7 +1,10 @@
 package ch.cyberduck.ui.cocoa;
 
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSAttributedString;
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,24 +21,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSRect;
-
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class CDTableCell extends NSCell {
-
-    protected boolean highlighted;
-
-    protected NSDictionary boldFont;
-    protected NSDictionary normalFont;
-    protected NSDictionary tinyFont;
-    protected NSDictionary tinyFontRight;
-    protected NSDictionary alertFont;
-    protected NSDictionary fixedFont;
+public class CDTableCellAttributes {
 
     protected static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
 
@@ -71,33 +60,6 @@ public class CDTableCell extends NSCell {
     public static final NSDictionary PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT = new NSDictionary(
             new Object[]{PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
             new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-
-
-    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        super.drawInteriorWithFrameInView(cellFrame, controlView);
-        this.highlighted = this.isHighlighted()
-                && !this.highlightColorWithFrameInView(cellFrame, controlView).equals(
-                NSColor.secondarySelectedControlColor()
-        );
-
-        //		Methods supporting the drawing of NSAttributedStrings are found in the Application Kit class NSGraphics.
-        if(highlighted) { // cell is selected (white font)
-            this.boldFont = BOLD_FONT_HIGHLIGHTED;
-            this.normalFont = NORMAL_FONT_HIGHLIGHTED;
-            this.tinyFont = TINY_FONT_HIGHLIGHTED;
-            this.tinyFontRight = TINY_FONT_HIGHLIGHTED_RIGHT;
-            this.alertFont = ALERT_FONT_HIGHLIGHTED;
-            this.fixedFont = FIXED_FONT_HIGHLIGHTED;
-        }
-        else { // cell is not selected (black font)
-            this.boldFont = BOLD_FONT;
-            this.normalFont = NORMAL_FONT;
-            this.tinyFont = TINY_FONT;
-            this.tinyFontRight = TINY_FONT_RIGHT;
-            this.alertFont = ALERT_FONT;
-            this.fixedFont = FIXED_FONT;
-        }
-    }
 
     public static NSDictionary ALERT_FONT = new NSDictionary(
             new Object[]{
