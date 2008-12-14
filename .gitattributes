@@ -1175,7 +1175,7 @@ img/queue.tiff -text svneol=unset#image/tiff
 img/reload.tiff -text svneol=unset#image/tiff
 img/remove.tiff -text svneol=unset#image/tiff
 img/removePressed.tiff -text svneol=unset#image/tiff
-img/rendezvous.icns -text
+img/rendezvous.tiff -text
 img/resume.tiff -text svneol=unset#image/tiff
 img/reveal.tiff -text svneol=unset#image/tiff
 img/run.tiff -text svneol=unset#image/tiff
