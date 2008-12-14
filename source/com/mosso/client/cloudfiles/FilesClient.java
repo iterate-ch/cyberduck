@@ -1024,26 +1024,21 @@ public class FilesClient {
         }
 
         GetMethod method = new GetMethod(storageURL + "/" + sanitizeForURI(container) + "/" + sanitizeForURI(objName));
-        try {
-            method.getParams().setSoTimeout(connectionTimeOut);
-            method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
+        method.getParams().setSoTimeout(connectionTimeOut);
+        method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
 
-            client.executeMethod(method);
+        client.executeMethod(method);
 
-            FilesResponse response = new FilesResponse(method);
+        FilesResponse response = new FilesResponse(method);
 
-            if(response.getStatusCode() == HttpStatus.SC_OK) {
-                logger.info("Object data retreived  : " + objName);
-                return response.getResponseBodyAsStream();
-            }
-            if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info("Object " + objName + " was not found  !");
-            }
-            throw new HttpException(response.getStatusMessage());
+        if(response.getStatusCode() == HttpStatus.SC_OK) {
+            logger.info("Object data retreived  : " + objName);
+            return response.getResponseBodyAsStream();
         }
-        finally {
-            method.releaseConnection();
+        if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            logger.info("Object " + objName + " was not found  !");
         }
+        throw new HttpException(response.getStatusMessage());
     }
 
     /**
