@@ -179,7 +179,7 @@ public class CDConnectionController extends CDSheetController {
         anonymousCheckbox.setState(h.getCredentials().isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
         this.anonymousCheckboxClicked(anonymousCheckbox);
         this.updateURLLabel(null);
-        this.getPasswordFromKeychain();
+        this.getPasswordFromKeychain(null);
         this.reachable();
     }
 
@@ -474,7 +474,7 @@ public class CDConnectionController extends CDSheetController {
      * Updating the password field with the actual password if any
      * is avaialble for this hostname
      */
-    public void getPasswordFromKeychain() {
+    public void getPasswordFromKeychain(final NSNotification sender) {
         if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
             if(hostField.stringValue() != null && !hostField.stringValue().equals("") &&
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
