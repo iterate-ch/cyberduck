@@ -35,12 +35,6 @@ import java.util.List;
 public class CDBookmarkTableDataSource extends CDController {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
-    private static final NSImage GREEN_ICON
-            = NSImage.imageNamed("statusGreen.tiff");
-
-    private static final NSImage YELLOW_ICON
-            = NSImage.imageNamed("statusYellow.tiff");
-
     public static final String ICON_COLUMN = "ICON";
     public static final String BOOKMARK_COLUMN = "BOOKMARK";
     public static final String STATUS_COLUMN = "STATUS";
@@ -149,10 +143,10 @@ public class CDBookmarkTableDataSource extends CDController {
                     final Session session = controller.getSession();
                     if(host.equals(session.getHost())) {
                         if(session.isConnected()) {
-                            return GREEN_ICON;
+                            return NSImage.imageNamed("statusGreen.tiff");
                         }
                         if(session.isOpening()) {
-                            return YELLOW_ICON;
+                            return NSImage.imageNamed("statusYellow.tiff");
                         }
                     }
                 }

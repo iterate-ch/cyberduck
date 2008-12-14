@@ -54,27 +54,17 @@ public class CDTransferIconCell extends NSCell {
         NSPoint cellPoint = cellFrame.origin();
         NSImage typeIcon = null;
         if(transfer instanceof DownloadTransfer) {
-            typeIcon = ARROW_DOWN_ICON;
+            typeIcon = CDIconCache.instance().iconForName("arrowDown", 32);
         }
         else if(transfer instanceof UploadTransfer) {
-            typeIcon = ARROW_UP_ICON;
+            typeIcon = CDIconCache.instance().iconForName("arrowUp", 32);
         }
         else if(transfer instanceof SyncTransfer) {
-            typeIcon = SYNC_ICON;
+            typeIcon = CDIconCache.instance().iconForName("sync", 32);
         }
         assert typeIcon != null;
         typeIcon.compositeToPoint(new NSPoint(cellPoint.x() + SPACE,
                 cellPoint.y() + 32),
                 NSImage.CompositeSourceOver);
-    }
-
-    private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp.tiff");
-    private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown.tiff");
-    private static final NSImage SYNC_ICON = NSImage.imageNamed("sync32.tiff");
-
-    static {
-        ARROW_UP_ICON.setSize(new NSSize(32f, 32f));
-        ARROW_DOWN_ICON.setSize(new NSSize(32f, 32f));
-        SYNC_ICON.setSize(new NSSize(32f, 32f));
     }
 }

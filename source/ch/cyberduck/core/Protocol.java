@@ -71,8 +71,8 @@ public abstract class Protocol {
      *
      * @return A small icon to display
      */
-    public NSImage icon() {
-        return NSImage.imageNamed("disk");
+    public String icon() {
+        return "disk";
     }
 
     /**
@@ -204,8 +204,8 @@ public abstract class Protocol {
             return Constants.S3_HOSTNAME;
         }
 
-        public NSImage icon() {
-            return NSImage.imageNamed(this.getIdentifier());
+        public String icon() {
+            return "amazon";
         }
     };
 
@@ -302,8 +302,8 @@ public abstract class Protocol {
             return "idisk.me.com";
         }
 
-        public NSImage icon() {
-            return NSImage.imageNamed(this.getIdentifier());
+        public String icon() {
+            return "idisk";
         }
     };
 
@@ -344,8 +344,8 @@ public abstract class Protocol {
             return "storage.clouddrive.com";
         }
 
-        public NSImage icon() {
-            return NSImage.imageNamed(this.getIdentifier());
+        public String icon() {
+            return this.getIdentifier();
         }
     };
 

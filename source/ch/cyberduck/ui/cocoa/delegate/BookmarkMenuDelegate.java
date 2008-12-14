@@ -19,15 +19,14 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSMenu;
 import com.apple.cocoa.application.NSMenuItem;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.CDMainController;
 
 import org.apache.log4j.Logger;
@@ -37,14 +36,6 @@ import org.apache.log4j.Logger;
  */
 public class BookmarkMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
-
-    private static final NSImage DOCUMENT_ICON_SMALL;
-
-    static {
-        DOCUMENT_ICON_SMALL = NSImage.imageNamed("bookmark16.tiff");
-        DOCUMENT_ICON_SMALL.setScalesWhenResized(true);
-        DOCUMENT_ICON_SMALL.setSize(new NSSize(16f, 16f));
-    }
 
     /**
      * @see com.apple.cocoa.application.NSMenu.Delegate
@@ -72,23 +63,21 @@ public class BookmarkMenuDelegate extends MenuDelegate {
         }
         if(index == 6) {
             item.setEnabled(true);
-            NSImage icon = NSImage.imageNamed("me");
-            icon.setSize(new NSSize(16f, 16f));
-            item.setImage(icon);
+            item.setImage(CDIconCache.instance().iconForName("me", 16));
         }
         if(index == 7) {
             item.setEnabled(true);
-            item.setImage(NSImage.imageNamed("history"));
+            item.setImage(CDIconCache.instance().iconForName("history", 16));
         }
         if(index == 8) {
             item.setEnabled(true);
-            item.setImage(NSImage.imageNamed("rendezvous16"));
+            item.setImage(CDIconCache.instance().iconForName("rendezvous", 16));
         }
         if(index > 9) {
             Host h = HostCollection.defaultCollection().get(index - 10);
             item.setTitle(h.getNickname());
             item.setTarget(this);
-            item.setImage(DOCUMENT_ICON_SMALL);
+            item.setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
             item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
             item.setRepresentedObject(h);
         }

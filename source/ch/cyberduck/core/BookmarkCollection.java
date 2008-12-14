@@ -19,7 +19,8 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.foundation.NSSize;
+
+import ch.cyberduck.ui.cocoa.CDIconCache;
 
 /**
  * @version $Id$
@@ -62,15 +63,7 @@ public abstract class BookmarkCollection extends Collection<Host> {
     }
 
     public NSImage getIcon(Host host) {
-        final NSImage icon = host.getProtocol().icon();
-        icon.setScalesWhenResized(true);
-        icon.setCacheMode(NSImage.ImageCacheNever);
-        if(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems")) {
-            icon.setSize(new NSSize(16, 16));
-        }
-        else {
-            icon.setSize(new NSSize(32, 32));
-        }
-        return icon;
+        return CDIconCache.instance().iconForName(host.getProtocol().icon(),
+                Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 16 : 32);
     }
 }

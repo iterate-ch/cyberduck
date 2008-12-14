@@ -241,8 +241,7 @@ public class CDPreferencesController extends CDWindowController {
                 NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
                         NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
                 );
-                icon.setSize(new NSSize(16f, 16f));
-                this.editorCombobox.itemWithTitle(editor).setImage(icon);
+                this.editorCombobox.itemWithTitle(editor).setImage(CDIconCache.instance().convert(icon, 16));
             }
         }
         this.editorCombobox.setTarget(this);
@@ -264,14 +263,6 @@ public class CDPreferencesController extends CDWindowController {
         this.bookmarkSizePopup = bookmarkSizePopup;
         this.bookmarkSizePopup.setTarget(this);
         this.bookmarkSizePopup.setAction(new NSSelector("bookmarkSizePopupClicked", new Class[]{NSPopUpButton.class}));
-//        NSImage iconSmall = NSImage.imageNamed("bookmark16.tiff");
-//        iconSmall.setScalesWhenResized(false);
-//        iconSmall.setSize(new NSSize(40f, 40f));
-//        this.bookmarkSizePopup.itemAtIndex(0).setImage(iconSmall);
-//        NSImage iconLarge = NSImage.imageNamed("bookmark40.tiff");
-//        iconLarge.setScalesWhenResized(false);
-//        iconLarge.setSize(new NSSize(40f, 40f));
-//        this.bookmarkSizePopup.itemAtIndex(1).setImage(iconLarge);
         this.bookmarkSizePopup.selectItemAtIndex(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 0 : 1);
     }
 
@@ -318,13 +309,13 @@ public class CDPreferencesController extends CDWindowController {
         this.defaultBookmarkCombobox.menu().addItem(new NSMenuItem().separatorItem());
         for(Host bookmark : HostCollection.defaultCollection()) {
             this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
-            this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
+            this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
         }
         HostCollection.defaultCollection().addListener(new CollectionListener<Host>() {
             public void collectionItemAdded(Host bookmark) {
                 CDPreferencesController.this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
-                CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(NSImage.imageNamed("bookmark16.tiff"));
+                CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
                 CDPreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
             }
 
@@ -1537,10 +1528,8 @@ public class CDPreferencesController extends CDWindowController {
                 continue;
             }
             defaultProtocolHandlerCombobox.addItem(app.infoDictionary().objectForKey("CFBundleName").toString());
-            final NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-            icon.setSize(new NSSize(16f, 16f));
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-            item.setImage(icon);
+            item.setImage(CDIconCache.instance().convert(NSWorkspace.sharedWorkspace().iconForFile(path), 16));
             item.setRepresentedObject(bundleIdentifiers[i]);
             if(bundleIdentifiers[i].equals(defaultHandler)) {
                 defaultProtocolHandlerCombobox.selectItem(item);

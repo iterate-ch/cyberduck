@@ -59,10 +59,6 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
      */
     protected static final String CREATE_COLUMN = "CREATE";
 
-    private static final NSImage ARROW_UP_ICON = NSImage.imageNamed("arrowUp16.tiff");
-    private static final NSImage ARROW_DOWN_ICON = NSImage.imageNamed("arrowDown16.tiff");
-    private static final NSImage PLUS_ICON = NSImage.imageNamed("plus.tiff");
-
     protected Object objectValueForItem(final Path item, final String identifier) {
         if(null != item) {
             if(identifier.equals(SIZE_COLUMN)) {
@@ -74,10 +70,10 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             if(identifier.equals(SYNC_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
                 if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return ARROW_DOWN_ICON;
+                    return CDIconCache.instance().iconForName("arrowDown", 16);
                 }
                 if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return ARROW_UP_ICON;
+                    return CDIconCache.instance().iconForName("arrowUp", 16);
                 }
                 return null;
             }
@@ -98,7 +94,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             }
             if(identifier.equals(CREATE_COLUMN)) {
                 if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
-                    return PLUS_ICON;
+                    return CDIconCache.instance().iconForName("plus", 16);
                 }
                 return null;
             }

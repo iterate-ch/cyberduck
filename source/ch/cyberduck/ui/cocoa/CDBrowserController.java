@@ -918,137 +918,6 @@ public class CDBrowserController extends CDWindowController
         return null;
     }
 
-//    private NSTableView bookmarkSourceView;
-//    private CDTableDelegate bookmarkSourceDelegate;
-//    private CDListDataSource bookmarkSourceModel;
-//
-//    public void setBookmarkSourceView(final NSTableView bookmarkSourceView) {
-//        this.bookmarkSourceView = bookmarkSourceView;
-//        this.bookmarkSourceView.setDelegate(this.bookmarkSourceDelegate = new CDAbstractTableDelegate() {
-//            public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-//
-//            }
-//
-//            public void tableRowDoubleClicked(Object sender) {
-//
-//            }
-//
-//            public void selectionDidChange(NSNotification notification) {
-//                final int row = bookmarkSourceView.selectedRow();
-//                if(0 == row) {
-//                    bookmarkModel.setSource(new Collection() {
-//                        public Object get(int row) {
-//                            return Rendezvous.instance().getService(row);
-//                        }
-//
-//                        public int size() {
-//                            return Rendezvous.instance().numberOfServices();
-//                        }
-//                    });
-//                }
-//                else if(1 == row) {
-//                    bookmarkModel.setSource(HistoryCollection.HISTORY);
-//                }
-//                else if(2 == row) {
-//                    bookmarkModel.setSource(BookmarkCollection.BOOKMARKS);
-//                }
-//                else {
-//                    bookmarkModel.setSource(new Collection());
-//                }
-//                bookmarkTable.reloadData();
-//                getFocus();
-//            }
-//
-//            public void enterKeyPressed(Object sender) {
-//
-//            }
-//
-//            public void deleteKeyPressed(Object sender) {
-//
-//            }
-//        });
-//        NSSelector setResizableMaskSelector
-//                = new NSSelector("setResizingMask", new Class[]{int.class});
-//        {
-//            NSTableColumn c = new NSTableColumn();
-//            c.setIdentifier("ICON");
-//            c.headerCell().setStringValue("");
-//            c.setMinWidth(32f);
-//            c.setWidth(32f);
-//            c.setMaxWidth(32f);
-//            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-//                c.setResizingMask(NSTableColumn.AutoresizingMask);
-//            }
-//            else {
-//                c.setResizable(false);
-//            }
-//            c.setDataCell(new NSImageCell());
-//            this.bookmarkSourceView.addTableColumn(c);
-//        }
-//        {
-//            NSTableColumn c = new NSTableColumn();
-//            c.setIdentifier("NAME");
-//            c.headerCell().setStringValue(NSBundle.localizedString("Bookmarks", "A column in the browser"));
-//            c.setMinWidth(150f);
-//            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-//                c.setResizingMask(NSTableColumn.AutoresizingMask);
-//            }
-//            else {
-//                c.setResizable(true);
-//            }
-//            c.setDataCell(new NSTextFieldCell());
-//            this.bookmarkSourceView.addTableColumn(c);
-//        }
-//        this.bookmarkSourceView.setDataSource(this.bookmarkSourceModel = new CDListDataSource() {
-//            public int numberOfRowsInTableView(NSTableView view) {
-//                return 3;
-//            }
-//
-//            public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-//                if(row < this.numberOfRowsInTableView(view)) {
-//                    String identifier = (String) tableColumn.identifier();
-//                    if(identifier.equals("ICON")) {
-//                        if(0 == row) {
-//                            return NSImage.imageNamed("rendezvous16.tiff");
-//                        }
-//                        if(1 == row) {
-//                            return NSImage.imageNamed("history.tiff");
-//                        }
-//                        if(2 == row) {
-//                            return NSImage.imageNamed("bookmarks.tiff");
-//                        }
-//                    }
-//                    if(identifier.equals("NAME")) {
-//                        if(0 == row) {
-//                            return NSBundle.localizedString("Bonjour");
-//                        }
-//                        if(1 == row) {
-//                            return NSBundle.localizedString("History");
-//                        }
-//                        if(2 == row) {
-//                            return NSBundle.localizedString("Bookmarks");
-//                        }
-//                    }
-//                    throw new IllegalArgumentException("Unknown identifier: " + identifier);
-//                }
-//                return null;
-//            }
-//        });
-////        this.bookmarkSourceTableView.setStyle(NSTableViewSelectionHighlightStyleSourceList)
-//
-//        // setting appearance attributes
-//        this.bookmarkSourceView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-//        this.bookmarkSourceView.setGridStyleMask(NSTableView.GridNone);
-//
-//        // selection properties
-//        this.bookmarkSourceView.setAllowsMultipleSelection(false);
-//        this.bookmarkSourceView.setAllowsEmptySelection(true);
-//        this.bookmarkSourceView.setAllowsColumnResizing(false);
-//        this.bookmarkSourceView.setAllowsColumnSelection(false);
-//        this.bookmarkSourceView.setAllowsColumnReordering(false);
-//        this.bookmarkSourceView.sizeToFit();
-//    }
-
     /**
      * @return The datasource of the currently selected browser view
      */
@@ -1060,7 +929,7 @@ public class CDBrowserController extends CDWindowController
 
     public void setBonjourButton(NSButton bonjourButton) {
         this.bonjourButton = bonjourButton;
-        this.bonjourButton.setImage(NSImage.imageNamed("rendezvous16.tiff"));
+        this.bonjourButton.setImage(CDIconCache.instance().iconForName("rendezvous", 16));
         this.setRecessedBezelStyle(this.bonjourButton);
         this.bonjourButton.setTarget(this);
         this.bonjourButton.setAction(new NSSelector("bookmarkButtonClicked", new Class[]{Object.class}));
@@ -1070,7 +939,7 @@ public class CDBrowserController extends CDWindowController
 
     public void setHistoryButton(NSButton historyButton) {
         this.historyButton = historyButton;
-        this.historyButton.setImage(NSImage.imageNamed("history.tiff"));
+        this.historyButton.setImage(CDIconCache.instance().iconForName("history", 16));
         this.setRecessedBezelStyle(this.historyButton);
         this.historyButton.setTarget(this);
         this.historyButton.setAction(new NSSelector("bookmarkButtonClicked", new Class[]{Object.class}));
@@ -1080,7 +949,7 @@ public class CDBrowserController extends CDWindowController
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        this.bookmarkButton.setImage(NSImage.imageNamed("bookmarks.tiff"));
+        this.bookmarkButton.setImage(CDIconCache.instance().iconForName("bookmarks"));
         this.setRecessedBezelStyle(this.bookmarkButton);
         this.bookmarkButton.setTarget(this);
         this.bookmarkButton.setAction(new NSSelector("bookmarkButtonClicked", new Class[]{Object.class}));
@@ -4469,7 +4338,7 @@ public class CDBrowserController extends CDWindowController
                 item.setLabel(NSBundle.localizedString("Stop", "Toolbar item"));
                 item.setPaletteLabel(NSBundle.localizedString("Stop", "Toolbar item"));
                 item.setToolTip(NSBundle.localizedString("Cancel current operation in progress", "Toolbar item tooltip"));
-                item.setImage(NSImage.imageNamed("stop.tiff"));
+                item.setImage(CDIconCache.instance().iconForName("stop", 32));
             }
             else {
                 item.setLabel(NSBundle.localizedString(TOOLBAR_DISCONNECT, "Toolbar item"));
@@ -4736,7 +4605,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_NEW_BOOKMARK, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NEW_BOOKMARK, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("New Bookmark", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("bookmark40.tiff"));
+            item.setImage(CDIconCache.instance().iconForName("cyberduck-document", 32));
             item.setTarget(this);
             item.setAction(new NSSelector("addBookmarkButtonClicked", new Class[]{Object.class}));
             return item;

@@ -199,7 +199,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.bandwidthPopup.setAllowsMixedState(true);
         this.bandwidthPopup.setTarget(this);
         this.bandwidthPopup.setAction(new NSSelector("bandwidthPopupChanged", new Class[]{Object.class}));
-        this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("bandwidth16.tiff"));
+        this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForName("bandwidth", 16));
         this.bandwidthPopup.menu().setDelegate(this.bandwidthPopupDelegate = new BandwidthDelegate());
     }
 
@@ -493,7 +493,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
         }
         // Set the standard icon
-        this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("bandwidth16.tiff"));
+        this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForName("bandwidth", 16));
     }
 
     private void reloadData() {
@@ -683,7 +683,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(NSBundle.localizedString(TOOLBAR_STOP, ""));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_STOP, ""));
             item.setToolTip(NSBundle.localizedString(TOOLBAR_STOP, ""));
-            item.setImage(NSImage.imageNamed("stop.tiff"));
+            item.setImage(CDIconCache.instance().iconForName("stop", 32));
             item.setTarget(this);
             item.setAction(new NSSelector("stopButtonClicked", new Class[]{Object.class}));
             return item;

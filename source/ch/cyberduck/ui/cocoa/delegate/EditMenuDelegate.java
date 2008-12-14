@@ -21,8 +21,8 @@ package ch.cyberduck.ui.cocoa.delegate;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSSize;
 
+import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
@@ -60,16 +60,16 @@ public class EditMenuDelegate extends MenuDelegate {
         if(identifier.equals(EditorFactory.getSelectedEditor())) {
             item.setKeyEquivalent("k");
             item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
-        } else {
+        }
+        else {
             item.setKeyEquivalent("");
         }
         String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                 identifier);
         if(path != null) {
-            NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(path);
-            icon.setSize(new NSSize(16f, 16f));
-            item.setImage(icon);
-        } else {
+            item.setImage(CDIconCache.instance().convert(NSWorkspace.sharedWorkspace().iconForFile(path), 16));
+        }
+        else {
             // Used to provide a custom icon for the edit menu and disable the menu
             // if no external editor can be found
             item.setImage(NSImage.imageNamed("pencil.tiff"));

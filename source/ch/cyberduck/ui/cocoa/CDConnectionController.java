@@ -52,16 +52,8 @@ public class CDConnectionController extends CDSheetController {
         for(int i = 0; i < protocols.length; i++) {
             final NSMenuItem item = this.protocolPopup.itemWithTitle(protocols[i].getDescription());
             item.setRepresentedObject(protocols[i]);
-            final NSImage icon = protocols[i].icon();
-            if(null == icon) {
-                continue;
-            }
-            icon.setCacheMode(NSImage.ImageCacheNever);
-            icon.setScalesWhenResized(true);
-            icon.setSize(new NSSize(16, 16));
-            item.setImage(icon);
+            item.setImage(CDIconCache.instance().iconForName(protocols[i].icon(), 16));
         }
-
         final Protocol defaultProtocol
                 = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
         this.protocolPopup.selectItemWithTitle(defaultProtocol.getDescription());
@@ -154,10 +146,6 @@ public class CDConnectionController extends CDSheetController {
                 new NSSelector("hostFieldTextDidChange", new Class[]{NSNotification.class}),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("getPasswordFromKeychain", new Class[]{NSNotification.class}),
-                NSControl.ControlTextDidEndEditingNotification,
-                this.hostField);
     }
 
     public void hostPopupSelectionDidChange(final NSControl sender) {
@@ -173,7 +161,6 @@ public class CDConnectionController extends CDSheetController {
                 break;
             }
         }
-        this.reachable();
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
@@ -181,7 +168,6 @@ public class CDConnectionController extends CDSheetController {
             final Host parsed = Host.parse(hostField.stringValue());
             this.hostChanged(parsed);
         }
-        this.reachable();
     }
 
     private void hostChanged(Host h) {
@@ -190,7 +176,11 @@ public class CDConnectionController extends CDSheetController {
         this.updateField(portField, String.valueOf(h.getPort()));
         this.updateField(usernameField, h.getCredentials().getUsername());
         this.updateField(pathField, h.getDefaultPath());
+        anonymousCheckbox.setState(h.getCredentials().isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
+        this.anonymousCheckboxClicked(anonymousCheckbox);
         this.updateURLLabel(null);
+        this.getPasswordFromKeychain();
+        this.reachable();
     }
 
     /**
@@ -484,7 +474,7 @@ public class CDConnectionController extends CDSheetController {
      * Updating the password field with the actual password if any
      * is avaialble for this hostname
      */
-    public void getPasswordFromKeychain(final NSNotification sender) {
+    public void getPasswordFromKeychain() {
         if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
             if(hostField.stringValue() != null && !hostField.stringValue().equals("") &&
                     usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {

@@ -20,10 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSRect;
-import com.apple.cocoa.foundation.NSSize;
+import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -85,6 +82,40 @@ public class CDIconCache extends HashMap<String, NSImage> {
         FOLDER_ICON.setSize(new NSSize(128, 128));
     }
 
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public NSImage iconForName(final String name) {
+        return NSImage.imageNamed(name);
+    }
+
+    /**
+     * @param name
+     * @param size
+     * @return
+     */
+    public NSImage iconForName(final String name, int size) {
+        NSImage image = NSImage.imageNamed(name);
+//        if(null == image) {
+//            // Look for icon in system System Core Types Bundle
+//            Local l = new Local(NSBundle.bundleWithPath(
+//                    "/System/Library/CoreServices/CoreTypes.bundle").resourcePath(),
+//                    name);
+//            if(!l.exists()) {
+//                return null;
+//            }
+//            image = new NSImage(l.getAbsolute(), false);
+//        }
+        return this.convert(image, size);
+    }
+
+    /**
+     * @param item
+     * @param size
+     * @return
+     */
     public NSImage iconForPath(final Local item, int size) {
         final NSImage icon;
         if(item.exists()) {
@@ -93,12 +124,14 @@ public class CDIconCache extends HashMap<String, NSImage> {
         else {
             icon = NSImage.imageNamed("notfound.tiff");
         }
-        icon.setCacheMode(NSImage.ImageCacheBySize);
-        icon.setScalesWhenResized(true);
-        icon.setSize(new NSSize(size, size));
-        return icon;
+        return this.convert(icon, size);
     }
 
+    /**
+     * @param item
+     * @param size
+     * @return
+     */
     public NSImage iconForPath(final Path item, int size) {
         if(item.attributes.isSymbolicLink()) {
             if(item.attributes.isDirectory()) {
@@ -188,7 +221,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
         return this.convert(NSImage.imageNamed("notfound.tiff"), size);
     }
 
-    private NSImage convert(NSImage icon, int size) {
+    public NSImage convert(NSImage icon, int size) {
         icon.setCacheMode(NSImage.ImageCacheBySize);
         icon.setScalesWhenResized(true);
         icon.setSize(new NSSize(size, size));
