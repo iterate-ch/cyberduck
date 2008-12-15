@@ -1165,7 +1165,6 @@ img/locked.tiff -text svneol=unset#image/tiff
 img/login.tiff -text svneol=unset#image/tiff
 img/me.png -text svneol=unset#image/png
 img/multipleDocuments.tiff -text svneol=unset#image/tiff
-img/multipleDocuments32.tiff -text svneol=unset#image/tiff
 img/notfound.tiff -text svneol=unset#image/tiff
 img/open.tiff -text svneol=unset#image/tiff
 img/outline.tiff -text svneol=unset#image/tiff

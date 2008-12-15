@@ -554,7 +554,7 @@ public class CDInfoController extends CDWindowController {
      */
     private void initIcon() {
         if(this.numberOfFiles() > 1) {
-            iconImageView.setImage(NSImage.imageNamed("multipleDocuments32.tiff"));
+            iconImageView.setImage(CDIconCache.instance().iconForName("multipleDocuments.tiff", 32));
         }
         else {
             iconImageView.setImage(CDIconCache.instance().iconForPath(files.get(0), 32));
