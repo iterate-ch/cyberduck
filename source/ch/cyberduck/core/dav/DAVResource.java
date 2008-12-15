@@ -26,14 +26,13 @@ import org.apache.webdav.lib.WebdavResource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
 /**
  * Webdav Resource adding support for Gzipped streams
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVResource extends WebdavResource {
 
@@ -112,7 +111,22 @@ public class DAVResource extends WebdavResource {
             throws IOException {
 
         setClient();
+
+        // Fix #2268
+        client.getState().setAuthenticationPreemptive(false);
+
         PutMethod method = new PutMethod(URIUtil.encodePathQuery(path));
+
+        // Activates 'Expect: 100-Continue' handshake. The purpose of
+        // the 'Expect: 100-Continue' handshake to allow a client that is
+        // sending a request message with a request body to determine if
+        // the origin server is willing to accept the request (based on
+        // the request headers) before the client sends the request body.
+        //
+        // Otherwise, upload will fail when using digest authentication.
+        // Fix #2268
+        method.setUseExpectHeader(true);
+
         generateIfHeader(method);
         if(getGetContentType() != null && !getGetContentType().equals("")) {
             method.setRequestHeader("Content-Type", getGetContentType());
