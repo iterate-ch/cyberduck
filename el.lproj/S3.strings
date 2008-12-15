@@ -7,7 +7,7 @@
 "Secret Access Key" = "Μυστικό Κλειδί Πρόσβασης";
 
 /* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
-"InProgress" = "In Progress";
+"InProgress" = "Σε Εξέλιξη";
 
 /* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
-"Deployed" = "Deployed";
+"Deployed" = "Ενεργό";
