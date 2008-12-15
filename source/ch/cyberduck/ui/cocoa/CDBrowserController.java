@@ -4083,7 +4083,7 @@ public class CDBrowserController extends CDWindowController
             int count = this.getSelectionCount();
             if(this.isMounted() && count > 0) {
                 if(count > 1) {
-                    item.setTitle(archive.getExtensions() + " " + count + " " + NSBundle.localizedString("files", ""));
+                    item.setTitle(archive.getIdentifier() + " " + count + " " + NSBundle.localizedString("files", ""));
                 }
                 else {
                     item.setTitle(archive.getTitle(this.getSelectedPath()));
@@ -4362,6 +4362,9 @@ public class CDBrowserController extends CDWindowController
                 }
             }
         }
+        if(item.itemIdentifier().equals(TOOLBAR_QUICKLOOK)) {
+            // Not called because custom view is set
+        }
         return this.validateItem(item.action().name());
     }
 
@@ -4387,6 +4390,7 @@ public class CDBrowserController extends CDWindowController
     private static final String TOOLBAR_GO_TO_FOLDER = "Go to Folder";
     private static final String TOOLBAR_TERMINAL = "Terminal";
     private static final String TOOLBAR_ARCHIVE = "Archive";
+    private static final String TOOLBAR_QUICKLOOK = "Quick Look";
 
     /**
      *
@@ -4468,14 +4472,6 @@ public class CDBrowserController extends CDWindowController
             item.setMaxSize(this.quickConnectPopup.frame().size());
             return item;
         }
-//        if(itemIdentifier.equals(TOOLBAR_NAVIGATION)) {
-//            item.setLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
-//            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NAVIGATION, "Toolbar item"));
-//            item.setView(this.navigationPopup);
-//            item.setMinSize(this.navigationPopup.frame().size());
-//            item.setMaxSize(this.navigationPopup.frame().size());
-//            return item;
-//        }
         if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
             item.setLabel(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_ENCODING, "Toolbar item"));
@@ -4529,7 +4525,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_SYNCHRONIZE, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_SYNCHRONIZE, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Synchronize files", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("sync32.tiff"));
+            item.setImage(NSImage.imageNamed("sync.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("syncButtonClicked", new Class[]{Object.class}));
             return item;
@@ -4646,10 +4642,32 @@ public class CDBrowserController extends CDWindowController
             item.setAction(new NSSelector("archiveButtonClicked", new Class[]{Object.class}));
             return item;
         }
+        if(itemIdentifier.equals(TOOLBAR_QUICKLOOK)) {
+            item.setLabel(NSBundle.localizedString(TOOLBAR_QUICKLOOK, "Toolbar item"));
+            item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_QUICKLOOK, "Toolbar item"));
+            if(QuickLook.isAvailable()) {
+                quicklookButton = new NSButton(new NSRect(0, 0, 29, 23));
+                quicklookButton.setBezelStyle(NSButtonCell.TexturedRoundedBezelStyle);
+                quicklookButton.setImage(NSImage.imageNamed("NSQuickLookTemplate"));
+                quicklookButton.setEnabled(false);
+                quicklookButton.setTarget(this);
+                quicklookButton.setAction(new NSSelector("quicklookButtonClicked", new Class[]{Object.class}));
+                item.setView(quicklookButton);
+                item.setMinSize(quicklookButton.frame().size());
+                item.setMaxSize(quicklookButton.frame().size());
+            }
+            else {
+                item.setEnabled(false);
+                item.setImage(NSImage.imageNamed("notfound.tiff"));
+            }
+            return item;
+        }
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
     }
+    
+    private NSButton quicklookButton;
 
     /**
      * @param toolbar
@@ -4695,6 +4713,7 @@ public class CDBrowserController extends CDWindowController
                 TOOLBAR_WEBVIEW,
                 TOOLBAR_TERMINAL,
                 TOOLBAR_ARCHIVE,
+                TOOLBAR_QUICKLOOK,
                 TOOLBAR_DISCONNECT,
 //                TOOLBAR_GO_TO_FOLDER,
                 NSToolbarItem.CustomizeToolbarItemIdentifier,
