@@ -136,18 +136,21 @@ public class CFPath extends CloudPath {
     }
 
     public Distribution readDistribution() {
-        try {
-            session.check();
-            final FilesCDNContainer info = session.CF.getCDNContainerInfo(this.getContainerName());
-            if(null == info) {
-                // Not found.
-                return new Distribution(false, null, NSBundle.localizedString("CDN Disabled", "Mosso", ""));
+        final String container = this.getContainerName();
+        if(null != container) {
+            try {
+                session.check();
+                final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
+                if(null == info) {
+                    // Not found.
+                    return new Distribution(false, null, NSBundle.localizedString("CDN Disabled", "Mosso", ""));
+                }
+                return new Distribution(info.isEnabled(), info.getCdnURL(),
+                        info.isEnabled() ? NSBundle.localizedString("CDN Enabled", "Mosso", "") : NSBundle.localizedString("CDN Disabled", "Mosso", ""));
             }
-            return new Distribution(info.isEnabled(), info.getCdnURL(),
-                    info.isEnabled() ? NSBundle.localizedString("CDN Enabled", "Mosso", "") : NSBundle.localizedString("CDN Disabled", "Mosso", ""));
-        }
-        catch(IOException e) {
-            this.error(e.getMessage(), e);
+            catch(IOException e) {
+                this.error(e.getMessage(), e);
+            }
         }
         return new Distribution(false, null, null);
     }
