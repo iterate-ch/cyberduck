@@ -32,16 +32,18 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @version $Id$
  */
-public class CDBookmarkCell extends NSImageCell {
+public class CDBookmarkCell extends NSCell {
 
     private Host bookmark;
 
-    public CDBookmarkCell() {
-        super();
-    }
-
     public void setObjectValue(final Object bookmark) {
         this.bookmark = (Host) bookmark;
+    }
+
+    private static final int NSCellHitContentArea = 1;
+
+    public int hitTestForEvent(NSEvent event, NSRect cellFrame, NSView controlView) {
+        return NSCellHitContentArea;
     }
 
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
