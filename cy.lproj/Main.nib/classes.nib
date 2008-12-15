@@ -86,6 +86,11 @@
             SUPERCLASS = NSObject;
         },
                 {
+            CLASS = "ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate";
+            LANGUAGE = Java;
+            SUPERCLASS = NSObject;
+        },
+                {
             CLASS = "ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate";
             LANGUAGE = Java;
             SUPERCLASS = NSObject;
