@@ -12,6 +12,7 @@ Changelog. Last modified: $Date$
 - [Feature] Archive and unarchive files and folders (ZIP, TAR etc.) (SFTP) [#2376]
 - [Feature] Clickable URL fields
 - [Feature] Display distinguished icon per protocol for bookmarks
+- [Bugfix] Uploads fail with digest access authentication [#2268]
 - [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
 
 3.0.3 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.3]
