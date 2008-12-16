@@ -507,11 +507,12 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void hostFieldDidChange(final NSNotification sender) {
-        if(Protocol.isURL(hostField.stringValue())) {
-            this.host.init(Host.parse(hostField.stringValue()).getAsDictionary());
+        String input = hostField.stringValue();
+        if(Protocol.isURL(input)) {
+            this.host.init(Host.parse(input).getAsDictionary());
         }
         else {
-            this.host.setHostname(hostField.stringValue());
+            this.host.setHostname(input);
         }
         this.itemChanged();
         this.reachable();

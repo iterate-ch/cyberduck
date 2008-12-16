@@ -592,7 +592,7 @@ public class CDBrowserController extends CDWindowController
 
     protected void setPathFilter(final String searchString) {
         log.debug("setPathFilter:" + searchString);
-        if(!StringUtils.isNotBlank(searchString)) {
+        if(StringUtils.isBlank(searchString)) {
             this.searchField.setStringValue("");
             // Revert to the last used default filter
             if(this.getShowHiddenFiles()) {
@@ -1865,7 +1865,7 @@ public class CDBrowserController extends CDWindowController
             return;
         }
         String input = (sender).stringValue();
-        if(!StringUtils.isNotBlank(input)) {
+        if(StringUtils.isBlank(input)) {
             return;
         }
         input = input.trim();
@@ -1977,7 +1977,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     private void setBookmarkFilter(final String searchString) {
-        if(!StringUtils.isNotBlank(searchString)) {
+        if(StringUtils.isBlank(searchString)) {
             this.searchField.setStringValue("");
             this.bookmarkModel.setFilter(null);
         }

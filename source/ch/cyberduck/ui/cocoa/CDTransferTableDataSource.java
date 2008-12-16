@@ -76,7 +76,7 @@ public class CDTransferTableDataSource extends CDController {
      * @param searchString
      */
     public void setFilter(final String searchString) {
-        if(!StringUtils.isNotBlank(searchString)) {
+        if(StringUtils.isBlank(searchString)) {
             // Revert to the default filter
             this.filter = new NullTransferFilter();
         }

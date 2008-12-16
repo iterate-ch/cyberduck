@@ -42,7 +42,7 @@ public abstract class AbstractLoginController implements LoginController {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     log.info("Searching keychain for password...");
                     String passFromKeychain = credentials.getInternetPasswordFromKeychain(protocol, hostname);
-                    if(!StringUtils.isNotBlank(passFromKeychain)) {
+                    if(StringUtils.isBlank(passFromKeychain)) {
                         this.prompt(protocol, credentials,
                                 NSBundle.localizedString("Login with username and password", "Credentials", ""),
                                 NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));

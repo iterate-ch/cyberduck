@@ -150,7 +150,7 @@ public class CDConnectionController extends CDSheetController {
 
     public void hostPopupSelectionDidChange(final NSControl sender) {
         String input = sender.stringValue();
-        if(!StringUtils.isNotBlank(input)) {
+        if(StringUtils.isBlank(input)) {
             return;
         }
         input = input.trim();
