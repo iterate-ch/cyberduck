@@ -4649,7 +4649,7 @@ public class CDBrowserController extends CDWindowController
                 quicklookButton = new NSButton(new NSRect(0, 0, 29, 23));
                 quicklookButton.setBezelStyle(NSButtonCell.TexturedRoundedBezelStyle);
                 quicklookButton.setImage(NSImage.imageNamed("NSQuickLookTemplate"));
-                quicklookButton.setEnabled(false);
+//                quicklookButton.setEnabled(false);
                 quicklookButton.setTarget(this);
                 quicklookButton.setAction(new NSSelector("quicklookButtonClicked", new Class[]{Object.class}));
                 item.setView(quicklookButton);
