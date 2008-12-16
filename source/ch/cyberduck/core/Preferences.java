@@ -342,6 +342,8 @@ public abstract class Preferences {
         defaults.put("queue.download.skip.regex",
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS");
 
+        defaults.put("queue.download.quarantine", String.valueOf(true));
+
         /**
          * Bandwidth throttle upload stream
          */

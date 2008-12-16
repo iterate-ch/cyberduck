@@ -7,25 +7,29 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: fs */
-/* Inaccessible static: separatorChar */
-/* Inaccessible static: pathSeparatorChar */
-/* Inaccessible static: tmpFileLock */
-/* Inaccessible static: counter */
-/* Inaccessible static: tmpdir */
-#undef ch_cyberduck_core_Local_serialVersionUID
-#define ch_cyberduck_core_Local_serialVersionUID 301077366599181567LL
-/* Inaccessible static: log */
-/* Inaccessible static: longDateFormatter */
-/* Inaccessible static: shortDateFormatter */
-/* Inaccessible static: class_00024ch_00024cyberduck_00024core_00024Local */
+#undef ch_cyberduck_core_Local_FILE_TYPE
+#define ch_cyberduck_core_Local_FILE_TYPE 1L
+#undef ch_cyberduck_core_Local_DIRECTORY_TYPE
+#define ch_cyberduck_core_Local_DIRECTORY_TYPE 2L
+#undef ch_cyberduck_core_Local_SYMBOLIC_LINK_TYPE
+#define ch_cyberduck_core_Local_SYMBOLIC_LINK_TYPE 4L
+#undef ch_cyberduck_core_Local_VOLUME_TYPE
+#define ch_cyberduck_core_Local_VOLUME_TYPE 8L
 /*
  * Class:     ch_cyberduck_core_Local
- * Method:    setIconFromExtension
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ * Method:    kind
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromExtension
-  (JNIEnv *, jobject, jstring, jstring);
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     ch_cyberduck_core_Local
+ * Method:    setQuarantine
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setQuarantine
+  (JNIEnv *, jobject, jstring, jstring, jstring);
 
 /*
  * Class:     ch_cyberduck_core_Local
@@ -45,16 +49,8 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon
 
 /*
  * Class:     ch_cyberduck_core_Local
- * Method:    kind
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     ch_cyberduck_core_Local
  * Method:    applicationForExtension
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_applicationForExtension
   (JNIEnv *, jobject, jstring);

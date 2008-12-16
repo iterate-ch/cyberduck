@@ -511,6 +511,12 @@ public abstract class Path extends AbstractPath implements Serializable {
         final boolean updateIcon = attributes.getSize() > Status.MEGA * 5;
         // Set the first progress icon
         this.getLocal().setIcon(0);
+
+        if(Preferences.instance().getBoolean("queue.download.quarantine")) {
+            // Set quarantine attributes
+            this.getLocal().setQuarantine(this.getHost().toURL(), this.toURL());
+        }
+
         final StreamListener listener = new StreamListener() {
             int step = 0;
 
