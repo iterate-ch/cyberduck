@@ -71,7 +71,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
             bookmark.setRepresentedObject(h);
             bookmark.setTarget(this);
             bookmark.setEnabled(true);
-            bookmark.setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
+            bookmark.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
             bookmark.setAction(new NSSelector("historyMenuItemClicked", new Class[]{NSMenuItem.class}));
             menu.insertItemAtIndex(bookmark, index);
             return !shouldCancel;

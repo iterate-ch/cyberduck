@@ -77,7 +77,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
             Host h = HostCollection.defaultCollection().get(index - 10);
             item.setTitle(h.getNickname());
             item.setTarget(this);
-            item.setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
+            item.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
             item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
             item.setRepresentedObject(h);
         }

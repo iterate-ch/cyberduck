@@ -28,6 +28,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDMainController;
+import ch.cyberduck.ui.cocoa.CDIconCache;
 
 import org.apache.log4j.Logger;
 
@@ -57,10 +58,10 @@ public class RendezvousMenuDelegate extends MenuDelegate {
      * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
         if(Rendezvous.instance().numberOfServices() == 0) {
-            sender.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
-            sender.setEnabled(false);
+            item.setTitle(NSBundle.localizedString("No Bonjour services available", ""));
+            item.setEnabled(false);
             return !shouldCancel;
         }
         else {
@@ -68,12 +69,14 @@ public class RendezvousMenuDelegate extends MenuDelegate {
                 log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
                 return false;
             }
-            String title = Rendezvous.instance().getDisplayedName(index);
-            sender.setTitle(title);
-            sender.setTarget(this);
-            sender.setEnabled(true);
-            sender.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
-            sender.setRepresentedObject(Rendezvous.instance().getServiceWithDisplayedName(title));
+            final String title = Rendezvous.instance().getDisplayedName(index);
+            final Host h = Rendezvous.instance().getServiceWithDisplayedName(title);
+            item.setTitle(title);
+            item.setTarget(this);
+            item.setEnabled(true);
+            item.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
+            item.setAction(new NSSelector("rendezvousMenuClicked", new Class[]{NSMenuItem.class}));
+            item.setRepresentedObject(h);
             return !shouldCancel;
         }
     }
