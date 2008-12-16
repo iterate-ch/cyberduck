@@ -479,8 +479,8 @@ public abstract class Preferences {
          */
         defaults.put("archive.command.create.tar", "tar -cvpPf {0}.tar {0}");
         defaults.put("archive.command.create.tar.gz", "tar -czvpPf {0}.tar.gz {0}");
-        defaults.put("archive.command.create.tar.bz2", "tar -cjvpPf {0}.tar.gz {0}");
-        defaults.put("archive.command.create.zip", "zip -v {0}.zip {0}");
+        defaults.put("archive.command.create.tar.bz2", "tar -cjvpPf {0}.tar.bz2 {0}");
+        defaults.put("archive.command.create.zip", "zip -rv {0}.zip {0}");
         defaults.put("archive.command.create.gz", "gzip -rv {0}");
         defaults.put("archive.command.create.bz2", "bzip2 -zvk {0}");
 
@@ -490,7 +490,7 @@ public abstract class Preferences {
         defaults.put("archive.command.expand.tar", "tar -xvpPf {0} -C {1}");
         defaults.put("archive.command.expand.tar.gz", "tar -xzvpPf {0} -C {1}");
         defaults.put("archive.command.expand.tar.bz2", "tar -xjvpPf {0} -C {1}");
-        defaults.put("archive.command.expand.zip", "unzip -v {0} -d {1}");
+        defaults.put("archive.command.expand.zip", "unzip -n {0} -d {1}");
         defaults.put("archive.command.expand.gz", "gzip -dv {0}");
         defaults.put("archive.command.expand.bz2", "bzip2 -dvk {0}");
 
