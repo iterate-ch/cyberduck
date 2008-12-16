@@ -72,7 +72,7 @@ public abstract class Protocol {
      * @return A small icon to display
      */
     public String icon() {
-        return "disk";
+        return this.getIdentifier();
     }
 
     /**
@@ -165,6 +165,10 @@ public abstract class Protocol {
         public boolean isSecure() {
             return true;
         }
+
+        public String icon() {
+            return "ftp-tls";
+        }
     };
 
     public static final Protocol S3 = new Protocol() {
@@ -203,10 +207,6 @@ public abstract class Protocol {
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
-
-        public String icon() {
-            return "amazon";
-        }
     };
 
     public static final Protocol WEBDAV = new Protocol() {
@@ -232,6 +232,10 @@ public abstract class Protocol {
 
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "dav"};
+        }
+
+        public String icon() {
+            return "disk";
         }
     };
 
@@ -262,6 +266,10 @@ public abstract class Protocol {
 
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "davs"};
+        }
+
+        public String icon() {
+            return "disk";
         }
     };
 
