@@ -313,6 +313,7 @@ public class Host extends NSObject implements Serializable {
      * @return
      */
     public static Host parse(String input) {
+        input = input.trim();
         int begin = 0;
         int cut;
         Protocol protocol = null;
