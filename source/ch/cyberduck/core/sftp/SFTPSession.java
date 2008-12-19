@@ -354,9 +354,19 @@ public class SFTPSession extends Session {
         return true;
     }
 
+    public boolean isArchiveSupported() {
+        return true;
+    }
+
+    public boolean isUnarchiveSupported() {
+        return true;
+    }
+
     public void sendCommand(String command) throws IOException {
         final ch.ethz.ssh2.Session sess = SSH.openSession();
         try {
+            this.message(command);
+            
             sess.execCommand(command, host.getEncoding());
 
             BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));

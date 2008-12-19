@@ -572,12 +572,4 @@ public class SFTPPath extends Path {
             }
         }
     }
-
-    public boolean isArchiveSupported() {
-        return true;
-    }
-
-    public boolean isUnarchiveSupported() {
-        return true;
-    }
 }

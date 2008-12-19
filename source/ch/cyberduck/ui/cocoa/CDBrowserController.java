@@ -28,8 +28,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
-import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -38,8 +38,8 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -153,7 +153,7 @@ public class CDBrowserController extends CDWindowController
         final Session session = this.init(host);
         final Path workdir = session.mount();
         if(session instanceof FTPSession) {
-            ((FTPSession)session).setStatListSupportedEnabled(false);
+            ((FTPSession) session).setStatListSupportedEnabled(false);
         }
         this.setWorkdir(workdir);
         BackgroundActionRegistry.instance().block();
@@ -677,6 +677,8 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
+     * Make the broser reload its content. Will make use of the cache.
+     *
      * @param selected The items to be selected
      * @see #setSelectedPaths(java.util.Collection)
      */
@@ -733,12 +735,18 @@ public class CDBrowserController extends CDWindowController
         browser.scrollRowToVisible(row);
     }
 
+    /**
+     * @param selected
+     */
     protected void setSelectedPath(Path selected) {
         List<Path> list = new Collection<Path>();
         list.add(selected);
         this.setSelectedPaths(list);
     }
 
+    /**
+     * @param selected
+     */
     protected void setSelectedPaths(List<Path> selected) {
         log.debug("setSelectedPaths");
         this.deselectAll();
@@ -1142,7 +1150,7 @@ public class CDBrowserController extends CDWindowController
         private void updateQuickLookSelection(final Collection<Path> selected) {
             if(QuickLook.isAvailable()) {
                 final Collection<Path> downloads = new Collection<Path>();
-                for(Path path: selected){
+                for(Path path : selected) {
                     if(!path.attributes.isFile()) {
                         continue;
                     }
@@ -1155,7 +1163,7 @@ public class CDBrowserController extends CDWindowController
                 if(downloads.size() > 0) {
                     background(new BrowserBackgroundAction(CDBrowserController.this) {
                         public void run() {
-                            for(Path download: downloads) {
+                            for(Path download : downloads) {
                                 if(this.isCanceled()) {
                                     break;
                                 }
@@ -1167,7 +1175,7 @@ public class CDBrowserController extends CDWindowController
 
                         public void cleanup() {
                             final Collection<Local> previews = new Collection<Local>();
-                            for(Path download: downloads) {
+                            for(Path download : downloads) {
                                 if(download.getLocal().attributes.getSize() == download.attributes.getSize()) {
                                     previews.add(download.getLocal());
                                 }
@@ -1658,7 +1666,7 @@ public class CDBrowserController extends CDWindowController
             public String tooltip(Host bookmark) {
                 return bookmark.toURL();
             }
-                
+
             public void tableRowDoubleClicked(final Object sender) {
                 CDBrowserController.this.connectBookmarkButtonClicked(sender);
             }
@@ -2390,12 +2398,13 @@ public class CDBrowserController extends CDWindowController
                     break;
                 }
             }
-            this.setWorkdir(this.workdir());
+            this.reloadData(true);
         }
     }
 
     /**
      * Open a new browser with the current selected folder as the working directory
+     *
      * @param sender
      */
     public void newBrowserButtonClicked(final Object sender) {
@@ -2763,7 +2772,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void editMenuClicked(final NSMenuItem sender) {
-        for(Path selected: this.getSelectedPaths()) {
+        for(Path selected : this.getSelectedPaths()) {
             String identifier = EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.title());
             if(identifier != null) {
                 Editor editor = EditorFactory.createEditor(
@@ -2774,7 +2783,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void editButtonClicked(final Object sender) {
-        for(Path selected: this.getSelectedPaths()) {
+        for(Path selected : this.getSelectedPaths()) {
             Editor editor = EditorFactory.createEditor(this, selected.getLocal(), selected);
             editor.open();
         }
@@ -2853,7 +2862,7 @@ public class CDBrowserController extends CDWindowController
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
             final Session session = this.getTransferSession();
             final List<Path> roots = new Collection<Path>();
-            for(Path selected: this.getSelectedPaths()) {
+            for(Path selected : this.getSelectedPaths()) {
                 Path path = PathFactory.createPath(session, selected.getAsDictionary());
                 path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
                 roots.add(path);
@@ -2869,7 +2878,7 @@ public class CDBrowserController extends CDWindowController
 
     public void downloadAsButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
-        for(Path selected: this.getSelectedPaths()) {
+        for(Path selected : this.getSelectedPaths()) {
             Path path = PathFactory.createPath(session, selected.getAsDictionary());
             downloadAsPanel = NSSavePanel.savePanel();
             downloadAsPanel.setMessage(NSBundle.localizedString("Download the selected file to...", ""));
@@ -2947,7 +2956,7 @@ public class CDBrowserController extends CDWindowController
     public void downloadButtonClicked(final Object sender) {
         final Session session = this.getTransferSession();
         final List<Path> roots = new Collection<Path>();
-        for(Path selected: this.getSelectedPaths()) {
+        for(Path selected : this.getSelectedPaths()) {
             Path path = PathFactory.createPath(session, selected.getAsDictionary());
             path.setLocal(null);
             roots.add(path);
@@ -2986,7 +2995,7 @@ public class CDBrowserController extends CDWindowController
                 destination = this.workdir();
             }
             else if(!destination.attributes.isDirectory()) {
-                destination = (Path)destination.getParent();
+                destination = (Path) destination.getParent();
             }
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
@@ -3232,7 +3241,7 @@ public class CDBrowserController extends CDWindowController
 
     public void cut(final Object sender) {
         final List<Path> roots = new Collection<Path>();
-        for(Path selected: this.getSelectedPaths()) {
+        for(Path selected : this.getSelectedPaths()) {
             roots.add(selected);
         }
         final Transfer q = new DownloadTransfer(roots);
@@ -3377,75 +3386,67 @@ public class CDBrowserController extends CDWindowController
     }
 
     /**
-     *
      * @param sender
      */
     public void archiveMenuClicked(final NSMenuItem sender) {
-        final Archive archive = (Archive)sender.representedObject();
-        this.archive(archive);
+        this.archiveClicked((Archive) sender.representedObject());
     }
 
     /**
-     *
      * @param sender
      */
     public void archiveButtonClicked(final NSToolbarItem sender) {
-        final Archive archive = Archive.TARGZ;
-        archive(archive);
+        this.archiveClicked(Archive.TARGZ);
     }
 
-    private void archive(final Archive archive) {
-        this.background(new BrowserBackgroundAction(this) {
-            Path current;
+    /**
+     * @param archive
+     */
+    private void archiveClicked(final Archive archive) {
+        final Collection<Path> selected = this.getSelectedPaths();
+        this.checkOverwrite(Collections.singletonList(archive.getArchive(selected)), new BrowserBackgroundAction(this) {
 
             public void run() {
-                for(Path selected: getSelectedPaths()) {
-                    current = selected;
-                    selected.archive(archive);
-                }
+                session.archive(archive, selected);
             }
 
             public void cleanup() {
-                reloadButtonClicked(null);
+                // Update Selection
+                reloadData(Collections.singletonList(archive.getArchive(selected)));
             }
 
             public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Archiving {0}", "Status", ""),
-                    archive.getTitle(current));
+                return archive.getCompressCommand(selected);
             }
         });
     }
 
     /**
-     * 
      * @param sender
      */
     public void unarchiveButtonClicked(final Object sender) {
-        this.background(new BrowserBackgroundAction(this) {
-            Path current;
-            Archive archive;
-
-            public void run() {
-                for(Path selected: getSelectedPaths()) {
-                    current = selected;
-                    archive = Archive.forName(selected.getName());
-                    if(null == archive) {
-                        continue;
-                    }
-                    selected.unarchive(archive);
+        final List<Path> expanded = new ArrayList<Path>();
+        for(final Path selected : this.getSelectedPaths()) {
+            final Archive archive = Archive.forName(selected.getName());
+            if(null == archive) {
+                continue;
+            }
+            this.checkOverwrite(archive.getExpanded(Collections.singletonList(selected)), new BrowserBackgroundAction(this) {
+                public void run() {
+                    session.unarchive(archive, selected);
                 }
-            }
 
-            public void cleanup() {
-                reloadButtonClicked(sender);
-            }
+                public void cleanup() {
+                    expanded.addAll(archive.getExpanded(Collections.singletonList(selected)));
+                    // Update Selection
+                    reloadData(expanded);
+                }
 
-
-            public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Unarchiving {0}", "Status", ""),
-                    archive.getTitle(current));
-            }
-        });
+                public String getActivity() {
+                    return archive.getDecompressCommand(selected);
+                }
+            });
+        };
     }
 
     /**
@@ -4079,19 +4080,9 @@ public class CDBrowserController extends CDWindowController
             }
         }
         else if(action.equals("archiveMenuClicked:")) {
-            final Archive archive = (Archive)item.representedObject();
+            final Archive archive = (Archive) item.representedObject();
             int count = this.getSelectionCount();
-            if(this.isMounted() && count > 0) {
-                if(count > 1) {
-                    item.setTitle(archive.getIdentifier() + " " + count + " " + NSBundle.localizedString("files", ""));
-                }
-                else {
-                    item.setTitle(archive.getTitle(this.getSelectedPath()));
-                }
-            }
-            else {
-                item.setTitle(archive.getIdentifier());
-            }
+            item.setTitle(archive.getTitle(this.getSelectedPaths()));
         }
         return this.validateItem(action);
     }
@@ -4149,7 +4140,7 @@ public class CDBrowserController extends CDWindowController
                 if(null == editor) {
                     return false;
                 }
-                for(Path selected: this.getSelectedPaths()) {
+                for(Path selected : this.getSelectedPaths()) {
                     if(!this.isEditable(selected)) {
                         return false;
                     }
@@ -4160,7 +4151,7 @@ public class CDBrowserController extends CDWindowController
         }
         if(action.equals("editMenuClicked:")) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
-                for(Path selected: this.getSelectedPaths()) {
+                for(Path selected : this.getSelectedPaths()) {
                     if(!this.isEditable(selected)) {
                         return false;
                     }
@@ -4280,11 +4271,11 @@ public class CDBrowserController extends CDWindowController
         }
         if(action.equals("archiveButtonClicked:") || action.equals("archiveMenuClicked:")) {
             if(this.isMounted()) {
+                if(!this.getSession().isArchiveSupported()) {
+                    return false;
+                }
                 if(this.getSelectionCount() > 0) {
-                    for(Path selected: this.getSelectedPaths()) {
-                        if(!selected.isArchiveSupported()) {
-                            return false;
-                        }
+                    for(Path selected : this.getSelectedPaths()) {
                         if(selected.attributes.isFile() && Archive.isArchive(selected.getName())) {
                             // At least one file selected is already an archive. No distinct action possible
                             return false;
@@ -4297,11 +4288,11 @@ public class CDBrowserController extends CDWindowController
         }
         if(action.equals("unarchiveButtonClicked:")) {
             if(this.isMounted()) {
+                if(!this.getSession().isUnarchiveSupported()) {
+                    return false;
+                }
                 if(this.getSelectionCount() > 0) {
-                    for(Path selected: this.getSelectedPaths()) {
-                        if(!selected.isUnarchiveSupported()) {
-                            return false;
-                        }
+                    for(Path selected : this.getSelectedPaths()) {
                         if(selected.attributes.isDirectory()) {
                             return false;
                         }
@@ -4666,7 +4657,7 @@ public class CDBrowserController extends CDWindowController
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
     }
-    
+
     private NSButton quicklookButton;
 
     /**

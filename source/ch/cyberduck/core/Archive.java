@@ -24,11 +24,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description of an archive format
  *
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class Archive {
     private static Logger log = Logger.getLogger(Archive.class);
@@ -154,18 +156,63 @@ public abstract class Archive {
     public abstract String getDescription();
 
     /**
+     * @param files
      * @return
      */
-    public String getTitle(final Path path) {
-        return StringUtils.remove(path.getName(), "." + this.getIdentifier()) + "." + this.getIdentifier();
+    public Path getArchive(final List<Path> files) {
+        if(files.size() == 0) {
+            return null;
+        }
+        if(files.size() == 1) {
+            return PathFactory.createPath(files.get(0).getSession(), files.get(0).getParent().getAbsolute(),
+                    files.get(0).getName() + "." + this.getIdentifier(),
+                    Path.FILE_TYPE);
+        }
+        return PathFactory.createPath(files.get(0).getSession(), files.get(0).getParent().getAbsolute(),
+                NSBundle.localizedString("Archive", "Archive", "") + "." + this.getIdentifier(),
+                Path.FILE_TYPE);
+    }
+
+    /**
+     *
+     * @param files
+     * @return
+     */
+    public List<Path> getExpanded(final List<Path> files) {
+        final List<Path> expanded = new ArrayList<Path>();
+        for(Path file : files) {
+            expanded.add(PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
+                    StringUtils.remove(file.getName(), "." + this.getIdentifier()),
+                    Path.FILE_TYPE));
+        }
+        return expanded;
+    }
+
+    /**
+     * @param files
+     * @return
+     */
+    public String getTitle(final List<Path> files) {
+        Path archive = this.getArchive(files);
+        if(null == archive) {
+            return this.getIdentifier();
+        }
+        return archive.getName();
     }
 
     /**
      * @return
      */
-    public String getCompressCommand(final Path path) {
+    public String getCompressCommand(final List<Path> files) {
+        String archive;
+        if(files.size() == 1) {
+            archive = files.get(0).getAbsolute();
+        }
+        else {
+            archive = files.get(0).getParent().getAbsolute() + Path.DELIMITER + NSBundle.localizedString("Archive", "Archive", "");
+        }
         return MessageFormat.format(Preferences.instance().getProperty("archive.command.create." + this.getIdentifier()),
-                path.getAbsolute());
+                archive, StringUtils.join(files, " "));
     }
 
     /**

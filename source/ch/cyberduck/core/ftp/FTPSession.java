@@ -295,6 +295,8 @@ public class FTPSession extends Session {
 
     public void sendCommand(String command) throws IOException {
         if(this.isConnected()) {
+            this.message(command);
+
             this.FTP.quote(command);
         }
     }

@@ -599,58 +599,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
-     * @return False
-     */
-    public boolean isArchiveSupported() {
-        return false;
-    }
-
-    /**
-     * Create ompressed archive.
-     *
-     * @param archive
-     */
-    public void archive(final Archive archive) {
-        try {
-            this.getSession().check();
-
-            this.getSession().message(MessageFormat.format(NSBundle.localizedString("Archiving {0}", "Status", ""),
-                    archive.getTitle(this)));
-            this.getSession().sendCommand(archive.getCompressCommand(this));
-        }
-        catch(IOException e) {
-            this.error("Cannot create archive", e);
-        }
-    }
-
-    /**
-     *
-     * @return False
-     */
-    public boolean isUnarchiveSupported() {
-        return false;
-    }
-
-    /**
-     * Unpack compressed archive
-     *
-     * @param archive
-     */
-    public void unarchive(final Archive archive) {
-        try {
-            this.getSession().check();
-
-            this.getSession().message(MessageFormat.format(NSBundle.localizedString("Unarchiving {0}", "Status", ""),
-                    archive.getTitle(this)));
-            this.getSession().sendCommand(archive.getDecompressCommand(this));
-        }
-        catch(IOException e) {
-            this.error("Cannot expand archive", e);
-        }
-    }
-
-    /**
      * @return true if the path exists (or is cached!)
      */
     public boolean exists() {

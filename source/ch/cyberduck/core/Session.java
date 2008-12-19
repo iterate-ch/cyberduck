@@ -32,6 +32,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -295,6 +296,62 @@ public abstract class Session extends NSObject {
      * @param command
      */
     public abstract void sendCommand(String command) throws IOException;
+
+    /**
+     *
+     * @return False
+     */
+    public boolean isArchiveSupported() {
+        return false;
+    }
+
+    /**
+     * Create ompressed archive.
+     *
+     * @param archive
+     */
+    public void archive(final Archive archive, final List<Path> files) {
+        try {
+            this.check();
+
+            this.sendCommand(archive.getCompressCommand(files));
+
+            // The directory listing is no more current
+            for(Path file: files) {
+                file.getParent().invalidate();
+            }
+        }
+        catch(IOException e) {
+            this.error(null, "Cannot create archive", e);
+        }
+    }
+
+    /**
+     *
+     * @return False
+     */
+    public boolean isUnarchiveSupported() {
+        return false;
+    }
+
+    /**
+     * Unpack compressed archive
+     *
+     * @param archive
+     */
+    public void unarchive(final Archive archive, Path file) {
+        try {
+            this.check();
+
+            this.sendCommand(archive.getDecompressCommand(file));
+
+            // The directory listing is no more current
+            file.getParent().invalidate();
+        }
+        catch(IOException e) {
+            this.error(null, "Cannot expand archive", e);
+        }
+    }
 
     /**
      * @return boolean True if the session has not yet been closed.

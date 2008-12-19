@@ -477,12 +477,12 @@ public abstract class Preferences {
         /**
          * Archiver
          */
-        defaults.put("archive.command.create.tar", "tar -cvpPf {0}.tar {0}");
-        defaults.put("archive.command.create.tar.gz", "tar -czvpPf {0}.tar.gz {0}");
-        defaults.put("archive.command.create.tar.bz2", "tar -cjvpPf {0}.tar.bz2 {0}");
-        defaults.put("archive.command.create.zip", "zip -rv {0}.zip {0}");
-        defaults.put("archive.command.create.gz", "gzip -rv {0}");
-        defaults.put("archive.command.create.bz2", "bzip2 -zvk {0}");
+        defaults.put("archive.command.create.tar", "tar -cvpPf {0}.tar {1}");
+        defaults.put("archive.command.create.tar.gz", "tar -czvpPf {0}.tar.gz {1}");
+        defaults.put("archive.command.create.tar.bz2", "tar -cjvpPf {0}.tar.bz2 {1}");
+        defaults.put("archive.command.create.zip", "zip -rv {0}.zip {1}");
+        defaults.put("archive.command.create.gz", "gzip -rv {1}");
+        defaults.put("archive.command.create.bz2", "bzip2 -zvk {1}");
 
         /**
          * Unarchiver
