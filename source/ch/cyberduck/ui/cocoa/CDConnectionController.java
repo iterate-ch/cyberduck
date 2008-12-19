@@ -403,14 +403,6 @@ public class CDConnectionController extends CDSheetController {
         this.toggleOptionsButton = b;
     }
 
-    private NSButton helpButton; //IBOutlet
-
-    public void setHelpButton(NSButton helpButton) {
-        this.helpButton = helpButton;
-        this.helpButton.setTarget(this);
-        this.helpButton.setAction(new NSSelector("helpButtonClicked", new Class[]{Object.class}));
-    }
-
     private static final Map<CDWindowController, CDConnectionController> controllers
             = new HashMap<CDWindowController, CDConnectionController>();
 
@@ -425,7 +417,7 @@ public class CDConnectionController extends CDSheetController {
             controller.loadBundle("Connection");
             controllers.put(parent, controller);
         }
-        final CDConnectionController c = (CDConnectionController) controllers.get(parent);
+        final CDConnectionController c = controllers.get(parent);
         c.passField.setStringValue("");
         return c;
     }
