@@ -115,6 +115,10 @@ public class CDCommandController extends CDSheetController implements Transcript
                         closeSheet(sender);
                     }
                 }
+
+                public String getActivity() {
+                    return command;
+                }
             });
         }
     }
