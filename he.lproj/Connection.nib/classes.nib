@@ -23,6 +23,7 @@
                 {
             ACTIONS =             {
                 closeSheet = id;
+                helpButtonClicked = id;
             };
             CLASS = "ch.cyberduck.ui.cocoa.CDConnectionController";
             LANGUAGE = Java;
@@ -31,7 +32,6 @@
                 anonymousCheckbox = NSButton;
                 connectmodePopup = NSPopUpButton;
                 encodingPopup = NSPopUpButton;
-                helpButton = NSButton;
                 hostPopup = NSComboBox;
                 keychainCheckbox = NSButton;
                 passField = NSSecureTextField;

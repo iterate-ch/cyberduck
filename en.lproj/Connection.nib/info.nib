@@ -10,7 +10,11 @@
 	<array/>
 	<key>IBOldestOS</key>
 	<integer>3</integer>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>22</integer>
+	</array>
 	<key>IBSystem Version</key>
-	<string>9F2114</string>
+	<string>9G55</string>
 </dict>
 </plist>
