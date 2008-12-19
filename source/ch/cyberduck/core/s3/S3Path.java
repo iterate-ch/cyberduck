@@ -190,15 +190,17 @@ public class S3Path extends CloudPath {
     }
 
     public void readSize() {
-        try {
-            session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
-                    this.getName()));
+        if(attributes.isFile()) {
+            try {
+                session.check();
+                session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                        this.getName()));
 
-            attributes.setSize(this.getDetails().getContentLength());
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                attributes.setSize(this.getDetails().getContentLength());
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
@@ -244,7 +246,6 @@ public class S3Path extends CloudPath {
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-
     }
 
     private Permission readPermissions(Set grants) {
