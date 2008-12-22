@@ -4167,6 +4167,9 @@ public class CDBrowserController extends CDWindowController
             }
             return false;
         }
+        if(action.equals("searchButtonClicked:")) {
+            return this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
+        }
         if(action.equals("quicklookButtonClicked:")) {
             return QuickLook.isAvailable() && this.isMounted() && this.getSelectionCount() > 0;
         }
