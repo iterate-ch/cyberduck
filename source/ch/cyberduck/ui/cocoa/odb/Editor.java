@@ -39,12 +39,6 @@ import java.util.Enumeration;
 public abstract class Editor extends CDController {
     private static Logger log = Logger.getLogger(Editor.class);
 
-    /**
-     *
-     */
-    private Local TEMPORARY_DIRECTORY
-            = new Local(Preferences.instance().getProperty("editor.tmp.directory"));
-
     private CDBrowserController controller;
 
     /**
@@ -65,7 +59,7 @@ public abstract class Editor extends CDController {
         this.controller = controller;
         this.bundleIdentifier = bundleIdentifier;
         this.edited = path;
-        final Local folder = new Local(new File(TEMPORARY_DIRECTORY.getAbsolute(),
+        final Local folder = new Local(new File(new Local(Preferences.instance().getProperty("editor.tmp.directory")).getAbsolute(),
                 edited.getParent().getAbsolute()));
         this.edited.setLocal(new Local(folder, edited.getName()));
     }
