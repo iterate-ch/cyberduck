@@ -1967,6 +1967,13 @@ public class CDBrowserController extends CDWindowController
                 this.searchField);
     }
 
+    /**
+     * Change focus to filter field
+     * @param sender
+     */
+    public void searchButtonClicked(final Object sender) {
+        this.window().makeFirstResponder(this.searchField);
+    }
 
     public void searchFieldTextDidChange(NSNotification notification) {
         NSDictionary userInfo = notification.userInfo();

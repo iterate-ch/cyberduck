@@ -137,6 +137,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    /**
+     * Change focus to filter field
+     * @param sender
+     */
+    public void searchButtonClicked(final Object sender) {
+        this.window().makeFirstResponder(this.filterField);
+    }
+
     private CDTranscriptController transcript;
 
     private NSDrawer logDrawer;
