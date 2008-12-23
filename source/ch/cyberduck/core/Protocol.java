@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.foundation.NSBundle;
 
 import org.apache.commons.lang.StringUtils;
@@ -68,7 +67,13 @@ public abstract class Protocol {
     }
 
     /**
-     *
+     * @return A mounted disk icon to display
+     */
+    public String disk() {
+        return "disk";
+    }
+
+    /**
      * @return A small icon to display
      */
     public String icon() {
@@ -207,6 +212,10 @@ public abstract class Protocol {
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
+
+        public String icon() {
+            return "amazon";
+        }
     };
 
     public static final Protocol WEBDAV = new Protocol() {
@@ -310,7 +319,7 @@ public abstract class Protocol {
             return "idisk.me.com";
         }
 
-        public String icon() {
+        public String disk() {
             return "idisk";
         }
     };
@@ -350,10 +359,6 @@ public abstract class Protocol {
 
         public String getDefaultHostname() {
             return "storage.clouddrive.com";
-        }
-
-        public String icon() {
-            return this.getIdentifier();
         }
     };
 

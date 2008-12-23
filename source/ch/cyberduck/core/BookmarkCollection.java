@@ -63,7 +63,7 @@ public abstract class BookmarkCollection extends Collection<Host> {
     }
 
     public NSImage getIcon(Host host) {
-        return CDIconCache.instance().iconForName(host.getProtocol().icon(),
+        return CDIconCache.instance().iconForName(host.getProtocol().disk(),
                 Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 16 : 32);
     }
 }
