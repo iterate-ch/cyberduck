@@ -91,8 +91,8 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 				//NSLog(@"New crash log found! Running alert panel");
 				if( NSRunAlertPanel( NSLocalizedStringFromTable( @"Do you want to report the last crash?", @"Crash", @"" ),
 									NSLocalizedStringFromTable( @"The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", @"Crash", @"" ),
-									NSLocalizedStringFromTable( @"Send", @"Crash", @"" ),
-									NSLocalizedStringFromTable( @"Don't Send", @"Crash", @"" ),
+									NSLocalizedStringFromTable( @"Send", @"Crash", @"" ), // NSAlertDefaultReturn
+									NSLocalizedStringFromTable( @"Don't Send", @"Crash", @"" ), // NSAlertAlternateReturn
 									@"", appName ) )
 				{
                     // Fetch the newest report from the log:
@@ -124,7 +124,12 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 
                     // Go into progress mode and kick off the HTTP post:
                     connection = [[NSURLConnection connectionWithRequest: postRequest delegate: self] retain];
-               }
+                }
+                else {
+                    // Don't ask twice:
+                    [[NSUserDefaults standardUserDefaults] setFloat: [[NSDate date] timeIntervalSince1970] forKey: @"crashreport.date"];
+                    [[NSUserDefaults standardUserDefaults] synchronize];
+                }
 			}
 		}
 	NS_HANDLER
