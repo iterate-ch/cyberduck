@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
+import com.apple.cocoa.foundation.NSDistributedNotificationCenter;
+import com.apple.cocoa.foundation.NSNotification;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
@@ -381,6 +383,9 @@ public class DownloadTransfer extends Transfer {
                     if(DownloadTransfer.this.shouldOpenWhenComplete()) {
                         NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
                     }
+                    NSDistributedNotificationCenter.defaultCenter().postNotification(
+                            new NSNotification("com.apple.DownloadFileFinished", getRoot().getLocal().getAbsolute())
+                    );
                 }
             }, true);
         }
