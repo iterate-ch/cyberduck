@@ -3353,7 +3353,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void openTerminalButtonClicked(final Object sender) {
-        final boolean identity = this.getSession().getHost().getCredentials().usesPublicKeyAuthentication();
+        final boolean identity = this.getSession().getHost().isPublicKeyAuthentication();
         String workdir = null;
         if(this.getSelectionCount() == 1) {
             Path selected = this.getSelectedPath();
@@ -3367,7 +3367,7 @@ public class CDBrowserController extends CDWindowController
         final String command
                 = "tell application \"Terminal\"\n"
                 + "do script \"ssh -t "
-                + (identity ? "-i " + new Local(this.getSession().getHost().getCredentials().getPrivateKeyFile()).getAbsolute() : "")
+                + (identity ? "-i " + new Local(this.getSession().getHost().getIdentity()).getAbsolute() : "")
                 + " "
                 + this.getSession().getHost().getCredentials().getUsername()
                 + "@"

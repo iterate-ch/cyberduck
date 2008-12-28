@@ -21,7 +21,6 @@ package ch.cyberduck.core.cf;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -37,7 +36,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 import com.mosso.client.cloudfiles.FilesClient;
-import com.mosso.client.cloudfiles.FilesAuthorizationException;
 
 /**
  * Mosso Cloud Files Implementation
@@ -130,7 +128,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         this.CF.setPassword(credentials.getPassword());
         if(!this.CF.login()) {
             this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-            this.login.fail(host.getProtocol(), credentials,
+            this.login.fail(host,
                     NSBundle.localizedString("Login with username and password", "Credentials", ""));
             this.login();
         }

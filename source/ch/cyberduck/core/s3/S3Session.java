@@ -45,7 +45,7 @@ import java.text.MessageFormat;
 import java.util.Date;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3Session extends HTTPSession implements SSLSession {
     private static Logger log = Logger.getLogger(S3Session.class);
@@ -188,7 +188,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         catch(S3ServiceException e) {
             if(this.isLoginFailure(e)) {
                 this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-                this.login.fail(host.getProtocol(), credentials,
+                this.login.fail(host,
                         NSBundle.localizedString("Login with username and password", "Credentials", ""));
                 this.login();
             }

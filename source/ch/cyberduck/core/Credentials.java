@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSPathUtilities;
+
 import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
 
@@ -43,10 +45,7 @@ public class Credentials {
      * The login password
      */
     private transient String pass;
-    /**
-     * If not null, use public key authentication if SSH is the protocol
-     */
-    private String privateKeyFile;
+
     /**
      * If the credentials should be stored in the Keychain upon successful login
      */
@@ -142,6 +141,9 @@ public class Credentials {
         }
     }
 
+    /**
+     * Default credentials from Preferences
+     */
     public Credentials() {
         this(Preferences.instance().getProperty("connection.login.name"), null,
                 Preferences.instance().getBoolean("connection.login.useKeychain"));
@@ -185,36 +187,10 @@ public class Credentials {
     }
 
     /**
-     * SSH specific
      *
-     * @return true if public key authentication should be used. This is the case, if a
-     *         private key file has been specified
-     * @see #setPrivateKeyFile
+     * @return
      */
-    public boolean usesPublicKeyAuthentication() {
-        return this.privateKeyFile != null;
-    }
-
-    /**
-     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
-     *
-     * @param file
-     */
-    public void setPrivateKeyFile(String file) {
-        this.privateKeyFile = file;
-    }
-
-    /**
-     * @return The path to the private key file to use for public key authentication
-     */
-    public String getPrivateKeyFile() {
-        return this.privateKeyFile;
-    }
-
     public boolean isValid() {
-        if(this.usesPublicKeyAuthentication()) {
-            return true;
-        }
         return StringUtils.isNotEmpty(this.getUsername()) && StringUtils.isNotEmpty(this.getPassword());
     }
 }

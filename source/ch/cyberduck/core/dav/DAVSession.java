@@ -120,7 +120,7 @@ public class DAVSession extends HTTPSession {
         catch(HttpException e) {
             if(e.getReasonCode() == HttpStatus.SC_UNAUTHORIZED) {
                 this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-                this.login.fail(host.getProtocol(), credentials,
+                this.login.fail(host,
                         e.getReason());
                 this.login();
             }

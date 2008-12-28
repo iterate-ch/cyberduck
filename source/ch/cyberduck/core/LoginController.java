@@ -21,31 +21,29 @@ package ch.cyberduck.core;
 public interface LoginController {
 
     /**
-     * @param credentials
-     * @param protocol
-     * @param hostname
+     * @param host
      * @throws LoginCanceledException
      */
-    void check(Credentials credentials, Protocol protocol, String hostname)
+    void check(Host host)
             throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
      * A concrete sublcass could eg. display a panel.
      *
-     * @param protocol
-     * @param credentials
+     * @param host
      * @param reason
      */
-    void fail(final Protocol protocol, final Credentials credentials, final String reason)
+    void fail(Host host, String reason)
             throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
      * A concrete sublcass could eg. display a panel.
      *
+     * @param host
      * @param message Any additional information why the login failed.
      */
-    void prompt(Protocol protocol, Credentials credentials, String reason, String message)
+    void prompt(Host host, String reason, String message)
             throws LoginCanceledException;
 }

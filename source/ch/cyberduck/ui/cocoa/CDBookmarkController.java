@@ -358,8 +358,7 @@ public class CDBookmarkController extends CDWindowController {
             downloadPathPanel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
         }
         else {
-            host.setDownloadFolder(NSPathUtilities.stringByAbbreviatingWithTildeInPath(
-                    sender.representedObject().toString()));
+            host.setDownloadFolder(sender.representedObject().toString());
             this.itemChanged();
         }
     }
@@ -369,8 +368,7 @@ public class CDBookmarkController extends CDWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if((filename = (String) selected.lastObject()) != null) {
-                host.setDownloadFolder(
-                        NSPathUtilities.stringByAbbreviatingWithTildeInPath(filename));
+                host.setDownloadFolder(filename);
             }
         }
         else {
@@ -483,7 +481,7 @@ public class CDBookmarkController extends CDWindowController {
                     new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
         }
         else {
-            this.host.getCredentials().setPrivateKeyFile(null);
+            this.host.setIdentity(null);
             this.itemChanged();
         }
     }
@@ -494,13 +492,11 @@ public class CDBookmarkController extends CDWindowController {
             NSArray selected = sheet.filenames();
             java.util.Enumeration enumerator = selected.objectEnumerator();
             while(enumerator.hasMoreElements()) {
-                String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
-                        (String) enumerator.nextElement());
-                this.host.getCredentials().setPrivateKeyFile(pk);
+                this.host.setIdentity((String) enumerator.nextElement());
             }
         }
         if(returncode == NSPanel.CancelButton) {
-            this.host.getCredentials().setPrivateKeyFile(null);
+            this.host.setIdentity(null);
         }
         publicKeyPanel = null;
         this.itemChanged();
@@ -633,9 +629,9 @@ public class CDBookmarkController extends CDWindowController {
             }
         }
         this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Protocol.SFTP));
-        if(this.host.getCredentials().usesPublicKeyAuthentication()) {
+        if(this.host.isPublicKeyAuthentication()) {
             this.pkCheckbox.setState(NSCell.OnState);
-            this.updateField(this.pkLabel, this.host.getCredentials().getPrivateKeyFile());
+            this.updateField(this.pkLabel, this.host.getIdentity());
         }
         else {
             this.pkCheckbox.setState(NSCell.OffState);

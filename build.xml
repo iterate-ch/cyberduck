@@ -375,6 +375,7 @@
 			manifest="${build}/MANIFEST.MF">
 			<fileset dir="${build.classes}">
 				<include name="ch/ethz/ssh2/**/*.class"/>
+                <include name="org/spearce/jgit/**/*.class"/>
 			</fileset>
 		</jar>
 		<jar jarfile="${build}/ftp.jar"

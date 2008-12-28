@@ -21,8 +21,9 @@ package ch.cyberduck.core;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -51,7 +52,7 @@ public class Host extends NSObject implements Serializable {
      *
      * @see Protocol#getDefaultPort()
      */
-    private int port;
+    private int port = -1;
     /**
      * The fully qualified hostname
      */
@@ -72,6 +73,10 @@ public class Host extends NSObject implements Serializable {
      * The credentials to authenticate with
      */
     private Credentials credentials = new Credentials();
+    /**
+     * If not null, use public key authentication if SSH is the protocol
+     */
+    private String identity;
     /**
      * The character encoding to use for file listings
      */
@@ -156,7 +161,7 @@ public class Host extends NSObject implements Serializable {
         }
         final Object keyObj = dict.objectForKey(Host.KEYFILE);
         if(keyObj != null) {
-            this.getCredentials().setPrivateKeyFile(keyObj.toString());
+            this.setIdentity(keyObj.toString());
         }
         Object portObj = dict.objectForKey(Host.PORT);
         if(portObj != null) {
@@ -227,15 +232,17 @@ public class Host extends NSObject implements Serializable {
         if(StringUtils.isNotBlank(this.encoding)) {
             dict.setObjectForKey(this.encoding, Host.ENCODING);
         }
-        if(StringUtils.isNotBlank(this.getCredentials().getPrivateKeyFile())) {
-            dict.setObjectForKey(this.getCredentials().getPrivateKeyFile(), Host.KEYFILE);
+        if(StringUtils.isNotBlank(this.getIdentity())) {
+            dict.setObjectForKey(this.getIdentity(), Host.KEYFILE);
         }
         if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null != this.connectMode) {
-                if(connectMode.equals(FTPConnectMode.ACTIVE))
+                if(connectMode.equals(FTPConnectMode.ACTIVE)) {
                     dict.setObjectForKey(FTPConnectMode.ACTIVE.toString(), Host.FTPCONNECTMODE);
-                else if(connectMode.equals(FTPConnectMode.PASV))
+                }
+                else if(connectMode.equals(FTPConnectMode.PASV)) {
                     dict.setObjectForKey(FTPConnectMode.PASV.toString(), Host.FTPCONNECTMODE);
+                }
             }
         }
         if(null != this.maxConnections) {
@@ -428,7 +435,40 @@ public class Host extends NSObject implements Serializable {
     }
 
     public Credentials getCredentials() {
-        return this.credentials;
+        return credentials;
+    }
+
+    /**
+     * SSH specific
+     *
+     * @return true if public key authentication should be used. This is the case, if a
+     *         private key file has been specified
+     * @see #setIdentity
+     */
+    public boolean isPublicKeyAuthentication() {
+        return StringUtils.isNotBlank(this.getIdentity());
+    }
+
+    /**
+     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
+     *
+     * @param file
+     */
+    public void setIdentity(String file) {
+        this.identity = NSPathUtilities.stringByAbbreviatingWithTildeInPath(file);
+    }
+
+    /**
+     * @return The path to the private key file to use for public key authentication
+     */
+    public String getIdentity() {
+        if(null == identity) {
+            final OpenSshConfig.Host host = OpenSshConfig.create().lookup(this.getHostname());
+            if(null != host.getIdentityFile()) {
+                this.setIdentity(host.getIdentityFile().getAbsolutePath());
+            }
+        }
+        return identity;
     }
 
     /**
@@ -440,7 +480,7 @@ public class Host extends NSObject implements Serializable {
                 Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
 
         if(!this.protocol.equals(Protocol.SFTP)) {
-            this.getCredentials().setPrivateKeyFile(null);
+            this.setIdentity(null);
         }
     }
 
@@ -603,7 +643,7 @@ public class Host extends NSObject implements Serializable {
      */
     public void setDownloadFolder(String folder) {
         log.debug("setDownloadFolder:" + folder);
-        this.downloadFolder = folder;
+        this.downloadFolder = NSPathUtilities.stringByAbbreviatingWithTildeInPath(folder);
     }
 
     /**
@@ -653,7 +693,6 @@ public class Host extends NSObject implements Serializable {
     }
 
     /**
-     *
      * @return
      */
     public String getWebURL() {
@@ -668,7 +707,6 @@ public class Host extends NSObject implements Serializable {
     }
 
     /**
-     *
      * @return
      */
     public String getDefaultWebURL() {
@@ -693,8 +731,8 @@ public class Host extends NSObject implements Serializable {
     }
 
     /**
-     * @see #toURL() 
      * @return
+     * @see #toURL()
      */
     public String toString() {
         return this.toURL();

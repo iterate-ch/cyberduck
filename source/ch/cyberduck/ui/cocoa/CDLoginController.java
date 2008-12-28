@@ -39,8 +39,10 @@ public class CDLoginController extends AbstractLoginController implements LoginC
         this.parent = parent;
     }
 
-    public void prompt(final Protocol protocol, final Credentials credentials, final String reason, final String message)
+    public void prompt(final Host host, final String reason, final String message)
             throws LoginCanceledException {
+
+        final Credentials credentials = host.getCredentials();
 
         CDSheetController c = new CDSheetController(parent) {
             protected String getBundleName() {
@@ -63,7 +65,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             public void setUserField(NSTextField userField) {
                 this.userField = userField;
                 this.updateField(this.userField, credentials.getUsername());
-                if(protocol.equals(Protocol.S3)) {
+                if(host.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.userField.cell()).setPlaceholderString(
                             NSBundle.localizedString("Access Key ID", "S3", "")
                     );
@@ -91,7 +93,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             public void setPassField(NSSecureTextField passField) {
                 this.passField = passField;
                 this.updateField(this.passField, credentials.getPassword());
-                if(protocol.equals(Protocol.S3)) {
+                if(host.equals(Protocol.S3)) {
                     ((NSTextFieldCell) this.passField.cell()).setPlaceholderString(
                             NSBundle.localizedString("Secret Access Key", "S3", "")
                     );
@@ -170,7 +172,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                             new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
                 }
                 else {
-                    credentials.setPrivateKeyFile(null);
+                    host.setIdentity(null);
                     this.update();
                 }
             }
@@ -181,13 +183,11 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     NSArray selected = sheet.filenames();
                     java.util.Enumeration enumerator = selected.objectEnumerator();
                     while(enumerator.hasMoreElements()) {
-                        String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
-                                (String) enumerator.nextElement());
-                        credentials.setPrivateKeyFile(pk);
+                        host.setIdentity((String) enumerator.nextElement());
                     }
                 }
                 if(returncode == NSPanel.CancelButton) {
-                    credentials.setPrivateKeyFile(null);
+                    host.setIdentity(null);
                 }
                 publicKeyPanel = null;
                 this.update();
@@ -198,10 +198,10 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.passField.setEnabled(!credentials.isAnonymousLogin());
                 this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
-                this.pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
-                if(credentials.usesPublicKeyAuthentication()) {
+                this.pkCheckbox.setEnabled(host.equals(Protocol.SFTP));
+                if(host.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.OnState);
-                    this.updateField(this.pkLabel, credentials.getPrivateKeyFile());
+                    this.updateField(this.pkLabel, host.getIdentity());
                 }
                 else {
                     this.pkCheckbox.setState(NSCell.OffState);

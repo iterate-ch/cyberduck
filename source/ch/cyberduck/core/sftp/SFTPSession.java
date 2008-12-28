@@ -159,7 +159,7 @@ public class SFTPSession extends Session {
     }
 
     protected void login(final Credentials credentials) throws IOException {
-        if(credentials.usesPublicKeyAuthentication()) {
+        if(host.isPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(credentials)
                     || this.loginUsingPasswordAuthentication(credentials)
                     || this.loginUsingKBIAuthentication(credentials)) {
@@ -175,7 +175,7 @@ public class SFTPSession extends Session {
             }
         }
         this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-        this.login.fail(host.getProtocol(), credentials,
+        this.login.fail(host,
                 NSBundle.localizedString("Login with username and password", "Credentials", ""));
         this.login();
     }
@@ -183,7 +183,7 @@ public class SFTPSession extends Session {
     private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
-            Local key = new Local(credentials.getPrivateKeyFile());
+            Local key = new Local(host.getIdentity());
             if(key.exists()) {
                 // If the private key is passphrase protected then ask for the passphrase
                 char[] buff = new char[256];
@@ -199,15 +199,15 @@ public class SFTPSession extends Session {
                 fr.close();
                 String passphrase = null;
                 if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                    passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", credentials.getPrivateKeyFile());
+                    passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", host.getIdentity());
                     if(StringUtils.isEmpty(passphrase)) {
-                        login.prompt(host.getProtocol(), host.getCredentials(),
+                        login.prompt(host,
                                 NSBundle.localizedString("Private key password protected", "Credentials", ""),
                                 NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
-                                        + " (" + credentials.getPrivateKeyFile() + ")");
+                                        + " (" + host.getIdentity() + ")");
                         passphrase = credentials.getPassword();
                         if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                            Keychain.instance().addPasswordToKeychain("SSHKeychain", credentials.getPrivateKeyFile(),
+                            Keychain.instance().addPasswordToKeychain("SSHKeychain", host.getIdentity(),
                                     passphrase);
                         }
                     }
