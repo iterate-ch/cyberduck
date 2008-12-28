@@ -97,7 +97,12 @@ public class CDIconCache extends HashMap<String, NSImage> {
      * @return
      */
     public NSImage iconForName(final String name, int size) {
-        NSImage image = NSImage.imageNamed(name);
+        NSImage loaded;
+        loaded = NSImage.imageNamed(name+size);
+        if(null == loaded) {
+            loaded = NSImage.imageNamed(name);
+            loaded.setName(name+size);
+        }
 //        if(null == image) {
 //            // Look for icon in system System Core Types Bundle
 //            Local l = new Local(NSBundle.bundleWithPath(
@@ -108,7 +113,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
 //            }
 //            image = new NSImage(l.getAbsolute(), false);
 //        }
-        return this.convert(image, size);
+        return this.convert(loaded, size);
     }
 
     /**
@@ -222,8 +227,10 @@ public class CDIconCache extends HashMap<String, NSImage> {
     }
 
     public NSImage convert(NSImage icon, int size) {
-        icon.setCacheMode(NSImage.ImageCacheBySize);
         icon.setScalesWhenResized(true);
+//        icon.setCacheMode(NSImage.ImageCacheBySize);
+//        icon.setCachedSeparately(true);
+//        icon.setMatchesOnMultipleResolution(false);
         icon.setSize(new NSSize(size, size));
         return icon;
     }
