@@ -226,7 +226,7 @@ public class CDConnectionController extends CDSheetController {
         this.anonymousCheckboxClicked(anonymousCheckbox);
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.OnState);
-            pkLabel.setStringValue(host.getCredentials().getIdentity());
+            pkLabel.setStringValue(host.getCredentials().getIdentity().toURL());
         }
         else {
             this.updateIdentity();
@@ -581,7 +581,7 @@ public class CDConnectionController extends CDSheetController {
             credentials.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
             if(protocolPopup.selectedItem().representedObject().equals(Protocol.SFTP)) {
                 if(pkCheckbox.state() == NSCell.OnState) {
-                    credentials.setIdentity(pkLabel.stringValue());
+                    credentials.setIdentity(new Credentials.Identity(pkLabel.stringValue()));
                 }
             }
             if(encodingPopup.titleOfSelectedItem().equals(DEFAULT)) {

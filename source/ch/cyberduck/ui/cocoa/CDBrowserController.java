@@ -3366,7 +3366,7 @@ public class CDBrowserController extends CDWindowController
         final String command
                 = "tell application \"Terminal\"\n"
                 + "do script \"ssh -t "
-                + (identity ? "-i " + new Local(this.getSession().getHost().getCredentials().getIdentity()).getAbsolute() : "")
+                + (identity ? "-i " + this.getSession().getHost().getCredentials().getIdentity().getAbsolute() : "")
                 + " "
                 + this.getSession().getHost().getCredentials().getUsername()
                 + "@"

@@ -50,7 +50,7 @@ public class Credentials {
     /**
      * If not null, use public key authentication if SSH is the protocol
      */
-    private String identity;
+    private Identity identity;
 
     /**
      * If the credentials should be stored in the Keychain upon successful login
@@ -200,7 +200,10 @@ public class Credentials {
      * @see #setIdentity
      */
     public boolean isPublicKeyAuthentication() {
-        return StringUtils.isNotBlank(this.getIdentity());
+        if(null == this.getIdentity()) {
+            return false;
+        }
+        return identity.exists();
     }
 
     /**
@@ -208,15 +211,33 @@ public class Credentials {
      *
      * @param file
      */
-    public void setIdentity(String file) {
-        this.identity = NSPathUtilities.stringByAbbreviatingWithTildeInPath(file);
+    public void setIdentity(Identity file) {
+        this.identity = file;
     }
 
     /**
      * @return The path to the private key file to use for public key authentication
      */
-    public String getIdentity() {
+    public Identity getIdentity() {
         return identity;
+    }
+
+    /**
+     *
+     */
+    public static class Identity extends Local {
+
+        public Identity(String path) {
+            super(path);
+        }
+
+        public String toString() {
+            return this.toURL();
+        }
+
+        public String toURL() {
+            return NSPathUtilities.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
+        }
     }
 
     /**

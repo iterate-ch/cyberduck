@@ -157,7 +157,7 @@ public class Host extends NSObject implements Serializable {
         }
         final Object keyObj = dict.objectForKey(Host.KEYFILE);
         if(keyObj != null) {
-            this.getCredentials().setIdentity(keyObj.toString());
+            this.getCredentials().setIdentity(new Credentials.Identity(keyObj.toString()));
         }
         Object portObj = dict.objectForKey(Host.PORT);
         if(portObj != null) {
@@ -228,8 +228,8 @@ public class Host extends NSObject implements Serializable {
         if(StringUtils.isNotBlank(this.encoding)) {
             dict.setObjectForKey(this.encoding, Host.ENCODING);
         }
-        if(StringUtils.isNotBlank(this.getCredentials().getIdentity())) {
-            dict.setObjectForKey(this.getCredentials().getIdentity(), Host.KEYFILE);
+        if(null != this.getCredentials().getIdentity()) {
+            dict.setObjectForKey(this.getCredentials().getIdentity().toURL(), Host.KEYFILE);
         }
         if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null != this.connectMode) {
@@ -895,14 +895,14 @@ public class Host extends NSObject implements Serializable {
          *
          * @return
          */
-        public String getIdentity() {
+        public Identity getIdentity() {
             if(!Host.this.getProtocol().equals(Protocol.SFTP)) {
                 return null;
             }
             if(null == super.getIdentity()) {
                 final OpenSshConfig.Host entry = config.lookup(Host.this.getHostname());
                 if(null != entry.getIdentityFile()) {
-                    return entry.getIdentityFile().getAbsolutePath();
+                    return new Identity(entry.getIdentityFile().getAbsolutePath());
                 }
             }
             return super.getIdentity();

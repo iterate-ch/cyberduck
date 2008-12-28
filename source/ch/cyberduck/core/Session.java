@@ -149,9 +149,9 @@ public abstract class Session extends NSObject {
     }
 
     protected void login() throws IOException {
-        final Credentials credentials = host.getCredentials();
         login.check(host);
 
+        final Credentials credentials = host.getCredentials();
         this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
                 credentials.getUsername()));
         this.login(credentials);

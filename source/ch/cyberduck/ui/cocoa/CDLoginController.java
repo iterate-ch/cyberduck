@@ -183,7 +183,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     NSArray selected = sheet.filenames();
                     java.util.Enumeration enumerator = selected.objectEnumerator();
                     while(enumerator.hasMoreElements()) {
-                        host.getCredentials().setIdentity((String) enumerator.nextElement());
+                        host.getCredentials().setIdentity(new Credentials.Identity((String) enumerator.nextElement()));
                     }
                 }
                 if(returncode == NSPanel.CancelButton) {
@@ -201,7 +201,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
                 if(host.getCredentials().isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.OnState);
-                    this.updateField(this.pkLabel, host.getCredentials().getIdentity());
+                    this.updateField(this.pkLabel, host.getCredentials().getIdentity().toURL());
                 }
                 else {
                     this.pkCheckbox.setState(NSCell.OffState);

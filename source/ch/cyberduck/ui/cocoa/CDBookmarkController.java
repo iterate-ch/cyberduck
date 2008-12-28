@@ -492,7 +492,8 @@ public class CDBookmarkController extends CDWindowController {
             NSArray selected = sheet.filenames();
             java.util.Enumeration enumerator = selected.objectEnumerator();
             while(enumerator.hasMoreElements()) {
-                this.host.getCredentials().setIdentity((String) enumerator.nextElement());
+                this.host.getCredentials().setIdentity(
+                        new Credentials.Identity((String) enumerator.nextElement()));
             }
         }
         if(returncode == NSPanel.CancelButton) {
@@ -631,7 +632,7 @@ public class CDBookmarkController extends CDWindowController {
         pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.OnState);
-            this.updateField(pkLabel, host.getCredentials().getIdentity());
+            this.updateField(pkLabel, host.getCredentials().getIdentity().toURL());
         }
         else {
             pkCheckbox.setState(NSCell.OffState);

@@ -160,19 +160,15 @@ public class SFTPSession extends Session {
 
     protected void login(final Credentials credentials) throws IOException {
         if(host.getCredentials().isPublicKeyAuthentication()) {
-            if(this.loginUsingPublicKeyAuthentication(credentials)
-                    || this.loginUsingPasswordAuthentication(credentials)
-                    || this.loginUsingKBIAuthentication(credentials)) {
+            if(this.loginUsingPublicKeyAuthentication(credentials)) {
                 this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
                 return;
             }
         }
-        else {
-            if(this.loginUsingPasswordAuthentication(credentials)
-                    || this.loginUsingKBIAuthentication(credentials)) {
-                this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
-                return;
-            }
+        else if(this.loginUsingPasswordAuthentication(credentials)
+                || this.loginUsingKBIAuthentication(credentials)) {
+            this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
+            return;
         }
         this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
         this.login.fail(host,
@@ -183,12 +179,12 @@ public class SFTPSession extends Session {
     private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
-            Local key = new Local(host.getCredentials().getIdentity());
-            if(key.exists()) {
+            final Credentials.Identity identity = host.getCredentials().getIdentity();
+            if(identity.exists()) {
                 // If the private key is passphrase protected then ask for the passphrase
                 char[] buff = new char[256];
                 CharArrayWriter cw = new CharArrayWriter();
-                FileReader fr = new FileReader(new File(key.getAbsolute()));
+                FileReader fr = new FileReader(new File(identity.getAbsolute()));
                 while(true) {
                     int len = fr.read(buff);
                     if(len < 0) {
@@ -199,23 +195,23 @@ public class SFTPSession extends Session {
                 fr.close();
                 String passphrase = null;
                 if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                    passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", host.getCredentials().getIdentity());
+                    passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
                         login.prompt(host,
                                 NSBundle.localizedString("Private key password protected", "Credentials", ""),
                                 NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
-                                        + " (" + host.getCredentials().getIdentity() + ")");
+                                        + " (" + identity + ")");
                         passphrase = credentials.getPassword();
                         if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                            Keychain.instance().addPasswordToKeychain("SSHKeychain", host.getCredentials().getIdentity(),
+                            Keychain.instance().addPasswordToKeychain("SSHKeychain", identity.toURL(),
                                     passphrase);
                         }
                     }
                 }
-                return SSH.authenticateWithPublicKey(host.getCredentials().getUsername(), new File(key.getAbsolute()),
+                return SSH.authenticateWithPublicKey(host.getCredentials().getUsername(), new File(identity.getAbsolute()),
                         passphrase);
             }
-            log.error("Key file " + key.getAbsolute() + " does not exist.");
+            log.error("Key file " + identity.getAbsolute() + " does not exist.");
         }
         return false;
     }
@@ -366,7 +362,7 @@ public class SFTPSession extends Session {
         final ch.ethz.ssh2.Session sess = SSH.openSession();
         try {
             this.message(command);
-            
+
             sess.execCommand(command, host.getEncoding());
 
             BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
