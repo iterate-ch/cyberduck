@@ -1083,7 +1083,7 @@ img/column.tiff -text svneol=unset#image/tiff
 img/connect.tiff -text svneol=unset#image/tiff
 img/connection.tiff -text svneol=unset#image/tiff
 img/deleteFile.tiff -text svneol=unset#image/tiff
-img/disk.icns -text
+img/disk.tiff -text
 img/download0.icns -text
 img/download1.icns -text
 img/download10.icns -text
@@ -1106,7 +1106,7 @@ img/gear.tiff -text svneol=unset#image/tiff
 img/general.tiff -text svneol=unset#image/tiff
 img/goto.tiff -text svneol=unset#image/tiff
 img/history.tiff -text svneol=unset#image/tiff
-img/idisk.icns -text
+img/idisk.tiff -text
 img/info.tiff -text svneol=unset#image/tiff
 img/list.tiff -text svneol=unset#image/tiff
 img/locked.tiff -text svneol=unset#image/tiff
@@ -1122,7 +1122,7 @@ img/queue.tiff -text svneol=unset#image/tiff
 img/reload.tiff -text svneol=unset#image/tiff
 img/remove.tiff -text svneol=unset#image/tiff
 img/removePressed.tiff -text svneol=unset#image/tiff
-img/rendezvous.icns -text
+img/rendezvous.tiff -text
 img/resume.tiff -text svneol=unset#image/tiff
 img/reveal.tiff -text svneol=unset#image/tiff
 img/run.tiff -text svneol=unset#image/tiff
