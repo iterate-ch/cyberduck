@@ -136,9 +136,8 @@ public class CDBrowserController extends CDWindowController
             }
             Object userObj = args.objectForKey("Username");
             if(userObj != null) {
-                host.setCredentials(new Credentials(
-                        (String) args.objectForKey("Username"), (String) args.objectForKey("Password"))
-                );
+                host.setCredentials(
+                        (String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
             }
             Object modeObj = args.objectForKey("Mode");
             if(modeObj != null) {
@@ -3030,7 +3029,7 @@ public class CDBrowserController extends CDWindowController
         }
         final Host h = new Host(this.session.getHost().getAsDictionary());
         // Copy credentials of the browser
-        h.setCredentials(this.session.getHost().getCredentials());
+        h.getCredentials().setPassword(this.session.getHost().getCredentials().getPassword());
         return SessionFactory.createSession(h);
     }
 
@@ -3353,7 +3352,7 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void openTerminalButtonClicked(final Object sender) {
-        final boolean identity = this.getSession().getHost().isPublicKeyAuthentication();
+        final boolean identity = this.getSession().getHost().getCredentials().isPublicKeyAuthentication();
         String workdir = null;
         if(this.getSelectionCount() == 1) {
             Path selected = this.getSelectedPath();
@@ -3367,7 +3366,7 @@ public class CDBrowserController extends CDWindowController
         final String command
                 = "tell application \"Terminal\"\n"
                 + "do script \"ssh -t "
-                + (identity ? "-i " + new Local(this.getSession().getHost().getIdentity()).getAbsolute() : "")
+                + (identity ? "-i " + new Local(this.getSession().getHost().getCredentials().getIdentity()).getAbsolute() : "")
                 + " "
                 + this.getSession().getHost().getCredentials().getUsername()
                 + "@"
@@ -3650,7 +3649,7 @@ public class CDBrowserController extends CDWindowController
                     public void run() {
                         updateStatusLabel(message);
                     }
-                });
+                }, true);
             }
         });
         session.addConnectionListener(listener = new ConnectionAdapter() {

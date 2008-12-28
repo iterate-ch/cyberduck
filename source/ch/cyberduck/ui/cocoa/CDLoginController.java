@@ -172,7 +172,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                             new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
                 }
                 else {
-                    host.setIdentity(null);
+                    host.getCredentials().setIdentity(null);
                     this.update();
                 }
             }
@@ -183,11 +183,11 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     NSArray selected = sheet.filenames();
                     java.util.Enumeration enumerator = selected.objectEnumerator();
                     while(enumerator.hasMoreElements()) {
-                        host.setIdentity((String) enumerator.nextElement());
+                        host.getCredentials().setIdentity((String) enumerator.nextElement());
                     }
                 }
                 if(returncode == NSPanel.CancelButton) {
-                    host.setIdentity(null);
+                    host.getCredentials().setIdentity(null);
                 }
                 publicKeyPanel = null;
                 this.update();
@@ -198,10 +198,10 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.passField.setEnabled(!credentials.isAnonymousLogin());
                 this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
-                this.pkCheckbox.setEnabled(host.equals(Protocol.SFTP));
-                if(host.isPublicKeyAuthentication()) {
+                this.pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
+                if(host.getCredentials().isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.OnState);
-                    this.updateField(this.pkLabel, host.getIdentity());
+                    this.updateField(this.pkLabel, host.getCredentials().getIdentity());
                 }
                 else {
                     this.pkCheckbox.setState(NSCell.OffState);

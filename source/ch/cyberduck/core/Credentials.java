@@ -20,8 +20,8 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSPathUtilities;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -41,10 +41,16 @@ public class Credentials {
      * The login name
      */
     private String user;
+
     /**
      * The login password
      */
     private transient String pass;
+
+    /**
+     * If not null, use public key authentication if SSH is the protocol
+     */
+    private String identity;
 
     /**
      * If the credentials should be stored in the Keychain upon successful login
@@ -187,7 +193,33 @@ public class Credentials {
     }
 
     /**
+     * SSH specific
      *
+     * @return true if public key authentication should be used. This is the case, if a
+     *         private key file has been specified
+     * @see #setIdentity
+     */
+    public boolean isPublicKeyAuthentication() {
+        return StringUtils.isNotBlank(this.getIdentity());
+    }
+
+    /**
+     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
+     *
+     * @param file
+     */
+    public void setIdentity(String file) {
+        this.identity = NSPathUtilities.stringByAbbreviatingWithTildeInPath(file);
+    }
+
+    /**
+     * @return The path to the private key file to use for public key authentication
+     */
+    public String getIdentity() {
+        return identity;
+    }
+
+    /**
      * @return
      */
     public boolean isValid() {

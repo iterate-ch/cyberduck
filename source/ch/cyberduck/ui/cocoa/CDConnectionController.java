@@ -135,17 +135,28 @@ public class CDConnectionController extends CDSheetController {
         pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
         if(protocol.equals(Protocol.SFTP)) {
             if(StringUtils.isNotEmpty(hostField.stringValue())) {
-                final OpenSshConfig.Host host = OpenSshConfig.create().lookup(hostField.stringValue());
-                if(null != host.getIdentityFile()) {
-                    pkLabel.setStringValue(NSPathUtilities.stringByAbbreviatingWithTildeInPath(
-                            host.getIdentityFile().getAbsolutePath()));
-                    pkCheckbox.setState(NSCell.OnState);
-                    return;
+                final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(hostField.stringValue());
+                if(null != entry.getIdentityFile()) {
+                    if(pkCheckbox.state() == NSCell.OffState) {
+                        // No previously manually selected key
+                        pkLabel.setStringValue(NSPathUtilities.stringByAbbreviatingWithTildeInPath(
+                                entry.getIdentityFile().getAbsolutePath()));
+                        pkCheckbox.setState(NSCell.OnState);
+                    }
+                }
+                else {
+                    pkCheckbox.setState(NSCell.OffState);
+                    pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+                }
+                if(StringUtils.isNotBlank(entry.getUser())) {
+                    usernameField.setStringValue(entry.getUser());
                 }
             }
         }
-        pkCheckbox.setState(NSCell.OffState);
-        pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+        else {
+            pkCheckbox.setState(NSCell.OffState);
+            pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+        }
     }
 
     private NSComboBox hostField;
@@ -213,9 +224,9 @@ public class CDConnectionController extends CDSheetController {
         this.updateField(pathField, host.getDefaultPath());
         anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
         this.anonymousCheckboxClicked(anonymousCheckbox);
-        if(host.isPublicKeyAuthentication()) {
+        if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.OnState);
-            pkLabel.setStringValue(host.getIdentity());
+            pkLabel.setStringValue(host.getCredentials().getIdentity());
         }
         else {
             this.updateIdentity();
@@ -564,11 +575,13 @@ public class CDConnectionController extends CDSheetController {
                     host.setFTPConnectMode(FTPConnectMode.PASV);
                 }
             }
-            host.setCredentials(new Credentials(usernameField.stringValue(), passField.stringValue(),
-                    keychainCheckbox.state() == NSCell.OnState));
+            final Credentials credentials = host.getCredentials();
+            credentials.setUsername(usernameField.stringValue());
+            credentials.setPassword(passField.stringValue());
+            credentials.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
             if(protocolPopup.selectedItem().representedObject().equals(Protocol.SFTP)) {
                 if(pkCheckbox.state() == NSCell.OnState) {
-                    host.setIdentity(pkLabel.stringValue());
+                    credentials.setIdentity(pkLabel.stringValue());
                 }
             }
             if(encodingPopup.titleOfSelectedItem().equals(DEFAULT)) {

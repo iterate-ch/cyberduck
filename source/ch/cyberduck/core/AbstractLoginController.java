@@ -39,10 +39,10 @@ public abstract class AbstractLoginController implements LoginController {
     public void check(final Host host)
             throws LoginCanceledException {
 
-        if(host.isPublicKeyAuthentication()) {
+        final Credentials credentials = host.getCredentials();
+        if(credentials.isPublicKeyAuthentication()) {
             return;
         }
-        final Credentials credentials = host.getCredentials();
         if(!credentials.isValid()) {
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {

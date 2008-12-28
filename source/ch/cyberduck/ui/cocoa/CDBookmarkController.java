@@ -481,7 +481,7 @@ public class CDBookmarkController extends CDWindowController {
                     new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
         }
         else {
-            this.host.setIdentity(null);
+            this.host.getCredentials().setIdentity(null);
             this.itemChanged();
         }
     }
@@ -492,11 +492,11 @@ public class CDBookmarkController extends CDWindowController {
             NSArray selected = sheet.filenames();
             java.util.Enumeration enumerator = selected.objectEnumerator();
             while(enumerator.hasMoreElements()) {
-                this.host.setIdentity((String) enumerator.nextElement());
+                this.host.getCredentials().setIdentity((String) enumerator.nextElement());
             }
         }
         if(returncode == NSPanel.CancelButton) {
-            this.host.setIdentity(null);
+            this.host.getCredentials().setIdentity(null);
         }
         publicKeyPanel = null;
         this.itemChanged();
@@ -578,69 +578,69 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     private void init() {
-        this.window.setTitle(this.host.getNickname());
-        this.updateField(this.hostField, this.host.getHostname());
-        this.hostField.setEnabled(this.host.getProtocol().isConfigurable());
-        this.updateField(this.nicknameField, this.host.getNickname());
+        window.setTitle(host.getNickname());
+        this.updateField(hostField, host.getHostname());
+        hostField.setEnabled(host.getProtocol().isConfigurable());
+        this.updateField(nicknameField, host.getNickname());
         final String url;
-        if(StringUtils.isNotBlank(this.host.getDefaultPath())) {
-            url = this.host.toURL() + Path.normalize(this.host.getDefaultPath());
+        if(StringUtils.isNotBlank(host.getDefaultPath())) {
+            url = host.toURL() + Path.normalize(host.getDefaultPath());
         }
         else {
-            url = this.host.toURL();
+            url = host.toURL();
         }
-        this.urlField.setAttributedStringValue(
+        urlField.setAttributedStringValue(
                 HyperlinkAttributedStringFactory.create(
                         new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
         );
-        this.updateField(this.portField, String.valueOf(this.host.getPort()));
-        this.portField.setEnabled(this.host.getProtocol().isConfigurable());
-        this.updateField(this.pathField, this.host.getDefaultPath());
-        this.updateField(this.usernameField, this.host.getCredentials().getUsername());
-        if(this.host.getProtocol().equals(Protocol.S3)) {
-            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString(
+        this.updateField(portField, String.valueOf(host.getPort()));
+        portField.setEnabled(host.getProtocol().isConfigurable());
+        this.updateField(pathField, host.getDefaultPath());
+        this.updateField(usernameField, host.getCredentials().getUsername());
+        if(host.getProtocol().equals(Protocol.S3)) {
+            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
                     NSBundle.localizedString("Access Key ID", "S3", "")
             );
         }
         else {
-            ((NSTextFieldCell) this.usernameField.cell()).setPlaceholderString("");
+            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString("");
         }
-        this.protocolPopup.selectItemWithTitle(this.host.getProtocol().getDescription());
+        protocolPopup.selectItemWithTitle(host.getProtocol().getDescription());
         if(null == host.getMaxConnections()) {
-            this.transferPopup.selectItemWithTitle(DEFAULT);
+            transferPopup.selectItemWithTitle(DEFAULT);
         }
         else {
-            this.transferPopup.selectItemWithTitle(
+            transferPopup.selectItemWithTitle(
                     host.getMaxConnections() == 1 ? TRANSFER_BROWSERCONNECTION : TRANSFER_NEWCONNECTION);
         }
-        this.connectmodePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)
-                || this.host.getProtocol().equals(Protocol.FTP_TLS));
-        this.encodingPopup.setEnabled(this.host.getProtocol().isConfigurable());
-        if(this.host.getProtocol().equals(Protocol.FTP)
-                || this.host.getProtocol().equals(Protocol.FTP_TLS)) {
+        connectmodePopup.setEnabled(host.getProtocol().equals(Protocol.FTP)
+                || host.getProtocol().equals(Protocol.FTP_TLS));
+        encodingPopup.setEnabled(host.getProtocol().isConfigurable());
+        if(host.getProtocol().equals(Protocol.FTP)
+                || host.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null == host.getFTPConnectMode()) {
-                this.connectmodePopup.selectItemWithTitle(DEFAULT);
+                connectmodePopup.selectItemWithTitle(DEFAULT);
             }
             else if(host.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
-                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
+                connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
             }
             else if(host.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
-                this.connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
+                connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
             }
         }
-        this.pkCheckbox.setEnabled(this.host.getProtocol().equals(Protocol.SFTP));
-        if(this.host.isPublicKeyAuthentication()) {
-            this.pkCheckbox.setState(NSCell.OnState);
-            this.updateField(this.pkLabel, this.host.getIdentity());
+        pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
+        if(host.getCredentials().isPublicKeyAuthentication()) {
+            pkCheckbox.setState(NSCell.OnState);
+            this.updateField(pkLabel, host.getCredentials().getIdentity());
         }
         else {
-            this.pkCheckbox.setState(NSCell.OffState);
-            this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+            pkCheckbox.setState(NSCell.OffState);
+            pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
-        this.webURLField.setEnabled(this.host.getProtocol().isConfigurable());
-        if(!this.host.getWebURL().equals(this.host.getDefaultWebURL())) {
-            this.updateField(this.webURLField, this.host.getWebURL());
+        webURLField.setEnabled(host.getProtocol().isConfigurable());
+        if(!host.getWebURL().equals(host.getDefaultWebURL())) {
+            this.updateField(webURLField, host.getWebURL());
         }
-        this.updateField(this.commentField, this.host.getComment());
+        this.updateField(commentField, host.getComment());
     }
 }
