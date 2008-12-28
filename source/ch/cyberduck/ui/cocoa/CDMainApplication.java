@@ -88,10 +88,10 @@ public class CDMainApplication extends NSApplication {
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
      * @param runnable The <code>Runnable</code> to run
-     * @param start    The event is added to the front of the queue.
+     * @param front    The event is added to the front of the queue.
      *                 otherwise the event is added to the back of the queue.
      */
-    public static synchronized void invoke(final MainAction runnable, boolean start) {
+    public static synchronized void invoke(final MainAction runnable, boolean front) {
         if(isMainThread()) {
             runnable.run();
             return;
@@ -104,7 +104,7 @@ public class CDMainApplication extends NSApplication {
         app.put(String.valueOf(key), runnable);
         // This method can also be called in subthreads. Events posted
         // in subthreads bubble up in the main thread event queue.
-        app.postEvent(event, start);
+        app.postEvent(event, front);
     }
 
     private static final String MAIN_THREAD_NAME = "main";
