@@ -21,8 +21,10 @@ import com.apple.cocoa.application.NSApplication;
 import com.apple.cocoa.foundation.NSScriptCommand;
 import com.apple.cocoa.foundation.NSScriptCommandDescription;
 
-import ch.cyberduck.core.Host;
+import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -43,6 +45,22 @@ public class CDApplescriptabilityController extends NSScriptCommand {
         }
         log.debug("Received URL from Apple Event:" + arg);
         final Host h = Host.parse(arg);
+        if(StringUtils.isNotEmpty(h.getDefaultPath())) {
+            final Session s = SessionFactory.createSession(h);
+            final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
+//            final AttributedList<AbstractPath> list = p.list();
+//            // Determine if listable directory
+//            if(!list.attributes().isReadable()) {
+            if(StringUtils.isNotBlank(p.getExtension())) {
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        CDTransferController.instance().startTransfer(new DownloadTransfer(p));
+                    }
+                });
+                return null;
+            }
+//            }
+        }
         CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
         doc.mount(h);
         return null;
