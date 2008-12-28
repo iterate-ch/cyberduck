@@ -11,10 +11,11 @@ Changelog. Last modified: $Date$
 - [Feature] Send arbitrary commands over SSH using the 'Send Command...' interface (SFTP) [#3]
 - [Feature] Archive and unarchive files and folders (ZIP, TAR etc.) (SFTP) [#2376]
 - [Feature] Clickable URL fields
-- [Feature] Display distinguished icon per protocol for bookmarks
 - [Feature] Set quarantine attribute on downloaded files
 - [Feature] Added Espresso to the list of supported editors (http://macrabbit.com/espresso/) [#2823]
 - [Feature] Download folder in Dock bounces once when download finishes (10.5)
+- [Feature] Read IdentityFile setting from OpenSSH configuration in ~/.ssh/config (SFTP) [#152]
+- [Feature] Default transfer setting for regular expression of skipped files includes GIT and others [#2829]
 - [Bugfix] Uploads fail with digest access authentication [#2268]
 - [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
 
