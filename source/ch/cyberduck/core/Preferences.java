@@ -338,9 +338,9 @@ public abstract class Preferences {
 
         defaults.put("queue.download.skip.enable", String.valueOf(true));
         defaults.put("queue.download.skip.regex.default",
-                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs");
         defaults.put("queue.download.skip.regex",
-                ".*~\\..*|\\.DS_Store|\\.svn|CVS");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs");
 
         defaults.put("queue.download.quarantine", String.valueOf(true));
 
