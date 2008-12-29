@@ -69,7 +69,7 @@ public class Keychain {
      * @param user
      * @return
      */
-    public synchronized native String getInternetPasswordFromKeychain(String protocol, String serviceName, String user);
+    public synchronized native String getInternetPasswordFromKeychain(String protocol, int port, String serviceName, String user);
 
     /**
      * @param serviceName

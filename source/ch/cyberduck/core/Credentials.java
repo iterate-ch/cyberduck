@@ -118,13 +118,23 @@ public class Credentials {
     }
 
     /**
-     * @return the password fetched from the keychain or null if it was not found
+     * 
+     * @param protocol
+     * @param hostname
+     * @return
      */
     public String getInternetPasswordFromKeychain(Protocol protocol, String hostname) {
+        return this.getInternetPasswordFromKeychain(protocol, hostname, 0);
+    }
+
+    /**
+     * @return the password fetched from the keychain or null if it was not found
+     */
+    public String getInternetPasswordFromKeychain(Protocol protocol, String hostname, int port) {
         if(log.isInfoEnabled()) {
             log.info("Fetching password from Keychain for:" + protocol + "," + hostname + "," + this.getUsername());
         }
-        final String p = Keychain.instance().getInternetPasswordFromKeychain(protocol.getScheme(),
+        final String p = Keychain.instance().getInternetPasswordFromKeychain(protocol.getScheme(), port,
                 hostname, this.getUsername());
         if(null == p) {
             log.info("Password for " + protocol + "," + hostname + "," + this.getUsername() + " not found in Keychain");

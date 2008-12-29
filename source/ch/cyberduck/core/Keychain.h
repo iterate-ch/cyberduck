@@ -22,7 +22,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFromKeychain
-  (JNIEnv *, jobject, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jint, jstring, jstring);
 
 /*
  * Class:     ch_cyberduck_core_Keychain

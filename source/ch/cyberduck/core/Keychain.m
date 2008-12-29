@@ -55,11 +55,11 @@ SecProtocolType convertToSecProtocolType(JNIEnv *env, jstring jProtocol)
     return kSecProtocolTypeAny;
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFromKeychain(JNIEnv *env, jobject this, jstring jProtocol, jstring jService,jstring jAccount)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getInternetPasswordFromKeychain(JNIEnv *env, jobject this, jstring jProtocol, jint port, jstring jService,jstring jAccount)
 {
     NSString *password = [[Keychain defaultKeychain] passwordForInternetServer:convertToNSString(env, jService)
                                                                     forAccount:convertToNSString(env, jAccount)
-                                                                          port:0
+                                                                          port:port
                                                                           path:@""
                                                               inSecurityDomain:@""
                                                                       protocol:convertToSecProtocolType(env, jProtocol)
