@@ -52,9 +52,9 @@ public class EditMenuDelegate extends MenuDelegate {
             item.setTitle(NSBundle.localizedString("No external editor available"));
             return false;
         }
-        String identifier = (String) EditorFactory.INSTALLED_ODB_EDITORS.values().toArray(
+        String identifier = EditorFactory.INSTALLED_ODB_EDITORS.values().toArray(
                 new String[EditorFactory.INSTALLED_ODB_EDITORS.size()])[index];
-        String editor = (String) EditorFactory.INSTALLED_ODB_EDITORS.keySet().toArray(
+        String editor = EditorFactory.INSTALLED_ODB_EDITORS.keySet().toArray(
                 new String[EditorFactory.INSTALLED_ODB_EDITORS.size()])[index];
         item.setTitle(editor);
         if(identifier.equals(EditorFactory.getSelectedEditor())) {
@@ -64,8 +64,7 @@ public class EditMenuDelegate extends MenuDelegate {
         else {
             item.setKeyEquivalent("");
         }
-        String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                identifier);
+        String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
         if(path != null) {
             item.setImage(CDIconCache.instance().convert(NSWorkspace.sharedWorkspace().iconForFile(path), 16));
         }

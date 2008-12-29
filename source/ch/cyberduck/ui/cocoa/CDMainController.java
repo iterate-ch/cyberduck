@@ -407,8 +407,7 @@ public class CDMainController extends CDController {
                 synchronized(Rendezvous.instance()) {
                     CDMainApplication.invoke(new DefaultMainAction() {
                         public void run() {
-                            Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier),
-                                    "rendezvous.icns");
+                            Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
                         }
                     });
                 }

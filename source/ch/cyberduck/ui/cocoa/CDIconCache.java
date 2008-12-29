@@ -172,7 +172,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
             return this.convert(this.get(item.getExtension()), size);
         }
         if(item.attributes.isVolume()) {
-            return this.convert(NSImage.imageNamed("disk.icns"), size);
+            return this.convert(NSImage.imageNamed("disk"), size);
         }
         if(item.attributes.isDirectory()) {
             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")
