@@ -4087,8 +4087,11 @@ public class CDBrowserController extends CDWindowController
         }
         else if(action.equals("archiveMenuClicked:")) {
             final Archive archive = (Archive) item.representedObject();
-            int count = this.getSelectionCount();
             item.setTitle(archive.getTitle(this.getSelectedPaths()));
+        }
+        else if(action.equals("quicklookButtonClicked:")) {
+            item.setKeyEquivalent(" ");
+            item.setKeyEquivalentModifierMask(0);
         }
         return this.validateItem(action);
     }
