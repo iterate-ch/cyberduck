@@ -220,6 +220,7 @@
 		47D3275B0F0828C800619C38 /* disk.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D3275A0F0828C800619C38 /* disk.tiff */; };
 		47D327720F08291F00619C38 /* idisk.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327710F08291F00619C38 /* idisk.tiff */; };
 		47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327A30F0829EC00619C38 /* rendezvous.tiff */; };
+		47D327C50F096E6C00619C38 /* site.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327C40F096E6C00619C38 /* site.tiff */; };
 		47D3F2FA0CF227E400A78764 /* PrivateFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F60CF227E400A78764 /* PrivateFolderBadgeIcon.icns */; };
 		47D3F2FB0CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */; };
 		47D3F2FC0CF227E400A78764 /* DropFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */; };
@@ -1327,6 +1328,7 @@
 		47D3275A0F0828C800619C38 /* disk.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = disk.tiff; sourceTree = "<group>"; };
 		47D327710F08291F00619C38 /* idisk.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = idisk.tiff; sourceTree = "<group>"; };
 		47D327A30F0829EC00619C38 /* rendezvous.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = rendezvous.tiff; sourceTree = "<group>"; };
+		47D327C40F096E6C00619C38 /* site.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = site.tiff; sourceTree = "<group>"; };
 		47D3F2F60CF227E400A78764 /* PrivateFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = PrivateFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ReadOnlyFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DropFolderBadgeIcon.icns; sourceTree = "<group>"; };
@@ -1835,6 +1837,7 @@
 				474BA1FE0EED9284005928F5 /* cf.png */,
 				47D3275A0F0828C800619C38 /* disk.tiff */,
 				47D327710F08291F00619C38 /* idisk.tiff */,
+				47D327C40F096E6C00619C38 /* site.tiff */,
 				473D6C670EED5134008F3B04 /* me.png */,
 				479F9DFF0C0E210100610A91 /* goto.tiff */,
 				479982810D26DA8200DB5353 /* executable.tiff */,
@@ -2637,6 +2640,7 @@
 				47D3275B0F0828C800619C38 /* disk.tiff in Resources */,
 				47D327720F08291F00619C38 /* idisk.tiff in Resources */,
 				47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */,
+				47D327C50F096E6C00619C38 /* site.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

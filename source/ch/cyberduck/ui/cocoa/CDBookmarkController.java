@@ -25,9 +25,13 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -197,10 +201,77 @@ public class CDBookmarkController extends CDWindowController {
                 this.webURLField);
     }
 
+    private NSButton webUrlImage; // IBOutlet
+
+    public void setWebUrlImage(NSButton b) {
+        this.webUrlImage = b;
+        this.webUrlImage.setTarget(this);
+        this.webUrlImage.setAction(new NSSelector("openWebUrl", new Class[]{NSButton.class}));
+        this.webUrlImage.setImage(CDIconCache.instance().iconForName("site", 16));
+        this.updateFavicon();
+    }
+
+    /**
+     *
+     */
+    private void updateFavicon() {
+        if(Preferences.instance().getBoolean("bookmark.favicon.download")) {
+            this.background(new AbstractBackgroundAction() {
+                private NSImage favicon;
+
+                public void run() {
+                    InputStream stream = null;
+                    try {
+                        final URL url = new URL(host.getWebURL());
+                        int port = url.getPort();
+                        if(-1 == port) {
+                            port = 80;
+                        }
+                        // Default favicon location
+                        stream = new URL(url.getProtocol(), url.getHost(), port, "/favicon.ico").openStream();
+                        final byte[] bytes = IOUtils.toByteArray(stream);
+                        if(bytes.length == 0) {
+                            return;
+                        }
+                        favicon = new NSImage(new NSData(bytes));
+                    }
+                    catch(java.net.MalformedURLException e) {
+                        log.warn(e.getMessage());
+                    }
+                    catch(IOException e) {
+                        log.warn(e.getMessage());
+                    }
+                    finally {
+                        IOUtils.closeQuietly(stream);
+                    }
+                }
+
+                public void cleanup() {
+                    if(null == favicon) {
+                        return;
+                    }
+                    webUrlImage.setImage(CDIconCache.instance().convert(favicon, 16));
+                }
+            });
+        }
+    }
+
+    public void openWebUrl(final NSButton sender) {
+        try {
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(host.getWebURL())
+            );
+        }
+        catch(java.net.MalformedURLException e) {
+            log.error(e.getMessage());
+        }
+    }
+
     private NSTextView commentField; // IBOutlet
 
     public void setCommentField(NSTextView commentField) {
         this.commentField = commentField;
+        this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
         NSNotificationCenter.defaultCenter().addObserver(this,
                 new NSSelector("commentInputDidChange", new Class[]{NSNotification.class}),
                 NSText.TextDidChangeNotification,
@@ -451,6 +522,7 @@ public class CDBookmarkController extends CDWindowController {
         this.cascade();
         this.init();
         this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("bookmark.toggle.options"));
+        this.reachable();
     }
 
     private NSTextField pkLabel;
@@ -561,6 +633,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void webURLInputDidChange(final NSNotification sender) {
         this.host.setWebURL(webURLField.stringValue());
+        this.updateFavicon();
         this.itemChanged();
     }
 
@@ -639,6 +712,7 @@ public class CDBookmarkController extends CDWindowController {
             pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
         webURLField.setEnabled(host.getProtocol().isConfigurable());
+        webUrlImage.setToolTip(host.getWebURL());
         if(!host.getWebURL().equals(host.getDefaultWebURL())) {
             this.updateField(webURLField, host.getWebURL());
         }
