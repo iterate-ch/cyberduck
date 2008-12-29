@@ -20,11 +20,16 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.*;
+import com.apple.cocoa.foundation.NSPathUtilities;
+import com.apple.cocoa.foundation.NSPoint;
+import com.apple.cocoa.foundation.NSRect;
+import com.apple.cocoa.foundation.NSSize;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 
@@ -32,6 +37,8 @@ import java.util.HashMap;
  * @version $Id$
  */
 public class CDIconCache extends HashMap<String, NSImage> {
+    private static Logger log = Logger.getLogger(CDIconCache.class);
+
     private static CDIconCache instance;
 
     private static final Object lock = new Object();
@@ -83,7 +90,6 @@ public class CDIconCache extends HashMap<String, NSImage> {
     }
 
     /**
-     * 
      * @param name
      * @return
      */
@@ -98,10 +104,14 @@ public class CDIconCache extends HashMap<String, NSImage> {
      */
     public NSImage iconForName(final String name, int size) {
         NSImage loaded;
-        loaded = NSImage.imageNamed(name+size);
+        loaded = NSImage.imageNamed(name + size);
         if(null == loaded) {
             loaded = NSImage.imageNamed(name);
-            loaded.setName(name+size);
+            if(null == loaded) {
+                log.error("No icon named " + name);
+                return null;
+            }
+            loaded.setName(name + size);
         }
 //        if(null == image) {
 //            // Look for icon in system System Core Types Bundle
@@ -227,6 +237,10 @@ public class CDIconCache extends HashMap<String, NSImage> {
     }
 
     public NSImage convert(NSImage icon, int size) {
+        if(null == icon) {
+            log.warn("Icon is null");
+            return null;
+        }
         icon.setScalesWhenResized(true);
 //        icon.setCacheMode(NSImage.ImageCacheBySize);
 //        icon.setCachedSeparately(true);
