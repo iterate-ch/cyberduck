@@ -54,6 +54,7 @@ public class EditMenuDelegate extends MenuDelegate {
         }
         String identifier = EditorFactory.INSTALLED_ODB_EDITORS.values().toArray(
                 new String[EditorFactory.INSTALLED_ODB_EDITORS.size()])[index];
+        item.setRepresentedObject(identifier);
         String editor = EditorFactory.INSTALLED_ODB_EDITORS.keySet().toArray(
                 new String[EditorFactory.INSTALLED_ODB_EDITORS.size()])[index];
         item.setTitle(editor);
