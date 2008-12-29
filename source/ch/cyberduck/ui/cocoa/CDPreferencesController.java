@@ -1409,7 +1409,9 @@ public class CDPreferencesController extends CDWindowController {
         this.protocolCombobox.addItemsWithTitles(new NSArray(Protocol.getProtocolDescriptions()));
         final Protocol[] protocols = Protocol.getKnownProtocols();
         for(int i = 0; i < protocols.length; i++) {
-            this.protocolCombobox.itemWithTitle(protocols[i].getDescription()).setRepresentedObject(protocols[i]);
+            final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocols[i].getDescription());
+            item.setRepresentedObject(protocols[i]);
+            item.setImage(CDIconCache.instance().iconForName(protocols[i].icon(), 16));
         }
 
         final Protocol defaultProtocol
