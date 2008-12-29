@@ -17,6 +17,7 @@ Changelog. Last modified: $Date$
 - [Feature] Read IdentityFile setting from OpenSSH configuration in ~/.ssh/config (SFTP) [#152]
 - [Feature] Default transfer setting for regular expression of skipped files includes GIT and others [#2829]
 - [Feature] Added QuickLook button to toolbar configuration
+- [Feature] Display Favicon for Web URL if available in bookmark window
 - [Bugfix] Uploads fail with digest access authentication [#2268]
 - [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
 
