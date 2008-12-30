@@ -50,7 +50,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <CoreServices/CoreServices.h>
-#import "SystemConfiguration/SCNetworkReachability.h"
+#import <SystemConfiguration/SCNetworkReachability.h>
 
 @interface Host : NSObject {
 
