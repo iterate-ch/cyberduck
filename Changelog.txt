@@ -20,6 +20,7 @@ Changelog. Last modified: $Date$
 - [Feature] Display Favicon for Web URL if available in bookmark window
 - [Bugfix] Uploads fail with digest access authentication [#2268]
 - [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
+- [Bugfix] Passwords stored in non default keychain are ignored [#2001]
 
 3.0.3 [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.3]
 - [Bugfix] Arbitrary Crashes [#2142]
