@@ -172,7 +172,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                             new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
                 }
                 else {
-                    host.getCredentials().setIdentity(null);
+                    credentials.setIdentity(null);
                     this.update();
                 }
             }
@@ -183,11 +183,11 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     NSArray selected = sheet.filenames();
                     java.util.Enumeration enumerator = selected.objectEnumerator();
                     while(enumerator.hasMoreElements()) {
-                        host.getCredentials().setIdentity(new Credentials.Identity((String) enumerator.nextElement()));
+                        credentials.setIdentity(new Credentials.Identity((String) enumerator.nextElement()));
                     }
                 }
                 if(returncode == NSPanel.CancelButton) {
-                    host.getCredentials().setIdentity(null);
+                    credentials.setIdentity(null);
                 }
                 publicKeyPanel = null;
                 this.update();
@@ -199,9 +199,9 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
                 this.pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
-                if(host.getCredentials().isPublicKeyAuthentication()) {
+                if(credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.OnState);
-                    this.updateField(this.pkLabel, host.getCredentials().getIdentity().toURL());
+                    this.updateField(this.pkLabel, credentials.getIdentity().toURL());
                 }
                 else {
                     this.pkCheckbox.setState(NSCell.OffState);
