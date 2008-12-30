@@ -2,12 +2,6 @@
 #include <jni.h>
 /* Header for class ch_cyberduck_core_Keychain */
 
-#import <Security/Security.h>
-#import <SecurityInterface/SFCertificateTrustPanel.h>
-#import <Keychain/Keychain.h>
-#import <Keychain/Trust.h>
-#import <Keychain/KeychainSearch.h>
-
 #ifndef _Included_ch_cyberduck_core_Keychain
 #define _Included_ch_cyberduck_core_Keychain
 #ifdef __cplusplus

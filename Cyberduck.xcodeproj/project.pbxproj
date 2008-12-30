@@ -81,7 +81,6 @@
 		4739EFBB0856991200405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EFBC0856991200405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4739EFBD0856991200405FD3 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
-		4739F01808569A8100405FD3 /* Keychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4739EFFB08569A8100405FD3 /* Keychain.framework */; };
 		4739F04508569B5E00405FD3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
 		473D6C680EED5134008F3B04 /* me.png in Resources */ = {isa = PBXBuildFile; fileRef = 473D6C670EED5134008F3B04 /* me.png */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
@@ -126,6 +125,10 @@
 		4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
 		47457F8E09980270002C93C3 /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47457F8C09980270002C93C3 /* UKCrashReporter.h */; };
 		47457F8F09980270002C93C3 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47457F8D09980270002C93C3 /* UKCrashReporter.m */; };
+		47462ADD0F0A473D0075CBA9 /* EMKeychainItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 47462AD90F0A473D0075CBA9 /* EMKeychainItem.h */; };
+		47462ADE0F0A473D0075CBA9 /* EMKeychainItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADA0F0A473D0075CBA9 /* EMKeychainItem.m */; };
+		47462ADF0F0A473D0075CBA9 /* EMKeychainProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 47462ADB0F0A473D0075CBA9 /* EMKeychainProxy.h */; };
+		47462AE00F0A473D0075CBA9 /* EMKeychainProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 47462ADC0F0A473D0075CBA9 /* EMKeychainProxy.m */; };
 		47494C4007EC6B4200B34D53 /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3C07EC6B4200B34D53 /* CDOutlineView.m */; };
 		47494C4107EC6B4200B34D53 /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47494C3D07EC6B4200B34D53 /* CDOutlineView.h */; };
 		47494C4207EC6B4200B34D53 /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3E07EC6B4200B34D53 /* CDListView.m */; };
@@ -215,7 +218,6 @@
 		47BEDB130B92968E00141EB4 /* URLSchemeHandlerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		47C261A90859014400765C4A /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
-		47C261AA0859014400765C4A /* Keychain.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739EFFB08569A8100405FD3 /* Keychain.framework */; };
 		47CD32A10751163400B82A2B /* plus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CD32A00751163400B82A2B /* plus.tiff */; };
 		47D3275B0F0828C800619C38 /* disk.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D3275A0F0828C800619C38 /* disk.tiff */; };
 		47D327720F08291F00619C38 /* idisk.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327710F08291F00619C38 /* idisk.tiff */; };
@@ -348,7 +350,6 @@
 				4773DCC90A73C0C600AB81E6 /* Sparkle.framework in CopyFiles */,
 				47DC8F0D0869A44E00B9DD7D /* DotMacKit.framework in CopyFiles */,
 				47C261A90859014400765C4A /* Growl.framework in CopyFiles */,
-				47C261AA0859014400765C4A /* Keychain.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,7 +598,6 @@
 		4739EFA20856990000405FD3 /* libGrowl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libGrowl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFB00856990900405FD3 /* libProxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4739EFFB08569A8100405FD3 /* Keychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Keychain.framework; path = build/Keychain.framework; sourceTree = "<group>"; };
 		4739F03D08569B5E00405FD3 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = build/Growl.framework; sourceTree = "<group>"; };
 		473D6C670EED5134008F3B04 /* me.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = me.png; sourceTree = "<group>"; };
 		474152F106C4F08A00AC0BD2 /* Proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Proxy.h; sourceTree = "<group>"; };
@@ -839,6 +839,10 @@
 		4743003109596BD900848A35 /* cy */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Status.strings; sourceTree = "<group>"; };
 		47457F8C09980270002C93C3 /* UKCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKCrashReporter.h; sourceTree = "<group>"; };
 		47457F8D09980270002C93C3 /* UKCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKCrashReporter.m; sourceTree = "<group>"; };
+		47462AD90F0A473D0075CBA9 /* EMKeychainItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMKeychainItem.h; sourceTree = "<group>"; };
+		47462ADA0F0A473D0075CBA9 /* EMKeychainItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMKeychainItem.m; sourceTree = "<group>"; };
+		47462ADB0F0A473D0075CBA9 /* EMKeychainProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMKeychainProxy.h; sourceTree = "<group>"; };
+		47462ADC0F0A473D0075CBA9 /* EMKeychainProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMKeychainProxy.m; sourceTree = "<group>"; };
 		47494C3C07EC6B4200B34D53 /* CDOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDOutlineView.m; sourceTree = "<group>"; };
 		47494C3D07EC6B4200B34D53 /* CDOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDOutlineView.h; sourceTree = "<group>"; };
 		47494C3E07EC6B4200B34D53 /* CDListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDListView.m; sourceTree = "<group>"; };
@@ -1497,7 +1501,6 @@
 			files = (
 				4739EF6D0856981300405FD3 /* JavaVM.framework in Frameworks */,
 				4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */,
-				4739F01808569A8100405FD3 /* Keychain.framework in Frameworks */,
 				476847090D99502A0090077B /* Security.framework in Frameworks */,
 				475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */,
 			);
@@ -1624,7 +1627,6 @@
 				475599FD0A72AE6200B5DCDB /* Sparkle.framework */,
 				47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */,
 				4739F03D08569B5E00405FD3 /* Growl.framework */,
-				4739EFFB08569A8100405FD3 /* Keychain.framework */,
 				47983764072AD73700FA3CDB /* Security.framework */,
 				47C761EA06A88D7600B464FF /* SystemConfiguration.framework */,
 				476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */,
@@ -1775,6 +1777,7 @@
 		4741532B06C4F08A00AC0BD2 /* com */ = {
 			isa = PBXGroup;
 			children = (
+				47462AD80F0A473D0075CBA9 /* extendmac */,
 				47152E180D9F2586003D8AE4 /* macfoh */,
 				477B1B7B0AF384350023BA7F /* snoize */,
 			);
@@ -1939,6 +1942,17 @@
 			path = zathras;
 			sourceTree = "<group>";
 		};
+		47462AD80F0A473D0075CBA9 /* extendmac */ = {
+			isa = PBXGroup;
+			children = (
+				47462AD90F0A473D0075CBA9 /* EMKeychainItem.h */,
+				47462ADA0F0A473D0075CBA9 /* EMKeychainItem.m */,
+				47462ADB0F0A473D0075CBA9 /* EMKeychainProxy.h */,
+				47462ADC0F0A473D0075CBA9 /* EMKeychainProxy.m */,
+			);
+			path = extendmac;
+			sourceTree = "<group>";
+		};
 		476691820DAA874100DAE443 /* quicklook */ = {
 			isa = PBXGroup;
 			children = (
@@ -2082,6 +2096,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4739EF690856981300405FD3 /* Keychain.h in Headers */,
+				47462ADD0F0A473D0075CBA9 /* EMKeychainItem.h in Headers */,
+				47462ADF0F0A473D0075CBA9 /* EMKeychainProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2787,6 +2803,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4739EF6B0856981300405FD3 /* Keychain.m in Sources */,
+				47462ADE0F0A473D0075CBA9 /* EMKeychainItem.m in Sources */,
+				47462AE00F0A473D0075CBA9 /* EMKeychainProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
