@@ -17,7 +17,8 @@ Changelog. Last modified: $Date$
 - [Feature] Default transfer setting for regular expression of skipped files includes GIT and others [#2829]
 - [Feature] Added QuickLook button to toolbar configuration
 - [Feature] Display Favicon for Web URL if available in bookmark window
-- [Bugfix] Uploads fail with digest access authentication [#2268]
+- [Feature] NTLM Authentication (WebDAV) [#2835]
+- [Bugfix] Uploads fail with digest access authentication (WebDAV) [#2268]
 - [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
 - [Bugfix] Passwords stored in non default keychain are ignored [#2001]
 

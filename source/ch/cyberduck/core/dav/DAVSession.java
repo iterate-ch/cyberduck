@@ -104,7 +104,8 @@ public class DAVSession extends HTTPSession {
             if(!credentials.isAnonymousLogin()) {
                 this.DAV.setCredentials(
                         new NTCredentials(credentials.getUsername(),
-                                credentials.getPassword(), InetAddress.getLocalHost().getHostName(), host.getDefaultPath())
+                                credentials.getPassword(), InetAddress.getLocalHost().getHostName(),
+                                Preferences.instance().getProperty("webdav.ntlm.domain"))
                 );
                 this.DAV.setUserInfo(credentials.getUsername(),
                         credentials.getPassword());

@@ -419,6 +419,11 @@ public abstract class Preferences {
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
 
         /**
+         * NTLM Windows Domain
+         */
+        defaults.put("webdav.ntlm.domain", "");
+
+        /**
          * Maximum concurrent connections to the same host
          * Unlimited by default
          */
