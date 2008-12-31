@@ -21,12 +21,10 @@ package ch.cyberduck.core.dav;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTPSession;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
@@ -34,6 +32,7 @@ import org.apache.webdav.lib.methods.DepthSupport;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.net.InetAddress;
 
 /**
  * @version $Id$
@@ -104,8 +103,8 @@ public class DAVSession extends HTTPSession {
         try {
             if(!credentials.isAnonymousLogin()) {
                 this.DAV.setCredentials(
-                        new UsernamePasswordCredentials(credentials.getUsername(),
-                                credentials.getPassword())
+                        new NTCredentials(credentials.getUsername(),
+                                credentials.getPassword(), InetAddress.getLocalHost().getHostName(), host.getDefaultPath())
                 );
                 this.DAV.setUserInfo(credentials.getUsername(),
                         credentials.getPassword());
