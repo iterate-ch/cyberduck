@@ -59,7 +59,6 @@ public class EditorFactory {
         SUPPORTED_ODB_EDITORS.put("MacVim", "org.vim.MacVim");
         SUPPORTED_ODB_EDITORS.put("ForgEdit", "com.forgedit.ForgEdit");
         SUPPORTED_ODB_EDITORS.put("Taco HTML Edit", "com.tacosw.TacoHTMLEdit");
-        SUPPORTED_ODB_EDITORS.put("Espresso", "com.macrabbit.Espresso");
 
         Iterator<String> editorNames = SUPPORTED_ODB_EDITORS.keySet().iterator();
         Iterator<String> editorIdentifiers = SUPPORTED_ODB_EDITORS.values().iterator();
