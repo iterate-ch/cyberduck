@@ -116,6 +116,10 @@ public abstract class Protocol {
         public boolean isSecure() {
             return true;
         }
+
+        public String disk() {
+            return this.icon();
+        }
     };
 
     public static final Protocol SCP = new Protocol() {
@@ -148,6 +152,10 @@ public abstract class Protocol {
         public String getScheme() {
             return "ftp";
         }
+
+        public String disk() {
+            return this.icon();
+        }
     };
 
     public static final Protocol FTP_TLS = new Protocol() {
@@ -173,6 +181,10 @@ public abstract class Protocol {
 
         public String icon() {
             return "ftp-tls";
+        }
+
+        public String disk() {
+            return this.icon();
         }
     };
 
