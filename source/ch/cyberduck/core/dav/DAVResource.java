@@ -17,15 +17,19 @@ package ch.cyberduck.core.dav;
  */
 
 import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang.StringUtils;
+import org.apache.webdav.lib.ResponseEntity;
 import org.apache.webdav.lib.WebdavResource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -150,5 +154,46 @@ public class DAVResource extends WebdavResource {
     private boolean isHttpSuccess(int statusCode) {
         return (statusCode >= HttpStatus.SC_OK
                 && statusCode < HttpStatus.SC_MULTIPLE_CHOICES);
+    }
+
+    protected void setWebdavProperties(final Enumeration responses)
+            throws HttpException, IOException {
+
+        super.setWebdavProperties(new Enumeration() {
+            public boolean hasMoreElements() {
+                return responses.hasMoreElements();
+            }
+
+            public Object nextElement() {
+                final ResponseEntity response =
+                        (ResponseEntity) responses.nextElement();
+                return new ResponseEntity() {
+
+                    public int getStatusCode() {
+                        return response.getStatusCode();
+                    }
+
+                    public Enumeration getProperties() {
+                        return response.getProperties();
+                    }
+
+                    public Enumeration getHistories() {
+                        return response.getHistories();
+                    }
+
+                    public Enumeration getWorkspaces() {
+                        return response.getWorkspaces();
+                    }
+
+                    public String getHref() {
+                        // http://trac.cyberduck.ch/ticket/2223
+                        if(StringUtils.isNotBlank(response.getHref())) {
+                            return StringUtils.replace(response.getHref(), " ", "%20");
+                        }
+                        return response.getHref();
+                    }
+                };
+            }
+        });
     }
 }
