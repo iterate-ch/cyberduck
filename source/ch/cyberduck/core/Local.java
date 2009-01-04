@@ -484,6 +484,21 @@ public class Local extends AbstractPath {
     private native void setQuarantine(String path, String originUrl, String dataUrl);
 
     /**
+     * Set the kMDItemWhereFroms on the file.
+     * @param dataUrl
+     */
+    public void setWhereFrom(final String dataUrl) {
+        this.setWhereFrom(this.getAbsolute(), dataUrl);
+    }
+
+    /**
+     * Set the kMDItemWhereFroms on the file.
+     * @param path
+     * @param dataUrl
+     */
+    private native void setWhereFrom(String path, String dataUrl);
+
+    /**
      * Update the custom icon for the file in the Finder
      *
      * @param progress An integer from -1 and 9. If -1 is passed,

@@ -343,6 +343,7 @@ public abstract class Preferences {
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs");
 
         defaults.put("queue.download.quarantine", String.valueOf(true));
+        defaults.put("queue.download.wherefrom", String.valueOf(true));
 
         /**
          * Bandwidth throttle upload stream

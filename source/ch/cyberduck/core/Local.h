@@ -15,46 +15,54 @@ extern "C" {
 #define ch_cyberduck_core_Local_SYMBOLIC_LINK_TYPE 4L
 #undef ch_cyberduck_core_Local_VOLUME_TYPE
 #define ch_cyberduck_core_Local_VOLUME_TYPE 8L
-/*
- * Class:     ch_cyberduck_core_Local
- * Method:    kind
- * Signature: (Ljava/lang/String;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     ch_cyberduck_core_Local
- * Method:    setQuarantine
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setQuarantine
-  (JNIEnv *, jobject, jstring, jstring, jstring);
-
-/*
- * Class:     ch_cyberduck_core_Local
- * Method:    setIconFromFile
- * Signature: (Ljava/lang/String;Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile
-  (JNIEnv *, jobject, jstring, jstring);
-
-/*
- * Class:     ch_cyberduck_core_Local
- * Method:    removeCustomIcon
- * Signature: (Ljava/lang/String;)V
- */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     ch_cyberduck_core_Local
- * Method:    applicationForExtension
- * Signature: (Ljava/lang/String;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_applicationForExtension
-  (JNIEnv *, jobject, jstring);
-
+	/*
+	 * Class:     ch_cyberduck_core_Local
+	 * Method:    kind
+	 * Signature: (Ljava/lang/String;)Ljava/lang/String;
+	 */
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_kind
+	(JNIEnv *, jobject, jstring);
+	
+	/*
+	 * Class:     ch_cyberduck_core_Local
+	 * Method:    setQuarantine
+	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setQuarantine
+	(JNIEnv *, jobject, jstring, jstring, jstring);
+	
+	/*
+	 * Class:     ch_cyberduck_core_Local
+	 * Method:    setWhereFrom
+	 * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setWhereFrom
+	(JNIEnv *, jobject, jstring, jstring);
+	
+	/*
+	 * Class:     ch_cyberduck_core_Local
+	 * Method:    setIconFromFile
+	 * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setIconFromFile
+	(JNIEnv *, jobject, jstring, jstring);
+	
+	/*
+	 * Class:     ch_cyberduck_core_Local
+	 * Method:    removeCustomIcon
+	 * Signature: (Ljava/lang/String;)V
+	 */
+	JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_removeCustomIcon
+	(JNIEnv *, jobject, jstring);
+	
+	/*
+	 * Class:     ch_cyberduck_core_Local
+	 * Method:    applicationForExtension
+	 * Signature: (Ljava/lang/String;)Ljava/lang/String;
+	 */
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_applicationForExtension
+	(JNIEnv *, jobject, jstring);
+	
 #ifdef __cplusplus
 }
 #endif

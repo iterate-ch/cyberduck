@@ -54,22 +54,96 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
+// This is a helper used by QuarantineDownload to look up strings at runtime.
+static const CFStringRef GetCFStringFromBundle(CFBundleRef bundle,
+                                               CFStringRef symbol) {
+	const CFStringRef* string = (const CFStringRef*)CFBundleGetDataPointerForName(bundle, symbol);
+	if (!string) {
+		return NULL;
+	}
+	return *string;
+}
+
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
 {
 	NSURL* url = [NSURL fileURLWithPath:convertToNSString(env, path)];
 	FSRef ref;
 	CFURLGetFSRef((CFURLRef) url, &ref);
 
+	// From mozilla/camino/src/download/nsDownloadListener.mm
+	typedef OSStatus (*LSSetItemAttribute_type)(const FSRef*, LSRolesMask,
+												CFStringRef, CFTypeRef);
+	
+	static LSSetItemAttribute_type lsSetItemAttributeFunc = NULL;
+	static CFStringRef lsItemQuarantineProperties = NULL;
+	
+	// LaunchServices declares these as CFStringRef, but they're used here as
+	// NSString.  Take advantage of data type equivalance and just call them
+	// NSString.
+	static NSString* lsQuarantineTypeKey = nil;
+	static NSString* lsQuarantineOriginURLKey = nil;
+	static NSString* lsQuarantineDataURLKey = nil;
+	static NSString* lsQuarantineTypeOtherDownload = nil;
+	
+	// The SDK is 10.4 or older, and doesn't contain 10.5 APIs.  Look up the
+	// symbols we need at runtime the first time through this function.
+	static bool didSymbolLookup = false;
+	if (!didSymbolLookup) {
+		didSymbolLookup = true;
+		CFBundleRef launchServicesBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.LaunchServices"));
+		if (!launchServicesBundle) {
+			return;
+		}
+		lsSetItemAttributeFunc = (LSSetItemAttribute_type)CFBundleGetFunctionPointerForName(launchServicesBundle, CFSTR("LSSetItemAttribute"));
+		lsItemQuarantineProperties = GetCFStringFromBundle(launchServicesBundle, CFSTR("kLSItemQuarantineProperties"));
+		lsQuarantineTypeKey = (NSString*)GetCFStringFromBundle(launchServicesBundle, CFSTR("kLSQuarantineTypeKey"));
+		lsQuarantineOriginURLKey = (NSString*)GetCFStringFromBundle(launchServicesBundle, CFSTR("kLSQuarantineOriginURLKey"));
+		lsQuarantineDataURLKey = (NSString*)GetCFStringFromBundle(launchServicesBundle, CFSTR("kLSQuarantineDataURLKey"));
+		lsQuarantineTypeOtherDownload = (NSString*)GetCFStringFromBundle(launchServicesBundle, CFSTR("kLSQuarantineTypeOtherDownload"));
+	}
+
+	// Regardless of the SDK, this may run on releases older than 10.5 that
+	// don't contain these symbols.  Before going any further, check to make
+	// sure that everything is present.
+	if (!lsSetItemAttributeFunc || !lsItemQuarantineProperties || !lsQuarantineTypeKey || !lsQuarantineOriginURLKey || !lsQuarantineDataURLKey || !lsQuarantineTypeOtherDownload) {
+		return;
+	}
+	
 	NSMutableDictionary* attrs = [[NSMutableDictionary alloc] init];
 	// Write quarantine attributes
-	[attrs setValue:(id)kLSQuarantineTypeOtherDownload forKey:(NSString *)kLSQuarantineTypeKey];
-	[attrs setValue:convertToNSString(env, originUrl) forKey:(NSString *)kLSQuarantineOriginURLKey];
-	[attrs setValue:convertToNSString(env, dataUrl) forKey:(NSString *)kLSQuarantineDataURLKey];
-	
-	if(LSSetItemAttribute(&ref, kLSRolesAll, kLSItemQuarantineProperties, (CFDictionaryRef*) attrs) != noErr) {
+	[attrs setValue:(id)lsQuarantineTypeOtherDownload forKey:(NSString *)lsQuarantineTypeKey];
+	[attrs setValue:convertToNSString(env, originUrl) forKey:(NSString *)lsQuarantineOriginURLKey];
+	[attrs setValue:convertToNSString(env, dataUrl) forKey:(NSString *)lsQuarantineDataURLKey];
+		
+	if(lsSetItemAttributeFunc(&ref, kLSRolesAll, lsItemQuarantineProperties, (CFDictionaryRef*) attrs) != noErr) {
 		NSLog(@"Error writing quarantine attribute");
 	}
 	[attrs release];
+}
+
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_Local_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
+{
+	// From mozilla/camino/src/download/nsDownloadListener.mm
+	typedef OSStatus (*MDItemSetAttribute_type)(MDItemRef, CFStringRef, CFTypeRef);
+	static MDItemSetAttribute_type mdItemSetAttributeFunc = NULL;
+	static bool didSymbolLookup = false;
+	if (!didSymbolLookup) {
+		didSymbolLookup = true;
+		CFBundleRef metadataBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.Metadata"));
+		if (!metadataBundle) {
+			return;
+		}
+		mdItemSetAttributeFunc = (MDItemSetAttribute_type)CFBundleGetFunctionPointerForName(metadataBundle, CFSTR("MDItemSetAttribute"));
+	}
+	if (!mdItemSetAttributeFunc) {
+		return;
+	}
+	MDItemRef mdItem = MDItemCreate(NULL, (CFStringRef)convertToNSString(env, path));
+	if (!mdItem) {
+	   return;
+	}
+	mdItemSetAttributeFunc(mdItem, kMDItemWhereFroms, (CFMutableArrayRef)[NSMutableArray arrayWithObject:convertToNSString(env, dataUrl)]);
+	CFRelease(mdItem);
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Local_applicationForExtension(

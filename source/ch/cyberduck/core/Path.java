@@ -516,6 +516,10 @@ public abstract class Path extends AbstractPath implements Serializable {
             // Set quarantine attributes
             this.getLocal().setQuarantine(this.getHost().toURL(), this.toURL());
         }
+        if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
+            // Set quarantine attributes
+            this.getLocal().setWhereFrom(this.toURL());
+        }
 
         final StreamListener listener = new StreamListener() {
             int step = 0;
