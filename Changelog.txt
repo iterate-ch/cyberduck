@@ -11,7 +11,8 @@ Changelog. Last modified: $Date$
 - [Feature] Send arbitrary commands over SSH using the 'Send Command...' interface (SFTP) [#3]
 - [Feature] Archive and unarchive files and folders (ZIP, TAR etc.) (SFTP) [#2376]
 - [Feature] Clickable URL fields
-- [Feature] Set quarantine attribute on downloaded files
+- [Feature] Set quarantine attribute for launch services of downloaded files
+- [Feature] Finder displays URL of downloaded files in 'Where from' in 'Get Info' window
 - [Feature] Download folder in Dock bounces once when download finishes (10.5)
 - [Feature] Read IdentityFile setting from OpenSSH configuration in ~/.ssh/config (SFTP) [#152]
 - [Feature] Default transfer setting for regular expression of skipped files includes GIT and others [#2829]
