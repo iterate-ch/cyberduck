@@ -19,6 +19,7 @@ Changelog. Last modified: $Date$
 - [Feature] Display Favicon for Web URL if available in bookmark window
 - [Feature] NTLM Authentication (WebDAV) [#2835]
 - [Bugfix] Uploads fail with digest access authentication (WebDAV) [#2268]
+- [Bugfix] Microsoft SharePoint interoperability (WebDAV) [#2223]
 - [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
 - [Bugfix] Passwords stored in non default keychain are ignored [#2001]
 
