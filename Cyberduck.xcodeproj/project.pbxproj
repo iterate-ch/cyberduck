@@ -161,9 +161,7 @@
 		47649E0908E563C500207DC9 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
 		47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */; };
 		47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
-		476623520E9A68BD00DBB7EA /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476623510E9A68BD00DBB7EA /* AddressBook.framework */; };
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
-		476847090D99502A0090077B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 476847080D99502A0090077B /* Security.framework */; };
 		476B03360D05CFA100CE8ADE /* UKFileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 476B03340D05CFA100CE8ADE /* UKFileWatcher.m */; };
 		476B03370D05CFA100CE8ADE /* UKFileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 476B03350D05CFA100CE8ADE /* UKFileWatcher.h */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
@@ -227,6 +225,9 @@
 		47D3F2FB0CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */; };
 		47D3F2FC0CF227E400A78764 /* DropFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */; };
 		47D3F2FD0CF227E400A78764 /* NewFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F90CF227E400A78764 /* NewFolderBadgeIcon.icns */; };
+		47D413ED0F0ECF0800BAF184 /* DownloadBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D413EB0F0ECF0800BAF184 /* DownloadBadge.png */; };
+		47D413EE0F0ECF0800BAF184 /* UploadBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D413EC0F0ECF0800BAF184 /* UploadBadge.png */; };
+		47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D414940F0ECFF300BAF184 /* Security.framework */; };
 		47DC8F0D0869A44E00B9DD7D /* DotMacKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */; };
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
 		47E0BB4F0746B1FA00C4A68E /* arrowUp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB490746B1FA00C4A68E /* arrowUp.tiff */; };
@@ -988,9 +989,7 @@
 		4765652D098134B200633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4765652E098134B200633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4765652F098134D300633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Status.strings; sourceTree = "<group>"; };
-		476623510E9A68BD00DBB7EA /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		476774DD0B74CE750025093E /* trash.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = trash.tiff; sourceTree = "<group>"; };
-		476847080D99502A0090077B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		476B03340D05CFA100CE8ADE /* UKFileWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKFileWatcher.m; sourceTree = "<group>"; };
 		476B03350D05CFA100CE8ADE /* UKFileWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKFileWatcher.h; sourceTree = "<group>"; };
 		476C7C1807F5A2A700CF6032 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/File.nib; sourceTree = "<group>"; };
@@ -1337,6 +1336,10 @@
 		47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ReadOnlyFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DropFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F90CF227E400A78764 /* NewFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = NewFolderBadgeIcon.icns; sourceTree = "<group>"; };
+		47D413EB0F0ECF0800BAF184 /* DownloadBadge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DownloadBadge.png; sourceTree = "<group>"; };
+		47D413EC0F0ECF0800BAF184 /* UploadBadge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UploadBadge.png; sourceTree = "<group>"; };
+		47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
+		47D414940F0ECFF300BAF184 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = build/DotMacKit.framework; sourceTree = "<group>"; };
 		47DC8E9308699CF300B9DD7D /* CDDotMacController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDDotMacController.h; sourceTree = "<group>"; };
 		47DC8E9408699CF300B9DD7D /* CDDotMacController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDDotMacController.m; sourceTree = "<group>"; };
@@ -1473,7 +1476,6 @@
 				47649E0908E563C500207DC9 /* Security.framework in Frameworks */,
 				47649E4508E563D000207DC9 /* CoreFoundation.framework in Frameworks */,
 				47649EDD08E563D600207DC9 /* Carbon.framework in Frameworks */,
-				476623520E9A68BD00DBB7EA /* AddressBook.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1501,8 +1503,8 @@
 			files = (
 				4739EF6D0856981300405FD3 /* JavaVM.framework in Frameworks */,
 				4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */,
-				476847090D99502A0090077B /* Security.framework in Frameworks */,
 				475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */,
+				47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1614,9 +1616,8 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				471D2C5405A2505600675163 /* Info.plist */,
-				476847080D99502A0090077B /* Security.framework */,
-				475D461C0D9953CD009450C4 /* SecurityInterface.framework */,
-				476623510E9A68BD00DBB7EA /* AddressBook.framework */,
+				47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */,
+				47D414940F0ECFF300BAF184 /* Security.framework */,
 			);
 			name = "cyberduck-cocoa";
 			sourceTree = "<group>";
@@ -1624,6 +1625,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				475D461C0D9953CD009450C4 /* SecurityInterface.framework */,
 				475599FD0A72AE6200B5DCDB /* Sparkle.framework */,
 				47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */,
 				4739F03D08569B5E00405FD3 /* Growl.framework */,
@@ -1835,6 +1837,8 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				47D413EB0F0ECF0800BAF184 /* DownloadBadge.png */,
+				47D413EC0F0ECF0800BAF184 /* UploadBadge.png */,
 				47D327A30F0829EC00619C38 /* rendezvous.tiff */,
 				4701FA700EF476C3000A1724 /* amazon.png */,
 				474BA1FE0EED9284005928F5 /* cf.png */,
@@ -2657,6 +2661,8 @@
 				47D327720F08291F00619C38 /* idisk.tiff in Resources */,
 				47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */,
 				47D327C50F096E6C00619C38 /* site.tiff in Resources */,
+				47D413ED0F0ECF0800BAF184 /* DownloadBadge.png in Resources */,
+				47D413EE0F0ECF0800BAF184 /* UploadBadge.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4072,13 +4078,13 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libDotMac;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4106,7 +4112,6 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_4",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4129,13 +4134,13 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libKQueue;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4157,14 +4162,13 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libKeychain;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4185,6 +4189,7 @@
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libODBEdit;
 				REZ_EXECUTABLE = YES;
@@ -4192,7 +4197,6 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4213,6 +4217,7 @@
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libGrowl;
 				REZ_EXECUTABLE = YES;
@@ -4220,7 +4225,6 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4240,6 +4244,7 @@
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libProxy;
 				REZ_EXECUTABLE = YES;
@@ -4247,7 +4252,6 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4267,9 +4271,11 @@
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libLocal;
 				REZ_EXECUTABLE = YES;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -4293,6 +4299,7 @@
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LIBRARY_STYLE = DYNAMIC;
 				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
 				PRODUCT_NAME = libDiagnostics;
 				REZ_EXECUTABLE = YES;
@@ -4300,7 +4307,6 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_3",
 				);
 				ZERO_LINK = NO;
 			};
@@ -4374,7 +4380,6 @@
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
-					"-DMAC_OS_X_VERSION_MAX_ALLOWED=MAC_OS_X_VERSION_10_4",
 				);
 				ZERO_LINK = NO;
 			};
