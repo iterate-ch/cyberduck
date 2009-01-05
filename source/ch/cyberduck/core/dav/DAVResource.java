@@ -16,14 +16,12 @@ package ch.cyberduck.core.dav;
  * limitations under the License.
  */
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.webdav.lib.ResponseEntity;
 import org.apache.webdav.lib.WebdavResource;
 
@@ -39,6 +37,7 @@ import java.util.zip.GZIPInputStream;
  * @version $Id$
  */
 public class DAVResource extends WebdavResource {
+    private static Logger log = Logger.getLogger(DAVResource.class);
 
     public DAVResource(String url) throws IOException {
         super(url);
@@ -156,6 +155,28 @@ public class DAVResource extends WebdavResource {
                 && statusCode < HttpStatus.SC_MULTIPLE_CHOICES);
     }
 
+    /**
+     * Verify whether a given string is escaped or not
+     *
+     * @param original given characters
+     * @return true if the given character array is 7 bit ASCII-compatible.
+     */
+    public static boolean verifyEscaped(char[] original) {
+        for(int i = 0; i < original.length; i++) {
+            int c = original[i];
+            if(c > 128) {
+                return false;
+            }
+            else if(c == '%') {
+                if(Character.digit(original[++i], 16) == -1
+                        || Character.digit(original[++i], 16) == -1) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     protected void setWebdavProperties(final Enumeration responses)
             throws HttpException, IOException {
 
@@ -186,9 +207,18 @@ public class DAVResource extends WebdavResource {
                     }
 
                     public String getHref() {
-                        // http://trac.cyberduck.ch/ticket/2223
                         if(StringUtils.isNotBlank(response.getHref())) {
-                            return StringUtils.replace(response.getHref(), " ", "%20");
+                            // http://trac.cyberduck.ch/ticket/2223
+                            final String escaped = StringUtils.replace(response.getHref(), " ", "%20");
+                            if(!verifyEscaped(escaped.toCharArray())) {
+                                try {
+                                    return URIUtil.encodePath(response.getHref());
+                                }
+                                catch(URIException e) {
+                                    log.error(e.getMessage(), e);
+                                }
+                            }
+                            return escaped;
                         }
                         return response.getHref();
                     }
