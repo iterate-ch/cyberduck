@@ -225,8 +225,6 @@
 		47D3F2FB0CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */; };
 		47D3F2FC0CF227E400A78764 /* DropFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */; };
 		47D3F2FD0CF227E400A78764 /* NewFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F90CF227E400A78764 /* NewFolderBadgeIcon.icns */; };
-		47D413ED0F0ECF0800BAF184 /* DownloadBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D413EB0F0ECF0800BAF184 /* DownloadBadge.png */; };
-		47D413EE0F0ECF0800BAF184 /* UploadBadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D413EC0F0ECF0800BAF184 /* UploadBadge.png */; };
 		47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D414940F0ECFF300BAF184 /* Security.framework */; };
 		47DC8F0D0869A44E00B9DD7D /* DotMacKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */; };
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
@@ -1336,8 +1334,6 @@
 		47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ReadOnlyFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DropFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F90CF227E400A78764 /* NewFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = NewFolderBadgeIcon.icns; sourceTree = "<group>"; };
-		47D413EB0F0ECF0800BAF184 /* DownloadBadge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DownloadBadge.png; sourceTree = "<group>"; };
-		47D413EC0F0ECF0800BAF184 /* UploadBadge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UploadBadge.png; sourceTree = "<group>"; };
 		47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
 		47D414940F0ECFF300BAF184 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = build/DotMacKit.framework; sourceTree = "<group>"; };
@@ -1837,8 +1833,6 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
-				47D413EB0F0ECF0800BAF184 /* DownloadBadge.png */,
-				47D413EC0F0ECF0800BAF184 /* UploadBadge.png */,
 				47D327A30F0829EC00619C38 /* rendezvous.tiff */,
 				4701FA700EF476C3000A1724 /* amazon.png */,
 				474BA1FE0EED9284005928F5 /* cf.png */,
@@ -2661,8 +2655,6 @@
 				47D327720F08291F00619C38 /* idisk.tiff in Resources */,
 				47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */,
 				47D327C50F096E6C00619C38 /* site.tiff in Resources */,
-				47D413ED0F0ECF0800BAF184 /* DownloadBadge.png in Resources */,
-				47D413EE0F0ECF0800BAF184 /* UploadBadge.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
