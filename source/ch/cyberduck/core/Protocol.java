@@ -255,8 +255,8 @@ public abstract class Protocol {
             return new String[]{this.getScheme(), "dav"};
         }
 
-        public String icon() {
-            return "disk";
+        public String disk() {
+            return this.icon();
         }
     };
 
@@ -289,8 +289,8 @@ public abstract class Protocol {
             return new String[]{this.getScheme(), "davs"};
         }
 
-        public String icon() {
-            return "disk";
+        public String disk() {
+            return this.icon();
         }
     };
 

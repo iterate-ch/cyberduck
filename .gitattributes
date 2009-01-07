@@ -1036,6 +1036,8 @@ img/cleanAll.tiff -text svneol=unset#image/tiff
 img/column.tiff -text svneol=unset#image/tiff
 img/connect.tiff -text svneol=unset#image/tiff
 img/connection.tiff -text svneol=unset#image/tiff
+img/dav.tiff -text
+img/davs.tiff -text
 img/deleteFile.tiff -text svneol=unset#image/tiff
 img/disk.tiff -text
 img/download0.icns -text
