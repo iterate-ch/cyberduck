@@ -115,9 +115,6 @@ public class DAVResource extends WebdavResource {
 
         setClient();
 
-        // Fix #2268
-        client.getState().setAuthenticationPreemptive(false);
-
         PutMethod method = new PutMethod(URIUtil.encodePathQuery(path));
 
         // Activates 'Expect: 100-Continue' handshake. The purpose of
