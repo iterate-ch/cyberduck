@@ -881,11 +881,12 @@ public class Host extends NSObject implements Serializable {
         public String getUsername() {
             final String user = super.getUsername();
             if(StringUtils.isBlank(user)) {
-                if(Host.this.getProtocol().equals(Protocol.SFTP)) {
-                    final OpenSshConfig.Host entry = config.lookup(Host.this.getHostname());
-                    if(StringUtils.isNotBlank(entry.getUser())) {
-                        return entry.getUser();
-                    }
+                if(!Protocol.SFTP.equals(Host.this.getProtocol())) {
+                    return null;
+                }
+                final OpenSshConfig.Host entry = config.lookup(Host.this.getHostname());
+                if(StringUtils.isNotBlank(entry.getUser())) {
+                    return entry.getUser();
                 }
             }
             return user;
@@ -896,7 +897,7 @@ public class Host extends NSObject implements Serializable {
          * @return
          */
         public Identity getIdentity() {
-            if(!Host.this.getProtocol().equals(Protocol.SFTP)) {
+            if(!Protocol.SFTP.equals(Host.this.getProtocol())) {
                 return null;
             }
             if(null == super.getIdentity()) {
