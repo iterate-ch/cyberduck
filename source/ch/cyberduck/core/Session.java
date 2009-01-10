@@ -26,13 +26,15 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -103,6 +105,22 @@ public abstract class Session extends NSObject {
                     this.connect();
                 }
             }
+        }
+        catch(SocketException e) {
+            if(e.getMessage().equals("Software caused connection abort")) {
+                // Do not report as failed if socket opening interrupted
+                log.warn("Supressed socket exception:" + e.getMessage());
+                throw new ConnectionCanceledException();
+            }
+            if(e.getMessage().equals("Socket closed")) {
+                // Do not report as failed if socket opening interrupted
+                log.warn("Supressed socket exception:" + e.getMessage());
+                throw new ConnectionCanceledException();
+            }
+        }
+        catch(SSLHandshakeException e) {
+            // Most probably caused by user dismissing ceritifcate
+            throw new ConnectionCanceledException();
         }
         catch(IOException e) {
             this.interrupt();

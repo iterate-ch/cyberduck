@@ -59,18 +59,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             // Do not report as failed if instanceof ConnectionCanceledException
             return;
         }
-        if(cause instanceof SocketException) {
-            if(cause.getMessage().equals("Software caused connection abort")) {
-                // Do not report as failed if socket opening interrupted
-                log.warn("Supressed socket exception:" + cause.getMessage());
-                return;
-            }
-            if(cause.getMessage().equals("Socket closed")) {
-                // Do not report as failed if socket opening interrupted
-                log.warn("Supressed socket exception:" + cause.getMessage());
-                return;
-            }
-        }
         CDMainApplication.invoke(new DefaultMainAction() {
             public void run() {
                 final String description = null == exception.getPath() ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
