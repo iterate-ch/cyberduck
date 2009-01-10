@@ -167,18 +167,18 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
 		CFRelease(searchRef);
 	}
 	NSString *hostname = convertToNSString(env, jHostname);
-//	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
-//		.Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
-//		.ServerNameLen = [hostname length]+1,
-//		.ServerName = [hostname cString],
-//		.Flags = 0
-//	};
-//
-//	CSSM_DATA customCssmData = {
-//		.Length = sizeof(ssloptions),
-//		.Data = (uint8*)&ssloptions
-//	};
-//	err = SecPolicySetValue(policyRef, &customCssmData);
+	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
+		.Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
+		.ServerNameLen = [hostname length]+1,
+		.ServerName = [hostname cStringUsingEncoding:NSASCIIStringEncoding],
+		.Flags = 0
+	};
+
+	CSSM_DATA customCssmData = {
+		.Length = sizeof(ssloptions),
+		.Data = (uint8*)&ssloptions
+	};
+	err = SecPolicySetValue(policyRef, &customCssmData);
 	// Creates a trust management object based on certificates and policies.
 	SecTrustRef trustRef = NULL;
 	err = SecTrustCreateWithCertificates((CFArrayRef)certificates, policyRef, &trustRef);
