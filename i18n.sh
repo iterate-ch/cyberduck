@@ -59,6 +59,13 @@ init() {
 	cp $base_language/License.txt $language/
 }
 
+test() {
+	for lproj in `ls . | grep lproj`; do
+		language=$lproj;
+		run;
+	done;
+}
+
 open() {
 	nib=`basename $nibfile .nib`
 	if [ "$language" = "all" ] ; then
@@ -256,6 +263,11 @@ while [ "$1" != "" ] # When there are arguments...
 			;; 
 			-r | --run)
 				run;
+				echo "*** DONE. ***";
+				exit 0;
+			;; 
+			--test)
+				test;
 				echo "*** DONE. ***";
 				exit 0;
 			;; 
