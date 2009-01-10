@@ -126,13 +126,26 @@ public class S3Path extends CloudPath {
         if(this.isRoot()) {
             return true;
         }
-        try {
-            this.getDetails();
+        if(attributes.isFile()) {
+            try {
+                this.getDetails();
+            }
+            catch(S3Exception e) {
+                return false;
+            }
+            return true;
         }
-        catch(S3Exception e) {
-            return false;
+        else {
+            if(this.isContainer()) {
+                try {
+                    return session.S3.isBucketAccessible(this.getContainerName());
+                }
+                catch(S3ServiceException e) {
+                    return false;
+                }
+            }
+            return !this.childs().isEmpty();
         }
-        return true;
     }
 
     private S3Object _details;
@@ -143,7 +156,6 @@ public class S3Path extends CloudPath {
      */
     private S3Object getDetails() throws S3Exception {
         if(null == this._details || !_details.isMetadataComplete()) {
-            log.debug("getDetails");
             try {
                 this._details = session.S3.getObjectDetails(this.getBucket(), this.getKey());
             }
