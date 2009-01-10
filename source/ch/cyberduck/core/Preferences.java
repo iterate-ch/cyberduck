@@ -419,6 +419,8 @@ public abstract class Preferences {
         defaults.put("webdav.followRedirects", String.valueOf(true));
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
 
+        defaults.put("cf.tls.acceptAnyCertificate", String.valueOf(false));
+
         /**
          * NTLM Windows Domain
          */

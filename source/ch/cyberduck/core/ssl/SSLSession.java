@@ -18,13 +18,11 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
-import javax.net.ssl.X509TrustManager;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface SSLSession {
-    X509TrustManager getTrustManager();
+    AbstractX509TrustManager getTrustManager();
 
-    void setTrustManager(X509TrustManager trustManager);
+    void setTrustManager(AbstractX509TrustManager trustManager);
 }

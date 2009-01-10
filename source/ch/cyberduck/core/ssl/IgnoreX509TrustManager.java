@@ -26,6 +26,10 @@ import org.apache.log4j.Logger;
 public class IgnoreX509TrustManager extends AbstractX509TrustManager {
     private static Logger log = Logger.getLogger(IgnoreX509TrustManager.class);
 
+    public IgnoreX509TrustManager() {
+        super(null);
+    }
+
     public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, java.lang.String string)
             throws java.security.cert.CertificateException {
         log.warn("Certificate not verified!");

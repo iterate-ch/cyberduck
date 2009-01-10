@@ -27,10 +27,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractX509TrustManager implements X509TrustManager {
     protected static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
+
+    private String hostname;
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    protected AbstractX509TrustManager(String hostname) {
+        this.hostname = hostname;
+    }
 
     /**
      * A set of all X509 certificates accepted by the user that contains

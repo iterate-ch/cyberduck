@@ -20,6 +20,7 @@ package ch.cyberduck.core.ftps;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -27,11 +28,9 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 import com.enterprisedt.net.ftp.FTPClient;
-import com.enterprisedt.net.ftp.FTPMessageListener;
 
 /**
  * @version $Id$
@@ -51,23 +50,22 @@ public class FTPSSession extends FTPSession implements SSLSession {
 
     protected FTPSSession(Host h) {
         super(h);
-        if(Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
-            this.setTrustManager(new IgnoreX509TrustManager());
-        }
-        else {
-            this.setTrustManager(new KeychainX509TrustManager(h.getHostname()));
-        }
     }
 
-    /**
-     * A trust manager accepting any certificate by default
-     */
-    private X509TrustManager trustManager;
+    private AbstractX509TrustManager trustManager;
 
     /**
      * @return
      */
-    public X509TrustManager getTrustManager() {
+    public AbstractX509TrustManager getTrustManager() {
+        if(null == trustManager) {
+            if(Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
+                this.setTrustManager(new IgnoreX509TrustManager());
+            }
+            else {
+                this.setTrustManager(new KeychainX509TrustManager(host.getHostname()));
+            }
+        }
         return trustManager;
     }
 
@@ -76,7 +74,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
      *
      * @param trustManager
      */
-    public void setTrustManager(X509TrustManager trustManager) {
+    public void setTrustManager(AbstractX509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 

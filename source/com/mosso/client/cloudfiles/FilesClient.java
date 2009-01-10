@@ -1271,6 +1271,10 @@ public class FilesClient {
         this.authenticationURL = authenticationURL;
     }
 
+    public String getCdnManagementURL() {
+        return cdnManagementURL;
+    }
+
     /**
      * @return the useETag
      */

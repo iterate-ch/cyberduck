@@ -33,12 +33,10 @@ import java.security.cert.X509Certificate;
 public class KeychainX509TrustManager extends AbstractX509TrustManager {
     protected static Logger log = Logger.getLogger(KeychainX509TrustManager.class);
 
-    private String hostname;
-
     public KeychainX509TrustManager(String hostname) {
-        this.hostname = hostname;
+        super(hostname);
     }
-    
+
     public void checkClientTrusted(final X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
 
@@ -54,7 +52,7 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
     private void checkCertificates(final X509Certificate[] certs)
             throws CertificateException {
 
-        if(Keychain.instance().isTrusted(hostname, certs)) {
+        if(Keychain.instance().isTrusted(this.getHostname(), certs)) {
             log.info("Certificate trusted in Keychain");
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am

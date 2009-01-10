@@ -23,16 +23,13 @@ import com.apple.cocoa.foundation.NSBundle;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
-import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.net.URI;
 import java.text.MessageFormat;
 
 import com.mosso.client.cloudfiles.FilesClient;
@@ -55,15 +52,20 @@ public class CFSession extends HTTPSession implements SSLSession {
         }
     }
 
-    /**
-     * A trust manager accepting any certificate by default
-     */
-    private X509TrustManager trustManager;
+    private AbstractX509TrustManager trustManager;
 
     /**
      * @return
      */
-    public X509TrustManager getTrustManager() {
+    public AbstractX509TrustManager getTrustManager() {
+        if(null == trustManager) {
+            if(Preferences.instance().getBoolean("cf.tls.acceptAnyCertificate")) {
+                this.setTrustManager(new IgnoreX509TrustManager());
+            }
+            else {
+                this.setTrustManager(new KeychainX509TrustManager(host.getHostname()));
+            }
+        }
         return trustManager;
     }
 
@@ -72,7 +74,7 @@ public class CFSession extends HTTPSession implements SSLSession {
      *
      * @param trustManager
      */
-    public void setTrustManager(X509TrustManager trustManager) {
+    public void setTrustManager(AbstractX509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 
@@ -80,12 +82,6 @@ public class CFSession extends HTTPSession implements SSLSession {
 
     protected CFSession(Host h) {
         super(h);
-        if(Preferences.instance().getBoolean("s3.tls.acceptAnyCertificate")) {
-            this.setTrustManager(new IgnoreX509TrustManager());
-        }
-        else {
-            this.setTrustManager(new KeychainX509TrustManager(h.getHostname()));
-        }
     }
 
     public void check() throws IOException {
@@ -100,11 +96,11 @@ public class CFSession extends HTTPSession implements SSLSession {
         if(this.isConnected()) {
             return;
         }
+        this.CF = new FilesClient();
         this.fireConnectionWillOpenEvent();
         this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
                 host.getProtocol().getName(), host.getHostname()));
 
-        this.CF = new FilesClient();
         this.CF.setConnectionTimeOut(this.timeout());
         final HostConfiguration hostConfiguration = new StickyHostConfiguration();
         hostConfiguration.setHost(host.getHostname(), host.getPort(),
@@ -126,12 +122,14 @@ public class CFSession extends HTTPSession implements SSLSession {
     protected void login(Credentials credentials) throws IOException {
         this.CF.setUserName(credentials.getUsername());
         this.CF.setPassword(credentials.getPassword());
+        this.getTrustManager().setHostname(URI.create(CF.getAuthenticationURL()).getHost());
         if(!this.CF.login()) {
             this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
             this.login.fail(host,
                     NSBundle.localizedString("Login with username and password", "Credentials", ""));
             this.login();
         }
+        this.getTrustManager().setHostname(URI.create(CF.getStorageURL()).getHost());
     }
 
     public void close() {

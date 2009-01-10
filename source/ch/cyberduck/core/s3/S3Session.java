@@ -23,10 +23,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
-import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.auth.AuthScheme;
@@ -39,7 +36,6 @@ import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.cloudfront.Distribution;
 import org.jets3t.service.security.AWSCredentials;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
@@ -62,15 +58,20 @@ public class S3Session extends HTTPSession implements SSLSession {
 
     protected S3Service S3;
 
-    /**
-     * A trust manager accepting any certificate by default
-     */
-    private X509TrustManager trustManager;
+    private AbstractX509TrustManager trustManager;
 
     /**
      * @return
      */
-    public X509TrustManager getTrustManager() {
+    public AbstractX509TrustManager getTrustManager() {
+        if(null == trustManager) {
+            if(Preferences.instance().getBoolean("s3.tls.acceptAnyCertificate")) {
+                this.setTrustManager(new IgnoreX509TrustManager());
+            }
+            else {
+                this.setTrustManager(new KeychainX509TrustManager(host.getHostname()));
+            }
+        }
         return trustManager;
     }
 
@@ -79,18 +80,12 @@ public class S3Session extends HTTPSession implements SSLSession {
      *
      * @param trustManager
      */
-    public void setTrustManager(X509TrustManager trustManager) {
+    public void setTrustManager(AbstractX509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 
     protected S3Session(Host h) {
         super(h);
-        if(Preferences.instance().getBoolean("s3.tls.acceptAnyCertificate")) {
-            this.setTrustManager(new IgnoreX509TrustManager());
-        }
-        else {
-            this.setTrustManager(new KeychainX509TrustManager(h.getHostname()));
-        }
     }
 
     private Jets3tProperties configuration;

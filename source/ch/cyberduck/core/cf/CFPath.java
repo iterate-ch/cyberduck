@@ -25,6 +25,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
@@ -32,6 +33,7 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -104,8 +106,10 @@ public class CFPath extends CloudPath {
      */
     public void writeDistribution(boolean enabled, String[] cnames) {
         final String container = this.getContainerName();
+        final AbstractX509TrustManager trust = session.getTrustManager();
         try {
             session.check();
+            trust.setHostname(URI.create(session.CF.getCdnManagementURL()).getHost());
             if(enabled) {
                 session.message(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
                         NSBundle.localizedString("Mosso Cloud Files", "Mosso", "")));
@@ -133,13 +137,18 @@ public class CFPath extends CloudPath {
         catch(IOException e) {
             this.error("Cannot change permissions", e);
         }
+        finally {
+            trust.setHostname(URI.create(session.CF.getStorageURL()).getHost());
+        }
     }
 
     public Distribution readDistribution() {
         final String container = this.getContainerName();
         if(null != container) {
+            final AbstractX509TrustManager trust = session.getTrustManager();
             try {
                 session.check();
+                trust.setHostname(URI.create(session.CF.getCdnManagementURL()).getHost());
                 final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
                 if(null == info) {
                     // Not found.
@@ -150,6 +159,9 @@ public class CFPath extends CloudPath {
             }
             catch(IOException e) {
                 this.error(e.getMessage(), e);
+            }
+            finally {
+                trust.setHostname(URI.create(session.CF.getStorageURL()).getHost());
             }
         }
         return new Distribution(false, null, null);

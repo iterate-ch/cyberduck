@@ -20,19 +20,15 @@ package ch.cyberduck.core.davs;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HttpClient;
 
 import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVSSession extends DAVSession implements SSLSession {
 
@@ -48,12 +44,6 @@ public class DAVSSession extends DAVSession implements SSLSession {
 
     protected DAVSSession(Host h) {
         super(h);
-        if(Preferences.instance().getBoolean("webdav.tls.acceptAnyCertificate")) {
-            this.setTrustManager(new IgnoreX509TrustManager());
-        }
-        else {
-            this.setTrustManager(new KeychainX509TrustManager(h.getHostname()));
-        }
     }
 
     protected void configure() throws IOException {
@@ -76,15 +66,20 @@ public class DAVSSession extends DAVSession implements SSLSession {
         }
     }
 
-    /**
-     * A trust manager accepting any certificate by default
-     */
-    private X509TrustManager trustManager;
+    private AbstractX509TrustManager trustManager;
 
     /**
      * @return
      */
-    public X509TrustManager getTrustManager() {
+    public AbstractX509TrustManager getTrustManager() {
+        if(null == trustManager) {
+            if(Preferences.instance().getBoolean("webdav.tls.acceptAnyCertificate")) {
+                this.setTrustManager(new IgnoreX509TrustManager());
+            }
+            else {
+                this.setTrustManager(new KeychainX509TrustManager(host.getHostname()));
+            }
+        }
         return trustManager;
     }
 
@@ -93,7 +88,7 @@ public class DAVSSession extends DAVSession implements SSLSession {
      *
      * @param trustManager
      */
-    public void setTrustManager(X509TrustManager trustManager) {
+    public void setTrustManager(AbstractX509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 }
