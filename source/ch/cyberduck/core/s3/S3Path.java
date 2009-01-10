@@ -157,7 +157,9 @@ public class S3Path extends CloudPath {
     private S3Object getDetails() throws S3Exception {
         if(null == this._details || !_details.isMetadataComplete()) {
             try {
-                this._details = session.S3.getObjectDetails(this.getBucket(), this.getKey());
+                final S3Bucket bucket = this.getBucket();
+                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                this._details = session.S3.getObjectDetails(bucket, this.getKey());
             }
             catch(S3ServiceException e) {
                 throw new S3Exception(e);
@@ -179,6 +181,7 @@ public class S3Path extends CloudPath {
             }
             final String bucketname = this.getContainerName();
             try {
+                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucketname));
                 if(!session.S3.isBucketAccessible(bucketname)) {
                     throw new S3Exception("Bucket not available: " + bucketname);
                 }
@@ -238,11 +241,13 @@ public class S3Path extends CloudPath {
                     this.getName()));
             try {
                 AccessControlList acl = null;
+                final S3Bucket bucket = this.getBucket();
+                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
                 if(this.isContainer()) {
-                    acl = session.S3.getBucketAcl(this.getBucket());
+                    acl = session.S3.getBucketAcl(bucket);
                 }
                 else if(attributes.isFile()) {
-                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+                    acl = session.S3.getObjectAcl(bucket, this.getKey());
                 }
                 if(null == acl) {
                     attributes.setPermission(Permission.EMPTY);
@@ -360,9 +365,11 @@ public class S3Path extends CloudPath {
                         this.getName()));
 
                 DownloadPackage download;
+                final S3Bucket bucket = this.getBucket();
+                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
                 try {
                     download = ObjectUtils.createPackageForDownload(
-                            new S3Object(this.getBucket(), this.getKey()),
+                            new S3Object(bucket, this.getKey()),
                             new File(this.getLocal().getAbsolute()), true, false, null);
                     download.setAppendToFile(true);
                     out = download.getOutputStream();
@@ -374,7 +381,7 @@ public class S3Path extends CloudPath {
                     throw new S3ServiceException(e.getMessage(), e);
                 }
 
-                in = session.S3.getObject(this.getBucket(), this.getKey(), null, null, null, null,
+                in = session.S3.getObject(bucket, this.getKey(), null, null, null, null,
                         this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
@@ -444,7 +451,9 @@ public class S3Path extends CloudPath {
                 getStatus().setCurrent(0);
 
                 // Transfer
-                multi.putObjects(this.getBucket(), new S3Object[]{object});
+                final S3Bucket bucket = this.getBucket();
+                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                multi.putObjects(bucket, new S3Object[]{object});
             }
             if(attributes.isDirectory()) {
                 if(this.isContainer()) {
@@ -499,6 +508,7 @@ public class S3Path extends CloudPath {
                 }
                 else {
                     final S3Bucket bucket = this.getBucket();
+                    session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
                     // Keys can be listed by prefix. By choosing a common prefix
                     // for the names of related keys and marking these keys with
                     // a special character that delimits hierarchy, you can use the list
@@ -617,11 +627,13 @@ public class S3Path extends CloudPath {
 
             try {
                 AccessControlList acl = null;
+                final S3Bucket bucket = this.getBucket();
+                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
                 if(this.isContainer()) {
-                    acl = session.S3.getBucketAcl(this.getBucket());
+                    acl = session.S3.getBucketAcl(bucket);
                 }
                 else if(attributes.isFile()) {
-                    acl = session.S3.getObjectAcl(this.getBucket(), this.getKey());
+                    acl = session.S3.getObjectAcl(bucket, this.getKey());
                 }
                 if(acl != null) {
                     final CanonicalGrantee ownerGrantee = new CanonicalGrantee(acl.getOwner().getId());
