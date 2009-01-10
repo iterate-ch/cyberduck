@@ -213,7 +213,7 @@ public class Credentials {
         if(null == this.getIdentity()) {
             return false;
         }
-        return identity.exists();
+        return this.getIdentity().exists();
     }
 
     /**
