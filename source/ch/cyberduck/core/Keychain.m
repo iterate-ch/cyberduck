@@ -209,7 +209,22 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
 	// kSecTrustResultInvalid -> logic error; fix your program (SecTrust was used incorrectly)
 	switch(trustResult) {
 		case kSecTrustResultProceed:
-			// Accepted by user keychain setting
+			// Accepted by user keychain setting explicitly
+			if(policyRef) {
+				CFRelease(policyRef);
+			}
+			if(trustRef) {
+				CFRelease(trustRef);
+			}
+			return TRUE;
+		case kSecTrustResultUnspecified:
+		    // See http://developer.apple.com/qa/qa2007/qa1360.html
+		    // Unspecified means that the user never expressed any persistent opinion about
+		    // this certificate (or any of its signers). Either this is the first time this certificate
+		    // has been encountered (in these circumstances), or the user has previously dealt with it
+		    // on a one-off basis without recording a persistent decision. In practice, this is what
+		    // most (cryptographically successful) evaluations return.
+		    // If the certificate is invalid kSecTrustResultUnspecified can never be returned.
 			if(policyRef) {
 				CFRelease(policyRef);
 			}
