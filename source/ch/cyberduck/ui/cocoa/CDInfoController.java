@@ -815,7 +815,7 @@ public class CDInfoController extends CDWindowController {
 
                 final CloudPath file = ((CloudPath) files.get(0));
                 // Concatenate URLs
-                final String key = file.encode(file.getKey());
+                final String key = file.isContainer() ? "" : file.encode(file.getKey());
                 if(numberOfFiles() > 1) {
                     distributionUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");
                     distributionCnameUrlField.setStringValue("(" + NSBundle.localizedString("Multiple files", "") + ")");

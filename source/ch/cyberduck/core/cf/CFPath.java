@@ -97,6 +97,9 @@ public class CFPath extends CloudPath {
     }
 
     public String getKey() {
+        if(this.isContainer()) {
+            return null;
+        }
         return this.getName();
     }
 
@@ -474,7 +477,9 @@ public class CFPath extends CloudPath {
         }
         StringBuffer b = new StringBuffer();
         b.append(distribution.getUrl());
-        b.append(this.encode(this.getKey()));
+        if(!this.isContainer()) {
+            b.append(this.encode(this.getKey()));
+        }
         return b.toString();
     }
 }

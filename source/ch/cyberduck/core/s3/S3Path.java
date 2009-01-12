@@ -474,7 +474,7 @@ public class S3Path extends CloudPath {
      */
     public String getKey() {
         if(this.isContainer()) {
-            return this.getContainerName();
+            return null;
         }
         if(this.getAbsolute().startsWith(Path.DELIMITER + this.getContainerName())) {
             return this.getAbsolute().substring(this.getContainerName().length() + 2);
@@ -823,13 +823,13 @@ public class S3Path extends CloudPath {
                 log.error(e.getMessage());
             }
         }
+        final String key = this.isContainer() ? "" : this.encode(this.getKey());
         if(RestS3Service.isBucketNameValidDNSName(this.getContainerName())) {
             return Protocol.S3.getScheme() + "://"
-                    + RestS3Service.generateS3HostnameForBucket(this.getContainerName()) + this.encode(this.getKey());
+                    + RestS3Service.generateS3HostnameForBucket(this.getContainerName()) + key;
         }
         else {
-            return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName()
-                    + this.encode(this.getKey());
+            return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + key;
         }
     }
 
