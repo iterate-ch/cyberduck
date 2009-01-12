@@ -174,7 +174,6 @@ public abstract class Archive {
     }
 
     /**
-     *
      * @param files
      * @return
      */
@@ -203,16 +202,20 @@ public abstract class Archive {
     /**
      * @return
      */
-    public String getCompressCommand(final List<Path> files) {
+    public String getCompressCommand(final List<Path> paths) {
         String archive;
-        if(files.size() == 1) {
-            archive = files.get(0).getAbsolute();
+        if(paths.size() == 1) {
+            archive = paths.get(0).getAbsolute();
         }
         else {
-            archive = files.get(0).getParent().getAbsolute() + Path.DELIMITER + NSBundle.localizedString("Archive", "Archive", "");
+            archive = paths.get(0).getParent().getAbsolute() + Path.DELIMITER + "Archive";
+        }
+        final List<String> files = new ArrayList<String>();
+        for(Path path : paths) {
+            files.add(this.escape(path.getAbsolute()));
         }
         return MessageFormat.format(Preferences.instance().getProperty("archive.command.create." + this.getIdentifier()),
-                archive, StringUtils.join(files, " "));
+                this.escape(archive), StringUtils.join(files, " "));
     }
 
     /**
@@ -220,9 +223,18 @@ public abstract class Archive {
      */
     public String getDecompressCommand(final Path path) {
         return MessageFormat.format(Preferences.instance().getProperty("archive.command.expand." + this.getIdentifier()),
-                path.getAbsolute(), path.getParent().getAbsolute());
+                this.escape(path.getAbsolute()), this.escape(path.getParent().getAbsolute()));
     }
 
+    /**
+     * Escape blank
+     *
+     * @param path
+     * @return
+     */
+    private String escape(String path) {
+        return StringUtils.replace(path, " ", "\\ ");
+    }
 
     /**
      * @return True if a known file extension for compressed archives
