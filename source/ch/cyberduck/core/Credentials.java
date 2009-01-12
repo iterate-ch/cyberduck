@@ -118,46 +118,6 @@ public class Credentials {
     }
 
     /**
-     * 
-     * @param protocol
-     * @param hostname
-     * @return
-     */
-    public String getInternetPasswordFromKeychain(Protocol protocol, String hostname) {
-        return this.getInternetPasswordFromKeychain(protocol, hostname, 0);
-    }
-
-    /**
-     * @return the password fetched from the keychain or null if it was not found
-     */
-    public String getInternetPasswordFromKeychain(Protocol protocol, String hostname, int port) {
-        if(log.isInfoEnabled()) {
-            log.info("Fetching password from Keychain for:" + protocol + "," + hostname + "," + this.getUsername());
-        }
-        final String p = Keychain.instance().getInternetPasswordFromKeychain(protocol.getScheme(), port,
-                hostname, this.getUsername());
-        if(null == p) {
-            log.info("Password for " + protocol + "," + hostname + "," + this.getUsername() + " not found in Keychain");
-        }
-        return p;
-    }
-
-    /**
-     * Adds the password to the system keychain
-     */
-    public void addInternetPasswordToKeychain(Protocol protocol, String hostname, int port) {
-        if(this.usesKeychain() && !this.isAnonymousLogin()) {
-            if(StringUtils.isNotEmpty(this.getUsername()) && StringUtils.isNotEmpty(this.getPassword())) {
-                if(log.isInfoEnabled()) {
-                    log.debug("addInternetPasswordToKeychain:" + protocol + "," + hostname + "," + this.getUsername());
-                }
-                Keychain.instance().addInternetPasswordToKeychain(protocol.getScheme(), port,
-                        hostname, this.getUsername(), this.getPassword());
-            }
-        }
-    }
-
-    /**
      * Default credentials from Preferences
      */
     public Credentials() {

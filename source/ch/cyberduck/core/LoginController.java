@@ -24,8 +24,12 @@ public interface LoginController {
      * @param host
      * @throws LoginCanceledException
      */
-    void check(Host host)
-            throws LoginCanceledException;
+    void check(Host host) throws LoginCanceledException;
+
+    /**
+     * @param host
+     */
+    public void success(final Host host);
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -34,8 +38,7 @@ public interface LoginController {
      * @param host
      * @param reason
      */
-    void fail(Host host, String reason)
-            throws LoginCanceledException;
+    void fail(Host host, String reason) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -44,6 +47,5 @@ public interface LoginController {
      * @param host
      * @param message Any additional information why the login failed.
      */
-    void prompt(Host host, String reason, String message)
-            throws LoginCanceledException;
+    void prompt(Host host, String reason, String message) throws LoginCanceledException;
 }

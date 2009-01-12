@@ -213,7 +213,6 @@ public class CDConnectionController extends CDSheetController {
     }
 
     /**
-     *
      * @param host
      */
     private void hostChanged(final Host host) {
@@ -516,12 +515,19 @@ public class CDConnectionController extends CDSheetController {
      */
     public void readPasswordFromKeychain() {
         if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-            if(hostField.stringValue() != null && !hostField.stringValue().equals("") &&
-                    usernameField.stringValue() != null && !usernameField.stringValue().equals("")) {
-                final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
-                Credentials l = new Credentials(usernameField.stringValue(), null);
-                this.updateField(this.passField, l.getInternetPasswordFromKeychain(protocol, hostField.stringValue()));
+            if(StringUtils.isBlank(hostField.stringValue())) {
+                return;
             }
+            if(StringUtils.isBlank(portField.stringValue())) {
+                return;
+            }
+            if(StringUtils.isBlank(usernameField.stringValue())) {
+                return;
+            }
+            final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
+            this.updateField(this.passField, Keychain.instance().getInternetPasswordFromKeychain(protocol.getScheme(),
+                    Integer.parseInt(portField.stringValue()),
+                    hostField.stringValue(), usernameField.stringValue()));
         }
     }
 

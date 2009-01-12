@@ -177,6 +177,8 @@ public abstract class Session extends NSObject {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
+
+        login.success(host);
     }
 
     /**
@@ -429,9 +431,6 @@ public abstract class Session extends NSObject {
     protected void fireConnectionDidOpenEvent() {
         log.debug("connectionDidOpen");
         this.resolver = null;
-
-        host.getCredentials().addInternetPasswordToKeychain(host.getProtocol(),
-                host.getHostname(), host.getPort());
 
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {
