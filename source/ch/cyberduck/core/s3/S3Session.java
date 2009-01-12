@@ -26,6 +26,9 @@ import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpHost;
+import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
@@ -132,7 +135,8 @@ public class S3Session extends HTTPSession implements SSLSession {
 
     protected S3Bucket[] getBuckets(boolean reload) throws S3ServiceException {
         if(reload) {
-            this.buckets = this.S3.listAllBuckets();
+            this.getTrustManager().setHostname(host.getHostname());
+            this.buckets = S3.listAllBuckets();
         }
         return this.buckets;
     }
@@ -158,8 +162,8 @@ public class S3Session extends HTTPSession implements SSLSession {
 
     protected void login(final Credentials credentials) throws IOException {
         try {
-            final HostConfiguration hostConfiguration = new StickyHostConfiguration();
-            hostConfiguration.setHost(host.getHostname(), host.getPort(),
+            final HostConfiguration hostconfig = new StickyHostConfiguration();
+            hostconfig.setHost(host.getHostname(), host.getPort(),
                     new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
                             new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
             );
@@ -176,7 +180,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                     throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
                             authscheme.getSchemeName());
                 }
-            }, configuration, hostConfiguration);
+            }, configuration, hostconfig);
 
             this.getBuckets(true);
         }
@@ -332,14 +336,27 @@ public class S3Session extends HTTPSession implements SSLSession {
     private CloudFrontService createCloudFrontService() throws CloudFrontServiceException {
         if(null == cloudfront) {
             final Credentials credentials = host.getCredentials();
+
             // Construct a CloudFrontService object to interact with the service.
+            HostConfiguration hostconfig = null;
+            try {
+                hostconfig = new StickyHostConfiguration();
+                final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT));
+                hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
+                        new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
+                                new CustomTrustSSLProtocolSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
+                );
+            }
+            catch(URIException e) {
+                log.error(e.getMessage(), e);
+            }
             cloudfront = new CloudFrontService(
                     credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                             credentials.getPassword()),
                     this.getUserAgent(), // Invoking application description
                     null, // Credentials Provider
                     new Jets3tProperties(),
-                    new HostConfiguration());
+                    hostconfig);
         }
         return cloudfront;
     }
