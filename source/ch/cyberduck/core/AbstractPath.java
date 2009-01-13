@@ -225,7 +225,7 @@ public abstract class AbstractPath extends NSObject {
     }
 
     public String getMimeType() {
-        return Mimetypes.getInstance().getMimetype(this.getName());
+        return Mimetypes.getInstance().getMimetype(this.getName().toLowerCase());
     }
 
     /**
