@@ -117,6 +117,9 @@ public abstract class Session extends NSObject {
                 log.warn("Supressed socket exception:" + e.getMessage());
                 throw new ConnectionCanceledException();
             }
+            this.interrupt();
+            this.error(null, "Connection failed", e);
+            throw e;
         }
         catch(SSLHandshakeException e) {
             // Most probably caused by user dismissing ceritifcate
