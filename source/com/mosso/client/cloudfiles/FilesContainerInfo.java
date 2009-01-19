@@ -14,13 +14,29 @@ public class FilesContainerInfo
 {
     private int objectCount;
     private long totalSize;
+    private String name;
 
     /**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
      * @param containerCount The number of objects in the container
      * @param totalSize      The total size of the container (in bytes)
      */
-    FilesContainerInfo(int containerCount, long totalSize)
+    FilesContainerInfo(String name, int containerCount, long totalSize)
     {
+    	this.name = name;
         this.objectCount = containerCount;
         this.totalSize = totalSize;
     }

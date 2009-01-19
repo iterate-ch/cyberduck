@@ -12,7 +12,7 @@ public class FilesConstants
 {
     private static Logger logger = Logger.getLogger(FilesConstants.class);
     
-    public static final String USER_AGENT = "java-cloudfiles/1.2.0";
+    public static final String USER_AGENT = "java-cloudfiles/1.3.0a";
     
     /** HTTP Header token that identifies the username to Cloud Files **/
     public static final String X_STORAGE_USER   = "x-auth-user";
@@ -48,6 +48,11 @@ public class FilesConstants
     public static final String LIST_CONTAINER_NAME_QUERY = "prefix";
     public static final String LIST_CONTAINER_LIMIT_OBJ_COUNT_QUERY = "limit";
     public static final String LIST_CONTAINER_START_OFFSET_QUERY = "offset";
+    
+    public static final int CONTAINER_NAME_LENGTH = 512;
+    public static final int OBJECT_NAME_LENGTH = 1024;
+    public static final int METADATA_NAME_LENGTH = 1024;
+    public static final int METADATA_VALUE_LENGTH = 1024;
     
     /** Prefix Cloud Files expects on all Meta data headers on Objects **/
     public static final String X_OBJECT_META = "X-Object-Meta-";
@@ -92,6 +97,6 @@ public class FilesConstants
      */
     public static String getMimetype (String fileExt)
     {
-    	return FilesConstants.MIMETYPES.getProperty(fileExt, "application/octet-stream");
+    	return FilesConstants.MIMETYPES.getProperty(fileExt.toLowerCase(), "application/octet-stream");
     }
 }

@@ -37,6 +37,7 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 import com.mosso.client.cloudfiles.*;
 
@@ -184,7 +185,7 @@ public class CFPath extends CloudPath {
         }
         if(!this.isCached()) {
             // Optimization
-            return this.list(false).contains(this);
+            return this.list().contains(this);
         }
         return super.exists();
     }
@@ -252,15 +253,11 @@ public class CFPath extends CloudPath {
         throw new UnsupportedOperationException();
     }
 
-    public AttributedList<Path> list() {
-        return this.list(true);
-    }
-
     /**
      * @param metadata Read additional metadata
      * @return
      */
-    public AttributedList<Path> list(final boolean metadata) {
+    public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
@@ -269,13 +266,10 @@ public class CFPath extends CloudPath {
 
             if(this.isRoot()) {
                 // List all containers
-                for(FilesContainer container : session.CF.listContainers()) {
+                for(FilesContainerInfo container : session.CF.listContainersInfo()) {
                     CFPath p = (CFPath) PathFactory.createPath(session, this.getAbsolute(), container.getName(),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    if(metadata) {
-                        final FilesContainerInfo info = container.getInfo();
-                        p.attributes.setSize(info.getTotalSize());
-                    }
+                    p.attributes.setSize(container.getTotalSize());
                     p.attributes.setOwner(session.CF.getUserName());
 
                     childs.add(p);
@@ -286,17 +280,10 @@ public class CFPath extends CloudPath {
                     final CFPath child = (CFPath) PathFactory.createPath(session, this.getContainerName(), object.getName(),
                             Path.FILE_TYPE);
                     child.setParent(this);
-                    if(metadata) {
-                        final FilesObjectMetaData meta = object.getMetaData();
-                        child.attributes.setSize(Long.parseLong(meta.getContentLength()));
-                        try {
-                            child.attributes.setModificationDate(
-                                    ServiceUtils.parseRfc822Date(object.getMetaData().getLastModified()).getTime()
-                            );
-                        }
-                        catch(ParseException e) {
-                            log.error(e);
-                        }
+                    child.attributes.setSize(object.getSize());
+                    final Date modified = object.getLastModified();
+                    if(null != modified) {
+                        child.attributes.setModificationDate(modified.getTime());
                     }
                     child.attributes.setOwner(this.attributes.getOwner());
 

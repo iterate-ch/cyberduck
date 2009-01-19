@@ -72,9 +72,13 @@ public class FilesContainer
      */
     public List<FilesObject> getObjects() throws HttpException, IOException
     {
+    
         if (client != null)
         {
-            return client.listObjects(this.name);            
+            if(objects == null) {
+            	objects = client.listObjects(this.name);            
+            }
+            return objects;
         }
         else
         {

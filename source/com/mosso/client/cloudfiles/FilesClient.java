@@ -13,15 +13,21 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.util.DateParser;
+import org.w3c.util.InvalidDateException;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A client for Cloud Files.  Here follows a basic example of logging in, creating a container and an
@@ -215,6 +221,90 @@ public class FilesClient {
     }
 
     /**
+     * List the containers available in an account, compete with information about size and number of files
+     *
+     * @return null if the user is not logged in or the Account is not found.  A List of FSContainers with all of the containers in the account.
+     *         if there are no containers in the account, the list will be zero length.
+     */
+    public List<FilesContainerInfo> listContainersInfo() throws IOException, HttpException, FilesAuthorizationException {
+        if(!this.isLoggedin()) {
+            throw new IOException("You need to first login to the account before you perform this operation.");
+        }
+        GetMethod method = new GetMethod(storageURL);
+        try {
+            method.getParams().setSoTimeout(connectionTimeOut);
+            method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
+
+            NameValuePair[] queryParams = {new NameValuePair("format", "xml")};
+            method.setQueryString(queryParams);
+            client.executeMethod(method);
+
+            FilesResponse response = new FilesResponse(method);
+
+            if(response.getStatusCode() == HttpStatus.SC_OK) {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(response.getResponseBodyAsStream());
+
+                NodeList nodes = document.getChildNodes();
+                Node accountNode = nodes.item(0);
+                if(!"account".equals(accountNode.getNodeName())) {
+                    logger.error("Got unexpected type of XML");
+                    return null;
+                }
+                ArrayList<FilesContainerInfo> containerList = new ArrayList<FilesContainerInfo>();
+                NodeList containerNodes = accountNode.getChildNodes();
+                for(int i = 0; i < containerNodes.getLength(); ++i) {
+                    Node containerNode = containerNodes.item(i);
+                    if(!"container".equals(containerNode.getNodeName())) {
+                        continue;
+                    }
+                    String name = null;
+                    int count = -1;
+                    long size = -1;
+                    NodeList objectData = containerNode.getChildNodes();
+                    for(int j = 0; j < objectData.getLength(); ++j) {
+                        Node data = objectData.item(j);
+                        if("name".equals(data.getNodeName())) {
+                            name = data.getTextContent();
+                        }
+                        else if("bytes".equals(data.getNodeName())) {
+                            size = Long.parseLong(data.getTextContent());
+                        }
+                        else if("count".equals(data.getNodeName())) {
+                            count = Integer.parseInt(data.getTextContent());
+                        }
+                        else if("size".equals(data.getNodeName())) {
+                            size = Long.parseLong(data.getTextContent());
+                        }
+                        else {
+                            logger.warn("Expected tag:" + data.getNodeName());
+                        }
+                    }
+                    if(name != null) {
+                        FilesContainerInfo obj = new FilesContainerInfo(name, count, size);
+                        containerList.add(obj);
+                    }
+                }
+                return containerList;
+            }
+            if(response.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                return new ArrayList<FilesContainerInfo>();
+            }
+            throw new HttpException(response.getStatusMessage());
+        }
+        catch(ParserConfigurationException e) {
+            throw new HttpException(e.getMessage(), e);
+        }
+        catch(SAXException e) {
+            throw new HttpException(e.getMessage(), e);
+        }
+        finally {
+            method.releaseConnection();
+        }
+    }
+
+    /**
      * List the containers available in an account.
      *
      * @return null if the user is not logged in or the Account is not found.  A List of FSContainers with all of the containers in the account.
@@ -281,83 +371,106 @@ public class FilesClient {
             method.getParams().setSoTimeout(connectionTimeOut);
             method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
 
-            NameValuePair[] queryParams = {new NameValuePair(FilesConstants.LIST_CONTAINER_NAME_QUERY, startsWith)};
+            NameValuePair[] queryParams = {new NameValuePair("format", "xml")};
+            if(startsWith != null) {
+                queryParams = new NameValuePair[]{new NameValuePair("format", "xml"),
+                        new NameValuePair(FilesConstants.LIST_CONTAINER_NAME_QUERY, startsWith)};
+            }
             method.setQueryString(queryParams);
             client.executeMethod(method);
 
             FilesResponse response = new FilesResponse(method);
 
             if(response.getStatusCode() == HttpStatus.SC_OK) {
-                StrTokenizer tokenize = new StrTokenizer(inputStreamToString(response.getResponseBodyAsStream(), method.getResponseCharSet()));
-                tokenize.setDelimiterString("\n");
-                String[] containers = tokenize.getTokenArray();
-                logger.debug("Total Containers in Account are: " + containers.length);
-                ArrayList<FilesObject> containerList = new ArrayList<FilesObject>();
-                for(String containerName : containers) {
-                    FilesObject tmpObj = new FilesObject(containerName, container, this);
-                    containerList.add(tmpObj);
-                }
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document document = builder.parse(response.getResponseBodyAsStream());
 
-                return containerList;
+                NodeList nodes = document.getChildNodes();
+                Node containerList = nodes.item(0);
+                ArrayList<FilesObject> objectList = new ArrayList<FilesObject>();
+                NodeList objectNodes = containerList.getChildNodes();
+                for(int i = 0; i < objectNodes.getLength(); ++i) {
+                    Node objectNode = objectNodes.item(i);
+                    if(!"object".equals(objectNode.getNodeName())) {
+                        continue;
+                    }
+                    String name = null;
+                    String eTag = null;
+                    long size = -1;
+                    Date last_modified = null;
+                    String mimeType = null;
+                    NodeList objectData = objectNode.getChildNodes();
+                    for(int j = 0; j < objectData.getLength(); ++j) {
+                        Node data = objectData.item(j);
+                        if("name".equals(data.getNodeName())) {
+                            name = data.getTextContent();
+                        }
+                        else if("type".equals(data.getNodeName())) {
+                            mimeType = data.getTextContent();
+                        }
+                        else if("content_type".equals(data.getNodeName())) {
+                            mimeType = data.getTextContent();
+                        }
+                        else if("hash".equals(data.getNodeName())) {
+                            eTag = data.getTextContent();
+                        }
+                        else if("bytes".equals(data.getNodeName())) {
+                            size = Long.parseLong(data.getTextContent());
+                        }
+                        else if("last_modified".equals(data.getNodeName())) {
+                            try {
+                                last_modified = DateParser.parse(data.getTextContent());
+                            }
+                            catch(InvalidDateException e) {
+                                logger.warn("Not ISO 8601 format:" + e.getMessage());
+                            }
+                        }
+                        else if("size".equals(data.getNodeName())) {
+                            size = Long.parseLong(data.getTextContent());
+                        }
+                        else {
+                            logger.warn("Expected tag:" + data.getNodeName());
+                        }
+                    }
+                    if(name != null) {
+                        FilesObject obj = new FilesObject(name, container, this);
+                        if(eTag != null) {
+                            obj.setMd5sum(eTag);
+                        }
+                        if(mimeType != null) {
+                            obj.setMimeType(mimeType);
+                        }
+                        if(last_modified != null) {
+                            obj.setLastModified(last_modified);
+                        }
+                        if(size > 0) {
+                            obj.setSize(size);
+                        }
+                        objectList.add(obj);
+                    }
+                }
+                return objectList;
             }
-            else if(response.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-                logger.debug("Account has no Containers");
+            if(response.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                logger.info("Container " + container + " has no Objects");
                 return new ArrayList<FilesObject>();
             }
-            else if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info("Either the Container could not be found or the account information is incorrect !");
-            }
             throw new HttpException(response.getStatusMessage());
+        }
+        catch(ParserConfigurationException e) {
+            throw new HttpException(e.getMessage(), e);
+        }
+        catch(SAXException e) {
+            throw new HttpException(e.getMessage(), e);
         }
         finally {
             method.releaseConnection();
         }
     }
 
-    /**
-     * Lists the contents of a container
-     *
-     * @param container The name of the container
-     * @return A list of all of the objects in that container
-     * @throws IOException   There was an IO error doing network communication
-     * @throws HttpException There was an error with the http protocol
-     */
     public List<FilesObject> listObjects(String container) throws IOException, HttpException {
-        if(!this.isLoggedin()) {
-            throw new IOException("You need to first login to the account before you perform this operation.");
-        }
-        GetMethod method = new GetMethod(storageURL + "/" + sanitizeForURI(container));
-        try {
-            method.getParams().setSoTimeout(connectionTimeOut);
-            method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
-            client.executeMethod(method);
-
-            FilesResponse response = new FilesResponse(method);
-
-            if(response.getStatusCode() == HttpStatus.SC_OK) {
-                StrTokenizer tokenize = new StrTokenizer(inputStreamToString(response.getResponseBodyAsStream(), method.getResponseCharSet()));
-                tokenize.setDelimiterString("\n");
-                String[] objects = tokenize.getTokenArray();
-                logger.debug("Total Objects in Container: " + container + " are: " + objects.length);
-                ArrayList<FilesObject> objectList = new ArrayList<FilesObject>();
-                for(String objectName : objects) {
-                    FilesObject tmpObj = new FilesObject(objectName, container, this);
-                    objectList.add(tmpObj);
-                }
-                return objectList;
-            }
-            else if(response.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-                logger.info("Container " + container + " has no Objects");
-                return new ArrayList<FilesObject>();
-            }
-            else if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.info("Either the Container could not be found or the account information is incorrect !");
-            }
-            throw new HttpException(response.getStatusMessage());
-        }
-        finally {
-            method.releaseConnection();
-        }
+        return listObjectsStaringWith(container, null);
     }
 
     /**
@@ -427,7 +540,7 @@ public class FilesClient {
 
                 int objCount = response.getContainerObjectCount();
                 long objSize = response.getContainerBytesUsed();
-                return new FilesContainerInfo(objCount, objSize);
+                return new FilesContainerInfo(container, objCount, objSize);
             }
             else if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                 logger.info("Either the Container could not be found or the account information is incorrect !");
@@ -815,9 +928,9 @@ public class FilesClient {
             throw new IOException("You need to first login to the account before you perform this operation.");
         }
         String objName = name;
-        if(objName.length() > 128) {
-            logger.warn("Object Name supplied was truncated to Max allowed of 128 characters !");
-            objName = objName.substring(0, 127);
+        if(objName.length() > FilesConstants.OBJECT_NAME_LENGTH) {
+            logger.warn("Object Name supplied was truncated to Max allowed of " + FilesConstants.OBJECT_NAME_LENGTH + " characters !");
+            objName = objName.substring(0, FilesConstants.OBJECT_NAME_LENGTH);
             logger.warn("Truncated Object Name is: " + objName);
         }
 
@@ -870,9 +983,9 @@ public class FilesClient {
         if(!this.isLoggedin()) {
             throw new IOException("You need to first login to the account before you perform this operation.");
         }
-        if(objName.length() > 128) {
-            logger.warn("Object Name supplied was truncated to Max allowed of 128 characters !");
-            objName = objName.substring(0, 127);
+        if(objName.length() > FilesConstants.OBJECT_NAME_LENGTH) {
+            logger.warn("Object Name supplied was truncated to Max allowed of " + FilesConstants.OBJECT_NAME_LENGTH + " characters !");
+            objName = objName.substring(0, FilesConstants.OBJECT_NAME_LENGTH);
             logger.warn("Truncated Object Name is: " + objName);
         }
 
@@ -913,9 +1026,9 @@ public class FilesClient {
             throw new IOException("You need to first login to the account before you perform this operation.");
         }
         FilesObjectMetaData metaData;
-        if(objName.length() > 128) {
-            logger.warn("Object Name supplied was truncated to Max allowed of 128 characters !");
-            objName = objName.substring(0, 127);
+        if(objName.length() > FilesConstants.OBJECT_NAME_LENGTH) {
+            logger.warn("Object Name supplied was truncated to Max allowed of " + FilesConstants.OBJECT_NAME_LENGTH + " characters !");
+            objName = objName.substring(0, FilesConstants.OBJECT_NAME_LENGTH);
             logger.warn("Truncated Object Name is: " + objName);
         }
 
@@ -975,9 +1088,9 @@ public class FilesClient {
         if(!this.isLoggedin()) {
             throw new IOException("You need to first login to the account before you perform this operation.");
         }
-        if(objName.length() > 128) {
-            logger.warn("Object Name supplied was truncated to Max allowed of 128 characters !");
-            objName = objName.substring(0, 127);
+        if(objName.length() > FilesConstants.OBJECT_NAME_LENGTH) {
+            logger.warn("Object Name supplied was truncated to Max allowed of " + FilesConstants.OBJECT_NAME_LENGTH + " characters !");
+            objName = objName.substring(0, FilesConstants.OBJECT_NAME_LENGTH);
             logger.warn("Truncated Object Name is: " + objName);
         }
 
@@ -1017,9 +1130,9 @@ public class FilesClient {
         if(!this.isLoggedin()) {
             throw new IOException("You need to first login to the account before you perform this operation.");
         }
-        if(objName.length() > 128) {
-            logger.warn("Object Name supplied was truncated to Max allowed of 128 characters !");
-            objName = objName.substring(0, 127);
+        if(objName.length() > FilesConstants.OBJECT_NAME_LENGTH) {
+            logger.warn("Object Name supplied was truncated to Max allowed of " + FilesConstants.OBJECT_NAME_LENGTH + " characters !");
+            objName = objName.substring(0, FilesConstants.OBJECT_NAME_LENGTH);
             logger.warn("Truncated Object Name is: " + objName);
         }
 
