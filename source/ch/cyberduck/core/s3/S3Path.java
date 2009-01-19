@@ -234,6 +234,16 @@ public class S3Path extends CloudPath {
         }
     }
 
+    private static final Permission DEFAULT_FOLDER_PERMISSION;
+
+    static {
+        boolean[][] access = new boolean[3][3];
+        access[Permission.OWNER][Permission.READ] = true;
+        access[Permission.OWNER][Permission.WRITE] = true;
+        access[Permission.OWNER][Permission.EXECUTE] = true;
+        DEFAULT_FOLDER_PERMISSION = new Permission(access);
+    }
+
     public void readPermission() {
         try {
             session.check();
@@ -250,7 +260,12 @@ public class S3Path extends CloudPath {
                     acl = session.S3.getObjectAcl(bucket, this.getKey());
                 }
                 if(null == acl) {
-                    attributes.setPermission(Permission.EMPTY);
+                    if(attributes.isDirectory()) {
+                        attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
+                    }
+                    else {
+                        attributes.setPermission(Permission.EMPTY);
+                    }
                 }
                 else {
                     attributes.setPermission(this.readPermissions(acl.getGrants()));
@@ -566,12 +581,7 @@ public class S3Path extends CloudPath {
                             if(null != bucket.getOwner()) {
                                 p.attributes.setOwner(bucket.getOwner().getDisplayName());
                             }
-                            boolean[][] access = new boolean[3][3];
-                            access[Permission.OWNER][Permission.READ] = true;
-                            access[Permission.OWNER][Permission.EXECUTE] = true;
-                            access[Permission.OTHER][Permission.READ] = true;
-                            access[Permission.OTHER][Permission.EXECUTE] = true;
-                            p.attributes.setPermission(new Permission(access));
+                            p.attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
                             childs.add(p);
                         }
 
@@ -874,6 +884,7 @@ public class S3Path extends CloudPath {
             }
             for(org.jets3t.service.model.cloudfront.Distribution distribution : session.listDistributions(container)) {
                 session.updateDistribution(enabled, distribution, cnames);
+                // We currently only support one distribution per bucket
                 return;
             }
             // Create new configuration
