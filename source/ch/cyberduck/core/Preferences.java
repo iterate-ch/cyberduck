@@ -463,6 +463,8 @@ public abstract class Preferences {
         defaults.put("connection.hostname.check", String.valueOf(true)); //Check hostname reachability using NSNetworkDiagnostics
         defaults.put("connection.hostname.idn", String.valueOf(true)); //Convert hostnames to Punycode
 
+        defaults.put("transcript.length", String.valueOf(1000));
+
         /**
          * Read favicon from Web URL
          */

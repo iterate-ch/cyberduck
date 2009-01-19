@@ -69,22 +69,23 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     /**
-     * Contains the transcript of the session
-     * while this action was running
+     * Contains the transcript of the session while this action was running
      */
     private StringBuffer transcript;
+
+    /**
+     * Maximum transcript buffer
+     */
+    private static final int TRANSCRIPT_MAX_LENGTH =
+            Preferences.instance().getInteger("transcript.length");
 
     /**
      * @param request
      * @param message @see ch.cyberduck.core.TranscriptListener
      */
     public void log(boolean request, String message) {
-        if(message.length() > transcript.capacity()) {
-            final int newline = transcript.indexOf("\n");
-            if(newline > 0) {
-                // Delete up to end - The ending index, exclusive.
-                transcript.delete(0, newline + 1);
-            }
+        if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
+            transcript = new StringBuffer();
         }
         transcript.append(message).append("\n");
     }
@@ -97,7 +98,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public RepeatableBackgroundAction(CDWindowController controller) {
         this.controller = controller;
         this.exceptions = new Collection<BackgroundException>();
-        this.transcript = new StringBuffer(100);
     }
 
     public Object lock() {
@@ -111,9 +111,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             session.addTranscriptListener(this);
         }
         // Clear the transcript and exceptions
-        if(transcript.length() > 0) {
-            transcript.delete(0, transcript.length() - 1);
-        }
+        transcript = new StringBuffer();
         return super.prepare();
     }
 
