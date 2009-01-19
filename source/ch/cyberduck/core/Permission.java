@@ -38,15 +38,13 @@ public class Permission {
     public static final Permission EMPTY
             = new Permission(EMPTY_MASK);
 
-    private String mask;
-
     public Permission(NSDictionary dict) {
         this((String)dict.objectForKey("Mask"));
     }
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
-        dict.setObjectForKey(this.mask, "Mask");
+        dict.setObjectForKey(this.getMask(), "Mask");
         return dict;
     }
 
@@ -98,7 +96,6 @@ public class Permission {
             log.error("Invalid mask:"+mask);
             throw new NumberFormatException("Must be a nine digit string");
         }
-        this.mask = mask;
         this.owner = this.getOwnerPermissions(mask);
         this.group = this.getGroupPermissions(mask);
         this.other = this.getOtherPermissions(mask);
@@ -122,7 +119,6 @@ public class Permission {
         this.other[WRITE] = p[OTHER][WRITE];
         this.other[EXECUTE] = p[OTHER][EXECUTE];
 //		log.debug("Permission:"+this.toString());
-        this.mask = this.getRwxString();
     }
 
     /**
@@ -223,22 +219,14 @@ public class Permission {
                 this.other = new boolean[]{true, true, true};
                 break;
         }
-        this.mask = this.getRwxString();
 //		log.debug("Permission:"+this.toString());
-    }
-
-    /**
-     * @param mask unix access permitions, i.e. rwxr-xr-x
-     */
-    public void setMask(String mask) {
-        this.mask = mask;
     }
 
     /**
      * @return The unix access permissions
      */
     public String getMask() {
-        return this.mask;
+        return this.getRwxString();
     }
 
     /**
