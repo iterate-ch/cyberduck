@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.S3ObjectsChunk;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
@@ -855,8 +856,12 @@ public class S3Path extends CloudPath {
                         "http://" + d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs());
             }
         }
-        catch(S3Exception e) {
-            this.error(e.getMessage(), e);
+        catch(CloudFrontServiceException e) {
+            if(e.getResponseCode() == 403) {
+                log.warn("Invalid CloudFront account:" + e.getMessage());
+                return new Distribution(false, null, null);
+            }
+            this.error(e.getErrorMessage(), e);
         }
         catch(IOException e) {
             this.error(e.getMessage(), e);
@@ -889,6 +894,9 @@ public class S3Path extends CloudPath {
             }
             // Create new configuration
             session.createDistribution(enabled, container, cnames);
+        }
+        catch(CloudFrontServiceException e) {
+            this.error(e.getErrorMessage(), e);
         }
         catch(IOException e) {
             this.error(e.getMessage(), e);

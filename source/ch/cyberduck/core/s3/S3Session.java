@@ -258,20 +258,15 @@ public class S3Session extends HTTPSession implements SSLSession {
      * @param path
      * @return
      */
-    public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames) throws IOException {
-        try {
-            final long reference = System.currentTimeMillis();
-            return this.createCloudFrontService().createDistribution(
-                    bucket,
-                    String.valueOf(reference), // Caller reference - a unique string value
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled  // Enabled?
-            );
-        }
-        catch(CloudFrontServiceException e) {
-            throw new S3Exception(e.getMessage(), e);
-        }
+    public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames) throws CloudFrontServiceException {
+        final long reference = System.currentTimeMillis();
+        return this.createCloudFrontService().createDistribution(
+                bucket,
+                String.valueOf(reference), // Caller reference - a unique string value
+                cnames, // CNAME aliases for distribution
+                new Date(reference).toString(), // Comment
+                enabled  // Enabled?
+        );
     }
 
     /**
@@ -280,19 +275,14 @@ public class S3Session extends HTTPSession implements SSLSession {
      * @param distribution
      * @param cnames       DNS CNAME aliases for distribution
      */
-    public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames) throws IOException {
-        try {
-            final long reference = System.currentTimeMillis();
-            this.createCloudFrontService().updateDistributionConfig(
-                    distribution.getId(),
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled // Enabled?
-            );
-        }
-        catch(CloudFrontServiceException e) {
-            throw new S3Exception(e.getMessage(), e);
-        }
+    public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames) throws CloudFrontServiceException {
+        final long reference = System.currentTimeMillis();
+        this.createCloudFrontService().updateDistributionConfig(
+                distribution.getId(),
+                cnames, // CNAME aliases for distribution
+                new Date(reference).toString(), // Comment
+                enabled // Enabled?
+        );
     }
 
     /**
@@ -300,26 +290,15 @@ public class S3Session extends HTTPSession implements SSLSession {
      *
      * @return All distributions for the given AWS Credentials
      */
-    public Distribution[] listDistributions(String bucket) throws IOException {
-        try {
-            return this.createCloudFrontService().listDistributions(bucket);
-        }
-        catch(CloudFrontServiceException e) {
-            throw new S3Exception(e.getMessage(), e);
-        }
+    public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
+        return this.createCloudFrontService().listDistributions(bucket);
     }
 
     /**
-     * 
      * @param distribution A distribution (the distribution must be disabled and deployed first)
      */
-    public void deleteDistribution(final Distribution distribution) throws IOException {
-        try {
-            this.createCloudFrontService().deleteDistribution(distribution.getId());
-        }
-        catch(CloudFrontServiceException e) {
-            throw new S3Exception(e.getMessage(), e);
-        }
+    public void deleteDistribution(final Distribution distribution) throws CloudFrontServiceException {
+        this.createCloudFrontService().deleteDistribution(distribution.getId());
     }
 
     /**
