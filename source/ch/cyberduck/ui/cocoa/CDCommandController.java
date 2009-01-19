@@ -91,7 +91,7 @@ public class CDCommandController extends CDSheetController implements Transcript
     public void sendButtonClicked(final NSButton sender) {
         final String command = this.inputField.stringValue();
         if(StringUtils.isNotBlank(command)) {
-            progress.startAnimation(sender);
+            progress.startAnimation(null);
             sender.setEnabled(false);
             parent.background(new BrowserBackgroundAction((CDBrowserController) parent) {
                 boolean close;
@@ -109,7 +109,7 @@ public class CDCommandController extends CDSheetController implements Transcript
                 }
 
                 public void cleanup() {
-                    progress.stopAnimation(sender);
+                    progress.stopAnimation(null);
                     sender.setEnabled(true);
                     if(close) {
                         closeSheet(sender);
