@@ -39,7 +39,9 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.mosso.client.cloudfiles.*;
+import com.mosso.client.cloudfiles.FilesCDNContainer;
+import com.mosso.client.cloudfiles.FilesContainerInfo;
+import com.mosso.client.cloudfiles.FilesObject;
 
 /**
  * Mosso Cloud Files Implementation
@@ -348,45 +350,53 @@ public class CFPath extends CloudPath {
                 session.check();
             }
             if(attributes.isFile()) {
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
-                        this.getName()));
-
                 // No Content-Range support
                 this.getStatus().setCurrent(0);
-
                 final InputStream in = new Local.InputStream(this.getLocal());
+                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Compute MD5 hash of {0}", "Status", ""),
+                        this.getName()));
+                String md5 = null;
                 try {
-                    final int result = session.CF.storeObjectAs(this.getContainerName(), this.getName(), new InputStream() {
-                        long bytesTransferred = getStatus().getCurrent();
-
-                        public int read() throws IOException {
-                            return read(new byte[1]);
-                        }
-
-                        int read;
-
-                        public int read(byte buffer[], int offset, int length)
-                                throws IOException {
-                            if(getStatus().isCanceled()) {
-                                return -1;
-                            }
-                            if(read > 0) {
-                                listener.bytesSent(read);
-                                bytesTransferred += read;
-                                getStatus().setCurrent(bytesTransferred);
-                            }
-                            read = in.read(buffer, offset, length);
-                            if(-1 == read) {
-                                // End of file
-                                getStatus().setComplete(true);
-                            }
-                            return read;
-                        }
-                    }, this.getLocal().attributes.getSize(), this.getLocal().getMimeType(), FilesClient.md5sum(new Local.InputStream(this.getLocal())));
+                    md5 = ServiceUtils.toHex(ServiceUtils.computeMD5Hash(new Local.InputStream(this.getLocal())));
+                    this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                            this.getName()));
                 }
                 catch(NoSuchAlgorithmException e) {
-                    throw new IOException(e.getMessage());
+                    log.error(e.getMessage(), e);
                 }
+                final int result = session.CF.storeObjectAs(this.getContainerName(),
+                        this.getName(),
+                        new InputStream() {
+                            long bytesTransferred = getStatus().getCurrent();
+
+                            public int read() throws IOException {
+                                return read(new byte[1]);
+                            }
+
+                            int read;
+
+                            public int read(byte buffer[], int offset, int length)
+                                    throws IOException {
+                                if(getStatus().isCanceled()) {
+                                    return -1;
+                                }
+                                if(read > 0) {
+                                    listener.bytesSent(read);
+                                    bytesTransferred += read;
+                                    getStatus().setCurrent(bytesTransferred);
+                                }
+                                read = in.read(buffer, offset, length);
+                                if(-1 == read) {
+                                    // End of file
+                                    getStatus().setComplete(true);
+                                }
+                                return read;
+                            }
+                        },
+                        this.getLocal().attributes.getSize(),
+                        this.getLocal().getMimeType(),
+                        md5
+                );
             }
             if(attributes.isDirectory()) {
                 if(this.isContainer()) {

@@ -27,10 +27,10 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.S3ObjectsChunk;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
-import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
@@ -436,28 +436,28 @@ public class S3Path extends CloudPath {
                 session.check();
             }
             if(attributes.isFile()) {
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
-                        this.getName()));
-
                 final S3ServiceMulti multi = new S3ServiceMulti(session.S3,
                         new S3ServiceTransferEventAdaptor(listener)
                 );
+                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Compute MD5 hash of {0}", "Status", ""),
+                        this.getName()));
+
                 final S3Object object;
                 try {
                     object = ObjectUtils.createObjectForUpload(this.getKey(),
                             new File(this.getLocal().getAbsolute()),
                             null, //no encryption
                             false); //no gzip
+                    AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
                     if(null != p) {
-                        AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
                         if(p.getOtherPermissions()[Permission.READ]) {
                             acl = AccessControlList.REST_CANNED_PUBLIC_READ;
                         }
                         if(p.getOtherPermissions()[Permission.WRITE]) {
                             acl = AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
                         }
-                        object.setAcl(acl);
                     }
+                    object.setAcl(acl);
                 }
                 catch(Exception e) {
                     throw new S3Exception(e.getMessage());
@@ -469,6 +469,10 @@ public class S3Path extends CloudPath {
                 // Transfer
                 final S3Bucket bucket = this.getBucket();
                 session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+
+                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                        this.getName()));
+
                 multi.putObjects(bucket, new S3Object[]{object});
             }
             if(attributes.isDirectory()) {
