@@ -146,9 +146,12 @@ public class CDProgressController extends CDBundleController {
                         CDMainApplication.invoke(new DefaultMainAction() {
                             public void run() {
                                 setProgressText();
-                                progressBar.setIndeterminate(false);
+                                final double transferred = transfer.getTransferred();
+                                if(transferred > 0) {
+                                    progressBar.setIndeterminate(false);
+                                }
                                 progressBar.setMaxValue(transfer.getSize());
-                                progressBar.setDoubleValue(transfer.getTransferred());
+                                progressBar.setDoubleValue(transferred);
                             }
                         });
                     }
@@ -289,6 +292,7 @@ public class CDProgressController extends CDBundleController {
     public void setProgressBar(final NSProgressIndicator progressBar) {
         this.progressBar = progressBar;
         this.progressBar.setDisplayedWhenStopped(false);
+        this.progressBar.setUsesThreadedAnimation(true);
         this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
         this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
         this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
