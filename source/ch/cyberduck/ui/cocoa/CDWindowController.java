@@ -48,21 +48,6 @@ public abstract class CDWindowController extends CDBundleController {
      */
     public abstract void awakeFromNib();
 
-    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-
-    static {
-        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-    }
-
-    protected static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = new NSDictionary(
-            new Object[]{NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), lineBreakByTruncatingMiddleParagraph},
-            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
-
-    protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{NSFont.userFixedPitchFontOfSize(NSFont.smallSystemFontSize())},
-            new Object[]{NSAttributedString.FontAttributeName}
-    );
-
     /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.

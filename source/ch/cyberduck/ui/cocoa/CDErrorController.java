@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSBundle;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
@@ -46,7 +47,8 @@ public class CDErrorController extends CDBundleController {
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
         if(null == failure.getPath()) {
-            this.hostField.setStringValue(failure.getSession().getHost().toURL());
+            this.hostField.setAttributedStringValue(
+                    new NSAttributedString(failure.getSession().getHost().toURL(), TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
             this.hostField.setStringValue(failure.getPath().getAbsolute());
@@ -57,14 +59,16 @@ public class CDErrorController extends CDBundleController {
 
     public void setDescriptionField(NSTextField descriptionField) {
         this.descriptionField = descriptionField;
-        this.descriptionField.setStringValue(this.getDetailedCauseMessage(failure));
+        this.descriptionField.setAttributedStringValue(
+                new NSAttributedString(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSTextField errorField;
 
     public void setErrorField(NSTextField errorField) {
         this.errorField = errorField;
-        this.errorField.setStringValue(this.getReadableTitle(failure) + ": " + failure.getMessage());
+        this.errorField.setAttributedStringValue(
+                new NSAttributedString(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSView view;

@@ -18,8 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSView;
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSAttributedString;
 
 import org.apache.log4j.Logger;
 
@@ -28,6 +29,21 @@ import org.apache.log4j.Logger;
  */
 public abstract class CDBundleController extends CDController {
     private static Logger log = Logger.getLogger(CDBundleController.class);
+
+    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
+
+    static {
+        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
+    }
+
+    protected static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = new NSDictionary(
+            new Object[]{NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), lineBreakByTruncatingMiddleParagraph},
+            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
+
+    protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{NSFont.userFixedPitchFontOfSize(NSFont.smallSystemFontSize())},
+            new Object[]{NSAttributedString.FontAttributeName}
+    );
 
     protected void loadBundle() {
         final String bundleName = this.getBundleName();
