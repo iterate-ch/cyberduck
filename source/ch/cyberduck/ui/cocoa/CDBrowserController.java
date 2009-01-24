@@ -2502,8 +2502,10 @@ public class CDBrowserController extends CDWindowController
                     }
                     final Path original = originalIterator.next();
                     original.getParent().invalidate();
-                    original.rename(renamedIterator.next());
-                    original.getParent().invalidate();
+                    final Path renamed = renamedIterator.next();
+                    original.rename(renamed);
+                    renamed.invalidate();
+                    renamed.getParent().invalidate();
                     if(!isConnected()) {
                         break;
                     }

@@ -183,6 +183,9 @@ public class SFTPPath extends Path {
             session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
                     this.getName(), renamed));
 
+            if(renamed.exists()) {
+                renamed.delete();
+            }
             session.sftp().mv(this.getAbsolute(), renamed.getAbsolute());
             this.setPath(renamed.getAbsolute());
         }
