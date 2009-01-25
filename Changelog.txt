@@ -11,6 +11,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Files not downloaded recursively (S3)
 - [Bugfix] Create and expand archives with space in filename [#2884]
 - [Bugfix] Incorrect CDN URI for public containers (Mosso) [#2875]
+- [Bugfix] Observe bandwidth setting for uploads (Mosso/WebDAV)
 
 3.1.1 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.1]
 - [Bugfix] Crash if no default login name is set in Preferences [#2852]
