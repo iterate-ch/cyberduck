@@ -19,6 +19,7 @@ package ch.cyberduck.core.dav;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -110,7 +111,7 @@ public class DAVResource extends WebdavResource {
      * @return true if the method is succeeded.
      * @throws IOException
      */
-    public boolean putMethod(String path, InputStream inputStream, long contentLength)
+    public boolean putMethod(String path, RequestEntity requestEntity)
             throws IOException {
 
         setClient();
@@ -131,8 +132,8 @@ public class DAVResource extends WebdavResource {
         if(getGetContentType() != null && !getGetContentType().equals("")) {
             method.setRequestHeader("Content-Type", getGetContentType());
         }
-        method.setRequestContentLength(contentLength);
-        method.setRequestBody(inputStream);
+        method.setRequestEntity(requestEntity);
+
         generateTransactionHeader(method);
         generateAdditionalHeaders(method);
         int statusCode = client.executeMethod(method);

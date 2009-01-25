@@ -25,6 +25,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
@@ -258,7 +259,7 @@ public class DAVPath extends Path {
         }
     }
 
-    public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
+    public void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes.isFile()) {
             OutputStream out = null;
             InputStream in = null;
@@ -304,7 +305,7 @@ public class DAVPath extends Path {
 
     }
 
-    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
         try {
             if(check) {
                 session.check();
@@ -315,8 +316,6 @@ public class DAVPath extends Path {
 
                 final InputStream in = new Local.InputStream(this.getLocal());
                 try {
-                    //Set the content-type to use for this resource, for PUTs
-                    session.DAV.setContentType(this.getLocal().getMimeType());
                     if(this.getStatus().isResume()) {
                         session.DAV.addRequestHeader("Content-Range", "bytes "
                                 + this.getStatus().getCurrent()
@@ -329,33 +328,12 @@ public class DAVPath extends Path {
                             throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
                         }
                     }
-                    if(!session.DAV.putMethod(this.getAbsolute(), new InputStream() {
-                        long bytesTransferred = getStatus().getCurrent();
-
-                        public int read() throws IOException {
-                            return read(new byte[1]);
-                        }
-
-                        int read;
-
-                        public int read(byte buffer[], int offset, int length)
-                                throws IOException {
-                            if(getStatus().isCanceled()) {
-                                return -1;
-                            }
-                            if(read > 0) {
-                                listener.bytesSent(read);
-                                bytesTransferred += read;
-                                getStatus().setCurrent(bytesTransferred);
-                            }
-                            read = in.read(buffer, offset, length);
-                            if(-1 == read) {
-                                // End of file
-                                getStatus().setComplete(true);
-                            }
-                            return read;
-                        }
-                    }, this.getLocal().attributes.getSize() - this.getStatus().getCurrent())) {
+                    if(!session.DAV.putMethod(this.getAbsolute(),
+                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - this.getStatus().getCurrent(), this.getLocal().getMimeType()) {
+                                public void writeRequest(OutputStream out) throws IOException {
+                                    upload(out, in, throttle, listener);
+                                }
+                            })) {
                         // Upload failed
                         throw new IOException(session.DAV.getStatusMessage());
                     }

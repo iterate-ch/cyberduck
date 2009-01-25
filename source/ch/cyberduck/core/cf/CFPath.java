@@ -27,6 +27,7 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -38,6 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.mosso.client.cloudfiles.FilesCDNContainer;
 import com.mosso.client.cloudfiles.FilesContainerInfo;
@@ -300,7 +302,7 @@ public class CFPath extends CloudPath {
         return childs;
     }
 
-    public void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    public void download(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         if(attributes.isFile()) {
             OutputStream out = null;
             InputStream in = null;
@@ -344,7 +346,7 @@ public class CFPath extends CloudPath {
         }
     }
 
-    protected void upload(BandwidthThrottle throttle, final StreamListener listener, Permission p, boolean check) {
+    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, Permission p, boolean check) {
         try {
             if(check) {
                 session.check();
@@ -355,47 +357,23 @@ public class CFPath extends CloudPath {
                 final InputStream in = new Local.InputStream(this.getLocal());
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Compute MD5 hash of {0}", "Status", ""),
                         this.getName()));
-                String md5 = null;
+                String md5sum = null;
                 try {
-                    md5 = ServiceUtils.toHex(ServiceUtils.computeMD5Hash(new Local.InputStream(this.getLocal())));
+                    md5sum = ServiceUtils.toHex(ServiceUtils.computeMD5Hash(new Local.InputStream(this.getLocal())));
                     this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
                             this.getName()));
                 }
                 catch(NoSuchAlgorithmException e) {
                     log.error(e.getMessage(), e);
                 }
-                final int result = session.CF.storeObjectAs(this.getContainerName(),
-                        this.getName(),
-                        new InputStream() {
-                            long bytesTransferred = getStatus().getCurrent();
 
-                            public int read() throws IOException {
-                                return read(new byte[1]);
-                            }
-
-                            int read;
-
-                            public int read(byte buffer[], int offset, int length)
-                                    throws IOException {
-                                if(getStatus().isCanceled()) {
-                                    return -1;
-                                }
-                                if(read > 0) {
-                                    listener.bytesSent(read);
-                                    bytesTransferred += read;
-                                    getStatus().setCurrent(bytesTransferred);
-                                }
-                                read = in.read(buffer, offset, length);
-                                if(-1 == read) {
-                                    // End of file
-                                    getStatus().setComplete(true);
-                                }
-                                return read;
+                session.CF.storeObjectAs(this.getContainerName(), this.getName(),
+                        new InputStreamRequestEntity(in, this.getLocal().attributes.getSize(), this.getLocal().getMimeType()) {
+                            public void writeRequest(OutputStream out) throws IOException {
+                                upload(out, in, throttle, listener);
                             }
                         },
-                        this.getLocal().attributes.getSize(),
-                        this.getLocal().getMimeType(),
-                        md5
+                        new HashMap<String, String>(), md5sum
                 );
             }
             if(attributes.isDirectory()) {
