@@ -3659,14 +3659,7 @@ public class CDBrowserController extends CDWindowController
                 CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         bookmarkTable.setNeedsDisplay();
-                        if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
-                            window.setTitle(host.getProtocol().getScheme() + ":" + host.getCredentials().getUsername()
-                                    + "@" + host.getHostname());
-                        }
-                        else {
-                            window.setTitle(host.getProtocol().getScheme() + ":"
-                                    + host.getHostname());
-                        }
+                        window.setTitle(host.getNickname());
                         window.setRepresentedFilename("");
                     }
                 });
