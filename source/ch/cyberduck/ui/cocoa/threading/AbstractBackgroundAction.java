@@ -61,6 +61,9 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
     }
 
     public boolean prepare() {
+        if(this.isCanceled()) {
+            return false;
+        }
         running = true;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);

@@ -71,9 +71,6 @@ public abstract class CDWindowController extends CDBundleController {
                     // that calls Cocoa, there won't be a top-level pool.
                     final int pool = NSAutoreleasePool.push();
                     try {
-                        if(runnable.isCanceled()) {
-                            return;
-                        }
                         if(runnable.prepare()) {
                             // Execute the action of the runnable
                             runnable.run();
