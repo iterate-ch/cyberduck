@@ -57,66 +57,6 @@ public class Credentials {
      */
     private boolean shouldBeAddedToKeychain;
 
-    public String getUsername() {
-        return this.user;
-    }
-
-    public void setUsername(String user) {
-        this.init(user, this.getPassword());
-    }
-
-    public String getPassword() {
-        return this.getPassword(false);
-    }
-
-    /**
-     * @param encrypted
-     * @return
-     */
-    public String getPassword(boolean encrypted) {
-        if(!encrypted) {
-            return this.pass;
-        }
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA");
-        }
-        catch(NoSuchAlgorithmException e) {
-            log.error(e.getMessage());
-            return null;
-        }
-        try {
-            md.update(this.pass.getBytes("UTF-8"));
-        }
-        catch(UnsupportedEncodingException e) {
-            log.error(e.getMessage());
-            return null;
-        }
-        byte raw[] = md.digest();
-        return (new BASE64Encoder()).encode(raw);
-    }
-
-    public void setPassword(String pass) {
-        this.init(this.getUsername(), pass);
-    }
-
-    /**
-     * Use this to define if passwords should be added to the keychain
-     *
-     * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon
-     *                                successfull login
-     */
-    public void setUseKeychain(boolean shouldBeAddedToKeychain) {
-        this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
-    }
-
-    /**
-     * @return true if the password will be added to the system keychain when logged in successfully
-     */
-    public boolean usesKeychain() {
-        return this.shouldBeAddedToKeychain;
-    }
-
     /**
      * Default credentials from Preferences
      */
@@ -150,16 +90,55 @@ public class Credentials {
     private void init(String username, String password) {
         this.user = username;
         this.pass = password;
-        if(StringUtils.isEmpty(password)) {
-            this.pass = this.isAnonymousLogin() ? Preferences.instance().getProperty("connection.login.anon.pass") : password;
+    }
+
+    public String getUsername() {
+        return this.user;
+    }
+
+    public void setUsername(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        if(StringUtils.isEmpty(pass)) {
+            if(this.isAnonymousLogin()) {
+                return Preferences.instance().getProperty("connection.login.anon.pass");
+            }
         }
+        return pass;
+    }
+
+    public void setPassword(String pass) {
+        this.pass = pass;
+    }
+
+    /**
+     * Use this to define if passwords should be added to the keychain
+     *
+     * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon
+     *                                successfull login
+     */
+    public void setUseKeychain(boolean shouldBeAddedToKeychain) {
+        this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
+    }
+
+    /**
+     * @return true if the password will be added to the system keychain when logged in successfully
+     */
+    public boolean usesKeychain() {
+        return this.shouldBeAddedToKeychain;
     }
 
     /**
      * @return true if the username is anononymous
      */
     public boolean isAnonymousLogin() {
-        return Preferences.instance().getProperty("connection.login.anon.name").equals(this.getUsername());
+        final String user = this.getUsername();
+        if(StringUtils.isEmpty(user)) {
+            return false;
+        }
+        return Preferences.instance().getProperty("connection.login.anon.name").equals(user);
     }
 
     /**
