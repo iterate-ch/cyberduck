@@ -274,9 +274,6 @@ public class FilesClient {
                         else if("count".equals(data.getNodeName())) {
                             count = Integer.parseInt(data.getTextContent());
                         }
-                        else if("size".equals(data.getNodeName())) {
-                            size = Long.parseLong(data.getTextContent());
-                        }
                         else {
                             logger.warn("Expected tag:" + data.getNodeName());
                         }
@@ -425,9 +422,6 @@ public class FilesClient {
                             catch(InvalidDateException e) {
                                 logger.warn("Not ISO 8601 format:" + e.getMessage());
                             }
-                        }
-                        else if("size".equals(data.getNodeName())) {
-                            size = Long.parseLong(data.getTextContent());
                         }
                         else {
                             logger.warn("Expected tag:" + data.getNodeName());
