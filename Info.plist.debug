@@ -92,6 +92,7 @@
 		<string>cloudfiles.jar</string>
 		<string>commons-lang-2.4.jar</string>
 		<string>commons-io-1.4.jar</string>
+		<string>java-xmlbuilder-1.jar</string>
 	</array>
 	<key>NSJavaRoot</key>
 	<string>Contents/Resources/Java</string>
