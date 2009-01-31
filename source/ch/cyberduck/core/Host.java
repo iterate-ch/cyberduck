@@ -499,7 +499,7 @@ public class Host extends NSObject implements Serializable {
      */
     public String getHostname(boolean punycode) {
         if(punycode && Preferences.instance().getBoolean("connection.hostname.idn")) {
-            if(null == this.punycode) {
+            if(null == this.punycode && StringUtils.isNotEmpty(this.hostname)) {
                 try {
                     // Convenience function that implements the IDNToASCII operation as defined in
                     // the IDNA RFC. This operation is done on complete domain names, e.g: "www.example.com".
@@ -517,7 +517,9 @@ public class Host extends NSObject implements Serializable {
                     log.error("Cannot convert hostname to IDNA:" + e.getMessage());
                 }
             }
-            return this.punycode;
+            if(StringUtils.isNotEmpty(this.punycode)) {
+                return this.punycode;
+            }
         }
         return this.hostname;
     }
