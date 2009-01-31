@@ -7,6 +7,8 @@ Changelog. Last modified: $Date$
 3.1.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.2]
 - [Feature] Enforce hostname verification (SSL)
 - [Feature] Improved container listing performance (Mosso)
+- [Feature] Updated bookmark icons (by Robert Curtis)
+- [Bugfix] Fix Amazon CloudFront distribution configuration
 - [Bugfix] Accept valid certificates without prompt if no explicit trust is given (SSL)
 - [Bugfix] Files not downloaded recursively (S3)
 - [Bugfix] Create and expand archives with space in filename [#2884]
