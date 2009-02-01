@@ -242,7 +242,6 @@
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 		47FD44A70801DCE200716715 /* queue.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD44A60801DCE200716715 /* queue.tiff */; };
-		47FD455A0801EC1400716715 /* advanced.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD45590801EC1400716715 /* advanced.tiff */; };
 		47FD45720801ED1D00716715 /* browser.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD456E0801ED1C00716715 /* browser.tiff */; };
 		47FD45740801ED1D00716715 /* general.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD45700801ED1C00716715 /* general.tiff */; };
 		47FF630407F34E6100C0BDB9 /* gear.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FF630307F34E6100C0BDB9 /* gear.tiff */; };
@@ -1452,7 +1451,6 @@
 		47FC195A099FDB3B0082431D /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC195D099FDB710082431D /* pl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FD44A60801DCE200716715 /* queue.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = queue.tiff; sourceTree = "<group>"; };
-		47FD45590801EC1400716715 /* advanced.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = advanced.tiff; sourceTree = "<group>"; };
 		47FD456E0801ED1C00716715 /* browser.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = browser.tiff; sourceTree = "<group>"; };
 		47FD45700801ED1C00716715 /* general.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = general.tiff; sourceTree = "<group>"; };
 		47FF630307F34E6100C0BDB9 /* gear.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = gear.tiff; sourceTree = "<group>"; };
@@ -1874,7 +1872,6 @@
 				475D17B20805D54C00166B8A /* download8.icns */,
 				475D17B40805D54C00166B8A /* download9.icns */,
 				4785B6050806FC6500F4E71F /* download10.icns */,
-				47FD45590801EC1400716715 /* advanced.tiff */,
 				47FD456E0801ED1C00716715 /* browser.tiff */,
 				47FD45700801ED1C00716715 /* general.tiff */,
 				47FF630307F34E6100C0BDB9 /* gear.tiff */,
@@ -2594,7 +2591,6 @@
 				476C7C1907F5A2A700CF6032 /* File.nib in Resources */,
 				47215AA707FC9A3E00451725 /* login.tiff in Resources */,
 				47FD44A70801DCE200716715 /* queue.tiff in Resources */,
-				47FD455A0801EC1400716715 /* advanced.tiff in Resources */,
 				47FD45720801ED1D00716715 /* browser.tiff in Resources */,
 				47FD45740801ED1D00716715 /* general.tiff in Resources */,
 				475D17B90805D54C00166B8A /* download5.icns in Resources */,
