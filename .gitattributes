@@ -1012,7 +1012,6 @@ img/PrivateFolderBadgeIcon.icns -text
 img/ReadOnlyFolderBadgeIcon.icns -text
 img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
-img/advanced.tiff -text svneol=unset#image/tiff
 img/alert.tiff -text svneol=unset#image/tiff
 img/arrowDown.tiff -text svneol=unset#image/tiff
 img/arrowDownBlack.tiff -text svneol=unset#image/tiff
