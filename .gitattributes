@@ -1014,7 +1014,6 @@ img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
 img/advanced.tiff -text svneol=unset#image/tiff
 img/alert.tiff -text svneol=unset#image/tiff
-img/amazon.png -text svneol=unset#image/png
 img/arrowDown.tiff -text svneol=unset#image/tiff
 img/arrowDownBlack.tiff -text svneol=unset#image/tiff
 img/arrowDownBlack16.tiff -text svneol=unset#image/tiff
@@ -1030,16 +1029,16 @@ img/bandwidth.tiff -text svneol=unset#image/tiff
 img/bookmarks.tiff -text svneol=unset#image/tiff
 img/browser.tiff -text svneol=unset#image/tiff
 img/cancel.tiff -text svneol=unset#image/tiff
-img/cf.png -text svneol=unset#image/png
+img/cf.icns -text
+img/cf.png -text svneol=unset#unset
 img/clean.tiff -text svneol=unset#image/tiff
 img/cleanAll.tiff -text svneol=unset#image/tiff
 img/column.tiff -text svneol=unset#image/tiff
 img/connect.tiff -text svneol=unset#image/tiff
 img/connection.tiff -text svneol=unset#image/tiff
-img/dav.tiff -text
-img/davs.tiff -text
+img/dav.icns -text
+img/dav.png -text svneol=unset#image/png
 img/deleteFile.tiff -text svneol=unset#image/tiff
-img/disk.tiff -text
 img/download0.icns -text
 img/download1.icns -text
 img/download10.icns -text
@@ -1056,17 +1055,17 @@ img/edit.tiff -text svneol=unset#image/tiff
 img/editPressed.tiff -text svneol=unset#image/tiff
 img/eject.tiff -text svneol=unset#image/tiff
 img/executable.tiff -text
-img/ftp-tls.tiff -text svneol=unset#image/tiff
-img/ftp.tiff -text svneol=unset#image/tiff
+img/ftp.icns -text
+img/ftp.png -text svneol=unset#image/png
 img/gear.tiff -text svneol=unset#image/tiff
 img/general.tiff -text svneol=unset#image/tiff
 img/goto.tiff -text svneol=unset#image/tiff
 img/history.tiff -text svneol=unset#image/tiff
-img/idisk.tiff -text
 img/info.tiff -text svneol=unset#image/tiff
 img/list.tiff -text svneol=unset#image/tiff
 img/locked.tiff -text svneol=unset#image/tiff
 img/login.tiff -text svneol=unset#image/tiff
+img/me.icns -text
 img/me.png -text svneol=unset#image/png
 img/multipleDocuments.tiff -text svneol=unset#image/tiff
 img/notfound.tiff -text svneol=unset#image/tiff
@@ -1082,8 +1081,10 @@ img/rendezvous.tiff -text
 img/resume.tiff -text svneol=unset#image/tiff
 img/reveal.tiff -text svneol=unset#image/tiff
 img/run.tiff -text svneol=unset#image/tiff
-img/s3.tiff -text
-img/sftp.tiff -text svneol=unset#image/tiff
+img/s3.icns -text
+img/s3.png -text svneol=unset#image/png
+img/sftp.icns -text
+img/sftp.png -text svneol=unset#image/png
 img/site.tiff -text
 img/statusGreen.tiff -text svneol=unset#image/tiff
 img/statusRed.tiff -text svneol=unset#image/tiff

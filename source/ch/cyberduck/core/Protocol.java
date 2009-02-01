@@ -70,14 +70,14 @@ public abstract class Protocol {
      * @return A mounted disk icon to display
      */
     public String disk() {
-        return "disk";
+        return this.getIdentifier() + ".icns";
     }
 
     /**
      * @return A small icon to display
      */
     public String icon() {
-        return this.getIdentifier();
+        return this.getIdentifier() + ".png";
     }
 
     /**
@@ -116,10 +116,6 @@ public abstract class Protocol {
         public boolean isSecure() {
             return true;
         }
-
-        public String disk() {
-            return this.icon();
-        }
     };
 
     public static final Protocol SCP = new Protocol() {
@@ -152,10 +148,6 @@ public abstract class Protocol {
         public String getScheme() {
             return "ftp";
         }
-
-        public String disk() {
-            return this.icon();
-        }
     };
 
     public static final Protocol FTP_TLS = new Protocol() {
@@ -179,12 +171,12 @@ public abstract class Protocol {
             return true;
         }
 
-        public String icon() {
-            return "ftp-tls";
+        public String disk() {
+            return SFTP.disk();
         }
 
-        public String disk() {
-            return this.icon();
+        public String icon() {
+            return SFTP.icon();
         }
     };
 
@@ -224,10 +216,6 @@ public abstract class Protocol {
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
-
-        public String icon() {
-            return "amazon";
-        }
     };
 
     public static final Protocol WEBDAV = new Protocol() {
@@ -253,10 +241,6 @@ public abstract class Protocol {
 
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "dav"};
-        }
-
-        public String disk() {
-            return this.icon();
         }
     };
 
@@ -290,7 +274,11 @@ public abstract class Protocol {
         }
 
         public String disk() {
-            return this.icon();
+            return WEBDAV.disk();
+        }
+
+        public String icon() {
+            return WEBDAV.icon();
         }
     };
 
@@ -329,10 +317,6 @@ public abstract class Protocol {
 
         public String getDefaultHostname() {
             return "idisk.me.com";
-        }
-
-        public String disk() {
-            return "idisk";
         }
     };
 
