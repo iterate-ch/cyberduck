@@ -30,11 +30,7 @@ import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.ConnectException;
+import java.net.*;
 import java.util.Vector;
 
 /**
@@ -227,14 +223,14 @@ public class FTPControlSocket {
                 return this.createDataSocketActive();
             }
             if(connectMode == FTPConnectMode.PASV) {
-                return this.createDataSocketPASV();
+                return this.createDataSocketPassive();
             }
         }
         catch(FTPException e) {
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
                 // Fallback to other connect mode
                 if(connectMode == FTPConnectMode.ACTIVE) {
-                    return this.createDataSocketPASV();
+                    return this.createDataSocketPassive();
                 }
                 if(connectMode == FTPConnectMode.PASV) {
                     return this.createDataSocketActive();
@@ -298,13 +294,40 @@ public class FTPControlSocket {
      * command
      *
      * @param host   the local host the server will connect to
-     * @param portNo the port number to connect to
+     * @param port the port number to connect to
      */
-    protected void setDataPort(InetAddress host, short portNo)
+    protected void setDataPort(InetAddress host, short port)
             throws IOException, FTPException {
 
+        if(host instanceof Inet6Address) {
+            this.setDataPortIPv6(host, port);
+        }
+        else {
+            this.setDataPortIPv4(host, port);
+        }
+    }
+
+    /**
+     * FTP Extensions for IPv6 and NATs
+     *
+     * @param host
+     * @param port
+     * @throws IOException
+     */
+    protected void setDataPortIPv6(InetAddress host, short port) throws IOException {
+        FTPReply ftpreply = sendCommand("EPRT |2|" + host.getHostAddress() + "|" + port + "|");
+        validateReply(ftpreply, "200");
+    }
+
+    /**
+     *
+     * @param host
+     * @param port
+     * @throws IOException
+     */
+    protected void setDataPortIPv4(InetAddress host, short port) throws IOException {
         byte[] hostBytes = host.getAddress();
-        byte[] portBytes = toByteArray(portNo);
+        byte[] portBytes = toByteArray(port);
 
         // assemble the PORT command
         String cmd = new StringBuffer("PORT ")
@@ -327,9 +350,22 @@ public class FTPControlSocket {
      *
      * @return connected data socket
      */
-    protected FTPDataSocket createDataSocketPASV()
+    protected FTPDataSocket createDataSocketPassive()
             throws IOException, FTPException {
 
+        if(controlSock.getInetAddress() instanceof Inet6Address) {
+            // FTP Extensions for IPv6 and NATs
+            return this.createDataSocketEPSV();
+        }
+        return this.createDataSocketPASV();
+    }
+
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
+    protected FTPDataSocket createDataSocketPASV() throws IOException {
         // PASSIVE command - tells the server to listen for
         // a connection attempt rather than initiating it
         FTPReply replyObj = sendCommand("PASV");
@@ -372,7 +408,6 @@ public class FTPControlSocket {
             // See #15353
             throw new FTPException(e.getMessage());
 		}
-        
     }
 
     protected int[] parsePASVResponse(String reply) throws FTPException {
@@ -428,6 +463,35 @@ public class FTPControlSocket {
         }
         return parts;
     }
+
+    /**
+     * FTP Extensions for IPv6 and NATs
+     *
+     * @return
+     * @throws IOException
+     */
+    protected FTPDataSocket createDataSocketEPSV() throws IOException {
+        FTPReply replyObj = sendCommand("EPSV");
+        validateReply(replyObj, "229");
+        String reply = replyObj.getReplyText();
+
+        int port = this.parseEPSVResponse(reply);
+
+        return new FTPPassiveDataSocket(new Socket(controlSock.getInetAddress(), port));
+    }
+
+    /**
+     *
+     * @param reply
+     * @return Port number to connect
+     */
+    protected int parseEPSVResponse(String reply) {
+        int i = reply.indexOf("(|||");
+        i += "(|||".length();
+        int j = reply.indexOf("|)");
+        return Integer.parseInt(reply.substring(i, j).trim());
+    }
+
 
     /**
      * Send a command to the FTP server and
