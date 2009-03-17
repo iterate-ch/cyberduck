@@ -153,10 +153,19 @@ static EMKeychainProxy* sharedProxy;
 	SecKeychainItemRef item = nil;
 	OSStatus returnStatus = SecKeychainAddInternetPassword(NULL, strlen(server), server, 0, NULL, strlen(username), username, strlen(path), path, port, protocol, kSecAuthenticationTypeDefault, strlen(password), (void *)password, &item);
 	
-	if (returnStatus != noErr || !item)
+	if (returnStatus != noErr)
 	{
-//		NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
-		return nil;
+        if (errSecDuplicateItem == returnStatus) {
+            EMInternetKeychainItem *existing = [self internetKeychainItemForServer:serverString withUsername:usernameString path:pathString port:port protocol:protocol];
+            if (nil == existing) {
+                return nil;
+            }
+            else {
+				[existing setPassword:passwordString];
+            }
+            return existing;
+        }
+        return nil;
 	}
 	return [EMInternetKeychainItem internetKeychainItem:item forServer:serverString username:usernameString password:passwordString path:pathString port:port protocol:protocol];
 }
