@@ -487,21 +487,6 @@ public class S3Path extends CloudPath {
         }
     }
 
-    /**
-     * The absolute path minus the bucket part
-     *
-     * @return
-     */
-    public String getKey() {
-        if(this.isContainer()) {
-            return null;
-        }
-        if(this.getAbsolute().startsWith(Path.DELIMITER + this.getContainerName())) {
-            return this.getAbsolute().substring(this.getContainerName().length() + 2);
-        }
-        return this.getAbsolute();
-    }
-
     private static final int BUCKET_LIST_CHUNKING_SIZE = 1000;
 
     public AttributedList<Path> list() {

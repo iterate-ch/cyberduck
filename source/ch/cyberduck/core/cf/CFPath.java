@@ -101,13 +101,6 @@ public class CFPath extends CloudPath {
         return this.session;
     }
 
-    public String getKey() {
-        if(this.isContainer()) {
-            return null;
-        }
-        return this.getName();
-    }
-
     /**
      * @param enabled Enable content distribution for the container
      * @param cnames  Currently ignored
@@ -187,10 +180,6 @@ public class CFPath extends CloudPath {
         catch(IOException e) {
             return false;
         }
-        if(!this.isCached()) {
-            // Optimization
-            return this.list().contains(this);
-        }
         return super.exists();
     }
 
@@ -205,9 +194,9 @@ public class CFPath extends CloudPath {
                         Long.valueOf(session.CF.getContainerInfo(this.getContainerName()).getTotalSize())
                 );
             }
-            else {
+            else if(this.attributes.isFile()) {
                 attributes.setSize(
-                        Long.valueOf(session.CF.getObjectMetaData(this.getContainerName(), this.getName()).getContentLength())
+                        Long.valueOf(session.CF.getObjectMetaData(this.getContainerName(), this.getKey()).getContentLength())
                 );
             }
         }
@@ -226,7 +215,7 @@ public class CFPath extends CloudPath {
                 try {
                     attributes.setModificationDate(
                             ServiceUtils.parseRfc822Date(session.CF.getObjectMetaData(this.getContainerName(),
-                                    this.getName()).getLastModified()).getTime()
+                                    this.getKey()).getLastModified()).getTime()
                     );
                 }
                 catch(ParseException e) {
@@ -280,18 +269,22 @@ public class CFPath extends CloudPath {
                 }
             }
             else {
-                for(FilesObject object : session.CF.listObjects(this.getContainerName())) {
-                    final CFPath child = (CFPath) PathFactory.createPath(session, this.getContainerName(), object.getName(),
-                            Path.FILE_TYPE);
-                    child.setParent(this);
-                    child.attributes.setSize(object.getSize());
-                    final Date modified = object.getLastModified();
-                    if(null != modified) {
-                        child.attributes.setModificationDate(modified.getTime());
-                    }
-                    child.attributes.setOwner(this.attributes.getOwner());
+                for(FilesObject object : session.CF.listObjects(this.getContainerName(), this.getKey())) {
+                    final CFPath file = (CFPath) PathFactory.createPath(session, this.getContainerName(), object.getName(),
+                            "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    if(file.getParent().equals(this)) {
+                        file.setParent(this);
+                        if(file.attributes.getType() == Path.FILE_TYPE) {
+                            file.attributes.setSize(object.getSize());
+                        }
+                        final Date modified = object.getLastModified();
+                        if(null != modified) {
+                            file.attributes.setModificationDate(modified.getTime());
+                        }
+                        file.attributes.setOwner(this.attributes.getOwner());
 
-                    childs.add(child);
+                        childs.add(file);
+                    }
                 }
             }
         }
@@ -313,7 +306,7 @@ public class CFPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
                         this.getName()));
 
-                in = this.session.CF.getObjectAsStream(this.getContainerName(), this.getName());
+                in = this.session.CF.getObjectAsStream(this.getContainerName(), this.getKey());
 
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
@@ -367,20 +360,19 @@ public class CFPath extends CloudPath {
                     log.error(e.getMessage(), e);
                 }
 
-                session.CF.storeObjectAs(this.getContainerName(), this.getName(),
+                final HashMap<String, String> metadata = new HashMap<String, String>();
+
+                session.CF.storeObjectAs(this.getContainerName(), this.getKey(),
                         new InputStreamRequestEntity(in, this.getLocal().attributes.getSize(), this.getLocal().getMimeType()) {
                             public void writeRequest(OutputStream out) throws IOException {
                                 upload(out, in, throttle, listener);
                             }
                         },
-                        new HashMap<String, String>(), md5sum
+                        metadata, md5sum
                 );
             }
             if(attributes.isDirectory()) {
-                if(this.isContainer()) {
-                    // Create container at top level
-                    this.mkdir();
-                }
+                this.mkdir();
             }
         }
         catch(IOException e) {
@@ -395,7 +387,14 @@ public class CFPath extends CloudPath {
             session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
-            final int result = session.CF.createContainer(this.getName());
+            if(this.isContainer()) {
+                // Create container at top level
+                session.CF.createContainer(this.getName());
+            }
+            else {
+                // Create virtual directory
+                session.CF.createFullPath(this.getContainerName(), this.getKey());
+            }
         }
         catch(IOException e) {
             this.error("Cannot create folder", e);
@@ -410,7 +409,7 @@ public class CFPath extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                         this.getName()));
 
-                final int result = session.CF.deleteObject(this.getContainerName(), this.getName());
+                session.CF.deleteObject(this.getContainerName(), this.getKey());
             }
             else if(attributes.isDirectory()) {
                 for(AbstractPath i : this.childs()) {
@@ -420,7 +419,7 @@ public class CFPath extends CloudPath {
                     i.delete();
                 }
                 if(this.isContainer()) {
-                    final int result = session.CF.deleteContainer(this.getContainerName());
+                    session.CF.deleteContainer(this.getContainerName());
                 }
             }
         }
@@ -456,5 +455,9 @@ public class CFPath extends CloudPath {
             b.append(this.encode(this.getKey()));
         }
         return b.toString();
+    }
+
+    public boolean isMkdirSupported() {
+        return true;
     }
 }

@@ -69,7 +69,15 @@ public abstract class CloudPath extends Path {
     /**
      * @return Absolute path without the container name
      */
-    public abstract String getKey();
+    public String getKey() {
+        if(this.isContainer()) {
+            return null;
+        }
+        if(this.getAbsolute().startsWith(Path.DELIMITER + this.getContainerName())) {
+            return this.getAbsolute().substring(this.getContainerName().length() + 2);
+        }
+        return null;
+    }
 
     /**
      * @param enabled
