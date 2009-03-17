@@ -13,12 +13,17 @@ public class FilesCDNContainer {
 //	private String referrerACL;
 	private int ttl;
 	private String cdnURL;
+	private String name;
 	
+	public FilesCDNContainer() {
+	}
+
 	public FilesCDNContainer(String cdnURL) {
 		this.cdnURL = cdnURL;
 	}
 	
-	public FilesCDNContainer(boolean enabled, int ttl) {
+	public FilesCDNContainer(String name, boolean enabled, int ttl) {
+        this.name = name;
 		this.enabled = enabled;
 		this.ttl = ttl;
 		//this(enabled, ttl, null, null);
@@ -92,6 +97,19 @@ public class FilesCDNContainer {
 	 */
 	public void setCdnURL(String cdnURL) {
 		this.cdnURL = cdnURL;
+	}
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

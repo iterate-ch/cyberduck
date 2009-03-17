@@ -26,19 +26,19 @@ public class FilesResponse
     {
     	httpmethod = method;
 
-//    	if (logger.isDebugEnabled())
-//        {
-//    		logger.debug ("Request Method: "+method.getName());
-//    		logger.debug ("Request Path: " + method.getPath());    
-//    		logger.debug ("Status Line: " + getStatusLine());
-//    		Header[] reqHeaders = method.getRequestHeaders();
-//    		for (Header rH: reqHeaders)
-//    			logger.debug(rH.toExternalForm());
-//
-//    		Header [] responseHeaders = getResponseHeaders();    
-//    		for (int i=0; i < responseHeaders.length;i++)
-//    			logger.debug(responseHeaders[i]);
-//        }
+    	if (logger.isDebugEnabled())
+        {
+    		logger.debug ("Request Method: "+method.getName());
+    		logger.debug ("Request Path: " + method.getPath());    
+    		logger.debug ("Status Line: " + getStatusLine());
+    		Header[] reqHeaders = method.getRequestHeaders();
+    		for (Header rH: reqHeaders)
+    			logger.debug(rH.toExternalForm());
+
+    		Header [] responseHeaders = getResponseHeaders();    
+    		for (int i=0; i < responseHeaders.length;i++)
+    			logger.debug(responseHeaders[i]);
+        }
     }
 
     /**

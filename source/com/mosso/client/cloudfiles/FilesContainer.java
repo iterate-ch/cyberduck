@@ -69,8 +69,10 @@ public class FilesContainer
      * @return A list of the contents
      * @throws HttpException There was a problem communicating with the server
      * @throws IOException There was a problem communicating with the server
+     * @throws FilesAuthorizationException 
+     * @throws FilesInvalidNameException 
      */
-    public List<FilesObject> getObjects() throws HttpException, IOException
+    public List<FilesObject> getObjects() throws HttpException, IOException, FilesAuthorizationException, FilesException
     {
     
         if (client != null)
@@ -88,13 +90,42 @@ public class FilesContainer
     }
 
     /**
+     * Returns the contents of this container
+     * 
+     * @param path Limit the results to files under the following path
+     * 
+     * @return A list of the contents
+     * @throws HttpException There was a problem communicating with the server
+     * @throws IOException There was a problem communicating with the server
+     * @throws FilesAuthorizationException 
+     * @throws FilesInvalidNameException 
+     */
+    public List<FilesObject> getObjects(String path) throws HttpException, IOException, FilesAuthorizationException, FilesException
+    {
+    
+        if (client != null)
+        {
+            if(objects == null) {
+            	objects = client.listObjects(this.name, path);            
+            }
+            return objects;
+        }
+        else
+        {
+            logger.fatal("This Container has no FilesClient defined !");
+        }
+        return null;
+    }
+
+    /**
      * Get useful information on this container
      * 
      * @return The container info
      * @throws HttpException There was a problem communicating with the server
      * @throws IOException There was a problem communicating with the server
+     * @throws FilesException 
      */
-    public FilesContainerInfo getInfo() throws HttpException, IOException
+    public FilesContainerInfo getInfo() throws HttpException, IOException, FilesException
     {
         if (client != null)
         {
@@ -125,8 +156,10 @@ public class FilesContainer
      * @return The return code from the server
      * @throws NoSuchAlgorithmException  The MD5 implementation is not installed in the client
      * @throws IOException
+     * @throws FilesAuthorizationException 
+     * @throws FilesInvalidNameException 
      */
-    public boolean addObject (File f, String mimeType) throws NoSuchAlgorithmException, IOException
+    public boolean addObject (File f, String mimeType) throws NoSuchAlgorithmException, IOException, FilesAuthorizationException, FilesException
     {
         FilesObject obj = new FilesObject(f, mimeType, this);
 
@@ -148,15 +181,17 @@ public class FilesContainer
      * @return Either FilesConstants.CONTAINER_CREATED or FilesConstants.CONTAINER_EXISTED or -1 if the client has not been set 
      * @throws HttpException
      * @throws IOException
+     * @throws FilesAuthorizationException 
+     * @throws FilesInvalidNameException 
      */
-    public int createContainer () throws HttpException, IOException
+    public void createContainer () throws HttpException, IOException, FilesAuthorizationException, FilesException
     {
         if (client != null)
         {
-        	return client.createContainer(this.name);
+        	client.createContainer(this.name);
         }
         else
             logger.fatal("This Container has no FilesClient defined !");
-        return -1;
+
     }
 }

@@ -21,7 +21,6 @@ public class FilesObject {
     private Date last_modified;
     private String mimeType;
     private FilesClient client = null;
-    private FilesObjectMetaData metaData;
 
     private static Logger logger = Logger.getLogger(FilesObject.class);
 
@@ -40,7 +39,7 @@ public class FilesObject {
             if(obj.exists()) {
                 if(!obj.isDirectory()) {
                     setName(obj.getName());
-                    setMd5sum(FilesClient.md5sum(obj));
+                    setMd5sum(FilesClient.md5Sum(obj));
                     setSize(obj.length());
                     setLastModified(new Date(obj.lastModified()));
                     setMimeType(mimeType);
@@ -231,7 +230,7 @@ public class FilesObject {
      * @throws IOException   There was an I/O exception communicating with the server or writing the file.
      */
     public FilesObjectMetaData getMetaData() throws HttpException, IOException {
-        metaData = client.getObjectMetaData(container, name);
+        FilesObjectMetaData metaData = client.getObjectMetaData(container, name);
         if(metaData != null) {
             setMd5sum(metaData.getETag());
             setSize(Long.parseLong(metaData.getContentLength()));
