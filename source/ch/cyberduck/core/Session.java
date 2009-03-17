@@ -203,10 +203,10 @@ public abstract class Session extends NSObject {
     /**
      * Connect to the remote host and mount the home directory
      *
-     * @param workdir
+     * @param directory
      * @return null if we fail, the mounted working directory if we succeed
      */
-    public Path mount(String workdir) {
+    public Path mount(String directory) {
         this.message(MessageFormat.format(NSBundle.localizedString("Mounting {0}", "Status", ""),
                 host.getHostname()));
         try {
@@ -215,20 +215,20 @@ public abstract class Session extends NSObject {
                 return null;
             }
             Path home;
-            if(workdir != null) {
-                if(workdir.startsWith(Path.DELIMITER) || workdir.equals(this.workdir().getName())) {
-                    home = PathFactory.createPath(this, workdir,
-                            workdir.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+            if(directory != null) {
+                if(directory.startsWith(Path.DELIMITER) || directory.equals(this.workdir().getName())) {
+                    home = PathFactory.createPath(this, directory,
+                            directory.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
                 }
-                else if(workdir.startsWith(Path.HOME)) {
+                else if(directory.startsWith(Path.HOME)) {
                     // relative path to the home directory
                     home = PathFactory.createPath(this,
-                            this.workdir().getAbsolute(), workdir.substring(1), Path.DIRECTORY_TYPE);
+                            this.workdir().getAbsolute(), directory.substring(1), Path.DIRECTORY_TYPE);
                 }
                 else {
                     // relative path
                     home = PathFactory.createPath(this,
-                            this.workdir().getAbsolute(), workdir, Path.DIRECTORY_TYPE);
+                            this.workdir().getAbsolute(), directory, Path.DIRECTORY_TYPE);
                 }
                 if(!home.childs().attributes().isReadable()) {
                     // the default path does not exist or is not readable due to permission issues
