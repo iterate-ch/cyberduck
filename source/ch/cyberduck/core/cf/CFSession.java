@@ -84,14 +84,6 @@ public class CFSession extends HTTPSession implements SSLSession {
         super(h);
     }
 
-    public void check() throws IOException {
-        super.check();
-
-        // Session tokens will automatically expire after 5 minutes of inactivity.
-        // Get new authentication token with cached credentials
-        this.login(host.getCredentials());
-    }
-
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         if(this.isConnected()) {
             return;
