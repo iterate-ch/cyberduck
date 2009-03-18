@@ -21,9 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
 import com.apple.cocoa.foundation.NSRange;
+import com.apple.cocoa.foundation.NSPathUtilities;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,8 +42,9 @@ public class CDCommandController extends CDSheetController implements Transcript
     private static Logger log = Logger.getLogger(CDCommandController.class);
 
     private NSTextField inputField; //IBOutlet
-    private NSTextView responseField; //IBOUtltet
-    private NSProgressIndicator progress;
+    private NSTextView responseField; //IBOutlet
+    private NSProgressIndicator progress; //IBOutlet
+    private NSImageView image; //IBOutlet
 
     public void setInputField(NSTextField inputField) {
         this.inputField = inputField;
@@ -59,6 +62,12 @@ public class CDCommandController extends CDSheetController implements Transcript
     public void setProgress(NSProgressIndicator progress) {
         this.progress = progress;
         this.progress.setDisplayedWhenStopped(false);
+    }
+
+    public void setImage(NSImageView image) {
+        this.image = image;
+        final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
+        this.image.setImage(CDIconCache.instance().iconForPath(new Local(t), 128));
     }
 
     public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
