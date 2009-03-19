@@ -1547,9 +1547,9 @@ public class CDBrowserController extends CDWindowController
             c.setIdentifier(CDBrowserTableDataSource.SIZE_COLUMN);
             c.setMinWidth(50f);
             c.setWidth(80f);
-            c.setMaxWidth(100f);
+            c.setMaxWidth(150f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
+                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
             }
             else {
                 c.setResizable(true);
