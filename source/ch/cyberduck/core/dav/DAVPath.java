@@ -357,4 +357,8 @@ public class DAVPath extends Path {
             this.error("Upload failed", e);
         }
     }
+
+    public String toHttpURL() {
+        return this.toURL();
+    }
 }
