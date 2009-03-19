@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.NSBundle;
  */
 public class Distribution {
 
+    private boolean inprogress;
     private boolean enabled;
     private String url;
     private String status;
@@ -47,7 +48,20 @@ public class Distribution {
      * @param cnames
      */
     public Distribution(boolean enabled, String url, String status, String[] cnames) {
+        this(enabled, false, url, status, cnames);
+    }
+
+    /**
+     *
+     * @param enabled Deployment Enabled
+     * @param inprogress Deployment Status is about to be changed
+     * @param url Where to find this distribution
+     * @param status Status Message about Deployment Status
+     * @param cnames Multiple CNAME aliases of this distribution
+     */
+    public Distribution(boolean enabled, boolean inprogress, String url, String status, String[] cnames) {
         this.enabled = enabled;
+        this.inprogress = inprogress;
         this.url = url;
         this.status = status;
         this.cnames = cnames;
@@ -59,6 +73,10 @@ public class Distribution {
      */
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public boolean isInprogress() {
+        return inprogress;
     }
 
     /**

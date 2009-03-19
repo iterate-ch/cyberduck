@@ -749,13 +749,13 @@ public class CDInfoController extends CDWindowController {
     }
 
     /**
-     * @param enable
+     * @param statusEnabled
      */
-    private void enableDistributionSettings(boolean enable) {
-        distributionStatusButton.setEnabled(enable);
-        distributionApplyButton.setEnabled(enable);
-        distributionEnableButton.setEnabled(enable);
-        if(enable) {
+    private void toggleDistributionSettings(boolean statusEnabled, boolean applyEnabled) {
+        distributionStatusButton.setEnabled(statusEnabled);
+        distributionEnableButton.setEnabled(applyEnabled);
+        distributionApplyButton.setEnabled(applyEnabled);
+        if(statusEnabled) {
             distributionProgress.stopAnimation(null);
         }
         else {
@@ -767,7 +767,7 @@ public class CDInfoController extends CDWindowController {
      * @param sender
      */
     public void distributionApplyButtonClicked(final Object sender) {
-        this.enableDistributionSettings(false);
+        this.toggleDistributionSettings(false, false);
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 for(Path next : files) {
@@ -784,7 +784,6 @@ public class CDInfoController extends CDWindowController {
             }
 
             public void cleanup() {
-                enableDistributionSettings(true);
                 // Refresh the current distribution status
                 distributionStatusButtonClicked(sender);
             }
@@ -795,7 +794,7 @@ public class CDInfoController extends CDWindowController {
      * @param sender
      */
     public void distributionStatusButtonClicked(final Object sender) {
-        this.enableDistributionSettings(false);
+        this.toggleDistributionSettings(false, false);
         controller.background(new BrowserBackgroundAction(controller) {
             Distribution distribution;
 
@@ -808,7 +807,7 @@ public class CDInfoController extends CDWindowController {
             }
 
             public void cleanup() {
-                enableDistributionSettings(true);
+                toggleDistributionSettings(true, !distribution.isInprogress());
 
                 distributionEnableButton.setState(distribution.isEnabled() ? NSCell.OnState : NSCell.OffState);
                 distributionStatusField.setStringValue(distribution.getStatus());

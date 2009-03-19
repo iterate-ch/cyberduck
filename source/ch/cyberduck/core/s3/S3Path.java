@@ -841,7 +841,7 @@ public class S3Path extends CloudPath {
             session.check();
             for(org.jets3t.service.model.cloudfront.Distribution d : session.listDistributions(this.getContainerName())) {
                 // We currently only support one distribution per bucket
-                return new Distribution(d.isEnabled(),
+                return new Distribution(d.isEnabled(), d.getStatus().equals("InProgress"),
                         "http://" + d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs());
             }
         }
