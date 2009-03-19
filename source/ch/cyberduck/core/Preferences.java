@@ -123,7 +123,7 @@ public abstract class Preferences {
     protected void setDefaults() {
         this.defaults = new HashMap<String, String>();
 
-        File APP_SUPPORT_DIR = null;
+        File APP_SUPPORT_DIR;
         if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
             APP_SUPPORT_DIR = new File(
                     NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
@@ -146,9 +146,7 @@ public abstract class Preferences {
         final Level level = Level.toLevel(this.getProperty("logging"));
         Logger.getLogger("ch.cyberduck").setLevel(level);
         Logger.getLogger("httpclient.wire.content").setLevel(level);
-
-        Logger.getLogger("httpclient.wire.header").setLevel(Level.DEBUG);
-
+        Logger.getLogger("httpclient.wire.header").setLevel(level);
 
         defaults.put("version", 
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
