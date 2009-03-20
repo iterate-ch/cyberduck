@@ -24,7 +24,6 @@ import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HttpClient;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 
 /**
@@ -54,15 +53,6 @@ public class DAVSSession extends DAVSession implements SSLSession {
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort()));
         if(Proxy.isHTTPSProxyEnabled()) {
             this.DAV.setProxy(Proxy.getHTTPSProxyHost(), Proxy.getHTTPSProxyPort());
-        }
-    }
-
-    public void connect() throws IOException {
-        try {
-            super.connect();
-        }
-        catch(SSLHandshakeException e) {
-            throw new ConnectionCanceledException(e.getMessage());
         }
     }
 

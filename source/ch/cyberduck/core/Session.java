@@ -88,42 +88,46 @@ public abstract class Session extends NSObject {
      */
     public void check() throws IOException {
         try {
-            if(!this.isConnected()) {
-                // If not connected anymore, reconnect the session
-                this.connect();
-            }
-            else {
-                // The session is still supposed to be connected
-                try {
-                    // Send a 'no operation command' to make sure the session is alive
-                    this.noop();
-                }
-                catch(IOException e) {
-                    // Close the underlying socket first
-                    this.interrupt();
-                    // Try to reconnect once more
+            try {
+                if(!this.isConnected()) {
+                    // If not connected anymore, reconnect the session
                     this.connect();
                 }
+                else {
+                    // The session is still supposed to be connected
+                    try {
+                        // Send a 'no operation command' to make sure the session is alive
+                        this.noop();
+                    }
+                    catch(IOException e) {
+                        // Close the underlying socket first
+                        this.interrupt();
+                        // Try to reconnect once more
+                        this.connect();
+                    }
+                }
             }
-        }
-        catch(SocketException e) {
-            if(e.getMessage().equals("Software caused connection abort")) {
-                // Do not report as failed if socket opening interrupted
-                log.warn("Supressed socket exception:" + e.getMessage());
-                throw new ConnectionCanceledException();
+            catch(SocketException e) {
+                if(e.getMessage().equals("Software caused connection abort")) {
+                    // Do not report as failed if socket opening interrupted
+                    log.warn("Supressed socket exception:" + e.getMessage());
+                    throw new ConnectionCanceledException();
+                }
+                if(e.getMessage().equals("Socket closed")) {
+                    // Do not report as failed if socket opening interrupted
+                    log.warn("Supressed socket exception:" + e.getMessage());
+                    throw new ConnectionCanceledException();
+                }
+                throw e;
             }
-            if(e.getMessage().equals("Socket closed")) {
-                // Do not report as failed if socket opening interrupted
-                log.warn("Supressed socket exception:" + e.getMessage());
-                throw new ConnectionCanceledException();
+            catch(SSLHandshakeException e) {
+                log.error("SSL Handshake failed: " + e.getMessage());
+                if(e.getCause() instanceof sun.security.validator.ValidatorException) {
+                    throw e;
+                }
+                // Most probably caused by user dismissing ceritifcate. No trusted certificate found.
+                throw new ConnectionCanceledException(e.getMessage());
             }
-            this.interrupt();
-            this.error(null, "Connection failed", e);
-            throw e;
-        }
-        catch(SSLHandshakeException e) {
-            // Most probably caused by user dismissing ceritifcate
-            throw new ConnectionCanceledException();
         }
         catch(IOException e) {
             this.interrupt();

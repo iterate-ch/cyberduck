@@ -27,7 +27,6 @@ import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 
 import com.enterprisedt.net.ftp.FTPClient;
@@ -89,13 +88,8 @@ public class FTPSSession extends FTPSession implements SSLSession {
     public void login(final Credentials credentials) throws IOException {
         if(auth) {
             // Only send AUTH before the first login attempt
-            try {
-                ((FTPSClient) this.FTP).auth();
-                auth = false;
-            }
-            catch(SSLHandshakeException e) {
-                throw new ConnectionCanceledException(e.getMessage());
-            }
+            ((FTPSClient) this.FTP).auth();
+            auth = false;
         }
         super.login(credentials);
     }
