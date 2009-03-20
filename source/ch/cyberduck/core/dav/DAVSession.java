@@ -25,14 +25,15 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTPSession;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.net.InetAddress;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -101,15 +102,37 @@ public class DAVSession extends HTTPSession {
 
     protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
-            if(!credentials.isAnonymousLogin()) {
-                this.DAV.setCredentials(
-                        new NTCredentials(credentials.getUsername(),
-                                credentials.getPassword(), InetAddress.getLocalHost().getHostName(),
-                                Preferences.instance().getProperty("webdav.ntlm.domain"))
-                );
-                this.DAV.setUserInfo(credentials.getUsername(),
-                        credentials.getPassword());
-            }
+            final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
+            client.getParams().setParameter(CredentialsProvider.PROVIDER, new CredentialsProvider() {
+
+                int retry = 0;
+
+                public org.apache.commons.httpclient.Credentials getCredentials(AuthScheme authscheme, String host, int port, boolean proxy) throws CredentialsNotAvailableException {
+                    if(null == authscheme) {
+                        return null;
+                    }
+                    try {
+                        if(retry > 0) {
+                            login.fail(getHost(), null);
+                        }
+                        retry++;
+                        if(authscheme instanceof RFC2617Scheme) {
+                            return new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword());
+                        }
+                        if(authscheme instanceof NTLMScheme) {
+                            return new NTCredentials(credentials.getUsername(),
+                                    credentials.getPassword(), InetAddress.getLocalHost().getHostName(),
+                                    Preferences.instance().getProperty("webdav.ntlm.domain"));
+                        }
+                        throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
+                                authscheme.getSchemeName());
+                    }
+                    catch(IOException e) {
+                        throw new CredentialsNotAvailableException(e.getMessage(), e);
+                    }
+                }
+            });
+
             this.configure();
 
             // Try to get basic properties fo this resource using these credentials

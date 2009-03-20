@@ -45,6 +45,17 @@ public class DAVResource extends WebdavResource {
     }
 
     /**
+     * Test that the httpURL is the same with the client.
+     *
+     * @return true if the given httpURL is the client for this resource.
+     */
+    protected synchronized boolean isTheClient() throws URIException {
+        final HostConfiguration hostConfig = client.getHostConfiguration();
+        return httpURL.getHost().equalsIgnoreCase(hostConfig.getHost())
+                && httpURL.getPort() == hostConfig.getProtocol().resolvePort(hostConfig.getPort());
+    }
+
+    /**
      * Add all additionals headers that have been previously registered
      * with addRequestHeader to the method
      */
