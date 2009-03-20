@@ -4204,7 +4204,7 @@ public class CDBrowserController extends CDWindowController
                 if(null == selected) {
                     return false;
                 }
-                return true;
+                return selected.isRenameSupported();
             }
             return false;
         }

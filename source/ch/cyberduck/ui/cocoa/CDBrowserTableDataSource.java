@@ -325,7 +325,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
                             return NSDraggingInfo.DragOperationCopy;
                         }
-                        return NSDraggingInfo.DragOperationMove;
+                        if(destination.isRenameSupported()) {
+                            return NSDraggingInfo.DragOperationMove;
+                        }
                     }
                 }
             }
