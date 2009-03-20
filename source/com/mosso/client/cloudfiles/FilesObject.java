@@ -6,8 +6,6 @@ package com.mosso.client.cloudfiles;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
-import org.w3c.util.DateParser;
-import org.w3c.util.InvalidDateException;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
