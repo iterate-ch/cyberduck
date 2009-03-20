@@ -26,6 +26,7 @@ import com.apple.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.StatusLine;
 import org.apache.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 
@@ -35,6 +36,7 @@ import java.net.UnknownHostException;
 
 import ch.ethz.ssh2.sftp.SFTPException;
 import com.enterprisedt.net.ftp.FTPException;
+import com.mosso.client.cloudfiles.FilesException;
 
 /**
  * @version $Id:$
@@ -48,7 +50,7 @@ public class CDErrorController extends CDBundleController {
         this.hostField = hostField;
         if(null == failure.getPath()) {
             this.hostField.setAttributedStringValue(
-                    new NSAttributedString(failure.getSession().getHost().toURL(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                    new NSAttributedString(failure.getSession().getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
         }
         else {
             this.hostField.setStringValue(failure.getPath().getAbsolute());
@@ -124,6 +126,16 @@ public class CDErrorController extends CDBundleController {
             if(null != ((S3ServiceException) cause).getS3ErrorMessage()) {
                 return cause.getMessage() + ". " + ((S3ServiceException) cause).getS3ErrorMessage();
             }
+        }
+        if(cause instanceof FilesException) {
+            final StatusLine status = ((FilesException) cause).getHttpStatusLine();
+            if(null != status && null != status.getReasonPhrase()) {
+                return cause.getMessage() + ". " + status.getReasonPhrase();
+            }
+        }
+        if(cause instanceof HttpException) {
+            final String status = ((HttpException) cause).getReason();
+            return cause.getMessage() + ". " + status;
         }
         return NSBundle.localizedString(cause.getMessage(), "Error", "");
     }
