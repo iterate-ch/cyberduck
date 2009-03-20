@@ -53,7 +53,8 @@ public class CDErrorController extends CDBundleController {
                     new NSAttributedString(failure.getSession().getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
         }
         else {
-            this.hostField.setStringValue(failure.getPath().getAbsolute());
+            this.hostField.setAttributedStringValue(
+                    new NSAttributedString(failure.getPath().getAbsolute(), FIXED_WITH_FONT_ATTRIBUTES));
         }
     }
 
@@ -61,6 +62,7 @@ public class CDErrorController extends CDBundleController {
 
     public void setDescriptionField(NSTextField descriptionField) {
         this.descriptionField = descriptionField;
+        this.descriptionField.setSelectable(true);
         this.descriptionField.setAttributedStringValue(
                 new NSAttributedString(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
@@ -69,8 +71,9 @@ public class CDErrorController extends CDBundleController {
 
     public void setErrorField(NSTextField errorField) {
         this.errorField = errorField;
+        this.errorField.setSelectable(true);
         this.errorField.setAttributedStringValue(
-                new NSAttributedString(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                new NSAttributedString(this.getReadableTitle(failure) + ": " + failure.getMessage(), CDTableCellAttributes.BOLD_FONT));
     }
 
     private NSView view;
