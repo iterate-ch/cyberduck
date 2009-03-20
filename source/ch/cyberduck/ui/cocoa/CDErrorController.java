@@ -133,10 +133,6 @@ public class CDErrorController extends CDBundleController {
                 return cause.getMessage() + ". " + status.getReasonPhrase();
             }
         }
-        if(cause instanceof HttpException) {
-            final String status = ((HttpException) cause).getReason();
-            return cause.getMessage() + ". " + status;
-        }
         return NSBundle.localizedString(cause.getMessage(), "Error", "");
     }
 
