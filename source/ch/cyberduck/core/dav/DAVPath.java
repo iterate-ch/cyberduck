@@ -162,14 +162,23 @@ public class DAVPath extends Path {
             WebdavResource[] resources = session.DAV.listWebdavResources();
 
             for(int i = 0; i < resources.length; i++) {
-                Path p = PathFactory.createPath(session, resources[i].getPath(),
-                        resources[i].getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                final WebdavResource resource = resources[i];
+                boolean collection = false;
+                if(null != resource.getResourceType()) {
+                    collection = resource.getResourceType().isCollection();
+                }
+                Path p = PathFactory.createPath(session, resource.getPath(),
+                        collection ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 p.setParent(this);
 
-                p.attributes.setOwner(resources[i].getOwner());
-                p.attributes.setModificationDate(resources[i].getGetLastModified());
-                p.attributes.setCreationDate(resources[i].getCreationDate());
-                p.attributes.setSize(resources[i].getGetContentLength());
+                p.attributes.setOwner(resource.getOwner());
+                if(resource.getGetLastModified() > 0) {
+                    p.attributes.setModificationDate(resource.getGetLastModified());
+                }
+                if(resource.getCreationDate() > 0) {
+                    p.attributes.setCreationDate(resource.getCreationDate());
+                }
+                p.attributes.setSize(resource.getGetContentLength());
 
                 childs.add(p);
             }
