@@ -461,6 +461,11 @@ public abstract class Preferences {
         defaults.put("connection.hostname.check", String.valueOf(true)); //Check hostname reachability using NSNetworkDiagnostics
         defaults.put("connection.hostname.idn", String.valueOf(true)); //Convert hostnames to Punycode
 
+        /**
+         * java.net.preferIPv6Addresses
+         */
+        defaults.put("connection.dns.ipv6", String.valueOf(false));
+
         defaults.put("transcript.length", String.valueOf(1000));
 
         /**
