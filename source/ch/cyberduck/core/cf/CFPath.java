@@ -30,6 +30,8 @@ import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
+import org.w3c.util.DateParser;
+import org.w3c.util.InvalidDateException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -277,9 +279,14 @@ public class CFPath extends CloudPath {
                         if(file.attributes.getType() == Path.FILE_TYPE) {
                             file.attributes.setSize(object.getSize());
                         }
-                        final Date modified = object.getLastModified();
-                        if(null != modified) {
-                            file.attributes.setModificationDate(modified.getTime());
+                        try {
+                            final Date modified = DateParser.parse(object.getLastModified());
+                            if(null != modified) {
+                                file.attributes.setModificationDate(modified.getTime());
+                            }
+                        }
+                        catch(InvalidDateException e) {
+                            log.warn("Not ISO 8601 format:" + e.getMessage());
                         }
                         file.attributes.setOwner(this.attributes.getOwner());
 

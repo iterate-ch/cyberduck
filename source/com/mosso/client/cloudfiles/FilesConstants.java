@@ -12,7 +12,7 @@ public class FilesConstants
 {
     private static Logger logger = Logger.getLogger(FilesConstants.class);
     
-    public static final String USER_AGENT = "java-cloudfiles/1.3.0";
+    public static final String USER_AGENT = "java-cloudfiles/1.3.1";
     
     /** HTTP Header token that identifies the username to Cloud Files **/
     public static final String X_STORAGE_USER   = "x-auth-user";
@@ -56,25 +56,6 @@ public class FilesConstants
     
     /** Prefix Cloud Files expects on all Meta data headers on Objects **/
     public static final String X_OBJECT_META = "X-Object-Meta-";
-
-    /** This code represents the HTTP code returned by Cloud Files that represents Container created **/
-    public static final int CONTAINER_CREATED = 201;
-    /** This code represents the HTTP code returned by Cloud Files that represents Container existed **/
-    public static final int CONTAINER_EXISTED = 202;
-    /** This code represents the HTTP code returned by Cloud Files to indicate a Container was Deleted **/
-    public static final int CONTAINER_DELETED = 204;
-    /** This code represents the HTTP code returned by Cloud Files to indicate a Container was not found  **/
-    public static final int CONTAINER_NOT_FOUND = 404;
-    /** This code represents the HTTP code returned by Cloud Files to indicate a Container was not Empty  **/
-    public static final int CONTAINER_NOT_EMPTY = 409;
-    /** This code represents an object being created in Cloud Files **/
-    public static final int OBJECT_CREATED = 201;
-
-    /** This code represents an object being created in Cloud Files **/
-    public static final int OBJECT_DELETED = 204;
-    
-    /** This code represents an object not being found in Cloud Files **/
-    public static final int OBJECT_NOT_FOUND = 404;
 
     public static Properties MIMETYPES = new Properties ();
 

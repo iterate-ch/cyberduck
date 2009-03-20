@@ -7,8 +7,6 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.httpclient.HttpException;
 
-import java.io.IOException;
-
 /**
  * @author lvaughn
  *
@@ -33,7 +31,7 @@ public class FilesException extends HttpException {
     }
     
     public FilesException(String message, Throwable cause) {
-        super(message, cause);
+    	super(message, cause);
     }
 
     /**
@@ -49,6 +47,8 @@ public class FilesException extends HttpException {
      */
     public String getHttpHeadersAsString ()
     {
+    	if (httpHeaders == null) return "";
+    	
         StringBuffer httpHeaderString = new StringBuffer();
         for (Header h: httpHeaders)
             httpHeaderString.append(h.toExternalForm());
@@ -69,7 +69,7 @@ public class FilesException extends HttpException {
      */
     public int getHttpStatusCode ()
     {
-        return httpStatusLine.getStatusCode();
+        return httpStatusLine == null? -1 : httpStatusLine.getStatusCode();
     }
 
     /**
@@ -77,7 +77,7 @@ public class FilesException extends HttpException {
      */
     public String getHttpStatusMessage ()
     {
-        return httpStatusLine.getReasonPhrase();
+        return httpStatusLine == null ? null : httpStatusLine.getReasonPhrase();
     }
 
     /**
@@ -85,7 +85,7 @@ public class FilesException extends HttpException {
      */
     public String getHttpVersion ()
     {
-        return httpStatusLine.getHttpVersion();
+        return httpStatusLine == null ? null : httpStatusLine.getHttpVersion();
     }
 
 }

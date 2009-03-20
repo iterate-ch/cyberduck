@@ -4,7 +4,6 @@
 
 package com.mosso.client.cloudfiles;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.URLCodec;
@@ -12,31 +11,22 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.util.InvalidDateException;
-import org.w3c.util.DateParser;
 import org.xml.sax.SAXException;
-
-import com.mosso.client.cloudfiles.wrapper.RequestEntityWrapper;
-
-import java.io.IOException;
-import java.util.*;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+
+import com.mosso.client.cloudfiles.wrapper.RequestEntityWrapper;
 
 /**
  * 
@@ -589,7 +579,7 @@ public class FilesClient
     				String eTag = null;
     				long size = -1;
     				String mimeType = null;
-    				Date lastModified = null;
+    				String lastModified = null;
     				NodeList objectData = objectNode.getChildNodes(); 
     				for(int j=0; j < objectData.getLength(); ++j) {
     					Node data = objectData.item(j);
@@ -605,15 +595,11 @@ public class FilesClient
        					else if ("bytes".equals(data.getNodeName())) {
     						size = Long.parseLong(data.getTextContent());
     					}
-       					else if ("last_modified".equals(data.getNodeName())) {
-                            try {
-                                lastModified = DateParser.parse(data.getTextContent());
-                            }
-                            catch(InvalidDateException e) {
-                                logger.warn("Not ISO 8601 format:" + e.getMessage());
-                            }
+       					else
+                        if ("last_modified".equals(data.getNodeName())) {
+       					    lastModified = data.getTextContent();
     					}
-    					else {
+    						else {
     						logger.warn("Unexpected tag:" + data.getNodeName());
     					}
     				}
@@ -1603,7 +1589,7 @@ public class FilesClient
      */
     public boolean storeObjectAs (String container, File obj, String contentType, String name) throws IOException, HttpException, FilesException
     {
-    	return storeObjectAs(container, obj, contentType, name, new HashMap<String,String>());
+    	return storeObjectAs(container, obj, contentType, name, new HashMap<String,String>(), null);
     }	
     
     /**
@@ -1638,7 +1624,7 @@ public class FilesClient
     {
     	return storeObjectAs (container, obj, contentType, name, metadata, null);
     }
-
+    
     /**
      * Store a file on the server, including metadata
      * 
@@ -1656,7 +1642,7 @@ public class FilesClient
     {
     	if (this.isLoggedin())
     	{
-            if (isValidContianerName(container) && isValidObjectName(name) )
+    		if (isValidContianerName(container) && isValidObjectName(name) )
     		{
     			if (!obj.exists())
     			{
@@ -1739,95 +1725,6 @@ public class FilesClient
     	}
     }
 
-    /**
-     * Store a file on the server, including metadata
-     *
-     * @param container   The name of the container
-     * @param obj         The File containing the file to copy over
-     * @param contentType The MIME type of the file
-     * @param name        The name of the file on the server
-     * @param metadata    A map with the metadata as key names and values as the metadata values
-     * @param metadata    The callback object that will be called as the data is sent
-     * @throws IOException   There was an IO error doing network communication
-     * @throws HttpException There was an error with the http protocol
-     * @throws FilesException
-     */
-    public boolean storeObjectAs (String container, String name, RequestEntity entity, Map<String,String> metadata, String md5sum) throws IOException, HttpException, FilesException
-    {
-    	if (this.isLoggedin())
-    	{
-            if (isValidContianerName(container) && isValidObjectName(name) )
-    		{
-    			PutMethod method = null;
-    			try {
-    				method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(name));
-    				method.getParams().setSoTimeout(connectionTimeOut);
-    				method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
-    				if (useETag) {
-    					method.setRequestHeader(FilesConstants.E_TAG, md5sum);
-    				}
-    				method.setRequestEntity(entity);
-    				for(String key : metadata.keySet()) {
-    					method.setRequestHeader(FilesConstants.X_OBJECT_META + key, sanitizeForURI(metadata.get(key)));
-    				}
-    				client.executeMethod(method);
-    				FilesResponse response = new FilesResponse(method);
-
-    				if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-    	       			method.releaseConnection();
-    	    			if(login()) {
-    	    				method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(name));
-    	    				method.getParams().setSoTimeout(connectionTimeOut);
-    	    				method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
-    	    				if (useETag) {
-    	    					method.setRequestHeader(FilesConstants.E_TAG, md5sum);
-    	    				}
-    	    				method.setRequestEntity(entity);
-    	    				for(String key : metadata.keySet()) {
-    	    					method.setRequestHeader(FilesConstants.X_OBJECT_META + key, sanitizeForURI(metadata.get(key)));
-    	    				}
-    	    				client.executeMethod(method);
-    	    				response = new FilesResponse(method);
-    	    			}
-    	    			else {
-    	    				throw new FilesAuthorizationException("Re-login failed", response.getResponseHeaders(), response.getStatusLine());
-    	    			}
-    				}
-    				if (response.getStatusCode() == HttpStatus.SC_CREATED)
-    				{
-    					return true;
-    				}
-    				else if (response.getStatusCode() == HttpStatus.SC_PRECONDITION_FAILED)
-    				{
-    					throw new FilesException("Etag missmatch", response.getResponseHeaders(), response.getStatusLine());
-    				}
-    				else if (response.getStatusCode() == HttpStatus.SC_LENGTH_REQUIRED)
-    				{
-    					throw new FilesException("Length miss-match", response.getResponseHeaders(), response.getStatusLine());
-    				}
-    				else
-    				{
-    					throw new FilesException("Unexpected Server Response", response.getResponseHeaders(), response.getStatusLine());
-    				}
-    			}
-    			finally {
-    				if (method != null) method.releaseConnection();
-    			}
-    		}
-    		else
-    		{
-    			if (!isValidObjectName(name)) {
-    				throw new FilesInvalidNameException(name);
-    			}
-    			else {
-    				throw new FilesInvalidNameException(container);
-    			}
-    		}
-    	}
-    	else {
-       		throw new FilesAuthorizationException("You must be logged in", null, null);
-    	}
-    }
 
     /**
      * Copies the file to Cloud Files, keeping the original file name in Cloud Files.
@@ -1878,12 +1775,13 @@ public class FilesClient
     {
     	if (this.isLoggedin())
     	{
-            if (isValidContianerName(container) && isValidObjectName(name))
+    		String objName	 =  name;
+    		if (isValidContianerName(container) && isValidObjectName(objName))
     		{
 
     			PutMethod method = null;
     			try {
-    				method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(name));
+    				method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(objName));
     				method.getParams().setSoTimeout(connectionTimeOut);
     				method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
     				if (useETag) {
@@ -1900,7 +1798,7 @@ public class FilesClient
     				if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
     					method.releaseConnection();
     					if(login()) {
-    						method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(name));
+    						method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(objName));
     						method.getParams().setSoTimeout(connectionTimeOut);
     						method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
     						if (useETag) {
@@ -1941,8 +1839,8 @@ public class FilesClient
     		}
     		else
     		{
-    			if (!isValidObjectName(name)) {
-    				throw new FilesInvalidNameException(name);
+    			if (!isValidObjectName(objName)) {
+    				throw new FilesInvalidNameException(objName);
     			}
     			else {
     				throw new FilesInvalidNameException(container);
@@ -1973,9 +1871,10 @@ public class FilesClient
     {
     	if (this.isLoggedin())
     	{
-            if (isValidContianerName(container) && isValidObjectName(name))
+			String objName	 =  name;
+			if (isValidContianerName(container) && isValidObjectName(objName))
     		{
-    			PutMethod method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(name));
+    			PutMethod method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(objName));
     			method.setContentChunked(true);
     			method.getParams().setSoTimeout(connectionTimeOut);
     			method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
@@ -2006,8 +1905,87 @@ public class FilesClient
     		}
     		else
     		{
-    			if (!isValidObjectName(name)) {
-    				throw new FilesInvalidNameException(name);
+    			if (!isValidObjectName(objName)) {
+    				throw new FilesInvalidNameException(objName);
+    			}
+    			else {
+    				throw new FilesInvalidNameException(container);
+    			}
+    		}
+    	}
+    	else {       		
+    		throw new FilesAuthorizationException("You must be logged in", null, null);
+    	}
+    }
+
+   /**
+    * 
+    * 
+    * @param container The name of the container
+    * @param name The name of the object
+    * @param entity The name of the request entity (make sure to set the Content-Type
+    * @param metadata The metadata for the object
+    * @param md5sum The 32 character hex encoded MD5 sum of the data
+    * @return True of the save was successful
+    * @throws IOException There was a socket level exception talking to CloudFiles
+    * @throws HttpException There was a protocol level error talking to CloudFiles
+    * @throws FilesException There was an error talking to CloudFiles.
+    */
+public boolean storeObjectAs(String container, String name, RequestEntity entity, Map<String,String> metadata, String md5sum) throws IOException, HttpException, FilesException
+    {
+    	if (this.isLoggedin())
+    	{
+			String objName	 =  name;
+			if (isValidContianerName(container) && isValidObjectName(objName))
+    		{
+    			PutMethod method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(objName));
+    			method.getParams().setSoTimeout(connectionTimeOut);
+    			method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
+    			method.setRequestEntity(entity);
+   				if (useETag && md5sum != null) {
+					method.setRequestHeader(FilesConstants.E_TAG, md5sum);
+   				}
+    			method.setRequestHeader("Content-Type", entity.getContentType());
+    
+    			for(String key : metadata.keySet()) {
+    				method.setRequestHeader(FilesConstants.X_OBJECT_META + key, sanitizeForURI(metadata.get(key)));
+    			}
+    			
+    			try {
+    				client.executeMethod(method);
+        			FilesResponse response = new FilesResponse(method);
+        			if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+        				login();
+        				method = new PutMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(objName));
+            			method.getParams().setSoTimeout(connectionTimeOut);
+            			method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
+            			method.setRequestEntity(entity);
+            			method.setRequestHeader("Content-Type", entity.getContentType());
+            			for(String key : metadata.keySet()) {
+            				method.setRequestHeader(FilesConstants.X_OBJECT_META + key, sanitizeForURI(metadata.get(key)));
+            			}
+            			client.executeMethod(method);
+            			response = new FilesResponse(method);
+        			}
+        			
+        			if (response.getStatusCode() == HttpStatus.SC_CREATED)
+        			{
+        				logger.debug ("Object stored : " + name);
+        				return true;
+        			}
+        			else {
+        				logger.debug(response.getStatusLine());
+        				throw new FilesException("Unexpected result", response.getResponseHeaders(), response.getStatusLine());
+        			}
+    			}
+    			finally {	
+    				method.releaseConnection();
+    			}
+    		}
+    		else
+    		{
+    			if (!isValidObjectName(objName)) {
+    				throw new FilesInvalidNameException(objName);
     			}
     			else {
     				throw new FilesInvalidNameException(container);
@@ -2027,37 +2005,37 @@ public class FilesClient
      * @return FilesConstants.OBJECT_DELETED
      * @throws IOException   There was an IO error doing network communication
      * @throws HttpException There was an error with the http protocol
-     * @throws FilesAuthorizationException 
-     * @throws FilesInvalidNameException 
+     * @throws FilesException 
      */
-    public int deleteObject (String container, String objName) throws IOException, HttpException, FilesAuthorizationException, FilesInvalidNameException
+    public void deleteObject (String container, String objName) throws IOException, HttpException, FilesException
     {
-    	int returnCode = -1;
-
     	if (this.isLoggedin())
     	{
     		if (isValidContianerName(container) && isValidObjectName(objName))
     		{
-    			DeleteMethod method = new DeleteMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(objName));
-    			method.getParams().setSoTimeout(connectionTimeOut);
-    			method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
+    			DeleteMethod method = null;
+    			try {
+    				method = new DeleteMethod(storageURL+"/"+sanitizeForURI(container)+"/"+sanitizeForURI(objName));
+    				method.getParams().setSoTimeout(connectionTimeOut);
+    				method.setRequestHeader(FilesConstants.X_AUTH_TOKEN, authToken);
+    				client.executeMethod(method);
+    				FilesResponse response = new FilesResponse(method);
 
-    			client.executeMethod(method);
-
-    			FilesResponse response = new FilesResponse(method);
-
-    			if (response.getStatusCode() == HttpStatus.SC_NO_CONTENT)
-    			{
-    				logger.info ("Object Deleted : "+objName);
-    				returnCode = response.getStatusCode();
+    				if (response.getStatusCode() == HttpStatus.SC_NO_CONTENT)
+    				{
+    					logger.debug ("Object Deleted : "+objName);
+    				}
+    				else if (response.getStatusCode() == HttpStatus.SC_NOT_FOUND)
+    				{
+    					throw new FilesNotFoundException("Object was not found " + objName, response.getResponseHeaders(), response.getStatusLine());
+    				}
+    				else {
+    					throw new FilesException("Unexpected status from server", response.getResponseHeaders(), response.getStatusLine());
+    				}
     			}
-    			else if (response.getStatusCode() == HttpStatus.SC_NOT_FOUND)
-    			{
-    				logger.info ("Object " + objName + " was not found  !");
-    				returnCode = response.getStatusCode();
+    			finally {
+    				if (method != null) method.releaseConnection();
     			}
-
-    			method.releaseConnection();
     		}
     		else
     		{
@@ -2072,7 +2050,6 @@ public class FilesClient
     	else {
        		throw new FilesAuthorizationException("You must be logged in", null, null);
     	}
-    	return returnCode;
     }
 
     /**
@@ -2317,7 +2294,7 @@ public class FilesClient
      * @return The MD5 checksum, as a base 16 encoded string
      * @throws IOException
      */
-    static String md5Sum (File f) throws IOException
+    public static String md5Sum (File f) throws IOException
     {
     	MessageDigest digest;
 		try {
@@ -2355,7 +2332,7 @@ public class FilesClient
      * @return The checksum, represented as a base 16 encoded string.
      * @throws IOException
       */
-    static String md5Sum (byte[] data) throws IOException
+    public static String md5Sum (byte[] data) throws IOException
     {
     	try {
     		MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -2511,10 +2488,6 @@ public class FilesClient
     	this.authenticationURL = authenticationURL;
     }
 
-    public String getCdnManagementURL() {
-        return cdnManagementURL;
-    }
-
 	/**
 	 * @return the useETag
 	 */
@@ -2542,14 +2515,21 @@ public class FilesClient
 		int length = name.length();
 		if (length == 0 || length > FilesConstants.CONTAINER_NAME_LENGTH) return false;
 		if (name.indexOf('/') != -1) return false;
-		if (name.indexOf('?') != -1) return false;
+		//if (name.indexOf('?') != -1) return false;
 		return true;
 	}
 	private boolean isValidObjectName(String name) {
 		if (name == null) return false;
 		int length = name.length();
 		if (length == 0 || length > FilesConstants.OBJECT_NAME_LENGTH) return false;
-		if (name.indexOf('?') != -1) return false;
+		//if (name.indexOf('?') != -1) return false;
 		return true;
+	}
+
+	/**
+	 * @return the cdnManagementURL
+	 */
+	public String getCdnManagementURL() {
+		return cdnManagementURL;
 	}
 }

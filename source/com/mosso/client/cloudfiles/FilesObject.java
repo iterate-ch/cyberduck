@@ -11,14 +11,13 @@ import org.w3c.util.InvalidDateException;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 
 public class FilesObject {
     private String container;
     private String name;
     private String md5sum;
     private long size = -1;
-    private Date last_modified;
+    private String last_modified;
     private String mimeType;
     private FilesClient client = null;
 
@@ -41,7 +40,6 @@ public class FilesObject {
                     setName(obj.getName());
                     setMd5sum(FilesClient.md5Sum(obj));
                     setSize(obj.length());
-                    setLastModified(new Date(obj.lastModified()));
                     setMimeType(mimeType);
                     setClient(container.getClient());
                     setContainer(container.getName());
@@ -159,11 +157,11 @@ public class FilesObject {
         this.size = size;
     }
 
-    public Date getLastModified() {
+    public String getLastModified() {
         return last_modified;
     }
 
-    public void setLastModified(Date last_modified) {
+    public void setLastModified(String last_modified) {
         this.last_modified = last_modified;
     }
 
@@ -234,12 +232,7 @@ public class FilesObject {
         if(metaData != null) {
             setMd5sum(metaData.getETag());
             setSize(Long.parseLong(metaData.getContentLength()));
-            try {
-                setLastModified(DateParser.parse(metaData.getLastModified()));
-            }
-            catch(InvalidDateException e) {
-                logger.warn("Not ISO 8601 format:" + e.getMessage());
-            }
+            setLastModified(metaData.getLastModified());
             setMimeType(metaData.getMimeType());
         }
         return metaData;

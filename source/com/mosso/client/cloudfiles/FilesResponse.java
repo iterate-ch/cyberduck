@@ -108,7 +108,9 @@ public class FilesResponse
      */
     public String getContentLength ()
     {
-       return getResponseHeader("Content-Length").getValue();
+    	Header hdr = getResponseHeader("Content-Length");
+    	if (hdr == null) return "0";
+    	return hdr.getValue();
     }
 
     /**
@@ -118,7 +120,9 @@ public class FilesResponse
      */
     public String getETag ()
     {
-       return getResponseHeader(FilesConstants.E_TAG).getValue(); 
+    	Header hdr = getResponseHeader(FilesConstants.E_TAG);
+    	if (hdr == null) return null;
+    	return hdr.getValue(); 
     }
 
     /**
