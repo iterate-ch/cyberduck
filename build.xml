@@ -250,6 +250,26 @@
 	</target>
 
 	<target name="mirror.release" depends="revision">
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+			   passphrase="">
+		</scp>
+		<scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
+			   todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+			   keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+			   passphrase="">
+		</scp>
 		<!-- Mirror - UZH -->
 		<scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
 			   todir="dkocher@www.icu.uzh.ch:./public_html/cyberduck/"
