@@ -113,7 +113,7 @@ public class DAVSession extends HTTPSession {
                     }
                     try {
                         if(retry > 0) {
-                            login.fail(getHost(), null);
+                            login.fail(getHost(), authscheme.getRealm());
                         }
                         retry++;
                         if(authscheme instanceof RFC2617Scheme) {
