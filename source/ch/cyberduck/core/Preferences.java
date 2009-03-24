@@ -183,6 +183,8 @@ public abstract class Preferences {
          */
         defaults.put("browser.serialize", String.valueOf(true));
 
+        defaults.put("browser.font.size", String.valueOf(11f));
+
         defaults.put("browser.view.autoexpand", String.valueOf(true));
         defaults.put("browser.view.autoexpand.useDelay", String.valueOf(true));
         defaults.put("browser.view.autoexpand.delay", "1.0"); // in seconds

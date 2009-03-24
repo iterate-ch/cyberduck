@@ -1287,7 +1287,8 @@ public class CDBrowserController extends CDWindowController
         ));
 
         // setting appearance attributes
-        this.browserOutlineView.setRowHeight(17f);
+        this.browserOutlineView.setRowHeight(new NSLayoutManager().defaultLineHeightForFont(
+                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))) + 2);
         this._updateBrowserAttributes(this.browserOutlineView);
         // selection properties
         this.browserOutlineView.setAllowsMultipleSelection(true);
@@ -1422,7 +1423,8 @@ public class CDBrowserController extends CDWindowController
         ));
 
         // setting appearance attributes
-        this.browserListView.setRowHeight(17f);
+        this.browserListView.setRowHeight(new NSLayoutManager().defaultLineHeightForFont(
+                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))) + 2);
         this._updateBrowserAttributes(this.browserListView);
         // selection properties
         this.browserListView.setAllowsMultipleSelection(true);

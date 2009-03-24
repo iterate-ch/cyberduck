@@ -56,12 +56,12 @@ public class CDBookmarkCell extends NSCell {
             NSDictionary boldFont;
             NSDictionary tinyFont;
             if(highlighted) { // cell is selected (white font)
-                boldFont = CDTableCellAttributes.BOLD_FONT_HIGHLIGHTED;
-                tinyFont = CDTableCellAttributes.TINY_FONT_HIGHLIGHTED;
+                boldFont = CDTableCellAttributes.highlightedBoldFontWithSize(11.0f);
+                tinyFont = CDTableCellAttributes.highlightedFontWithSize(10.0f);
             }
             else { // cell is not selected (black font)
-                boldFont = CDTableCellAttributes.BOLD_FONT;
-                tinyFont = CDTableCellAttributes.TINY_FONT;
+                boldFont = CDTableCellAttributes.boldFontWithSize(11.0f);
+                tinyFont = CDTableCellAttributes.darkFontWithSize(10.0f);
             }
             if(StringUtils.isNotBlank(bookmark.getNickname())) {
                 NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),

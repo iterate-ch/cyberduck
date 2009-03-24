@@ -177,7 +177,7 @@ public abstract class CDTransferPromptModel extends CDController {
             }
             if(identifier.equals(FILENAME_COLUMN)) {
                 return new NSAttributedString(item.getName(),
-                        CDTableCellAttributes.PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT);
+                        CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
                 return item.getName();

@@ -283,7 +283,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 }
             }
         });
-        this.browserView.setRowHeight(17f);
+        this.browserView.setRowHeight(new NSLayoutManager().defaultLineHeightForFont(
+                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))) + 2);
         // selection properties
         this.browserView.setAllowsMultipleSelection(true);
         this.browserView.setAllowsEmptySelection(true);

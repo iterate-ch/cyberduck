@@ -1,8 +1,5 @@
 package ch.cyberduck.ui.cocoa;
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSAttributedString;
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -21,8 +18,14 @@ import com.apple.cocoa.foundation.NSAttributedString;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.application.*;
+import com.apple.cocoa.foundation.NSAttributedString;
+import com.apple.cocoa.foundation.NSDictionary;
+
+import ch.cyberduck.core.Preferences;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CDTableCellAttributes {
 
@@ -53,149 +56,74 @@ public class CDTableCellAttributes {
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
     }
 
-    public static final NSDictionary PARAGRAPH_DICTIONARY_LEFT_ALIGNEMENT = new NSDictionary(
-            new Object[]{PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
-            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+    public static NSDictionary browserFontLeftAlignment() {
+        return new NSDictionary(
+                new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
+                new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
 
-    public static final NSDictionary PARAGRAPH_DICTIONARY_RIGHHT_ALIGNEMENT = new NSDictionary(
-            new Object[]{PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
+    }
 
-    public static NSDictionary ALERT_FONT = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
-                    NSColor.redColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName});
+    public static NSDictionary browserFontRightAlignment() {
+        return new NSDictionary(
+                new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
+                new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
+    }
 
-    public static final NSDictionary FIXED_FONT = new NSDictionary(
-            new Object[]{
-                    NSFont.userFixedPitchFontOfSize(9.0f),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName}
-    );
+    public static NSDictionary boldFontWithSize(float size) {
+        return new NSDictionary(new Object[]{
+                NSFont.boldSystemFontOfSize(size),
+                PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+                new Object[]{
+                        NSAttributedString.FontAttributeName,
+                        NSAttributedString.ParagraphStyleAttributeName} //keys
+        );
+    }
 
-    public static NSDictionary BOLD_FONT = new NSDictionary(new Object[]{
-            NSFont.boldSystemFontOfSize(11.0f),
-            //								   NSColor.darkGrayColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    //								   NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName} //keys
-    );
+    public static NSDictionary normalFontWithSize(float size) {
+        return new NSDictionary(new Object[]{
+                NSFont.systemFontOfSize(size),
+                PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+                new Object[]{
+                        NSAttributedString.FontAttributeName,
+                        NSAttributedString.ParagraphStyleAttributeName} //keys
+        );
+    }
 
-    public static NSDictionary NORMAL_FONT = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(11.0f),
-                    //								   NSColor.darkGrayColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    //								   NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName} //keys
-    );
+    public static NSDictionary darkFontWithSize(float size) {
+        return new NSDictionary(
+                new Object[]{
+                        NSFont.systemFontOfSize(size),
+                        NSColor.darkGrayColor(),
+                        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+                new Object[]{
+                        NSAttributedString.FontAttributeName,
+                        NSAttributedString.ForegroundColorAttributeName,
+                        NSAttributedString.ParagraphStyleAttributeName} //keys
+        );
+    }
 
-    public static NSDictionary NORMAL_GRAY_FONT = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(11.0f),
-                    NSColor.darkGrayColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName} //keys
-    );
+    public static NSDictionary highlightedBoldFontWithSize(float size) {
+        return new NSDictionary(
+                new Object[]{
+                        NSFont.boldSystemFontOfSize(size),
+                        NSColor.whiteColor(),
+                        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+                new Object[]{
+                        NSAttributedString.FontAttributeName,
+                        NSAttributedString.ForegroundColorAttributeName,
+                        NSAttributedString.ParagraphStyleAttributeName} //keys
+        );
+    }
 
-    public static NSDictionary TINY_FONT = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
-                    NSColor.darkGrayColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName});
-
-    public static NSDictionary TINY_FONT_RIGHT = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
-                    NSColor.darkGrayColor(),
-                    PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName});
-
-    public static NSDictionary ALERT_FONT_HIGHLIGHTED = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
-                    NSColor.redColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName});
-
-    public static final NSDictionary FIXED_FONT_HIGHLIGHTED = new NSDictionary(
-            new Object[]{
-                    NSFont.userFixedPitchFontOfSize(9.0f),
-                    NSColor.whiteColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName}
-    );
-
-    public static NSDictionary BOLD_FONT_HIGHLIGHTED = new NSDictionary(
-            new Object[]{
-                    NSFont.boldSystemFontOfSize(11.0f),
-                    NSColor.whiteColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName} //keys
-    );
-
-    public static NSDictionary NORMAL_FONT_HIGHLIGHTED = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(11.0f),
-                    NSColor.whiteColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName} //keys
-    );
-
-    public static NSDictionary TINY_FONT_HIGHLIGHTED = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
-                    NSColor.whiteColor(),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName
-            }
-
-    );
-
-    public static NSDictionary TINY_FONT_HIGHLIGHTED_RIGHT = new NSDictionary(
-            new Object[]{
-                    NSFont.systemFontOfSize(10.0f),
-                    NSColor.whiteColor(),
-                    PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName});
-
+    public static NSDictionary highlightedFontWithSize(float size) {
+        return new NSDictionary(new Object[]{
+                NSFont.systemFontOfSize(size),
+                NSColor.whiteColor(),
+                PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+                new Object[]{
+                        NSAttributedString.FontAttributeName,
+                        NSAttributedString.ForegroundColorAttributeName,
+                        NSAttributedString.ParagraphStyleAttributeName} //keys
+        );
+    }
 }

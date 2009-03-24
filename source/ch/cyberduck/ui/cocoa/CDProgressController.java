@@ -222,13 +222,13 @@ public class CDProgressController extends CDBundleController {
         if(transfer.getRoot().getLocal().exists()) {
             filesPopup.itemAtIndex(0).setAttributedTitle(
                     new NSAttributedString(filesPopup.itemAtIndex(0).title(),
-                            highlighted ? CDTableCellAttributes.NORMAL_FONT_HIGHLIGHTED : CDTableCellAttributes.NORMAL_FONT)
+                            highlighted ? CDTableCellAttributes.highlightedFontWithSize(11.0f) : CDTableCellAttributes.normalFontWithSize(11.0f))
             );
         }
         else {
             filesPopup.itemAtIndex(0).setAttributedTitle(
                     new NSAttributedString(filesPopup.itemAtIndex(0).title(),
-                            highlighted ? CDTableCellAttributes.NORMAL_FONT_HIGHLIGHTED : CDTableCellAttributes.NORMAL_GRAY_FONT)
+                            highlighted ? CDTableCellAttributes.highlightedFontWithSize(11.0f) : CDTableCellAttributes.darkFontWithSize(11.0f))
             );
         }
     }
