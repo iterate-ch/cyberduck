@@ -56,17 +56,22 @@ public class CDTableCellAttributes {
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
     }
 
+    private static final NSDictionary BROWSER_FONT_ATTRIBUTES_LEFT_ALIGNMENT = new NSDictionary(
+            new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
+            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
+
     public static NSDictionary browserFontLeftAlignment() {
-        return new NSDictionary(
-                new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
-                new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
+        return BROWSER_FONT_ATTRIBUTES_LEFT_ALIGNMENT;
 
     }
 
+    private static final NSDictionary BROWSER_FONT_ATTRIBUTES_RIGHT_ALIGNMENT = new NSDictionary(
+            new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
+            new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
+
+
     public static NSDictionary browserFontRightAlignment() {
-        return new NSDictionary(
-                new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
-                new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
+        return BROWSER_FONT_ATTRIBUTES_RIGHT_ALIGNMENT;
     }
 
     public static NSDictionary boldFontWithSize(float size) {
