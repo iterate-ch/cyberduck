@@ -45,14 +45,18 @@ public class DAVResource extends WebdavResource {
     }
 
     /**
-     * Test that the httpURL is the same with the client.
+     * Overwritten to make sure the client and its properties are not overwritten when
+     * the credentials change. See #2974.
      *
      * @return true if the given httpURL is the client for this resource.
      */
     protected synchronized boolean isTheClient() throws URIException {
         final HostConfiguration hostConfig = client.getHostConfiguration();
+        // Hack to enable preemptive authentication
+        client.getState().setCredentials(null, httpURL.getHost(), hostCredentials);
         return httpURL.getHost().equalsIgnoreCase(hostConfig.getHost())
                 && httpURL.getPort() == hostConfig.getProtocol().resolvePort(hostConfig.getPort());
+
     }
 
     /**

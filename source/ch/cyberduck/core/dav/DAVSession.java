@@ -25,6 +25,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTPSession;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -102,7 +103,22 @@ public class DAVSession extends HTTPSession {
 
     protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
+            if(!credentials.isAnonymousLogin()) {
+                // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+                this.DAV.setCredentials(
+                        new NTCredentials(credentials.getUsername(),
+                                credentials.getPassword(), InetAddress.getLocalHost().getHostName(),
+                                Preferences.instance().getProperty("webdav.ntlm.domain"))
+                );
+            }
+
             final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
+
+            HttpState clientState = client.getState();
+            // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+            clientState.setAuthenticationPreemptive(true);
+
+            client.getParams().setParameter(HttpClientParams.PREEMPTIVE_AUTHENTICATION, true);
             client.getParams().setParameter(CredentialsProvider.PROVIDER, new CredentialsProvider() {
 
                 int retry = 0;
@@ -112,7 +128,9 @@ public class DAVSession extends HTTPSession {
                         return null;
                     }
                     try {
+                        // authstate.isAuthAttempted() && authscheme.isComplete()
                         if(retry > 0) {
+                            // Already tried and failed.
                             login.fail(getHost(), authscheme.getRealm());
                         }
                         retry++;
@@ -127,8 +145,11 @@ public class DAVSession extends HTTPSession {
                         throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
                                 authscheme.getSchemeName());
                     }
+                    catch(LoginCanceledException e) {
+                        throw new CredentialsNotAvailableException();
+                    }
                     catch(IOException e) {
-                        throw new CredentialsNotAvailableException(e.getMessage(), e);
+                        throw new CredentialsNotAvailableException();
                     }
                 }
             });
@@ -142,14 +163,9 @@ public class DAVSession extends HTTPSession {
         }
         catch(HttpException e) {
             if(e.getReasonCode() == HttpStatus.SC_UNAUTHORIZED) {
-                this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
-                this.login.fail(host,
-                        e.getReason());
-                this.login();
+                throw new LoginCanceledException();
             }
-            else {
-                throw e;
-            }
+            throw e;
         }
     }
 
