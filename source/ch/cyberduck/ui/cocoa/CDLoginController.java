@@ -18,14 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.LoginController;
-
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
-import org.apache.log4j.Logger;
+import ch.cyberduck.core.*;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -85,7 +84,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                this.updateField(this.textField, message);
+                this.updateField(this.textField, message + ".");
             }
 
             private NSSecureTextField passField; // IBOutlet
@@ -214,7 +213,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             }
 
             public void callback(final int returncode) {
-                if (returncode == CDSheetCallback.DEFAULT_OPTION) {
+                if(returncode == CDSheetCallback.DEFAULT_OPTION) {
                     this.window().endEditingForObject(null);
                     credentials.setUsername((String) userField.objectValue());
                     credentials.setPassword((String) passField.objectValue());
@@ -223,7 +222,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
         };
         c.beginSheet();
 
-        if (c.returnCode() == CDSheetCallback.CANCEL_OPTION) {
+        if(c.returnCode() == CDSheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }
     }
