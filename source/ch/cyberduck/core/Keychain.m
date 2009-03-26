@@ -169,7 +169,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrusted (JNIEnv *en
 	NSString *hostname = convertToNSString(env, jHostname);
 	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
 		.Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
-		.ServerNameLen = [hostname length]+1,
+		.ServerNameLen = [hostname length],
 		.ServerName = [hostname cStringUsingEncoding:NSASCIIStringEncoding],
 		.Flags = 0
 	};
