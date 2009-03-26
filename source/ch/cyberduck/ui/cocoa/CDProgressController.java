@@ -41,17 +41,6 @@ import java.util.TimerTask;
 public class CDProgressController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDProgressController.class);
 
-    private static NSMutableParagraphStyle lineBreakByTruncatingMiddleParagraph = new NSMutableParagraphStyle();
-    private static NSMutableParagraphStyle lineBreakByTruncatingTailParagraph = new NSMutableParagraphStyle();
-
-    static {
-        lineBreakByTruncatingMiddleParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingMiddle);
-        lineBreakByTruncatingTailParagraph.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
-    }
-
-    private static final NSDictionary TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY = new NSDictionary(new Object[]{lineBreakByTruncatingMiddleParagraph},
-            new Object[]{NSAttributedString.ParagraphStyleAttributeName});
-
     /**
      *
      */
@@ -183,15 +172,11 @@ public class CDProgressController extends CDBundleController {
         if(messageText != null) {
             b.append(messageText);
         }
-        messageField.setAttributedStringValue(new NSAttributedString(
-                b.toString(),
-                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+        messageField.setAttributedStringValue(new NSAttributedString(b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setProgressText() {
-        progressField.setAttributedStringValue(new NSAttributedString(
-                meter.getProgress(),
-                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+        progressField.setAttributedStringValue(new NSAttributedString(meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setStatusText() {
@@ -212,8 +197,39 @@ public class CDProgressController extends CDBundleController {
         }
         statusField.setAttributedStringValue(new NSAttributedString(
                 b.toString(),
-                TRUNCATE_MIDDLE_PARAGRAPH_DICTIONARY));
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
+
+    private static final NSDictionary NORMAL_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{
+                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName}
+    );
+
+    private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{
+                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
+                    NSColor.whiteColor(),
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName}
+    );
+
+    private static final NSDictionary DARK_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{
+                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
+                    NSColor.darkGrayColor(),
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName}
+    );
 
     public void setHighlighted(final boolean highlighted) {
         statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
@@ -222,13 +238,13 @@ public class CDProgressController extends CDBundleController {
         if(transfer.getRoot().getLocal().exists()) {
             filesPopup.itemAtIndex(0).setAttributedTitle(
                     new NSAttributedString(filesPopup.itemAtIndex(0).title(),
-                            highlighted ? CDTableCellAttributes.highlightedFontWithSize(11.0f) : CDTableCellAttributes.normalFontWithSize(11.0f))
+                            highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
             );
         }
         else {
             filesPopup.itemAtIndex(0).setAttributedTitle(
                     new NSAttributedString(filesPopup.itemAtIndex(0).title(),
-                            highlighted ? CDTableCellAttributes.highlightedFontWithSize(11.0f) : CDTableCellAttributes.darkFontWithSize(11.0f))
+                            highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
             );
         }
     }

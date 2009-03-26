@@ -73,7 +73,7 @@ public class CDErrorController extends CDBundleController {
         this.errorField = errorField;
         this.errorField.setSelectable(true);
         this.errorField.setAttributedStringValue(
-                new NSAttributedString(this.getReadableTitle(failure) + ": " + failure.getMessage(), CDTableCellAttributes.boldFontWithSize(11.0f)));
+                new NSAttributedString(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSView view;

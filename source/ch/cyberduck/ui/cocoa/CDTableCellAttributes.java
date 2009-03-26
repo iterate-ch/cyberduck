@@ -56,79 +56,20 @@ public class CDTableCellAttributes {
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.LineBreakByTruncatingTail);
     }
 
-    private static final NSDictionary BROWSER_FONT_ATTRIBUTES_LEFT_ALIGNMENT = new NSDictionary(
+    protected static final NSDictionary BROWSER_FONT_ATTRIBUTES_LEFT_ALIGNMENT = new NSDictionary(
             new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
             new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
-
+    
     public static NSDictionary browserFontLeftAlignment() {
         return BROWSER_FONT_ATTRIBUTES_LEFT_ALIGNMENT;
-
     }
 
-    private static final NSDictionary BROWSER_FONT_ATTRIBUTES_RIGHT_ALIGNMENT = new NSDictionary(
+    protected static final NSDictionary BROWSER_FONT_ATTRIBUTES_RIGHT_ALIGNMENT = new NSDictionary(
             new Object[]{NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size")), PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL},
             new Object[]{NSAttributedString.FontAttributeName, NSAttributedString.ParagraphStyleAttributeName});
 
 
     public static NSDictionary browserFontRightAlignment() {
         return BROWSER_FONT_ATTRIBUTES_RIGHT_ALIGNMENT;
-    }
-
-    public static NSDictionary boldFontWithSize(float size) {
-        return new NSDictionary(new Object[]{
-                NSFont.boldSystemFontOfSize(size),
-                PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-                new Object[]{
-                        NSAttributedString.FontAttributeName,
-                        NSAttributedString.ParagraphStyleAttributeName} //keys
-        );
-    }
-
-    public static NSDictionary normalFontWithSize(float size) {
-        return new NSDictionary(new Object[]{
-                NSFont.systemFontOfSize(size),
-                PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-                new Object[]{
-                        NSAttributedString.FontAttributeName,
-                        NSAttributedString.ParagraphStyleAttributeName} //keys
-        );
-    }
-
-    public static NSDictionary darkFontWithSize(float size) {
-        return new NSDictionary(
-                new Object[]{
-                        NSFont.systemFontOfSize(size),
-                        NSColor.darkGrayColor(),
-                        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-                new Object[]{
-                        NSAttributedString.FontAttributeName,
-                        NSAttributedString.ForegroundColorAttributeName,
-                        NSAttributedString.ParagraphStyleAttributeName} //keys
-        );
-    }
-
-    public static NSDictionary highlightedBoldFontWithSize(float size) {
-        return new NSDictionary(
-                new Object[]{
-                        NSFont.boldSystemFontOfSize(size),
-                        NSColor.whiteColor(),
-                        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-                new Object[]{
-                        NSAttributedString.FontAttributeName,
-                        NSAttributedString.ForegroundColorAttributeName,
-                        NSAttributedString.ParagraphStyleAttributeName} //keys
-        );
-    }
-
-    public static NSDictionary highlightedFontWithSize(float size) {
-        return new NSDictionary(new Object[]{
-                NSFont.systemFontOfSize(size),
-                NSColor.whiteColor(),
-                PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
-                new Object[]{
-                        NSAttributedString.FontAttributeName,
-                        NSAttributedString.ForegroundColorAttributeName,
-                        NSAttributedString.ParagraphStyleAttributeName} //keys
-        );
     }
 }

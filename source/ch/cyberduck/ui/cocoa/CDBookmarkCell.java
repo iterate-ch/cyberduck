@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSRect;
 import com.apple.cocoa.foundation.NSDictionary;
+import com.apple.cocoa.foundation.NSRect;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -46,6 +46,48 @@ public class CDBookmarkCell extends NSCell {
         return NSCellHitContentArea;
     }
 
+    private static final NSDictionary BOLD_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{
+                    NSFont.boldSystemFontOfSize(NSFont.smallSystemFontSize()),
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName} //keys
+    );
+
+    private static final NSDictionary HIGHLIGHTED_BOLD_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{
+                    NSFont.boldSystemFontOfSize(NSFont.smallSystemFontSize()),
+                    NSColor.whiteColor(),
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName} //keys
+    );
+
+    private static final NSDictionary SMALL_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{
+                    NSFont.systemFontOfSize(NSFont.labelFontSize()),
+                    NSColor.darkGrayColor(),
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName} //keys
+    );
+
+    private static final NSDictionary HIGHLIGHTED_SMALL_FONT_ATTRIBUTES = new NSDictionary(
+            new Object[]{
+                    NSFont.systemFontOfSize(NSFont.labelFontSize()),
+                    NSColor.whiteColor(),
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL}, //objects
+            new Object[]{
+                    NSAttributedString.FontAttributeName,
+                    NSAttributedString.ForegroundColorAttributeName,
+                    NSAttributedString.ParagraphStyleAttributeName} //keys
+    );
+
     public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
         if(bookmark != null) {
             boolean highlighted = this.isHighlighted()
@@ -56,12 +98,12 @@ public class CDBookmarkCell extends NSCell {
             NSDictionary boldFont;
             NSDictionary tinyFont;
             if(highlighted) { // cell is selected (white font)
-                boldFont = CDTableCellAttributes.highlightedBoldFontWithSize(11.0f);
-                tinyFont = CDTableCellAttributes.highlightedFontWithSize(10.0f);
+                boldFont = HIGHLIGHTED_BOLD_FONT_ATTRIBUTES;
+                tinyFont = HIGHLIGHTED_SMALL_FONT_ATTRIBUTES;
             }
             else { // cell is not selected (black font)
-                boldFont = CDTableCellAttributes.boldFontWithSize(11.0f);
-                tinyFont = CDTableCellAttributes.darkFontWithSize(10.0f);
+                boldFont = BOLD_FONT_ATTRIBUTES;
+                tinyFont = SMALL_FONT_ATTRIBUTES;
             }
             if(StringUtils.isNotBlank(bookmark.getNickname())) {
                 NSGraphics.drawAttributedString(new NSAttributedString(bookmark.getNickname(),
