@@ -10,6 +10,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Update passwords in Keychain [#2984]
 - [Bugfix] Invalid Origin parameter when creating CloudFront distribution (S3) [#3068]
 - [Bugfix] Only reauthenticate when needed (Mosso) [#2876]
+- [Bugfix] Improve Interoperability (WebDAV) [#2974, #3076]
 
 3.1.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.2]
 - [Feature] Enforce hostname verification (SSL)
