@@ -25,8 +25,8 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTPSession;
 
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
@@ -131,7 +131,7 @@ public class DAVSession extends HTTPSession {
                         // authstate.isAuthAttempted() && authscheme.isComplete()
                         if(retry > 0) {
                             // Already tried and failed.
-                            login.fail(getHost(), authscheme.getRealm());
+                            login.fail(DAVSession.this.getHost(), host + ":" + port + ". " + authscheme.getRealm());
                         }
                         retry++;
                         if(authscheme instanceof RFC2617Scheme) {
