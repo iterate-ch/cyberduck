@@ -151,6 +151,9 @@ public abstract class Transfer extends NSObject implements Serializable {
                 if(rootDict.objectForKey("Complete") != null) {
                     root.getStatus().setComplete(true);
                 }
+                if(rootDict.objectForKey("Skipped") != null) {
+                    root.getStatus().setSkipped(true);
+                }
                 roots.add(root);
             }
         }
@@ -177,6 +180,9 @@ public abstract class Transfer extends NSObject implements Serializable {
             final NSMutableDictionary rootDict = root.getAsDictionary();
             if(root.getStatus().isComplete()) {
                 rootDict.setObjectForKey(String.valueOf(true), "Complete");
+            }
+            if(root.getStatus().isSkipped()) {
+                rootDict.setObjectForKey(String.valueOf(true), "Skipped");
             }
             r.addObject(rootDict);
         }
@@ -736,6 +742,9 @@ public abstract class Transfer extends NSObject implements Serializable {
     public boolean isComplete() {
         log.debug("isComplete");
         for(Path root : this.roots) {
+            if(root.getStatus().isSkipped()) {
+                continue;
+            }
             if(!root.getStatus().isComplete()) {
                 return false;
             }
