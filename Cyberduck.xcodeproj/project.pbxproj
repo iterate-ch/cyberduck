@@ -224,13 +224,13 @@
 		47BEDB130B92968E00141EB4 /* URLSchemeHandlerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		47C261A90859014400765C4A /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4739F03D08569B5E00405FD3 /* Growl.framework */; };
+		47C278F50F80018300E7453E /* newfolder.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47C278F40F80018300E7453E /* newfolder.tiff */; };
 		47CD32A10751163400B82A2B /* plus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CD32A00751163400B82A2B /* plus.tiff */; };
 		47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327A30F0829EC00619C38 /* rendezvous.tiff */; };
 		47D327C50F096E6C00619C38 /* site.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327C40F096E6C00619C38 /* site.tiff */; };
 		47D3F2FA0CF227E400A78764 /* PrivateFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F60CF227E400A78764 /* PrivateFolderBadgeIcon.icns */; };
 		47D3F2FB0CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */; };
 		47D3F2FC0CF227E400A78764 /* DropFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */; };
-		47D3F2FD0CF227E400A78764 /* NewFolderBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47D3F2F90CF227E400A78764 /* NewFolderBadgeIcon.icns */; };
 		47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D414940F0ECFF300BAF184 /* Security.framework */; };
 		47DC8F0D0869A44E00B9DD7D /* DotMacKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */; };
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
@@ -1295,6 +1295,7 @@
 		47BEDB0E0B92967600141EB4 /* URLSchemeHandlerConfiguration.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = URLSchemeHandlerConfiguration.java; sourceTree = "<group>"; };
 		47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLSchemeHandlerConfiguration.m; sourceTree = "<group>"; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		47C278F40F80018300E7453E /* newfolder.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = newfolder.tiff; sourceTree = "<group>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CD08798D14007A1D39 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1341,7 +1342,6 @@
 		47D3F2F60CF227E400A78764 /* PrivateFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = PrivateFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ReadOnlyFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DropFolderBadgeIcon.icns; sourceTree = "<group>"; };
-		47D3F2F90CF227E400A78764 /* NewFolderBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = NewFolderBadgeIcon.icns; sourceTree = "<group>"; };
 		47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
 		47D414940F0ECFF300BAF184 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47DC7F4308694B5A00B9DD7D /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = build/DotMacKit.framework; sourceTree = "<group>"; };
@@ -1902,7 +1902,6 @@
 				47D3F2F60CF227E400A78764 /* PrivateFolderBadgeIcon.icns */,
 				47D3F2F70CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns */,
 				47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */,
-				47D3F2F90CF227E400A78764 /* NewFolderBadgeIcon.icns */,
 				4741659A06C4FC4000AC0BD2 /* history.tiff */,
 				4741659B06C4FC4000AC0BD2 /* info.tiff */,
 				479F7D740EF5440F00B6FF8D /* multipleDocuments.tiff */,
@@ -1915,6 +1914,7 @@
 				474165A906C4FC4000AC0BD2 /* resume.tiff */,
 				474165AA06C4FC4000AC0BD2 /* reveal.tiff */,
 				474165AD06C4FC4000AC0BD2 /* stop.tiff */,
+				47C278F40F80018300E7453E /* newfolder.tiff */,
 				4741656A06C4FC3F00AC0BD2 /* downloadFile.tiff */,
 				474165B206C4FC4000AC0BD2 /* uploadFile.tiff */,
 				47215AA607FC9A3E00451725 /* login.tiff */,
@@ -2635,7 +2635,6 @@
 				47D3F2FA0CF227E400A78764 /* PrivateFolderBadgeIcon.icns in Resources */,
 				47D3F2FB0CF227E400A78764 /* ReadOnlyFolderBadgeIcon.icns in Resources */,
 				47D3F2FC0CF227E400A78764 /* DropFolderBadgeIcon.icns in Resources */,
-				47D3F2FD0CF227E400A78764 /* NewFolderBadgeIcon.icns in Resources */,
 				47A0C83E0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns in Resources */,
 				479982820D26DA8200DB5353 /* executable.tiff in Resources */,
 				47E987600D689A280077733F /* S3.strings in Resources */,
@@ -2663,6 +2662,7 @@
 				479B52AE0F35DC7600878024 /* dav.png in Resources */,
 				479B52B00F35DC7A00878024 /* s3.png in Resources */,
 				479B52B20F35DCCA00878024 /* sftp.png in Resources */,
+				47C278F50F80018300E7453E /* newfolder.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
