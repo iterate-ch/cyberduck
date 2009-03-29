@@ -38,7 +38,7 @@ public class CDFolderController extends CDFileController {
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
-        this.iconView.setImage(CDIconCache.FOLDER_NEW_ICON);
+        this.iconView.setImage(CDIconCache.instance().iconForName("newfolder.tiff", 128));
     }
 
     public CDFolderController(final CDWindowController parent) {

@@ -67,21 +67,6 @@ public class CDIconCache extends HashMap<String, NSImage> {
     private static String FOLDER_PATH
             = Preferences.instance().getProperty("application.support.path");
 
-    public static final NSImage FOLDER_NEW_ICON;
-
-    static {
-        FOLDER_NEW_ICON = new NSImage(new NSSize(128, 128));
-        FOLDER_NEW_ICON.lockFocus();
-        NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
-                NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
-        f.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW_ICON.size()),
-                NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
-        NSImage o = NSImage.imageNamed("NewFolderBadgeIcon.icns");
-        o.drawInRect(new NSRect(new NSPoint(0, 0), FOLDER_NEW_ICON.size()),
-                NSRect.ZeroRect, NSImage.CompositeSourceOver, 1.0f);
-        FOLDER_NEW_ICON.unlockFocus();
-    }
-
     public static final NSImage FOLDER_ICON = NSWorkspace.sharedWorkspace().iconForFile(
             NSPathUtilities.stringByExpandingTildeInPath(FOLDER_PATH));
 
