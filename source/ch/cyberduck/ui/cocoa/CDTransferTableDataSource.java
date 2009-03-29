@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
+import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSDictionary;
 
@@ -125,7 +122,17 @@ public class CDTransferTableDataSource extends CDController {
         if(row < numberOfRowsInTableView(view)) {
             final String identifier = (String) tableColumn.identifier();
             if(identifier.equals(ICON_COLUMN)) {
-                return this.getSource().get(row);
+                final Transfer transfer = this.getSource().get(row);
+                if(transfer instanceof DownloadTransfer) {
+                    return CDIconCache.instance().iconForName("arrowDown", 32);
+                }
+                else if(transfer instanceof UploadTransfer) {
+                    return CDIconCache.instance().iconForName("arrowUp", 32);
+                }
+                else if(transfer instanceof SyncTransfer) {
+                    return CDIconCache.instance().iconForName("sync", 32);
+                }
+                return null;
             }
             if(identifier.equals(PROGRESS_COLUMN)) {
                 return controllers.get(this.getSource().get(row));

@@ -369,21 +369,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDTransferTableDataSource.ICON_COLUMN);
-            c.setMinWidth(32f);
-            c.setWidth(32f);
-            c.setMaxWidth(32f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
-            c.setDataCell(new CDTransferIconCell());
-            this.transferTable.addTableColumn(c);
-        }
-        {
-            NSTableColumn c = new NSTableColumn();
             c.setIdentifier(CDTransferTableDataSource.PROGRESS_COLUMN);
             c.setMinWidth(80f);
             c.setWidth(300f);
@@ -393,7 +378,24 @@ public class CDTransferController extends CDWindowController implements NSToolba
             else {
                 c.setResizable(true);
             }
-            c.setDataCell(new CDControllerCell());
+            final CDControllerCell cell = new CDControllerCell();
+            c.setDataCell(cell);
+            this.transferTable.addTableColumn(c);
+        }
+        {
+            NSTableColumn c = new NSTableColumn();
+            c.setIdentifier(CDTransferTableDataSource.ICON_COLUMN);
+            c.setMinWidth(40f);
+            c.setWidth(40f);
+            c.setMaxWidth(40f);
+            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
+                c.setResizingMask(NSTableColumn.AutoresizingMask);
+            }
+            else {
+                c.setResizable(true);
+            }
+            final NSImageCell cell = new NSImageCell();
+            c.setDataCell(cell);
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
