@@ -87,7 +87,11 @@ public abstract class Protocol {
         return false;
     }
 
-    public boolean isConfigurable() {
+    public boolean isHostnameConfigurable() {
+        return true;
+    }
+
+    public boolean isWebUrlConfigurable() {
         return true;
     }
 
@@ -209,12 +213,16 @@ public abstract class Protocol {
             return true;
         }
 
-        public boolean isConfigurable() {
+        public boolean isHostnameConfigurable() {
             return false;
         }
 
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
+        }
+
+        public boolean isWebUrlConfigurable() {
+            return false;
         }
     };
 
@@ -311,12 +319,16 @@ public abstract class Protocol {
             return new String[]{this.getScheme(), "idisk"};
         }
 
-        public boolean isConfigurable() {
+        public boolean isHostnameConfigurable() {
             return false;
         }
 
         public String getDefaultHostname() {
             return "idisk.me.com";
+        }
+
+        public boolean isWebUrlConfigurable() {
+            return false;
         }
     };
 
@@ -349,12 +361,16 @@ public abstract class Protocol {
             return true;
         }
 
-        public boolean isConfigurable() {
+        public boolean isHostnameConfigurable() {
             return false;
         }
 
         public String getDefaultHostname() {
             return "storage.clouddrive.com";
+        }
+
+        public boolean isWebUrlConfigurable() {
+            return false;
         }
     };
 

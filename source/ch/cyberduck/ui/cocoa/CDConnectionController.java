@@ -64,10 +64,9 @@ public class CDConnectionController extends CDSheetController {
         log.debug("protocolSelectionDidChange:" + sender);
         final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
         portField.setIntValue(protocol.getDefaultPort());
-        if(!protocol.isConfigurable()) {
+        if(!protocol.isHostnameConfigurable()) {
             hostField.setEnabled(false);
             portField.setEnabled(false);
-            encodingPopup.selectItemWithTitle(DEFAULT);
             hostField.setStringValue(protocol.getDefaultHostname());
             if(protocol.equals(Protocol.S3)) {
                 ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
@@ -117,7 +116,13 @@ public class CDConnectionController extends CDSheetController {
         }
         connectmodePopup.setEnabled(protocol.equals(Protocol.FTP)
                 || protocol.equals(Protocol.FTP_TLS));
-        encodingPopup.setEnabled(protocol.isConfigurable());
+
+        final boolean supportsCustomEncoding = protocol.equals(Protocol.FTP)
+                || protocol.equals(Protocol.FTP_TLS) || protocol.equals(Protocol.SFTP);
+        if(!supportsCustomEncoding) {
+            encodingPopup.selectItemWithTitle(DEFAULT);
+        }
+        encodingPopup.setEnabled(supportsCustomEncoding);
 
         this.updateIdentity();
         this.updateURLLabel();
@@ -570,7 +575,7 @@ public class CDConnectionController extends CDSheetController {
                     Integer.parseInt(portField.stringValue()),
                     pathField.stringValue());
             if(protocolPopup.selectedItem().representedObject().equals(Protocol.FTP) ||
-                    protocolPopup.selectedItem().representedObject().equals(Protocol.FTP)) {
+                    protocolPopup.selectedItem().representedObject().equals(Protocol.FTP_TLS)) {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
                     host.setFTPConnectMode(null);
                 }

@@ -67,17 +67,17 @@ public class CDBookmarkController extends CDWindowController {
         if(this.host.getProtocol().getDefaultHostname().equals(this.host.getHostname())) {
             this.host.setHostname(selected.getDefaultHostname());
         }
-        if(!selected.isConfigurable()) {
+        if(!selected.isWebUrlConfigurable()) {
             this.host.setWebURL(null);
-            if(selected == Protocol.IDISK) {
-                CDDotMacController controller = new CDDotMacController();
-                final String member = controller.getAccountName();
-                controller.invalidate();
-                if(null != member) {
-                    // Account name configured in System Preferences
-                    this.host.getCredentials().setUsername(member);
-                    this.host.setDefaultPath(Path.DELIMITER + member);
-                }
+        }
+        if(selected.equals(Protocol.IDISK)) {
+            CDDotMacController controller = new CDDotMacController();
+            final String member = controller.getAccountName();
+            controller.invalidate();
+            if(null != member) {
+                // Account name configured in System Preferences
+                this.host.getCredentials().setUsername(member);
+                this.host.setDefaultPath(Path.DELIMITER + member);
             }
         }
         this.host.setProtocol(selected);
@@ -654,7 +654,7 @@ public class CDBookmarkController extends CDWindowController {
     private void init() {
         window.setTitle(host.getNickname());
         this.updateField(hostField, host.getHostname());
-        hostField.setEnabled(host.getProtocol().isConfigurable());
+        hostField.setEnabled(host.getProtocol().isHostnameConfigurable());
         this.updateField(nicknameField, host.getNickname());
         final String url;
         if(StringUtils.isNotBlank(host.getDefaultPath())) {
@@ -668,7 +668,7 @@ public class CDBookmarkController extends CDWindowController {
                         new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
         );
         this.updateField(portField, String.valueOf(host.getPort()));
-        portField.setEnabled(host.getProtocol().isConfigurable());
+        portField.setEnabled(host.getProtocol().isHostnameConfigurable());
         this.updateField(pathField, host.getDefaultPath());
         this.updateField(usernameField, host.getCredentials().getUsername());
         if(host.getProtocol().equals(Protocol.S3)) {
@@ -689,7 +689,8 @@ public class CDBookmarkController extends CDWindowController {
         }
         connectmodePopup.setEnabled(host.getProtocol().equals(Protocol.FTP)
                 || host.getProtocol().equals(Protocol.FTP_TLS));
-        encodingPopup.setEnabled(host.getProtocol().isConfigurable());
+        encodingPopup.setEnabled(host.getProtocol().equals(Protocol.FTP)
+                || host.getProtocol().equals(Protocol.FTP_TLS) || host.getProtocol().equals(Protocol.SFTP));
         if(host.getProtocol().equals(Protocol.FTP)
                 || host.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null == host.getFTPConnectMode()) {
@@ -711,11 +712,9 @@ public class CDBookmarkController extends CDWindowController {
             pkCheckbox.setState(NSCell.OffState);
             pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
         }
-        webURLField.setEnabled(host.getProtocol().isConfigurable());
+        webURLField.setEnabled(host.getProtocol().isWebUrlConfigurable());
         webUrlImage.setToolTip(host.getWebURL());
-        if(!host.getWebURL().equals(host.getDefaultWebURL())) {
-            this.updateField(webURLField, host.getWebURL());
-        }
+        this.updateField(webURLField, host.getWebURL());
         this.updateField(commentField, host.getComment());
     }
 }
