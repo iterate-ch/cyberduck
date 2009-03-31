@@ -1066,7 +1066,7 @@ img/login.tiff -text svneol=unset#image/tiff
 img/me.icns -text
 img/me.png -text svneol=unset#image/png
 img/multipleDocuments.tiff -text svneol=unset#image/tiff
-img/newfolder.tiff -text
+img/newfolder.icns -text
 img/notfound.tiff -text svneol=unset#image/tiff
 img/open.tiff -text svneol=unset#image/tiff
 img/outline.tiff -text svneol=unset#image/tiff

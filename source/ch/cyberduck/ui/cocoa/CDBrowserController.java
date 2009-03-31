@@ -4592,7 +4592,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_NEW_FOLDER, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Create New Folder", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("newfolder.tiff"));
+            item.setImage(NSImage.imageNamed("newfolder.icns"));
             item.setTarget(this);
             item.setAction(new NSSelector("createFolderButtonClicked", new Class[]{Object.class}));
             return item;
