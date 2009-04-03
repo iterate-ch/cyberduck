@@ -239,7 +239,6 @@ public abstract class Preferences {
          */
         defaults.put("browser.editable", String.valueOf(true));
 
-        defaults.put("browser.bookmarkDrawer.smallItems", String.valueOf(false));
         /**
          * Warn before renaming files
          */
@@ -477,6 +476,8 @@ public abstract class Preferences {
          * Read favicon from Web URL
          */
         defaults.put("bookmark.favicon.download", String.valueOf(true));
+
+        defaults.put("bookmark.icon.size", String.valueOf(32));
 
         /**
          * Normalize path names

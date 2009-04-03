@@ -263,11 +263,28 @@ public class CDPreferencesController extends CDWindowController {
         this.bookmarkSizePopup = bookmarkSizePopup;
         this.bookmarkSizePopup.setTarget(this);
         this.bookmarkSizePopup.setAction(new NSSelector("bookmarkSizePopupClicked", new Class[]{NSPopUpButton.class}));
-        this.bookmarkSizePopup.selectItemAtIndex(Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 0 : 1);
+        int size = Preferences.instance().getInteger("bookmark.icon.size");
+        if(size == CDBookmarkCell.SMALL_BOOKMARK_SIZE) {
+            this.bookmarkSizePopup.selectItemAtIndex(0);
+        }
+        if(size == CDBookmarkCell.MEDIUM_BOOKMARK_SIZE) {
+            this.bookmarkSizePopup.selectItemAtIndex(1);
+        }
+        if(size == CDBookmarkCell.LARGE_BOOKMARK_SIZE) {
+            this.bookmarkSizePopup.selectItemAtIndex(2);
+        }
     }
 
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("browser.bookmarkDrawer.smallItems", sender.indexOfSelectedItem() == 0);
+        if(sender.indexOfSelectedItem() == 0) {
+            Preferences.instance().setProperty("bookmark.icon.size", 16);
+        }
+        if(sender.indexOfSelectedItem() == 1) {
+            Preferences.instance().setProperty("bookmark.icon.size", 32);
+        }
+        if(sender.indexOfSelectedItem() == 2) {
+            Preferences.instance().setProperty("bookmark.icon.size", 64);
+        }
         CDBrowserController.updateBookmarkTableRowHeight();
     }
 

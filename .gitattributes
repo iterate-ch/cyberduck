@@ -1036,7 +1036,8 @@ img/connect.tiff -text svneol=unset#image/tiff
 img/connection.tiff -text svneol=unset#image/tiff
 img/dav.icns -text
 img/dav.png -text svneol=unset#image/png
-img/deleteFile.tiff -text svneol=unset#image/tiff
+img/delete.tiff -text svneol=unset#image/tiff
+img/download.tiff -text svneol=unset#image/tiff
 img/download0.icns -text
 img/download1.icns -text
 img/download10.icns -text
@@ -1048,7 +1049,6 @@ img/download6.icns -text
 img/download7.icns -text
 img/download8.icns -text
 img/download9.icns -text
-img/downloadFile.tiff -text svneol=unset#image/tiff
 img/edit.tiff -text svneol=unset#image/tiff
 img/editPressed.tiff -text svneol=unset#image/tiff
 img/eject.tiff -text svneol=unset#image/tiff
@@ -1095,7 +1095,7 @@ img/trash.tiff -text svneol=unset#image/tiff
 img/turtle.tiff -text svneol=unset#image/tiff
 img/unlocked.tiff -text svneol=unset#image/tiff
 img/update.tiff -text svneol=unset#image/tiff
-img/uploadFile.tiff -text svneol=unset#image/tiff
+img/upload.tiff -text svneol=unset#image/tiff
 it.lproj/Alert.nib/classes.nib -text
 it.lproj/Alert.nib/info.nib -text
 it.lproj/Alert.nib/keyedobjects.nib -text

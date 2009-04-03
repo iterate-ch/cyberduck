@@ -504,7 +504,7 @@ public class CDBrowserController extends CDWindowController
             NSWindow window = (NSWindow) windows.objectAtIndex(count);
             CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if(null != controller) {
-                controller._updateBookmarkCellHeight();
+                controller._updateBookmarkCell();
             }
         }
     }
@@ -1533,9 +1533,23 @@ public class CDBrowserController extends CDWindowController
         }
     }
 
-    protected void _updateBookmarkCellHeight() {
-        this.bookmarkTable.setRowHeight(
-                Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 18f : 45f);
+    protected void _updateBookmarkCell() {
+        final int size = Preferences.instance().getInteger("bookmark.icon.size");
+        if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
+            this.bookmarkTable.setRowHeight(18);
+        }
+        if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
+            this.bookmarkTable.setRowHeight(45);
+        }
+        if(CDBookmarkCell.LARGE_BOOKMARK_SIZE == size) {
+            this.bookmarkTable.setRowHeight(70);
+        }
+        final int width = (int)(size * 1.5);
+        final NSTableColumn c = this.bookmarkTable.tableColumnWithIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
+        c.setMinWidth(width);
+        c.setWidth(width);
+        c.setMaxWidth(width);
+        this.bookmarkTable.sizeToFit();
         this.bookmarkTable.reloadData();
     }
 
@@ -1702,17 +1716,12 @@ public class CDBrowserController extends CDWindowController
                         "HostPBoardType" //moving bookmarks
                 }));
 
-        this._updateBookmarkCellHeight();
-
         NSSelector setResizableMaskSelector
                 = new NSSelector("setResizingMask", new Class[]{int.class});
         {
             NSTableColumn c = new NSTableColumn();
             c.setIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
             c.headerCell().setStringValue("");
-            c.setMinWidth(40f);
-            c.setWidth(40f);
-            c.setMaxWidth(40f);
             if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
                 c.setResizingMask(NSTableColumn.AutoresizingMask);
             }
@@ -1753,6 +1762,8 @@ public class CDBrowserController extends CDWindowController
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             this.bookmarkTable.addTableColumn(c);
         }
+
+        this._updateBookmarkCell();
 
         // setting appearance attributes
         this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
@@ -4507,7 +4518,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_DOWNLOAD, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_DOWNLOAD, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Download file", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("downloadFile.tiff"));
+            item.setImage(NSImage.imageNamed("download.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("downloadButtonClicked", new Class[]{Object.class}));
             return item;
@@ -4516,7 +4527,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_UPLOAD, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_UPLOAD, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Upload local file to the remote host", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("uploadFile.tiff"));
+            item.setImage(NSImage.imageNamed("upload.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("uploadButtonClicked", new Class[]{Object.class}));
             return item;
@@ -4583,7 +4594,7 @@ public class CDBrowserController extends CDWindowController
             item.setLabel(NSBundle.localizedString(TOOLBAR_DELETE, "Toolbar item"));
             item.setPaletteLabel(NSBundle.localizedString(TOOLBAR_DELETE, "Toolbar item"));
             item.setToolTip(NSBundle.localizedString("Delete file", "Toolbar item tooltip"));
-            item.setImage(NSImage.imageNamed("deleteFile.tiff"));
+            item.setImage(NSImage.imageNamed("delete.tiff"));
             item.setTarget(this);
             item.setAction(new NSSelector("deleteFileButtonClicked", new Class[]{Object.class}));
             return item;

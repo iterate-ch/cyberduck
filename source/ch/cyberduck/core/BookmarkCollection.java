@@ -61,9 +61,4 @@ public abstract class BookmarkCollection extends Collection<Host> {
     public boolean allowsEdit() {
         return true;
     }
-
-    public NSImage getIcon(Host host) {
-        return CDIconCache.instance().iconForName(host.getProtocol().disk(),
-                Preferences.instance().getBoolean("browser.bookmarkDrawer.smallItems") ? 16 : 32);
-    }
 }

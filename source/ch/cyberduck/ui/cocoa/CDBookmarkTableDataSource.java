@@ -94,10 +94,6 @@ public class CDBookmarkTableDataSource extends CDController {
                 public boolean allowsEdit() {
                     return source.allowsEdit();
                 }
-
-                public NSImage getIcon(Host host) {
-                    return source.getIcon(host);
-                }
             };
             for(Iterator<Host> i = source.iterator(); i.hasNext();) {
                 final Host bookmark = i.next();
@@ -133,7 +129,8 @@ public class CDBookmarkTableDataSource extends CDController {
             final String identifier = (String) tableColumn.identifier();
             final Host host = this.getSource().get(row);
             if(identifier.equals(ICON_COLUMN)) {
-                return source.getIcon(host);
+                return CDIconCache.instance().iconForName(host.getProtocol().disk(),
+                        Preferences.instance().getInteger("bookmark.icon.size"));
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {
                 return host;
