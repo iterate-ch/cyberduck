@@ -95,12 +95,10 @@ public class S3Session extends HTTPSession implements SSLSession {
 
     protected void configure(Jets3tProperties configuration) {
         configuration.setProperty("s3service.s3-endpoint", host.getHostname());
-        configuration.setProperty("s3service.https-only",
-                String.valueOf(host.getProtocol().getScheme().equals("https"))
-        );
+        configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
 
         configuration.setProperty("httpclient.proxy-autodetect", "false");
-        if(host.getProtocol().getScheme().equals("https")) {
+        if(host.getProtocol().isSecure()) {
             if(Proxy.isHTTPSProxyEnabled()) {
                 configuration.setProperty("httpclient.proxy-host", Proxy.getHTTPSProxyHost());
                 configuration.setProperty("httpclient.proxy-port", String.valueOf(Proxy.getHTTPSProxyPort()));
