@@ -22,6 +22,7 @@
             LANGUAGE = Java;
             OUTLETS =             {
                 filesPopup = NSPopUpButton;
+                iconImageView = NSImageView;
                 messageField = NSTextField;
                 progressBar = NSProgressIndicator;
                 progressField = NSTextField;

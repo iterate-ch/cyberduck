@@ -326,6 +326,21 @@ public class CDProgressController extends CDBundleController {
         this.statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
     }
 
+    private NSImageView iconImageView; //IBOutlet
+
+    public void setIconImageView(final NSImageView iconImageView) {
+        this.iconImageView = iconImageView;
+        if(transfer instanceof DownloadTransfer) {
+            iconImageView.setImage(CDIconCache.instance().iconForName("arrowDown", 32));
+        }
+        else if(transfer instanceof UploadTransfer) {
+            iconImageView.setImage(CDIconCache.instance().iconForName("arrowUp", 32));
+        }
+        else if(transfer instanceof SyncTransfer) {
+            iconImageView.setImage(CDIconCache.instance().iconForName("sync", 32));
+        }
+    }
+
     /**
      * The view drawn in the table cell
      */

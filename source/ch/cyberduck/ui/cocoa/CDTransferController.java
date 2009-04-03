@@ -382,22 +382,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
             c.setDataCell(cell);
             this.transferTable.addTableColumn(c);
         }
-        {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDTransferTableDataSource.ICON_COLUMN);
-            c.setMinWidth(40f);
-            c.setWidth(40f);
-            c.setMaxWidth(40f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
-            final NSImageCell cell = new NSImageCell();
-            c.setDataCell(cell);
-            this.transferTable.addTableColumn(c);
-        }
         this.transferTable.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
         this.transferTable.setRowHeight(82f);
         //selection properties

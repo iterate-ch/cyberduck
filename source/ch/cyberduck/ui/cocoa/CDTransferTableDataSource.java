@@ -37,7 +37,6 @@ import java.util.Map;
 public class CDTransferTableDataSource extends CDController {
     private static Logger log = Logger.getLogger(CDTransferTableDataSource.class);
 
-    public static final String ICON_COLUMN = "ICON";
     public static final String PROGRESS_COLUMN = "PROGRESS";
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
@@ -121,19 +120,6 @@ public class CDTransferTableDataSource extends CDController {
     public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < numberOfRowsInTableView(view)) {
             final String identifier = (String) tableColumn.identifier();
-            if(identifier.equals(ICON_COLUMN)) {
-                final Transfer transfer = this.getSource().get(row);
-                if(transfer instanceof DownloadTransfer) {
-                    return CDIconCache.instance().iconForName("arrowDown", 32);
-                }
-                else if(transfer instanceof UploadTransfer) {
-                    return CDIconCache.instance().iconForName("arrowUp", 32);
-                }
-                else if(transfer instanceof SyncTransfer) {
-                    return CDIconCache.instance().iconForName("sync", 32);
-                }
-                return null;
-            }
             if(identifier.equals(PROGRESS_COLUMN)) {
                 return controllers.get(this.getSource().get(row));
             }
