@@ -60,6 +60,13 @@ public class DAVResource extends WebdavResource {
     }
 
     /**
+     * 
+     */
+    public void clearHeaders() {
+        headers.clear();
+    }
+
+    /**
      * Add all additionals headers that have been previously registered
      * with addRequestHeader to the method
      */
@@ -74,12 +81,6 @@ public class DAVResource extends WebdavResource {
 
     public boolean isResume() {
         return resume;
-    }
-
-    private boolean zipped;
-
-    public boolean isZipped() {
-        return zipped;
     }
 
     /**
@@ -107,7 +108,7 @@ public class DAVResource extends WebdavResource {
 
         if(isHttpSuccess(statusCode)) {
             Header contentEncoding = method.getResponseHeader("Content-Encoding");
-            zipped = contentEncoding != null && "gzip".equalsIgnoreCase(contentEncoding.getValue());
+            boolean zipped = contentEncoding != null && "gzip".equalsIgnoreCase(contentEncoding.getValue());
             if(zipped) {
                 return new GZIPInputStream(method.getResponseBodyAsStream());
             }

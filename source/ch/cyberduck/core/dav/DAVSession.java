@@ -58,6 +58,13 @@ public class DAVSession extends HTTPSession {
         super(h);
     }
 
+    public void check() throws IOException {
+        super.check();
+        if(this.isConnected()) {
+            DAV.clearHeaders();
+        }
+    }
+
     protected void configure() throws IOException {
         final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
         client.getHostConfiguration().getParams().setParameter(
@@ -220,9 +227,7 @@ public class DAVSession extends HTTPSession {
     }
 
     protected void noop() throws IOException {
-        if(this.isConnected()) {
-            DAV.getStatusMessage();
-        }
+        ;
     }
 
     public void sendCommand(String command) {
