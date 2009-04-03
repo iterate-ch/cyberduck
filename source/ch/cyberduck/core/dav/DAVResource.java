@@ -144,9 +144,6 @@ public class DAVResource extends WebdavResource {
         method.setUseExpectHeader(true);
 
         generateIfHeader(method);
-        if(getGetContentType() != null && !getGetContentType().equals("")) {
-            method.setRequestHeader("Content-Type", getGetContentType());
-        }
         method.setRequestEntity(requestEntity);
 
         generateTransactionHeader(method);
