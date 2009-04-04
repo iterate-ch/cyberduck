@@ -387,6 +387,10 @@ public class S3Path extends CloudPath {
                     download = ObjectUtils.createPackageForDownload(
                             new S3Object(bucket, this.getKey()),
                             new File(this.getLocal().getAbsolute()), true, false, null);
+                    if(null == download) {
+                        // application/x-directory
+                        return;
+                    }
                     download.setAppendToFile(true);
                     out = download.getOutputStream();
                     if(null == out) {
@@ -476,10 +480,7 @@ public class S3Path extends CloudPath {
                 multi.putObjects(bucket, new S3Object[]{object});
             }
             if(attributes.isDirectory()) {
-                if(this.isContainer()) {
-                    // Create bucket
-                    this.mkdir();
-                }
+                this.mkdir();
             }
         }
         catch(IOException e) {
@@ -572,8 +573,8 @@ public class S3Path extends CloudPath {
                                 p.attributes.setOwner(bucket.getOwner().getDisplayName());
                             }
                             p.attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
-                            childs.add(p);
-                        }
+                                childs.add(p);
+                            }
 
                         priorLastKey = chunk.getPriorLastKey();
                     }
@@ -594,15 +595,22 @@ public class S3Path extends CloudPath {
     public void mkdir() {
         log.debug("mkdir:" + this.getName());
         try {
-            if(!this.isContainer()) {
-                throw new S3Exception("Bucket can only be created at top level");
-            }
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
-
             try {
-                session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
+                if(this.isContainer()) {
+                    // Create bucket
+                    session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
+                }
+//                else {
+//                    S3Object object = new S3Object(this.getBucket(), this.getKey());
+//                    // Set object explicitly to private access by default.
+//                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+//                    object.setContentLength(0);
+//                    object.setContentType(Mimetypes.MIMETYPE_JETS3T_DIRECTORY);
+//                    session.S3.putObject(this.getBucket(), object);
+//                }
             }
             catch(S3ServiceException e) {
                 throw new S3Exception(e);

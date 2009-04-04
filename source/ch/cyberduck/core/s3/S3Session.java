@@ -159,13 +159,22 @@ public class S3Session extends HTTPSession implements SSLSession {
     }
 
     protected void login(final Credentials credentials) throws IOException {
-        try {
             final HostConfiguration hostconfig = new StickyHostConfiguration();
             hostconfig.setHost(host.getHostname(), host.getPort(),
                     new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
                             new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
             );
+            this.login(credentials, hostconfig);
+    }
 
+    /**
+     * 
+     * @param credentials
+     * @param hostconfig
+     * @throws IOException
+     */
+    protected void login(final Credentials credentials, final HostConfiguration hostconfig) throws IOException {
+        try {
             this.S3 = new RestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                     credentials.getPassword()), this.getUserAgent(), new CredentialsProvider() {
                 /**
