@@ -11,6 +11,7 @@
 		470168500EED9EB7005E2CCF /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
+		4709E81B0F864B16005A06CE /* sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4709E81A0F864B16005A06CE /* sync.tiff */; };
 		470E56D508BE3E1E00BDF3CD /* MacOSXForkerIO.c in Sources */ = {isa = PBXBuildFile; fileRef = 470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */; };
 		470E56D608BE3E1F00BDF3CD /* TinAlias.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D108BE3E1E00BDF3CD /* TinAlias.h */; };
 		470E56D708BE3E1F00BDF3CD /* TinFSFork.h in Headers */ = {isa = PBXBuildFile; fileRef = 470E56D208BE3E1E00BDF3CD /* TinFSFork.h */; };
@@ -465,6 +466,7 @@
 		470913200C36FDE00049FBCE /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470913210C36FDE50049FBCE /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_BR; path = pt_BR.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470913220C36FDEA0049FBCE /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_PT; path = pt_PT.lproj/Prompt.nib; sourceTree = "<group>"; };
+		4709E81A0F864B16005A06CE /* sync.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = sync.tiff; sourceTree = "<group>"; };
 		470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacOSXForkerIO.c; sourceTree = "<group>"; };
 		470E56D108BE3E1E00BDF3CD /* TinAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinAlias.h; sourceTree = "<group>"; };
 		470E56D208BE3E1E00BDF3CD /* TinFSFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSFork.h; sourceTree = "<group>"; };
@@ -1912,6 +1914,7 @@
 				474165AD06C4FC4000AC0BD2 /* stop.tiff */,
 				475A4B9F0F8179E200F65EB9 /* newfolder.icns */,
 				4739D39D0F8268D600D2782A /* delete.tiff */,
+				4709E81A0F864B16005A06CE /* sync.tiff */,
 				4739D3990F8268B700D2782A /* upload.tiff */,
 				4739D39A0F8268B700D2782A /* download.tiff */,
 				47215AA607FC9A3E00451725 /* login.tiff */,
@@ -2659,6 +2662,7 @@
 				4739D39B0F8268B700D2782A /* upload.tiff in Resources */,
 				4739D39C0F8268B700D2782A /* download.tiff in Resources */,
 				4739D39E0F8268D600D2782A /* delete.tiff in Resources */,
+				4709E81B0F864B16005A06CE /* sync.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
