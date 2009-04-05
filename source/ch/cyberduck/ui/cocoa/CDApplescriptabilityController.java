@@ -46,20 +46,22 @@ public class CDApplescriptabilityController extends NSScriptCommand {
         log.debug("Received URL from Apple Event:" + arg);
         final Host h = Host.parse(arg);
         if(StringUtils.isNotEmpty(h.getDefaultPath())) {
-            final Session s = SessionFactory.createSession(h);
-            final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
+            if(!h.getDefaultPath().endsWith(Path.DELIMITER)) {
+                final Session s = SessionFactory.createSession(h);
+                final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
 //            final AttributedList<AbstractPath> list = p.list();
 //            // Determine if listable directory
 //            if(!list.attributes().isReadable()) {
-            if(StringUtils.isNotBlank(p.getExtension())) {
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        CDTransferController.instance().startTransfer(new DownloadTransfer(p));
-                    }
-                });
-                return null;
-            }
+                if(StringUtils.isNotBlank(p.getExtension())) {
+                    CDMainApplication.invoke(new DefaultMainAction() {
+                        public void run() {
+                            CDTransferController.instance().startTransfer(new DownloadTransfer(p));
+                        }
+                    });
+                    return null;
+                }
 //            }
+            }
         }
         CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
         doc.mount(h);
