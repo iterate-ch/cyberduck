@@ -3926,7 +3926,9 @@ public class CDBrowserController extends CDWindowController
             }
 
             public void cleanup() {
-                ;
+                if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
+                    CDBrowserController.this.toggleBookmarks(true);
+                }
             }
 
             public String getActivity() {

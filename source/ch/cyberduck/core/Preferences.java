@@ -202,6 +202,8 @@ public abstract class Preferences {
          * Confirm closing the browsing connection
          */
         defaults.put("browser.confirmDisconnect", String.valueOf(false));
+        defaults.put("browser.disconnect.showBookmarks", String.valueOf(false));
+
         /**
          * Display only one info panel and change information according to selection in browser
          */
