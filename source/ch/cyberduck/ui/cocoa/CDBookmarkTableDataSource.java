@@ -213,6 +213,7 @@ public class CDBookmarkTableDataSource extends CDController {
      */
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewAcceptDrop:" + row);
+        final BookmarkCollection source = this.getSource();
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.StringPboardType);
             if(o != null) {
@@ -254,7 +255,7 @@ public class CDBookmarkTableDataSource extends CDController {
                 }
                 else {
                     // The bookmark this file has been dropped onto
-                    Host h = this.getSource().get(row);
+                    Host h = source.get(row);
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
@@ -329,7 +330,7 @@ public class CDBookmarkTableDataSource extends CDController {
             this.promisedDragBookmarks = new Host[rows.count()];
             for(int i = 0; i < rows.count(); i++) {
                 promisedDragBookmarks[i] =
-                        new Host(source.get(((Number) rows.objectAtIndex(i)).intValue()).getAsDictionary());
+                        new Host(this.getSource().get(((Number) rows.objectAtIndex(i)).intValue()).getAsDictionary());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
