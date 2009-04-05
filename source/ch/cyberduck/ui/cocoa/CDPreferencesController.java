@@ -263,27 +263,30 @@ public class CDPreferencesController extends CDWindowController {
         this.bookmarkSizePopup = bookmarkSizePopup;
         this.bookmarkSizePopup.setTarget(this);
         this.bookmarkSizePopup.setAction(new NSSelector("bookmarkSizePopupClicked", new Class[]{NSPopUpButton.class}));
-        int size = Preferences.instance().getInteger("bookmark.icon.size");
-        if(size == CDBookmarkCell.SMALL_BOOKMARK_SIZE) {
+        final int size = Preferences.instance().getInteger("bookmark.icon.size");
+        for(int i = 0; i < this.bookmarkSizePopup.numberOfItems(); i++) {
+            this.bookmarkSizePopup.itemAtIndex(i).setState(NSCell.OffState);
+        }
+        if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
             this.bookmarkSizePopup.selectItemAtIndex(0);
         }
-        if(size == CDBookmarkCell.MEDIUM_BOOKMARK_SIZE) {
+        if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
             this.bookmarkSizePopup.selectItemAtIndex(1);
         }
-        if(size == CDBookmarkCell.LARGE_BOOKMARK_SIZE) {
+        if(CDBookmarkCell.LARGE_BOOKMARK_SIZE == size) {
             this.bookmarkSizePopup.selectItemAtIndex(2);
         }
     }
 
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {
         if(sender.indexOfSelectedItem() == 0) {
-            Preferences.instance().setProperty("bookmark.icon.size", 16);
+            Preferences.instance().setProperty("bookmark.icon.size", CDBookmarkCell.SMALL_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem() == 1) {
-            Preferences.instance().setProperty("bookmark.icon.size", 32);
+            Preferences.instance().setProperty("bookmark.icon.size", CDBookmarkCell.MEDIUM_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem() == 2) {
-            Preferences.instance().setProperty("bookmark.icon.size", 64);
+            Preferences.instance().setProperty("bookmark.icon.size", CDBookmarkCell.LARGE_BOOKMARK_SIZE);
         }
         CDBrowserController.updateBookmarkTableRowHeight();
     }
