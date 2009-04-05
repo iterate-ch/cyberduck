@@ -459,7 +459,24 @@ public class FTPPath extends Path {
 
             session.setWorkdir((Path) this.getParent());
             if(attributes.isFile() && !attributes.isSymbolicLink()) {
-                session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
+                if(recursive) {
+                    // Do not write executable bit for files if not already set when recursively updating directory.
+                    // See #1787
+                    Permission modified = new Permission(perm);
+                    if(!this.attributes.getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                        modified.getOwnerPermissions()[Permission.EXECUTE] = false;
+                    }
+                    if(!this.attributes.getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                        modified.getGroupPermissions()[Permission.EXECUTE] = false;
+                    }
+                    if(!this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                        modified.getOtherPermissions()[Permission.EXECUTE] = false;
+                    }
+                    session.FTP.site(command + " " + modified.getOctalString() + " " + this.getName());
+                }
+                else {
+                    session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
+                }
             }
             else if(attributes.isDirectory()) {
                 session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
@@ -470,6 +487,7 @@ public class FTPPath extends Path {
                         }
                         child.writePermissions(perm, recursive);
                     }
+                    this.invalidate();
                 }
             }
         }
@@ -494,12 +512,10 @@ public class FTPPath extends Path {
                         this.downloadBinary(throttle, listener);
                     }
                 }
-                else
-                if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
+                else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
                     this.downloadBinary(throttle, listener);
                 }
-                else
-                if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
+                else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
                     this.downloadASCII(throttle, listener);
                 }
                 else {

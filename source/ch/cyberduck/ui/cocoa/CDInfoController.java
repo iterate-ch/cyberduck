@@ -394,17 +394,21 @@ public class CDInfoController extends CDWindowController {
             this.ownerField.setStringValue(count > 1 ? "(" + NSBundle.localizedString("Multiple files", "") + ")" :
                     file.attributes.getOwner());
 
-            boolean isDirectorySelected = false;
-            for(Path next : files) {
-                if(next.attributes.isDirectory()) {
-                    isDirectorySelected = true;
+            this.recursiveCheckbox.setEnabled(true);
+            for(Path next: files) {
+                if(next.attributes.isFile()) {
+                    this.recursiveCheckbox.setState(NSCell.OffState);
+                    this.recursiveCheckbox.setEnabled(false);
+                    this.sizeButton.setEnabled(false);
                     break;
                 }
             }
-            this.sizeButton.setEnabled(isDirectorySelected);
-            this.recursiveCheckbox.setEnabled(isDirectorySelected);
-            if(!isDirectorySelected) {
-                this.recursiveCheckbox.setState(NSCell.OffState);
+            this.sizeButton.setEnabled(false);
+            for(Path next: files) {
+                if(next.attributes.isDirectory()) {
+                    this.sizeButton.setEnabled(true);
+                    break;
+                }
             }
 
             // Sum of files
@@ -609,6 +613,7 @@ public class CDInfoController extends CDWindowController {
         sizeProgress.startAnimation(null);
         controller.background(new BrowserBackgroundAction(controller) {
             long size = 0;
+
             public void run() {
                 for(Path next : files) {
                     if(-1 == next.attributes.getSize()) {

@@ -88,6 +88,14 @@ public class Permission {
     private boolean[] other = new boolean[3];
 
     /**
+     * Copy
+     * @param p
+     */
+    public Permission(Permission p) {
+        this(p.getMask());
+    }
+
+    /**
      * @param mask the access string to parse the permissions from.
      *             Must be something between --------- and rwxrwxrwx
      */

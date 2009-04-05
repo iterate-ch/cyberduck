@@ -393,7 +393,24 @@ public class SFTPPath extends Path {
                     this.getName(), perm.getOctalString()));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            attr.permissions = perm.getOctalNumber();
+            if(recursive && this.attributes.isFile()) {
+                // Do not write executable bit for files if not already set when recursively updating directory.
+                // See #1787
+                Permission modified = new Permission(perm);
+                if(!this.attributes.getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                    modified.getOwnerPermissions()[Permission.EXECUTE] = false;
+                }
+                if(!this.attributes.getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                    modified.getGroupPermissions()[Permission.EXECUTE] = false;
+                }
+                if(!this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                    modified.getOtherPermissions()[Permission.EXECUTE] = false;
+                }
+                attr.permissions = modified.getOctalNumber();
+            }
+            else {
+                attr.permissions = perm.getOctalNumber();
+            }
             session.sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes.isDirectory()) {
                 if(recursive) {
@@ -403,6 +420,7 @@ public class SFTPPath extends Path {
                         }
                         child.writePermissions(perm, recursive);
                     }
+                    this.invalidate();
                 }
             }
         }
