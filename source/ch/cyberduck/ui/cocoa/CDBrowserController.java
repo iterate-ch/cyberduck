@@ -2336,22 +2336,16 @@ public class CDBrowserController extends CDWindowController
     }
 
     public void updateStatusLabel(String label) {
-        if(null == label) {
-            label = "";
+        if(StringUtils.isEmpty(label)) {
+            label = NSBundle.localizedString("Disconnected", "Status", "");
             if(this.isMounted()) {
                 if(this.isConnected()) {
                     label = this.getSelectedBrowserView().numberOfRows() + " " + NSBundle.localizedString("Files", "");
                 }
-                else {
-                    label = NSBundle.localizedString("Disconnected", "Status", "");
-                }
             }
         }
-        final String status = label;
         // Update the status label at the bottom of the browser window
-        statusLabel.setAttributedStringValue(new NSAttributedString(
-                status,
-                TRUNCATE_MIDDLE_ATTRIBUTES));
+        statusLabel.setAttributedStringValue(new NSAttributedString(label, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSButton securityLabel; // IBOutlet
@@ -3715,6 +3709,8 @@ public class CDBrowserController extends CDWindowController
 
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
                         securityLabel.setEnabled(false);
+
+                        updateStatusLabel(null);
                     }
                 });
             }
