@@ -226,6 +226,14 @@ public class FTPSession extends Session {
                 host.getProtocol().getName()));
         this.login();
         this.fireConnectionDidOpenEvent();
+        if("UTF-8".equals(this.getEncoding())) {
+            try {
+                this.FTP.utf8();
+            }
+            catch(FTPException e) {
+                log.warn("Failed to negogiate UTF-8 charset:" + e.getMessage());
+            }
+        }
     }
 
     /**

@@ -104,7 +104,6 @@ public class FTPClient {
     private FTPMessageListener listener;
 
     /**
-     *
      * @param encoding
      * @param listener
      */
@@ -116,7 +115,6 @@ public class FTPClient {
     private String[] features;
 
     /**
-     *
      * @param remoteHost  the remote hostname
      * @param controlPort port for control stream (use -1 for the default port)
      * @throws IOException
@@ -138,7 +136,6 @@ public class FTPClient {
     }
 
     /**
-     *
      * @throws IOException
      */
     public void interrupt() throws IOException {
@@ -163,8 +160,9 @@ public class FTPClient {
      */
     public void setStrictReturnCodes(boolean strict) {
         this.strictReturnCodes = strict;
-        if(control != null)
+        if(control != null) {
             control.setStrictReturnCodes(strict);
+        }
     }
 
     /**
@@ -224,12 +222,13 @@ public class FTPClient {
      * @param password user's password
      */
     public void login(String user, String password) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("USER "+user);
+        FTPReply reply = control.sendCommand("USER " + user);
         // we allow for a site with no password - 230 response
         String[] validCodes = {"230", "331"};
         lastValidReply = control.validateReply(reply, validCodes);
-        if(lastValidReply.getReplyCode().equals("230"))
+        if(lastValidReply.getReplyCode().equals("230")) {
             return;
+        }
         else {
             this.password(password);
         }
@@ -243,7 +242,7 @@ public class FTPClient {
      * @param user user name
      */
     public void user(String user) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("USER "+user);
+        FTPReply reply = control.sendCommand("USER " + user);
         // we allow for a site with no password - 230 response
         String[] validCodes = {"230", "331"};
         lastValidReply = control.validateReply(reply, validCodes);
@@ -258,7 +257,7 @@ public class FTPClient {
      * @param password The password.
      */
     public void password(String password) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("PASS "+password);
+        FTPReply reply = control.sendCommand("PASS " + password);
         // we allow for a site with no passwords (202)
         String[] validCodes = {"230", "202"};
         lastValidReply = control.validateReply(reply, validCodes);
@@ -281,7 +280,7 @@ public class FTPClient {
      */
     public static void initSOCKS(int port, String host) {
         Properties props = System.getProperties();
-        props.put(SOCKS_PORT, ""+port);
+        props.put(SOCKS_PORT, "" + port);
         props.put(SOCKS_HOST, host);
         System.setProperties(props);
     }
@@ -325,7 +324,7 @@ public class FTPClient {
     /**
      * Issue arbitrary ftp commands to the FTP server.
      *
-     * @param command    ftp command to be sent to server
+     * @param command ftp command to be sent to server
      * @return the text returned by the FTP server
      */
     public String quote(String command) throws IOException, FTPException {
@@ -343,7 +342,7 @@ public class FTPClient {
      * @return size of file in bytes
      */
     public long size(String remoteFile) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("SIZE "+remoteFile);
+        FTPReply reply = control.sendCommand("SIZE " + remoteFile);
         lastValidReply = control.validateReply(reply, "213");
 
         // parse the reply string .
@@ -352,15 +351,16 @@ public class FTPClient {
         // trim off any trailing characters after a space, e.g. webstar
         // responds to SIZE with 213 55564 bytes
         int spacePos = replyText.indexOf(' ');
-        if(spacePos >= 0)
+        if(spacePos >= 0) {
             replyText = replyText.substring(0, spacePos);
+        }
 
         // parse the reply
         try {
             return Long.parseLong(replyText);
         }
         catch(NumberFormatException ex) {
-            throw new FTPException("Failed to parse reply: "+replyText);
+            throw new FTPException("Failed to parse reply: " + replyText);
         }
     }
 
@@ -375,7 +375,7 @@ public class FTPClient {
      */
     private void restart(long size) throws IOException, FTPException {
         String[] validReplyCodes = {"125", "350"};
-        FTPReply reply = control.sendCommand("REST "+size);
+        FTPReply reply = control.sendCommand("REST " + size);
         lastValidReply = control.validateReply(reply, validReplyCodes);
     }
 
@@ -391,8 +391,9 @@ public class FTPClient {
         // permit 426/450 error if we cancelled the transfer, otherwise
         // throw an exception
         String code = reply.getReplyCode();
-        if((code.equals("426") || code.equals("450")) && !cancelTransfer)
+        if((code.equals("426") || code.equals("450")) && !cancelTransfer) {
             throw new FTPException(reply);
+        }
 
         lastValidReply = control.validateReply(reply, validCodes);
     }
@@ -442,7 +443,7 @@ public class FTPClient {
      * @param remoteFile name of remote file
      */
     private void initGet(String remoteFile, long resume) throws IOException, FTPException {
-        final String cmd = "RETR "+remoteFile;
+        final String cmd = "RETR " + remoteFile;
 
         this.pret(cmd);
 
@@ -496,7 +497,7 @@ public class FTPClient {
      */
     public boolean site(String command) throws IOException, FTPException {
         // send the retrieve command
-        FTPReply reply = control.sendCommand("SITE "+command);
+        FTPReply reply = control.sendCommand("SITE " + command);
 
         // Can get a 200 (ok) or 202 (not impl). Some
         // FTP servers return 502 (not impl)
@@ -518,14 +519,14 @@ public class FTPClient {
     /**
      * Issue the FTP STAT command to the server for a given pathname.  This
      * should produce a listing of the file or directory.
-     *
+     * <p/>
      * Popular FTP servers already support "STAT -l" command to
      * transferring dir list via control channel.
      *
+     * @return Null if there is no result returned from the command and the feature
+     *         may be not supported
      * @throws IOException
      * @throws FTPException
-     * @return Null if there is no result returned from the command and the feature
-     * may be not supported
      */
     public BufferedReader stat(String pathname) throws IOException, FTPException {
         if(statListSupportedEnabled) {
@@ -576,9 +577,8 @@ public class FTPClient {
     }
 
     /**
-     *
      * @param encoding
-     * @param flag Try with -a flag first
+     * @param flag     Try with -a flag first
      * @return May return null for empty directory listing
      * @throws IOException
      * @throws FTPException
@@ -644,7 +644,6 @@ public class FTPClient {
     }
 
     /**
-     *
      * @throws IOException
      * @throws FTPException
      */
@@ -698,11 +697,12 @@ public class FTPClient {
         if(!type.equals(this.transferType)) {
             // determine the character to send
             String typeStr = FTPTransferType.ASCII_CHAR;
-            if(type.equals(FTPTransferType.BINARY))
+            if(type.equals(FTPTransferType.BINARY)) {
                 typeStr = FTPTransferType.BINARY_CHAR;
+            }
 
             // send the command
-            FTPReply reply = control.sendCommand("TYPE "+typeStr);
+            FTPReply reply = control.sendCommand("TYPE " + typeStr);
             lastValidReply = control.validateReply(reply, "200");
         }
         // record the type
@@ -717,7 +717,7 @@ public class FTPClient {
      *                   delete
      */
     public void delete(String remoteFile) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("DELE "+remoteFile);
+        FTPReply reply = control.sendCommand("DELE " + remoteFile);
         lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
     }
 
@@ -729,10 +729,10 @@ public class FTPClient {
      * @param to   intended name
      */
     public void rename(String from, String to) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("RNFR "+from);
+        FTPReply reply = control.sendCommand("RNFR " + from);
         lastValidReply = control.validateReply(reply, "350");
 
-        reply = control.sendCommand("RNTO "+to);
+        reply = control.sendCommand("RNTO " + to);
         lastValidReply = control.validateReply(reply, new String[]{"200", "250"});
     }
 
@@ -744,7 +744,7 @@ public class FTPClient {
      *            delete
      */
     public void rmdir(String dir) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("RMD "+dir);
+        FTPReply reply = control.sendCommand("RMD " + dir);
         // some servers return 200,257, technically incorrect but
         // we cater for it ...
         lastValidReply = control.validateReply(reply, new String[]{"200", "250", "257"});
@@ -758,7 +758,7 @@ public class FTPClient {
      *            create
      */
     public void mkdir(String dir) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("MKD "+dir);
+        FTPReply reply = control.sendCommand("MKD " + dir);
         // some servers return 200,257, technically incorrect but
         // we cater for it ...
         lastValidReply = control.validateReply(reply, new String[]{"200", "250", "257"});
@@ -773,7 +773,7 @@ public class FTPClient {
      *            change to
      */
     public void chdir(String dir) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("CWD "+dir);
+        FTPReply reply = control.sendCommand("CWD " + dir);
         lastValidReply = control.validateReply(reply, new String[]{"200", "250", "257"});
     }
 
@@ -790,7 +790,7 @@ public class FTPClient {
      * Format to interpret MTDM timestamp
      */
     private SimpleDateFormat tsFormat =
-        new SimpleDateFormat("yyyyMMddHHmmss");
+            new SimpleDateFormat("yyyyMMddHHmmss");
 
     private boolean getModtimeSupported = true;
 
@@ -803,7 +803,7 @@ public class FTPClient {
     public long modtime(String remoteFile, TimeZone timezone) throws IOException, FTPException {
         if(getModtimeSupported) {
             try {
-                FTPReply reply = control.sendCommand("MDTM "+remoteFile);
+                FTPReply reply = control.sendCommand("MDTM " + remoteFile);
                 lastValidReply = control.validateReply(reply, "213");
 
                 tsFormat.setTimeZone(timezone);
@@ -823,7 +823,8 @@ public class FTPClient {
 
     /**
      * Change modification time for a remote file
-     * @param modtime Milliseconds since (00:00:00 GMT, January 1, 1970)
+     *
+     * @param modtime    Milliseconds since (00:00:00 GMT, January 1, 1970)
      * @param remoteFile name of remote file
      */
     public void utime(long modtime, long createdtime, String remoteFile, TimeZone timezone)
@@ -837,10 +838,10 @@ public class FTPClient {
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
                 int offset = timezone.getRawOffset();
-                this.site("UTIME "+remoteFile+" "+tsFormat.format(new Date(modtime-offset))
-                        +" "+tsFormat.format(new Date(modtime-offset))
-                        +" "+tsFormat.format(new Date(createdtime-offset))
-                        +" UTC");
+                this.site("UTIME " + remoteFile + " " + tsFormat.format(new Date(modtime - offset))
+                        + " " + tsFormat.format(new Date(modtime - offset))
+                        + " " + tsFormat.format(new Date(createdtime - offset))
+                        + " UTC");
             }
             catch(FTPException e) {
                 this.setUtimeSupported = false;
@@ -858,7 +859,7 @@ public class FTPClient {
         tsFormat.setTimeZone(timezone);
         if(this.setModtimeSupported) {
             try {
-                FTPReply reply = control.sendCommand("MDTM "+tsFormat.format(new Date(modtime))+" "+remoteFile);
+                FTPReply reply = control.sendCommand("MDTM " + tsFormat.format(new Date(modtime)) + " " + remoteFile);
                 lastValidReply = control.validateReply(reply, "213");
             }
             catch(FTPException e) {
@@ -875,13 +876,14 @@ public class FTPClient {
 
     /**
      * Change the unix permissions of a remote file
+     *
      * @param octal
      * @param remoteFile
      */
     public void setPermissions(String octal, String remoteFile) throws IOException, FTPException {
         if(this.setChmodSupported) {
             try {
-                this.site("CHMOD "+octal+" "+remoteFile);
+                this.site("CHMOD " + octal + " " + remoteFile);
             }
             catch(FTPException e) {
                 this.setChmodSupported = false;
@@ -907,11 +909,13 @@ public class FTPClient {
         // just return the whole reply string
         String text = lastValidReply.getReplyText();
         int start = text.indexOf('"');
-        int end = text.indexOf('"', start+1);
-        if(start >= 0 && end > start)
-            return text.substring(start+1, end);
-        else
+        int end = text.indexOf('"', start + 1);
+        if(start >= 0 && end > start) {
+            return text.substring(start + 1, end);
+        }
+        else {
             return text;
+        }
     }
 
     /**
@@ -944,8 +948,8 @@ public class FTPClient {
         lastValidReply = control.validateReply(reply, new String[]{"225", "226", "426", "450", "451"});
         String replyCode = lastValidReply.getReplyCode();
         if(replyCode.equals("426")
-            || replyCode.equals("450")
-            || replyCode.equals("451")) {
+                || replyCode.equals("450")
+                || replyCode.equals("451")) {
             String[] c = {"225", "226"};
             lastValidReply = control.validateReply(control.readReply(), c);
         }
@@ -1053,6 +1057,7 @@ public class FTPClient {
 
     /**
      * http://drftpd.org/index.php/PRET_Specifications
+     *
      * @param cmd
      * @throws IOException
      */
@@ -1060,13 +1065,52 @@ public class FTPClient {
         try {
             if(this.isPRETSupported()) {
                 // PRET support
-                control.sendCommand("PRET "+cmd);
+                control.sendCommand("PRET " + cmd);
             }
         }
         catch(FTPException e) {
-            log.warn("PRET (PRE Transfer) command not supported:"+e.getMessage());
+            log.warn("PRET (PRE Transfer) command not supported:" + e.getMessage());
         }
     }
+
+    protected boolean isUTF8Supported() {
+        try {
+            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+                if("UTF8".equals(((String) iter.next()).trim())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch(IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     * The user issues the OPTS UTF-8 command to indicate its willingness to
+     * send and receive UTF-8 encoded pathnames over the control connection.
+     * Prior to sending this command, the user should not transmit UTF-8
+     * encoded pathnames.
+     */
+    public String utf8() throws IOException, FTPException {
+        // Before sending the UTF-8 option, the user should issue the FEAT
+        // command and examine the response to that command.  If the response
+        // contains the UTF-8 option, the user should take that option to mean
+        // the server is willing to transmit UTF-8 encoded pathnames, and may
+        // support the OPTS UTF-8 command to enable their use.  Note that the
+        // specification of the OPTS command, and the OPTS UTF-8 variant,
+        // provide a reliable means to determine support for UTF-8 encoded
+        // pathnames; no harmful effect occurs if the user does not issue the
+        // FEAT command
+        if(this.isUTF8Supported()) {
+            FTPReply reply = control.sendCommand("OPTS UTF8 ON");
+            lastValidReply = control.validateReply(reply, new String[]{"200"});
+            return lastValidReply.getReplyText();
+        }
+        throw new FTPException("No support for UTF8 option");
+    }
+
 
     /**
      * Quit the FTP session
