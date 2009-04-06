@@ -502,11 +502,9 @@ public class SFTPPath extends Path {
                     else {
                         handle = session.sftp().createFileTruncate(this.getAbsolute());
                     }
-                }
-                // We do set the permissions here as otherwise we might have an empty mask for
-                // interrupted file transfers
-                if(null != p) {
-                    if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
+                    // We do set the permissions here as otherwise we might have an empty mask for
+                    // interrupted file transfers
+                    if(null != p) {
                         try {
                             log.info("Updating permissions:" + p.getOctalString());
                             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
@@ -520,8 +518,6 @@ public class SFTPPath extends Path {
                             log.warn(e.getMessage());
                         }
                     }
-                }
-                if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     out = new SFTPOutputStream(handle);
                     if(getStatus().isResume()) {
                         long skipped = ((SFTPOutputStream) out).skip(getStatus().getCurrent());
@@ -531,7 +527,7 @@ public class SFTPPath extends Path {
                         }
                     }
                 }
-                if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
+                else if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
                     SCPClient scp = session.openScp();
                     scp.setCharset(session.getEncoding());
                     out = scp.put(this.getName(), this.getLocal().attributes.getSize(),

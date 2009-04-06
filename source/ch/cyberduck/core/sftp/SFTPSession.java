@@ -107,9 +107,14 @@ public class SFTPSession extends Session {
                 throw new LoginCanceledException();
             }
             this.message(NSBundle.localizedString("Starting SFTP subsystem", "Status", ""));
-            SFTP = new SFTPv3Client(SSH);
-            this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
-            SFTP.setCharset(this.getEncoding());
+            try {
+                SFTP = new SFTPv3Client(SSH);
+                this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
+                SFTP.setCharset(this.getEncoding());
+            }
+            catch(IOException e) {
+                this.error(null, e.getMessage(), e);
+            }
         }
         return SFTP;
     }
