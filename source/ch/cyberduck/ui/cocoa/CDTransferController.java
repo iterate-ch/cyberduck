@@ -111,7 +111,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void queueSizeStepperChanged(final Object sender) {
         synchronized(Queue.instance()) {
-            Queue.instance().notifyAll();
+            Queue.instance().notify();
         }
     }
 
