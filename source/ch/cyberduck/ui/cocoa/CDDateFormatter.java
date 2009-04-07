@@ -22,8 +22,6 @@ import com.apple.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
-import java.util.TimeZone;
-
 /**
  * @version $Id$
  */
@@ -61,32 +59,13 @@ public class CDDateFormatter {
     }
 
     /**
-     * Converts a java.util.TimeZone to a instance of NSTimeZone
-     *
-     * @param timezone
-     * @return The equivalant NSTimeZone
-     */
-    private static NSTimeZone convertTimeZone(TimeZone timezone) {
-        // Returns null if there is no match for the name.
-        // @warn Purpose of boolean attribute is not known.
-        // @warn No idea why this is returning java.lang.Object instead of NSTimeZone
-        Object o = NSTimeZone.timeZoneWithName(timezone.getID(), false);
-        if(null == o) {
-            log.error("Cannot map timezone " + timezone.getID() + " to NSTimeZone");
-            return NSTimeZone.defaultTimeZone();
-        }
-        return (NSTimeZone) o;
-    }
-
-    /**
      * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
      *
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
-     * @param timezone
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
      */
-    public static String getShortFormat(final long milliseconds, final TimeZone timezone) {
-        return getShortFormat(convertReferenceFrom1970To2001(milliseconds), convertTimeZone(timezone));
+    public static String getShortFormat(final long milliseconds) {
+        return getShortFormat(convertReferenceFrom1970To2001(milliseconds), NSTimeZone.defaultTimeZone());
     }
 
     /**
@@ -128,11 +107,10 @@ public class CDDateFormatter {
      * Date represented as NSUserDefaults.TimeDateFormatString
      *
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
-     * @param timezone
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
-    public static String getLongFormat(final long milliseconds, final TimeZone timezone) {
-        return getLongFormat(milliseconds, convertTimeZone(timezone));
+    public static String getLongFormat(final long milliseconds) {
+        return getLongFormat(milliseconds, NSTimeZone.defaultTimeZone());
     }
 
     /**

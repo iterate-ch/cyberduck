@@ -38,7 +38,7 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
     public String tooltip(Path p) {
         return p.getAbsolute() + "\n"
                 + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                + CDDateFormatter.getLongFormat(p.attributes.getModificationDate(), p.getHost().getTimezone());
+                + CDDateFormatter.getLongFormat(p.attributes.getModificationDate());
     }
 
     public Comparator<Path> getSortingComparator() {

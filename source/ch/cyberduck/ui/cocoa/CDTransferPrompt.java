@@ -199,8 +199,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         }
                         else {
                             localModificationField.setAttributedStringValue(new NSAttributedString(
-                                    CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate(),
-                                            p.getHost().getTimezone()),
+                                    CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         localModificationField.setHidden(false);
@@ -230,8 +229,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         }
                         else {
                             remoteModificationField.setAttributedStringValue(new NSAttributedString(
-                                    CDDateFormatter.getLongFormat(p.attributes.getModificationDate(),
-                                            p.getHost().getTimezone()),
+                                    CDDateFormatter.getLongFormat(p.attributes.getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         remoteModificationField.setHidden(false);

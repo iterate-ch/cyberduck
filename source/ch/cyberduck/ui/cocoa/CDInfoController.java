@@ -387,7 +387,7 @@ public class CDInfoController extends CDWindowController {
                 }
                 else {
                     this.modifiedField.setAttributedStringValue(new NSAttributedString(
-                            CDDateFormatter.getLongFormat(file.attributes.getModificationDate(), file.getHost().getTimezone()),
+                            CDDateFormatter.getLongFormat(file.attributes.getModificationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
             }

@@ -153,8 +153,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
                 if(item.attributes.getModificationDate() != -1) {
-                    return new NSAttributedString(CDDateFormatter.getShortFormat(item.attributes.getModificationDate(),
-                            item.getHost().getTimezone()),
+                    return new NSAttributedString(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
                             CDTableCellAttributes.browserFontLeftAlignment());
                 }
                 return UNKNOWN_STRING;

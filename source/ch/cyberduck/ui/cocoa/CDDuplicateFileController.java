@@ -58,8 +58,7 @@ public class CDDuplicateFileController extends CDFileController {
         else {
             proposal.append(selected.getName().substring(0, selected.getName().lastIndexOf(".")));
         }
-        proposal.append(" (" + CDDateFormatter.getShortFormat(System.currentTimeMillis(),
-                selected.getHost().getTimezone()).replace('/', ':') + ")");
+        proposal.append(" (" + CDDateFormatter.getShortFormat(System.currentTimeMillis()).replace('/', ':') + ")");
         if(null != selected.getExtension()) {
             proposal.append("."+selected.getExtension());
         }
