@@ -20,7 +20,7 @@ import com.apple.cocoa.foundation.NSBundle;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
 */
 public class Speedometer {
     //the time to start counting bytes transfered
@@ -67,9 +67,12 @@ public class Speedometer {
         b.append(" ");
         b.append(Status.getSizeAsString(transfer.getSize()));
         if(transfer.isRunning()) {
+            b.append(" (");
+            b.append((int)(transfer.getTransferred()/transfer.getSize()*100));
+            b.append("%");
             float speed = this.getSpeed();
             if(speed > 0) {
-                b.append(" (");
+                b.append(", ");
                 b.append(Status.getSizeAsString(speed));
                 b.append("/sec");
                 if(transfer.getSize() > 0) {
@@ -78,8 +81,8 @@ public class Speedometer {
                     double remaining = ((transfer.getSize() - this.getBytesTransfered()) / speed);
                     b.append(Status.getRemainingAsString(remaining));
                 }
-                b.append(")");
             }
+            b.append(")");
         }
         return b.toString();
     }
