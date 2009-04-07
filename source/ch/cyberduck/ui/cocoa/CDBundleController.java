@@ -39,12 +39,8 @@ public abstract class CDBundleController extends CDController {
                     NSAttributedString.ParagraphStyleAttributeName});
 
     protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{
-                    NSFont.userFixedPitchFontOfSize(NSFont.smallSystemFontSize()),
-                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE},
-            new Object[]{
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName}
+            new Object[]{NSFont.userFixedPitchFontOfSize(NSFont.smallSystemFontSize())},
+            new Object[]{NSAttributedString.FontAttributeName}
     );
 
     protected void loadBundle() {
