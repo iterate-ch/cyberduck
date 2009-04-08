@@ -109,7 +109,7 @@ public class DAVSession extends HTTPSession {
     }
 
     protected void login() throws IOException {
-        this.login(null);
+        this.login(host.getCredentials());
 
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
