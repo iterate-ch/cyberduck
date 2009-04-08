@@ -34,6 +34,11 @@ public abstract class AbstractLoginController implements LoginController {
      */
     private boolean persisted;
 
+    public void check(final Host host)
+            throws LoginCanceledException {
+        this.check(host, null);
+    }
+
     /**
      * Try to the password from the user or the Keychain
      *
@@ -41,22 +46,26 @@ public abstract class AbstractLoginController implements LoginController {
      * @return true if reasonable values have been found localy or in the keychain or the user
      *         was prompted to for the credentials and new values got entered.
      */
-    public void check(final Host host)
+    public void check(final Host host, String message)
             throws LoginCanceledException {
 
+        StringBuffer reason = new StringBuffer();
+        if(StringUtils.isNotBlank(message)) {
+            reason.append(message).append(". ");
+        }
         final Credentials credentials = host.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             return;
         }
         if(!credentials.isValid()) {
+            final String title = NSBundle.localizedString("Login with username and password", "Credentials", "");
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     log.info("Searching keychain for password...");
                     String passFromKeychain = this.findPassword(host);
                     if(StringUtils.isBlank(passFromKeychain)) {
-                        this.prompt(host,
-                                NSBundle.localizedString("Login with username and password", "Credentials", ""),
-                                NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
+                        reason.append(NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
+                        this.prompt(host, title, reason.toString());
                     }
                     else {
                         persisted = true;
@@ -64,15 +73,13 @@ public abstract class AbstractLoginController implements LoginController {
                     }
                 }
                 else {
-                    this.prompt(host,
-                            NSBundle.localizedString("Login with username and password", "Credentials", ""),
-                            NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
+                    reason.append(NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
+                    this.prompt(host, title, reason.toString());
                 }
             }
             else {
-                this.prompt(host,
-                        NSBundle.localizedString("Login with username and password", "Credentials", ""),
-                        NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
+                reason.append(NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
+                this.prompt(host, title, reason.toString());
             }
         }
     }

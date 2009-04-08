@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 public interface LoginController {
 
+    void check(Host host, String reason) throws LoginCanceledException;
+
     /**
      * @param host
      * @throws LoginCanceledException

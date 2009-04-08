@@ -108,17 +108,18 @@ public class DAVSession extends HTTPSession {
         this.fireConnectionDidOpenEvent();
     }
 
+    protected void login() throws IOException {
+        this.login(null);
+
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+
+        login.success(host);
+    }
+
     protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
-            if(!credentials.isAnonymousLogin()) {
-                // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                this.DAV.setCredentials(
-                        new NTCredentials(credentials.getUsername(),
-                                credentials.getPassword(), InetAddress.getLocalHost().getHostName(),
-                                Preferences.instance().getProperty("webdav.ntlm.domain"))
-                );
-            }
-
             final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
 
             HttpState clientState = client.getState();
@@ -130,16 +131,28 @@ public class DAVSession extends HTTPSession {
 
                 int retry = 0;
 
-                public org.apache.commons.httpclient.Credentials getCredentials(AuthScheme authscheme, String host, int port, boolean proxy) throws CredentialsNotAvailableException {
+                public org.apache.commons.httpclient.Credentials getCredentials(AuthScheme authscheme, String hostname, int port, boolean proxy) throws CredentialsNotAvailableException {
                     if(null == authscheme) {
                         return null;
                     }
                     try {
-                        // authstate.isAuthAttempted() && authscheme.isComplete()
-                        if(retry > 0) {
-                            // Already tried and failed.
-                            login.fail(DAVSession.this.getHost(), host + ":" + port + ". " + authscheme.getRealm());
+                        final StringBuffer realm = new StringBuffer(hostname);
+                        realm.append(":").append(port).append(".");
+                        if(StringUtils.isNotBlank(authscheme.getRealm())) {
+                            realm.append(" ").append(authscheme.getRealm());
                         }
+                        if(0 == retry) {
+                            login.check(host, realm.toString());
+                        }
+                        else {
+                            // authstate.isAuthAttempted() && authscheme.isComplete()
+                            // Already tried and failed.
+                            login.fail(DAVSession.this.getHost(), realm.toString());
+                        }
+
+                        message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+                                credentials.getUsername()));
+
                         retry++;
                         if(authscheme instanceof RFC2617Scheme) {
                             return new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword());
@@ -160,8 +173,6 @@ public class DAVSession extends HTTPSession {
                     }
                 }
             });
-
-            this.configure();
 
             // Try to get basic properties fo this resource using these credentials
             this.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_0);
