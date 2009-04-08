@@ -226,6 +226,56 @@ public abstract class Protocol {
         }
     };
 
+    public static final Protocol EUCALYPTUS = new Protocol() {
+        public String getName() {
+            return "Walrus";
+        }
+
+        public String getDescription() {
+            return NSBundle.localizedString("Eucalyptus Walrus (Elastic Utility Computing Architecture for Linking Your Programs To Useful Systems)", "S3", "");
+        }
+
+        public String getIdentifier() {
+            return "ec";
+        }
+
+        public int getDefaultPort() {
+            return 8773;
+        }
+
+        public String getScheme() {
+            return "http";
+        }
+
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "walrus"};
+        }
+
+        public boolean isSecure() {
+            return false;
+        }
+
+        public boolean isHostnameConfigurable() {
+            return true;
+        }
+
+        public String getDefaultHostname() {
+            return "mayhem9.cs.ucsb.edu";
+        }
+
+        public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        public String disk() {
+            return S3.disk();
+        }
+
+        public String icon() {
+            return S3.icon();
+        }
+    };
+
     public static final Protocol WEBDAV = new Protocol() {
         public String getName() {
             return "WebDAV (HTTP)";
