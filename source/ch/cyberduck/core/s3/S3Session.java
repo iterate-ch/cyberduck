@@ -127,6 +127,17 @@ public class S3Session extends HTTPSession implements SSLSession {
     }
 
     /**
+     *
+     * @param bucket
+     * @return
+     */
+    protected String getHostnameForBucket(String bucket) {
+        return S3Service.generateS3HostnameForBucket(bucket,
+                configuration.getBoolProperty("s3service.disable-dns-buckets", false));
+    }
+
+
+    /**
      * Caching the uses's buckets
      */
     private S3Bucket[] buckets = new S3Bucket[]{};
@@ -268,7 +279,7 @@ public class S3Session extends HTTPSession implements SSLSession {
     public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
         return this.createCloudFrontService().createDistribution(
-                S3Service.generateS3HostnameForBucket(bucket),
+                this.getHostnameForBucket(bucket),
                 String.valueOf(reference), // Caller reference - a unique string value
                 cnames, // CNAME aliases for distribution
                 new Date(reference).toString(), // Comment

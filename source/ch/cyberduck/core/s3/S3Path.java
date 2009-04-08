@@ -159,7 +159,7 @@ public class S3Path extends CloudPath {
         if(null == this._details || !_details.isMetadataComplete()) {
             try {
                 final S3Bucket bucket = this.getBucket();
-                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                session.getTrustManager().setHostname(session.getHostnameForBucket(bucket.getName()));
                 this._details = session.S3.getObjectDetails(bucket, this.getKey());
             }
             catch(S3ServiceException e) {
@@ -182,7 +182,7 @@ public class S3Path extends CloudPath {
             }
             final String bucketname = this.getContainerName();
             try {
-                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucketname));
+                session.getTrustManager().setHostname(session.getHostnameForBucket(bucketname));
                 if(!session.S3.isBucketAccessible(bucketname)) {
                     throw new S3Exception("Bucket not available: " + bucketname);
                 }
@@ -253,7 +253,7 @@ public class S3Path extends CloudPath {
             try {
                 AccessControlList acl = null;
                 final S3Bucket bucket = this.getBucket();
-                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                session.getTrustManager().setHostname(session.getHostnameForBucket(bucket.getName()));
                 if(this.isContainer()) {
                     acl = session.S3.getBucketAcl(bucket);
                 }
@@ -382,7 +382,7 @@ public class S3Path extends CloudPath {
 
                 DownloadPackage download;
                 final S3Bucket bucket = this.getBucket();
-                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                session.getTrustManager().setHostname(session.getHostnameForBucket(bucket.getName()));
                 try {
                     download = ObjectUtils.createPackageForDownload(
                             new S3Object(bucket, this.getKey()),
@@ -472,7 +472,7 @@ public class S3Path extends CloudPath {
 
                 // Transfer
                 final S3Bucket bucket = this.getBucket();
-                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                session.getTrustManager().setHostname(session.getHostnameForBucket(bucket.getName()));
 
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
                         this.getName()));
@@ -514,7 +514,7 @@ public class S3Path extends CloudPath {
                 }
                 else {
                     final S3Bucket bucket = this.getBucket();
-                    session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                    session.getTrustManager().setHostname(session.getHostnameForBucket(bucket.getName()));
                     // Keys can be listed by prefix. By choosing a common prefix
                     // for the names of related keys and marking these keys with
                     // a special character that delimits hierarchy, you can use the list
@@ -573,8 +573,8 @@ public class S3Path extends CloudPath {
                                 p.attributes.setOwner(bucket.getOwner().getDisplayName());
                             }
                             p.attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
-                                childs.add(p);
-                            }
+                            childs.add(p);
+                        }
 
                         priorLastKey = chunk.getPriorLastKey();
                     }
@@ -636,7 +636,7 @@ public class S3Path extends CloudPath {
             try {
                 AccessControlList acl = null;
                 final S3Bucket bucket = this.getBucket();
-                session.getTrustManager().setHostname(RestS3Service.generateS3HostnameForBucket(bucket.getName()));
+                session.getTrustManager().setHostname(session.getHostnameForBucket(bucket.getName()));
                 if(this.isContainer()) {
                     acl = session.S3.getBucketAcl(bucket);
                 }
@@ -834,7 +834,7 @@ public class S3Path extends CloudPath {
         final String key = this.isContainer() ? "" : this.encode(this.getKey());
         if(RestS3Service.isBucketNameValidDNSName(this.getContainerName())) {
             return Protocol.S3.getScheme() + "://"
-                    + RestS3Service.generateS3HostnameForBucket(this.getContainerName()) + key;
+                    + session.getHostnameForBucket(this.getContainerName()) + key;
         }
         else {
             return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + key;
