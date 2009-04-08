@@ -91,9 +91,16 @@ public class S3Session extends HTTPSession implements SSLSession {
         super(h);
     }
 
-    private Jets3tProperties configuration;
+    /**
+     *
+     */
+    protected Jets3tProperties configuration = new Jets3tProperties();
 
-    protected void configure(Jets3tProperties configuration) {
+    /**
+     * 
+     * @param configuration
+     */
+    protected void configure() {
         configuration.setProperty("s3service.s3-endpoint", host.getHostname());
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
 
@@ -160,7 +167,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                 host.getProtocol().getName(), host.getHostname()));
 
         // Configure connection options
-        this.configure(configuration = new Jets3tProperties());
+        this.configure();
 
         // Prompt the login credentials first
         this.login();

@@ -821,7 +821,8 @@ public class S3Path extends CloudPath {
                 session.check();
                 return S3Service.createSignedUrl("GET",
                         this.getContainerName(), this.getName(), null,
-                        null, session.S3.getAWSCredentials(), secondsSinceEpoch, false);
+                        null, session.S3.getAWSCredentials(), secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(),
+                        session.configuration.getBoolProperty("s3service.disable-dns-buckets", false));
             }
             catch(S3ServiceException e) {
                 log.error(e.getMessage());
