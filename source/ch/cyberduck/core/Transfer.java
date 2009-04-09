@@ -97,6 +97,11 @@ public abstract class Transfer extends NSObject implements Serializable {
      */
     private boolean reset;
 
+    /**
+     * Last transfered in milliseconds
+     */
+    private Date timestamp;
+
     public boolean isResumable() {
         if(!this.isComplete()) {
             if(this.getSession() instanceof SFTPSession) {
@@ -161,6 +166,10 @@ public abstract class Transfer extends NSObject implements Serializable {
         if(sizeObj != null) {
             this.size = Double.parseDouble(sizeObj.toString());
         }
+        Object timestampObj = dict.objectForKey("Timestamp");
+        if(timestampObj != null) {
+            this.timestamp = new Date(Long.parseLong(timestampObj.toString()));
+        }
         Object currentObj = dict.objectForKey("Current");
         if(currentObj != null) {
             this.transferred = Double.parseDouble(currentObj.toString());
@@ -189,8 +198,8 @@ public abstract class Transfer extends NSObject implements Serializable {
         dict.setObjectForKey(r, "Roots");
         dict.setObjectForKey(String.valueOf(this.getSize()), "Size");
         dict.setObjectForKey(String.valueOf(this.getTransferred()), "Current");
-        if(this.getSize() == this.getTransferred()) {
-
+        if(timestamp != null) {
+            dict.setObjectForKey(String.valueOf(timestamp.getTime()), "Timestamp");
         }
         if(bandwidth != null) {
             dict.setObjectForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
@@ -254,6 +263,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         synchronized(Queue.instance()) {
             Queue.instance().notify();
         }
+        timestamp = new Date();
     }
 
     protected void fireWillTransferPath(Path path) {
@@ -282,6 +292,14 @@ public abstract class Transfer extends NSObject implements Serializable {
         for(TransferListener listener : listeners) {
             listener.bandwidthChanged(bandwidth);
         }
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public Date getTimestamp() {
+        return timestamp;
     }
 
     /**

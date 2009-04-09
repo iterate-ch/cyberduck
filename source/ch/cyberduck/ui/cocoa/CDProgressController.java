@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Date;
 
 /**
  * @version $Id$
@@ -115,8 +116,12 @@ public class CDProgressController extends CDBundleController {
                 progressBar.stopAnimation(null);
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
-                        // Do not display any progress text when transfer is stopped
                         messageText = null;
+                        // Do not display any progress text when transfer is stopped
+                        final Date timestamp = transfer.getTimestamp();
+                        if(null != timestamp) {
+                            messageText = CDDateFormatter.getLongFormat(timestamp.getTime());
+                        }
                         setMessageText();
                         setProgressText();
                         setStatusText();
