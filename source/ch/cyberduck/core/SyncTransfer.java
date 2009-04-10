@@ -18,14 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
-
+import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSBundle;
+
+import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import java.util.*;
 
@@ -78,7 +79,7 @@ public class SyncTransfer extends Transfer {
 
     public double getSize() {
         final double size = _delegateDownload.getSize() + _delegateUpload.getSize();
-        if (0 == size) {
+        if(0 == size) {
             return super.getSize();
         }
         return size;
@@ -86,7 +87,7 @@ public class SyncTransfer extends Transfer {
 
     public double getTransferred() {
         final double transferred = _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
-        if (0 == transferred) {
+        if(0 == transferred) {
             return super.getTransferred();
         }
         return transferred;
@@ -154,21 +155,22 @@ public class SyncTransfer extends Transfer {
 
         public void prepare(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if (compare.equals(COMPARISON_REMOTE_NEWER)) {
+            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
                 _delegateFilterDownload.prepare(p);
-            } else if (compare.equals(COMPARISON_LOCAL_NEWER)) {
+            }
+            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
                 _delegateFilterUpload.prepare(p);
             }
         }
 
         public boolean accept(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if (!COMPARISON_EQUAL.equals(compare)) {
-                if (compare.equals(COMPARISON_REMOTE_NEWER)) {
+            if(!COMPARISON_EQUAL.equals(compare)) {
+                if(compare.equals(COMPARISON_REMOTE_NEWER)) {
                     // Ask the download delegate for inclusion
                     return _delegateFilterDownload.accept(p);
                 }
-                else if (compare.equals(COMPARISON_LOCAL_NEWER)) {
+                else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
                     // Ask the upload delegate for inclusion
                     return _delegateFilterUpload.accept(p);
                 }
@@ -179,11 +181,11 @@ public class SyncTransfer extends Transfer {
 
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
-        if (action.equals(TransferAction.ACTION_OVERWRITE)) {
+        if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             // When synchronizing, either cancel or overwrite. Resume is not supported
             return ACTION_OVERWRITE;
         }
-        if (action.equals(TransferAction.ACTION_CALLBACK)) {
+        if(action.equals(TransferAction.ACTION_CALLBACK)) {
             TransferAction result = prompt.prompt();
             return this.filter(result); //break out of loop
         }
@@ -193,7 +195,7 @@ public class SyncTransfer extends Transfer {
     private final Cache<Path> _cache = new Cache<Path>();
 
     public AttributedList<Path> childs(final Path parent) {
-        if (!_cache.containsKey(parent)) {
+        if(!_cache.containsKey(parent)) {
             Set<Path> childs = new HashSet<Path>();
             childs.addAll(_delegateDownload.childs(parent));
             childs.addAll(_delegateUpload.childs(parent));
@@ -218,9 +220,10 @@ public class SyncTransfer extends Transfer {
 
     protected void _transferImpl(final Path p) {
         final Comparison compare = this.compare(p);
-        if (compare.equals(COMPARISON_REMOTE_NEWER)) {
+        if(compare.equals(COMPARISON_REMOTE_NEWER)) {
             _delegateDownload._transferImpl(p);
-        } else if (compare.equals(COMPARISON_LOCAL_NEWER)) {
+        }
+        else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
             _delegateUpload._transferImpl(p);
         }
     }
@@ -234,13 +237,13 @@ public class SyncTransfer extends Transfer {
             }, true);
         }
         super.fireTransferDidEnd();
-    }    
+    }
 
     public boolean exists(Path file) {
         if(roots.contains(file)) {
             return true;
         }
-        else if(!this.exists((Path)file.getParent())) {
+        else if(!this.exists((Path) file.getParent())) {
             return false;
         }
         return super.exists(file);
@@ -272,7 +275,7 @@ public class SyncTransfer extends Transfer {
      */
     public static class Comparison {
         public boolean equals(Object other) {
-            if (null == other) {
+            if(null == other) {
                 return false;
             }
             return this == other;
@@ -317,13 +320,13 @@ public class SyncTransfer extends Transfer {
      * @return COMPARISON_REMOTE_NEWER, COMPARISON_LOCAL_NEWER or COMPARISON_EQUAL
      */
     public Comparison compare(Path p) {
-        if (!_comparisons.containsKey(p)) {
+        if(!_comparisons.containsKey(p)) {
             log.debug("compare:" + p);
             Comparison result = COMPARISON_EQUAL;
-            if (SyncTransfer.this.exists(p.getLocal()) && SyncTransfer.this.exists(p)) {
-                if (p.attributes.isFile()) {
+            if(SyncTransfer.this.exists(p.getLocal()) && SyncTransfer.this.exists(p)) {
+                if(p.attributes.isFile()) {
                     result = this.compareSize(p);
-                    if (result.equals(COMPARISON_UNEQUAL)) {
+                    if(result.equals(COMPARISON_UNEQUAL)) {
                         if(this.getAction().equals(ACTION_DOWNLOAD)) {
                             result = COMPARISON_REMOTE_NEWER;
                         }
@@ -336,11 +339,11 @@ public class SyncTransfer extends Transfer {
                     }
                 }
             }
-            else if (SyncTransfer.this.exists(p)) {
+            else if(SyncTransfer.this.exists(p)) {
                 // only the remote file exists
                 result = COMPARISON_REMOTE_NEWER;
             }
-            else if (SyncTransfer.this.exists(p.getLocal())) {
+            else if(SyncTransfer.this.exists(p.getLocal())) {
                 // only the local file exists
                 result = COMPARISON_LOCAL_NEWER;
             }
@@ -357,7 +360,7 @@ public class SyncTransfer extends Transfer {
                     this.setSkipped(p, this.getAction().equals(ACTION_DOWNLOAD));
                 }
             }
-            
+
             _comparisons.put(p, result);
         }
         return _comparisons.get(p);
@@ -369,20 +372,20 @@ public class SyncTransfer extends Transfer {
      */
     private Comparison compareSize(Path p) {
         log.debug("compareSize:" + p);
-        if (p.attributes.getSize() == -1) {
+        if(p.attributes.getSize() == -1) {
             p.readSize();
         }
         //fist make sure both files are larger than 0 bytes
-        if (p.attributes.getSize() == 0 && p.getLocal().attributes.getSize() == 0) {
+        if(p.attributes.getSize() == 0 && p.getLocal().attributes.getSize() == 0) {
             return COMPARISON_EQUAL;
         }
-        if (p.attributes.getSize() == 0) {
+        if(p.attributes.getSize() == 0) {
             return COMPARISON_LOCAL_NEWER;
         }
-        if (p.getLocal().attributes.getSize() == 0) {
+        if(p.getLocal().attributes.getSize() == 0) {
             return COMPARISON_REMOTE_NEWER;
         }
-        if (p.attributes.getSize() == p.getLocal().attributes.getSize()) {
+        if(p.attributes.getSize() == p.getLocal().attributes.getSize()) {
             return COMPARISON_EQUAL;
         }
         //different file size - further comparison check
@@ -395,21 +398,17 @@ public class SyncTransfer extends Transfer {
      */
     private Comparison compareTimestamp(Path p) {
         log.debug("compareTimestamp:" + p);
-        if (p.attributes.getModificationDate() == -1) {
+        if(p.attributes.getModificationDate() == -1
+                || p instanceof FTPPath) {
+            // Make sure we have a UTC timestamp
             p.readTimestamp();
         }
-        Calendar remote = this.asCalendar(
-                p.attributes.getModificationDate(),
-//                        -this.getHost().getTimezone().getRawOffset()
-                p.getHost().getTimezone(),
-                Calendar.SECOND);
-        Calendar local = this.asCalendar(p.getLocal().attributes.getModificationDate(),
-                TimeZone.getDefault(),
-                Calendar.SECOND);
-        if (local.before(remote)) {
+        final Calendar remote = this.asCalendar(p.attributes.getModificationDate(), Calendar.SECOND);
+        final Calendar local = this.asCalendar(p.getLocal().attributes.getModificationDate(), Calendar.SECOND);
+        if(local.before(remote)) {
             return COMPARISON_REMOTE_NEWER;
         }
-        if (local.after(remote)) {
+        if(local.after(remote)) {
             return COMPARISON_LOCAL_NEWER;
         }
         //same timestamp
@@ -422,23 +421,23 @@ public class SyncTransfer extends Transfer {
      * @param precision
      * @return
      */
-    private Calendar asCalendar(final long timestamp, final TimeZone timezone, final int precision) {
+    private Calendar asCalendar(final long timestamp, final int precision) {
         log.debug("asCalendar:" + timestamp);
-        Calendar c = Calendar.getInstance(timezone);
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         c.setTimeInMillis(timestamp);
-        if (precision == Calendar.MILLISECOND) {
+        if(precision == Calendar.MILLISECOND) {
             return c;
         }
         c.clear(Calendar.MILLISECOND);
-        if (precision == Calendar.SECOND) {
+        if(precision == Calendar.SECOND) {
             return c;
         }
         c.clear(Calendar.SECOND);
-        if (precision == Calendar.MINUTE) {
+        if(precision == Calendar.MINUTE) {
             return c;
         }
         c.clear(Calendar.MINUTE);
-        if (precision == Calendar.HOUR) {
+        if(precision == Calendar.HOUR) {
             return c;
         }
         c.clear(Calendar.HOUR);
