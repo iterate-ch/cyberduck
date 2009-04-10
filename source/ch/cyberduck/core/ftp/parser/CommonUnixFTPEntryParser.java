@@ -38,11 +38,10 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     private static Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
 
     /**
-     * @param REGEX
+     * @param regex
      */
-    public CommonUnixFTPEntryParser(String REGEX) {
-        super(REGEX);
-        this.configure(null);
+    public CommonUnixFTPEntryParser(String regex) {
+        super(regex);
     }
 
     public Calendar parseTimestamp(String timestampStr) throws ParseException {

@@ -287,19 +287,6 @@ public class Local extends AbstractPath {
         return false;
     }
 
-//    /**
-//     * @param time     Modification date measured in milliseconds since 00:00:00 <code>timezone</code>, January 1, 1970
-//     * @param timezone
-//     * @return <code>true</code> if and only if the operation succeeded;
-//     *         <code>false</code> otherwise
-//     */
-//    public boolean setLastModified(final long time, final TimeZone timezone) {
-//        super.setLastModified(time);
-//        int offset = TimeZone.getDefault().getRawOffset() /*amount of raw offset time in milliseconds to add to UTC*/
-//                - timezone.getOffset(time); /*amount of time in milliseconds to add to UTC to get local time*/
-//        return super.setLastModified(time + offset);
-//    }
-
     public void delete() {
         this.delete(true);
     }

@@ -311,19 +311,15 @@ public class FTPPath extends Path {
                     this.getName()));
 
             if(attributes.isFile()) {
+                // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
+                // Attempts to query the modification time of files that exist but are unable to be
+                // retrieved may generate an error-response
                 try {
-                    attributes.setModificationDate(session.FTP.modtime(this.getAbsolute(),
-                            this.getHost().getTimezone()));
-                    return;
+                    attributes.setModificationDate(session.FTP.mdtm(this.getAbsolute()));
                 }
                 catch(FTPException e) {
                     log.warn("Cannot read timestamp:" + e.getMessage());
                 }
-            }
-            // Read the timestamp from the directory listing
-            List l = this.getParent().childs();
-            if(l.contains(this)) {
-                attributes.setModificationDate(((AbstractPath) l.get(l.indexOf(this))).attributes.getModificationDate());
             }
         }
         catch(IOException e) {
@@ -693,7 +689,7 @@ public class FTPPath extends Path {
                 log.info("Updating timestamp");
                 try {
                     session.FTP.utime(this.getLocal().attributes.getModificationDate(),
-                            this.getLocal().attributes.getCreationDate(), this.getName(), this.getHost().getTimezone());
+                            this.getLocal().attributes.getCreationDate(), this.getName());
                 }
                 catch(FTPException ignore) {
                     log.warn(ignore.getMessage());

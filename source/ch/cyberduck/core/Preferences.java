@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -403,6 +404,12 @@ public abstract class Preferences {
          * If the parser should not trim whitespace from filenames
          */
         defaults.put("ftp.parser.whitespaceAware", String.valueOf(true));
+
+        /**
+         * Try to determine the timezone automatically using timestamp comparison from MLST and LIST
+         */
+        defaults.put("ftp.timezone.auto", String.valueOf(false));
+        defaults.put("ftp.timezone.default", TimeZone.getDefault().getID());
 
         /**
          * Default bucket location

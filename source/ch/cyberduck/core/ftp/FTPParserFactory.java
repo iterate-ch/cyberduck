@@ -18,13 +18,15 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ftp.parser.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
+import ch.cyberduck.core.ftp.parser.*;
 
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.*;
 import org.apache.log4j.Logger;
+
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -32,78 +34,130 @@ import org.apache.log4j.Logger;
 public class FTPParserFactory implements FTPFileEntryParserFactory {
     private static Logger log = Logger.getLogger(FTPParserFactory.class);
 
-    public FTPFileEntryParser createFileEntryParser(String key) throws ParserInitializationException {
-        if(null != key) {
-            String ukey = key.toUpperCase();
+    public FTPFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
+        if(null != system) {
+            String ukey = system.toUpperCase();
             if(ukey.indexOf(FTPClientConfig.SYST_UNIX) >= 0) {
-                return this.createUnixFTPEntryParser();
+                return this.createUnixFTPEntryParser(timezone);
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_VMS) >= 0) {
-                throw new ParserInitializationException("\"" + key + "\" is not currently a supported system.");
+                throw new ParserInitializationException("\"" + system + "\" is not currently a supported system.");
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_NETWARE) >= 0) {
-                return this.createNetwareFTPEntryParser();
+                return this.createNetwareFTPEntryParser(timezone);
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_NT) >= 0) {
-                return this.createNTFTPEntryParser();
+                return this.createNTFTPEntryParser(timezone);
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_OS2) >= 0) {
-                return this.createOS2FTPEntryParser();
+                return this.createOS2FTPEntryParser(timezone);
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_OS400) >= 0) {
-                return this.createOS400FTPEntryParser();
+                return this.createOS400FTPEntryParser(timezone);
             }
             else if(ukey.indexOf(FTPClientConfig.SYST_MVS) >= 0) {
-                return this.createMVSEntryParser();
+                return this.createMVSEntryParser(timezone);
             }
         }
         // Defaulting to UNIX parser
-        return this.createUnixFTPEntryParser();
+        return this.createUnixFTPEntryParser(timezone);
+    }
+
+    public FTPFileEntryParser createFileEntryParser(String system) throws ParserInitializationException {
+        return this.createFileEntryParser(system, TimeZone.getDefault());
     }
 
     public FTPFileEntryParser createFileEntryParser(FTPClientConfig config) throws ParserInitializationException {
-        return this.createFileEntryParser(config.getServerSystemKey());
+        return this.createFileEntryParser(config.getServerSystemKey(), TimeZone.getTimeZone(config.getServerTimeZoneId()));
     }
 
-    private FTPFileEntryParser createUnixFTPEntryParser() {
+    private FTPFileEntryParser createUnixFTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        new LaxUnixFTPEntryParser(),
+                        new LaxUnixFTPEntryParser() {
+                            protected FTPClientConfig getDefaultConfiguration() {
+                                final FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setServerTimeZoneId(timezone.getID());
+                                return config;
+                            }
+                        },
                         new EPLFFTPEntryParser(),
-                        new RumpusFTPEntryParser(),
-                        new TrellixFTPEntryParser()
+                        new RumpusFTPEntryParser() {
+                            protected FTPClientConfig getDefaultConfiguration() {
+                                final FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setServerTimeZoneId(timezone.getID());
+                                return config;
+                            }
+                        },
+                        new TrellixFTPEntryParser() {
+                            protected FTPClientConfig getDefaultConfiguration() {
+                                final FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setServerTimeZoneId(timezone.getID());
+                                return config;
+                            }
+                        }
                 });
     }
 
-    private FTPFileEntryParser createNetwareFTPEntryParser() {
+    private FTPFileEntryParser createNetwareFTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        new NetwareFTPEntryParser(),
-                        this.createUnixFTPEntryParser()
+                        new NetwareFTPEntryParser() {
+                            protected FTPClientConfig getDefaultConfiguration() {
+                                final FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setServerTimeZoneId(timezone.getID());
+                                return config;
+                            }
+                        },
+                        this.createUnixFTPEntryParser(timezone)
                 });
     }
 
-    private FTPFileEntryParser createNTFTPEntryParser() {
+    private FTPFileEntryParser createNTFTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        new NTFTPEntryParser(),
-                        this.createUnixFTPEntryParser()
+                        new NTFTPEntryParser() {
+                            public FTPClientConfig getDefaultConfiguration() {
+                                final FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setServerTimeZoneId(timezone.getID());
+                                return config;
+                            }
+                        },
+                        this.createUnixFTPEntryParser(timezone)
                 });
     }
 
-    private FTPFileEntryParser createOS2FTPEntryParser() {
-        return new OS2FTPEntryParser();
+    private FTPFileEntryParser createOS2FTPEntryParser(final TimeZone timezone) {
+        return new OS2FTPEntryParser() {
+            protected FTPClientConfig getDefaultConfiguration() {
+                final FTPClientConfig config = super.getDefaultConfiguration();
+                config.setServerTimeZoneId(timezone.getID());
+                return config;
+            }
+        };
     }
 
-    private FTPFileEntryParser createOS400FTPEntryParser() {
+    private FTPFileEntryParser createOS400FTPEntryParser(final TimeZone timezone) {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
-                        new OS400FTPEntryParser(),
-                        this.createUnixFTPEntryParser()
+                        new OS400FTPEntryParser() {
+                            protected FTPClientConfig getDefaultConfiguration() {
+                                final FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setServerTimeZoneId(timezone.getID());
+                                return config;
+                            }
+                        },
+                        this.createUnixFTPEntryParser(timezone)
                 });
     }
 
-    private FTPFileEntryParser createMVSEntryParser() {
-        return new MVSFTPEntryParser();
+    private FTPFileEntryParser createMVSEntryParser(final TimeZone timezone) {
+        return new MVSFTPEntryParser() {
+            protected FTPClientConfig getDefaultConfiguration() {
+                final FTPClientConfig config = super.getDefaultConfiguration();
+                config.setServerTimeZoneId(timezone.getID());
+                return config;
+            }
+        };
     }
 }

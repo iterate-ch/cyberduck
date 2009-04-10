@@ -31,10 +31,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -73,6 +70,20 @@ public abstract class Session extends NSObject {
 
     public String getUserAgent() {
         return ua;
+    }
+
+    /**
+     * Default implementation
+     *
+     * @return
+     */
+    protected TimeZone getTimezone() {
+        if(null == host.getTimezone()) {
+            final TimeZone tz = TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default"));
+            log.info("Fallback to default timezone:" + tz);
+            return tz;
+        }
+        return host.getTimezone();
     }
 
     /**
@@ -197,11 +208,21 @@ public abstract class Session extends NSObject {
      */
     protected abstract void login(Credentials credentials) throws IOException;
 
+    /**
+     *
+     * @return
+     */
     public Path mount() {
-        if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            return this.mount(host.getDefaultPath());
+        try {
+            if(StringUtils.isNotBlank(host.getDefaultPath())) {
+                return this.mount(host.getDefaultPath());
+            }
+            return this.mount(null);
         }
-        return this.mount(null);
+        catch(IOException e) {
+            this.interrupt();
+        }
+        return null;
     }
 
     /**
@@ -210,44 +231,38 @@ public abstract class Session extends NSObject {
      * @param directory
      * @return null if we fail, the mounted working directory if we succeed
      */
-    public Path mount(String directory) {
+    protected Path mount(String directory) throws IOException {
         this.message(MessageFormat.format(NSBundle.localizedString("Mounting {0}", "Status", ""),
                 host.getHostname()));
-        try {
-            this.check();
-            if(!this.isConnected()) {
-                return null;
+        this.check();
+        if(!this.isConnected()) {
+            return null;
+        }
+        Path home;
+        if(directory != null) {
+            if(directory.startsWith(Path.DELIMITER) || directory.equals(this.workdir().getName())) {
+                home = PathFactory.createPath(this, directory,
+                        directory.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
             }
-            Path home;
-            if(directory != null) {
-                if(directory.startsWith(Path.DELIMITER) || directory.equals(this.workdir().getName())) {
-                    home = PathFactory.createPath(this, directory,
-                            directory.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
-                }
-                else if(directory.startsWith(Path.HOME)) {
-                    // relative path to the home directory
-                    home = PathFactory.createPath(this,
-                            this.workdir().getAbsolute(), directory.substring(1), Path.DIRECTORY_TYPE);
-                }
-                else {
-                    // relative path
-                    home = PathFactory.createPath(this,
-                            this.workdir().getAbsolute(), directory, Path.DIRECTORY_TYPE);
-                }
-                if(!home.childs().attributes().isReadable()) {
-                    // the default path does not exist or is not readable due to permission issues
-                    home = this.workdir();
-                }
+            else if(directory.startsWith(Path.HOME)) {
+                // relative path to the home directory
+                home = PathFactory.createPath(this,
+                        this.workdir().getAbsolute(), directory.substring(1), Path.DIRECTORY_TYPE);
             }
             else {
+                // relative path
+                home = PathFactory.createPath(this,
+                        this.workdir().getAbsolute(), directory, Path.DIRECTORY_TYPE);
+            }
+            if(!home.childs().attributes().isReadable()) {
+                // the default path does not exist or is not readable due to permission issues
                 home = this.workdir();
             }
-            return home;
         }
-        catch(IOException e) {
-            this.interrupt();
+        else {
+            home = this.workdir();
         }
-        return null;
+        return home;
     }
 
     /**
@@ -325,7 +340,6 @@ public abstract class Session extends NSObject {
     public abstract void sendCommand(String command) throws IOException;
 
     /**
-     *
      * @return False
      */
     public boolean isArchiveSupported() {
@@ -344,7 +358,7 @@ public abstract class Session extends NSObject {
             this.sendCommand(archive.getCompressCommand(files));
 
             // The directory listing is no more current
-            for(Path file: files) {
+            for(Path file : files) {
                 file.getParent().invalidate();
             }
         }
@@ -354,7 +368,6 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     *
      * @return False
      */
     public boolean isUnarchiveSupported() {

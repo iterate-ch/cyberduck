@@ -429,7 +429,6 @@ public class Host extends NSObject implements Serializable {
     }
 
     /**
-     * 
      * @return
      */
     public Credentials getCredentials() {
@@ -632,16 +631,14 @@ public class Host extends NSObject implements Serializable {
      * @param timezone
      */
     public void setTimezone(TimeZone timezone) {
+        log.debug("setTimezone:" + timezone);
         this.timezone = timezone;
     }
 
     /**
-     * @return The custom timezone or the default local timezone if not set
+     * @return The custom timezone or null if not set
      */
     public TimeZone getTimezone() {
-        if(null == this.timezone) {
-            return TimeZone.getDefault();
-        }
         return this.timezone;
     }
 
@@ -877,7 +874,6 @@ public class Host extends NSObject implements Serializable {
     private class KnownHostsCredentials extends Credentials {
 
         /**
-         *
          * @return
          */
         public String getUsername() {
@@ -895,7 +891,6 @@ public class Host extends NSObject implements Serializable {
         }
 
         /**
-         *
          * @return
          */
         public Identity getIdentity() {
