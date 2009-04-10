@@ -792,7 +792,14 @@ public class FTPClient {
     private SimpleDateFormat tsFormat =
             new SimpleDateFormat("yyyyMMddHHmmss");
 
-    private boolean getModtimeSupported = true;
+    protected boolean isMDTMSupported() throws IOException {
+        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+            if("MDTM".equals(((String) iter.next()).trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Get modification time for a remote file
@@ -800,23 +807,17 @@ public class FTPClient {
      * @param remoteFile name of remote file
      * @return modification time of file in milliseconds
      */
-    public long modtime(String remoteFile, TimeZone timezone) throws IOException, FTPException {
-        if(getModtimeSupported) {
-            try {
-                FTPReply reply = control.sendCommand("MDTM " + remoteFile);
-                lastValidReply = control.validateReply(reply, "213");
+    public long mdtm(String remoteFile) throws IOException, FTPException {
+        if(this.isMDTMSupported()) {
+            FTPReply reply = control.sendCommand("MDTM " + remoteFile);
+            lastValidReply = control.validateReply(reply, "213");
 
-                tsFormat.setTimeZone(timezone);
-                // parse the reply string ...
-                return tsFormat.parse(lastValidReply.getReplyText(),
-                        new ParsePosition(0)).getTime();
-            }
-            catch(FTPException e) {
-                this.getModtimeSupported = false;
-                throw e;
-            }
+            tsFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            // parse the reply string ...
+            return tsFormat.parse(lastValidReply.getReplyText(),
+                    new ParsePosition(0)).getTime();
         }
-        throw new FTPException("MDTM not supported");
+        return -1;
     }
 
     private boolean setUtimeSupported = true;
@@ -827,7 +828,7 @@ public class FTPClient {
      * @param modtime    Milliseconds since (00:00:00 GMT, January 1, 1970)
      * @param remoteFile name of remote file
      */
-    public void utime(long modtime, long createdtime, String remoteFile, TimeZone timezone)
+    public void utime(long modtime, long createdtime, String remoteFile)
             throws IOException, FTPException {
 
         if(this.setUtimeSupported) {
@@ -837,10 +838,10 @@ public class FTPClient {
                 // The access time is set to the value of the first element,
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
-                int offset = timezone.getRawOffset();
-                this.site("UTIME " + remoteFile + " " + tsFormat.format(new Date(modtime - offset))
-                        + " " + tsFormat.format(new Date(modtime - offset))
-                        + " " + tsFormat.format(new Date(createdtime - offset))
+                tsFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                this.site("UTIME " + remoteFile + " " + tsFormat.format(new Date(modtime))
+                        + " " + tsFormat.format(new Date(modtime))
+                        + " " + tsFormat.format(new Date(createdtime))
                         + " UTC");
             }
             catch(FTPException e) {
@@ -848,28 +849,7 @@ public class FTPClient {
                 throw e;
             }
         }
-        if(!this.setUtimeSupported) {
-            throw new FTPException("UTIME not supported");
-        }
-    }
-
-    private boolean setModtimeSupported = true;
-
-    public void setmodtime(long modtime, String remoteFile, TimeZone timezone) throws IOException, FTPException {
-        tsFormat.setTimeZone(timezone);
-        if(this.setModtimeSupported) {
-            try {
-                FTPReply reply = control.sendCommand("MDTM " + tsFormat.format(new Date(modtime)) + " " + remoteFile);
-                lastValidReply = control.validateReply(reply, "213");
-            }
-            catch(FTPException e) {
-                this.setModtimeSupported = false;
-                throw e;
-            }
-        }
-        if(!this.setModtimeSupported) {
-            throw new FTPException("MDTM not supported");
-        }
+        throw new FTPException("UTIME not supported");
     }
 
     private boolean setChmodSupported = true;
@@ -890,9 +870,7 @@ public class FTPClient {
                 throw e;
             }
         }
-        if(!this.setChmodSupported) {
-            throw new FTPException("CHMOD not supported");
-        }
+        throw new FTPException("CHMOD not supported");
     }
 
     /**
@@ -964,26 +942,20 @@ public class FTPClient {
      *         supported
      */
     public String[] features() throws IOException, FTPException {
-        if(featSupported) {
-            try {
-                if(null == features) {
+        if(null == features) {
+            if(featSupported) {
+                try {
                     FTPReply reply = control.sendCommand("FEAT");
-                    lastValidReply = control.validateReply(reply, new String[]{"211", "500", "502"});
-                    if(lastValidReply.getReplyCode().equals("211")) {
-                        features = lastValidReply.getReplyData();
-                    }
-                    else {
-                        throw new FTPException(reply);
-                    }
+                    lastValidReply = control.validateReply(reply, new String[]{"211"});
+                    features = lastValidReply.getReplyData();
+                }
+                catch(FTPException e) {
+                    featSupported = false;
                 }
             }
-            catch(FTPException e) {
-                featSupported = false;
-                throw e;
+            if(null == features) {
+                return new String[]{};
             }
-        }
-        if(null == features) {
-            return new String[]{};
         }
         return features;
     }
@@ -999,60 +971,13 @@ public class FTPClient {
         return lastValidReply.getReplyText();
     }
 
-    protected boolean isMDTMSupported() {
-        try {
-            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-                if("MDTM".equals(((String) iter.next()).trim())) {
-                    return true;
-                }
+    protected boolean isPRETSupported() throws IOException {
+        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+            if("PRET".equals(((String) iter.next()).trim())) {
+                return true;
             }
-            return false;
         }
-        catch(IOException e) {
-            return false;
-        }
-    }
-
-    protected boolean isMDTMSetSupported() {
-        try {
-            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-                if("MDTM yyyyMMddHHmmss".equals(((String) iter.next()).trim())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        catch(IOException e) {
-            return false;
-        }
-    }
-
-    protected boolean isUTIMESupported() {
-        try {
-            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-                if("SITE UTIME".equals(((String) iter.next()).trim())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        catch(IOException e) {
-            return false;
-        }
-    }
-
-    protected boolean isPRETSupported() {
-        try {
-            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-                if("PRET".equals(((String) iter.next()).trim())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        catch(IOException e) {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -1065,7 +990,8 @@ public class FTPClient {
         try {
             if(this.isPRETSupported()) {
                 // PRET support
-                control.sendCommand("PRET " + cmd);
+                final FTPReply reply = control.sendCommand("PRET " + cmd);
+                lastValidReply = control.validateReply(reply, new String[]{"200"});
             }
         }
         catch(FTPException e) {
@@ -1073,18 +999,13 @@ public class FTPClient {
         }
     }
 
-    protected boolean isUTF8Supported() {
-        try {
-            for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-                if("UTF8".equals(((String) iter.next()).trim())) {
-                    return true;
-                }
+    protected boolean isUTF8Supported() throws IOException {
+        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+            if("UTF8".equals(((String) iter.next()).trim())) {
+                return true;
             }
-            return false;
         }
-        catch(IOException e) {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -1093,7 +1014,7 @@ public class FTPClient {
      * Prior to sending this command, the user should not transmit UTF-8
      * encoded pathnames.
      */
-    public String utf8() throws IOException, FTPException {
+    public void utf8() throws IOException {
         // Before sending the UTF-8 option, the user should issue the FEAT
         // command and examine the response to that command.  If the response
         // contains the UTF-8 option, the user should take that option to mean
@@ -1104,13 +1025,18 @@ public class FTPClient {
         // pathnames; no harmful effect occurs if the user does not issue the
         // FEAT command
         if(this.isUTF8Supported()) {
-            FTPReply reply = control.sendCommand("OPTS UTF8 ON");
-            lastValidReply = control.validateReply(reply, new String[]{"200"});
-            return lastValidReply.getReplyText();
+            try {
+                FTPReply reply = control.sendCommand("OPTS UTF8 ON");
+                lastValidReply = control.validateReply(reply, new String[]{"200"});
+            }
+            catch(FTPException e) {
+                log.warn("Failed to negogiate UTF-8 charset:" + e.getMessage());
+            }
         }
-        throw new FTPException("No support for UTF8 option");
+        else {
+            log.warn("No UTF-8 support available in FEAT");
+        }
     }
-
 
     /**
      * Quit the FTP session
