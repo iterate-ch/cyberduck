@@ -8,6 +8,8 @@ Changelog. Last modified: $Date$
 - [Feature] IPv6 Interoperability with support for EPSV and EPRT commands (FTP) [#2539, #2885]
 - [Feature] UTF8 charset negogiation (FTP) 
 - [Feature] Support for hierarchical directory structure (Mosso)
+- [Feature] Added Espresso to the list of supported editors (http://macrabbit.com/espresso/) [#2823]
+- [Feature] Display date of transfer [#1462]
 - [Bugfix] Update passwords in Keychain [#2984]
 - [Bugfix] Invalid Origin parameter when creating CloudFront distribution (S3) [#3068]
 - [Bugfix] Only reauthenticate when needed (Mosso) [#2876]
