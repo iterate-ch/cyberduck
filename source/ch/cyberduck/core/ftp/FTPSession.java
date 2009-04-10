@@ -25,6 +25,7 @@ import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 
+import org.apache.commons.net.ftp.Configurable;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
@@ -33,8 +34,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.enterprisedt.net.ftp.*;
 
@@ -63,8 +63,25 @@ public class FTPSession extends Session {
         super(h);
     }
 
+    /**
+     * @return
+     * @throws IOException
+     */
     protected FTPFileEntryParser getFileParser() throws IOException {
         try {
+            if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
+                if(null == this.host.getTimezone()) {
+                    // No custom timezone set
+                    final List<TimeZone> matches = this.calculateTimezoneMatches();
+                    for(TimeZone tz : matches) {
+                        // Save in bookmark. User should have the option to choose from determined zones.
+                        host.setTimezone(tz);
+                        // Reset parser to use newly determined timezone
+                        parser = null;
+                        break;
+                    }
+                }
+            }
             if(null == parser) {
                 String system = null;
                 try {
@@ -73,13 +90,78 @@ public class FTPSession extends Session {
                 catch(FTPException e) {
                     log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
                 }
-                parser = new FTPParserFactory().createFileEntryParser(system);
+                parser = new FTPParserFactory().createFileEntryParser(system, this.getTimezone());
+                if(parser instanceof Configurable) {
+                    // Configure with default configuration
+                    ((Configurable) parser).configure(null);
+                }
             }
             return parser;
         }
         catch(ParserInitializationException e) {
             throw new IOException(e.getMessage());
         }
+    }
+
+    /**
+     * Best guess of available timezones given the offset of the modification
+     * date in the directory listing from the UTC timestamp returned from <code>MDTM</code>
+     * if available. Result is error prone because of additional daylight saving offsets.
+     */
+    protected List<TimeZone> calculateTimezoneMatches() throws IOException {
+        try {
+            // Determine the server offset from UTC
+            if(!this.workdir().isCached()) {
+                log.warn("No directory listing to calculate timezone");
+                return Collections.emptyList();
+            }
+            final AttributedList<Path> list = this.workdir().cache().get(this.workdir());
+            if(list.isEmpty()) {
+                log.warn("Cannot determine timezone with empty directory listing");
+                return Collections.emptyList();
+            }
+            for(Path test : list) {
+                if(test.attributes.isFile()) {
+                    // Read the modify fact which must be UTC
+                    long utc = this.FTP.mdtm(test.getAbsolute());
+                    // Subtract seconds
+                    utc -= utc % 60000;
+                    long local = test.attributes.getModificationDate();
+                    if(-1 == local) {
+                        log.warn("No modification date in directory listing to calculate timezone");
+                        return Collections.emptyList();
+                    }
+                    // Subtract seconds
+                    local -= local % 60000;
+                    long offset = local - utc;
+                    log.info("Calculated UTC offset is " + offset + "ms");
+                    final List<TimeZone> zones = new ArrayList<TimeZone>();
+                    if(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getOffset(utc) == offset) {
+                        log.info("Offset equals local timezone offset.");
+                        zones.add(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")));
+                        return zones;
+                    }
+                    // The offset should be the raw GMT offset without the daylight saving offset.
+                    // However the determied offset *does* include daylight saving time and therefore
+                    // the call to TimeZone#getAvailableIDs leads to errorneous results.
+                    final String[] timezones = TimeZone.getAvailableIDs((int) offset);
+                    for(String timezone : timezones) {
+                        log.info("Matching timezone identifier:" + timezone);
+                        final TimeZone match = TimeZone.getTimeZone(timezone);
+                        log.info("Determined timezone:" + match);
+                        zones.add(match);
+                    }
+                    if(zones.isEmpty()) {
+                        log.warn("Failed to calculate timezone for offset:" + offset);
+                    }
+                    return zones;
+                }
+            }
+        }
+        catch(FTPException e) {
+            log.warn("Failed to calculate timezone:" + e.getMessage());
+        }
+        return Collections.emptyList();
     }
 
     public void setStatListSupportedEnabled(boolean statListSupportedEnabled) {
@@ -227,12 +309,7 @@ public class FTPSession extends Session {
         this.login();
         this.fireConnectionDidOpenEvent();
         if("UTF-8".equals(this.getEncoding())) {
-            try {
-                this.FTP.utf8();
-            }
-            catch(FTPException e) {
-                log.warn("Failed to negogiate UTF-8 charset:" + e.getMessage());
-            }
+            this.FTP.utf8();
         }
     }
 
