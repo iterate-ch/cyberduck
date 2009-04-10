@@ -32,8 +32,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
@@ -278,44 +277,69 @@ public class CDBookmarkController extends CDWindowController {
                 this.commentField);
     }
 
-//    private NSPopUpButton timezonePopup; //IBOutlet
-//
-//    public void setTimezonePopup(NSPopUpButton timezonePopup) {
-//        this.timezonePopup = timezonePopup;
-//        this.timezonePopup.setTarget(this);
-//        this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
-//        this.timezonePopup.removeAllItems();
-//        this.timezonePopup.addItem(DEFAULT);
-//        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
-//        String[] ids = TimeZone.getAvailableIDs();
-//        for(int i = 0; i < ids.length; i++) {
-//            this.timezonePopup.addItem(TimeZone.getTimeZone(ids[i]).getDisplayName());
-//        }
-//        if(this.host.getTimezone().equals(TimeZone.getDefault())) {
-//            this.timezonePopup.setTitle(DEFAULT);
-//        }
-//        else {
-//            this.timezonePopup.setTitle(this.host.getTimezone().getDisplayName());
-//        }
-//    }
-//
-//    public void timezonePopupClicked(NSPopUpButton sender) {
-//        String selected = sender.selectedItem().title();
-//        if(selected.equals(DEFAULT)) {
-//            this.host.setTimezone(null);
-//        }
-//        else {
-//            String[] ids = TimeZone.getAvailableIDs();
-//            TimeZone tz;
-//            for(int i = 0; i < ids.length; i++) {
-//                if((tz = TimeZone.getTimeZone(ids[i])).getDisplayName().equals(selected)) {
-//                    this.host.setTimezone(tz);
-//                    break;
-//                }
-//            }
-//        }
-//        this.itemChanged();
-//    }
+    /**
+     * Calculate timezone
+     */
+    protected static final String AUTO = NSBundle.localizedString("Auto", "");
+
+    private NSPopUpButton timezonePopup; //IBOutlet
+
+    private static final String TIMEZONE_ID_PREFIXES =
+            "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+
+    public void setTimezonePopup(NSPopUpButton timezonePopup) {
+        this.timezonePopup = timezonePopup;
+        this.timezonePopup.setTarget(this);
+        this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
+        this.timezonePopup.removeAllItems();
+        this.timezonePopup.addItem(AUTO);
+        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+
+        final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
+        Collections.sort(timezones, new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
+            }
+        });
+        for(String tz : timezones) {
+            if (tz.matches(TIMEZONE_ID_PREFIXES)) {
+                this.timezonePopup.addItem(TimeZone.getTimeZone(tz).getID());
+            }
+        }
+        if(null == this.host.getTimezone()) {
+            if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
+                this.timezonePopup.setTitle(AUTO);
+            }
+            else {
+                this.timezonePopup.setTitle(
+                        TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID()
+                );
+            }
+        }
+        else {
+            this.timezonePopup.setTitle(this.host.getTimezone().getID());
+        }
+        this.timezonePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)
+                || this.host.getProtocol().equals(Protocol.FTP_TLS));
+    }
+
+    public void timezonePopupClicked(NSPopUpButton sender) {
+        String selected = sender.selectedItem().title();
+        if(selected.equals(DEFAULT)) {
+            this.host.setTimezone(null);
+        }
+        else {
+            String[] ids = TimeZone.getAvailableIDs();
+            TimeZone tz;
+            for(int i = 0; i < ids.length; i++) {
+                if((tz = TimeZone.getTimeZone(ids[i])).getDisplayName().equals(selected)) {
+                    this.host.setTimezone(tz);
+                    break;
+                }
+            }
+        }
+        this.itemChanged();
+    }
 
     private NSPopUpButton connectmodePopup; //IBOutlet
 
