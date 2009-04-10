@@ -1038,6 +1038,33 @@ public class FTPClient {
         }
     }
 
+    protected boolean isMMLSTSupported() throws IOException {
+        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+            if(((String) iter.next()).trim().startsWith("MLST")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Map<String, String> mlst(String path) throws IOException {
+        final Map<String, String> facts = new HashMap<String, String>();
+        if(this.isMMLSTSupported()) {
+                     FTPReply reply = control.sendCommand("MLST " + path);
+                     lastValidReply = control.validateReply(reply, new String[]{"250", "226"});
+                     for(String data : lastValidReply.getReplyData()) {
+                         if(data.contains(";")) {
+                             for(String fact : data.split(";")) {
+                                 if(fact.contains("=")) {
+                                     facts.put(fact.split("=")[0].toLowerCase(), fact.split("=")[1].toLowerCase());
+                                 }
+                             }
+                         }
+                     }
+                 }
+        return facts;
+    }
+
     /**
      * Quit the FTP session
      */
