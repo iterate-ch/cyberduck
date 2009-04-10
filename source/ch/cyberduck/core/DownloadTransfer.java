@@ -251,7 +251,7 @@ public class DownloadTransfer extends Transfer {
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
             }
-            if(DownloadTransfer.this.exists(p.getLocal())) {
+            if(DownloadTransfer.this.exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0) {
                 final String parent = p.getLocal().getParent().getAbsolute();
                 final String filename = p.getName();
                 String proposal;
