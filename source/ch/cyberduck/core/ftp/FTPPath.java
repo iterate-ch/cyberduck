@@ -105,11 +105,11 @@ public class FTPPath extends Path {
             session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
                     this.getName()));
 
+            session.setWorkdir(this);
             final FTPFileEntryParser parser = session.getFileParser();
             if(!this.parse(childs, parser, session.FTP.stat(this.getAbsolute())) || childs.isEmpty()) {
                 // STAT listing failed
                 session.FTP.setTransferType(FTPTransferType.ASCII);
-                session.setWorkdir(this);
                 if(!this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), true))) {
                     // LIST -a listing failed
                     session.FTP.finishDir();

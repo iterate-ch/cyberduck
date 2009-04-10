@@ -292,40 +292,50 @@ public class CDBookmarkController extends CDWindowController {
         this.timezonePopup.setTarget(this);
         this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
         this.timezonePopup.removeAllItems();
-        this.timezonePopup.addItem(AUTO);
-        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
-
-        final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
-        Collections.sort(timezones, new Comparator<String>() {
-            public int compare(String o1, String o2) {
-                return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
-            }
-        });
-        for(String tz : timezones) {
-            if (tz.matches(TIMEZONE_ID_PREFIXES)) {
-                this.timezonePopup.addItem(TimeZone.getTimeZone(tz).getID());
-            }
+        {
+            final TimeZone tc = TimeZone.getTimeZone("UTC");
+            final String utc = tc.getID() + " – " + tc.getDisplayName();
+            this.timezonePopup.addItem(utc);
+            this.timezonePopup.setTitle(utc);
         }
-        if(null == this.host.getTimezone()) {
-            if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
-                this.timezonePopup.setTitle(AUTO);
+        if(this.host.getProtocol().equals(Protocol.FTP)
+                || this.host.getProtocol().equals(Protocol.FTP_TLS)) {
+            this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+            this.timezonePopup.addItem(AUTO);
+            this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+            final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
+            Collections.sort(timezones, new Comparator<String>() {
+                public int compare(String o1, String o2) {
+                    return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
+                }
+            });
+            for(String tz : timezones) {
+                if(tz.matches(TIMEZONE_ID_PREFIXES)) {
+                    this.timezonePopup.addItem(TimeZone.getTimeZone(tz).getID());
+                }
+            }
+            if(null == this.host.getTimezone()) {
+                if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
+                    this.timezonePopup.setTitle(AUTO);
+                }
+                else {
+                    this.timezonePopup.setTitle(
+                            TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID()
+                    );
+                }
             }
             else {
-                this.timezonePopup.setTitle(
-                        TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID()
-                );
+                this.timezonePopup.setTitle(this.host.getTimezone().getID());
             }
         }
         else {
-            this.timezonePopup.setTitle(this.host.getTimezone().getID());
+            this.timezonePopup.setEnabled(false);
         }
-        this.timezonePopup.setEnabled(this.host.getProtocol().equals(Protocol.FTP)
-                || this.host.getProtocol().equals(Protocol.FTP_TLS));
     }
 
     public void timezonePopupClicked(NSPopUpButton sender) {
         String selected = sender.selectedItem().title();
-        if(selected.equals(DEFAULT)) {
+        if(selected.equals(AUTO)) {
             this.host.setTimezone(null);
         }
         else {

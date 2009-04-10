@@ -73,20 +73,6 @@ public abstract class Session extends NSObject {
     }
 
     /**
-     * Default implementation
-     *
-     * @return
-     */
-    protected TimeZone getTimezone() {
-        if(null == host.getTimezone()) {
-            final TimeZone tz = TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default"));
-            log.info("Fallback to default timezone:" + tz);
-            return tz;
-        }
-        return host.getTimezone();
-    }
-
-    /**
      * Used for the hostname resolution in the background
      */
     private Resolver resolver;

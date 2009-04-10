@@ -63,25 +63,40 @@ public class FTPSession extends Session {
         super(h);
     }
 
+    protected Path mount(String directory) throws IOException {
+        final Path workdir = super.mount(directory);
+        if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
+            if(null == host.getTimezone()) {
+                // No custom timezone set
+                final List<TimeZone> matches = this.calculateTimezone();
+                for(TimeZone tz : matches) {
+                    // Save in bookmark. User should have the option to choose from determined zones.
+                    host.setTimezone(tz);
+                    break;
+                }
+                if(!matches.isEmpty()) {
+                    // Reset parser to use newly determined timezone
+                    parser = null;
+                }
+            }
+        }
+        return workdir;
+    }
+
+    protected TimeZone getTimezone() throws IOException {
+        if(null == host.getTimezone()) {
+            return TimeZone.getTimeZone(
+                    Preferences.instance().getProperty("ftp.timezone.default"));
+        }
+        return host.getTimezone();
+    }
+
     /**
      * @return
      * @throws IOException
      */
     protected FTPFileEntryParser getFileParser() throws IOException {
         try {
-            if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
-                if(null == this.host.getTimezone()) {
-                    // No custom timezone set
-                    final List<TimeZone> matches = this.calculateTimezoneMatches();
-                    for(TimeZone tz : matches) {
-                        // Save in bookmark. User should have the option to choose from determined zones.
-                        host.setTimezone(tz);
-                        // Reset parser to use newly determined timezone
-                        parser = null;
-                        break;
-                    }
-                }
-            }
             if(null == parser) {
                 String system = null;
                 try {
@@ -108,14 +123,10 @@ public class FTPSession extends Session {
      * date in the directory listing from the UTC timestamp returned from <code>MDTM</code>
      * if available. Result is error prone because of additional daylight saving offsets.
      */
-    protected List<TimeZone> calculateTimezoneMatches() throws IOException {
+    private List<TimeZone> calculateTimezone() throws IOException {
         try {
             // Determine the server offset from UTC
-            if(!this.workdir().isCached()) {
-                log.warn("No directory listing to calculate timezone");
-                return Collections.emptyList();
-            }
-            final AttributedList<Path> list = this.workdir().cache().get(this.workdir());
+            final AttributedList<Path> list = this.workdir().childs();
             if(list.isEmpty()) {
                 log.warn("Cannot determine timezone with empty directory listing");
                 return Collections.emptyList();
@@ -161,6 +172,7 @@ public class FTPSession extends Session {
         catch(FTPException e) {
             log.warn("Failed to calculate timezone:" + e.getMessage());
         }
+        log.warn("No file in directory listing to calculate timezone");
         return Collections.emptyList();
     }
 
