@@ -342,7 +342,7 @@ public class CDBookmarkController extends CDWindowController {
             String[] ids = TimeZone.getAvailableIDs();
             TimeZone tz;
             for(int i = 0; i < ids.length; i++) {
-                if((tz = TimeZone.getTimeZone(ids[i])).getDisplayName().equals(selected)) {
+                if((tz = TimeZone.getTimeZone(ids[i])).getID().equals(selected)) {
                     this.host.setTimezone(tz);
                     break;
                 }

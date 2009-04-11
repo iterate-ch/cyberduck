@@ -91,12 +91,18 @@ public class FTPSession extends Session {
         return host.getTimezone();
     }
 
+    private TimeZone tz;
+
     /**
      * @return
      * @throws IOException
      */
     protected FTPFileEntryParser getFileParser() throws IOException {
         try {
+            if(!this.getTimezone().equals(this.tz)) {
+                tz = this.getTimezone();
+                parser = null;
+            }
             if(null == parser) {
                 String system = null;
                 try {
@@ -105,7 +111,7 @@ public class FTPSession extends Session {
                 catch(FTPException e) {
                     log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
                 }
-                parser = new FTPParserFactory().createFileEntryParser(system, this.getTimezone());
+                parser = new FTPParserFactory().createFileEntryParser(system, tz);
                 if(parser instanceof Configurable) {
                     // Configure with default configuration
                     ((Configurable) parser).configure(null);
