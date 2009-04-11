@@ -199,7 +199,7 @@ public class CDConnectionController extends CDSheetController {
         // First look for equivalent bookmarks
         for(Host h : HostCollection.defaultCollection()) {
             if(h.getNickname().equals(input)) {
-                this.hostChanged(new Host(h.getAsDictionary()));
+                this.hostChanged(h);
                 break;
             }
         }
