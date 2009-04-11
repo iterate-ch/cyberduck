@@ -552,7 +552,14 @@ public class CDMainController extends CDController {
                 if(Preferences.instance().getBoolean("browser.serialize")) {
                     if(controller.isMounted()) {
                         // The workspace should be saved. Serialize all open browser sessions
-                        sessions.add(controller.getSession().getHost());
+                        final Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
+                        try {
+                            serialized.setDefaultPath(controller.getSession().workdir().getAbsolute());
+                        }
+                        catch(IOException e) {
+                            log.warn(e.getMessage());
+                        }
+                        sessions.add(serialized);
                     }
                 }
                 if(controller.isConnected()) {
