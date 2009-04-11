@@ -101,6 +101,7 @@ public class FTPSession extends Session {
         try {
             if(!this.getTimezone().equals(this.tz)) {
                 tz = this.getTimezone();
+                log.info("Reset parser to timezone:" + tz);
                 parser = null;
             }
             if(null == parser) {
@@ -146,7 +147,7 @@ public class FTPSession extends Session {
                     long local = test.attributes.getModificationDate();
                     if(-1 == local) {
                         log.warn("No modification date in directory listing to calculate timezone");
-                        return Collections.emptyList();
+                        continue;
                     }
                     // Subtract seconds
                     local -= local % 60000;
@@ -170,6 +171,7 @@ public class FTPSession extends Session {
                     }
                     if(zones.isEmpty()) {
                         log.warn("Failed to calculate timezone for offset:" + offset);
+                        continue;
                     }
                     return zones;
                 }

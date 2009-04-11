@@ -284,6 +284,8 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSPopUpButton timezonePopup; //IBOutlet
 
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
     private static final String TIMEZONE_ID_PREFIXES =
             "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
@@ -293,43 +295,21 @@ public class CDBookmarkController extends CDWindowController {
         this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
         this.timezonePopup.removeAllItems();
         {
-            final TimeZone tc = TimeZone.getTimeZone("UTC");
-            final String utc = tc.getID() + " – " + tc.getDisplayName();
-            this.timezonePopup.addItem(utc);
-            this.timezonePopup.setTitle(utc);
+            this.timezonePopup.addItem(UTC.getID());
         }
-        if(this.host.getProtocol().equals(Protocol.FTP)
-                || this.host.getProtocol().equals(Protocol.FTP_TLS)) {
-            this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
-            this.timezonePopup.addItem(AUTO);
-            this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
-            final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
-            Collections.sort(timezones, new Comparator<String>() {
-                public int compare(String o1, String o2) {
-                    return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
-                }
-            });
-            for(String tz : timezones) {
-                if(tz.matches(TIMEZONE_ID_PREFIXES)) {
-                    this.timezonePopup.addItem(TimeZone.getTimeZone(tz).getID());
-                }
+        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+//        this.timezonePopup.addItem(AUTO);
+//        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+        final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
+        Collections.sort(timezones, new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
             }
-            if(null == this.host.getTimezone()) {
-                if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
-                    this.timezonePopup.setTitle(AUTO);
-                }
-                else {
-                    this.timezonePopup.setTitle(
-                            TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID()
-                    );
-                }
+        });
+        for(String tz : timezones) {
+            if(tz.matches(TIMEZONE_ID_PREFIXES)) {
+                this.timezonePopup.addItem(TimeZone.getTimeZone(tz).getID());
             }
-            else {
-                this.timezonePopup.setTitle(this.host.getTimezone().getID());
-            }
-        }
-        else {
-            this.timezonePopup.setEnabled(false);
         }
     }
 
@@ -749,6 +729,27 @@ public class CDBookmarkController extends CDWindowController {
         webURLField.setEnabled(host.getProtocol().isWebUrlConfigurable());
         webUrlImage.setToolTip(host.getWebURL());
         this.updateField(webURLField, host.getWebURL());
-        this.updateField(commentField, host.getComment());
+        this.updateField(commentField, host.getComment());        
+        final boolean tzEnabled = this.host.getProtocol().equals(Protocol.FTP)
+                || this.host.getProtocol().equals(Protocol.FTP_TLS);
+        this.timezonePopup.setEnabled(tzEnabled);
+        if(null == this.host.getTimezone()) {
+            if(tzEnabled) {
+                if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
+                    this.timezonePopup.setTitle(AUTO);
+                }
+                else {
+                    this.timezonePopup.setTitle(
+                            TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID()
+                    );
+                }
+            }
+            else {
+                this.timezonePopup.setTitle(UTC.getID());
+            }
+        }
+        else {
+            this.timezonePopup.setTitle(this.host.getTimezone().getID());
+        }
     }
 }
