@@ -235,6 +235,7 @@ public class DAVSession extends HTTPSession {
             throw new ConnectionCanceledException();
         }
         DAV.setPath(workdir.isRoot() ? Path.DELIMITER : workdir.getAbsolute() + Path.DELIMITER);
+        this.workdir = workdir;
     }
 
     protected void noop() throws IOException {
