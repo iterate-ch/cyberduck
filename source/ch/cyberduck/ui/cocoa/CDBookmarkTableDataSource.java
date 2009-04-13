@@ -166,8 +166,21 @@ public class CDBookmarkTableDataSource extends CDController {
             // Do not allow drags for non writable collections
             return NSDraggingInfo.DragOperationNone;
         }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for(int i = 0; i < elements.count(); i++) {
+                    if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
+                        view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
+                        return NSDraggingInfo.DragOperationCopy;
+                    }
+                }
+            }
+            return NSDraggingInfo.DragOperationNone;
+        }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.StringPboardType);
+            Object o = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
                 if(Protocol.isURL(o.toString())) {
                     view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
@@ -214,8 +227,22 @@ public class CDBookmarkTableDataSource extends CDController {
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewAcceptDrop:" + row);
         final BookmarkCollection source = this.getSource();
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for(int i = 0; i < elements.count(); i++) {
+                    final Host h = Host.parse(elements.objectAtIndex(i).toString());
+                    source.add(row, h);
+                    view.selectRow(row, false);
+                    view.scrollRowToVisible(row);
+                }
+                return true;
+            }
+            return false;
+        }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.StringPboardType);
+            Object o = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
                 final Host h = Host.parse(o.toString());
                 source.add(row, h);

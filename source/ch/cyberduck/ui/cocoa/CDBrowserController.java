@@ -1282,6 +1282,7 @@ public class CDBrowserController extends CDWindowController
         // receive drag events from types
         this.browserOutlineView.registerForDraggedTypes(new NSArray(new Object[]{
                 CDPasteboards.TransferPasteboardType,
+                NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
@@ -1418,6 +1419,7 @@ public class CDBrowserController extends CDWindowController
         // receive drag events from types
         this.browserListView.registerForDraggedTypes(new NSArray(new Object[]{
                 CDPasteboards.TransferPasteboardType,
+                NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType} //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
@@ -1544,7 +1546,7 @@ public class CDBrowserController extends CDWindowController
         if(CDBookmarkCell.LARGE_BOOKMARK_SIZE == size) {
             this.bookmarkTable.setRowHeight(70);
         }
-        final int width = (int)(size * 1.5);
+        final int width = (int) (size * 1.5);
         final NSTableColumn c = this.bookmarkTable.tableColumnWithIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
         c.setMinWidth(width);
         c.setWidth(width);
@@ -1674,6 +1676,8 @@ public class CDBrowserController extends CDWindowController
 
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
+        // receive drag events from types
+        this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{NSPasteboard.URLPboardType}));
         this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource(
                 this, HostCollection.defaultCollection())
         );
@@ -1981,6 +1985,7 @@ public class CDBrowserController extends CDWindowController
 
     /**
      * Change focus to filter field
+     *
      * @param sender
      */
     public void searchButtonClicked(final Object sender) {
@@ -3461,7 +3466,8 @@ public class CDBrowserController extends CDWindowController
                     return archive.getDecompressCommand(selected);
                 }
             });
-        };
+        }
+        ;
     }
 
     /**
