@@ -307,6 +307,15 @@ public class FTPSession extends Session {
         return new FTPClient(this.getEncoding(), messageListener);
     }
 
+    protected void configure(FTPClient client) throws IOException {
+        client.setTimeout(this.timeout());
+        client.setStatListSupportedEnabled(Preferences.instance().getBoolean("ftp.sendStatListCommand"));
+        client.setExtendedListEnabled(Preferences.instance().getBoolean("ftp.sendExtendedListCommand"));
+        client.setMlsdListSupportedEnabled(Preferences.instance().getBoolean("ftp.sendMlsdListCommand"));
+        client.setStrictReturnCodes(true);
+        client.setConnectMode(this.getConnectMode());
+    }
+
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
         if(this.isConnected()) {
             return;
@@ -316,14 +325,12 @@ public class FTPSession extends Session {
         this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
                 host.getProtocol().getName(), host.getHostname()));
 
-        this.FTP = this.getClient();
-        this.FTP.setTimeout(this.timeout());
+        this.configure(this.FTP = this.getClient());
+
         this.FTP.connect(host.getHostname(true), host.getPort());
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        this.FTP.setStrictReturnCodes(true);
-        this.FTP.setConnectMode(this.getConnectMode());
         this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
                 host.getProtocol().getName()));
         this.login();

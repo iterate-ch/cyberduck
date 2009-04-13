@@ -26,8 +26,6 @@
 
 package com.enterprisedt.net.ftp;
 
-import ch.cyberduck.core.Preferences;
-
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -513,8 +511,7 @@ public class FTPClient {
         return reply.getReplyCode().equals("200");
     }
 
-    private boolean statListSupportedEnabled
-            = Preferences.instance().getBoolean("ftp.sendStatListCommand");
+    private boolean statListSupportedEnabled = true;
 
     public void setStatListSupportedEnabled(boolean statListSupportedEnabled) {
         this.statListSupportedEnabled = statListSupportedEnabled;
@@ -573,8 +570,7 @@ public class FTPClient {
     /**
      * The server supports LIST -a
      */
-    private boolean extendedListEnabled
-            = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
+    private boolean extendedListEnabled = true;
 
     public void setExtendedListEnabled(boolean extendedListEnabled) {
         this.extendedListEnabled = extendedListEnabled;
@@ -1051,31 +1047,39 @@ public class FTPClient {
         return null;
     }
 
+    private boolean mlsdListSupportedEnabled = true;
+
+    public void setMlsdListSupportedEnabled(boolean mlsdListSupportedEnabled) {
+        this.mlsdListSupportedEnabled = mlsdListSupportedEnabled;
+    }
+
     /**
      * @param path
      * @return Null if feature is not supported
      * @throws IOException
      */
     public BufferedReader mlsd(final String encoding) throws IOException {
-        if(this.isFeatureSupported("MLSD")) {
-            // set up data channel
-            data = control.createDataSocket(connectMode);
-            data.setTimeout(timeout);
+        if(mlsdListSupportedEnabled) {
+            if(this.isFeatureSupported("MLSD")) {
+                // set up data channel
+                data = control.createDataSocket(connectMode);
+                data.setTimeout(timeout);
 
-            FTPReply reply = control.sendCommand("MLSD");
-            lastValidReply = control.validateReply(reply, "150");
+                FTPReply reply = control.sendCommand("MLSD");
+                lastValidReply = control.validateReply(reply, "150");
 
-            return new BufferedReader(new InputStreamReader(data.getInputStream(),
-                    Charset.forName(encoding)
-            )) {
-                public String readLine() throws IOException {
-                    String line = super.readLine();
-                    if(null != line) {
-                        listener.logReply(line);
+                return new BufferedReader(new InputStreamReader(data.getInputStream(),
+                        Charset.forName(encoding)
+                )) {
+                    public String readLine() throws IOException {
+                        String line = super.readLine();
+                        if(null != line) {
+                            listener.logReply(line);
+                        }
+                        return line;
                     }
-                    return line;
-                }
-            };
+                };
+            }
         }
         return null;
     }
