@@ -7,7 +7,9 @@ Changelog. Last modified: $Date$
 3.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.3]
 - [Feature] Choose Time Zone for bookmark (FTP) [#434]
 - [Feature] IPv6 Interoperability with support for EPSV and EPRT commands (FTP) [#2539, #2885]
-- [Feature] UTF8 charset negogiation (FTP) 
+- [Feature] UTF8 charset negogiation [http://tools.ietf.org/html/draft-ietf-ftpext-utf-8-option-00] (FTP)
+- [Feature] Support for directory listings using MLSD [RFC 3659] (FTP)
+- [Feature] Support for Modification Time (MFMT) extension [http://tools.ietf.org/html/draft-somers-ftp-mfxx-04] (FTP)
 - [Feature] Support for hierarchical directory structure (Mosso)
 - [Feature] Added Espresso to the list of supported editors (http://macrabbit.com/espresso/) [#2823]
 - [Feature] Display date of transfer [#1462]

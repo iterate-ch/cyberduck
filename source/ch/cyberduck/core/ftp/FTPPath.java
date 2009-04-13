@@ -33,9 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPTransferType;
@@ -110,10 +110,13 @@ public class FTPPath extends Path {
             if(!this.parse(childs, parser, session.FTP.stat(this.getAbsolute())) || childs.isEmpty()) {
                 // STAT listing failed
                 session.FTP.setTransferType(FTPTransferType.ASCII);
-                if(!this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), true))) {
-                    // LIST -a listing failed
-                    session.FTP.finishDir();
-                    this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), false));
+                if(!this.parse(childs, session.FTP.mlsd(this.session.getEncoding()))) {
+                    // MLSD listing failed
+                    if(!this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), true))) {
+                        // LIST -a listing failed
+                        session.FTP.finishDir();
+                        this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), false));
+                    }
                 }
                 session.FTP.finishDir();
             }
@@ -139,6 +142,152 @@ public class FTPPath extends Path {
             this.error("Listing directory failed", e);
         }
         return childs;
+    }
+
+    /**
+     * The "facts" for a file in a reply to a MLSx command consist of
+     * information about that file.  The facts are a series of keyword=value
+     * pairs each followed by semi-colon (";") characters.  An individual
+     * fact may not contain a semi-colon in its name or value.  The complete
+     * series of facts may not contain the space character.  See the
+     * definition or "RCHAR" in section 2.1 for a list of the characters
+     * that can occur in a fact value.  Not all are applicable to all facts.
+     * <p/>
+     * A sample of a typical series of facts would be: (spread over two
+     * lines for presentation here only)
+     * <p/>
+     * size=4161;lang=en-US;modify=19970214165800;create=19961001124534;
+     * type=file;x.myfact=foo,bar;
+     * <p/>
+     * This document defines a standard set of facts as follows:
+     * <p/>
+     * size       -- Size in octets
+     * modify     -- Last modification time
+     * create     -- Creation time
+     * type       -- Entry type
+     * unique     -- Unique id of file/directory
+     * perm       -- File permissions, whether read, write, execute is
+     * allowed for the login id.
+     * lang       -- Language of the file name per IANA [11] registry.
+     * media-type -- MIME media-type of file contents per IANA registry.
+     * charset    -- Character set per IANA registry (if not UTF-8)
+     *
+     * @param line
+     * @return
+     */
+    protected Map<String, Map<String, String>> parseFacts(String[] response) {
+        Map<String, Map<String, String>> files = new HashMap<String, Map<String, String>>();
+        for(String line : response) {
+            files.putAll(this.parseFacts(line));
+        }
+        return files;
+    }
+
+    /**
+     * @param p
+     * @param files
+     * @param line
+     */
+    protected Map<String, Map<String, String>> parseFacts(String line) {
+        final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(\\S*)");
+        final Matcher result = p.matcher(line);
+        Map<String, Map<String, String>> file = new HashMap<String, Map<String, String>>();
+        if(result.matches()) {
+            final String filename = result.group(2);
+            final Map<String, String> facts = new HashMap<String, String>();
+            for(String fact : result.group(1).split(";")) {
+                if(fact.contains("=")) {
+                    facts.put(fact.split("=")[0].toLowerCase(), fact.split("=")[1].toLowerCase());
+                }
+            }
+            file.put(filename, facts);
+        }
+        return file;
+    }
+
+    /**
+     * Parse response of MLSD
+     *
+     * @param childs
+     * @param reader
+     * @return
+     * @throws IOException
+     */
+    private boolean parse(final AttributedList<Path> childs, BufferedReader reader)
+            throws IOException {
+
+        if(null == reader) {
+            // This is an empty directory
+            return false;
+        }
+        boolean success = false;
+        String line;
+        while((line = reader.readLine()) != null) {
+            final Map<String, Map<String, String>> file = this.parseFacts(line);
+            if(file.isEmpty()) {
+                continue;
+            }
+            for(String name : file.keySet()) {
+                final Path parsed = PathFactory.createPath(session, this.getAbsolute(), name, Path.FILE_TYPE);
+                parsed.setParent(this);
+                //                * size       -- Size in octets
+                //                * modify     -- Last modification time
+                //                * create     -- Creation time
+                //                * type       -- Entry type
+                //                * unique     -- Unique id of file/directory
+                //                * perm       -- File permissions, whether read, write, execute is
+                //                * allowed for the login id.
+                //                * lang       -- Language of the file name per IANA [11] registry.
+                //                * media-type -- MIME media-type of file contents per IANA registry.
+                //                * charset    -- Character set per IANA registry (if not UTF-8)
+                for(Map<String, String> facts : file.values()) {
+                    if(!facts.containsKey("type")) {
+                        continue;
+                    }
+                    if("dir".equals(facts.get("type").toLowerCase())) {
+                        parsed.attributes.setType(Path.DIRECTORY_TYPE);
+                    }
+                    else if("file".equals(facts.get("type").toLowerCase())) {
+                        parsed.attributes.setType(Path.FILE_TYPE);
+                    }
+                    else {
+                        log.warn("Unsupported type: " + line);
+                        continue;
+                    }
+                    success = true; // At least one entry successfully parsed
+
+                    if(facts.containsKey("sizd")) {
+                        parsed.attributes.setSize(Long.parseLong(facts.get("sizd")));
+                    }
+                    if(facts.containsKey("size")) {
+                        parsed.attributes.setSize(Long.parseLong(facts.get("size")));
+                    }
+                    if(facts.containsKey("unix.uid")) {
+                        parsed.attributes.setOwner(facts.get("unix.uid"));
+                    }
+                    if(facts.containsKey("unix.owner")) {
+                        parsed.attributes.setOwner(facts.get("unix.owner"));
+                    }
+                    if(facts.containsKey("unix.gid")) {
+                        parsed.attributes.setGroup(facts.get("unix.gid"));
+                    }
+                    if(facts.containsKey("unix.group")) {
+                        parsed.attributes.setGroup(facts.get("unix.group"));
+                    }
+                    if(facts.containsKey("unix.mode")) {
+                        parsed.attributes.setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
+                    }
+                    if(facts.containsKey("modify")) {
+                        parsed.attributes.setModificationDate(session.FTP.parseTimestamp(facts.get("modify")));
+                    }
+                    if(facts.containsKey("create")) {
+                        parsed.attributes.setCreationDate(session.FTP.parseTimestamp(facts.get("create")));
+                    }
+                    childs.add(parsed);
+                }
+            }
+        }
+        return success;
     }
 
     /**
@@ -284,15 +433,10 @@ public class FTPPath extends Path {
                 else {
                     throw new FTPException("Transfer type not set");
                 }
-                try {
-                    attributes.setSize(session.FTP.size(this.getAbsolute()));
-                }
-                catch(FTPException e) {
-                    log.warn("Cannot read size:" + e.getMessage());
-                }
+                attributes.setSize(session.FTP.size(this.getAbsolute()));
             }
             if(-1 == attributes.getSize()) {
-                // Read the timestamp from the directory listing
+                // Read the size from the directory listing
                 List l = this.getParent().childs();
                 if(l.contains(this)) {
                     attributes.setSize(((AbstractPath) l.get(l.indexOf(this))).attributes.getSize());
@@ -314,12 +458,11 @@ public class FTPPath extends Path {
                 // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
                 // Attempts to query the modification time of files that exist but are unable to be
                 // retrieved may generate an error-response
-                try {
-                    attributes.setModificationDate(session.FTP.mdtm(this.getAbsolute()));
+                final long millis = session.FTP.mdtm(this.getAbsolute());
+                if(-1 == millis) {
+                    return;
                 }
-                catch(FTPException e) {
-                    log.warn("Cannot read timestamp:" + e.getMessage());
-                }
+                attributes.setModificationDate(millis);
             }
         }
         catch(IOException e) {
@@ -532,6 +675,11 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             session.FTP.setTransferType(FTPTransferType.BINARY);
+            if(this.getStatus().isResume()) {
+                if(!session.FTP.isFeatureSupported("REST STREAM")) {
+                    this.getStatus().setResume(false);
+                }
+            }
             out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
             if(null == out) {
                 throw new IOException("Unable to buffer data");
@@ -677,7 +825,7 @@ public class FTPPath extends Path {
             if(null != p) {
                 try {
                     log.info("Updating permissions:" + p.getOctalString());
-                    session.FTP.setPermissions(p.getOctalString(),
+                    session.FTP.chmod(p.getOctalString(),
                             this.getName());
                 }
                 catch(FTPException ignore) {
@@ -687,13 +835,8 @@ public class FTPPath extends Path {
             }
             if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                 log.info("Updating timestamp");
-                try {
-                    session.FTP.utime(this.getLocal().attributes.getModificationDate(),
-                            this.getLocal().attributes.getCreationDate(), this.getName());
-                }
-                catch(FTPException ignore) {
-                    log.warn(ignore.getMessage());
-                }
+                session.FTP.mfmt(this.getLocal().attributes.getModificationDate(),
+                        this.getLocal().attributes.getCreationDate(), this.getName());
             }
         }
         catch(IOException e) {
