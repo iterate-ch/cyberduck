@@ -332,7 +332,6 @@ public class FTPClient {
         return reply.getReplyText();
     }
 
-
     /**
      * Get the size of a remote file. This is not a standard FTP command, it
      * is defined in "Extensions to FTP", a draft RFC
@@ -342,26 +341,29 @@ public class FTPClient {
      * @return size of file in bytes
      */
     public long size(String remoteFile) throws IOException, FTPException {
-        FTPReply reply = control.sendCommand("SIZE " + remoteFile);
-        lastValidReply = control.validateReply(reply, "213");
+        if(this.isFeatureSupported("SIZE")) {
+            FTPReply reply = control.sendCommand("SIZE " + remoteFile);
+            lastValidReply = control.validateReply(reply, "213");
 
-        // parse the reply string .
-        String replyText = lastValidReply.getReplyText();
+            // parse the reply string .
+            String replyText = lastValidReply.getReplyText();
 
-        // trim off any trailing characters after a space, e.g. webstar
-        // responds to SIZE with 213 55564 bytes
-        int spacePos = replyText.indexOf(' ');
-        if(spacePos >= 0) {
-            replyText = replyText.substring(0, spacePos);
-        }
+            // trim off any trailing characters after a space, e.g. webstar
+            // responds to SIZE with 213 55564 bytes
+            int spacePos = replyText.indexOf(' ');
+            if(spacePos >= 0) {
+                replyText = replyText.substring(0, spacePos);
+            }
 
-        // parse the reply
-        try {
-            return Long.parseLong(replyText);
+            // parse the reply
+            try {
+                return Long.parseLong(replyText);
+            }
+            catch(NumberFormatException ex) {
+                log.warn("Failed to parse reply: " + replyText);
+            }
         }
-        catch(NumberFormatException ex) {
-            throw new FTPException("Failed to parse reply: " + replyText);
-        }
+        return -1;
     }
 
     /**
@@ -374,9 +376,11 @@ public class FTPClient {
      * @throws FTPException
      */
     private void restart(long size) throws IOException, FTPException {
-        String[] validReplyCodes = {"125", "350"};
-        FTPReply reply = control.sendCommand("REST " + size);
-        lastValidReply = control.validateReply(reply, validReplyCodes);
+        if(this.isFeatureSupported("REST STREAM")) {
+            String[] validReplyCodes = {"125", "350"};
+            FTPReply reply = control.sendCommand("REST " + size);
+            lastValidReply = control.validateReply(reply, validReplyCodes);
+        }
     }
 
     /**
@@ -792,12 +796,27 @@ public class FTPClient {
     private SimpleDateFormat tsFormat =
             new SimpleDateFormat("yyyyMMddHHmmss");
 
+    {
+        tsFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    /**
+     * Parse the timestamp using the MTDM format
+     *
+     * @param timestamp
+     * @return
+     */
+    public long parseTimestamp(final String timestamp) {
+        return tsFormat.parse(timestamp, new ParsePosition(0)).getTime();
+    }
+
     protected boolean isMDTMSupported() throws IOException {
         for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
             if("MDTM".equals(((String) iter.next()).trim())) {
                 return true;
             }
         }
+        log.warn("No MDTM support");
         return false;
     }
 
@@ -812,15 +831,12 @@ public class FTPClient {
             FTPReply reply = control.sendCommand("MDTM " + remoteFile);
             lastValidReply = control.validateReply(reply, "213");
 
-            tsFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            // parse the reply string ...
-            return tsFormat.parse(lastValidReply.getReplyText(),
-                    new ParsePosition(0)).getTime();
+            return this.parseTimestamp(lastValidReply.getReplyText());
         }
         return -1;
     }
 
-    private boolean setUtimeSupported = true;
+    private boolean utimeSupported = true;
 
     /**
      * Change modification time for a remote file
@@ -828,31 +844,29 @@ public class FTPClient {
      * @param modtime    Milliseconds since (00:00:00 GMT, January 1, 1970)
      * @param remoteFile name of remote file
      */
-    public void utime(long modtime, long createdtime, String remoteFile)
+    private void utime(long modtime, long createdtime, String remoteFile)
             throws IOException, FTPException {
 
-        if(this.setUtimeSupported) {
+        if(this.utimeSupported) {
             try {
                 // The utime() function sets the access and modification times of the named
                 // file from the structures in the argument array timep.
                 // The access time is set to the value of the first element,
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
-                tsFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 this.site("UTIME " + remoteFile + " " + tsFormat.format(new Date(modtime))
                         + " " + tsFormat.format(new Date(modtime))
                         + " " + tsFormat.format(new Date(createdtime))
                         + " UTC");
             }
             catch(FTPException e) {
-                this.setUtimeSupported = false;
-                throw e;
+                this.utimeSupported = false;
+                log.warn("UTIME not supported");
             }
         }
-        throw new FTPException("UTIME not supported");
     }
 
-    private boolean setChmodSupported = true;
+    private boolean chmodSupported = true;
 
     /**
      * Change the unix permissions of a remote file
@@ -860,13 +874,13 @@ public class FTPClient {
      * @param octal
      * @param remoteFile
      */
-    public void setPermissions(String octal, String remoteFile) throws IOException, FTPException {
-        if(this.setChmodSupported) {
+    public void chmod(String octal, String remoteFile) throws IOException, FTPException {
+        if(this.chmodSupported) {
             try {
                 this.site("CHMOD " + octal + " " + remoteFile);
             }
             catch(FTPException e) {
-                this.setChmodSupported = false;
+                this.chmodSupported = false;
                 throw e;
             }
         }
@@ -946,7 +960,7 @@ public class FTPClient {
             if(featSupported) {
                 try {
                     FTPReply reply = control.sendCommand("FEAT");
-                    lastValidReply = control.validateReply(reply, new String[]{"211"});
+                    lastValidReply = control.validateReply(reply, "211");
                     features = lastValidReply.getReplyData();
                 }
                 catch(FTPException e) {
@@ -960,6 +974,17 @@ public class FTPClient {
         return features;
     }
 
+    public boolean isFeatureSupported(final String feature) throws IOException {
+        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
+            if(feature.equals(((String) iter.next()).trim())) {
+                return true;
+            }
+        }
+        log.warn("No " + feature + " support");
+        return false;
+    }
+
+
     /**
      * Get the type of the OS at the server
      *
@@ -971,15 +996,6 @@ public class FTPClient {
         return lastValidReply.getReplyText();
     }
 
-    protected boolean isPRETSupported() throws IOException {
-        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-            if("PRET".equals(((String) iter.next()).trim())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * http://drftpd.org/index.php/PRET_Specifications
      *
@@ -987,25 +1003,11 @@ public class FTPClient {
      * @throws IOException
      */
     private void pret(String cmd) throws IOException {
-        try {
-            if(this.isPRETSupported()) {
-                // PRET support
-                final FTPReply reply = control.sendCommand("PRET " + cmd);
-                lastValidReply = control.validateReply(reply, new String[]{"200"});
-            }
+        if(this.isFeatureSupported("PRET")) {
+            // PRET support
+            final FTPReply reply = control.sendCommand("PRET " + cmd);
+            lastValidReply = control.validateReply(reply, "200");
         }
-        catch(FTPException e) {
-            log.warn("PRET (PRE Transfer) command not supported:" + e.getMessage());
-        }
-    }
-
-    protected boolean isUTF8Supported() throws IOException {
-        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-            if("UTF8".equals(((String) iter.next()).trim())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -1024,7 +1026,7 @@ public class FTPClient {
         // provide a reliable means to determine support for UTF-8 encoded
         // pathnames; no harmful effect occurs if the user does not issue the
         // FEAT command
-        if(this.isUTF8Supported()) {
+        if(this.isFeatureSupported("UTF8")) {
             try {
                 FTPReply reply = control.sendCommand("OPTS UTF8 ON");
                 lastValidReply = control.validateReply(reply, new String[]{"200"});
@@ -1033,36 +1035,66 @@ public class FTPClient {
                 log.warn("Failed to negogiate UTF-8 charset:" + e.getMessage());
             }
         }
+    }
+
+    /**
+     * @param path
+     * @return Null if feature is not supported
+     * @throws IOException
+     */
+    public String[] mlst(String path) throws IOException {
+        if(this.isFeatureSupported("MLST")) {
+            FTPReply reply = control.sendCommand("MLST " + path);
+            lastValidReply = control.validateReply(reply, new String[]{"250"});
+            return lastValidReply.getReplyData();
+        }
+        return null;
+    }
+
+    /**
+     * @param path
+     * @return Null if feature is not supported
+     * @throws IOException
+     */
+    public BufferedReader mlsd(final String encoding) throws IOException {
+        if(this.isFeatureSupported("MLSD")) {
+            // set up data channel
+            data = control.createDataSocket(connectMode);
+            data.setTimeout(timeout);
+
+            FTPReply reply = control.sendCommand("MLSD");
+            lastValidReply = control.validateReply(reply, "150");
+
+            return new BufferedReader(new InputStreamReader(data.getInputStream(),
+                    Charset.forName(encoding)
+            )) {
+                public String readLine() throws IOException {
+                    String line = super.readLine();
+                    if(null != line) {
+                        listener.logReply(line);
+                    }
+                    return line;
+                }
+            };
+        }
+        return null;
+    }
+
+    /**
+     * @param modtime
+     * @param remoteFile
+     * @throws IOException
+     * @throws FTPException
+     */
+    public void mfmt(final long modtime, final long createdate, final String remoteFile)
+            throws IOException, FTPException {
+        if(this.isFeatureSupported("MFMT")) {
+            FTPReply reply = control.sendCommand("MFMT " + tsFormat.format(modtime) + " " + remoteFile);
+            lastValidReply = control.validateReply(reply, "213");
+        }
         else {
-            log.warn("No UTF-8 support available in FEAT");
+            this.utime(modtime, createdate, remoteFile);
         }
-    }
-
-    protected boolean isMMLSTSupported() throws IOException {
-        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-            if(((String) iter.next()).trim().startsWith("MLST")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Map<String, String> mlst(String path) throws IOException {
-        final Map<String, String> facts = new HashMap<String, String>();
-        if(this.isMMLSTSupported()) {
-                     FTPReply reply = control.sendCommand("MLST " + path);
-                     lastValidReply = control.validateReply(reply, new String[]{"250", "226"});
-                     for(String data : lastValidReply.getReplyData()) {
-                         if(data.contains(";")) {
-                             for(String fact : data.split(";")) {
-                                 if(fact.contains("=")) {
-                                     facts.put(fact.split("=")[0].toLowerCase(), fact.split("=")[1].toLowerCase());
-                                 }
-                             }
-                         }
-                     }
-                 }
-        return facts;
     }
 
     /**
