@@ -607,6 +607,10 @@ public abstract class Preferences {
         String locale = "en";
         NSArray preferredLocalizations = NSBundle.preferredLocalizations(
                 NSBundle.mainBundle().localizations());
+        if(null == preferredLocalizations) {
+            log.warn("No localizations found in main bundle");
+            return locale;
+        }
         if(preferredLocalizations.count() > 0) {
             locale = (String) preferredLocalizations.objectAtIndex(0);
         }
