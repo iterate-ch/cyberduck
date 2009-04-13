@@ -63,7 +63,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
         }
         if(index == 6) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.instance().iconForName("me.png", 16));
+            item.setImage(CDIconCache.instance().iconForName("me-icon.png", 16));
         }
         if(index == 7) {
             item.setEnabled(true);

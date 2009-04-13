@@ -77,7 +77,7 @@ public abstract class Protocol {
      * @return A small icon to display
      */
     public String icon() {
-        return this.getIdentifier() + ".png";
+        return this.getIdentifier() + "-icon.png";
     }
 
     /**
