@@ -24,6 +24,7 @@ import com.apple.cocoa.foundation.*;
 import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -232,10 +233,13 @@ public class CDBookmarkTableDataSource extends CDController {
             if(o != null) {
                 NSArray elements = (NSArray) o;
                 for(int i = 0; i < elements.count(); i++) {
-                    final Host h = Host.parse(elements.objectAtIndex(i).toString());
-                    source.add(row, h);
-                    view.selectRow(row, false);
-                    view.scrollRowToVisible(row);
+                    final String url = elements.objectAtIndex(i).toString();
+                    if(StringUtils.isNotBlank(url)) {
+                        final Host h = Host.parse(url);
+                        source.add(row, h);
+                        view.selectRow(row, false);
+                        view.scrollRowToVisible(row);
+                    }
                 }
                 return true;
             }
