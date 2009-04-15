@@ -167,19 +167,6 @@ public class CDBookmarkTableDataSource extends CDController {
             // Do not allow drags for non writable collections
             return NSDraggingInfo.DragOperationNone;
         }
-        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
-            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
-            if(o != null) {
-                NSArray elements = (NSArray) o;
-                for(int i = 0; i < elements.count(); i++) {
-                    if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
-                        view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
-                        return NSDraggingInfo.DragOperationCopy;
-                    }
-                }
-            }
-            return NSDraggingInfo.DragOperationNone;
-        }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
             Object o = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
@@ -208,6 +195,19 @@ public class CDBookmarkTableDataSource extends CDController {
                 }
             }
         }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for(int i = 0; i < elements.count(); i++) {
+                    if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
+                        view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
+                        return NSDraggingInfo.DragOperationCopy;
+                    }
+                }
+            }
+            return NSDraggingInfo.DragOperationNone;
+        }
         if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
             if(index > -1 && index < view.numberOfRows()) {
                 view.setDropRowAndDropOperation(index, NSTableView.DropAbove);
@@ -228,34 +228,6 @@ public class CDBookmarkTableDataSource extends CDController {
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewAcceptDrop:" + row);
         final BookmarkCollection source = this.getSource();
-        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
-            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
-            if(o != null) {
-                NSArray elements = (NSArray) o;
-                for(int i = 0; i < elements.count(); i++) {
-                    final String url = elements.objectAtIndex(i).toString();
-                    if(StringUtils.isNotBlank(url)) {
-                        final Host h = Host.parse(url);
-                        source.add(row, h);
-                        view.selectRow(row, false);
-                        view.scrollRowToVisible(row);
-                    }
-                }
-                return true;
-            }
-            return false;
-        }
-        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-            Object o = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);
-            if(o != null) {
-                final Host h = Host.parse(o.toString());
-                source.add(row, h);
-                view.selectRow(row, false);
-                view.scrollRowToVisible(row);
-                return true;
-            }
-            return false;
-        }
         if(info.draggingPasteboard().availableTypeFromArray(
                 new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
             // We get a drag from another application e.g. Finder.app proposing some files
@@ -303,8 +275,36 @@ public class CDBookmarkTableDataSource extends CDController {
             }
             return true;
         }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for(int i = 0; i < elements.count(); i++) {
+                    final String url = elements.objectAtIndex(i).toString();
+                    if(StringUtils.isNotBlank(url)) {
+                        final Host h = Host.parse(url);
+                        source.add(row, h);
+                        view.selectRow(row, false);
+                        view.scrollRowToVisible(row);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+            Object o = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);
+            if(o != null) {
+                final Host h = Host.parse(o.toString());
+                source.add(row, h);
+                view.selectRow(row, false);
+                view.scrollRowToVisible(row);
+                return true;
+            }
+            return false;
+        }
         if(info.draggingPasteboard().availableTypeFromArray(
-                new NSArray(NSPasteboard.FilesPromisePboardType)) != null) {
+                new NSArray(NSPasteboard.FilesPromisePboardType)) != null && promisedDragBookmarks != null) {
             for(int i = 0; i < promisedDragBookmarks.length; i++) {
                 source.remove(source.indexOf(promisedDragBookmarks[i]));
                 source.add(row, promisedDragBookmarks[i]);
@@ -326,6 +326,7 @@ public class CDBookmarkTableDataSource extends CDController {
             controller.deleteBookmarkButtonClicked(null);
         }
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes(null, null);
+        promisedDragBookmarks = null;
     }
 
     /**
