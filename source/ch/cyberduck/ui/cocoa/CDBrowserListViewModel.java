@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-
 import com.apple.cocoa.application.NSDraggingInfo;
 import com.apple.cocoa.application.NSPasteboard;
 import com.apple.cocoa.application.NSTableColumn;
 import com.apple.cocoa.application.NSTableView;
 import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSMutableArray;
+
+import ch.cyberduck.core.Path;
 
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
             }
             return super.validateDrop(view, destination, row, info);
         }
-        return NSDraggingInfo.DragOperationNone;
+        return super.validateDrop(view, null, row, info);
     }
 
     public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
@@ -90,7 +90,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
             }
             return super.acceptDrop(view, destination, info);
         }
-        return false;
+        return super.acceptDrop(view, null, info);
     }
 
     // ----------------------------------------------------------

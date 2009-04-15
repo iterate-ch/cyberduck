@@ -131,6 +131,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
      * @see NSOutlineView.DataSource
      */
     public int outlineViewValidateDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
+        }
         if(controller.isMounted()) {
             if(null != destination) {
                 // Dragging over file or folder
@@ -151,7 +154,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                 return super.validateDrop(outlineView, controller.workdir(), row, info);
             }
         }
-        return NSDraggingInfo.DragOperationNone;
+        return super.validateDrop(outlineView, null, row, info);
     }
 
     /**
@@ -162,9 +165,8 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             if(null == destination) {
                 destination = controller.workdir();
             }
-            return super.acceptDrop(outlineView, destination, info);
         }
-        return false;
+        return super.acceptDrop(outlineView, destination, info);
     }
 
     /**

@@ -24,8 +24,8 @@ import com.apple.cocoa.foundation.*;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -54,7 +54,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
     /**
      * Container for all paths currently being listed in the background
      */
-    private final List<Path> isLoadingListingInBackground 
+    private final List<Path> isLoadingListingInBackground
             = new Collection<Path>();
 
     protected CDBrowserController controller;
@@ -217,69 +217,88 @@ public abstract class CDBrowserTableDataSource extends CDController {
 
     public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
         log.debug("acceptDrop:" + destination);
-        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
-            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
-            // A file drag has been received by another application; upload to the dragged directory
+        if(controller.isMounted()) {
+            if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+                // A file drag has been received by another application; upload to the dragged directory
+                if(o != null) {
+                    NSArray elements = (NSArray) o;
+                    final Session session = controller.getTransferSession();
+                    final List<Path> roots = new Collection<Path>();
+                    for(int i = 0; i < elements.count(); i++) {
+                        Path p = PathFactory.createPath(session,
+                                destination.getAbsolute(),
+                                new Local((String) elements.objectAtIndex(i)));
+                        roots.add(p);
+                    }
+                    final Transfer q = new UploadTransfer(roots);
+                    if(q.numberOfRoots() > 0) {
+                        controller.transfer(q, destination);
+                    }
+                    return true;
+                }
+                return false;
+            }
+        }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 NSArray elements = (NSArray) o;
-                final Session session = controller.getTransferSession();
-                final List<Path> roots = new Collection<Path>();
                 for(int i = 0; i < elements.count(); i++) {
-                    Path p = PathFactory.createPath(session,
-                            destination.getAbsolute(),
-                            new Local((String) elements.objectAtIndex(i)));
-                    roots.add(p);
+                    if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
+                        controller.mount(Host.parse(elements.objectAtIndex(i).toString()));
+                        return true;
+                    }
                 }
-                final Transfer q = new UploadTransfer(roots);
-                if(q.numberOfRoots() > 0) {
-                    controller.transfer(q, destination);
-                }
+                return false;
             }
-            return true;
         }
-        if(NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard).availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
-            Object o = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard).propertyListForType(CDPasteboards.TransferPasteboardType);
-            if(o != null) {
-                // A file dragged within the browser has been received
-                final NSArray elements = (NSArray) o;
-                if((info.draggingSourceOperationMask() & NSDraggingInfo.DragOperationMove)
-                        == NSDraggingInfo.DragOperationMove) {
-                    // The file should be renamed
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(int i = 0; i < elements.count(); i++) {
-                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Transfer q = TransferFactory.create(dict);
-                        for(Path next: q.getRoots()) {
-                            Path original = PathFactory.createPath(controller.workdir().getSession(),
-                                    next.getAbsolute(), next.attributes.getType());
-                            Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                                    destination.getAbsolute(), original.getName(), next.attributes.getType());
-                            files.put(original, renamed);
+        if(controller.isMounted()) {
+            final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+                Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
+                if(o != null) {
+                    // A file dragged within the browser has been received
+                    final NSArray elements = (NSArray) o;
+                    if((info.draggingSourceOperationMask() & NSDraggingInfo.DragOperationMove)
+                            == NSDraggingInfo.DragOperationMove) {
+                        // The file should be renamed
+                        final Map<Path, Path> files = new HashMap<Path, Path>();
+                        for(int i = 0; i < elements.count(); i++) {
+                            NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                            Transfer q = TransferFactory.create(dict);
+                            for(Path next : q.getRoots()) {
+                                Path original = PathFactory.createPath(controller.workdir().getSession(),
+                                        next.getAbsolute(), next.attributes.getType());
+                                Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                                        destination.getAbsolute(), original.getName(), next.attributes.getType());
+                                files.put(original, renamed);
+                            }
                         }
+                        controller.renamePaths(files);
                     }
-                    controller.renamePaths(files);
-                }
-                if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
-                    // The file should be duplicated
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(int i = 0; i < elements.count(); i++) {
-                        NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
-                        Transfer q = TransferFactory.create(dict, controller.getSession());
-                        for(Iterator<Path> iter = q.getRoots().iterator(); iter.hasNext();) {
-                            final Path source = iter.next();
-                            final Path copy = PathFactory.createPath(controller.getSession(), source.getAsDictionary());
-                            copy.setPath(destination.getAbsolute(), source.getName());
-                            files.put(source, copy);
+                    if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
+                        // The file should be duplicated
+                        final Map<Path, Path> files = new HashMap<Path, Path>();
+                        for(int i = 0; i < elements.count(); i++) {
+                            NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                            Transfer q = TransferFactory.create(dict, controller.getSession());
+                            for(Iterator<Path> iter = q.getRoots().iterator(); iter.hasNext();) {
+                                final Path source = iter.next();
+                                final Path copy = PathFactory.createPath(controller.getSession(), source.getAsDictionary());
+                                copy.setPath(destination.getAbsolute(), source.getName());
+                                files.put(source, copy);
+                            }
                         }
+                        controller.duplicatePaths(files, false);
                     }
-                    controller.duplicatePaths(files, false);
+                    pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
+                    return true;
                 }
-                NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard).setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
-                return true;
+                return false;
             }
         }
         return false;
-
     }
 
     public int validateDrop(NSTableView view, Path destination, int row, NSDraggingInfo info) {
@@ -289,8 +308,26 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     this.setDropRowAndDropOperation(view, destination, row);
                     return NSDraggingInfo.DragOperationCopy;
                 }
+                return NSDraggingInfo.DragOperationNone;
             }
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+        }
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            Object o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            if(o != null) {
+                NSArray elements = (NSArray) o;
+                for(int i = 0; i < elements.count(); i++) {
+                    if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
+                        // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
+                        // entire table view to be highlighted rather than a specific row.
+                        // view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+                        return NSDraggingInfo.DragOperationCopy;
+                    }
+                }
+            }
+            return NSDraggingInfo.DragOperationNone;
+        }
+        if(controller.isMounted()) {
+            final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
             if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
                 Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                 if(o != null) {
@@ -298,7 +335,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
                         Transfer q = TransferFactory.create(dict);
-                        for(Path next: q.getRoots()) {
+                        for(Path next : q.getRoots()) {
                             if(!next.getSession().equals(this.controller.getSession())) {
                                 // Don't allow dragging between two browser windows if not connected
                                 // to the same server using the same protocol
@@ -329,6 +366,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         }
                     }
                 }
+                return NSDraggingInfo.DragOperationNone;
             }
         }
         return NSDraggingInfo.DragOperationNone;
@@ -337,6 +375,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
     private void setDropRowAndDropOperation(NSTableView view, Path destination, int row) {
         if(destination.equals(controller.workdir())) {
             log.debug("setDropRowAndDropOperation:-1");
+            // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
+            // entire table view to be highlighted rather than a specific row.
             view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
         }
         else if(destination.attributes.isDirectory()) {
@@ -382,11 +422,12 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 final Transfer q = new DownloadTransfer(roots);
 
                 // Writing data for private use when the item gets dragged to the transfer queue.
-                NSPasteboard queuePboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-                queuePboard.declareTypes(new NSArray(CDPasteboards.TransferPasteboardType), null);
-                if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
+                NSPasteboard transferPasteboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+                transferPasteboard.declareTypes(new NSArray(CDPasteboards.TransferPasteboardType), null);
+                if(transferPasteboard.setPropertyListForType(new NSArray(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
                     log.debug("TransferPasteboardType data sucessfully written to pasteboard");
                 }
+
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
                     NSPoint dragPosition = view.convertPointFromView(event.locationInWindow(), null);
