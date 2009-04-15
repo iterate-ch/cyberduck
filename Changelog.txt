@@ -13,6 +13,7 @@ Changelog. Last modified: $Date$
 - [Feature] Support for hierarchical directory structure (Mosso)
 - [Feature] Added Espresso to the list of supported editors (http://macrabbit.com/espresso/) [#2823]
 - [Feature] Display date of transfer [#1462]
+- [Feature] Option for big sized icons in bookmark list
 - [Bugfix] Update passwords in Keychain [#2984]
 - [Bugfix] Invalid Origin parameter when creating CloudFront distribution (S3) [#3068]
 - [Bugfix] Only reauthenticate when needed (Mosso) [#2876]
