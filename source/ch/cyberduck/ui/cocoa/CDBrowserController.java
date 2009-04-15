@@ -3266,15 +3266,14 @@ public class CDBrowserController extends CDWindowController
         }
         final Transfer q = new DownloadTransfer(roots);
         // Writing data for private use when the item gets dragged to the transfer queue.
-        NSPasteboard queuePboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-        queuePboard.declareTypes(new NSArray(CDPasteboards.TransferPasteboardType), null);
-        if(queuePboard.setPropertyListForType(new NSArray(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
+        final NSPasteboard transferPasteboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+        transferPasteboard.declareTypes(new NSArray(CDPasteboards.TransferPasteboardType), null);
+        if(transferPasteboard.setPropertyListForType(new NSArray(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
             log.debug("TransferPasteboardType data sucessfully written to pasteboard");
         }
-        Path p = this.getSelectedPath();
-        NSPasteboard pboard = NSPasteboard.generalPasteboard();
-        pboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
-        if(!pboard.setStringForType(p.getAbsolute(), NSPasteboard.StringPboardType)) {
+        final NSPasteboard generalPasteboard = NSPasteboard.generalPasteboard();
+        generalPasteboard.declareTypes(new NSArray(NSPasteboard.StringPboardType), null);
+        if(!generalPasteboard.setStringForType(this.getSelectedPath().getAbsolute(), NSPasteboard.StringPboardType)) {
             log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
         }
     }
@@ -3756,16 +3755,14 @@ public class CDBrowserController extends CDWindowController
                 final Session session = init(host);
 
                 background(new BrowserBackgroundAction(CDBrowserController.this) {
-                    private Path mount;
-
                     public void run() {
                         // Mount this session
-                        mount = session.mount();
+                        workdir = session.mount();
                     }
 
                     public void cleanup() {
                         // Set the working directory
-                        setWorkdir(mount);
+                        setWorkdir(workdir);
                         if(!session.isConnected()) {
                             // Connection attempt failed
                             unmount(true);

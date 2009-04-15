@@ -114,7 +114,13 @@ public class FTPPath extends Path {
                     // MLSD listing failed
                     if(!this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), true))) {
                         // LIST -a listing failed
-                        session.FTP.finishDir();
+                        try {
+                            session.FTP.finishDir();
+                        }
+                        catch(FTPException e) {
+                            log.error(e.getMessage());
+                            session.FTP.setExtendedListEnabled(false);
+                        }
                         this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), false));
                     }
                 }
