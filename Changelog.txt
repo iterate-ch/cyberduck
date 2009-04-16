@@ -14,10 +14,12 @@ Changelog. Last modified: $Date$
 - [Feature] Added Espresso to the list of supported editors (http://macrabbit.com/espresso/) [#2823]
 - [Feature] Display date of transfer [#1462]
 - [Feature] Option for big sized icons in bookmark list
+- [Feature] Drag URL to browser window to open connection [#2326]
 - [Bugfix] Update passwords in Keychain [#2984]
 - [Bugfix] Invalid Origin parameter when creating CloudFront distribution (S3) [#3068]
 - [Bugfix] Only reauthenticate when needed (Mosso) [#2876]
 - [Bugfix] Improve Interoperability (WebDAV) [#2974, #3076]
+- [Bugfix] Different recursive permissions for directory and files [#1787]
 
 3.1.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.2]
 - [Feature] Enforce hostname verification (SSL)
