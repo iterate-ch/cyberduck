@@ -84,7 +84,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                this.updateField(this.textField, message + ".");
+                this.updateField(this.textField, message);
             }
 
             private NSSecureTextField passField; // IBOutlet
