@@ -464,11 +464,14 @@ public class FTPPath extends Path {
                 // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
                 // Attempts to query the modification time of files that exist but are unable to be
                 // retrieved may generate an error-response
-                final long millis = session.FTP.mdtm(this.getAbsolute());
-                if(-1 == millis) {
-                    return;
+                attributes.setModificationDate(session.FTP.mdtm(this.getAbsolute()));
+            }
+            if(-1 == attributes.getModificationDate()) {
+                // Read the timestamp from the directory listing
+                List l = this.getParent().childs();
+                if(l.contains(this)) {
+                    attributes.setModificationDate(((AbstractPath) l.get(l.indexOf(this))).attributes.getModificationDate());
                 }
-                attributes.setModificationDate(millis);
             }
         }
         catch(IOException e) {
