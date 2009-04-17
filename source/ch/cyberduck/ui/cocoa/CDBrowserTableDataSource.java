@@ -319,7 +319,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
                         // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
                         // entire table view to be highlighted rather than a specific row.
-                        // view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
+                        view.setDropRowAndDropOperation(-1, NSTableView.DropOn);
                         return NSDraggingInfo.DragOperationCopy;
                     }
                 }
