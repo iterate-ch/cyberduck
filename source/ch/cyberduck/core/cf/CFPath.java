@@ -412,7 +412,7 @@ public class CFPath extends CloudPath {
         log.debug("delete:" + this.toString());
         try {
             session.check();
-            if(attributes.isFile()) {
+            if(!this.isContainer()) {
                 session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
                         this.getName()));
 
