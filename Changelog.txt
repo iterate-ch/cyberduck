@@ -4,7 +4,7 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.3]
+3.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.2]
 - [Feature] Choose Time Zone for bookmark (FTP) [#434]
 - [Feature] IPv6 Interoperability with support for EPSV and EPRT commands (FTP) [#2539, #2885]
 - [Feature] UTF8 charset negogiation [http://tools.ietf.org/html/draft-ietf-ftpext-utf-8-option-00] (FTP)
