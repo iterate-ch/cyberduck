@@ -135,23 +135,25 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
         }
         if(controller.isMounted()) {
-            if(null != destination) {
-                // Dragging over file or folder
-                final int draggingColumn = outlineView.columnAtPoint(info.draggingLocation());
-                if(0 == draggingColumn && destination.attributes.isDirectory()) {
-                    // Drop target is directory
-                    outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
-                    return super.validateDrop(outlineView, destination, row, info);
+            if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+                if(null != destination) {
+                    // Dragging over file or folder
+                    final int draggingColumn = outlineView.columnAtPoint(info.draggingLocation());
+                    if(0 == draggingColumn && destination.attributes.isDirectory()) {
+                        // Drop target is directory
+                        outlineView.setDropItemAndDropChildIndex(destination, NSOutlineView.DropOnItemIndex);
+                        return super.validateDrop(outlineView, destination, row, info);
+                    }
+                    else {
+                        outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
+                        return super.validateDrop(outlineView, controller.workdir(), row, info);
+                    }
                 }
                 else {
+                    // Dragging over empty rows
                     outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
                     return super.validateDrop(outlineView, controller.workdir(), row, info);
                 }
-            }
-            else {
-                // Dragging over empty rows
-                outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
-                return super.validateDrop(outlineView, controller.workdir(), row, info);
             }
         }
         return super.validateDrop(outlineView, null, row, info);
