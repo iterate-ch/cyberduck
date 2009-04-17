@@ -131,11 +131,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
      * @see NSOutlineView.DataSource
      */
     public int outlineViewValidateDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
-        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
-            outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
-        }
         if(controller.isMounted()) {
-            if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
+            final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null
+                    || info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.FilenamesPboardType)) != null) {
                 if(null != destination) {
                     // Dragging over file or folder
                     final int draggingColumn = outlineView.columnAtPoint(info.draggingLocation());
@@ -156,7 +155,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                 }
             }
         }
-        return super.validateDrop(outlineView, null, row, info);
+        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.URLPboardType)) != null) {
+            outlineView.setDropItemAndDropChildIndex(null, NSOutlineView.DropOnItemIndex);
+        }
+        return super.validateDrop(outlineView, destination, row, info);
     }
 
     /**

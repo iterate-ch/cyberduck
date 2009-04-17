@@ -276,6 +276,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             }
                         }
                         controller.renamePaths(files);
+                        return true;
                     }
                     if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
                         // The file should be duplicated
@@ -291,9 +292,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             }
                         }
                         controller.duplicatePaths(files, false);
+                        return true;
                     }
                     pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
-                    return true;
+                    return false;
                 }
                 return false;
             }
