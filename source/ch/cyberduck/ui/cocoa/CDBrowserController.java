@@ -167,7 +167,7 @@ public class CDBrowserController extends CDWindowController
      */
     public Object handleCloseScriptCommand(NSScriptCommand command) {
         log.debug("handleCloseScriptCommand:" + command);
-        this.unmount(true);
+        this.unmountImpl();
         BackgroundActionRegistry.instance().block();
         this.window().close();
         return null;
@@ -2291,7 +2291,7 @@ public class CDBrowserController extends CDWindowController
             }
             this.background(new BrowserBackgroundAction(this) {
                 public void run() {
-                    unmount(false);
+                    unmountImpl();
                 }
 
                 public void cleanup() {
@@ -3765,7 +3765,7 @@ public class CDBrowserController extends CDWindowController
                         setWorkdir(workdir);
                         if(!session.isConnected()) {
                             // Connection attempt failed
-                            unmount(true);
+                            unmountImpl();
                         }
                     }
 
@@ -3776,25 +3776,6 @@ public class CDBrowserController extends CDWindowController
                 });
             }
         });
-    }
-
-    /**
-     * Will close the session but still display the current working directory without any confirmation
-     * from the user
-     *
-     * @param forever The session won't be remounted in any case; will clear the cache
-     */
-    private void unmount(final boolean forever) {
-        // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
-        // sessions not yet connected
-        if(this.hasSession()) {
-            //Close the connection gracefully
-            this.session.close();
-            if(forever) {
-                this.session.cache().clear();
-                this.session.getHost().getCredentials().setPassword(null);
-            }
-        }
     }
 
     public boolean unmount() {
@@ -3818,30 +3799,6 @@ public class CDBrowserController extends CDWindowController
                 }
             }
         }, disconnected);
-    }
-
-    /**
-     * @param disconnected
-     */
-    private void unmountImpl(final Runnable disconnected) {
-        if(this.isActivityRunning()) {
-            this.interrupt();
-        }
-        this.background(new BrowserBackgroundAction(this) {
-            public void run() {
-                unmount(true);
-                inspector = null;
-            }
-
-            public void cleanup() {
-                disconnected.run();
-            }
-
-            public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
-                        session.getHost().getHostname());
-            }
-        });
     }
 
     /**
@@ -3870,6 +3827,51 @@ public class CDBrowserController extends CDWindowController
         disconnected.run();
         // Unmount succeeded
         return true;
+    }
+
+    /**
+     * @param disconnected
+     */
+    private void unmountImpl(final Runnable disconnected) {
+        if(this.isActivityRunning()) {
+            this.interrupt();
+        }
+        final Session session = this.getSession();
+        this.background(new BrowserBackgroundAction(this) {
+            public void run() {
+                unmountImpl();
+            }
+
+            public void cleanup() {
+                inspector = null;
+                if(null != session) {
+                    // Clear the cache on the main thread to make sure the browser model is not in an invalid state
+                    session.cache().clear();
+                    session.getHost().getCredentials().setPassword(null);
+                }
+                disconnected.run();
+            }
+
+            public String getActivity() {
+                return MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
+                        session.getHost().getHostname());
+            }
+        });
+    }
+
+    /**
+     * Will close the session but still display the current working directory without any confirmation
+     * from the user
+     *
+     * @param forever The session won't be remounted in any case; will clear the cache
+     */
+    private void unmountImpl() {
+        // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
+        // sessions not yet connected
+        if(this.hasSession()) {
+            //Close the connection gracefully
+            this.session.close();
+        }
     }
 
     /**
@@ -3921,7 +3923,7 @@ public class CDBrowserController extends CDWindowController
     private void disconnect() {
         this.background(new BrowserBackgroundAction(this) {
             public void run() {
-                unmount(false);
+                unmountImpl();
             }
 
             public void cleanup() {
