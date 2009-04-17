@@ -30,7 +30,7 @@ import java.util.Arrays;
  *
  * @version $Id$
  */
-public class Permission {
+public class Permission implements Serializable {
     private static Logger log = Logger.getLogger(Permission.class);
 
     private static final int EMPTY_MASK = 0;
@@ -39,7 +39,11 @@ public class Permission {
             = new Permission(EMPTY_MASK);
 
     public Permission(NSDictionary dict) {
-        this((String)dict.objectForKey("Mask"));
+        this.init(dict);
+    }
+
+    public void init(NSDictionary dict) {
+        this.init(dict.objectForKey("Mask").toString());
     }
 
     public NSDictionary getAsDictionary() {
@@ -92,7 +96,7 @@ public class Permission {
      * @param p
      */
     public Permission(Permission p) {
-        this(p.getMask());
+        this.init(p.getMask());
     }
 
     /**
@@ -100,6 +104,14 @@ public class Permission {
      *             Must be something between --------- and rwxrwxrwx
      */
     public Permission(String mask) {
+        this.init(mask);
+    }
+
+    /**
+     *
+     * @param mask
+     */
+    private void init(String mask) {
         if (mask.length() != 9) {
             log.error("Invalid mask:"+mask);
             throw new NumberFormatException("Must be a nine digit string");
@@ -115,6 +127,14 @@ public class Permission {
      *          by owner, group and others. (1,1) is the owner's read permission
      */
     public Permission(boolean[][] p) {
+        this.init(p);
+    }
+
+    /**
+     *
+     * @param p
+     */
+    private void init(boolean[][] p) {
         this.owner[READ] = p[OWNER][READ];
         this.owner[WRITE] = p[OWNER][WRITE];
         this.owner[EXECUTE] = p[OWNER][EXECUTE];

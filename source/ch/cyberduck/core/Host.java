@@ -209,7 +209,7 @@ public class Host extends NSObject implements Serializable {
     /**
      * @return
      */
-    public NSMutableDictionary getAsDictionary() {
+    public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
         if(!this.getNickname().equals(this.getDefaultNickname())) {

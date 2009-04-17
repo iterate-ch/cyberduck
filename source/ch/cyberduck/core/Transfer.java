@@ -186,7 +186,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
         NSMutableArray r = new NSMutableArray();
         for(Path root : this.roots) {
-            final NSMutableDictionary rootDict = root.getAsDictionary();
+            final NSMutableDictionary rootDict = (NSMutableDictionary)root.getAsDictionary();
             if(root.getStatus().isComplete()) {
                 rootDict.setObjectForKey(String.valueOf(true), "Complete");
             }

@@ -22,10 +22,10 @@ import com.apple.cocoa.foundation.NSDictionary;
 import com.apple.cocoa.foundation.NSMutableDictionary;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Serializable extends java.io.Serializable {
     void init(NSDictionary dict);
 
-    NSMutableDictionary getAsDictionary();
+    NSDictionary getAsDictionary();
 }

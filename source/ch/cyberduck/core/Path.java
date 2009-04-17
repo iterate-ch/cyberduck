@@ -124,7 +124,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
-    public NSMutableDictionary getAsDictionary() {
+    public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(this.getAbsolute(), REMOTE);
         if(local != null) {

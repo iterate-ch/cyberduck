@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class PathAttributes extends Attributes {
+public class PathAttributes extends Attributes implements Serializable {
     private static Logger log = Logger.getLogger(PathAttributes.class);
 
     /**
@@ -56,17 +56,45 @@ public class PathAttributes extends Attributes {
     }
 
     private static final String TYPE = "Type";
+    private static final String SIZE = "Size";
+    private static final String MODIFIED = "Modified";
+    private static final String PERMISSION = "Permission";
 
     public PathAttributes(NSDictionary dict) {
+        this.init(dict);
+    }
+
+    public void init(NSDictionary dict) {
         Object typeObj = dict.objectForKey(TYPE);
         if(typeObj != null) {
             this.type = Integer.parseInt((String) typeObj);
+        }
+        Object sizeObj = dict.objectForKey(SIZE);
+        if(sizeObj != null) {
+            this.size = Long.parseLong((String) sizeObj);
+        }
+        Object modifiedObj = dict.objectForKey(MODIFIED);
+        if(modifiedObj != null) {
+            this.modified = Long.parseLong((String) modifiedObj);
+        }
+        Object permissionObj = dict.objectForKey(PERMISSION);
+        if(permissionObj != null) {
+            this.permission = new Permission((NSDictionary)permissionObj);
         }
     }
 
     public NSDictionary getAsDictionary() {
         NSMutableDictionary dict = new NSMutableDictionary();
         dict.setObjectForKey(String.valueOf(this.type), TYPE);
+        if(this.size != -1) {
+            dict.setObjectForKey(String.valueOf(this.size), SIZE);
+        }
+        if(this.modified != -1) {
+            dict.setObjectForKey(String.valueOf(this.modified), MODIFIED);
+        }
+        if(null != permission) {
+            dict.setObjectForKey(permission.getAsDictionary(), PERMISSION);
+        }
         return dict;
     }
 
@@ -155,8 +183,9 @@ public class PathAttributes extends Attributes {
      * @return The owner of the file or 'Unknown' if not set
      */
     public String getOwner() {
-        if(null == this.owner)
+        if(null == this.owner) {
             return NSBundle.localizedString("Unknown", "");
+        }
         return this.owner;
     }
 
@@ -168,8 +197,9 @@ public class PathAttributes extends Attributes {
      * @return
      */
     public String getGroup() {
-        if(null == this.group)
+        if(null == this.group) {
             return NSBundle.localizedString("Unknown", "");
+        }
         return this.group;
     }
 }
