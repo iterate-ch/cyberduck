@@ -1676,8 +1676,6 @@ public class CDBrowserController extends CDWindowController
 
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
-        // receive drag events from types
-        this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]{NSPasteboard.URLPboardType}));
         this.bookmarkTable.setDataSource(this.bookmarkModel = new CDBookmarkTableDataSource(
                 this, HostCollection.defaultCollection())
         );
@@ -1714,6 +1712,7 @@ public class CDBrowserController extends CDWindowController
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(new NSArray(new Object[]
                 {
+                        NSPasteboard.URLPboardType,
                         NSPasteboard.StringPboardType,
                         NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
                         NSPasteboard.FilesPromisePboardType,
