@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -349,7 +350,7 @@ public class Local extends AbstractPath {
             return NSBundle.localizedString("Folder", "");
         }
         final String extension = this.getExtension();
-        if(null == extension) {
+        if(StringUtils.isEmpty(extension)) {
             return NSBundle.localizedString("Unknown", "");
         }
         if(!Local.jni_load()) {
@@ -435,12 +436,12 @@ public class Local extends AbstractPath {
         });
     }
 
-    public void rename(Path renamed) {
+    public void rename(AbstractPath renamed) {
         _impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()));
         this.setPath(this.getParent().getAbsolute(), renamed.getAbsolute());
     }
 
-    public void copy(Path copy) {
+    public void copy(AbstractPath copy) {
         throw new UnsupportedOperationException();
     }
 
@@ -550,6 +551,9 @@ public class Local extends AbstractPath {
     }
 
     public boolean equals(Object other) {
+        if(null == other) {
+            return false;
+        }
         if(other instanceof Local) {
             return this.getAbsolute().equalsIgnoreCase(((AbstractPath) other).getAbsolute());
         }
@@ -580,7 +584,7 @@ public class Local extends AbstractPath {
             return null;
         }
         final String extension = this.getExtension();
-        if(null == extension) {
+        if(StringUtils.isEmpty(extension)) {
             return null;
         }
         return this.applicationForExtension(extension);

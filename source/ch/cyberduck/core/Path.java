@@ -292,19 +292,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     public abstract void readPermission();
 
     /**
-     * @param p
-     * @return true if p is a child of me in the path hierarchy
-     */
-    public boolean isChild(Path p) {
-        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if(parent.equals(p)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * @return the path relative to its parent directory
      */
     public String getName() {
@@ -576,7 +563,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         out.flush();
     }
 
-    public void copy(final Path copy) {
+    public void copy(final AbstractPath copy) {
         final Local local = new Local(NSPathUtilities.temporaryDirectory(),
                 copy.getName());
         TransferOptions options = new TransferOptions();
@@ -589,8 +576,8 @@ public abstract class Path extends AbstractPath implements Serializable {
                     return TransferAction.ACTION_OVERWRITE;
                 }
             }, options);
-            copy.setLocal(local);
-            UploadTransfer upload = new UploadTransfer(copy);
+            ((Path)copy).setLocal(local);
+            UploadTransfer upload = new UploadTransfer(((Path)copy));
             upload.start(new TransferPrompt() {
                 public TransferAction prompt() {
                     return TransferAction.ACTION_OVERWRITE;
@@ -630,7 +617,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         if(other instanceof Path) {
             //BUG: returns the wrong result on case-insensitive systems, e.g. NT!
-            return this.getAbsolute().equals(((AbstractPath) other).getAbsolute());
+            return this.getAbsolute().equals(((Path) other).getAbsolute());
         }
         return false;
     }

@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import com.apple.cocoa.foundation.NSObject;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.utils.Mimetypes;
 
 import java.util.Comparator;
@@ -103,7 +105,7 @@ public abstract class AbstractPath extends NSObject {
         if(!this.isCached()) {
             this.cache().put(this, this.list());
         }
-        return this.<T>cache().get((T)this, comparator, filter);
+        return this.<T>cache().get((T) this, comparator, filter);
     }
 
     /**
@@ -216,12 +218,11 @@ public abstract class AbstractPath extends NSObject {
      * @return the extension if any or null otherwise
      */
     public String getExtension() {
-        String name = this.getName();
-        int index = name.lastIndexOf(".");
-        if(index != -1 && index != 0) {
-            return name.substring(index + 1, name.length());
+        final String extension = FilenameUtils.getExtension(this.getName());
+        if(StringUtils.isEmpty(extension)) {
+            return null;
         }
-        return null;
+        return extension;
     }
 
     public String getMimeType() {
@@ -248,9 +249,21 @@ public abstract class AbstractPath extends NSObject {
     public abstract void setPath(String name);
 
     /**
-     *
+     * @param p
+     * @return true if p is a child of me in the path hierarchy
+     */
+    public boolean isChild(AbstractPath p) {
+        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+            if(parent.equals(p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param parent Absolute path to the symbolic link
-     * @param name Target of the symbolic link name. Absolute or relative pathname
+     * @param name   Target of the symbolic link name. Absolute or relative pathname
      */
     public void setSymbolicLinkPath(String parent, String name) {
         if(name.startsWith(DELIMITER)) {
@@ -337,11 +350,10 @@ public abstract class AbstractPath extends NSObject {
     /**
      * @param renamed Must be an absolute path
      */
-    public abstract void rename(Path renamed);
+    public abstract void rename(AbstractPath renamed);
 
     /**
-     *
      * @param copy
      */
-    public abstract void copy(Path copy);
+    public abstract void copy(AbstractPath copy);
 }
