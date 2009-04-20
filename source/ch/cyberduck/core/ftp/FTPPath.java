@@ -106,25 +106,41 @@ public class FTPPath extends Path {
                     this.getName()));
 
             session.setWorkdir(this);
+            // Cached file parser determined from SYST response with the timezone set from the bookmark
             final FTPFileEntryParser parser = session.getFileParser();
-            if(!this.parse(childs, parser, session.FTP.stat(this.getAbsolute())) || childs.isEmpty()) {
-                // STAT listing failed
+            boolean success = this.parse(childs, parser, session.FTP.stat(this.getAbsolute()));
+            if(!success || childs.isEmpty()) {
+                // STAT listing failed or empty
+                // Set transfer type for traditional data socket file listings
                 session.FTP.setTransferType(FTPTransferType.ASCII);
-                if(!this.parse(childs, session.FTP.mlsd(this.session.getEncoding()))) {
-                    // MLSD listing failed
-                    if(!this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), true))) {
+                final BufferedReader mlsd = session.FTP.mlsd(this.session.getEncoding());
+                success = this.parse(childs, mlsd);
+                // MLSD listing failed
+                if(null != mlsd) {
+                    // Close MLSD data socket
+                    session.FTP.finishDir();
+                }
+                if(!success) {
+                    final BufferedReader lsa = session.FTP.list(this.session.getEncoding(), true);
+                    success = this.parse(childs, parser, lsa);
+                    if(null != lsa) {
+                        // Close LIST data socket
+                        session.FTP.finishDir();
+                    }
+                    if(!success) {
                         // LIST -a listing failed
-                        try {
+                        final BufferedReader ls = session.FTP.list(this.session.getEncoding(), false);
+                        success = this.parse(childs, parser, ls);
+                        if(null != ls) {
+                            // Close LIST data socket
                             session.FTP.finishDir();
                         }
-                        catch(FTPException e) {
-                            log.error(e.getMessage());
-                            session.FTP.setExtendedListEnabled(false);
+                        if(!success) {
+                            // LIST listing failed
+                            log.error("No compatible file listing method found");
                         }
-                        this.parse(childs, parser, session.FTP.list(this.session.getEncoding(), false));
                     }
                 }
-                session.FTP.finishDir();
             }
             boolean dirChanged = false;
             for(Path child : childs) {
@@ -233,6 +249,7 @@ public class FTPPath extends Path {
             if(file.isEmpty()) {
                 continue;
             }
+            success = true; // At least one entry successfully parsed
             for(String name : file.keySet()) {
                 final Path parsed = PathFactory.createPath(session, this.getAbsolute(), name, Path.FILE_TYPE);
                 parsed.setParent(this);
@@ -260,8 +277,6 @@ public class FTPPath extends Path {
                         log.warn("Unsupported type: " + line);
                         continue;
                     }
-                    success = true; // At least one entry successfully parsed
-
                     if(facts.containsKey("sizd")) {
                         parsed.attributes.setSize(Long.parseLong(facts.get("sizd")));
                     }
@@ -392,7 +407,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void rename(Path renamed) {
+    public void rename(AbstractPath renamed) {
         log.debug("rename:" + renamed);
         try {
             session.check();
