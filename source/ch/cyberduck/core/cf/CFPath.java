@@ -444,7 +444,7 @@ public class CFPath extends CloudPath {
         return false;
     }
 
-    public void rename(Path renamed) {
+    public void rename(AbstractPath renamed) {
         throw new UnsupportedOperationException();
     }
 

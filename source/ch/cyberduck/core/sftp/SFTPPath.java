@@ -177,7 +177,7 @@ public class SFTPPath extends Path {
         }
     }
 
-    public void rename(Path renamed) {
+    public void rename(AbstractPath renamed) {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),

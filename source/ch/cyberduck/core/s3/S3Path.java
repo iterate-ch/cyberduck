@@ -725,7 +725,7 @@ public class S3Path extends CloudPath {
         }
     }
 
-    public void rename(Path renamed) {
+    public void rename(AbstractPath renamed) {
         try {
             if(attributes.isFile()) {
                 session.check();
@@ -764,7 +764,7 @@ public class S3Path extends CloudPath {
         }
     }
 
-    public void copy(Path copy) {
+    public void copy(AbstractPath copy) {
         try {
             if(attributes.isFile()) {
                 session.check();

@@ -226,7 +226,7 @@ public class DAVPath extends Path {
 //            }
     }
 
-    public void rename(Path renamed) {
+    public void rename(AbstractPath renamed) {
         log.debug("rename:" + renamed);
         try {
             session.check();
@@ -248,7 +248,7 @@ public class DAVPath extends Path {
         }
     }
 
-    public void copy(Path copy) {
+    public void copy(AbstractPath copy) {
         try {
             session.check();
             session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
