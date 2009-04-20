@@ -30,6 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 
@@ -159,7 +160,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
             return this.convert(symlink, size);
         }
         if(item.attributes.isFile()) {
-            if(null == item.getExtension() && null != item.attributes.getPermission()) {
+            if(StringUtils.isEmpty(item.getExtension()) && null != item.attributes.getPermission()) {
                 if(item.attributes.isExecutable()) {
                     return this.convert(NSImage.imageNamed("executable.tiff"), size);
                 }

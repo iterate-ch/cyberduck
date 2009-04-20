@@ -18,14 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-
 import com.apple.cocoa.application.NSImage;
 import com.apple.cocoa.application.NSImageView;
 import com.apple.cocoa.application.NSTextField;
 import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSSize;
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -36,52 +38,47 @@ public class CDDuplicateFileController extends CDFileController {
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
-        NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(((CDBrowserController)parent).getSelectedPath().getExtension());
+        NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(((CDBrowserController) parent).getSelectedPath().getExtension());
         this.iconView.setImage(CDIconCache.instance().convert(icon, 64));
     }
 
     public CDDuplicateFileController(final CDWindowController parent) {
         super(parent);
     }
-    
+
     protected String getBundleName() {
         return "Duplicate";
     }
 
     public void setFilenameField(NSTextField field) {
         super.setFilenameField(field);
-        Path selected = ((CDBrowserController)parent).getSelectedPath();
+        final Path selected = ((CDBrowserController) parent).getSelectedPath();
         StringBuffer proposal = new StringBuffer();
-        if(null == selected.getExtension()) {
-            proposal.append(selected.getName());
-        }
-        else {
-            proposal.append(selected.getName().substring(0, selected.getName().lastIndexOf(".")));
-        }
+        proposal.append(FilenameUtils.getBaseName(selected.getName()));
         proposal.append(" (" + CDDateFormatter.getShortFormat(System.currentTimeMillis()).replace('/', ':') + ")");
-        if(null != selected.getExtension()) {
-            proposal.append("."+selected.getExtension());
+        if(StringUtils.isNotEmpty(selected.getExtension())) {
+            proposal.append("." + selected.getExtension());
         }
         this.filenameField.setStringValue(proposal.toString());
     }
 
     public void callback(final int returncode) {
-        Path selected = ((CDBrowserController)parent).getSelectedPath();
-        if (returncode == DEFAULT_OPTION) {
+        final Path selected = ((CDBrowserController) parent).getSelectedPath();
+        if(returncode == DEFAULT_OPTION) {
             this.duplicateFile(selected, filenameField.stringValue(), false);
         }
-        if (returncode == ALTERNATE_OPTION) {
+        if(returncode == ALTERNATE_OPTION) {
             this.duplicateFile(selected, filenameField.stringValue(), true);
         }
     }
 
     protected Path getWorkdir() {
-        return (Path)((CDBrowserController)parent).getSelectedPath().getParent();
+        return (Path) ((CDBrowserController) parent).getSelectedPath().getParent();
     }
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {
         final Path duplicate = PathFactory.createPath(selected.getSession(), selected.getAsDictionary());
         duplicate.setPath(duplicate.getParent().getAbsolute(), filename);
-        ((CDBrowserController)parent).duplicatePath(selected, duplicate, edit);
+        ((CDBrowserController) parent).duplicatePath(selected, duplicate, edit);
     }
 }

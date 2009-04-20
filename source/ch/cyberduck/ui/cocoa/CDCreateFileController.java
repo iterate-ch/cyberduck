@@ -27,6 +27,9 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.text.MessageFormat;
 import java.util.Collections;
 
@@ -60,15 +63,11 @@ public class CDCreateFileController extends CDFileController {
 
             public void run() {
                 int no = 0;
-                int index = filename.lastIndexOf(".");
                 while(file.getLocal().exists()) {
                     no++;
-                    String proposal;
-                    if(index != -1) {
-                        proposal = filename.substring(0, index) + "-" + no + filename.substring(index);
-                    }
-                    else {
-                        proposal = filename + "-" + no;
+                    String proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                        proposal += "." + FilenameUtils.getExtension(filename);
                     }
                     file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
                 }

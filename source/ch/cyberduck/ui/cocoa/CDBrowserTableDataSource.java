@@ -406,7 +406,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 for(int i = 0; i < items.count(); i++) {
                     promisedDragPaths[i] = PathFactory.createPath(session, ((Path) items.objectAtIndex(i)).getAsDictionary());
                     if(promisedDragPaths[i].attributes.isFile()) {
-                        if(promisedDragPaths[i].getExtension() != null) {
+                        if(StringUtils.isNotEmpty(promisedDragPaths[i].getExtension())) {
                             fileTypes.addObject(promisedDragPaths[i].getExtension());
                         }
                         else {
