@@ -211,7 +211,7 @@ public class FTPPath extends Path {
      * @param line
      */
     protected Map<String, Map<String, String>> parseFacts(String line) {
-        final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(\\S*)");
+        final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
         final Matcher result = p.matcher(line);
         Map<String, Map<String, String>> file = new HashMap<String, Map<String, String>>();
         if(result.matches()) {
@@ -223,6 +223,9 @@ public class FTPPath extends Path {
                 }
             }
             file.put(filename, facts);
+        }
+        else {
+            log.warn("No match for " + line);
         }
         return file;
     }
