@@ -29,8 +29,12 @@ import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -51,12 +55,15 @@ public class DownloadTransfer extends Transfer {
         final List<Path> normalized = new Collection<Path>();
         for(Path download : downloads) {
             boolean duplicate = false;
-            for(Path n : normalized) {
+            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
+                Path n = iter.next();
                 if(download.isChild(n)) {
-                    // The selected file is a child of a directory
-                    // already included
+                    // The selected file is a child of a directory already included
                     duplicate = true;
                     break;
+                }
+                if(n.isChild(download)) {
+                    iter.remove();
                 }
                 if(download.getLocal().getName().equals(n.getLocal().getName())) {
                     // The selected file has the same name; if downloaded as a root element
@@ -65,15 +72,11 @@ public class DownloadTransfer extends Transfer {
                     final String filename = download.getName();
                     String proposal;
                     int no = 0;
-                    int index = filename.lastIndexOf(".");
                     do {
                         no++;
-                        if(index != -1 && index != 0) {
-                            proposal = filename.substring(0, index)
-                                    + "-" + no + filename.substring(index);
-                        }
-                        else {
-                            proposal = filename + "-" + no;
+                        proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                        if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                            proposal += "." + FilenameUtils.getExtension(filename);
                         }
                         download.setLocal(new Local(parent, proposal));
                     }
@@ -254,17 +257,12 @@ public class DownloadTransfer extends Transfer {
             if(DownloadTransfer.this.exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0) {
                 final String parent = p.getLocal().getParent().getAbsolute();
                 final String filename = p.getName();
-                String proposal;
                 int no = 0;
-                int index = filename.lastIndexOf(".");
                 while(p.getLocal().exists()) {
                     no++;
-                    if(index != -1 && index != 0) {
-                        proposal = filename.substring(0, index)
-                                + "-" + no + filename.substring(index);
-                    }
-                    else {
-                        proposal = filename + "-" + no;
+                    String proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                        proposal += "." + FilenameUtils.getExtension(filename);
                     }
                     p.setLocal(new Local(parent, proposal));
                 }

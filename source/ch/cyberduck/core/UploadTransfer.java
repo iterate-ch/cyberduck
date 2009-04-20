@@ -27,7 +27,11 @@ import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -59,6 +63,52 @@ public class UploadTransfer extends Transfer {
         log.debug("init");
         this.bandwidth = new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes"));
+    }
+
+    protected void setRoots(List<Path> uploads) {
+        final List<Path> normalized = new Collection<Path>();
+        for(Path upload : uploads) {
+            boolean duplicate = false;
+            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
+                Path n = iter.next();
+                if(upload.getLocal().isChild(n.getLocal())) {
+                    // The selected file is a child of a directory already included
+                    duplicate = true;
+                    break;
+                }
+                if(n.getLocal().isChild(upload.getLocal())) {
+                    iter.remove();
+                }
+                if(upload.getName().equals(n.getName())) {
+                    // The selected file has the same name; if downloaded as a root element
+                    // it would overwrite the earlier
+                    final String parent = upload.getParent().getAbsolute();
+                    final String filename = upload.getName();
+                    String proposal;
+                    int no = 0;
+                    int index = filename.lastIndexOf(".");
+                    do {
+                        no++;
+                        if(index != -1 && index != 0) {
+                            proposal = filename.substring(0, index)
+                                    + "-" + no + filename.substring(index);
+                        }
+                        else {
+                            proposal = filename + "-" + no;
+                        }
+                        upload.setPath(parent, proposal);
+                    }
+                    while(false);//(upload.exists());
+                    log.info("Changed name to:" + upload.getName());
+                }
+            }
+            // Prunes the list of selected files. Files which are a child of an already included directory
+            // are removed from the returned list.
+            if(!duplicate) {
+                normalized.add(upload);
+            }
+        }
+        super.setRoots(normalized);
     }
 
     /**
@@ -219,17 +269,12 @@ public class UploadTransfer extends Transfer {
             if(UploadTransfer.this.exists(p)) {
                 final String parent = p.getParent().getAbsolute();
                 final String filename = p.getName();
-                String proposal = filename;
                 int no = 0;
-                int index = filename.lastIndexOf(".");
                 while(p.exists()) { // Do not use cached value of exists!
                     no++;
-                    if(index != -1 && index != 0) {
-                        proposal = filename.substring(0, index)
-                                + "-" + no + filename.substring(index);
-                    }
-                    else {
-                        proposal = filename + "-" + no;
+                    String proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                        proposal += "." + FilenameUtils.getExtension(filename);
                     }
                     p.setPath(parent, proposal);
                 }
@@ -254,7 +299,7 @@ public class UploadTransfer extends Transfer {
     };
 
     public TransferFilter filter(final TransferAction action) {
-        log.debug("filter:"+action);
+        log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return ACTION_OVERWRITE;
         }
@@ -268,7 +313,7 @@ public class UploadTransfer extends Transfer {
             return ACTION_SKIP;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Path root: this.getRoots()) {
+            for(Path root : this.getRoots()) {
                 if(this.exists(root)) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.childs().size()) {
@@ -293,7 +338,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:"+resumeRequested+","+reloadRequested);
+        log.debug("action:" + resumeRequested + "," + reloadRequested);
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;
@@ -345,5 +390,5 @@ public class UploadTransfer extends Transfer {
             }, true);
         }
         super.fireTransferDidEnd();
-    }    
+    }
 }
