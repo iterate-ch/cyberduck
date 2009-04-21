@@ -22,6 +22,7 @@ import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
@@ -30,13 +31,13 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.nio.charset.Charset;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -65,7 +66,7 @@ public class CDMainController extends CDController {
 
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
-        Map<String,String> columns = new HashMap<String,String>();
+        Map<String, String> columns = new HashMap<String, String>();
         columns.put("browser.columnKind", NSBundle.localizedString("Kind", ""));
         columns.put("browser.columnSize", NSBundle.localizedString("Size", ""));
         columns.put("browser.columnModification", NSBundle.localizedString("Modified", ""));
@@ -234,7 +235,7 @@ public class CDMainController extends CDController {
         log.debug("applicationOpenFile:" + filename);
         Local f = new Local(filename);
         if(f.exists()) {
-            if(f.getAbsolute().endsWith(".duck")) {
+            if("duck".equals(f.getExtension())) {
                 try {
                     final Host host = new Host(f);
                     this.newDocument().mount(host);
@@ -244,22 +245,35 @@ public class CDMainController extends CDController {
                     return false;
                 }
             }
-            else {
-                NSArray windows = NSApplication.sharedApplication().windows();
-                int count = windows.count();
-                while(0 != count--) {
-                    NSWindow window = (NSWindow) windows.objectAtIndex(count);
-                    final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-                    if(null != controller) {
-                        if(controller.isMounted()) {
-                            final Path workdir = controller.workdir();
-                            final Session session = controller.getTransferSession();
-                            final Transfer q = new UploadTransfer(
-                                    PathFactory.createPath(session, workdir.getAbsolute(), f)
-                            );
-                            controller.transfer(q, workdir);
-                            break;
-                        }
+            if("cyberducklicense".equals(f.getExtension())) {
+                final License l = new License(f);
+                if(l.verify()) {
+                    int choice = NSAlertPanel.runInformationalAlert(
+                            NSBundle.localizedString("Thanks for your support! ", "License", ""),
+                            NSBundle.localizedString("That makes it possible for me to spend more time on this project and will help to make Cyberduck even better.", "License", ""),
+                            NSBundle.localizedString("Continue", ""), //default
+                            null, //other
+                            null); //alternate
+                    if(choice == CDSheetCallback.DEFAULT_OPTION) {
+                        f.rename(new Local(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                    }
+                }
+                return true;
+            }
+            final NSArray windows = NSApplication.sharedApplication().windows();
+            int count = windows.count();
+            while(0 != count--) {
+                NSWindow window = (NSWindow) windows.objectAtIndex(count);
+                final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+                if(null != controller) {
+                    if(controller.isMounted()) {
+                        final Path workdir = controller.workdir();
+                        final Session session = controller.getTransferSession();
+                        final Transfer q = new UploadTransfer(
+                                PathFactory.createPath(session, workdir.getAbsolute(), f)
+                        );
+                        controller.transfer(q, workdir);
+                        break;
                     }
                 }
             }
@@ -313,7 +327,7 @@ public class CDMainController extends CDController {
         if(null == defaultBookmark) {
             return; //No default bookmark given
         }
-        for(Host bookmark: HostCollection.defaultCollection()) {
+        for(Host bookmark : HostCollection.defaultCollection()) {
             if(bookmark.getNickname().equals(defaultBookmark)) {
                 controller.mount(bookmark);
                 return;
@@ -424,7 +438,7 @@ public class CDMainController extends CDController {
                     this.openDefaultBookmark(this.newDocument());
                 }
             }
-            for(Host host: sessions) {
+            for(Host host : sessions) {
                 this.newDocument(true).mount(host);
             }
             sessions.clear();
