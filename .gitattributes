@@ -1884,6 +1884,7 @@ sv.lproj/Transfer.nib/classes.nib -text
 sv.lproj/Transfer.nib/info.nib -text
 sv.lproj/Transfer.nib/keyedobjects.nib -text
 sv.lproj/Transfer.strings -text svneol=unset#text/utf-16
+test/ch/cyberduck/core/ftp/parser/FilezillaFTPEntryParserTest.java -text
 test/ch/cyberduck/core/ftp/parser/FreeboxFTPEntryParserTest.java -text
 test/ch/cyberduck/core/ftp/parser/HPTru64ParserTest.java -text
 test/ch/cyberduck/core/ftp/parser/NetwareFTPEntryParserTest.java -text
