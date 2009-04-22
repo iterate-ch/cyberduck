@@ -37,6 +37,15 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
+jstring convertToJString(JNIEnv *env, NSString *nsString)
+{
+    if(nsString == nil) {
+        return NULL;
+    }
+    const char *unichars = [nsString UTF8String];
+    return (*env)->NewStringUTF(env, unichars);
+}
+
 /*
  * Class:     ch_cyberduck_core_aquaticprime_License
  * Method:    verify
@@ -47,7 +56,22 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_aquaticprime_License_verify(JN
 	// Paste obfuscated public key here
     NSString *key = [NSString stringWithString:@"0xAF026CFCF552C3D09A051124A596CEF7BBB26B15629504CD163B09675BE507C9C526ED3DBFCB91B78F718E0886A18400B56BC00E9213228CD6D6E9C84D8B6099AA3DE6E6F46F6CC7970982DE93A2A7318351FDFA25AE75B403996E50BB40643384214234E84EDA3E518772A4FF57FE29DD7C77A5EEB14C9023CA18FEC63236EF"];
     // Instantiate AquaticPrime
-    AquaticPrime *validator = [AquaticPrime aquaticPrimeWithKey:key];
+    AquaticPrime *p = [AquaticPrime aquaticPrimeWithKey:key];
 	
-    return [validator verifyLicenseFile:convertToNSString(env, license)];
+    return [p verifyLicenseFile:convertToNSString(env, license)];
+}
+
+/*
+ * Class:     ch_cyberduck_core_aquaticprime_License
+ * Method:    getName
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_aquaticprime_License_getValue(JNIEnv *env, jobject this, jstring license, jstring property)
+{
+	// Paste obfuscated public key here
+    NSString *key = [NSString stringWithString:@"0xAF026CFCF552C3D09A051124A596CEF7BBB26B15629504CD163B09675BE507C9C526ED3DBFCB91B78F718E0886A18400B56BC00E9213228CD6D6E9C84D8B6099AA3DE6E6F46F6CC7970982DE93A2A7318351FDFA25AE75B403996E50BB40643384214234E84EDA3E518772A4FF57FE29DD7C77A5EEB14C9023CA18FEC63236EF"];
+    // Instantiate AquaticPrime
+    AquaticPrime *p = [AquaticPrime aquaticPrimeWithKey:key];
+
+    return convertToJString(env, [[p dictionaryForLicenseFile:convertToNSString(env, license)] valueForKey:@convertToNSString(env, property)]);
 }

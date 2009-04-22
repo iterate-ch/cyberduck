@@ -32,7 +32,7 @@ import java.io.File;
 import java.util.Collection;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class License {
     private static Logger log = Logger.getLogger(License.class);
@@ -64,17 +64,14 @@ public class License {
      * @return Null if no license found
      */
     public static License find() {
-        if(!License.jni_load()) {
-            return null;
-        }
         final Collection<File> licenses = FileUtils.listFiles(
                 new File(new Local(Preferences.instance().getProperty("application.support.path")).getAbsolute()),
                 new SuffixFileFilter(".cyberducklicense"), FalseFileFilter.FALSE);
         for(File license : licenses) {
             return new License(new Local(license));
         }
-        log.warn("No license found");
-        return null;
+        log.info("No license found");
+        return new License(null);
     }
 
     private Local file;
@@ -90,11 +87,11 @@ public class License {
      * @return True if valid license key
      */
     public boolean verify() {
-        if(!License.jni_load()) {
-            return false;
-        }
         if(!file.exists()) {
             log.info("License file not found:" + file.getAbsolute());
+            return false;
+        }
+        if(!License.jni_load()) {
             return false;
         }
         final boolean valid = this.verify(file.getAbsolute());
@@ -108,4 +105,21 @@ public class License {
     }
 
     public native boolean verify(String license);
+
+    /**
+     *
+     * @return
+     */
+    public String getValue(String property) {
+        if(!file.exists()) {
+            log.info("License file not found:" + file.getAbsolute());
+            return null;
+        }
+        if(!License.jni_load()) {
+            return null;
+        }
+        return this.getName(file.getAbsolute(), property);
+    }
+
+    public native String getName(String license, String property);
 }

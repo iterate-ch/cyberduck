@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_aquaticprime_License_verify
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     ch_cyberduck_core_aquaticprime_License
+ * Method:    getName
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_aquaticprime_License_getValue
+   (JNIEnv *, jobject, jstring, jstring);
+
 #ifdef __cplusplus
 }
 #endif

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -249,14 +250,24 @@ public class CDMainController extends CDController {
                 final License l = new License(f);
                 if(l.verify()) {
                     int choice = NSAlertPanel.runInformationalAlert(
-                            NSBundle.localizedString("Thanks for your support! ", "License", ""),
-                            NSBundle.localizedString("That makes it possible for me to spend more time on this project and will help to make Cyberduck even better.", "License", ""),
+                            MessageFormat.format(NSBundle.localizedString("Registered to {0}", "License", ""), l.getValue("Name")),
+                            NSBundle.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License", "")
+                                    + "\n\n"
+                                    + NSBundle.localizedString("Your license file has been copied to the Application Support folder.", "License", ""),
                             NSBundle.localizedString("Continue", ""), //default
                             null, //other
                             null); //alternate
                     if(choice == CDSheetCallback.DEFAULT_OPTION) {
-                        f.rename(new Local(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                        f.copy(new Local(Preferences.instance().getProperty("application.support.path"), f.getName()));
                     }
+                }
+                else {
+                    int choice = NSAlertPanel.runCriticalAlert(
+                            NSBundle.localizedString("Not a valid license", "License", ""),
+                            NSBundle.localizedString("This license key does not appear to be valid.", "License", ""),
+                            NSBundle.localizedString("Continue", ""), //default
+                            null, //other
+                            null); //alternate
                 }
                 return true;
             }
@@ -480,6 +491,10 @@ public class CDMainController extends CDController {
                 null);
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             Rendezvous.instance().init();
+        }
+        final License l = License.find();
+        if(l.verify()) {
+            donationBoxDisplayed = true;
         }
     }
 
