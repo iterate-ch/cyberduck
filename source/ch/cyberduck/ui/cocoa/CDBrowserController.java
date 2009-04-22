@@ -922,6 +922,7 @@ public class CDBrowserController extends CDWindowController
                 return this.browserOutlineView;
             }
         }
+        log.fatal("No selected brower view");
         return null;
     }
 

@@ -43,7 +43,7 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
 
     public Comparator<Path> getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
-        String identifier = this.selectedColumnIdentifier();
+        final String identifier = this.selectedColumnIdentifier();
         if(identifier.equals(CDBrowserTableDataSource.ICON_COLUMN)
                 || identifier.equals(CDBrowserTableDataSource.KIND_COLUMN)) {
             return new FileTypeComparator(ascending);
@@ -60,11 +60,14 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         else if(identifier.equals(CDBrowserTableDataSource.OWNER_COLUMN)) {
             return new OwnerComparator(ascending);
         }
+        else if(identifier.equals(CDBrowserTableDataSource.GROUP_COLUMN)) {
+            return new GroupComparator(ascending);
+        }
         else if(identifier.equals(CDBrowserTableDataSource.PERMISSIONS_COLUMN)) {
             return new PermissionsComparator(ascending);
         }
         log.error("Unknown column identifier:" + identifier);
-        return null;
+        return new NullComparator<Path>();
     }
 
     private class FileTypeComparator extends BrowserComparator {
@@ -174,6 +177,24 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
 
         public String toString() {
             return CDBrowserTableDataSource.OWNER_COLUMN;
+        }
+    }
+
+    private class GroupComparator extends BrowserComparator {
+
+        public GroupComparator(boolean ascending) {
+            super(ascending);
+        }
+
+        public int compare(Path p1, Path p2) {
+            if(ascending) {
+                return p1.attributes.getGroup().compareToIgnoreCase(p2.attributes.getGroup());
+            }
+            return -p1.attributes.getGroup().compareToIgnoreCase(p2.attributes.getGroup());
+        }
+
+        public String toString() {
+            return CDBrowserTableDataSource.GROUP_COLUMN;
         }
     }
 
