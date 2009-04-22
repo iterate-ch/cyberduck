@@ -71,10 +71,24 @@ public class License {
             return new License(new Local(license));
         }
         log.info("No license found");
-        return new License(null);
+        return License.EMPTY;
     }
 
+    private static final License EMPTY = new License() {
+        public boolean verify() {
+            return false;
+        }
+
+        public String getValue(String property) {
+            return null;
+        }
+    };
+
     private Local file;
+
+    private License() {
+        ;
+    }
 
     /**
      * @param file
@@ -87,10 +101,6 @@ public class License {
      * @return True if valid license key
      */
     public boolean verify() {
-        if(!file.exists()) {
-            log.info("License file not found:" + file.getAbsolute());
-            return false;
-        }
         if(!License.jni_load()) {
             return false;
         }
@@ -104,22 +114,17 @@ public class License {
         return valid;
     }
 
-    public native boolean verify(String license);
+    private native boolean verify(String license);
 
     /**
-     *
      * @return
      */
     public String getValue(String property) {
-        if(!file.exists()) {
-            log.info("License file not found:" + file.getAbsolute());
-            return null;
-        }
         if(!License.jni_load()) {
             return null;
         }
         return this.getName(file.getAbsolute(), property);
     }
 
-    public native String getName(String license, String property);
+    private native String getName(String license, String property);
 }
