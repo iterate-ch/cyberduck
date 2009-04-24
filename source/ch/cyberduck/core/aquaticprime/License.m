@@ -73,5 +73,5 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_aquaticprime_License_getValue(J
     // Instantiate AquaticPrime
     AquaticPrime *p = [AquaticPrime aquaticPrimeWithKey:key];
 
-    return convertToJString(env, [[p dictionaryForLicenseFile:convertToNSString(env, license)] valueForKey:@convertToNSString(env, property)]);
+    return convertToJString(env, [[p dictionaryForLicenseFile:convertToNSString(env, license)] valueForKey:convertToNSString(env, property)]);
 }

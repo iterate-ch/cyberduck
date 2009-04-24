@@ -106,10 +106,10 @@ public class License {
         }
         final boolean valid = this.verify(file.getAbsolute());
         if(valid) {
-            log.info("Valid license file:" + file.getAbsolute());
+            log.info("Valid donation key:" + file.getAbsolute());
         }
         else {
-            log.warn("Not a valid license file:" + file.getAbsolute());
+            log.warn("Not a valid donation key:" + file.getAbsolute());
         }
         return valid;
     }

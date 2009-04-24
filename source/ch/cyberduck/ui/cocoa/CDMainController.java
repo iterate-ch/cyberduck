@@ -253,7 +253,7 @@ public class CDMainController extends CDController {
                             MessageFormat.format(NSBundle.localizedString("Registered to {0}", "License", ""), l.getValue("Name")),
                             NSBundle.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License", "")
                                     + "\n\n"
-                                    + NSBundle.localizedString("Your license file has been copied to the Application Support folder.", "License", ""),
+                                    + NSBundle.localizedString("Your donation key has been copied to the Application Support folder.", "License", ""),
                             NSBundle.localizedString("Continue", ""), //default
                             null, //other
                             null); //alternate
@@ -263,8 +263,8 @@ public class CDMainController extends CDController {
                 }
                 else {
                     int choice = NSAlertPanel.runCriticalAlert(
-                            NSBundle.localizedString("Not a valid license", "License", ""),
-                            NSBundle.localizedString("This license key does not appear to be valid.", "License", ""),
+                            NSBundle.localizedString("Not a valid donation key", "License", ""),
+                            NSBundle.localizedString("This donation key does not appear to be valid.", "License", ""),
                             NSBundle.localizedString("Continue", ""), //default
                             null, //other
                             null); //alternate

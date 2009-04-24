@@ -44,7 +44,7 @@
                 <key>CFBundleTypeIconFile</key>
                 <string>cyberduck-document.icns</string>
                 <key>CFBundleTypeName</key>
-                <string>Cyberduck License</string>
+                <string>Cyberduck Donation Key</string>
                 <key>CFBundleTypeRole</key>
                 <string>Viewer</string>
                 <key>LSItemContentTypes</key>
@@ -190,7 +190,7 @@
                     <string>public.xml</string>
                 </array>
                 <key>UTTypeDescription</key>
-                <string>Cyberduck License</string>
+                <string>Cyberduck Donation Key</string>
                 <key>UTTypeIdentifier</key>
                 <string>ch.sudo.cyberduck.license</string>
                 <key>UTTypeTagSpecification</key>
