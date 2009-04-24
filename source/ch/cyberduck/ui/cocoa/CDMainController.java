@@ -249,8 +249,12 @@ public class CDMainController extends CDController {
             if("cyberducklicense".equals(f.getExtension())) {
                 final License l = new License(f);
                 if(l.verify()) {
+                    String to = l.getValue("Name");
+                    if(null == to) {
+                        to= l.getValue("Email"); // primary key
+                    }
                     int choice = NSAlertPanel.runInformationalAlert(
-                            MessageFormat.format(NSBundle.localizedString("Registered to {0}", "License", ""), l.getValue("Name")),
+                            MessageFormat.format(NSBundle.localizedString("Registered to {0}", "License", ""), to),
                             NSBundle.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License", "")
                                     + "\n\n"
                                     + NSBundle.localizedString("Your donation key has been copied to the Application Support folder.", "License", ""),

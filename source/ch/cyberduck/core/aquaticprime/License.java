@@ -123,8 +123,8 @@ public class License {
         if(!License.jni_load()) {
             return null;
         }
-        return this.getName(file.getAbsolute(), property);
+        return this.getValue(file.getAbsolute(), property);
     }
 
-    private native String getName(String license, String property);
+    private native String getValue(String license, String property);
 }
