@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -250,7 +251,7 @@ public class CDMainController extends CDController {
                 final License l = new License(f);
                 if(l.verify()) {
                     String to = l.getValue("Name");
-                    if(null == to) {
+                    if(StringUtils.isBlank(to)) {
                         to= l.getValue("Email"); // primary key
                     }
                     int choice = NSAlertPanel.runInformationalAlert(
