@@ -21,9 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
@@ -72,8 +70,19 @@ public class CDCreateFileController extends CDFileController {
                     file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
                 }
                 file.getLocal().touch();
-                file.upload();
-                file.getLocal().delete(false);
+                TransferOptions options = new TransferOptions();
+                options.closeSession = false;
+                try {
+                    UploadTransfer upload = new UploadTransfer(file);
+                    upload.start(new TransferPrompt() {
+                        public TransferAction prompt() {
+                            return TransferAction.ACTION_OVERWRITE;
+                        }
+                    }, options);
+                }
+                finally {
+                    file.getLocal().delete(false);
+                }
                 if(file.exists()) {
                     if(edit) {
                         Editor editor = EditorFactory.createEditor(c, file.getLocal(), file);
