@@ -1,23 +1,61 @@
 #!/usr/local/bin/python
 
 import cgi
+import os
 import smtplib
 import email
 from email.MIMEText import MIMEText
+import sqlite3
 
-print "Content-type: text/html\n\n"
-try:
-	form = cgi.FieldStorage()
-	if form.has_key("crashlog"):
-		mail = MIMEText(form["crashlog"].value)
-		mail["To"] = "bugs@cyberduck.ch"
-	 	mail["From"]= "noreply@cyberduck.ch"
-	 	mail["Subject"] ="Cyberduck Crash Report"
-	 	mail["Date"] = email.Utils.formatdate(localtime=1)
-	 	mail["Message-ID"] = email.Utils.make_msgid()
-		s = smtplib.SMTP()
-		s.connect("localhost")
-		s.sendmail("noreply@cyberduck.ch", "bugs@cyberduck.ch", mail.as_string())
-		s.quit()
-except:
-    cgi.print_exception()
+from traceback import format_exception
+from sys import exc_info
+import logging
+logging.basicConfig(level=logging.DEBUG,
+                    format="%(asctime)s %(levelname)-8s %(message)s",
+                    datefmt="%a, %d %b %Y %H:%M:%S",
+                    filename="crash.log",
+                    filemode="a")
+
+#create table crash(ip TEXT, crashlog TEXT);
+db = 'crash.sqlite'
+
+if __name__=="__main__":
+	print "Content-type: text/html"
+	print
+	try:
+		form = cgi.FieldStorage()
+		if form.has_key("crashlog"):
+			crashlog = form["crashlog"].value
+			ip = cgi.escape(os.environ["REMOTE_ADDR"])
+			logging.info("Crash Report from %s", ip)
+
+			#add database entry
+			conn = sqlite3.connect(db)
+			c = conn.cursor()
+
+			row = (ip, crashlog)
+			try:
+				c.execute('insert into crash values(?,?)', row)
+			except sqlite3.IntegrityError, (ErrorMessage):
+				logging.error('Error adding crashlog from IP %s:%s', ip, ErrorMessage)
+				pass
+			finally:
+				# Save (commit) the changes
+				conn.commit()
+				# We can also close the cursor if we are done with it
+				c.close()
+
+			#send mail
+			mail = MIMEText(crashlog)
+			mail["To"] = "bugs@cyberduck.ch"
+			mail["From"] = "noreply@cyberduck.ch"
+			mail["Subject"] = "Cyberduck Crash Report from " + ip
+			mail["Date"] = email.Utils.formatdate(localtime=1)
+			mail["Message-ID"] = email.Utils.make_msgid()
+			s = smtplib.SMTP()
+			s.connect("localhost")
+			s.sendmail("noreply@cyberduck.ch", "bugs@cyberduck.ch", mail.as_string())
+			s.quit()
+	except:
+		logging.error("Unexpected error:".join(format_exception(*exc_info())))
+		cgi.print_exception()
