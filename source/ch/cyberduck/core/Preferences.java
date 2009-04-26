@@ -33,6 +33,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.Date;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -118,6 +119,10 @@ public abstract class Preferences {
         this.setProperty(property, String.valueOf(v));
     }
 
+    public void setProperty(String property, long v) {
+        this.setProperty(property, String.valueOf(v));
+    }
+
     /**
      * setting the default prefs values
      */
@@ -161,7 +166,9 @@ public abstract class Preferences {
         /**
          * True if donation dialog will be displayed before quit
          */
-        defaults.put("donate.reminder", String.valueOf(true));
+        defaults.put("donate.reminder", String.valueOf(-1));
+        defaults.put("donate.reminder.interval", String.valueOf(30)); // in days
+        defaults.put("donate.reminder.date", String.valueOf(new Date(0).getTime()));
 
         defaults.put("defaulthandler.reminder", String.valueOf(true));
 
@@ -562,6 +569,10 @@ public abstract class Preferences {
 
     public float getFloat(String property) {
         return Float.parseFloat(this.getObject(property).toString());
+    }
+
+    public long getLong(String property) {
+        return Long.parseLong(this.getObject(property).toString());
     }
 
     public double getDouble(String property) {

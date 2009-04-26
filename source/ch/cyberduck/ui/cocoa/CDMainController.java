@@ -21,14 +21,15 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,10 +37,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -252,7 +250,7 @@ public class CDMainController extends CDController {
                 if(l.verify()) {
                     String to = l.getValue("Name");
                     if(StringUtils.isBlank(to)) {
-                        to= l.getValue("Email"); // primary key
+                        to = l.getValue("Email"); // primary key
                     }
                     int choice = NSAlertPanel.runInformationalAlert(
                             MessageFormat.format(NSBundle.localizedString("Registered to {0}", "License", ""), to),
@@ -497,22 +495,18 @@ public class CDMainController extends CDController {
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             Rendezvous.instance().init();
         }
-        final License l = License.find();
-        if(l.verify()) {
-            donationBoxDisplayed = true;
-        }
     }
-
-    /**
-     * The donation reminder dialog has been displayed already
-     */
-    private boolean donationBoxDisplayed = false;
 
     /**
      * Saved browsers
      */
     private Collection<Host> sessions = new HistoryCollection(
             new Local(Preferences.instance().getProperty("application.support.path"), "Sessions"));
+
+    /**
+     * Display donation reminder dialog
+     */
+    private boolean prompt = true;
 
     /**
      * Invoked from within the terminate method immediately before the
@@ -525,55 +519,72 @@ public class CDMainController extends CDController {
      */
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-        if(!donationBoxDisplayed) {
-            Object lastreminder = Preferences.instance().getObject("donate.reminder");
-            if(null == lastreminder
-                    || !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastreminder)) {
-                // The donation dialog has not been displayed yet and the users has never choosen
-                // not to show it again in the future
-                final int uses = Preferences.instance().getInteger("uses");
-                CDWindowController c = new CDWindowController() {
-                    protected String getBundleName() {
-                        return "Donate";
-                    }
-
-                    private NSButton neverShowDonationCheckbox;
-
-                    public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
-                        this.neverShowDonationCheckbox = neverShowDonationCheckbox;
-                        this.neverShowDonationCheckbox.setTarget(this);
-                        this.neverShowDonationCheckbox.setState(NSCell.OffState);
-                    }
-
-                    public void awakeFromNib() {
-                        this.window().setTitle(this.window().title() + " (" + uses + ")");
-                        this.window().center();
-                        this.window().makeKeyAndOrderFront(null);
-                    }
-
-                    public void closeDonationSheet(final NSButton sender) {
-                        this.window().close();
-                        boolean never = neverShowDonationCheckbox.state() == NSCell.OnState;
-                        if(never) {
-                            Preferences.instance().setProperty("donate.reminder",
-                                    NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
-                        }
-                        if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
-                            try {
-                                NSWorkspace.sharedWorkspace().openURL(
-                                        new java.net.URL(Preferences.instance().getProperty("website.donate")));
+        if(prompt) {
+            final License l = License.find();
+            if(l.verify()) {
+                prompt = false;
+            }
+            else {
+                try {
+                    final Calendar lastreminder = Calendar.getInstance();
+                    lastreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
+                    // Display prompt every n days
+                    lastreminder.roll(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("donate.reminder.interval"));
+                    // Display after upgrade
+                    final String lastversion = Preferences.instance().getProperty("donate.reminder");
+                    if(lastreminder.getTime().before(new Date(System.currentTimeMillis())) ||
+                            !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
+                        final int uses = Preferences.instance().getInteger("uses");
+                        CDWindowController c = new CDWindowController() {
+                            protected String getBundleName() {
+                                return "Donate";
                             }
-                            catch(java.net.MalformedURLException e) {
-                                log.error(e.getMessage());
+
+                            private NSButton neverShowDonationCheckbox;
+
+                            public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
+                                this.neverShowDonationCheckbox = neverShowDonationCheckbox;
+                                this.neverShowDonationCheckbox.setTarget(this);
+                                this.neverShowDonationCheckbox.setState(NSCell.OffState);
                             }
-                        }
-                        NSApplication.sharedApplication().terminate(null);
+
+                            public void awakeFromNib() {
+                                this.window().setTitle(this.window().title() + " (" + uses + ")");
+                                this.window().center();
+                                this.window().makeKeyAndOrderFront(null);
+                            }
+
+                            public void closeDonationSheet(final NSButton sender) {
+                                this.window().close();
+                                boolean never = neverShowDonationCheckbox.state() == NSCell.OnState;
+                                if(never) {
+                                    Preferences.instance().setProperty("donate.reminder",
+                                            NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
+                                }
+                                if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
+                                    try {
+                                        NSWorkspace.sharedWorkspace().openURL(
+                                                new java.net.URL(Preferences.instance().getProperty("website.donate")));
+                                    }
+                                    catch(java.net.MalformedURLException e) {
+                                        log.error(e.getMessage());
+                                    }
+                                }
+                                // Remeber this reminder date
+                                Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
+                                // Quit again
+                                NSApplication.sharedApplication().terminate(null);
+                            }
+                        };
+                        c.loadBundle();
+                        // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
+                        return NSApplication.TerminateCancel;
                     }
-                };
-                c.loadBundle();
-                donationBoxDisplayed = true;
-                // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
-                return NSApplication.TerminateCancel;
+                }
+                finally {
+                    // Disable until next launch
+                    prompt = false;
+                }
             }
         }
         NSArray windows = app.windows();
@@ -652,7 +663,6 @@ public class CDMainController extends CDController {
      */
     public void workspaceWillPowerOff(NSNotification notification) {
         log.debug("workspaceWillPowerOff");
-        donationBoxDisplayed = true;
     }
 
     /**
@@ -664,7 +674,6 @@ public class CDMainController extends CDController {
      */
     public void workspaceWillLogout(NSNotification notification) {
         log.debug("workspaceWillLogout");
-        donationBoxDisplayed = true;
     }
 
     /**
