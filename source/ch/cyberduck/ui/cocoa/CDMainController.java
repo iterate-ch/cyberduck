@@ -520,12 +520,9 @@ public class CDMainController extends CDController {
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
         if(prompt) {
-            final License l = License.find();
-            if(l.verify()) {
-                prompt = false;
-            }
-            else {
-                try {
+            try {
+                final License l = License.find();
+                if(!l.verify()) {
                     final Calendar lastreminder = Calendar.getInstance();
                     lastreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
                     // Display prompt every n days
@@ -581,10 +578,10 @@ public class CDMainController extends CDController {
                         return NSApplication.TerminateCancel;
                     }
                 }
-                finally {
-                    // Disable until next launch
-                    prompt = false;
-                }
+            }
+            finally {
+                // Disable until next launch
+                prompt = false;
             }
         }
         NSArray windows = app.windows();
