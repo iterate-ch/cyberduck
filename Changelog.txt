@@ -16,6 +16,7 @@ Changelog. Last modified: $Date$
 - [Feature] Display percentage transferred [#2618]
 - [Feature] Option for big sized icons in bookmark list
 - [Feature] Drag URL to browser window to open connection [#2326]
+- [Feature] Display realm of HTTP authentication (WebDAV) [#3083]
 - [Bugfix] Update passwords in Keychain [#2984]
 - [Bugfix] Invalid Origin parameter when creating CloudFront distribution (S3) [#3068]
 - [Bugfix] Only reauthenticate when needed (Mosso) [#2876]
