@@ -339,8 +339,19 @@ public class DAVPath extends Path {
                     }
                     if(!session.DAV.putMethod(this.getAbsolute(),
                             new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - this.getStatus().getCurrent(), this.getLocal().getMimeType()) {
+                                boolean repeatable = true;
+
                                 public void writeRequest(OutputStream out) throws IOException {
-                                    upload(out, in, throttle, listener);
+                                    try {
+                                        DAVPath.this.upload(out, in, throttle, listener);
+                                    }
+                                    finally {
+                                        repeatable = false;
+                                    }
+                                }
+
+                                public boolean isRepeatable() {
+                                    return super.isRepeatable() || repeatable;
                                 }
                             })) {
                         // Upload failed

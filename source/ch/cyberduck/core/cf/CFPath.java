@@ -371,8 +371,19 @@ public class CFPath extends CloudPath {
 
                 session.CF.storeObjectAs(this.getContainerName(), this.getKey(),
                         new InputStreamRequestEntity(in, this.getLocal().attributes.getSize(), this.getLocal().getMimeType()) {
+                            boolean repeatable = true;
+
                             public void writeRequest(OutputStream out) throws IOException {
-                                upload(out, in, throttle, listener);
+                                try {
+                                    CFPath.this.upload(out, in, throttle, listener);
+                                }
+                                finally {
+                                    repeatable = false;
+                                }
+                            }
+
+                            public boolean isRepeatable() {
+                                return super.isRepeatable() || repeatable;
                             }
                         },
                         metadata, md5sum
