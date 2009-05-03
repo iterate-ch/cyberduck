@@ -121,10 +121,14 @@ public class DAVSession extends HTTPSession {
     protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
             final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
-
-            HttpState clientState = client.getState();
-            // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-            clientState.setAuthenticationPreemptive(true);
+            
+            final HttpState clientState = client.getState();
+            if(credentials.isValid()) {
+                // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
+                clientState.setAuthenticationPreemptive(true);
+                clientState.setCredentials(new AuthScope(host.getHostname(), host.getPort()),
+                        new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
+            }
 
             client.getParams().setParameter(HttpClientParams.PREEMPTIVE_AUTHENTICATION, true);
             client.getParams().setParameter(CredentialsProvider.PROVIDER, new CredentialsProvider() {
