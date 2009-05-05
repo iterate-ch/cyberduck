@@ -353,7 +353,8 @@ public class CFPath extends CloudPath {
             }
             if(attributes.isFile()) {
                 // No Content-Range support
-                this.getStatus().setCurrent(0);
+                final Status stat = this.getStatus();
+                stat.setCurrent(0);
                 final InputStream in = new Local.InputStream(this.getLocal());
                 this.getSession().message(MessageFormat.format(NSBundle.localizedString("Compute MD5 hash of {0}", "Status", ""),
                         this.getName()));
@@ -371,32 +372,44 @@ public class CFPath extends CloudPath {
 
                 session.CF.storeObjectAs(this.getContainerName(), this.getKey(),
                         new InputStreamRequestEntity(in, this.getLocal().attributes.getSize(), this.getLocal().getMimeType()) {
-                            boolean repeatable = true;
+
+                            boolean requested = false;
 
                             public void writeRequest(OutputStream out) throws IOException {
+                                if(requested) {
+                                    in.reset();
+                                    stat.reset();
+                                    stat.setCurrent(0);
+                                }
                                 try {
                                     CFPath.this.upload(out, in, throttle, listener);
                                 }
                                 finally {
-                                    repeatable = false;
+                                    requested = true;
                                 }
                             }
 
                             public boolean isRepeatable() {
-                                return super.isRepeatable() || repeatable;
+                                return true;
                             }
                         },
                         metadata, md5sum
                 );
             }
-            if(attributes.isDirectory()) {
-                this.mkdir();
-            }
-        }
-        catch(IOException e) {
-            this.error("Upload failed", e);
+        if(attributes.isDirectory()) {
+            this.mkdir();
         }
     }
+
+    catch(
+    IOException e
+    )
+
+    {
+        this.error("Upload failed", e);
+    }
+
+}
 
     public void mkdir(boolean recursive) {
         log.debug("mkdir:" + this.getName());
