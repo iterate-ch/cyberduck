@@ -124,19 +124,7 @@ public class S3Path extends CloudPath {
     }
 
     public boolean exists() {
-        if(this.isRoot()) {
-            return true;
-        }
-        if(attributes.isFile()) {
-            try {
-                this.getDetails();
-            }
-            catch(S3Exception e) {
-                return false;
-            }
-            return true;
-        }
-        else {
+        if(attributes.isDirectory()) {
             if(this.isContainer()) {
                 try {
                     return session.S3.isBucketAccessible(this.getContainerName());
@@ -147,15 +135,16 @@ public class S3Path extends CloudPath {
             }
             return !this.childs().isEmpty();
         }
+        return super.exists();
     }
 
-    private S3Object _details;
+    protected S3Object _details;
 
     /**
      * @return
      * @throws S3ServiceException
      */
-    private S3Object getDetails() throws S3Exception {
+    protected S3Object getDetails() throws S3Exception {
         if(null == this._details || !_details.isMetadataComplete()) {
             try {
                 final S3Bucket bucket = this.getBucket();
@@ -212,7 +201,11 @@ public class S3Path extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
                         this.getName()));
 
-                attributes.setSize(this.getDetails().getContentLength());
+                final S3Object details = this.getDetails();
+                if(null == details) {
+                    return;
+                }
+                attributes.setSize(details.getContentLength());
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -227,7 +220,11 @@ public class S3Path extends CloudPath {
                 session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
                         this.getName()));
 
-                attributes.setModificationDate(this.getDetails().getLastModifiedDate().getTime());
+                final S3Object details = this.getDetails();
+                if(null == details) {
+                    return;
+                }
+                attributes.setModificationDate(details.getLastModifiedDate().getTime());
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);

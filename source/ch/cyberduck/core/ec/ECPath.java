@@ -22,10 +22,10 @@ import com.apple.cocoa.foundation.NSDictionary;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.Distribution;
-import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Exception;
+import ch.cyberduck.core.s3.S3Path;
 
-import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.model.S3Object;
 
 /**
  * @version $Id$
@@ -68,6 +68,10 @@ public class ECPath extends S3Path {
 
     protected ECPath(ECSession s, NSDictionary dict) {
         super(s, dict);
+    }
+
+    protected S3Object getDetails() throws S3Exception {
+        return null;
     }
 
     /**
