@@ -97,12 +97,17 @@ public class S3Session extends HTTPSession implements SSLSession {
     protected Jets3tProperties configuration = new Jets3tProperties();
 
     /**
-     * 
      * @param configuration
      */
     protected void configure() {
         configuration.setProperty("s3service.s3-endpoint", host.getHostname());
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
+        // The maximum number of retries that will be attempted when an S3 connection fails
+        // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
+        // configuration.setProperty("s3service.internal-error-retry-max", String.valueOf(0));
+        // The maximum number of concurrent communication threads that will be started by
+        // the multi-threaded service for upload and download operations.
+        // configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
 
         configuration.setProperty("httpclient.proxy-autodetect", "false");
         if(host.getProtocol().isSecure()) {
@@ -120,6 +125,9 @@ public class S3Session extends HTTPSession implements SSLSession {
         configuration.setProperty("httpclient.connection-timeout-ms", String.valueOf(this.timeout()));
         configuration.setProperty("httpclient.socket-timeout-ms", String.valueOf(this.timeout()));
         configuration.setProperty("httpclient.useragent", this.getUserAgent());
+        configuration.setProperty("httpclient.authentication-preemptive", String.valueOf(true));
+        // How many times to retry connections when they fail with IO errors. Set this to 0 to disable retries.
+        // configuration.setProperty("httpclient.retry-max", String.valueOf(0));
 
 //        final String cipher = Preferences.instance().getProperty("s3.crypto.algorithm");
 //        if(EncryptionUtil.isCipherAvailableForUse(cipher)) {
@@ -134,7 +142,6 @@ public class S3Session extends HTTPSession implements SSLSession {
     }
 
     /**
-     *
      * @param bucket
      * @return
      */
@@ -177,16 +184,15 @@ public class S3Session extends HTTPSession implements SSLSession {
     }
 
     protected void login(final Credentials credentials) throws IOException {
-            final HostConfiguration hostconfig = new StickyHostConfiguration();
-            hostconfig.setHost(host.getHostname(), host.getPort(),
-                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
-            );
-            this.login(credentials, hostconfig);
+        final HostConfiguration hostconfig = new StickyHostConfiguration();
+        hostconfig.setHost(host.getHostname(), host.getPort(),
+                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+        );
+        this.login(credentials, hostconfig);
     }
 
     /**
-     * 
      * @param credentials
      * @param hostconfig
      * @throws IOException
@@ -290,7 +296,8 @@ public class S3Session extends HTTPSession implements SSLSession {
                 String.valueOf(reference), // Caller reference - a unique string value
                 cnames, // CNAME aliases for distribution
                 new Date(reference).toString(), // Comment
-                enabled  // Enabled?
+                enabled,  // Enabled?
+                null // Logging Status. Disabled if null
         );
     }
 
@@ -306,7 +313,8 @@ public class S3Session extends HTTPSession implements SSLSession {
                 distribution.getId(),
                 cnames, // CNAME aliases for distribution
                 new Date(reference).toString(), // Comment
-                enabled // Enabled?
+                enabled, // Enabled?
+                null // Logging Status. Disabled if null
         );
     }
 
