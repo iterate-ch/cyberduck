@@ -23,6 +23,7 @@ import com.apple.cocoa.foundation.*;
 
 import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
+import ch.cyberduck.core.io.RepeatableFileInputStream;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
@@ -614,7 +615,7 @@ public class Local extends AbstractPath {
         }
     }
 
-    public static class InputStream extends FileInputStream {
+    public static class InputStream extends RepeatableFileInputStream {
         public InputStream(Local local) throws FileNotFoundException {
             super(local._impl);
         }
