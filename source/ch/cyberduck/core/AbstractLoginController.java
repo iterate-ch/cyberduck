@@ -30,21 +30,27 @@ public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
     /**
-     * Saved in keychain
+     * Password already found in keychain
      */
     private boolean persisted;
 
-    public void check(final Host host)
-            throws LoginCanceledException {
+    /**
+     * Check the credentials for validity and prompt the user for the password if not found
+     * in the login keychain
+     *
+     * @param host See Host#getCredentials
+     * @throws LoginCanceledException
+     */
+    public void check(final Host host) throws LoginCanceledException {
         this.check(host, null);
     }
 
     /**
-     * Try to the password from the user or the Keychain
+     * Check the credentials for validity and prompt the user for the password if not found
+     * in the login keychain
      *
-     * @param host
-     * @return true if reasonable values have been found localy or in the keychain or the user
-     *         was prompted to for the credentials and new values got entered.
+     * @param host    See Host#getCredentials
+     * @param message Additional message displayed in the password prompt
      */
     public void check(final Host host, String message)
             throws LoginCanceledException {
@@ -61,8 +67,7 @@ public abstract class AbstractLoginController implements LoginController {
             final String title = NSBundle.localizedString("Login with username and password", "Credentials", "");
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                    log.info("Searching keychain for password...");
-                    String passFromKeychain = this.findPassword(host);
+                    String passFromKeychain = this.find(host);
                     if(StringUtils.isBlank(passFromKeychain)) {
                         reason.append(NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
                         this.prompt(host, title, reason.toString());
@@ -89,7 +94,7 @@ public abstract class AbstractLoginController implements LoginController {
             log.info("Password already persisted in Keychain");
             return;
         }
-        this.savePassword(host);
+        this.save(host);
     }
 
     public void fail(final Host host, final String reason) throws LoginCanceledException {
@@ -103,12 +108,16 @@ public abstract class AbstractLoginController implements LoginController {
      * @param port     Use 0 if the port does not matter
      * @return the password fetched from the keychain or null if it was not found
      */
-    private String findPassword(final Host host) {
+    public String find(final Host host) {
         if(log.isInfoEnabled()) {
             log.info("Fetching password from Keychain:" + host);
         }
         if(StringUtils.isEmpty(host.getHostname())) {
             log.warn("No hostname given");
+            return null;
+        }
+        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
+            log.warn("No username given");
             return null;
         }
         final String p = Keychain.instance().getInternetPasswordFromKeychain(host.getProtocol().getScheme(), host.getPort(),
@@ -122,9 +131,11 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     /**
-     * Adds the password to the system keychain
+     * Adds the password to the login keychain
+     *
+     * @param host
      */
-    private void savePassword(final Host host) {
+    protected void save(final Host host) {
         if(StringUtils.isEmpty(host.getHostname())) {
             log.warn("No hostname given");
             return;
