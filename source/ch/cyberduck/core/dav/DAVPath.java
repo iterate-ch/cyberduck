@@ -325,33 +325,39 @@ public class DAVPath extends Path {
 
                 final InputStream in = new Local.InputStream(this.getLocal());
                 try {
-                    if(this.getStatus().isResume()) {
+                    final Status stat = this.getStatus();
+                    if(stat.isResume()) {
                         session.DAV.addRequestHeader("Content-Range", "bytes "
-                                + this.getStatus().getCurrent()
+                                + stat.getCurrent()
                                 + "-" + (this.getLocal().attributes.getSize() - 1)
                                 + "/" + this.getLocal().attributes.getSize()
                         );
-                        long skipped = in.skip(getStatus().getCurrent());
+                        long skipped = in.skip(stat.getCurrent());
                         log.info("Skipping " + skipped + " bytes");
-                        if(skipped < getStatus().getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
+                        if(skipped < stat.getCurrent()) {
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + stat.getCurrent());
                         }
                     }
                     if(!session.DAV.putMethod(this.getAbsolute(),
-                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - this.getStatus().getCurrent(), this.getLocal().getMimeType()) {
-                                boolean repeatable = true;
+                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - stat.getCurrent(), this.getLocal().getMimeType()) {
+                                boolean requested = false;
 
                                 public void writeRequest(OutputStream out) throws IOException {
+                                    if(requested) {
+                                        in.reset();
+                                        stat.reset();
+                                        stat.setCurrent(0);
+                                    }
                                     try {
                                         DAVPath.this.upload(out, in, throttle, listener);
                                     }
                                     finally {
-                                        repeatable = false;
+                                        requested = true;
                                     }
                                 }
 
                                 public boolean isRepeatable() {
-                                    return super.isRepeatable() || repeatable;
+                                    return true;
                                 }
                             })) {
                         // Upload failed
