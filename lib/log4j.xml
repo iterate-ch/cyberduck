@@ -6,26 +6,13 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
-    <logger name="ch.cyberduck">
+    <logger name="httpclient.wire.content" additivity="false">
+        <level value="error"/>
+    </logger>
+    <logger name="httpclient.wire.header" additivity="false">
         <level value="debug"/>
-    </logger>
-    <logger name="org.apache.commons.httpclient">
-        <level value="info"/>
-    </logger>
-    <logger name="httpclient.wire.content">
-        <level value="debug"/>
-    </logger>
-    <logger name="httpclient.wire.header">
-        <level value="debug"/>
-    </logger>
-    <logger name="org.jets3t">
-        <level value="info"/>
-    </logger>
-    <logger name="org.jets3t.service.utils">
-        <level value="warn"/>
     </logger>
     <root>
-        <priority value="debug"/>
         <appender-ref ref="console"/>
     </root>
 </log4j:configuration>

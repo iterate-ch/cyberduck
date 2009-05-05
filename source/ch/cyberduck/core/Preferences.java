@@ -18,9 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSArray;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSPathUtilities;
-import com.apple.cocoa.foundation.NSArray;
 
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
@@ -30,10 +30,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.Date;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -64,7 +64,7 @@ public abstract class Preferences {
      */
     public static Preferences instance() {
         synchronized(lock) {
-            if (null == current) {
+            if(null == current) {
                 if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
                     current = new CDPreferencesImpl();
                 }
@@ -138,10 +138,10 @@ public abstract class Preferences {
         else {
             APP_SUPPORT_DIR = new File(
                     NSPathUtilities.stringByExpandingTildeInPath(
-                            (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")));
+                            (String) NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")));
         }
         APP_SUPPORT_DIR.mkdirs();
-        
+
         defaults.put("application.support.path", APP_SUPPORT_DIR.getAbsolutePath());
 
         /**
@@ -149,15 +149,10 @@ public abstract class Preferences {
          */
         defaults.put("logging", "ERROR");
 
-        final Level level = Level.toLevel(this.getProperty("logging"));
-        Logger.getLogger("ch.cyberduck").setLevel(level);
+        final Logger root = Logger.getRootLogger();
+        root.setLevel(Level.toLevel(this.getProperty("logging")));
 
-        // Always logged to at DEBUG level
-        Logger.getLogger("httpclient.wire.content").setLevel(Level.ERROR);
-        // Always logged to at DEBUG level
-        Logger.getLogger("httpclient.wire.header").setLevel(Level.DEBUG);
-
-        defaults.put("version", 
+        defaults.put("version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
         /**
          * How many times the application was launched
@@ -266,7 +261,7 @@ public abstract class Preferences {
         defaults.put("alert.toggle.transcript", String.valueOf(0));
 
         defaults.put("transfer.toggle.details", String.valueOf(1));
-        
+
         /**
          * Default editor
          */
@@ -540,7 +535,7 @@ public abstract class Preferences {
         defaults.put("archive.command.expand.bz2", "bzip2 -dvk {0}");
 
         defaults.put("update.check", String.valueOf(true));
-        final int DAY = 60*60*24;
+        final int DAY = 60 * 60 * 24;
         defaults.put("update.check.interval", String.valueOf(DAY)); // periodic update check in seconds
     }
 
@@ -553,7 +548,7 @@ public abstract class Preferences {
      */
     public Object getObject(String property) {
         Object value = defaults.get(property);
-        if (null == value) {
+        if(null == value) {
             log.warn("No property with key '" + property + "'");
         }
         return value;
