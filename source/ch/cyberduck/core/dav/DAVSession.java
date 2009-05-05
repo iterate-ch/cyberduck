@@ -108,25 +108,45 @@ public class DAVSession extends HTTPSession {
         this.fireConnectionDidOpenEvent();
     }
 
-    protected void login() throws IOException {
-        this.login(host.getCredentials());
+    public void setLoginController(final LoginController c) {
+        this.login = new LoginController() {
 
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
+            public void check(Host host) throws LoginCanceledException {
+                final Credentials credentials = host.getCredentials();
+                if(!credentials.isValid()) {
+                    if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
+                        credentials.setPassword(((AbstractLoginController)c).find(host));
+                    }
+                }
+                // Do not prompt for credentials yet but in the credentials provider
+                // below upon request with the given authentication scheme realm
+            }
 
-        login.success(host);
+            public void check(Host host, String reason) throws LoginCanceledException {
+                c.check(host, reason);
+            }
+
+            public void success(Host host) {
+                c.success(host);
+            }
+
+            public void fail(Host host, String reason) throws LoginCanceledException {
+                c.fail(host, reason);
+            }
+
+            public void prompt(Host host, String reason, String message) throws LoginCanceledException {
+                c.prompt(host, reason, message);
+            }
+        };
     }
 
     protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
             final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
-            
-            final HttpState clientState = client.getState();
+
             if(credentials.isValid()) {
                 // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                clientState.setAuthenticationPreemptive(true);
-                clientState.setCredentials(new AuthScope(host.getHostname(), host.getPort()),
+                this.DAV.setCredentials(
                         new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
             }
 
