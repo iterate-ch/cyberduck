@@ -650,6 +650,7 @@ public class CDInfoController extends CDWindowController {
                 }
                 else if(StringUtils.isBlank(filenameField.stringValue())) {
                     filenameField.setStringValue(current.getName());
+                    this.initWebUrl();
                 }
                 else {
                     this.alert(NSAlertPanel.informationalAlertPanel(
