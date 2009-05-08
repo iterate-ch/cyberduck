@@ -18,17 +18,13 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.commons.io.IOUtils;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class RepeatableFileInputStream extends InputStream {
-
-    private File file;
-    private FileInputStream fis;
+public class RepeatableFileInputStream extends org.jets3t.service.io.RepeatableFileInputStream {
 
     /**
      * Creates a repeatable input stream based on a file.
@@ -37,28 +33,6 @@ public class RepeatableFileInputStream extends InputStream {
      * @throws java.io.FileNotFoundException
      */
     public RepeatableFileInputStream(File file) throws FileNotFoundException {
-        this.file = file;
-        this.fis = new FileInputStream(file);
-    }
-
-    public void reset() throws IOException {
-        IOUtils.closeQuietly(fis);
-        fis = new FileInputStream(file);
-    }
-
-    public int available() throws IOException {
-        return fis.available();
-    }
-
-    public void close() throws IOException {
-        fis.close();
-    }
-
-    public int read() throws IOException {
-        return fis.read();
-    }
-
-    public int read(byte b[], int off, int len) throws IOException {
-        return fis.read(b, off, len);
+        super(file);
     }
 }
