@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.ResponseEntity;
 import org.apache.webdav.lib.WebdavResource;
+import org.apache.webdav.lib.util.WebdavStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +61,7 @@ public class DAVResource extends WebdavResource {
     }
 
     /**
-     * 
+     *
      */
     public void clearHeaders() {
         headers.clear();
@@ -83,6 +84,15 @@ public class DAVResource extends WebdavResource {
         return resume;
     }
 
+    protected void setStatusCode(int statusCode, String message) {
+        latestStatusCode = statusCode;
+        final String statusText = WebdavStatus.getStatusText(statusCode);
+        StringBuffer text = new StringBuffer();
+        text.append(statusCode).append(" ").append(StringUtils.isNotBlank(statusText) ? statusText : "").
+                append(" ").append(StringUtils.isNotBlank(message) ? message : "");
+        latestStatusMessage = text.toString();
+    }
+
     /**
      * Get InputStream for the GET method for the given path.
      *
@@ -99,12 +109,11 @@ public class DAVResource extends WebdavResource {
 
         generateTransactionHeader(method);
         generateAdditionalHeaders(method);
-        client.executeMethod(method);
+        final int statusCode = client.executeMethod(method);
         Header contentRange = method.getResponseHeader("Content-Range");
         resume = contentRange != null;
 
-        int statusCode = method.getStatusLine().getStatusCode();
-        setStatusCode(statusCode);
+        setStatusCode(statusCode, method.getStatusText());
 
         if(isHttpSuccess(statusCode)) {
             Header contentEncoding = method.getResponseHeader("Content-Encoding");
@@ -151,7 +160,7 @@ public class DAVResource extends WebdavResource {
         generateAdditionalHeaders(method);
         int statusCode = client.executeMethod(method);
 
-        setStatusCode(statusCode);
+        setStatusCode(statusCode, method.getStatusText());
         return isHttpSuccess(statusCode);
     }
 
