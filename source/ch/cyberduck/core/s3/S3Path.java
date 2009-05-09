@@ -173,7 +173,7 @@ public class S3Path extends CloudPath {
             try {
                 session.getTrustManager().setHostname(session.getHostnameForBucket(bucketname));
                 if(!session.S3.isBucketAccessible(bucketname)) {
-                    throw new S3Exception("Bucket not available: " + bucketname);
+                    log.warn("Bucket not available: " + bucketname);
                 }
                 final S3Bucket[] buckets = session.getBuckets(false);
                 for(int i = 0; i < buckets.length; i++) {
@@ -542,8 +542,7 @@ public class S3Path extends CloudPath {
                         final S3Object[] objects = chunk.getObjects();
                         final S3Path[] paths = new S3Path[objects.length];
                         for(int i = 0; i < objects.length; i++) {
-                            paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(),
-                                    Path.FILE_TYPE);
+                            paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(), Path.FILE_TYPE);
                             paths[i].setParent(this);
                             paths[i]._bucket = bucket;
 
@@ -551,6 +550,11 @@ public class S3Path extends CloudPath {
                             paths[i].attributes.setModificationDate(objects[i].getLastModifiedDate().getTime());
                             if(null != bucket.getOwner()) {
                                 paths[i].attributes.setOwner(bucket.getOwner().getDisplayName());
+                            }
+                            if(0 == objects[i].getContentLength()) {
+                                if(MIMETYPE_DIRECTORY.equals(paths[i].getDetails().getContentType())) {
+                                    paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(), Path.DIRECTORY_TYPE);
+                                }
                             }
                         }
                         childs.addAll(Arrays.asList(paths));
@@ -589,6 +593,11 @@ public class S3Path extends CloudPath {
         return childs;
     }
 
+    /**
+     * Mimetype used to indicate that an S3 object actually represents a directory on the local file system.
+     */
+    private final static String MIMETYPE_DIRECTORY = "application/x-directory";
+
     public void mkdir() {
         log.debug("mkdir:" + this.getName());
         try {
@@ -600,14 +609,14 @@ public class S3Path extends CloudPath {
                     // Create bucket
                     session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
                 }
-//                else {
-//                    S3Object object = new S3Object(this.getBucket(), this.getKey());
-//                    // Set object explicitly to private access by default.
-//                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
-//                    object.setContentLength(0);
-//                    object.setContentType(Mimetypes.MIMETYPE_JETS3T_DIRECTORY);
-//                    session.S3.putObject(this.getBucket(), object);
-//                }
+                else {
+                    S3Object object = new S3Object(this.getBucket(), this.getKey());
+                    // Set object explicitly to private access by default.
+                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+                    object.setContentLength(0);
+                    object.setContentType(MIMETYPE_DIRECTORY);
+                    session.S3.putObject(this.getBucket(), object);
+                }
             }
             catch(S3ServiceException e) {
                 throw new S3Exception(e);
@@ -705,6 +714,9 @@ public class S3Path extends CloudPath {
                     }
                     if(this.isContainer()) {
                         session.S3.deleteBucket(this.getContainerName());
+                    }
+                    else {
+                        session.S3.deleteObject(this.getContainerName(), this.getKey());
                     }
                 }
             }

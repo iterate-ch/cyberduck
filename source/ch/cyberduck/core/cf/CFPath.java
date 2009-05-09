@@ -487,8 +487,4 @@ public class CFPath extends CloudPath {
         }
         return b.toString();
     }
-
-    public boolean isMkdirSupported() {
-        return true;
-    }
 }
