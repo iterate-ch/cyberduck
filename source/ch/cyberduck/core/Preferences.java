@@ -429,6 +429,10 @@ public abstract class Preferences {
         defaults.put("s3.tls.acceptAnyCertificate", String.valueOf(false));
 
 //        defaults.put("s3.crypto.algorithm", "PBEWithMD5AndDES");
+        /**
+         * A prefix to apply to log file names
+         */
+        defaults.put("s3.logging.prefix", "logs/");
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
@@ -503,7 +507,7 @@ public abstract class Preferences {
         /**
          * Location of the openssh known_hosts file
          */
-        defaults.put("ssh.knownhosts",  "~/.ssh/known_hosts");
+        defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
 
         defaults.put("ssh.CSEncryption", "blowfish-cbc"); //client -> server encryption cipher
         defaults.put("ssh.SCEncryption", "blowfish-cbc"); //server -> client encryption cipher

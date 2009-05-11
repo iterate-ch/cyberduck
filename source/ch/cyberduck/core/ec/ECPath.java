@@ -86,8 +86,9 @@ public class ECPath extends S3Path {
      *
      * @param enabled
      * @param cnames
+     * @param logging
      */
-    public void writeDistribution(final boolean enabled, final String[] cnames) {
+    public void writeDistribution(final boolean enabled, final String[] cnames, boolean logging) {
         throw new UnsupportedOperationException();
     }
 }

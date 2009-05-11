@@ -37,6 +37,8 @@ import org.jets3t.service.*;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.cloudfront.Distribution;
+import org.jets3t.service.model.cloudfront.LoggingStatus;
+import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.security.AWSCredentials;
 
 import java.io.IOException;
@@ -104,10 +106,10 @@ public class S3Session extends HTTPSession implements SSLSession {
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
-        // configuration.setProperty("s3service.internal-error-retry-max", String.valueOf(0));
+        configuration.setProperty("s3service.internal-error-retry-max", String.valueOf(0));
         // The maximum number of concurrent communication threads that will be started by
         // the multi-threaded service for upload and download operations.
-        // configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
+        configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
 
         configuration.setProperty("httpclient.proxy-autodetect", "false");
         if(host.getProtocol().isSecure()) {
@@ -289,7 +291,7 @@ public class S3Session extends HTTPSession implements SSLSession {
      * @param path
      * @return
      */
-    public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames) throws CloudFrontServiceException {
+    public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
         return this.createCloudFrontService().createDistribution(
                 this.getHostnameForBucket(bucket),
@@ -297,7 +299,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                 cnames, // CNAME aliases for distribution
                 new Date(reference).toString(), // Comment
                 enabled,  // Enabled?
-                null // Logging Status. Disabled if null
+                logging // Logging Status. Disabled if null
         );
     }
 
@@ -307,14 +309,14 @@ public class S3Session extends HTTPSession implements SSLSession {
      * @param distribution
      * @param cnames       DNS CNAME aliases for distribution
      */
-    public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames) throws CloudFrontServiceException {
+    public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
         this.createCloudFrontService().updateDistributionConfig(
                 distribution.getId(),
                 cnames, // CNAME aliases for distribution
                 new Date(reference).toString(), // Comment
                 enabled, // Enabled?
-                null // Logging Status. Disabled if null
+                logging // Logging Status. Disabled if null
         );
     }
 
@@ -325,6 +327,16 @@ public class S3Session extends HTTPSession implements SSLSession {
      */
     public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
         return this.createCloudFrontService().listDistributions(bucket);
+    }
+
+    /**
+     * 
+     * @param distribution
+     * @return
+     * @throws CloudFrontServiceException
+     */
+    public DistributionConfig getDistributionConfig(final Distribution distribution) throws CloudFrontServiceException {
+        return this.createCloudFrontService().getDistributionConfig(distribution.getId());
     }
 
     /**
@@ -372,5 +384,4 @@ public class S3Session extends HTTPSession implements SSLSession {
         }
         return cloudfront;
     }
-
 }

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.cloud;
 
-import com.apple.cocoa.foundation.NSBundle;
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -19,13 +18,25 @@ import com.apple.cocoa.foundation.NSBundle;
  *  dkocher@cyberduck.ch
  */
 
+import com.apple.cocoa.foundation.NSBundle;
+
 /**
  * @version $Id$
  */
 public class Distribution {
 
+    /**
+     * Configuration pending
+     */
     private boolean inprogress;
+    /**
+     * Deployment enabled
+     */
     private boolean enabled;
+    /**
+     * Logging enabled
+     */
+    private boolean logging;
     private String url;
     private String status;
     private String cnames[];
@@ -41,34 +52,45 @@ public class Distribution {
     }
 
     /**
-     * @param enabled
-     * @param origin
-     * @param url
-     * @param status
-     * @param cnames
+     * @param enabled    Deployment Enabled
+     * @param inprogress Deployment Status is about to be changed
+     * @param url        Where to find this distribution
+     * @param status     Status Message about Deployment Status
+     * @param cnames     Multiple CNAME aliases of this distribution
      */
     public Distribution(boolean enabled, String url, String status, String[] cnames) {
         this(enabled, false, url, status, cnames);
     }
 
     /**
-     *
-     * @param enabled Deployment Enabled
+     * @param enabled    Deployment Enabled
      * @param inprogress Deployment Status is about to be changed
-     * @param url Where to find this distribution
-     * @param status Status Message about Deployment Status
-     * @param cnames Multiple CNAME aliases of this distribution
+     * @param url        Where to find this distribution
+     * @param status     Status Message about Deployment Status
+     * @param cnames     Multiple CNAME aliases of this distribution
      */
     public Distribution(boolean enabled, boolean inprogress, String url, String status, String[] cnames) {
+        this(enabled, inprogress, url, status, cnames, false);
+    }
+
+    /**
+     * @param enabled    Deployment Enabled
+     * @param inprogress Deployment Status is about to be changed
+     * @param url        Where to find this distribution
+     * @param status     Status Message about Deployment Status
+     * @param cnames     Multiple CNAME aliases of this distribution
+     * @param logging
+     */
+    public Distribution(boolean enabled, boolean inprogress, String url, String status, String[] cnames, boolean logging) {
         this.enabled = enabled;
         this.inprogress = inprogress;
         this.url = url;
         this.status = status;
         this.cnames = cnames;
+        this.logging = logging;
     }
 
     /**
-     *
      * @return True if distribution is enabled
      */
     public boolean isEnabled() {
@@ -79,8 +101,15 @@ public class Distribution {
         return inprogress;
     }
 
+    public boolean isLogging() {
+        return logging;
+    }
+
+    public void setLogging(boolean logging) {
+        this.logging = logging;
+    }
+
     /**
-     *
      * @return Null if not available
      */
     public String getUrl() {
@@ -88,7 +117,6 @@ public class Distribution {
     }
 
     /**
-     *
      * @return "Unknown" if distribution status is not known
      */
     public String getStatus() {

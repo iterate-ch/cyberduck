@@ -37,7 +37,10 @@ import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.cloudfront.DistributionConfig;
+import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.multithread.*;
 import org.jets3t.service.utils.ObjectUtils;
 
@@ -858,9 +861,12 @@ public class S3Path extends CloudPath {
         try {
             session.check();
             for(org.jets3t.service.model.cloudfront.Distribution d : session.listDistributions(this.getContainerName())) {
+                // Retrieve distribution's configuration to access current logging status settings.
+                final DistributionConfig distributionConfig = session.getDistributionConfig(d);
                 // We currently only support one distribution per bucket
                 return new Distribution(d.isEnabled(), d.getStatus().equals("InProgress"),
-                        "http://" + d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs());
+                        "http://" + d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs(),
+                        distributionConfig.isLoggingEnabled());
             }
         }
         catch(CloudFrontServiceException e) {
@@ -881,10 +887,17 @@ public class S3Path extends CloudPath {
      *
      * @param enabled
      * @param cnames
+     * @param logging
      */
-    public void writeDistribution(final boolean enabled, final String[] cnames) {
+    public void writeDistribution(final boolean enabled, final String[] cnames, boolean logging) {
         final String container = this.getContainerName();
         try {
+            LoggingStatus l = null;
+            if(logging) {
+                l = new LoggingStatus(
+                        session.getHostnameForBucket(this.getBucket().getName()),
+                        Preferences.instance().getProperty("s3.logging.prefix"));
+            }
             session.check();
             if(enabled) {
                 session.message(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
@@ -895,12 +908,12 @@ public class S3Path extends CloudPath {
                         NSBundle.localizedString("Amazon CloudFront", "S3", "")));
             }
             for(org.jets3t.service.model.cloudfront.Distribution distribution : session.listDistributions(container)) {
-                session.updateDistribution(enabled, distribution, cnames);
+                session.updateDistribution(enabled, distribution, cnames, l);
                 // We currently only support one distribution per bucket
                 return;
             }
             // Create new configuration
-            session.createDistribution(enabled, container, cnames);
+            session.createDistribution(enabled, container, cnames, l);
         }
         catch(CloudFrontServiceException e) {
             this.error(e.getErrorMessage(), e);

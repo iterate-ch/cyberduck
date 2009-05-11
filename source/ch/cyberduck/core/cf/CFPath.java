@@ -106,8 +106,9 @@ public class CFPath extends CloudPath {
     /**
      * @param enabled Enable content distribution for the container
      * @param cnames  Currently ignored
+     * @param logging
      */
-    public void writeDistribution(boolean enabled, String[] cnames) {
+    public void writeDistribution(boolean enabled, String[] cnames, boolean logging) {
         final String container = this.getContainerName();
         final AbstractX509TrustManager trust = session.getTrustManager();
         try {

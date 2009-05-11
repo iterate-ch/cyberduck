@@ -82,8 +82,9 @@ public abstract class CloudPath extends Path {
     /**
      * @param enabled
      * @param cnames
+     * @param logging
      */
-    public abstract void writeDistribution(final boolean enabled, final String[] cnames);
+    public abstract void writeDistribution(final boolean enabled, final String[] cnames, boolean logging);
 
     /**
      * @return
