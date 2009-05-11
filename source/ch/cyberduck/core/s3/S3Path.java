@@ -573,6 +573,10 @@ public class S3Path extends CloudPath {
                             p.setParent(this);
                             p._bucket = bucket;
 
+                            if(childs.contains(p)) {
+                                continue;
+                            }
+
                             if(null != bucket.getOwner()) {
                                 p.attributes.setOwner(bucket.getOwner().getDisplayName());
                             }
