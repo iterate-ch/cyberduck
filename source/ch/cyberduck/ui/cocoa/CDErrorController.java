@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.StatusLine;
 import org.apache.log4j.Logger;
+import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.S3ServiceException;
 
 import java.io.IOException;
@@ -104,6 +105,9 @@ public class CDErrorController extends CDBundleController {
         }
         else if(cause instanceof S3ServiceException) {
             title = "S3 " + NSBundle.localizedString("Error", "");
+        }
+        else if(cause instanceof CloudFrontServiceException) {
+            title = "CloudFront " + NSBundle.localizedString("Error", "");
         }
         else if(cause instanceof HttpException) {
             title = "HTTP " + NSBundle.localizedString("Error", "");
