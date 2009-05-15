@@ -21,11 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import com.apple.cocoa.application.*;
 import com.apple.cocoa.foundation.*;
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -239,5 +240,16 @@ public abstract class CDWindowController extends CDBundleController {
 
     protected void updateField(final NSTextField f, final String value) {
         f.setStringValue(StringUtils.isNotBlank(value) ? value : "");
+    }
+
+    public void helpButtonClicked(final NSButton sender) {
+        try {
+            NSWorkspace.sharedWorkspace().openURL(
+                    new java.net.URL(Preferences.instance().getProperty("website.help"))
+            );
+        }
+        catch(java.net.MalformedURLException e) {
+            log.error(e.getMessage());
+        }
     }
 }
