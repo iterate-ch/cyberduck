@@ -53,6 +53,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.window = window;
         this.window.setReleasedWhenClosed(false);
         this.window.setDelegate(this);
+        this.window.setMovableByWindowBackground(true);
         this.window.setTitle(NSBundle.localizedString("Transfers", ""));
     }
 

@@ -10,11 +10,11 @@
 #import "CTGradient.h"
 
 @interface CTGradientView : NSView
-	{
+{
 	CTGradient *myGradient;
 	
 	float angle;
 	bool  isRadial;
-	}
+}
 
 @end

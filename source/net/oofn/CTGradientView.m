@@ -23,21 +23,22 @@
 }
 
 - (void)dealloc
-  {
+{
   [myGradient release];
   [super dealloc];
-  }
+}
 
 - (BOOL)isOpaque
-  {
-  return YES;
-  }
+{
+  return NO;
+}
 
 - (void)drawRect:(NSRect)rect
-  {
+{
   if(isRadial)
 	[myGradient radialFillRect:rect];
   else
 	[myGradient fillRect:rect angle:angle];
-  }
+}
+
 @end

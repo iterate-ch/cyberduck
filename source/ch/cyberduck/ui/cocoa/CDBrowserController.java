@@ -842,6 +842,7 @@ public class CDBrowserController extends CDWindowController
         window.setDelegate(this);
         window.setTitle((String) NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName"));
         window.setMiniwindowImage(NSImage.imageNamed("cyberduck-document.icns"));
+        window.setMovableByWindowBackground(true);
         super.setWindow(window);
     }
 
