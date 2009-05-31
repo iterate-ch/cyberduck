@@ -1,7 +1,5 @@
 package ch.cyberduck.ui.cocoa.threading;
 
-import ch.cyberduck.ui.cocoa.CDController;
-
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -25,7 +23,7 @@ import ch.cyberduck.ui.cocoa.CDController;
  *
  * @version $Id:$
  */
-public abstract class MainAction extends CDController implements Runnable {
+public abstract class MainAction implements Runnable {
 
     /**
      * To be run on the main thread
@@ -37,12 +35,4 @@ public abstract class MainAction extends CDController implements Runnable {
      * been invalidated in the mean time.
      */
     public abstract boolean isValid();
-
-    private static short ACTION_COUNTER = Short.MIN_VALUE;
-
-    private short id = ACTION_COUNTER++;
-
-    public short id() {
-        return id;
-    }
 }

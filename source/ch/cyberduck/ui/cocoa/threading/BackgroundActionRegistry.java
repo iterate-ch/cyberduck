@@ -18,8 +18,6 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-
 import ch.cyberduck.core.Collection;
 
 import org.apache.log4j.Logger;

@@ -18,24 +18,28 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSSelector;
-import com.apple.cocoa.foundation.NSNotification;
-
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.cocoa.CGFloat;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.ArrayList;
 
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
@@ -130,7 +134,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     public int retry() {
         if(!this.isCanceled()) {
-            for(BackgroundException e: exceptions) {
+            for(BackgroundException e : exceptions) {
                 final Throwable cause = e.getCause();
                 // Check for an exception we consider possibly temporary
                 if(cause instanceof SocketException
@@ -213,8 +217,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
             public void setDiagnosticsButton(NSButton diagnosticsButton) {
                 this.diagnosticsButton = diagnosticsButton;
-                this.diagnosticsButton.setTarget(this);
-                this.diagnosticsButton.setAction(new NSSelector("diagnosticsButtonClicked", new Class[]{NSButton.class}));
+                this.diagnosticsButton.setTarget(this.id());
+                this.diagnosticsButton.setAction(Foundation.selector("diagnosticsButtonClicked:"));
                 boolean hidden = true;
                 for(BackgroundException e: exceptions) {
                     final Throwable cause = e.getCause();
@@ -246,17 +250,17 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 for(BackgroundException e: exceptions) {
                     errors.add(new CDErrorController(e));
                 }
-                this.errorView.setDataSource(this);
-                this.errorView.setDelegate(this);
+                this.errorView.setDataSource(this.id());
+                this.errorView.setDelegate(this.id());
                 {
-                    NSTableColumn c = new NSTableColumn();
+                    NSTableColumn c = NSTableColumn.Factory.create("Error");
                     c.setMinWidth(50f);
                     c.setWidth(400f);
                     c.setMaxWidth(1000f);
-                    c.setDataCell(new CDControllerCell());
+                    c.setDataCell(CDControllerCell.Factory.create());
                     this.errorView.addTableColumn(c);
                 }
-                this.errorView.setRowHeight(77f);
+                this.errorView.setRowHeight(new CGFloat(77f));
             }
 
             public NSTextView transcriptView;
@@ -264,7 +268,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             public void setTranscriptView(NSTextView transcriptView) {
                 this.transcriptView = transcriptView;
                 this.transcriptView.textStorage().setAttributedString(
-                        new NSAttributedString(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
+                        NSAttributedString.create(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
             }
 
             public void callback(final int returncode) {
@@ -331,7 +335,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 final Session session = getSession();
                 if(session != null) {
                     session.message(MessageFormat.format(
-                            NSBundle.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status", ""),
+                            Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
                             String.valueOf(delay), String.valueOf(retry())));
                 }
                 delay--;
@@ -367,6 +371,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         if(session != null) {
             return session.getHost().getHostname();
         }
-        return NSBundle.localizedString("Unknown", "");
+        return Locale.localizedString("Unknown", "");
     }
 }

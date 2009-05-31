@@ -18,10 +18,9 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.i18n.Locale;
 
 /**
  * @version $Id$
@@ -42,7 +41,7 @@ public class BackgroundException extends Exception {
     }
 
     public String getMessage() {
-        return NSBundle.localizedString(this.message, "Error", "");
+        return Locale.localizedString(this.message, "Error");
     }
 
     /**
@@ -54,7 +53,7 @@ public class BackgroundException extends Exception {
 
     /**
      * @return The path accessed when the exception was thrown or null if
-     * the exception is not related to any path
+     *         the exception is not related to any path
      */
     public Path getPath() {
         return this.path;

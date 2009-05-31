@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -94,7 +94,7 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
     }
 
     public String getActivity() {
-        return NSBundle.localizedString("Unknown", "");
+        return Locale.localizedString("Unknown", "");
     }
 
     private final Object lock = new Object();
