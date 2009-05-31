@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa.growl;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 

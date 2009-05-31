@@ -18,9 +18,8 @@ package ch.cyberduck.ui.cocoa.quicklook;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.Local;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -47,6 +46,7 @@ public class QuickLook {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libQuickLook.dylib library:" + e.getMessage());
+                    throw e;
                 }
             }
             return JNI_LOADED;
