@@ -173,12 +173,3 @@
 + (BOOL) removeCustomIconFromFile:(NSString*)path;
 
 @end
-
-// Methods for interfacing with the Carbon Scrap Manager (analogous to and
-// interoperable with the Cocoa Pasteboard).
-@interface IconFamily (ScrapAdditions)
-+ (BOOL) canInitWithScrap;
-+ (IconFamily*) iconFamilyWithScrap;
-- initWithScrap;
-- (BOOL) putOnScrap;
-@end
