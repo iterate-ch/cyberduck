@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2005 Whitney Young. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,57 +18,29 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSTextFieldCell;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.NSCoder;
-import com.apple.cocoa.foundation.NSPoint;
-import com.apple.cocoa.foundation.NSRect;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
 
-public class CDOutlineCell extends NSTextFieldCell {
+import org.rococoa.Rococoa;
 
-    public CDOutlineCell() {
-        super();
-    }
+/**
+ * @version $Id$
+ */
+public interface CDOutlineCell extends NSTextFieldCell {
+    static final _Class CLASS = org.rococoa.Rococoa.createClass("CDOutlineCell", _Class.class);
 
-    protected CDOutlineCell(NSCoder decoder, long token) {
-        super(decoder, token);
-    }
-
-    protected void encodeWithCoder(NSCoder encoder) {
-        super.encodeWithCoder(encoder);
-    }
-
-    private NSImage icon;
-
-    public void setIcon(NSImage icon) {
-        this.icon = icon;
-    }
-
-    public NSImage icon() {
-        return this.icon;
-    }
-
-    public void drawInteriorWithFrameInView(NSRect cellFrame, NSView controlView) {
-        if (this.icon() != null) {
-            if (controlView.isFlipped()) {
-                this.icon().compositeToPoint(new NSPoint(cellFrame.origin().x() + 3,
-                        cellFrame.origin().y() + (cellFrame.size().height() + this.icon().size().height()) / 2),
-                        NSImage.CompositeSourceOver);
-            }
-            else {
-                this.icon().compositeToPoint(new NSPoint(cellFrame.origin().x() + 3,
-                        cellFrame.origin().y() + (cellFrame.size().height() - this.icon().size().height()) / 2),
-                        NSImage.CompositeSourceOver);
-            }
-            super.drawInteriorWithFrameInView(new NSRect(cellFrame.origin().x() + 6 + this.icon().size().width(),
-                    cellFrame.origin().y(),
-                    cellFrame.width() - 6 - this.icon().size().width(),
-                    cellFrame.height()),
-                    controlView);
-        }
-        else {
-            super.drawInteriorWithFrameInView(cellFrame, controlView);
+    public static class Factory {
+        public static CDOutlineCell create() {
+            return Rococoa.cast(CLASS.alloc().init().autorelease(), CDOutlineCell.class);
         }
     }
+
+    public interface _Class extends org.rococoa.NSClass {
+        CDOutlineCell alloc();
+    }
+
+    public abstract CDOutlineCell init();
+
+    public abstract void setIcon(NSImage aImage);
+
 }
