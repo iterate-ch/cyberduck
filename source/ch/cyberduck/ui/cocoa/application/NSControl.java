@@ -1,0 +1,423 @@
+package ch.cyberduck.ui.cocoa.application;
+
+/*
+ * Copyright (c) 2002-2009 David Kocher. All rights reserved.
+ *
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
+ */
+
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+
+import org.rococoa.Selector;
+import org.rococoa.cocoa.NSRect;
+
+/// <i>native declaration : :10</i>
+public interface NSControl extends NSView {
+    static final _Class CLASS = org.rococoa.Rococoa.createClass("NSControl", _Class.class);
+
+    public interface _Class extends org.rococoa.NSClass {
+        /**
+         * <i>native declaration : :26</i><br>
+         * Conversion Error : /// Original signature : <code>void setCellClass(null)</code><br>
+         * + (void)setCellClass:(null)factoryId; (Argument factoryId cannot be converted)
+         */
+        /**
+         * Original signature : <code>cellClass()</code><br>
+         * <i>native declaration : :27</i>
+         */
+        NSObject cellClass();
+
+        NSControl alloc();
+    }
+
+    /**
+     * <i>native declaration : :29</i><br>
+     * Conversion Error : /// Original signature : <code>id initWithFrame(null)</code><br>
+     * - (id)initWithFrame:(null)frameRect; (Argument frameRect cannot be converted)
+     */
+    NSControl initWithFrame(NSRect frameRect);
+
+    /**
+     * Original signature : <code>void sizeToFit()</code><br>
+     * <i>native declaration : :30</i>
+     */
+    void sizeToFit();
+
+    /**
+     * Original signature : <code>void calcSize()</code><br>
+     * <i>native declaration : :31</i>
+     */
+    void calcSize();
+
+    /**
+     * Original signature : <code>id cell()</code><br>
+     * <i>native declaration : :32</i>
+     */
+    NSObject cell();
+
+    /**
+     * Original signature : <code>void setCell(NSCell*)</code><br>
+     * <i>native declaration : :33</i>
+     */
+    void setCell(NSCell aCell);
+
+    /**
+     * Original signature : <code>id selectedCell()</code><br>
+     * <i>native declaration : :34</i>
+     */
+    NSCell selectedCell();
+
+    /**
+     * Original signature : <code>id target()</code><br>
+     * <i>native declaration : :35</i>
+     */
+    org.rococoa.ID target();
+
+    /**
+     * Original signature : <code>void setTarget(id)</code><br>
+     * <i>native declaration : :36</i>
+     */
+    void setTarget(org.rococoa.ID anObject);
+
+    /**
+     * Original signature : <code>action()</code><br>
+     * <i>native declaration : :37</i>
+     */
+    Selector action();
+
+    /**
+     * <i>native declaration : :38</i><br>
+     * Conversion Error : /// Original signature : <code>void setAction(null)</code><br>
+     * - (void)setAction:(null)aSelector; (Argument aSelector cannot be converted)
+     */
+    void setAction(Selector action);
+
+    /**
+     * Original signature : <code>NSInteger tag()</code><br>
+     * <i>native declaration : :39</i>
+     */
+    int tag();
+
+    /**
+     * Original signature : <code>void setTag(NSInteger)</code><br>
+     * <i>native declaration : :40</i>
+     */
+    void setTag(int anInt);
+
+    /**
+     * Original signature : <code>NSInteger selectedTag()</code><br>
+     * <i>native declaration : :41</i>
+     */
+    int selectedTag();
+
+    /**
+     * Original signature : <code>void setIgnoresMultiClick(BOOL)</code><br>
+     * <i>native declaration : :42</i>
+     */
+    void setIgnoresMultiClick(boolean flag);
+
+    /**
+     * Original signature : <code>BOOL ignoresMultiClick()</code><br>
+     * <i>native declaration : :43</i>
+     */
+    boolean ignoresMultiClick();
+
+    /**
+     * Original signature : <code>NSInteger sendActionOn(NSInteger)</code><br>
+     * <i>native declaration : :44</i>
+     */
+    int sendActionOn(int mask);
+
+    /**
+     * Original signature : <code>BOOL isContinuous()</code><br>
+     * <i>native declaration : :45</i>
+     */
+    boolean isContinuous();
+
+    /**
+     * Original signature : <code>void setContinuous(BOOL)</code><br>
+     * <i>native declaration : :46</i>
+     */
+    void setContinuous(boolean flag);
+
+    /**
+     * Original signature : <code>BOOL isEnabled()</code><br>
+     * <i>native declaration : :47</i>
+     */
+    boolean isEnabled();
+
+    /**
+     * Original signature : <code>void setEnabled(BOOL)</code><br>
+     * <i>native declaration : :48</i>
+     */
+    void setEnabled(boolean flag);
+
+    /**
+     * Original signature : <code>void setFloatingPointFormat(BOOL, NSUInteger, NSUInteger)</code><br>
+     * <i>native declaration : :49</i>
+     */
+    void setFloatingPointFormat_left_right(boolean autoRange, int leftDigits, int rightDigits);
+
+    /**
+     * Original signature : <code>alignment()</code><br>
+     * <i>native declaration : :50</i>
+     */
+    NSObject alignment();
+    /**
+     * <i>native declaration : :51</i><br>
+     * Conversion Error : /// Original signature : <code>void setAlignment(null)</code><br>
+     * - (void)setAlignment:(null)mode; (Argument mode cannot be converted)
+     */
+    /**
+     * Original signature : <code>NSFont* font()</code><br>
+     * <i>native declaration : :52</i>
+     */
+    NSFont font();
+
+    /**
+     * Original signature : <code>void setFont(NSFont*)</code><br>
+     * <i>native declaration : :53</i>
+     */
+    void setFont(NSFont fontObj);
+
+    /**
+     * Original signature : <code>void setFormatter(NSFormatter*)</code><br>
+     * <i>native declaration : :54</i>
+     */
+    void setFormatter(com.sun.jna.Pointer newFormatter);
+
+    /**
+     * Original signature : <code>id formatter()</code><br>
+     * <i>native declaration : :55</i>
+     */
+    NSObject formatter();
+    /**
+     * <i>native declaration : :56</i><br>
+     * Conversion Error : id<NSCopying>
+     */
+    /**
+     * Original signature : <code>void setStringValue(NSString*)</code><br>
+     * <i>native declaration : :57</i>
+     */
+    void setStringValue(String aString);
+
+    /**
+     * Original signature : <code>void setIntValue(int)</code><br>
+     * <i>native declaration : :58</i>
+     */
+    void setIntValue(int anInt);
+
+    /**
+     * Original signature : <code>void setFloatValue(float)</code><br>
+     * <i>native declaration : :59</i>
+     */
+    void setFloatValue(float aFloat);
+
+    /**
+     * Original signature : <code>void setDoubleValue(double)</code><br>
+     * <i>native declaration : :60</i>
+     */
+    void setDoubleValue(double aDouble);
+
+    /**
+     * Original signature : <code>id objectValue()</code><br>
+     * <i>native declaration : :61</i>
+     */
+    NSObject objectValue();
+
+    /**
+     * Original signature : <code>NSString* stringValue()</code><br>
+     * <i>native declaration : :62</i>
+     */
+    String stringValue();
+
+    /**
+     * Original signature : <code>int intValue()</code><br>
+     * <i>native declaration : :63</i>
+     */
+    int intValue();
+
+    /**
+     * Original signature : <code>float floatValue()</code><br>
+     * <i>native declaration : :64</i>
+     */
+    float floatValue();
+
+    /**
+     * Original signature : <code>double doubleValue()</code><br>
+     * <i>native declaration : :65</i>
+     */
+    double doubleValue();
+
+    /**
+     * Original signature : <code>void setNeedsDisplay()</code><br>
+     * <i>native declaration : :66</i>
+     */
+    void setNeedsDisplay();
+
+    /**
+     * Original signature : <code>void updateCell(NSCell*)</code><br>
+     * <i>native declaration : :67</i>
+     */
+    void updateCell(NSCell aCell);
+
+    /**
+     * Original signature : <code>void updateCellInside(NSCell*)</code><br>
+     * <i>native declaration : :68</i>
+     */
+    void updateCellInside(NSCell aCell);
+
+    /**
+     * Original signature : <code>void drawCellInside(NSCell*)</code><br>
+     * <i>native declaration : :69</i>
+     */
+    void drawCellInside(NSCell aCell);
+
+    /**
+     * Original signature : <code>void drawCell(NSCell*)</code><br>
+     * <i>native declaration : :70</i>
+     */
+    void drawCell(NSCell aCell);
+
+    /**
+     * Original signature : <code>void selectCell(NSCell*)</code><br>
+     * <i>native declaration : :71</i>
+     */
+    void selectCell(NSCell aCell);
+    /**
+     * <i>native declaration : :73</i><br>
+     * Conversion Error : /// Original signature : <code>BOOL sendAction(null, id)</code><br>
+     * - (BOOL)sendAction:(null)theAction to:(id)theTarget; (Argument theAction cannot be converted)
+     */
+    /**
+     * Original signature : <code>void takeIntValueFrom(id)</code><br>
+     * <i>native declaration : :74</i>
+     */
+    void takeIntValueFrom(NSObject sender);
+
+    /**
+     * Original signature : <code>void takeFloatValueFrom(id)</code><br>
+     * <i>native declaration : :75</i>
+     */
+    void takeFloatValueFrom(NSObject sender);
+
+    /**
+     * Original signature : <code>void takeDoubleValueFrom(id)</code><br>
+     * <i>native declaration : :76</i>
+     */
+    void takeDoubleValueFrom(NSObject sender);
+
+    /**
+     * Original signature : <code>void takeStringValueFrom(id)</code><br>
+     * <i>native declaration : :77</i>
+     */
+    void takeStringValueFrom(NSObject sender);
+
+    /**
+     * Original signature : <code>void takeObjectValueFrom(id)</code><br>
+     * <i>native declaration : :78</i>
+     */
+    void takeObjectValueFrom(NSObject sender);
+
+    /**
+     * Original signature : <code>NSText* currentEditor()</code><br>
+     * <i>native declaration : :79</i>
+     */
+    NSText currentEditor();
+
+    /**
+     * Original signature : <code>BOOL abortEditing()</code><br>
+     * <i>native declaration : :80</i>
+     */
+    boolean abortEditing();
+
+    /**
+     * Original signature : <code>void validateEditing()</code><br>
+     * <i>native declaration : :81</i>
+     */
+    void validateEditing();
+
+    /**
+     * Original signature : <code>void mouseDown(NSEvent*)</code><br>
+     * <i>native declaration : :82</i>
+     */
+    void mouseDown(NSEvent event);
+
+    /**
+     * Original signature : <code>baseWritingDirection()</code><br>
+     * <i>native declaration : :85</i>
+     */
+    NSObject baseWritingDirection();
+    /**
+     * <i>native declaration : :86</i><br>
+     * Conversion Error : /// Original signature : <code>void setBaseWritingDirection(null)</code><br>
+     * - (void)setBaseWritingDirection:(null)writingDirection; (Argument writingDirection cannot be converted)
+     */
+    /**
+     * Original signature : <code>NSInteger integerValue()</code><br>
+     * <i>native declaration : :90</i>
+     */
+    int integerValue();
+
+    /**
+     * Original signature : <code>void setIntegerValue(NSInteger)</code><br>
+     * <i>native declaration : :91</i>
+     */
+    void setIntegerValue(int anInteger);
+
+    /**
+     * Original signature : <code>void takeIntegerValueFrom(id)</code><br>
+     * <i>native declaration : :92</i>
+     */
+    void takeIntegerValueFrom(org.rococoa.ID sender);
+
+    /**
+     * <i>from NSKeyboardUI native declaration : :98</i><br>
+     * Conversion Error : /// Original signature : <code>void performClick(null)</code><br>
+     * - (void)performClick:(null)sender; (Argument sender cannot be converted)
+     */
+    void performClick(org.rococoa.ID sender);
+
+    /**
+     * Original signature : <code>void setRefusesFirstResponder(BOOL)</code><br>
+     * <i>from NSKeyboardUI native declaration : :99</i>
+     */
+    void setRefusesFirstResponder(boolean flag);
+
+    /**
+     * Original signature : <code>BOOL refusesFirstResponder()</code><br>
+     * <i>from NSKeyboardUI native declaration : :100</i>
+     */
+    boolean refusesFirstResponder();
+
+    /**
+     * Original signature : <code>NSAttributedString* attributedStringValue()</code><br>
+     * <i>from NSControlAttributedStringMethods native declaration : :135</i>
+     */
+    NSAttributedString attributedStringValue();
+
+    /**
+     * Original signature : <code>void setAttributedStringValue(NSAttributedString*)</code><br>
+     * <i>from NSControlAttributedStringMethods native declaration : :136</i>
+     */
+    void setAttributedStringValue(NSAttributedString obj);
+
+    public static final String ControlTextDidBeginEditingNotification = "NSControlTextDidBeginEditingNotification";
+    public static final String ControlTextDidEndEditingNotification = "NSControlTextDidEndEditingNotification";
+    public static final String ControlTextDidChangeNotification = "NSControlTextDidChangeNotification";
+
+}

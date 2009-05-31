@@ -1,0 +1,246 @@
+package ch.cyberduck.ui.cocoa.application;
+
+/*
+ * Copyright (c) 2002-2009 David Kocher. All rights reserved.
+ *
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
+ */
+
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+
+/// <i>native declaration : :10</i>
+public interface NSPopUpButton extends NSButton {
+    _Class CLASS = org.rococoa.Rococoa.createClass("NSPopUpButton", _Class.class);
+
+    public interface _Class extends org.rococoa.NSClass {
+        NSPopUpButton alloc();
+    }
+    /**
+     * <i>native declaration : :22</i><br>
+     * Conversion Error : /// Original signature : <code>initWithFrame(null, BOOL)</code><br>
+     * - (null)initWithFrame:(null)buttonFrame pullsDown:(BOOL)flag; (Argument buttonFrame cannot be converted)
+     */
+    /**
+     * Overrides behavior of NSView.  This is the menu for the popup, not a context menu.  PopUpButtons do not have context menus.<br>
+     * Original signature : <code>void setMenu(NSMenu*)</code><br>
+     * <i>native declaration : :25</i>
+     */
+    void setMenu(NSMenu menu);
+
+    /**
+     * Original signature : <code>NSMenu* menu()</code><br>
+     * <i>native declaration : :26</i>
+     */
+    NSMenu menu();
+
+    /**
+     * Behavior settings<br>
+     * Original signature : <code>void setPullsDown(BOOL)</code><br>
+     * <i>native declaration : :29</i>
+     */
+    void setPullsDown(boolean flag);
+
+    /**
+     * Original signature : <code>BOOL pullsDown()</code><br>
+     * <i>native declaration : :30</i>
+     */
+    boolean pullsDown();
+
+    /**
+     * Original signature : <code>void setAutoenablesItems(BOOL)</code><br>
+     * <i>native declaration : :32</i>
+     */
+    void setAutoenablesItems(boolean flag);
+
+    /**
+     * Original signature : <code>BOOL autoenablesItems()</code><br>
+     * <i>native declaration : :33</i>
+     */
+    boolean autoenablesItems();
+    /**
+     * <i>native declaration : :35</i><br>
+     * Conversion Error : /// Original signature : <code>void setPreferredEdge(null)</code><br>
+     * - (void)setPreferredEdge:(null)edge; (Argument edge cannot be converted)
+     */
+    /**
+     * Original signature : <code>preferredEdge()</code><br>
+     * <i>native declaration : :36</i>
+     */
+    com.sun.jna.Pointer preferredEdge();
+
+    /**
+     * Adding and removing items<br>
+     * Original signature : <code>void addItemWithTitle(NSString*)</code><br>
+     * <i>native declaration : :40</i>
+     */
+    void addItemWithTitle(String title);
+
+    /**
+     * Original signature : <code>void addItemsWithTitles(NSArray*)</code><br>
+     * <i>native declaration : :41</i>
+     */
+    void addItemsWithTitles(NSArray itemTitles);
+
+    /**
+     * Original signature : <code>void insertItemWithTitle(NSString*, NSInteger)</code><br>
+     * <i>native declaration : :42</i>
+     */
+    void insertItemWithTitle_atIndex(String title, int index);
+
+    /**
+     * Original signature : <code>void removeItemWithTitle(NSString*)</code><br>
+     * <i>native declaration : :44</i>
+     */
+    void removeItemWithTitle(com.sun.jna.Pointer title);
+
+    /**
+     * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
+     * <i>native declaration : :45</i>
+     */
+    void removeItemAtIndex(int index);
+
+    /**
+     * Original signature : <code>void removeAllItems()</code><br>
+     * <i>native declaration : :46</i>
+     */
+    void removeAllItems();
+
+    /**
+     * Accessing the items<br>
+     * Original signature : <code>NSArray* itemArray()</code><br>
+     * <i>native declaration : :50</i>
+     */
+    com.sun.jna.Pointer itemArray();
+
+    /**
+     * Original signature : <code>NSInteger numberOfItems()</code><br>
+     * <i>native declaration : :51</i>
+     */
+    int numberOfItems();
+
+    /**
+     * Original signature : <code>NSInteger indexOfItem(NSMenuItem*)</code><br>
+     * <i>native declaration : :53</i>
+     */
+    int indexOfItem(NSMenuItem item);
+
+    /**
+     * Original signature : <code>NSInteger indexOfItemWithTitle(NSString*)</code><br>
+     * <i>native declaration : :54</i>
+     */
+    int indexOfItemWithTitle(String title);
+
+    /**
+     * Original signature : <code>NSInteger indexOfItemWithTag(NSInteger)</code><br>
+     * <i>native declaration : :55</i>
+     */
+    int indexOfItemWithTag(int tag);
+    /**
+     * <i>native declaration : :56</i><br>
+     * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithRepresentedObject(null)</code><br>
+     * - (NSInteger)indexOfItemWithRepresentedObject:(null)obj; (Argument obj cannot be converted)
+     */
+    /**
+     * <i>native declaration : :57</i><br>
+     * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithTarget(null, null)</code><br>
+     * - (NSInteger)indexOfItemWithTarget:(null)target andAction:(null)actionSelector; (Argument target cannot be converted)
+     */
+    /**
+     * Original signature : <code>NSMenuItem* itemAtIndex(NSInteger)</code><br>
+     * <i>native declaration : :59</i>
+     */
+    NSMenuItem itemAtIndex(int index);
+
+    /**
+     * Original signature : <code>NSMenuItem* itemWithTitle(NSString*)</code><br>
+     * <i>native declaration : :60</i>
+     */
+    NSMenuItem itemWithTitle(String title);
+
+    /**
+     * Original signature : <code>NSMenuItem* lastItem()</code><br>
+     * <i>native declaration : :61</i>
+     */
+    NSMenuItem lastItem();
+
+    /**
+     * Dealing with selection<br>
+     * Original signature : <code>void selectItem(NSMenuItem*)</code><br>
+     * <i>native declaration : :65</i>
+     */
+    void selectItem(NSMenuItem item);
+
+    /**
+     * Original signature : <code>void selectItemAtIndex(NSInteger)</code><br>
+     * <i>native declaration : :66</i>
+     */
+    void selectItemAtIndex(int index);
+
+    /**
+     * Original signature : <code>void selectItemWithTitle(NSString*)</code><br>
+     * <i>native declaration : :67</i>
+     */
+    void selectItemWithTitle(String title);
+
+    /**
+     * Original signature : <code>BOOL selectItemWithTag(NSInteger)</code><br>
+     * <i>native declaration : :69</i>
+     */
+    boolean selectItemWithTag(int tag);
+
+    /**
+     * Original signature : <code>void setTitle(NSString*)</code><br>
+     * <i>native declaration : :71</i>
+     */
+    void setTitle(String aString);
+
+    /**
+     * Original signature : <code>NSMenuItem* selectedItem()</code><br>
+     * <i>native declaration : :73</i>
+     */
+    NSMenuItem selectedItem();
+
+    /**
+     * Original signature : <code>NSInteger indexOfSelectedItem()</code><br>
+     * <i>native declaration : :74</i>
+     */
+    int indexOfSelectedItem();
+
+    /**
+     * Original signature : <code>void synchronizeTitleAndSelectedItem()</code><br>
+     * <i>native declaration : :75</i>
+     */
+    void synchronizeTitleAndSelectedItem();
+
+    /**
+     * Title conveniences<br>
+     * Original signature : <code>NSString* itemTitleAtIndex(NSInteger)</code><br>
+     * <i>native declaration : :78</i>
+     */
+    String itemTitleAtIndex(int index);
+
+    /**
+     * Original signature : <code>NSArray* itemTitles()</code><br>
+     * <i>native declaration : :79</i>
+     */
+    NSArray itemTitles();
+
+    /**
+     * Original signature : <code>NSString* titleOfSelectedItem()</code><br>
+     * <i>native declaration : :80</i>
+     */
+    String titleOfSelectedItem();
+}
