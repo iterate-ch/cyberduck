@@ -25,7 +25,6 @@ import ch.cyberduck.core.s3.S3Session;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.cloudfront.Distribution;
 
 import java.io.IOException;
@@ -58,6 +57,7 @@ public class ECSession extends S3Session {
 
     protected void configure() {
         super.configure();
+        configuration.setProperty("s3service.s3-endpoint", host.getHostname());
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize("/services/Walrus"));
     }
@@ -71,23 +71,12 @@ public class ECSession extends S3Session {
         super.login(credentials, hostconfig);
     }
 
-    public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames) throws CloudFrontServiceException {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Amazon CloudFront Extension used to list all configured distributions
      *
      * @return All distributions for the given AWS Credentials
      */
     public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @param distribution A distribution (the distribution must be disabled and deployed first)
-     */
-    public void deleteDistribution(final Distribution distribution) throws CloudFrontServiceException {
-        throw new UnsupportedOperationException();
+        return new Distribution[]{};
     }
 }
