@@ -4,10 +4,21 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.2.1
+- [Feature] Create placeholder objects for virtual directory (S3)
+- [Feature] Info window displays signed temporary public URL with a default validity of 24 hours (S3)
+- [Feature] Info window displays BitTorrent URL of file (S3)
+- [Feature] Option to enable Bucket Access Logging in the Info window (S3)
+- [Feature] Option to enable CloudFront Access Logging in the Info window (S3)
+- [Feature] Updated to Cloudfront API Version 2009-04-02 (S3)
+- [Feature] Access third party buckets using anonymous login (S3)
+- [Feature[ Option to specify object expiration using Cache-Control header [#3185] (S3)
+- [Bugfix] MobileMe iDisk upload failures (WebDAV) [#3149]
+
 3.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.2]
 - [Feature] Choose Time Zone for bookmark (FTP) [#434]
 - [Feature] IPv6 Interoperability with support for EPSV and EPRT commands (FTP) [#2539, #2885]
-- [Feature] UTF8 charset negogiation [http://tools.ietf.org/html/draft-ietf-ftpext-utf-8-option-00] (FTP)
+- [Feature] UTF8 charset negotiation [http://tools.ietf.org/html/draft-ietf-ftpext-utf-8-option-00] (FTP)
 - [Feature] Support for directory listings using MLSD [RFC 3659] (FTP)
 - [Feature] Support for Modification Time (MFMT) extension [http://tools.ietf.org/html/draft-somers-ftp-mfxx-04] (FTP)
 - [Feature] Support for hierarchical directory structure (Mosso)
