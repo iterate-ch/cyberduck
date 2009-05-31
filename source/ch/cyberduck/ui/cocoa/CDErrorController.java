@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.StatusLine;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.S3ServiceException;
@@ -95,59 +96,76 @@ public class CDErrorController extends CDBundleController {
     }
 
     private String getReadableTitle(BackgroundException e) {
-        String title = NSBundle.localizedString("Error", "");
         final Throwable cause = e.getCause();
         if(cause instanceof FTPException) {
-            title = "FTP " + NSBundle.localizedString("Error", "");
+            return "FTP " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof SFTPException) {
-            title = "SSH " + NSBundle.localizedString("Error", "");
+        if(cause instanceof SFTPException) {
+            return "SSH " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof S3ServiceException) {
-            title = "S3 " + NSBundle.localizedString("Error", "");
+        if(cause instanceof S3ServiceException) {
+            return "S3 " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof CloudFrontServiceException) {
-            title = "CloudFront " + NSBundle.localizedString("Error", "");
+        if(cause instanceof CloudFrontServiceException) {
+            return "CloudFront " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof HttpException) {
-            title = "HTTP " + NSBundle.localizedString("Error", "");
+        if(cause instanceof HttpException) {
+            return "HTTP " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof SocketException) {
-            title = "Network " + NSBundle.localizedString("Error", "");
+        if(cause instanceof SocketException) {
+            return "Network " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof UnknownHostException) {
-            title = "DNS " + NSBundle.localizedString("Error", "");
+        if(cause instanceof UnknownHostException) {
+            return "DNS " + NSBundle.localizedString("Error", "");
         }
-        else if(cause instanceof IOException) {
-            title = "I/O " + NSBundle.localizedString("Error", "");
+        if(cause instanceof IOException) {
+            return "I/O " + NSBundle.localizedString("Error", "");
         }
-        return title;
+        return NSBundle.localizedString("Error", "");
     }
 
     private String getDetailedCauseMessage(BackgroundException e) {
         final Throwable cause = e.getCause();
+        StringBuilder buffer = new StringBuilder();
+        if(StringUtils.isNotBlank(cause.getMessage())) {
+            buffer.append(cause.getMessage()).append(".");
+        }
         if(cause instanceof SFTPException) {
-            return ((SFTPException) cause).getServerErrorCodeVerbose();
+            final SFTPException sftp = (SFTPException) cause;
+            if(StringUtils.isNotBlank(sftp.getServerErrorCodeVerbose())) {
+                buffer.append(" ").append(sftp.getServerErrorCodeVerbose()).append(".");
+            }
         }
         if(cause instanceof S3ServiceException) {
             final S3ServiceException s3 = (S3ServiceException) cause;
-            if(null != s3.getS3ErrorMessage()) {
-                return cause.getMessage() + ". " + s3.getS3ErrorMessage();
+            if(StringUtils.isNotBlank(s3.getResponseStatus())) {
+                // HTTP method status
+                buffer.append(" ").append(s3.getResponseStatus()).append(".");
+            }
+            if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
+                // S3 protocol message
+                buffer.append(" ").append(s3.getS3ErrorMessage()).append(".");
             }
         }
         if(cause instanceof CloudFrontServiceException) {
             final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
-            if(null != cf.getErrorMessage()) {
-                return cf.getErrorMessage() + ". " + cf.getErrorDetail();
+            if(StringUtils.isNotBlank(cf.getErrorMessage())) {
+                buffer.append(cf.getErrorMessage()).append(". ");
+            }
+            if(StringUtils.isNotBlank(cf.getErrorDetail())) {
+                buffer.append(" ").append(cf.getErrorDetail()).append(".");
             }
         }
         if(cause instanceof FilesException) {
-            final StatusLine status = ((FilesException) cause).getHttpStatusLine();
-            if(null != status && null != status.getReasonPhrase()) {
-                return cause.getMessage() + ". " + status.getReasonPhrase();
+            final FilesException cf = (FilesException) cause;
+            final StatusLine status = cf.getHttpStatusLine();
+            if(null != status) {
+                if(StringUtils.isNotBlank(status.getReasonPhrase())) {
+                    buffer.append(" ").append(status.getReasonPhrase()).append(".");
+                }
             }
         }
-        return NSBundle.localizedString(cause.getMessage(), "Error", "");
+        return NSBundle.localizedString(buffer.toString(), "Error", "");
     }
 
     public void awakeFromNib() {
