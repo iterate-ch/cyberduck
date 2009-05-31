@@ -1,10 +1,5 @@
 package ch.cyberduck.ui.cocoa.util;
 
-import com.apple.cocoa.application.NSColor;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableAttributedString;
-import com.apple.cocoa.foundation.NSRange;
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -23,10 +18,15 @@ import com.apple.cocoa.foundation.NSRange;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
+
 /**
  * From http://developer.apple.com/qa/qa2006/qa1487.html
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class HyperlinkAttributedStringFactory {
 
@@ -34,7 +34,7 @@ public class HyperlinkAttributedStringFactory {
      * @param hyperlink
      */
     public static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
-        NSRange range = new NSRange(0, value.length());
+        final NSRange range = NSRange.NSMakeRange(0, value.length());
         value.beginEditing();
         value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,
                 hyperlink, range);
