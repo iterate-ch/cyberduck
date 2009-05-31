@@ -32,18 +32,23 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.*;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.cloudfront.Distribution;
-import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
+import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -102,7 +107,6 @@ public class S3Session extends HTTPSession implements SSLSession {
      * @param configuration
      */
     protected void configure() {
-        configuration.setProperty("s3service.s3-endpoint", host.getHostname());
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
@@ -127,7 +131,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         configuration.setProperty("httpclient.connection-timeout-ms", String.valueOf(this.timeout()));
         configuration.setProperty("httpclient.socket-timeout-ms", String.valueOf(this.timeout()));
         configuration.setProperty("httpclient.useragent", this.getUserAgent());
-        configuration.setProperty("httpclient.authentication-preemptive", String.valueOf(true));
+        configuration.setProperty("httpclient.authentication-preemptive", String.valueOf(false));
         // How many times to retry connections when they fail with IO errors. Set this to 0 to disable retries.
         // configuration.setProperty("httpclient.retry-max", String.valueOf(0));
 
@@ -152,18 +156,48 @@ public class S3Session extends HTTPSession implements SSLSession {
                 configuration.getBoolProperty("s3service.disable-dns-buckets", false));
     }
 
+    /**
+     * @param hostname
+     * @return
+     */
+    protected String getBucketForHostname(String hostname) {
+        return ServiceUtils.findBucketNameInHostname(hostname);
+    }
 
     /**
      * Caching the uses's buckets
      */
-    private S3Bucket[] buckets = new S3Bucket[]{};
+    private List<S3Bucket> buckets = new ArrayList<S3Bucket>();
 
-    protected S3Bucket[] getBuckets(boolean reload) throws S3ServiceException {
-        if(reload) {
-            this.getTrustManager().setHostname(host.getHostname());
-            this.buckets = S3.listAllBuckets();
+    /**
+     * @param reload
+     * @return
+     * @throws S3ServiceException
+     */
+    protected List<S3Bucket> getBuckets(boolean reload) throws S3ServiceException {
+        if(buckets.isEmpty() || reload) {
+            buckets.clear();
+            if(host.getCredentials().isAnonymousLogin()) {
+                // Listing buckets not supported for thirdparty buckets
+                String bucketname = this.getBucketForHostname(host.getHostname());
+                if(null == bucketname) {
+                    if(StringUtils.isNotBlank(host.getDefaultPath())) {
+                        bucketname = host.getDefaultPath();
+                    }
+                }
+                if(null == bucketname) {
+                    return buckets;
+                }
+                final S3Path thirdparty = (S3Path) PathFactory.createPath(this, bucketname,
+                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                buckets.add(new S3Bucket(thirdparty.getContainerName()));
+            }
+            else {
+                this.getTrustManager().setHostname(host.getHostname());
+                buckets.addAll(Arrays.asList(S3.listAllBuckets()));
+            }
         }
-        return this.buckets;
+        return buckets;
     }
 
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
@@ -214,7 +248,6 @@ public class S3Session extends HTTPSession implements SSLSession {
                             authscheme.getSchemeName());
                 }
             }, configuration, hostconfig);
-
             this.getBuckets(true);
         }
         catch(S3ServiceException e) {
@@ -225,7 +258,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                 this.login();
             }
             else {
-                throw new S3Exception(e);
+                throw new IOException(e.getS3ErrorMessage());
             }
         }
     }
@@ -330,7 +363,6 @@ public class S3Session extends HTTPSession implements SSLSession {
     }
 
     /**
-     * 
      * @param distribution
      * @return
      * @throws CloudFrontServiceException
@@ -375,8 +407,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                 log.error(e.getMessage(), e);
             }
             cloudfront = new CloudFrontService(
-                    credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
-                            credentials.getPassword()),
+                    new AWSCredentials(credentials.getUsername(), credentials.getPassword()),
                     this.getUserAgent(), // Invoking application description
                     null, // Credentials Provider
                     new Jets3tProperties(),
