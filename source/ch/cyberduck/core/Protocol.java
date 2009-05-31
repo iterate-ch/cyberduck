@@ -213,10 +213,6 @@ public abstract class Protocol {
             return true;
         }
 
-        public boolean isHostnameConfigurable() {
-            return false;
-        }
-
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
