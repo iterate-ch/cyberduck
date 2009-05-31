@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
         <key>CFBundleDevelopmentRegion</key>
@@ -122,41 +122,17 @@
         <string>_VERSION_ (_REVISION_)</string>
         <key>Java</key>
         <dict>
+            <key>ClassPath</key>
+            <string>core.jar:cocoa.jar:log4j-1.2.15.jar:icu4j-3.6.1.jar:jdom-1.1.jar:jakarta-oro-2.0.8.jar:commons-net-1.5.0-dev.jar:commons-logging-1.1.1.jar:commons-httpclient-3.1.jar:commons-codec-1.3.jar:jets3t-0.7.1.jar:jakarta-slide-webdavlib-2.2-dev.jar:cloudfiles-1.3.1.jar:commons-lang-2.4.jar:commons-io-1.4.jar:java-xmlbuilder-1.jar:jna-3.1.0.jar:asm-3.1.jar:cglib-2.2.jar:slf4j-log4j12-1.5.6.jar:slf4j-api-1.5.6.jar</string>
+            <key>MainClass</key>
+            <string>ch.cyberduck.ui.cocoa.CDMainApplication</string>
+            <key>WorkingDirectory</key>
+            <string>$APP_PACKAGE/Contents/Resources/Java</string>
             <key>JVMVersion</key>
-            <string>1.5*</string>
+            <string>1.6*</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <string>YES</string>
-        <key>NSJavaNeeded</key>
-        <string>YES</string>
-        <key>NSJavaPath</key>
-        <array>
-            <string>core.jar</string>
-            <string>cocoa.jar</string>
-            <string>ganymed.jar</string>
-            <string>ftp.jar</string>
-            <string>log4j-1.2.15.jar</string>
-            <string>icu4j-3.6.1.jar</string>
-            <string>jdom-1.1.jar</string>
-            <string>jakarta-oro-2.0.8.jar</string>
-            <string>commons-net-1.5.0-dev.jar</string>
-            <string>commons-logging-1.1.1.jar</string>
-            <string>commons-httpclient-3.1.jar</string>
-            <string>commons-codec-1.3.jar</string>
-            <string>jets3t-0.7.1.jar</string>
-            <string>jakarta-slide-webdavlib-2.2-dev.jar</string>
-            <string>cloudfiles.jar</string>
-            <string>commons-lang-2.4.jar</string>
-            <string>commons-io-1.4.jar</string>
-            <string>java-xmlbuilder-1.jar</string>
-            <string>cloudfiles-1.3.1.jar</string>
-        </array>
-        <key>NSJavaRoot</key>
-        <string>Contents/Resources/Java</string>
-        <key>NSMainNibFile</key>
-        <string>Main</string>
-        <key>NSPrincipalClass</key>
-        <string>ch.cyberduck.ui.cocoa.CDMainApplication</string>
         <key>SUFeedURL</key>
         <string>_SPARKLEFEED_</string>
         <key>SUCheckAtStartup</key>
