@@ -65,38 +65,10 @@ public class CDConnectionController extends CDSheetController {
         final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
         portField.setIntValue(protocol.getDefaultPort());
         if(!protocol.isHostnameConfigurable()) {
+            hostField.setStringValue(protocol.getDefaultHostname());
             hostField.setEnabled(false);
             portField.setEnabled(false);
-            hostField.setStringValue(protocol.getDefaultHostname());
-            if(protocol.equals(Protocol.S3)) {
-                ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
-                        NSBundle.localizedString("Access Key ID", "S3", "")
-                );
-                ((NSTextFieldCell) passField.cell()).setPlaceholderString(
-                        NSBundle.localizedString("Secret Access Key", "S3", "")
-                );
-            }
-            if(protocol.equals(Protocol.MOSSO)) {
-                ((NSTextFieldCell) usernameField.cell()).setPlaceholderString("");
-                ((NSTextFieldCell) passField.cell()).setPlaceholderString(
-                        NSBundle.localizedString("API Access Key", "Mosso", "")
-                );
-            }
-            if(protocol.equals(Protocol.IDISK)) {
-                CDDotMacController controller = new CDDotMacController();
-                final String member = controller.getAccountName();
-                controller.invalidate();
-                ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
-                        NSBundle.localizedString("MobileMe Member Name", "IDisk", "")
-                );
-                if(null != member) {
-                    // Account name configured in System Preferences
-                    usernameField.setStringValue(member);
-                    usernameField.setEnabled(false);
-                    pathField.setStringValue(Path.DELIMITER + member);
-                    pathField.setEnabled(false);
-                }
-            }
+            pathField.setEnabled(true);
         }
         else {
             if(!hostField.isEnabled()) {
@@ -113,6 +85,36 @@ public class CDConnectionController extends CDSheetController {
             pathField.setEnabled(true);
             ((NSTextFieldCell) usernameField.cell()).setPlaceholderString("");
             ((NSTextFieldCell) passField.cell()).setPlaceholderString("");
+        }
+        if(protocol.equals(Protocol.S3)) {
+            hostField.setStringValue(protocol.getDefaultHostname());
+            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
+                    NSBundle.localizedString("Access Key ID", "S3", "")
+            );
+            ((NSTextFieldCell) passField.cell()).setPlaceholderString(
+                    NSBundle.localizedString("Secret Access Key", "S3", "")
+            );
+        }
+        if(protocol.equals(Protocol.MOSSO)) {
+            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString("");
+            ((NSTextFieldCell) passField.cell()).setPlaceholderString(
+                    NSBundle.localizedString("API Access Key", "Mosso", "")
+            );
+        }
+        if(protocol.equals(Protocol.IDISK)) {
+            CDDotMacController controller = new CDDotMacController();
+            final String member = controller.getAccountName();
+            controller.invalidate();
+            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
+                    NSBundle.localizedString("MobileMe Member Name", "IDisk", "")
+            );
+            if(null != member) {
+                // Account name configured in System Preferences
+                usernameField.setStringValue(member);
+                usernameField.setEnabled(false);
+                pathField.setStringValue(Path.DELIMITER + member);
+                pathField.setEnabled(false);
+            }
         }
         connectmodePopup.setEnabled(protocol.equals(Protocol.FTP)
                 || protocol.equals(Protocol.FTP_TLS));
