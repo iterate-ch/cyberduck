@@ -254,6 +254,7 @@ public abstract class Preferences {
 
         defaults.put("info.toggle.permission", String.valueOf(1));
         defaults.put("info.toggle.distribution", String.valueOf(0));
+        defaults.put("info.toggle.s3", String.valueOf(0));
 
         defaults.put("connection.toggle.options", String.valueOf(0));
         defaults.put("bookmark.toggle.options", String.valueOf(0));
@@ -433,6 +434,9 @@ public abstract class Preferences {
          * A prefix to apply to log file names
          */
         defaults.put("s3.logging.prefix", "logs/");
+        defaults.put("cloudfront.logging.prefix", "logs/");
+
+        defaults.put("s3.cache.seconds", "86400"); //24h
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));

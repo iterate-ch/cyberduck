@@ -161,6 +161,9 @@ public class S3Session extends HTTPSession implements SSLSession {
      * @return
      */
     protected String getBucketForHostname(String hostname) {
+        if(hostname.equals(Constants.S3_HOSTNAME)) {
+            return null;
+        }
         return ServiceUtils.findBucketNameInHostname(hostname);
     }
 
@@ -174,7 +177,7 @@ public class S3Session extends HTTPSession implements SSLSession {
      * @return
      * @throws S3ServiceException
      */
-    protected List<S3Bucket> getBuckets(boolean reload) throws S3ServiceException {
+    protected List<S3Bucket> getBuckets(boolean reload) throws IOException, S3ServiceException {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
             if(host.getCredentials().isAnonymousLogin()) {
@@ -188,12 +191,16 @@ public class S3Session extends HTTPSession implements SSLSession {
                 if(null == bucketname) {
                     return buckets;
                 }
+                if(!S3.isBucketAccessible(bucketname)) {
+                    throw new IOException("Bucket not available: " + bucketname);
+                }
                 final S3Path thirdparty = (S3Path) PathFactory.createPath(this, bucketname,
                         Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                 buckets.add(new S3Bucket(thirdparty.getContainerName()));
+
             }
             else {
-                this.getTrustManager().setHostname(host.getHostname());
+                this.getTrustManager().setHostname(Constants.S3_HOSTNAME);
                 buckets.addAll(Arrays.asList(S3.listAllBuckets()));
             }
         }

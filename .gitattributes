@@ -1816,7 +1816,6 @@ source/ch/cyberduck/core/io/UKKQueue.m -text
 source/ch/cyberduck/core/io/UKMainThreadProxy.m -text
 source/ch/cyberduck/core/me/MEPath.java -text
 source/ch/cyberduck/core/me/MESession.java -text
-source/ch/cyberduck/core/s3/S3Exception.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
