@@ -6,13 +6,34 @@
             SUPERCLASS = NSObject;
         },
                 {
+            CLASS = NSDatePicker;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSControl;
+        },
+                {
+            ACTIONS =             {
+                hide = id;
+                show = id;
+                toggleDisclosure = id;
+            };
+            CLASS = SNDisclosableView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
+        },
+                {
+            ACTIONS =             {
+                helpButtonClicked = id;
+            };
             CLASS = "ch.cyberduck.ui.cocoa.CDInfoController";
             LANGUAGE = Java;
             OUTLETS =             {
+                bucketLocationField = id;
+                bucketLoggingButton = id;
                 distributionApplyButton = id;
                 distributionCnameField = id;
                 distributionCnameUrlField = id;
                 distributionEnableButton = id;
+                distributionLoggingButton = id;
                 distributionProgress = id;
                 distributionStatusButton = id;
                 distributionStatusField = id;
@@ -39,6 +60,11 @@
                 permissionToggle = id;
                 permissionsBox = id;
                 recursiveCheckbox = id;
+                s3CachePopup = id;
+                s3Progress = id;
+                s3PublicUrlField = id;
+                s3Toggle = id;
+                s3torrentUrlField = id;
                 sizeButton = id;
                 sizeField = id;
                 sizeProgress = id;
