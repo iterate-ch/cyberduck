@@ -18,8 +18,8 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Status;
 
 import org.apache.commons.net.ftp.FTPFile;
 

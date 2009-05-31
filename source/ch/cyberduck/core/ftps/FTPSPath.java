@@ -18,10 +18,9 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
  * @version $Id$

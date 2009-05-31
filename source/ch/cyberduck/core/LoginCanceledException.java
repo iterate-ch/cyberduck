@@ -1,6 +1,6 @@
 package ch.cyberduck.core;
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
@@ -27,6 +27,6 @@ import com.apple.cocoa.foundation.NSBundle;
 public class LoginCanceledException extends ConnectionCanceledException {
 
     public LoginCanceledException() {
-        super(NSBundle.localizedString("Login canceled", "Credentials", ""));
+        super(Locale.localizedString("Login canceled", "Credentials"));
     }
 }

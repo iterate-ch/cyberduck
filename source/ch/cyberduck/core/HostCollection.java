@@ -18,12 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
-import java.net.URL;
-import java.util.Enumeration;
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -50,7 +50,7 @@ public class HostCollection extends BookmarkCollection {
      */
     public HostCollection(Local file) {
         this.setFile(file);
-        this.load();
+//        this.load();
     }
 
     /**
@@ -134,30 +134,25 @@ public class HostCollection extends BookmarkCollection {
      */
     protected void save() {
         if(Preferences.instance().getBoolean("favorites.save")) {
+            NSMutableArray list = NSMutableArray.arrayWithCapacity(1);
+            for(Host bookmark : this) {
+                list.addObject(bookmark.getAsDictionary());
+            }
+            NSMutableData collection = NSMutableData.dataWithLength(0);
             try {
-                NSMutableArray list = new NSMutableArray();
-                for(Host bookmark : this) {
-                    list.addObject(bookmark.getAsDictionary());
-                }
-                NSMutableData collection = new NSMutableData();
-                String[] errorString = new String[]{null};
-                collection.appendData(NSPropertyListSerialization.dataFromPropertyList(list,
-                        NSPropertyListSerialization.PropertyListXMLFormat,
-                        errorString));
-                if(errorString[0] != null) {
-                    log.error("Problem writing bookmark file: " + errorString[0]);
-                }
-                if(collection.writeToURL(new URL(file.toURL()), true)) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Bookmarks sucessfully saved to :" + file.toString());
-                    }
-                }
-                else {
-                    log.error("Error saving Bookmarks to :" + file.toString());
+                collection.appendData(NSPropertyListSerialization.dataFromPropertyList(list));
+            }
+            catch(IOException e) {
+                log.error("Problem writing bookmark file: " + e.getMessage());
+
+            }
+            if(collection.writeToURL(NSURL.fileURLWithPath(file.getAbsolute()))) {
+                if(log.isInfoEnabled()) {
+                    log.info("Bookmarks sucessfully saved to :" + file.toString());
                 }
             }
-            catch(java.net.MalformedURLException e) {
-                log.error(e.getMessage());
+            else {
+                log.error("Error saving Bookmarks to :" + file.toString());
             }
         }
     }
@@ -167,34 +162,25 @@ public class HostCollection extends BookmarkCollection {
      */
     protected void load() {
         if(file.exists()) {
+            log.info("Found Bookmarks file: " + file.getAbsolute());
+            NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(file.getAbsolute()));
+            if(null == plistData) {
+                log.error("Invalid bookmark file:" + file);
+                return;
+            }
             try {
-                log.info("Found Bookmarks file: " + file.toString());
-                NSData plistData = new NSData(new URL(file.toURL()));
-                String[] errorString = new String[]{null};
-                Object propertyListFromXMLData =
-                        NSPropertyListSerialization.propertyListFromData(plistData,
-                                NSPropertyListSerialization.PropertyListImmutable,
-                                new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                                errorString);
-                if(errorString[0] != null) {
-                    log.error("Problem reading bookmark file: " + errorString[0]);
-                    return;
+                NSArray propertyListFromXMLData = Rococoa.cast(NSPropertyListSerialization.propertyListFromData(plistData), NSArray.class);
+                final NSEnumerator i = propertyListFromXMLData.objectEnumerator();
+                NSObject next;
+                while(((next = i.nextObject()) != null)) {
+                    super.add(new Host(Rococoa.cast(next, NSDictionary.class)));
                 }
-                if(propertyListFromXMLData instanceof NSArray) {
-                    NSArray entries = (NSArray) propertyListFromXMLData;
-                    Enumeration i = entries.objectEnumerator();
-                    while(i.hasMoreElements()) {
-                        Object element = i.nextElement();
-                        if(element instanceof NSDictionary) {
-                            super.add(new Host((NSDictionary) element));
-                        }
-                    }
-                }
+                this.sort();
+
             }
-            catch(java.net.MalformedURLException e) {
-                log.error(e.getMessage());
+            catch(IOException e) {
+                log.error("Problem reading bookmark file:" + e.getMessage());
             }
-            this.sort();
         }
     }
 

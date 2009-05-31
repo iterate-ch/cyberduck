@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Overwrite", "");
+            return Locale.localizedString("Overwrite", "");
         }
     };
 
@@ -71,7 +71,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Resume", "");
+            return Locale.localizedString("Resume", "");
         }
     };
 
@@ -84,7 +84,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Rename", "");
+            return Locale.localizedString("Rename", "");
         }
     };
 
@@ -97,7 +97,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Skip", "");
+            return Locale.localizedString("Skip", "");
         }
     };
 
@@ -110,7 +110,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Prompt", "");
+            return Locale.localizedString("Prompt", "");
         }
     };
 
@@ -120,7 +120,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Cancel", "");
+            return Locale.localizedString("Cancel", "");
         }
     };
 }

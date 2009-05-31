@@ -18,7 +18,7 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 /**
  * @version $Id$
@@ -121,7 +121,7 @@ public class Distribution {
      */
     public String getStatus() {
         if(null == status) {
-            return NSBundle.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown", "");
         }
         return status;
     }

@@ -18,8 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,7 +27,9 @@ import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.util.TimeZone;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -37,7 +39,7 @@ import com.ibm.icu.text.StringPrepParseException;
 /**
  * @version $Id$
  */
-public class Host extends NSObject implements Serializable {
+public class Host implements Serializable {
     private static Logger log = Logger.getLogger(Host.class);
     /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
@@ -103,7 +105,7 @@ public class Host extends NSObject implements Serializable {
     private String webURL;
 
     private static final String HOSTNAME = "Hostname";
-    private static final String NICKNAME = "Nickname";
+    public static final String NICKNAME = "Nickname";
     private static final String PORT = "Port";
     private static final String PROTOCOL = "Protocol";
     private static final String USERNAME = "Username";
@@ -143,64 +145,64 @@ public class Host extends NSObject implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("init:" + dict);
         }
-        Object protocolObj = dict.objectForKey(Host.PROTOCOL);
+        NSObject protocolObj = dict.objectForKey(Host.PROTOCOL);
         if(protocolObj != null) {
             this.setProtocol(Protocol.forName(protocolObj.toString()));
         }
-        Object hostnameObj = dict.objectForKey(Host.HOSTNAME);
+        NSObject hostnameObj = dict.objectForKey(Host.HOSTNAME);
         if(hostnameObj != null) {
             this.setHostname(hostnameObj.toString());
         }
-        Object usernameObj = dict.objectForKey(Host.USERNAME);
+        NSObject usernameObj = dict.objectForKey(Host.USERNAME);
         if(usernameObj != null) {
             this.setCredentials(usernameObj.toString(), null);
         }
-        final Object keyObj = dict.objectForKey(Host.KEYFILE);
+        final NSObject keyObj = dict.objectForKey(Host.KEYFILE);
         if(keyObj != null) {
             this.getCredentials().setIdentity(new Credentials.Identity(keyObj.toString()));
         }
-        Object portObj = dict.objectForKey(Host.PORT);
+        NSObject portObj = dict.objectForKey(Host.PORT);
         if(portObj != null) {
             this.setPort(Integer.parseInt(portObj.toString()));
         }
-        Object pathObj = dict.objectForKey(Host.PATH);
+        NSObject pathObj = dict.objectForKey(Host.PATH);
         if(pathObj != null) {
             this.setDefaultPath(pathObj.toString());
         }
-        Object nicknameObj = dict.objectForKey(Host.NICKNAME);
+        NSObject nicknameObj = dict.objectForKey(Host.NICKNAME);
         if(nicknameObj != null) {
             this.setNickname(nicknameObj.toString());
         }
-        Object encodingObj = dict.objectForKey(Host.ENCODING);
+        NSObject encodingObj = dict.objectForKey(Host.ENCODING);
         if(encodingObj != null) {
             this.setEncoding(encodingObj.toString());
         }
-        Object connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
+        NSObject connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
         if(connectModeObj != null) {
-            if(connectModeObj.equals(FTPConnectMode.ACTIVE.toString())) {
+            if(connectModeObj.toString().equals(FTPConnectMode.ACTIVE.toString())) {
                 this.setFTPConnectMode(FTPConnectMode.ACTIVE);
             }
-            if(connectModeObj.equals(FTPConnectMode.PASV.toString())) {
+            if(connectModeObj.toString().equals(FTPConnectMode.PASV.toString())) {
                 this.setFTPConnectMode(FTPConnectMode.PASV);
             }
         }
-        Object connObj = dict.objectForKey(Host.MAXCONNECTIONS);
+        NSObject connObj = dict.objectForKey(Host.MAXCONNECTIONS);
         if(connObj != null) {
             this.setMaxConnections(Integer.valueOf(connObj.toString()));
         }
-        Object downloadObj = dict.objectForKey(Host.DOWNLOADFOLDER);
+        NSObject downloadObj = dict.objectForKey(Host.DOWNLOADFOLDER);
         if(downloadObj != null) {
             this.setDownloadFolder(downloadObj.toString());
         }
-        Object timezoneObj = dict.objectForKey(Host.TIMEZONE);
+        NSObject timezoneObj = dict.objectForKey(Host.TIMEZONE);
         if(timezoneObj != null) {
             this.setTimezone(TimeZone.getTimeZone(timezoneObj.toString()));
         }
-        Object commentObj = dict.objectForKey(Host.COMMENT);
+        NSObject commentObj = dict.objectForKey(Host.COMMENT);
         if(commentObj != null) {
             this.setComment(commentObj.toString());
         }
-        Object urlObj = dict.objectForKey(Host.WEBURL);
+        NSObject urlObj = dict.objectForKey(Host.WEBURL);
         if(urlObj != null) {
             this.setWebURL(urlObj.toString());
         }
@@ -210,7 +212,7 @@ public class Host extends NSObject implements Serializable {
      * @return
      */
     public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = new NSMutableDictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
         if(!this.getNickname().equals(this.getDefaultNickname())) {
             dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
@@ -609,7 +611,7 @@ public class Host extends NSObject implements Serializable {
      */
     public void setDownloadFolder(String folder) {
         log.debug("setDownloadFolder:" + folder);
-        this.downloadFolder = NSPathUtilities.stringByAbbreviatingWithTildeInPath(folder);
+        this.downloadFolder = NSString.stringByAbbreviatingWithTildeInPath(folder);
     }
 
     /**
@@ -751,6 +753,7 @@ public class Host extends NSObject implements Serializable {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
+                    throw e;
                 }
             }
             return JNI_LOADED;
@@ -794,31 +797,18 @@ public class Host extends NSObject implements Serializable {
      * @pre Host#setFile()
      */
     private void read() throws IOException {
-        log.info("Reading bookmark from:" + file);
-        NSData plistData;
-        try {
-            plistData = new NSData(new URL(file.toURL()));
-        }
-        catch(MalformedURLException e) {
-            throw new IOException(e.getMessage());
-        }
-        final String[] errorString = new String[]{null};
-        Object propertyListFromXMLData =
-                NSPropertyListSerialization.propertyListFromData(plistData,
-                        NSPropertyListSerialization.PropertyListImmutable,
-                        new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                        errorString);
-        if(StringUtils.isNotBlank(errorString[0])) {
-            throw new IOException("Problem reading bookmark file:" + errorString[0]);
-        }
-        if(propertyListFromXMLData instanceof NSDictionary) {
-            this.init((NSDictionary) propertyListFromXMLData);
-        }
-        else {
+        log.info("Reading bookmark from:" + file.getAbsolute());
+        NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(file.getAbsolute()));
+        if(null == plistData) {
             throw new IOException("Invalid file format:" + file);
         }
+//        NSObject propertyListFromXMLData = NSPropertyListSerialization.propertyListFromData(plistData);
+//        if(propertyListFromXMLData.id().isNull()) {
+//            throw new IOException("Invalid file format:" + file);
+//         }
+//        NSDictionary dict = Rococoa.cast(propertyListFromXMLData, NSDictionary.class);
+//        this.init(dict);
     }
-
 
     /**
      * Serializes the bookmark to the given folder
@@ -827,25 +817,14 @@ public class Host extends NSObject implements Serializable {
      */
     public void write() throws IOException {
         log.info("Exporting bookmark " + this.toURL() + " to " + file);
-        NSMutableData collection = new NSMutableData();
-        final String[] errorString = new String[]{null};
-        collection.appendData(NSPropertyListSerialization.dataFromPropertyList(this.getAsDictionary(),
-                NSPropertyListSerialization.PropertyListXMLFormat,
-                errorString));
-        if(StringUtils.isNotBlank(errorString[0])) {
-            throw new IOException("Problem writing bookmark file:" + errorString[0]);
+        NSMutableData collection = NSMutableData.dataWithLength(0);
+        collection.appendData(NSPropertyListSerialization.dataFromPropertyList(this.getAsDictionary()));
+        if(collection.writeToURL(NSURL.fileURLWithPath(file.getAbsolute()))) {
+            log.info("Bookmarks sucessfully saved in :" + file);
+            NSWorkspace.sharedWorkspace().noteFileSystemChanged(file.getAbsolute());
         }
-        try {
-            if(collection.writeToURL(new URL(file.toURL()), true)) {
-                log.info("Bookmarks sucessfully saved in :" + file);
-                NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(file.getAbsolute());
-            }
-            else {
-                throw new IOException("Error saving bookmark to:" + file);
-            }
-        }
-        catch(MalformedURLException e) {
-            throw new IOException(e.getMessage());
+        else {
+            throw new IOException("Error saving bookmark to:" + file);
         }
     }
 

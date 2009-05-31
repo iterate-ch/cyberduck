@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -67,7 +67,7 @@ public class Status {
      */
     public static String getSizeAsString(double size) {
         if(-1 == size) {
-            return NSBundle.localizedString("Unknown size", "");
+            return Locale.localizedString("Unknown size", "");
         }
         if(size < KILO) {
             return (int) size + " B";
@@ -94,17 +94,17 @@ public class Status {
     public static String getRemainingAsString(double remaining) {
         StringBuffer b = new StringBuffer();
         if(remaining > 7200) { // More than two hours
-            b.append(MessageFormat.format(NSBundle.localizedString("{0} hours remaining", "Status", ""),
+            b.append(MessageFormat.format(Locale.localizedString("{0} hours remaining", "Status"),
                     new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString())
             );
         }
         else if(remaining > 120) { // More than two minutes
-            b.append(MessageFormat.format(NSBundle.localizedString("{0} minutes remaining", "Status", ""),
+            b.append(MessageFormat.format(Locale.localizedString("{0} minutes remaining", "Status"),
                     String.valueOf((int) (remaining / 60)))
             );
         }
         else {
-            b.append(MessageFormat.format(NSBundle.localizedString("{0} seconds remaining", "Status", ""),
+            b.append(MessageFormat.format(Locale.localizedString("{0} seconds remaining", "Status"),
                     String.valueOf((int) remaining))
             );
         }

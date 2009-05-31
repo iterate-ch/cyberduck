@@ -1,9 +1,9 @@
 package ch.cyberduck.core.sftp;
 
-import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
-
 import java.io.IOException;
 import java.io.OutputStream;
+
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 /**
  * @author David Kocher, dkocher@cyberduck.ch

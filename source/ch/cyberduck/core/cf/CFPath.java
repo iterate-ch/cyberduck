@@ -18,14 +18,13 @@ package ch.cyberduck.core.cf;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.Distribution;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.log4j.Logger;
@@ -115,12 +114,12 @@ public class CFPath extends CloudPath {
             session.check();
             trust.setHostname(URI.create(session.CF.getCdnManagementURL()).getHost());
             if(enabled) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
-                        NSBundle.localizedString("Mosso Cloud Files", "Mosso", "")));
+                session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                        Locale.localizedString("Mosso Cloud Files", "Mosso")));
             }
             else {
-                session.message(MessageFormat.format(NSBundle.localizedString("Disable {0} Distribution", "Status", ""),
-                        NSBundle.localizedString("Mosso Cloud Files", "Mosso", "")));
+                session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
+                        Locale.localizedString("Mosso Cloud Files", "Mosso")));
             }
             if(enabled) {
                 final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
@@ -156,10 +155,10 @@ public class CFPath extends CloudPath {
                 final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
                 if(null == info) {
                     // Not found.
-                    return new Distribution(false, null, NSBundle.localizedString("CDN Disabled", "Mosso", ""));
+                    return new Distribution(false, null, Locale.localizedString("CDN Disabled", "Mosso"));
                 }
                 return new Distribution(info.isEnabled(), info.getCdnURL(),
-                        info.isEnabled() ? NSBundle.localizedString("CDN Enabled", "Mosso", "") : NSBundle.localizedString("CDN Disabled", "Mosso", ""));
+                        info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"));
             }
             catch(IOException e) {
                 this.error(e.getMessage(), e);
@@ -189,7 +188,7 @@ public class CFPath extends CloudPath {
     public void readSize() {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
             if(this.isContainer()) {
@@ -211,7 +210,7 @@ public class CFPath extends CloudPath {
     public void readTimestamp() {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
             if(!this.isContainer()) {
@@ -257,7 +256,7 @@ public class CFPath extends CloudPath {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
-            session.message(NSBundle.localizedString("Listing directory", "Status", "") + " "
+            session.message(Locale.localizedString("Listing directory", "Status") + " "
                     + this.getAbsolute());
 
             if(this.isRoot()) {
@@ -311,7 +310,7 @@ public class CFPath extends CloudPath {
                 if(check) {
                     session.check();
                 }
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                         this.getName()));
 
                 in = this.session.CF.getObjectAsStream(this.getContainerName(), this.getKey());
@@ -357,12 +356,12 @@ public class CFPath extends CloudPath {
                 final Status stat = this.getStatus();
                 stat.setCurrent(0);
                 final InputStream in = new Local.InputStream(this.getLocal());
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Compute MD5 hash of {0}", "Status", ""),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
                 String md5sum = null;
                 try {
                     md5sum = ServiceUtils.toHex(ServiceUtils.computeMD5Hash(new Local.InputStream(this.getLocal())));
-                    this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                    this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                             this.getName()));
                 }
                 catch(NoSuchAlgorithmException e) {
@@ -416,7 +415,7 @@ public class CFPath extends CloudPath {
         log.debug("mkdir:" + this.getName());
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
             if(this.isContainer()) {
@@ -438,7 +437,7 @@ public class CFPath extends CloudPath {
         try {
             session.check();
             if(!this.isContainer()) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
                 session.CF.deleteObject(this.getContainerName(), this.getKey());

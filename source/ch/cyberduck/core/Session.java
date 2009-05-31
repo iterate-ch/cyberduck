@@ -18,9 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSObject;
-
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,12 +30,15 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
  */
-public abstract class Session extends NSObject {
+public abstract class Session {
     private static Logger log = Logger.getLogger(Session.class);
 
     /**
@@ -174,7 +176,7 @@ public abstract class Session extends NSObject {
         login.check(host);
 
         final Credentials credentials = host.getCredentials();
-        this.message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 credentials.getUsername()));
         this.login(credentials);
 
@@ -218,7 +220,7 @@ public abstract class Session extends NSObject {
      * @return null if we fail, the mounted working directory if we succeed
      */
     protected Path mount(String directory) throws IOException {
-        this.message(MessageFormat.format(NSBundle.localizedString("Mounting {0}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
                 host.getHostname()));
         this.check();
         if(!this.isConnected()) {
@@ -420,7 +422,7 @@ public abstract class Session extends NSObject {
         // Configuring proxy if any
         Proxy.configure(this.host.getHostname());
         this.resolver = new Resolver(this.host.getHostname(true));
-        this.message(MessageFormat.format(NSBundle.localizedString("Resolving {0}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                 host.getHostname()));
 
         // Try to resolve the hostname first
@@ -451,7 +453,7 @@ public abstract class Session extends NSObject {
      */
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
-        this.message(MessageFormat.format(NSBundle.localizedString("Disconnecting {0}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                 this.getHost().getHostname()));
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
         for(int i = 0; i < l.length; i++) {

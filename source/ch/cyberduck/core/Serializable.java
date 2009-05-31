@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -17,9 +19,6 @@ package ch.cyberduck.core;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
-
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
 
 /**
  * @version $Id$

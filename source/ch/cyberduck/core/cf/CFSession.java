@@ -18,11 +18,10 @@ package ch.cyberduck.core.cf;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -90,7 +89,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         }
         this.CF = new FilesClient();
         this.fireConnectionWillOpenEvent();
-        this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
         this.CF.setConnectionTimeOut(this.timeout());
@@ -105,7 +104,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         // Prompt the login credentials first
         this.login();
 
-        this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
         this.fireConnectionDidOpenEvent();
 
@@ -116,9 +115,9 @@ public class CFSession extends HTTPSession implements SSLSession {
         this.CF.setPassword(credentials.getPassword());
         this.getTrustManager().setHostname(URI.create(CF.getAuthenticationURL()).getHost());
         if(!this.CF.login()) {
-            this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+            this.message(Locale.localizedString("Login failed", "Credentials"));
             this.login.fail(host,
-                    NSBundle.localizedString("Login with username and password", "Credentials", ""));
+                    Locale.localizedString("Login with username and password", "Credentials"));
             this.login();
         }
         this.getTrustManager().setHostname(URI.create(CF.getStorageURL()).getHost());

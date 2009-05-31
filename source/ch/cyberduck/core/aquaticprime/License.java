@@ -18,10 +18,9 @@ package ch.cyberduck.core.aquaticprime;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
@@ -54,6 +53,7 @@ public class License {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libPrime.dylib library:" + e.getMessage());
+                    throw e;
                 }
             }
             return JNI_LOADED;

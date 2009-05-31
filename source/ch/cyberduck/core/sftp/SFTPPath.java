@@ -18,12 +18,11 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 
@@ -98,7 +97,7 @@ public class SFTPPath extends Path {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
             List<SFTPv3DirectoryEntry> children = session.sftp().ls(this.getAbsolute());
@@ -166,7 +165,7 @@ public class SFTPPath extends Path {
                 }
             }
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
             Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
@@ -180,7 +179,7 @@ public class SFTPPath extends Path {
     public void rename(AbstractPath renamed) {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
             if(renamed.exists()) {
@@ -204,7 +203,7 @@ public class SFTPPath extends Path {
         try {
             session.check();
             if(this.attributes.isFile() || this.attributes.isSymbolicLink()) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
                 session.sftp().rm(this.getAbsolute());
@@ -216,7 +215,7 @@ public class SFTPPath extends Path {
                     }
                     child.delete();
                 }
-                session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
                 session.sftp().rmdir(this.getAbsolute());
@@ -239,7 +238,7 @@ public class SFTPPath extends Path {
                 session.check();
                 handle = session.sftp().openFileRO(this.getAbsolute());
                 SFTPv3FileAttributes attr = session.sftp().fstat(handle);
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
                 this.attributes.setSize(attr.size);
@@ -267,7 +266,7 @@ public class SFTPPath extends Path {
             SFTPv3FileHandle handle = null;
             try {
                 session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
                 handle = session.sftp().openFileRO(this.getAbsolute());
@@ -296,7 +295,7 @@ public class SFTPPath extends Path {
             SFTPv3FileHandle handle = null;
             try {
                 session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                         this.getName()));
 
                 handle = session.sftp().openFileRO(this.getAbsolute());
@@ -330,7 +329,7 @@ public class SFTPPath extends Path {
         log.debug("changeOwner");
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Changing owner of {0} to {1}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                     this.getName(), owner));
 
 
@@ -360,7 +359,7 @@ public class SFTPPath extends Path {
         log.debug("changeGroup");
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Changing group of {0} to {1}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
                     this.getName(), group));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
@@ -389,7 +388,7 @@ public class SFTPPath extends Path {
         log.debug("changePermissions");
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), perm.getOctalString()));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();

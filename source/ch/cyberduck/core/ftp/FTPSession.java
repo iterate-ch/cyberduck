@@ -18,12 +18,11 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.net.ftp.Configurable;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -322,7 +321,7 @@ public class FTPSession extends Session {
         }
         this.fireConnectionWillOpenEvent();
 
-        this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
         this.configure(this.FTP = this.getClient());
@@ -331,7 +330,7 @@ public class FTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
         this.login();
         this.fireConnectionDidOpenEvent();
@@ -360,10 +359,10 @@ public class FTPSession extends Session {
     protected void login(final Credentials credentials) throws IOException {
         try {
             this.FTP.login(credentials.getUsername(), credentials.getPassword());
-            this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
+            this.message(Locale.localizedString("Login successful", "Credentials"));
         }
         catch(FTPException e) {
-            this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+            this.message(Locale.localizedString("Login failed", "Credentials"));
             this.login.fail(host, e.getMessage());
             this.login();
         }

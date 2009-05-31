@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.i18n;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -18,43 +18,32 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public abstract class BookmarkCollection extends Collection<Host> {
+public class Locale {
 
-    public BookmarkCollection() {
-        super();
-    }
-
-    public BookmarkCollection(java.util.Collection<Host> c) {
-        super(c);
+    /**
+     * @param key
+     * @return
+     */
+    public static String localizedString(final String key) {
+        return localizedString(key, null);
     }
 
     /**
-     * Add new bookmark to the collection
-     *
+     * @param key
+     * @param table
      * @return
      */
-    public boolean allowsAdd() {
-        return true;
-    }
-
-    /**
-     * Remove a bookmark from the collection
-     *
-     * @return
-     */
-    public boolean allowsDelete() {
-        return true;
-    }
-
-    /**
-     * Edit the bookmark configuration
-     *
-     * @return
-     */
-    public boolean allowsEdit() {
-        return true;
+    public static String localizedString(final String key, final String table) {
+        if(StringUtils.isEmpty(table)) {
+            return NSBundle.localizedString(key);
+        }
+        return NSBundle.localizedString(key, table);
     }
 }

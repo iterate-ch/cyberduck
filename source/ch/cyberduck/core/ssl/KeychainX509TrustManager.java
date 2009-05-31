@@ -18,9 +18,8 @@ package ch.cyberduck.core.ssl;
 *  dkocher@cyberduck.ch
 */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -62,7 +61,7 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
         }
         // The certificate has not been trusted
         throw new CertificateException(
-                NSBundle.localizedString("No trusted certificate found", "Status", ""));
+                Locale.localizedString("No trusted certificate found", "Status"));
     }
 
 }

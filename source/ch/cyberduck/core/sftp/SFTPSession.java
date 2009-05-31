@@ -18,10 +18,9 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -106,10 +105,10 @@ public class SFTPSession extends Session {
             if(!SSH.isAuthenticationComplete()) {
                 throw new LoginCanceledException();
             }
-            this.message(NSBundle.localizedString("Starting SFTP subsystem", "Status", ""));
+            this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
             try {
                 SFTP = new SFTPv3Client(SSH);
-                this.message(NSBundle.localizedString("SFTP subsystem ready", "Status", ""));
+                this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
                 SFTP.setCharset(this.getEncoding());
             }
             catch(IOException e) {
@@ -131,9 +130,9 @@ public class SFTPSession extends Session {
         if(!SSH.isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
-//        this.message(NSBundle.localizedString("Starting SCP subsystem", "Status", ""));
+//        this.message(Locale.localizedString("Starting SCP subsystem", "Status"));
         final SCPClient client = new SCPClient(SSH);
-//        this.message(NSBundle.localizedString("SCP subsystem ready", "Status", ""));
+//        this.message(Locale.localizedString("SCP subsystem ready", "Status"));
         client.setCharset(this.getEncoding());
         return client;
     }
@@ -144,7 +143,7 @@ public class SFTPSession extends Session {
         }
         this.fireConnectionWillOpenEvent();
 
-        this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
         SSH = new Connection(this.host.getHostname(true), this.host.getPort());
@@ -154,7 +153,7 @@ public class SFTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
         this.login();
         if(!SSH.isAuthenticationComplete()) {
@@ -166,18 +165,18 @@ public class SFTPSession extends Session {
     protected void login(final Credentials credentials) throws IOException {
         if(host.getCredentials().isPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(credentials)) {
-                this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
+                this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
             }
         }
         else if(this.loginUsingPasswordAuthentication(credentials)
                 || this.loginUsingKBIAuthentication(credentials)) {
-            this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
+            this.message(Locale.localizedString("Login successful", "Credentials"));
             return;
         }
-        this.message(NSBundle.localizedString("Login failed", "Credentials", ""));
+        this.message(Locale.localizedString("Login failed", "Credentials"));
         this.login.fail(host,
-                NSBundle.localizedString("Login with username and password", "Credentials", ""));
+                Locale.localizedString("Login with username and password", "Credentials"));
         this.login();
     }
 
@@ -203,8 +202,8 @@ public class SFTPSession extends Session {
                     passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
                         login.prompt(host,
-                                NSBundle.localizedString("Private key password protected", "Credentials", ""),
-                                NSBundle.localizedString("Enter the passphrase for the private key file", "Credentials", "")
+                                Locale.localizedString("Private key password protected", "Credentials"),
+                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
                         passphrase = credentials.getPassword();
                         if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {

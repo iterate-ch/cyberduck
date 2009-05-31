@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -106,7 +106,7 @@ public abstract class Protocol {
 
     public static final Protocol SFTP = new Protocol() {
         public String getDescription() {
-            return NSBundle.localizedString("SFTP (SSH File Transfer Protocol)", "");
+            return Locale.localizedString("SFTP (SSH File Transfer Protocol)", "");
         }
 
         public int getDefaultPort() {
@@ -124,7 +124,7 @@ public abstract class Protocol {
 
     public static final Protocol SCP = new Protocol() {
         public String getDescription() {
-            return NSBundle.localizedString("SCP (Secure Copy)", "");
+            return Locale.localizedString("SCP (Secure Copy)", "");
         }
 
         public int getDefaultPort() {
@@ -142,7 +142,7 @@ public abstract class Protocol {
 
     public static final Protocol FTP = new Protocol() {
         public String getDescription() {
-            return NSBundle.localizedString("FTP (File Transfer Protocol)", "");
+            return Locale.localizedString("FTP (File Transfer Protocol)", "");
         }
 
         public int getDefaultPort() {
@@ -160,7 +160,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("FTPS (FTP/SSL)", "");
+            return Locale.localizedString("FTPS (FTP/SSL)", "");
         }
 
         public int getDefaultPort() {
@@ -190,7 +190,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("S3 (Amazon Simple Storage Service)", "S3", "");
+            return Locale.localizedString("S3 (Amazon Simple Storage Service)", "S3");
         }
 
         public String getIdentifier() {
@@ -228,7 +228,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("Eucalyptus Walrus (Elastic Utility Computing Architecture for Linking Your Programs To Useful Systems)", "S3", "");
+            return Locale.localizedString("Eucalyptus Walrus (Elastic Utility Computing Architecture for Linking Your Programs To Useful Systems)", "S3");
         }
 
         public String getIdentifier() {
@@ -278,7 +278,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)", "");
+            return Locale.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)", "");
         }
 
         public String getIdentifier() {
@@ -304,7 +304,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("WebDAV (HTTP/SSL)", "");
+            return Locale.localizedString("WebDAV (HTTP/SSL)", "");
         }
 
         public String getIdentifier() {
@@ -342,7 +342,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return NSBundle.localizedString("MobileMe iDisk (WebDAV)", "");
+            return Locale.localizedString("MobileMe iDisk (WebDAV)", "");
         }
 
         public String getIdentifier() {

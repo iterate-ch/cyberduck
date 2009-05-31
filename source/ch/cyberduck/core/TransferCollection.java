@@ -18,18 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSData;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSMutableData;
-import com.apple.cocoa.foundation.NSPropertyListSerialization;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
-import java.util.Iterator;
-import java.net.URL;
-import java.net.MalformedURLException;
+import java.io.IOException;
 
 
 /**
@@ -70,6 +64,7 @@ public class TransferCollection extends Collection<Transfer> {
 
     /**
      * Saves the collection after adding the new item
+     *
      * @param row
      * @param o
      * @see #save()
@@ -81,6 +76,7 @@ public class TransferCollection extends Collection<Transfer> {
 
     /**
      * Does not save the collection after modifiying
+     *
      * @param row
      * @return the element that was removed from the list.
      * @see #save()
@@ -90,43 +86,36 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     public void save() {
-        this.save(QUEUE_FILE);
+//        this.save(QUEUE_FILE);
     }
 
     private synchronized void save(Local f) {
         log.debug("save");
         synchronized(this) {
             if(Preferences.instance().getBoolean("queue.save")) {
-                NSMutableArray list = new NSMutableArray();
-                for(int i = 0; i < this.size(); i++) {
-                    list.addObject((this.get(i)).getAsDictionary());
+                NSMutableArray list = NSMutableArray.arrayWithCapacity(this.size());
+                for(Transfer transfer : this) {
+                    list.addObject(transfer.getAsDictionary());
                 }
-                NSMutableData collection = new NSMutableData();
-                String[] errorString = new String[]{null};
-                collection.appendData(NSPropertyListSerialization.dataFromPropertyList(list,
-                        NSPropertyListSerialization.PropertyListXMLFormat,
-                        errorString));
-                if(errorString[0] != null) {
-                    log.error("Problem writing queue file: " + errorString[0]);
-                }
-
+                NSMutableData collection = NSMutableData.dataWithLength(0);
                 try {
-                    if(collection.writeToURL(new URL(f.toURL()), true)) {
-                        log.info("Queue sucessfully saved to :" + f.toString());
-                    }
-                    else {
-                        log.error("Error saving queue to :" + f.toString());
-                    }
+                    collection.appendData(NSPropertyListSerialization.dataFromPropertyList(list));
                 }
-                catch(MalformedURLException e) {
-                    log.error(e.getMessage());
+                catch(IOException e) {
+                    log.error("Problem writing queue file: " + e.getMessage());
+                }
+                if(collection.writeToURL(NSURL.fileURLWithPath(f.getAbsolute()))) {
+                    log.info("Queue sucessfully saved to :" + f.toString());
+                }
+                else {
+                    log.error("Error saving queue to :" + f.toString());
                 }
             }
         }
     }
 
     public void load() {
-        this.load(QUEUE_FILE);
+//        this.load(QUEUE_FILE);
     }
 
     private synchronized void load(Local f) {
@@ -134,44 +123,29 @@ public class TransferCollection extends Collection<Transfer> {
         synchronized(this) {
             if(f.exists()) {
                 log.info("Found Queue file: " + f.toString());
-                NSData plistData = null;
+                NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(f.getAbsolute()));
                 try {
-                    plistData = new NSData(new URL(f.toURL()));
-                }
-                catch(MalformedURLException e) {
-                    log.error(e.getMessage());
-                }
-                String[] errorString = new String[]{null};
-                Object propertyListFromXMLData =
-                        NSPropertyListSerialization.propertyListFromData(plistData,
-                                NSPropertyListSerialization.PropertyListImmutable,
-                                new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                                errorString);
-                if(errorString[0] != null) {
-                    log.error("Problem reading queue file: " + errorString[0]);
-                }
-                if(propertyListFromXMLData instanceof NSArray) {
-                    NSArray entries = (NSArray) propertyListFromXMLData;
-                    java.util.Enumeration i = entries.objectEnumerator();
-                    while(i.hasMoreElements()) {
-                        Object element = i.nextElement();
-                        if(element instanceof NSDictionary) {
-                            super.add(TransferFactory.create((NSDictionary) element));
-                        }
+                    NSArray propertyListFromXMLData = Rococoa.cast(NSPropertyListSerialization.propertyListFromData(plistData), NSArray.class);
+                    final NSEnumerator i = propertyListFromXMLData.objectEnumerator();
+                    NSObject next;
+                    while(((next = i.nextObject()) != null)) {
+                        super.add(TransferFactory.create(Rococoa.cast(next, NSDictionary.class)));
                     }
+                }
+                catch(IOException e) {
+                    log.error("Problem reading queue file: " + e.getMessage());
                 }
             }
         }
     }
 
     /**
-     *
      * @return
      */
     public synchronized int numberOfRunningTransfers() {
         int running = 0;
         // Count the number of running transfers
-        for(Transfer t: this) {
+        for(Transfer t : this) {
             if(null == t) {
                 continue;
             }
@@ -179,18 +153,17 @@ public class TransferCollection extends Collection<Transfer> {
                 running++;
             }
         }
-        log.debug("numberOfRunningTransfers:"+running);
+        log.debug("numberOfRunningTransfers:" + running);
         return running;
     }
 
     /**
-     * 
      * @return
      */
     public synchronized int numberOfQueuedTransfers() {
         int queued = 0;
         // Count the number of queued transfers
-        for(Transfer t: this) {
+        for(Transfer t : this) {
             if(null == t) {
                 continue;
             }
@@ -198,7 +171,7 @@ public class TransferCollection extends Collection<Transfer> {
                 queued++;
             }
         }
-        log.debug("numberOfQueuedTransfers:"+queued);
+        log.debug("numberOfQueuedTransfers:" + queued);
         return queued;
     }
 }

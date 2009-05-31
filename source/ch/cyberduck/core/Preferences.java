@@ -18,13 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSPathUtilities;
-
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
 import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -132,17 +132,16 @@ public abstract class Preferences {
         File APP_SUPPORT_DIR;
         if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
             APP_SUPPORT_DIR = new File(
-                    NSPathUtilities.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
-            APP_SUPPORT_DIR.mkdirs();
+                    NSString.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
         }
         else {
             APP_SUPPORT_DIR = new File(
-                    NSPathUtilities.stringByExpandingTildeInPath(
-                            (String) NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")));
+                    NSString.stringByExpandingTildeInPath(NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path").toString()));
         }
         APP_SUPPORT_DIR.mkdirs();
 
         defaults.put("application.support.path", APP_SUPPORT_DIR.getAbsolutePath());
+        defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
 
         /**
          * The logging level (DEBUG, INFO, WARN, ERROR)
@@ -154,6 +153,7 @@ public abstract class Preferences {
 
         defaults.put("version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+
         /**
          * How many times the application was launched
          */
@@ -198,7 +198,7 @@ public abstract class Preferences {
         defaults.put("browser.hidden.regex", "\\..*");
 
         defaults.put("browser.openUntitled", String.valueOf(true));
-        defaults.put("browser.defaultBookmark", NSBundle.localizedString("None", ""));
+        defaults.put("browser.defaultBookmark", Locale.localizedString("None"));
 
         defaults.put("browser.markInaccessibleFolders", String.valueOf(true));
         /**
@@ -272,7 +272,7 @@ public abstract class Preferences {
          * Editor for the current selected file. Used to set the shortcut key in the menu delegate
          */
         defaults.put("editor.kqueue.enable", "false");
-        defaults.put("editor.tmp.directory", NSPathUtilities.temporaryDirectory());
+        defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
         defaults.put("filetype.text.regex",
                 ".*\\.txt|.*\\.cgi|.*\\.htm|.*\\.html|.*\\.shtml|.*\\.xml|.*\\.xsl|.*\\.php|.*\\.php3|" +
@@ -306,7 +306,7 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnStart", String.valueOf(true));
         defaults.put("queue.orderBackOnStop", String.valueOf(false));
 
-        if(new File(NSPathUtilities.stringByExpandingTildeInPath("~/Downloads")).exists()) {
+        if(new File(NSString.stringByExpandingTildeInPath("~/Downloads")).exists()) {
             // For 10.5 this usually exists and should be preferrred
             defaults.put("queue.download.folder", "~/Downloads");
         }
@@ -434,9 +434,8 @@ public abstract class Preferences {
          * A prefix to apply to log file names
          */
         defaults.put("s3.logging.prefix", "logs/");
-        defaults.put("cloudfront.logging.prefix", "logs/");
 
-        defaults.put("s3.cache.seconds", "86400"); //24h
+        defaults.put("s3.cache.seconds", "86400");
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
@@ -620,14 +619,13 @@ public abstract class Preferences {
      */
     private String locale() {
         String locale = "en";
-        NSArray preferredLocalizations = NSBundle.preferredLocalizations(
-                NSBundle.mainBundle().localizations());
+        NSArray preferredLocalizations = NSBundle.mainBundle().preferredLocalizations();
         if(null == preferredLocalizations) {
             log.warn("No localizations found in main bundle");
             return locale;
         }
         if(preferredLocalizations.count() > 0) {
-            locale = (String) preferredLocalizations.objectAtIndex(0);
+            locale = preferredLocalizations.objectAtIndex(0).toString();
         }
         return locale;
     }

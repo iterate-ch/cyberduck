@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import org.apache.log4j.Logger;
-
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -20,8 +18,10 @@ import org.apache.log4j.Logger;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 /**
- * @version $Id: IAttributes.java 2821 2007-02-07 09:56:57Z dkocher $
+ * @version $Id$
  */
 public abstract class Attributes {
     private static Logger log = Logger.getLogger(Attributes.class);

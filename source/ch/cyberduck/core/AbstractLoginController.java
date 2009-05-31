@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -64,12 +64,12 @@ public abstract class AbstractLoginController implements LoginController {
             return;
         }
         if(!credentials.isValid()) {
-            final String title = NSBundle.localizedString("Login with username and password", "Credentials", "");
+            final String title = Locale.localizedString("Login with username and password", "Credentials");
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     String passFromKeychain = this.find(host);
                     if(StringUtils.isBlank(passFromKeychain)) {
-                        reason.append(NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
+                        reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                         this.prompt(host, title, reason.toString());
                     }
                     else {
@@ -78,12 +78,12 @@ public abstract class AbstractLoginController implements LoginController {
                     }
                 }
                 else {
-                    reason.append(NSBundle.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials", ""));
+                    reason.append(Locale.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
                     this.prompt(host, title, reason.toString());
                 }
             }
             else {
-                reason.append(NSBundle.localizedString("No login credentials could be found in the Keychain", "Credentials", ""));
+                reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                 this.prompt(host, title, reason.toString());
             }
         }
@@ -99,7 +99,7 @@ public abstract class AbstractLoginController implements LoginController {
 
     public void fail(final Host host, final String reason) throws LoginCanceledException {
         persisted = false;
-        this.prompt(host, NSBundle.localizedString("Login failed", "Credentials", ""), reason);
+        this.prompt(host, Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
     /**

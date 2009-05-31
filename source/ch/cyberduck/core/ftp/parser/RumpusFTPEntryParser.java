@@ -20,8 +20,6 @@ package ch.cyberduck.core.ftp.parser;
 
 import org.apache.commons.net.ftp.FTPFile;
 
-import java.text.ParseException;
-
 /**
  * @version $Id: StingrayFTPEntryParser.java 3171 2007-07-16 10:30:28Z dkocher $
  * @see org.apache.commons.net.ftp.parser.UnixFTPEntryParser

@@ -1,6 +1,5 @@
 package ch.cyberduck.core.ftp.parser;
 
-import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.commons.net.ftp.FTPFile;
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.

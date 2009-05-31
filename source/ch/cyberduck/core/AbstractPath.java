@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSObject;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.utils.Mimetypes;
@@ -31,7 +29,7 @@ import com.ibm.icu.text.Normalizer;
 /**
  * @version $Id$
  */
-public abstract class AbstractPath extends NSObject {
+public abstract class AbstractPath {
 
     /**
      * The path delimiter
@@ -70,8 +68,10 @@ public abstract class AbstractPath extends NSObject {
      * @throws NullPointerException if session is not initialized
      */
     public void invalidate() {
-        if(this.isCached()) {
-            this.cache().get(this).attributes().setDirty(true);
+        if(attributes.isDirectory()) {
+            if(this.isCached()) {
+                this.cache().get(this).attributes().setDirty(true);
+            }
         }
     }
 
@@ -113,6 +113,21 @@ public abstract class AbstractPath extends NSObject {
      */
     public boolean isRoot() {
         return this.getAbsolute().equals(DELIMITER);
+    }
+
+    public static String getParent(String absolute) {
+        int index = absolute.length() - 1;
+        if(absolute.charAt(index) == '/') {
+            if(index > 0) {
+                index--;
+            }
+        }
+        int cut = absolute.lastIndexOf('/', index);
+        if(cut > 0) {
+            return absolute.substring(0, cut);
+        }
+        //if (index == 0) //parent is root
+        return DELIMITER;
     }
 
     public abstract String getAbsolute();

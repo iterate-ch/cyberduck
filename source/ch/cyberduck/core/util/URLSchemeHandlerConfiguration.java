@@ -1,6 +1,6 @@
 package ch.cyberduck.core.util;
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -76,9 +76,7 @@ public class URLSchemeHandlerConfiguration {
      * @return True if this application is the default handler for the scheme
      */
     public boolean isDefaultHandlerForURLScheme(String scheme) {
-        return NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString().equals(
-                this.getDefaultHandlerForURLScheme(scheme)
-        );
+        return false;
     }
 
     /**

@@ -18,25 +18,22 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.*;
-
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.io.*;
 import java.net.MalformedURLException;
-
-import glguerin.io.FileForker;
-import glguerin.io.Pathname;
-import glguerin.io.imp.mac.macosx.MacOSXForker;
 
 /**
  * @version $Id$
@@ -48,12 +45,13 @@ public class Local extends AbstractPath {
         attributes = new Attributes() {
             public Permission getPermission() {
                 try {
-                    NSDictionary fileAttributes = NSPathUtilities.fileAttributes(_impl.getAbsolutePath(), true);
+                    NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(
+                            _impl.getAbsolutePath());
                     if(null == fileAttributes) {
                         log.error("No such file:" + getAbsolute());
                         return null;
                     }
-                    Object posix = fileAttributes.objectForKey(NSPathUtilities.FilePosixPermissions);
+                    Object posix = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions.get().toString());
                     if(null == posix) {
                         log.error("No such file:" + getAbsolute());
                         return null;
@@ -139,7 +137,7 @@ public class Local extends AbstractPath {
             }
 
             public long getCreationDate() {
-                NSDictionary fileAttributes = NSPathUtilities.fileAttributes(_impl.getAbsolutePath(), true);
+                NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
                 // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
                 // if the link points to a nonexistent file, this method returns null. If flag is false,
                 // the attributes of the symbolic link are returned.
@@ -147,19 +145,22 @@ public class Local extends AbstractPath {
                     log.error("No such file:" + getAbsolute());
                     return -1;
                 }
-                Object date = fileAttributes.objectForKey(NSPathUtilities.FileCreationDate);
+                NSObject date = fileAttributes.objectForKey(NSFileManager.NSFileCreationDate.get().toString());
                 if(null == date) {
                     // Returns an entry’s value given its key, or null if no value is associated with key.
                     log.error("No such file:" + getAbsolute());
                     return -1;
                 }
-                return NSDate.timeIntervalToMilliseconds(((NSDate) date).timeIntervalSinceDate(NSDate.DateFor1970));
+                return (long) (Rococoa.cast(date, NSDate.class).timeIntervalSince1970() * 1000);
             }
 
             public void setCreationDate(long millis) {
-                boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                        new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
-                                NSPathUtilities.FileCreationDate));
+                NSDate date = NSDate.dateWithTimeIntervalSince1970(millis / 1000);
+                boolean success = NSFileManager.defaultManager().changeFileAttributes(
+                        NSDictionary.dictionaryWithObjectsForKeys(
+                                NSArray.arrayWithObject(date),
+                                NSArray.arrayWithObject(NSFileManager.NSFileCreationDate.get().toString())),
+                        _impl.getAbsolutePath());
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
@@ -207,6 +208,7 @@ public class Local extends AbstractPath {
                 }
                 catch(UnsatisfiedLinkError e) {
                     log.error("Could not load the libLocal.dylib library:" + e.getMessage());
+                    throw e;
                 }
             }
             return JNI_LOADED;
@@ -239,16 +241,16 @@ public class Local extends AbstractPath {
         if(!Local.jni_load()) {
             return;
         }
-        FileForker forker = new MacOSXForker();
-        forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
-        if(forker.isAlias()) {
-            try {
-                this.setPath(forker.makeResolved().getPath());
-            }
-            catch(IOException e) {
-                log.error("Error resolving alias:" + e.getMessage());
-            }
-        }
+//        FileForker forker = new MacOSXForker();
+//        forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
+//        if(forker.isAlias()) {
+//            try {
+//                this.setPath(forker.makeResolved().getPath());
+//            }
+//            catch(IOException e) {
+//                log.error("Error resolving alias:" + e.getMessage());
+//            }
+//        }
     }
 
     private FileWatcher uk;
@@ -304,8 +306,10 @@ public class Local extends AbstractPath {
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
                         log.debug("Move " + file + " to Trash");
-                        if(0 > NSWorkspace.sharedWorkspace().performFileOperation(NSWorkspace.RecycleOperation,
-                                file.getParent().getAbsolute(), "", new NSArray(file.getName()))) {
+                        if(!NSWorkspace.sharedWorkspace().performFileOperation(
+                                NSWorkspace.RecycleOperation,
+                                file.getParent().getAbsolute(), "",
+                                NSArray.arrayWithObject(file.getName()))) {
                             log.warn("Failed to move " + file.getAbsolute() + " to Trash");
                         }
                     }
@@ -349,14 +353,14 @@ public class Local extends AbstractPath {
      */
     public String kind() {
         if(this.attributes.isDirectory()) {
-            return NSBundle.localizedString("Folder", "");
+            return Locale.localizedString("Folder");
         }
         final String extension = this.getExtension();
         if(StringUtils.isEmpty(extension)) {
-            return NSBundle.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown");
         }
         if(!Local.jni_load()) {
-            return NSBundle.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown");
         }
         return this.kind(this.getExtension());
     }
@@ -394,7 +398,7 @@ public class Local extends AbstractPath {
     }
 
     public void setPath(String name) {
-        _impl = new File(Path.normalize(NSPathUtilities.stringByExpandingTildeInPath(name)));
+        _impl = new File(Path.normalize(NSString.stringByExpandingTildeInPath(name)));
         this.init();
     }
 
@@ -410,12 +414,14 @@ public class Local extends AbstractPath {
     public void writePermissions(final Permission perm, final boolean recursive) {
         CDMainApplication.invoke(new DefaultMainAction() {
             public void run() {
-                boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                        new NSDictionary(new Integer(perm.getOctalNumber()),
-                                NSPathUtilities.FilePosixPermissions));
-                if(!success) {
-                    log.error("File attribute changed failed:" + getAbsolute());
-                }
+//                boolean success = NSFileManager.defaultManager().changeFileAttributes(
+//                        NSDictionary.dictionaryWithObjectsForKeys(
+//                                NSArray.arrayWithObject(perm.getOctalNumber()),
+//                                NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions.get().toString())),
+//                        _impl.getAbsolutePath());
+//                if(!success) {
+//                    log.error("File attribute changed failed:" + getAbsolute());
+//                }
                 if(attributes.isDirectory() && recursive) {
                     for(AbstractPath child : childs()) {
                         child.writePermissions(perm, recursive);
@@ -428,9 +434,11 @@ public class Local extends AbstractPath {
     public void writeModificationDate(final long millis) {
         CDMainApplication.invoke(new DefaultMainAction() {
             public void run() {
-                boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                        new NSDictionary(new NSDate(NSDate.millisecondsToTimeInterval(millis), NSDate.DateFor1970),
-                                NSPathUtilities.FileModificationDate));
+                boolean success = NSFileManager.defaultManager().changeFileAttributes(
+                        NSDictionary.dictionaryWithObjectsForKeys(
+                                NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(millis / 1000)),
+                                NSArray.arrayWithObject(NSFileManager.NSFileModificationDate.get().toString())),
+                        _impl.getAbsolutePath());
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
@@ -538,15 +546,15 @@ public class Local extends AbstractPath {
      * Removes the resource fork from the file alltogether
      */
     private void removeResourceFork() {
-        try {
-            this.removeCustomIcon();
-            FileForker forker = new MacOSXForker();
-            forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
-            forker.makeForkOutputStream(true, false).close();
-        }
-        catch(IOException e) {
-            log.error("Failed to remove resource fork from file:" + e.getMessage());
-        }
+        this.removeCustomIcon();
+//        try {
+//            FileForker forker = new MacOSXForker();
+//            forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
+//            forker.makeForkOutputStream(true, false).close();
+//        }
+//        catch(IOException e) {
+//            log.error("Failed to remove resource fork from file:" + e.getMessage());
+//        }
     }
 
     /**

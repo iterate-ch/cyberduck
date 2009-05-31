@@ -18,13 +18,12 @@ package ch.cyberduck.core.s3;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.Distribution;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -229,7 +228,7 @@ public class S3Path extends CloudPath {
      * Expires: Thu, 01 Dec 1994 16:00:00 GMT
      */
     private SimpleDateFormat rfc1123 =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", java.util.Locale.ENGLISH);
 
     {
         rfc1123.setTimeZone(TimeZone.getDefault());
@@ -389,7 +388,7 @@ public class S3Path extends CloudPath {
         if(attributes.isFile()) {
             try {
                 session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
                 final S3Object details = this.getDetails();
@@ -411,7 +410,7 @@ public class S3Path extends CloudPath {
         if(attributes.isFile()) {
             try {
                 session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
                 final S3Object details = this.getDetails();
@@ -442,7 +441,7 @@ public class S3Path extends CloudPath {
     public void readPermission() {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Getting permission of {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                     this.getName()));
             AccessControlList acl = null;
             if(this.isContainer()) {
@@ -574,7 +573,7 @@ public class S3Path extends CloudPath {
                 if(check) {
                     session.check();
                 }
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                         this.getName()));
 
                 DownloadPackage download;
@@ -639,7 +638,7 @@ public class S3Path extends CloudPath {
                 final S3ServiceMulti multi = new S3ServiceMulti(session.S3,
                         new S3ServiceTransferEventAdaptor(listener)
                 );
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Compute MD5 hash of {0}", "Status", ""),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
 
                 final S3Object object;
@@ -668,7 +667,7 @@ public class S3Path extends CloudPath {
 
                 // Transfer
                 final S3Bucket bucket = this.getBucket();
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
                 multi.putObjects(bucket, new S3Object[]{object});
@@ -688,7 +687,7 @@ public class S3Path extends CloudPath {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
-            session.message(NSBundle.localizedString("Listing directory", "Status", "") + " "
+            session.message(Locale.localizedString("Listing directory", "Status") + " "
                     + this.getAbsolute());
 
             if(this.isRoot()) {
@@ -805,7 +804,7 @@ public class S3Path extends CloudPath {
         log.debug("mkdir:" + this.getName());
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
             final S3Bucket bucket = this.getBucket();
@@ -838,7 +837,7 @@ public class S3Path extends CloudPath {
         log.debug("writePermissions:" + perm);
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), perm.getOctalString()));
 
             AccessControlList acl = null;
@@ -898,7 +897,7 @@ public class S3Path extends CloudPath {
         try {
             session.check();
             if(attributes.isFile()) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
                 session.S3.deleteObject(this.getContainerName(), this.getKey());
@@ -935,7 +934,7 @@ public class S3Path extends CloudPath {
         try {
             if(attributes.isFile()) {
                 session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
 
                 session.S3.moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
@@ -967,7 +966,7 @@ public class S3Path extends CloudPath {
         try {
             if(attributes.isFile()) {
                 session.check();
-                session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
+                session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
                 session.S3.copyObject(this.getContainerName(), this.getKey(), ((S3Path) copy).getContainerName(),
@@ -1068,7 +1067,7 @@ public class S3Path extends CloudPath {
                 final DistributionConfig distributionConfig = session.getDistributionConfig(d);
                 // We currently only support one distribution per bucket
                 return new Distribution(d.isEnabled(), d.getStatus().equals("InProgress"),
-                        "http://" + d.getDomainName(), NSBundle.localizedString(d.getStatus(), "S3", ""), d.getCNAMEs(),
+                        "http://" + d.getDomainName(), Locale.localizedString(d.getStatus(), "S3"), d.getCNAMEs(),
                         distributionConfig.isLoggingEnabled());
             }
         }
@@ -1106,12 +1105,12 @@ public class S3Path extends CloudPath {
             }
             session.check();
             if(enabled) {
-                session.message(MessageFormat.format(NSBundle.localizedString("Enable {0} Distribution", "Status", ""),
-                        NSBundle.localizedString("Amazon CloudFront", "S3", "")));
+                session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                        Locale.localizedString("Amazon CloudFront", "S3")));
             }
             else {
-                session.message(MessageFormat.format(NSBundle.localizedString("Disable {0} Distribution", "Status", ""),
-                        NSBundle.localizedString("Amazon CloudFront", "S3", "")));
+                session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
+                        Locale.localizedString("Amazon CloudFront", "S3")));
             }
             for(org.jets3t.service.model.cloudfront.Distribution distribution : session.listDistributions(container)) {
                 session.updateDistribution(enabled, distribution, cnames, l);

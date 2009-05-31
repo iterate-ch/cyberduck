@@ -18,11 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 /**
  * Attributes of a remote directory or file.
@@ -65,26 +67,26 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     public void init(NSDictionary dict) {
-        Object typeObj = dict.objectForKey(TYPE);
+        NSObject typeObj = dict.objectForKey(TYPE);
         if(typeObj != null) {
-            this.type = Integer.parseInt((String) typeObj);
+            this.type = Integer.parseInt(typeObj.toString());
         }
-        Object sizeObj = dict.objectForKey(SIZE);
+        NSObject sizeObj = dict.objectForKey(SIZE);
         if(sizeObj != null) {
-            this.size = Long.parseLong((String) sizeObj);
+            this.size = Long.parseLong(sizeObj.toString());
         }
-        Object modifiedObj = dict.objectForKey(MODIFIED);
+        NSObject modifiedObj = dict.objectForKey(MODIFIED);
         if(modifiedObj != null) {
-            this.modified = Long.parseLong((String) modifiedObj);
+            this.modified = Long.parseLong(modifiedObj.toString());
         }
-        Object permissionObj = dict.objectForKey(PERMISSION);
+        NSObject permissionObj = dict.objectForKey(PERMISSION);
         if(permissionObj != null) {
-            this.permission = new Permission((NSDictionary)permissionObj);
+            this.permission = new Permission(Rococoa.cast(permissionObj, NSDictionary.class));
         }
     }
 
     public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = new NSMutableDictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(String.valueOf(this.type), TYPE);
         if(this.size != -1) {
             dict.setObjectForKey(String.valueOf(this.size), SIZE);
@@ -184,7 +186,7 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     public String getOwner() {
         if(null == this.owner) {
-            return NSBundle.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown", "");
         }
         return this.owner;
     }
@@ -198,7 +200,7 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     public String getGroup() {
         if(null == this.group) {
-            return NSBundle.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown", "");
         }
         return this.group;
     }

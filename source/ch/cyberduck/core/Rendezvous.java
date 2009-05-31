@@ -18,13 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
 import com.apple.dnssd.*;
+
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -189,7 +188,7 @@ public class Rendezvous
                 return services.values().toArray(new Host[services.size()])[index].getNickname();
             }
         }
-        return NSBundle.localizedString("Unknown", "");
+        return Locale.localizedString("Unknown", "");
     }
 
     /**
@@ -199,7 +198,7 @@ public class Rendezvous
     public String getDisplayedName(String identifier) {
         Host host = services.get(identifier);
         if(null == host) {
-            return NSBundle.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown", "");
         }
         return host.getNickname();
     }

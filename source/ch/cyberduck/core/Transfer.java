@@ -18,16 +18,17 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.io.IOException;
 import java.util.*;
@@ -37,7 +38,7 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 /**
  * @version $Id$
  */
-public abstract class Transfer extends NSObject implements Serializable {
+public abstract class Transfer implements Serializable {
     protected static Logger log = Logger.getLogger(Transfer.class);
 
     /**
@@ -146,12 +147,12 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     public void init(NSDictionary dict) {
-        Object rootsObj = dict.objectForKey("Roots");
+        NSObject rootsObj = dict.objectForKey("Roots");
         if(rootsObj != null) {
-            NSArray r = (NSArray) rootsObj;
+            NSArray r = Rococoa.cast(rootsObj, NSArray.class);
             roots = new Collection<Path>();
             for(int i = 0; i < r.count(); i++) {
-                final NSDictionary rootDict = (NSDictionary) r.objectAtIndex(i);
+                final NSDictionary rootDict = Rococoa.cast(r.objectAtIndex(i), NSDictionary.class);
                 final Path root = PathFactory.createPath(this.session, rootDict);
                 if(rootDict.objectForKey("Complete") != null) {
                     root.getStatus().setComplete(true);
@@ -162,31 +163,31 @@ public abstract class Transfer extends NSObject implements Serializable {
                 roots.add(root);
             }
         }
-        Object sizeObj = dict.objectForKey("Size");
+        NSObject sizeObj = dict.objectForKey("Size");
         if(sizeObj != null) {
             this.size = Double.parseDouble(sizeObj.toString());
         }
-        Object timestampObj = dict.objectForKey("Timestamp");
+        NSObject timestampObj = dict.objectForKey("Timestamp");
         if(timestampObj != null) {
             this.timestamp = new Date(Long.parseLong(timestampObj.toString()));
         }
-        Object currentObj = dict.objectForKey("Current");
+        NSObject currentObj = dict.objectForKey("Current");
         if(currentObj != null) {
             this.transferred = Double.parseDouble(currentObj.toString());
         }
         this.init();
-        Object bandwidthObj = dict.objectForKey("Bandwidth");
+        NSObject bandwidthObj = dict.objectForKey("Bandwidth");
         if(bandwidthObj != null) {
             this.bandwidth.setRate(Float.parseFloat(bandwidthObj.toString()));
         }
     }
 
     public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = new NSMutableDictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
-        NSMutableArray r = new NSMutableArray();
+        NSMutableArray r = NSMutableArray.arrayWithCapacity(this.numberOfRoots());
         for(Path root : this.roots) {
-            final NSMutableDictionary rootDict = (NSMutableDictionary)root.getAsDictionary();
+            final NSMutableDictionary rootDict = (NSMutableDictionary) root.getAsDictionary();
             if(root.getStatus().isComplete()) {
                 rootDict.setObjectForKey(String.valueOf(true), "Complete");
             }
@@ -240,16 +241,16 @@ public abstract class Transfer extends NSObject implements Serializable {
                 Growl.instance().notify("Transfer queued", session.getHost().getHostname());
             }
         });
-        session.message(NSBundle.localizedString("Maximum allowed connections exceeded. Waiting", "Status", ""));
+        session.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
         queued = true;
-        for(TransferListener listener: listeners) {
+        for(TransferListener listener : listeners) {
             listener.transferQueued();
         }
     }
 
     public void fireTransferResumed() {
         queued = false;
-        for(TransferListener listener: listeners) {
+        for(TransferListener listener : listeners) {
             listener.transferResumed();
         }
     }
@@ -295,7 +296,6 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     /**
-     * 
      * @return
      */
     public Date getTimestamp() {
@@ -679,8 +679,7 @@ public abstract class Transfer extends NSObject implements Serializable {
         final TransferCollection q = TransferCollection.instance();
         // This transfer should respect the settings for maximum number of transfers
         if(q.numberOfRunningTransfers() - q.numberOfQueuedTransfers() - 1
-                >= (int) Preferences.instance().getDouble("queue.maxtransfers"))
-        {
+                >= (int) Preferences.instance().getDouble("queue.maxtransfers")) {
             this.fireTransferQueued();
             log.info("Queuing " + this.toString());
             // The maximum number of transfers is already reached
@@ -739,7 +738,6 @@ public abstract class Transfer extends NSObject implements Serializable {
     }
 
     /**
-     *
      * @return
      */
     public boolean isReset() {

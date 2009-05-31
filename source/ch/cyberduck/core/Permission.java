@@ -18,8 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
 
@@ -47,7 +47,7 @@ public class Permission implements Serializable {
     }
 
     public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = new NSMutableDictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getMask(), "Mask");
         return dict;
     }

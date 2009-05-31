@@ -20,12 +20,9 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.io.IOException;
-
-import com.apple.cocoa.application.NSImage;
 
 /**
  * @version $Id$
@@ -38,7 +35,6 @@ public class HistoryCollection extends HostCollection {
     );
 
     /**
-     *
      * @return
      */
     public static HistoryCollection defaultCollection() {
@@ -91,7 +87,7 @@ public class HistoryCollection extends HostCollection {
                     }
                 }
         );
-        for(Local next: bookmarks) {
+        for(Local next : bookmarks) {
             try {
                 super.add(this.size(), new Host(next));
             }
@@ -119,7 +115,7 @@ public class HistoryCollection extends HostCollection {
 
     public synchronized void clear() {
         log.debug("Removing all bookmarks from " + file);
-        for(Host next: this) {
+        for(Host next : this) {
             next.getFile().delete(false);
         }
         super.clear();

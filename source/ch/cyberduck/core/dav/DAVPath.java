@@ -18,12 +18,11 @@ package ch.cyberduck.core.dav;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.log4j.Logger;
@@ -92,7 +91,7 @@ public class DAVPath extends Path {
     public void readSize() {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Getting size of {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
             session.DAV.setPath(this.attributes.isDirectory() ?
@@ -109,7 +108,7 @@ public class DAVPath extends Path {
     public void readTimestamp() {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Getting timestamp of {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
             session.DAV.setPath(this.attributes.isDirectory() ?
@@ -132,7 +131,7 @@ public class DAVPath extends Path {
         log.debug("delete:" + this.toString());
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Deleting {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
 
             if(!session.DAV.deleteMethod(this.getAbsolute())) {
@@ -154,7 +153,7 @@ public class DAVPath extends Path {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
             session.setWorkdir(this);
@@ -200,7 +199,7 @@ public class DAVPath extends Path {
                 }
             }
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
             session.DAV.setContentType("text/xml");
@@ -218,7 +217,7 @@ public class DAVPath extends Path {
 //            log.debug("changePermissions:" + perm);
 //            try {
 //                session.check();
-//                session.message(NSBundle.localizedString("Changing permission of {0} to {1}", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
+//                session.message(Locale.localizedString("Changing permission of {0} to {1}", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
 //                session.DAV.aclMethod(this.getAbsolute(), new Ace[]{});
 //            }
 //            catch(IOException e) {
@@ -230,7 +229,7 @@ public class DAVPath extends Path {
         log.debug("rename:" + renamed);
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Renaming {0} to {1}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed.getName()));
 
             if(!session.DAV.moveMethod(this.getAbsolute(), renamed.getAbsolute())) {
@@ -251,7 +250,7 @@ public class DAVPath extends Path {
     public void copy(AbstractPath copy) {
         try {
             session.check();
-            session.message(MessageFormat.format(NSBundle.localizedString("Copying {0} to {1}", "Status", ""),
+            session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                     this.getName(), copy));
 
             if(!session.DAV.copyMethod(this.getAbsolute(), copy.getAbsolute())) {
@@ -320,7 +319,7 @@ public class DAVPath extends Path {
                 session.check();
             }
             if(attributes.isFile()) {
-                this.getSession().message(MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
                 final InputStream in = new Local.InputStream(this.getLocal());

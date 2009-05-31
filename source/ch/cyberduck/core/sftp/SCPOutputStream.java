@@ -1,12 +1,12 @@
 package ch.cyberduck.core.sftp;
 
-import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.Session;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.Session;
 
 /**
  * @author David Kocher, dkocher@cyberduck.ch

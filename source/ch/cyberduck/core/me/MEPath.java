@@ -18,13 +18,12 @@ package ch.cyberduck.core.me;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.davs.DAVSPath;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MEPath extends DAVSPath {
 

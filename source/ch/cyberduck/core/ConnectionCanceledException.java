@@ -1,6 +1,6 @@
 package ch.cyberduck.core;
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ import java.io.IOException;
 public class ConnectionCanceledException extends IOException {
 
     public ConnectionCanceledException() {
-        super(NSBundle.localizedString("Connection attempt canceled", "Credentials", ""));
+        super(Locale.localizedString("Connection attempt canceled", "Credentials"));
     }
 
     public ConnectionCanceledException(String s) {

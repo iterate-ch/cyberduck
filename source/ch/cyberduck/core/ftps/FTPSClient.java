@@ -18,10 +18,6 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import com.enterprisedt.net.ftp.FTPClient;
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPMessageListener;
-
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
@@ -29,6 +25,10 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+
+import com.enterprisedt.net.ftp.FTPClient;
+import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPMessageListener;
 
 /**
  * @version $Id$

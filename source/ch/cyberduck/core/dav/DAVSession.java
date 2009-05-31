@@ -18,11 +18,10 @@ package ch.cyberduck.core.dav;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTPSession;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -82,7 +81,7 @@ public class DAVSession extends HTTPSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        this.message(MessageFormat.format(NSBundle.localizedString("Opening {0} connection to {1}", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
         WebdavResource.setDefaultAction(WebdavResource.NOACTION);
@@ -98,7 +97,7 @@ public class DAVSession extends HTTPSession {
 
         WebdavResource.setDefaultAction(WebdavResource.BASIC);
 
-        this.message(MessageFormat.format(NSBundle.localizedString("{0} connection opened", "Status", ""),
+        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
 
         if(null == this.DAV.getResourceType() || !this.DAV.getResourceType().isCollection()) {
@@ -174,7 +173,7 @@ public class DAVSession extends HTTPSession {
                             login.fail(DAVSession.this.getHost(), realm.toString());
                         }
 
-                        message(MessageFormat.format(NSBundle.localizedString("Authenticating as {0}", "Status", ""),
+                        message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                                 credentials.getUsername()));
 
                         retry++;
@@ -201,7 +200,7 @@ public class DAVSession extends HTTPSession {
             // Try to get basic properties fo this resource using these credentials
             this.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_0);
 
-            this.message(NSBundle.localizedString("Login successful", "Credentials", ""));
+            this.message(Locale.localizedString("Login successful", "Credentials"));
         }
         catch(HttpException e) {
             if(e.getReasonCode() == HttpStatus.SC_UNAUTHORIZED) {

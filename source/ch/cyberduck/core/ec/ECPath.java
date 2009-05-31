@@ -18,14 +18,13 @@ package ch.cyberduck.core.ec;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Path;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.model.S3Object;
 
 /**
  * @version $Id$

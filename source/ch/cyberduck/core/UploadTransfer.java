@@ -18,19 +18,17 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -129,7 +127,7 @@ public class UploadTransfer extends Transfer {
             }
             if(p.attributes.isDirectory()) {
                 if(!UploadTransfer.this.exists(p)) {
-                    p.cache().put(p, new AttributedList<Path>(Collections.<Path>emptyList()));
+                    p.cache().put(p, new AttributedList<Path>());
                 }
             }
         }
@@ -165,7 +163,7 @@ public class UploadTransfer extends Transfer {
     public AttributedList<Path> childs(final Path parent) {
         if(!this.exists(parent.getLocal())) {
             // Cannot fetch file listing of non existant file
-            _cache.put(parent, new AttributedList<Path>(Collections.<Path>emptyList()));
+            _cache.put(parent, new AttributedList<Path>());
         }
         if(!_cache.containsKey(parent)) {
             AttributedList<Path> childs = new AttributedList<Path>();

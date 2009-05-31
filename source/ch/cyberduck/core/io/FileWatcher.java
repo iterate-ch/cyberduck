@@ -18,19 +18,18 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSObject;
-import com.apple.cocoa.foundation.NSSelector;
-
 import ch.cyberduck.core.Local;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.CDController;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 import java.util.*;
 
-public class FileWatcher extends NSObject {
+public class FileWatcher extends CDController {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
     private static final String UKKQueueFileRenamedNotification = "UKKQueueFileRenamedNotification";
@@ -75,7 +74,6 @@ public class FileWatcher extends NSObject {
             = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
 
     /**
-     * 
      * @param file
      */
     private FileWatcher(final Local file) {
@@ -83,19 +81,19 @@ public class FileWatcher extends NSObject {
     }
 
     public void fileWritten(NSNotification notification) {
-        for(FileWatcherListener listener: listeners) {
+        for(FileWatcherListener listener : listeners) {
             listener.fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileRenamed(NSNotification notification) {
-        for(FileWatcherListener listener: listeners) {
+        for(FileWatcherListener listener : listeners) {
             listener.fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
         }
     }
 
     public void fileDeleted(NSNotification notification) {
-        for(FileWatcherListener listener: listeners) {
+        for(FileWatcherListener listener : listeners) {
             listener.fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
         }
         removePath(file.getAbsolute());
@@ -104,17 +102,18 @@ public class FileWatcher extends NSObject {
     public void watch(final FileWatcherListener listener) {
         this.listeners.add(listener);
         NSWorkspace.sharedWorkspace().notificationCenter().addObserver(
-                this,
-                new NSSelector("fileWritten", new Class[]{NSNotification.class}),
+                this.id(),
+                Foundation.selector("fileWritten:"),
                 UKKQueueFileWrittenToNotification,
                 null);
         NSWorkspace.sharedWorkspace().notificationCenter().addObserver(
-                this,
-                new NSSelector("fileRenamed", new Class[]{NSNotification.class}),
+                this.id(),
+                Foundation.selector("fileRenamed:"),
                 UKKQueueFileRenamedNotification,
                 null);
         NSWorkspace.sharedWorkspace().notificationCenter().addObserver(
-                this, new NSSelector("fileDeleted", new Class[]{NSNotification.class}),
+                this.id(),
+                Foundation.selector("fileDeleted:"),
                 UKKQueueFileDeletedNotification,
                 null);
         this.addPath(file.getAbsolute());

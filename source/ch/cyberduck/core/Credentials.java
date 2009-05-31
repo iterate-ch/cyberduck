@@ -18,16 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSPathUtilities;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import sun.misc.BASE64Encoder;
 
 /**
  * Stores the login credentials
@@ -185,7 +179,7 @@ public class Credentials {
         }
 
         public String toURL() {
-            return NSPathUtilities.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
+            return NSString.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
         }
     }
 

@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
-import com.apple.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.i18n.Locale;
+
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -63,7 +64,7 @@ public class Speedometer {
         StringBuffer b = new StringBuffer();
         b.append(Status.getSizeAsString(transfer.getTransferred()));
         b.append(" ");
-        b.append(NSBundle.localizedString("of", "1.2MB of 3.4MB"));
+        b.append(Locale.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
         b.append(Status.getSizeAsString(transfer.getSize()));
         if(transfer.isRunning()) {

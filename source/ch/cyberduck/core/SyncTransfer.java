@@ -18,13 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-
 import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
@@ -118,7 +117,7 @@ public class SyncTransfer extends Transfer {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Download", "");
+            return Locale.localizedString("Download", "");
         }
     };
     public static final TransferAction ACTION_UPLOAD = new TransferAction() {
@@ -127,7 +126,7 @@ public class SyncTransfer extends Transfer {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Upload", "");
+            return Locale.localizedString("Upload", "");
         }
     };
     public static final TransferAction ACTION_MIRROR = new TransferAction() {
@@ -136,7 +135,7 @@ public class SyncTransfer extends Transfer {
         }
 
         public String getLocalizableString() {
-            return NSBundle.localizedString("Mirror", "");
+            return Locale.localizedString("Mirror", "");
         }
     };
 

@@ -18,13 +18,12 @@ package ch.cyberduck.core.davs;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.dav.DAVPath;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DAVSPath extends DAVPath {
 

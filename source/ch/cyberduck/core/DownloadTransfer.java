@@ -18,23 +18,19 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSDistributedNotificationCenter;
-import com.apple.cocoa.foundation.NSNotification;
-
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -55,7 +51,7 @@ public class DownloadTransfer extends Transfer {
         final List<Path> normalized = new Collection<Path>();
         for(Path download : downloads) {
             boolean duplicate = false;
-            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
+            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext();) {
                 Path n = iter.next();
                 if(download.isChild(n)) {
                     // The selected file is a child of a directory already included
@@ -74,7 +70,7 @@ public class DownloadTransfer extends Transfer {
                     int no = 0;
                     do {
                         no++;
-                        proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                        proposal = FilenameUtils.getBaseName(filename) + "-" + no;
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                             proposal += "." + FilenameUtils.getExtension(filename);
                         }
@@ -168,8 +164,8 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    private final PathFilter childFilter = new PathFilter() {
-        public boolean accept(AbstractPath child) {
+    private final PathFilter<Path> childFilter = new PathFilter<Path>() {
+        public boolean accept(Path child) {
             if(Preferences.instance().getBoolean("queue.download.skip.enable")
                     && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
                 return false;
@@ -181,10 +177,10 @@ public class DownloadTransfer extends Transfer {
     public AttributedList<Path> childs(final Path parent) {
         if(!this.exists(parent)) {
             // Cannot fetch file listing of non existant file
-            return new AttributedList<Path>(Collections.<Path>emptyList());
+            return new AttributedList<Path>();
         }
         AttributedList<Path> downloads = new AttributedList<Path>();
-        final AttributedList<Path> list = (AttributedList<Path>) parent.childs(new NullComparator<Path>(), childFilter);
+        final AttributedList<Path> list = parent.childs(new NullComparator<Path>(), childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
             download.setLocal(new Local(parent.getLocal(), download.getName()));
@@ -260,7 +256,7 @@ public class DownloadTransfer extends Transfer {
                 int no = 0;
                 while(p.getLocal().exists()) {
                     no++;
-                    String proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                    String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }
@@ -381,9 +377,9 @@ public class DownloadTransfer extends Transfer {
                     if(DownloadTransfer.this.shouldOpenWhenComplete()) {
                         NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
                     }
-                    NSDistributedNotificationCenter.defaultCenter().postNotification(
-                            new NSNotification("com.apple.DownloadFileFinished", getRoot().getLocal().getAbsolute())
-                    );
+//                    NSDistributedNotificationCenter.defaultCenter().postNotification(
+//                            NSNotification.notificationWithName("com.apple.DownloadFileFinished", getRoot().getLocal().getAbsolute())
+//                    );
                 }
             }, true);
         }
