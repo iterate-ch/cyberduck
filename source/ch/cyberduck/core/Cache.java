@@ -26,8 +26,10 @@ import java.util.*;
  */
 public class Cache<E extends AbstractPath> {
 
-    private Map<String, AttributedList<E>> _impl
-            = new HashMap<String, AttributedList<E>>();
+    /**
+     *
+     */
+    private HashMap<String, AttributedList<E>> _impl = new HashMap<String, AttributedList<E>>();
 
     /**
      *
@@ -41,7 +43,16 @@ public class Cache<E extends AbstractPath> {
      * @return True if the directory listing for this path is cached
      */
     public boolean containsKey(E path) {
-        return _impl.containsKey(path.getAbsolute());
+        return this.containsKey(path.getAbsolute());
+    }
+
+    /**
+     *
+     * @param path
+     * @return
+     */
+    public boolean containsKey(String path) {
+        return _impl.containsKey(path);
     }
 
     /**
@@ -50,7 +61,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return
      */
-    public AttributedList remove(E path) {
+    public AttributedList<E> remove(E path) {
         return _impl.remove(path.getAbsolute());
     }
 
@@ -61,7 +72,16 @@ public class Cache<E extends AbstractPath> {
      * @return null if no cached file listing is available
      */
     public AttributedList<E> get(E path) {
-        return _impl.get(path.getAbsolute());
+        return this.get(path.getAbsolute());
+    }
+
+    /**
+     *
+     * @param path
+     * @return
+     */
+    public AttributedList<E> get(String path) {
+        return _impl.get(path);
     }
 
     /**
@@ -71,7 +91,18 @@ public class Cache<E extends AbstractPath> {
      * @return null if no cached file listing is available
      */
     public AttributedList<E> get(final E path, final Comparator<E> comparator, final PathFilter<E> filter) {
-        AttributedList<E> childs = _impl.get(path.getAbsolute());
+        return this.get(path.getAbsolute(), comparator, filter);
+    }
+
+    /**
+     *
+     * @param path
+     * @param comparator
+     * @param filter
+     * @return
+     */
+    public AttributedList<E> get(final String path, final Comparator<E> comparator, final PathFilter<E> filter) {
+        AttributedList<E> childs = _impl.get(path);
         if(null == childs) {
             return null;
         }
@@ -107,7 +138,7 @@ public class Cache<E extends AbstractPath> {
         return childs;
     }
 
-    public AttributedList put(E path, AttributedList<E> childs) {
+    public AttributedList<E> put(E path, AttributedList<E> childs) {
         return _impl.put(path.getAbsolute(), childs);
     }
 
