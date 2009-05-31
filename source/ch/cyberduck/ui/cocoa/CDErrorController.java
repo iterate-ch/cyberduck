@@ -130,8 +130,15 @@ public class CDErrorController extends CDBundleController {
             return ((SFTPException) cause).getServerErrorCodeVerbose();
         }
         if(cause instanceof S3ServiceException) {
-            if(null != ((S3ServiceException) cause).getS3ErrorMessage()) {
-                return cause.getMessage() + ". " + ((S3ServiceException) cause).getS3ErrorMessage();
+            final S3ServiceException s3 = (S3ServiceException) cause;
+            if(null != s3.getS3ErrorMessage()) {
+                return cause.getMessage() + ". " + s3.getS3ErrorMessage();
+            }
+        }
+        if(cause instanceof CloudFrontServiceException) {
+            final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
+            if(null != cf.getErrorMessage()) {
+                return cf.getErrorMessage() + ". " + cf.getErrorDetail();
             }
         }
         if(cause instanceof FilesException) {
