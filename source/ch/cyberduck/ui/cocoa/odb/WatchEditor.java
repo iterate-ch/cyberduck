@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSDictionary;
-
-import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
-
-import java.util.Enumeration;
+import org.rococoa.Rococoa;
 
 /**
  * @version $Id:$
@@ -74,18 +74,18 @@ public class WatchEditor extends Editor {
     }
 
     public boolean isOpen() {
-        if(null == bundleIdentifier) {
-            final String fullpath = NSWorkspace.sharedWorkspace().applicationForFile(edited.getLocal().getAbsolute());
-
-            final Enumeration apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
-            while(apps.hasMoreElements()) {
-                NSDictionary app = (NSDictionary) apps.nextElement();
-                if(fullpath.equals(app.objectForKey("NSApplicationPath").toString())) {
-                    return true;
-                }
-            }
-            return false;
-        }
+//        if(null == bundleIdentifier) {
+//            final String fullpath = NSWorkspace.sharedWorkspace().applicationForFile(edited.getLocal().getAbsolute());
+//            final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
+//            NSObject next;
+//            while(((next = apps.nextObject()) != null)) {
+//                NSDictionary app = Rococoa.cast(next, NSDictionary.class);
+//                if(fullpath.equals(app.objectForKey("NSApplicationPath").toString())) {
+//                    return true;
+//                }
+//            }
+//            return false;
+//        }
         return super.isOpen();
     }
 }

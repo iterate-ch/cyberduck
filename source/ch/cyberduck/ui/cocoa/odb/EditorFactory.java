@@ -18,12 +18,11 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
-
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
 

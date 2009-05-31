@@ -18,20 +18,21 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.Enumeration;
 
 /**
  * @version $Id$
@@ -86,7 +87,7 @@ public abstract class Editor extends CDController {
             }
 
             public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Downloading {0}", "Status", ""),
+                return MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                         edited.getName());
             }
 
@@ -109,11 +110,12 @@ public abstract class Editor extends CDController {
      * @return True if the editor is open
      */
     public boolean isOpen() {
-        final Enumeration apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
-        while(apps.hasMoreElements()) {
-            NSDictionary app = (NSDictionary) apps.nextElement();
-            final Object identifier = app.objectForKey("NSApplicationBundleIdentifier");
-            if(identifier.equals(bundleIdentifier)) {
+        final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
+        NSObject next;
+        while(((next = apps.nextObject()) != null)) {
+            NSDictionary app = Rococoa.cast(next, NSDictionary.class);
+            final NSObject identifier = app.objectForKey("NSApplicationBundleIdentifier");
+            if(identifier.toString().equals(bundleIdentifier)) {
                 return true;
             }
         }
@@ -171,13 +173,12 @@ public abstract class Editor extends CDController {
             }
 
             public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         edited.getName());
             }
 
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
-                    controller.reloadData(true);
                     if(Editor.this.isDeferredDelete()) {
                         Editor.this.delete();
                     }

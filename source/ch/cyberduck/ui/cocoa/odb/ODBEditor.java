@@ -18,10 +18,9 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-
-import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -56,6 +55,7 @@ public class ODBEditor extends Editor {
             }
             catch(UnsatisfiedLinkError e) {
                 log.error("Could not load the libODBEdit.dylib library:" + e.getMessage());
+                throw e;
             }
         }
         return JNI_LOADED;
