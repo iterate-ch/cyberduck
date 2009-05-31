@@ -18,18 +18,16 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSMenu;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.foundation.NSSelector;
-
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.CDMainController;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 /**
  * @version $Id$
@@ -76,18 +74,19 @@ public class BookmarkMenuDelegate extends MenuDelegate {
         if(index > 9) {
             Host h = HostCollection.defaultCollection().get(index - 10);
             item.setTitle(h.getNickname());
-            item.setTarget(this);
+            item.setTarget(this.id());
             item.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
-            item.setAction(new NSSelector("bookmarkMenuItemClicked", new Class[]{Object.class}));
-            item.setRepresentedObject(h);
+            item.setAction(Foundation.selector("bookmarkMenuItemClicked:"));
+            item.setRepresentedObject(h.getNickname());
         }
         return true;
     }
 
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
-        CDBrowserController controller
-                = ((CDMainController) (NSApplication.sharedApplication().delegate())).newDocument();
-        controller.mount((Host) sender.representedObject());
+        CDBrowserController controller = CDMainController.newDocument();
+        controller.mount(HostCollection.defaultCollection().get(
+                HostCollection.defaultCollection().indexOf(sender.representedObject())
+        ));
     }
 }

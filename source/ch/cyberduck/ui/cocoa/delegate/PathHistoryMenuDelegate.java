@@ -18,16 +18,15 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSMenu;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSSelector;
-
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDIconCache;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 import java.util.List;
 
@@ -68,39 +67,37 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
             // This is a hack. We insert a new NSMenuItem as NSMenu has
             // a bug caching old entries since we introduced the separator item below
             menu.removeItemAtIndex(index);
-            NSMenuItem path = new NSMenuItem();
-            path.setTitle(item.getName());
-            path.setRepresentedObject(item);
-            path.setTarget(this);
+            NSMenuItem path = NSMenuItem.itemWithTitle(
+                    item.getName(), Foundation.selector("pathMenuItemClicked:"), "");
+            path.setRepresentedObject(item.getAbsolute());
+            path.setTarget(this.id());
             path.setEnabled(true);
             path.setImage(CDIconCache.instance().iconForPath(item, 16));
-            path.setAction(new NSSelector("pathMenuItemClicked", new Class[]{NSMenuItem.class}));
-            menu.insertItemAtIndex(path, index);
+            menu.insertItem_atIndex(path, index);
             return !shouldCancel;
         }
         if(index == length) {
             menu.removeItemAtIndex(index);
             // There is no way in this wonderful API to add a separator item
             // without creating a new NSMenuItem first
-            NSMenuItem separator = new NSMenuItem().separatorItem();
-            menu.insertItemAtIndex(separator, index);
+            NSMenuItem separator = NSMenuItem.separatorItem();
+            menu.insertItem_atIndex(separator, index);
             return !shouldCancel;
         }
         if(index == length + 1) {
             menu.removeItemAtIndex(index);
-            NSMenuItem clear = new NSMenuItem();
-            clear.setTitle(NSBundle.localizedString("Clear Menu", ""));
-            clear.setTarget(this);
+            NSMenuItem clear = NSMenuItem.itemWithTitle(
+                    Locale.localizedString("Clear Menu"), Foundation.selector("clearMenuItemClicked:"), "");
+            clear.setTarget(this.id());
             clear.setEnabled(true);
-            clear.setAction(new NSSelector("clearMenuItemClicked", new Class[]{NSMenuItem.class}));
-            menu.insertItemAtIndex(clear, index);
+            menu.insertItem_atIndex(clear, index);
             return !shouldCancel;
         }
         return true;
     }
 
     public void pathMenuItemClicked(NSMenuItem sender) {
-        controller.setWorkdir((Path) sender.representedObject());
+        controller.setWorkdir(sender.representedObject());
     }
 
     public abstract void clearMenuItemClicked(NSMenuItem sender);

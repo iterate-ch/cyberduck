@@ -18,14 +18,13 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSSelector;
-
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDIconCache;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 /**
  * @version $Id$
@@ -49,7 +48,7 @@ public class EditMenuDelegate extends MenuDelegate {
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
         if(EditorFactory.INSTALLED_ODB_EDITORS.size() == 0) {
-            item.setTitle(NSBundle.localizedString("No external editor available"));
+            item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
         String identifier = EditorFactory.INSTALLED_ODB_EDITORS.values().toArray(
@@ -60,7 +59,7 @@ public class EditMenuDelegate extends MenuDelegate {
         item.setTitle(editor);
         if(identifier.equals(EditorFactory.getSelectedEditor())) {
             item.setKeyEquivalent("k");
-            item.setKeyEquivalentModifierMask(NSEvent.CommandKeyMask);
+            item.setKeyEquivalentModifierMask(NSEvent.NSCommandKeyMask);
         }
         else {
             item.setKeyEquivalent("");
@@ -74,7 +73,7 @@ public class EditMenuDelegate extends MenuDelegate {
             // if no external editor can be found
             item.setImage(NSImage.imageNamed("pencil.tiff"));
         }
-        item.setAction(new NSSelector("editMenuClicked", new Class[]{Object.class}));
+        item.setAction(Foundation.selector("editMenuClicked:"));
         return !shouldCancel;
     }
 }

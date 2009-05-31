@@ -18,10 +18,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSMenuItem;
-
-import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import java.util.List;
 

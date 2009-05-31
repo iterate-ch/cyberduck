@@ -18,17 +18,16 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSMenu;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.application.NSWorkspace;
-import com.apple.cocoa.foundation.NSSelector;
-
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.CDIconCache;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 import java.util.List;
 
@@ -56,20 +55,21 @@ public class TransferMenuDelegate extends MenuDelegate {
         item.setTitle(path.getName());
         if(path.getLocal().exists()) {
             item.setEnabled(true);
-            item.setTarget(this);
-            item.setAction(new NSSelector("reveal", new Class[]{NSMenuItem.class}));
-        } else {
+            item.setTarget(this.id());
+            item.setAction(Foundation.selector("reveal:"));
+        }
+        else {
             item.setEnabled(false);
             item.setTarget(null);
         }
-        item.setState(path.getLocal().exists() ? NSCell.OnState : NSCell.OffState);
-        item.setRepresentedObject(path);
+        item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
+        item.setRepresentedObject(path.getLocal().getAbsolute());
         item.setImage(CDIconCache.instance().iconForPath(path, 16));
         return !shouldCancel;
     }
 
     public void reveal(final NSMenuItem sender) {
-        Local l = ((Path) sender.representedObject()).getLocal();
+        Local l = new Local(sender.representedObject());
         // If a second path argument is specified, a new file viewer is opened. If you specify an
         // empty string (@"") for this parameter, the file is selected in the main viewer.
         if(!NSWorkspace.sharedWorkspace().selectFile(l.getAbsolute(), l.getParent().getAbsolute())) {

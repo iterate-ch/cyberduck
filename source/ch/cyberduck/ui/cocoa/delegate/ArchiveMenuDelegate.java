@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSMenu;
-import com.apple.cocoa.application.NSMenuItem;
-import com.apple.cocoa.foundation.NSSelector;
-
 import ch.cyberduck.core.Archive;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+
+import org.rococoa.Foundation;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ArchiveMenuDelegate extends MenuDelegate {
 
@@ -35,9 +35,9 @@ public class ArchiveMenuDelegate extends MenuDelegate {
 
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
         final Archive archive = Archive.getKnownArchives()[index];
-        item.setRepresentedObject(archive);
+        item.setRepresentedObject(archive.getIdentifier());
         item.setTitle(archive.getIdentifier());
-        item.setAction(new NSSelector("archiveMenuClicked", new Class[]{Object.class}));
+        item.setAction(Foundation.selector("archiveMenuClicked:"));
         return !shouldCancel;
     }
 }
