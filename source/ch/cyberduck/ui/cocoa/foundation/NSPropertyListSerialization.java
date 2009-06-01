@@ -19,36 +19,9 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.NSObjectByReference;
-
-import java.io.IOException;
-
 /// <i>native declaration : :27</i>
 public abstract class NSPropertyListSerialization implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPropertyListSerialization", _Class.class);
-
-    public static NSObject propertyListFromData(NSData data) throws IOException {
-        NSObjectByReference errorReference = new NSObjectByReference();
-        final NSObject result = CLASS.propertyListFromData_mutabilityOption_format_errorDescription(
-                data,
-                NSPropertyListSerialization.PropertyListImmutable,
-                NSPropertyListSerialization.PropertyListXMLFormat, errorReference);
-        if(!errorReference.getValueAs(NSString.class).id().isNull()) {
-            throw new IOException(errorReference.getValueAs(NSString.class).toString());
-        }
-        return result;
-    }
-
-    public static NSData dataFromPropertyList(NSObject plist) throws IOException {
-        NSObjectByReference errorReference = new NSObjectByReference();
-        final NSData result = CLASS.dataFromPropertyList_format_errorDescription(
-                plist,
-                NSPropertyListSerialization.PropertyListXMLFormat, errorReference);
-        if(!errorReference.getValueAs(NSString.class).id().isNull()) {
-            throw new IOException(errorReference.getValueAs(NSString.class).toString());
-        }
-        return result;
-    }
 
     public interface _Class extends org.rococoa.NSClass {
         /**

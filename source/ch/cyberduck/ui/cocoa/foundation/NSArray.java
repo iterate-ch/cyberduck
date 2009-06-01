@@ -236,13 +236,22 @@ public abstract class NSArray implements NSObject, NSFastEnumeration {
      * Original signature : <code>BOOL writeToFile(NSString*, BOOL)</code><br>
      * <i>from NSExtendedArray native declaration : /Users/dkocher/null:46</i>
      */
-    public abstract byte writeToFile_atomically(com.sun.jna.Pointer path, byte useAuxiliaryFile);
+    public abstract boolean writeToFile_atomically(String path, boolean useAuxiliaryFile);
+
+    public boolean writeToFile(String path ) {
+        return this.writeToFile_atomically(path, true);
+    }
 
     /**
      * Original signature : <code>BOOL writeToURL(NSURL*, BOOL)</code><br>
      * <i>from NSExtendedArray native declaration : /Users/dkocher/null:47</i>
      */
-    public abstract byte writeToURL_atomically(NSURL url, byte atomically);
+    public abstract boolean writeToURL_atomically(NSURL url, boolean atomically);
+
+    public boolean writeToURL(NSURL url ) {
+        return this.writeToURL_atomically(url, true);
+    }
+
     /**
      * <i>from NSExtendedArray native declaration : /Users/dkocher/null:49</i><br>
      * Conversion Error : /// Original signature : <code>void makeObjectsPerformSelector(null)</code><br>

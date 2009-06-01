@@ -27,6 +27,14 @@ public abstract class NSDictionary implements NSObject {
         return CLASS.dictionaryWithObjects_forKeys(objects, keys);
     }
 
+    public static NSDictionary dictionaryWithContentsOfURL(NSURL url) {
+        return CLASS.dictionaryWithContentsOfURL(url);
+    }
+
+    public static NSDictionary dictionaryWithContentsOfFile(String path) {
+        return CLASS.dictionaryWithContentsOfFile(path);
+    }
+
     public interface _Class extends org.rococoa.NSClass {
         /**
          * Original signature : <code>id dictionary()</code><br>
@@ -154,14 +162,23 @@ public abstract class NSDictionary implements NSObject {
      * Original signature : <code>BOOL writeToFile(NSString*, BOOL)</code><br>
      * <i>from NSExtendedDictionary native declaration : :30</i>
      */
-    public abstract boolean writeToFile_atomically(com.sun.jna.Pointer path, boolean useAuxiliaryFile);
+    public abstract boolean writeToFile_atomically(String path, boolean useAuxiliaryFile);
 
+    public boolean writeToFile(String path ) {
+        return this.writeToFile_atomically(path, true);
+    }
+    
     /**
      * Original signature : <code>BOOL writeToURL(NSURL*, BOOL)</code><br>
      * the atomically flag is ignored if url of a type that cannot be written atomically.<br>
      * <i>from NSExtendedDictionary native declaration : :31</i>
      */
-    public abstract boolean writeToURL_atomically(com.sun.jna.Pointer url, boolean atomically);
+    public abstract boolean writeToURL_atomically(NSURL url, boolean atomically);
+
+    public boolean writeToURL(NSURL url ) {
+        return this.writeToURL_atomically(url, true);
+    }
+
     /**
      * <i>from NSExtendedDictionary native declaration : :33</i><br>
      * Conversion Error : /// Original signature : <code>NSArray* keysSortedByValueUsingSelector(null)</code><br>
