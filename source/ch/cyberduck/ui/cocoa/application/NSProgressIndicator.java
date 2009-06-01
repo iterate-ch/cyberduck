@@ -86,6 +86,7 @@ public interface NSProgressIndicator extends NSView {
      * Conversion Error : /// Original signature : <code>void setControlSize(null)</code><br>
      * - (void)setControlSize:(null)size; (Argument size cannot be converted)
      */
+    int setControlSize(int size);
     /**
      * Original signature : <code>double doubleValue()</code><br>
      * <i>native declaration : :100</i>

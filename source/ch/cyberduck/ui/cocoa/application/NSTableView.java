@@ -71,7 +71,7 @@ public interface NSTableView extends NSControl {
      * Original signature : <code>void setDataSource(id)</code><br>
      * <i>native declaration : :100</i>
      */
-    void setDataSource(NSObject aSource);
+    void setDataSource(org.rococoa.ID aSource);
 
     /**
      * Original signature : <code>id dataSource()</code><br>

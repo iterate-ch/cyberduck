@@ -19,10 +19,7 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSCoding;
-import ch.cyberduck.ui.cocoa.foundation.NSCopying;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Rococoa;
 
@@ -44,13 +41,13 @@ public interface NSMenu extends NSCopying, NSCoding {
          * Original signature : <code>void setMenuZone(NSZone*)</code><br>
          * <i>native declaration : :41</i>
          */
-        void setMenuZone(com.sun.jna.Pointer aZone);
+        void setMenuZone(NSZone aZone);
 
         /**
          * Original signature : <code>NSZone* menuZone()</code><br>
          * <i>native declaration : :42</i>
          */
-        com.sun.jna.Pointer menuZone();
+        NSZone menuZone();
 
         /**
          * Original signature : <code>void popUpContextMenu(NSMenu*, NSEvent*, NSView*)</code><br>
@@ -254,7 +251,7 @@ public interface NSMenu extends NSCopying, NSCoding {
      * Original signature : <code>void itemChanged(NSMenuItem*)</code><br>
      * <i>native declaration : :94</i>
      */
-    void itemChanged(com.sun.jna.Pointer item);
+    void itemChanged(NSMenuItem item);
 
     /**
      * Original signature : <code>void helpRequested(NSEvent*)</code><br>
@@ -266,37 +263,37 @@ public interface NSMenu extends NSCopying, NSCoding {
      * Original signature : <code>void setMenuRepresentation(id)</code><br>
      * <i>native declaration : :98</i>
      */
-    void setMenuRepresentation(NSObject menuRep);
+    void setMenuRepresentation(org.rococoa.ID menuRep);
 
     /**
      * Original signature : <code>id menuRepresentation()</code><br>
      * <i>native declaration : :99</i>
      */
-    NSObject menuRepresentation();
+    org.rococoa.ID menuRepresentation();
 
     /**
      * Original signature : <code>void setContextMenuRepresentation(id)</code><br>
      * <i>native declaration : :101</i>
      */
-    void setContextMenuRepresentation(NSObject menuRep);
+    void setContextMenuRepresentation(org.rococoa.ID menuRep);
 
     /**
      * Original signature : <code>id contextMenuRepresentation()</code><br>
      * <i>native declaration : :102</i>
      */
-    NSObject contextMenuRepresentation();
+    org.rococoa.ID contextMenuRepresentation();
 
     /**
      * Original signature : <code>void setTearOffMenuRepresentation(id)</code><br>
      * <i>native declaration : :104</i>
      */
-    void setTearOffMenuRepresentation(NSObject menuRep);
+    void setTearOffMenuRepresentation(org.rococoa.ID menuRep);
 
     /**
      * Original signature : <code>id tearOffMenuRepresentation()</code><br>
      * <i>native declaration : :105</i>
      */
-    NSObject tearOffMenuRepresentation();
+    org.rococoa.ID tearOffMenuRepresentation();
 
     /**
      * Original signature : <code>BOOL isTornOff()</code><br>
@@ -365,7 +362,7 @@ public interface NSMenu extends NSCopying, NSCoding {
      * Original signature : <code>NSMenuItem* highlightedItem()</code><br>
      * <i>native declaration : :131</i>
      */
-    com.sun.jna.Pointer highlightedItem();
+    NSMenuItem highlightedItem();
 
     /**
      * Original signature : <code>void setShowsStateColumn(BOOL)</code><br>

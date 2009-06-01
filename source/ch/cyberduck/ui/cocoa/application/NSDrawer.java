@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.NSSize;
 
 /// <i>native declaration : :31</i>
@@ -97,19 +98,19 @@ public interface NSDrawer extends NSObject {
      * Original signature : <code>void open(id)</code><br>
      * <i>native declaration : :72</i>
      */
-    void open(NSObject sender);
+    void open(ID sender);
 
     /**
      * Original signature : <code>void close(id)</code><br>
      * <i>native declaration : :73</i>
      */
-    void close(NSObject sender);
+    void close(ID sender);
 
     /**
      * Original signature : <code>void toggle(id)</code><br>
      * <i>native declaration : :74</i>
      */
-    void toggle(NSObject sender);
+    void toggle(ID sender);
 
     /**
      * Original signature : <code>NSInteger state()</code><br>

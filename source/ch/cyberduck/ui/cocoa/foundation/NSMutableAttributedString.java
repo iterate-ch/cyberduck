@@ -41,6 +41,12 @@ public abstract class NSMutableAttributedString extends NSAttributedString {
      * Conversion Error : /// Original signature : <code>void replaceCharactersInRange(null, NSString*)</code><br>
      * - (void)replaceCharactersInRange:(null)range withString:(NSString*)str; (Argument range cannot be converted)
      */
+    public abstract void replaceCharactersInRange_withString(NSRange range, String str);
+
+    public void replaceCharactersInRange(NSRange range, String attrString) {
+        this.replaceCharactersInRange_withString(range, attrString);
+    }
+
     /**
      * <i>native declaration : :33</i><br>
      * Conversion Error : /// Original signature : <code>void setAttributes(NSDictionary*, null)</code><br>
@@ -98,6 +104,12 @@ public abstract class NSMutableAttributedString extends NSAttributedString {
      * Conversion Error : /// Original signature : <code>void replaceCharactersInRange(null, NSAttributedString*)</code><br>
      * - (void)replaceCharactersInRange:(null)range withAttributedString:(NSAttributedString*)attrString; (Argument range cannot be converted)
      */
+    public abstract void replaceCharactersInRange_withAttributedString(NSRange range, NSAttributedString attrString);
+
+    public void replaceCharactersInRange(NSRange range, NSAttributedString attrString) {
+        this.replaceCharactersInRange_withAttributedString(range, attrString);
+    }
+
     /**
      * Original signature : <code>void insertAttributedString(NSAttributedString*, NSUInteger)</code><br>
      * <i>from NSExtendedMutableAttributedString native declaration : :46</i>

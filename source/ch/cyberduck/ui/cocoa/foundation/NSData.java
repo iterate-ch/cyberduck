@@ -139,12 +139,20 @@ public abstract class NSData implements NSObject {
      */
     public abstract byte writeToFile_atomically(String path, boolean useAuxiliaryFile);
 
+    public byte writeToFile(String path ) {
+        return this.writeToFile_atomically(path, true);
+    }
+
     /**
      * Original signature : <code>BOOL writeToURL(NSURL*, BOOL)</code><br>
      * the atomically flag is ignored if the url is not of a type the supports atomic writes<br>
      * <i>from NSExtendedData native declaration : :43</i>
      */
     public abstract boolean writeToURL_atomically(NSURL url, boolean atomically);
+
+    public boolean writeToURL(NSURL url ) {
+        return this.writeToURL_atomically(url, true);
+    }
 
     /**
      * Original signature : <code>BOOL writeToFile(NSString*, NSUInteger, NSError**)</code><br>

@@ -22,8 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.cocoa.CGFloat;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 
 public interface NSButtonCell extends NSActionCell {
     _Class CLASS = org.rococoa.Rococoa.createClass("NSButtonCell", _Class.class);

@@ -164,13 +164,13 @@ public interface NSComboBox extends NSTextField {
      * Original signature : <code>id dataSource()</code><br>
      * <i>native declaration : :53</i>
      */
-    NSObject dataSource();
+    org.rococoa.ID dataSource();
 
     /**
      * Original signature : <code>void setDataSource(id)</code><br>
      * <i>native declaration : :54</i>
      */
-    void setDataSource(NSObject aSource);
+    void setDataSource(org.rococoa.ID aSource);
 
     /**
      * These methods can only be used when usesDataSource is NO<br>

@@ -22,7 +22,6 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Selector;
-import org.rococoa.ID;
 
 public interface NSCell extends NSObject, NSCopying, NSCoding {
     _Class CLASS = org.rococoa.Rococoa.createClass("NSCell", _Class.class);

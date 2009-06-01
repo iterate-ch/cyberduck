@@ -22,8 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.rococoa.cocoa.CGFloat;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 
 
 /// <i>native declaration : :17</i>

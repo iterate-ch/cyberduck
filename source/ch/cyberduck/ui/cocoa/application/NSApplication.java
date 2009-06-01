@@ -27,12 +27,11 @@ import org.rococoa.ID;
 import org.rococoa.NSClass;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.NSError;
 
 import com.sun.jna.Pointer;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class NSApplication implements NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSApplication", _Class.class); //$NON-NLS-1$
@@ -81,37 +80,6 @@ public abstract class NSApplication implements NSObject {
         return CLASS.sharedApplication();
     }
 
-    public static interface Delegate {
-
-        public abstract int applicationShouldTerminate(NSApplication nsapplication);
-
-        public abstract boolean applicationOpenFile(NSApplication nsapplication, String s);
-
-        public abstract void applicationOpenFiles(NSApplication nsapplication, NSArray nsarray);
-
-        public abstract boolean applicationOpenTempFile(NSApplication nsapplication, String s);
-
-        public abstract boolean applicationShouldOpenUntitledFile(NSApplication nsapplication);
-
-        public abstract boolean applicationOpenUntitledFile(NSApplication nsapplication);
-
-        public abstract boolean applicationOpenFileWithoutUI(Object obj, String s);
-
-        public abstract boolean applicationPrintFile(NSApplication nsapplication, String s);
-
-        public abstract int applicationPrintFiles(NSApplication nsapplication, NSArray nsarray, NSDictionary nsdictionary, boolean flag);
-
-        public abstract void applicationPrintFiles(NSApplication nsapplication, NSArray nsarray);
-
-        public abstract boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication nsapplication);
-
-        public abstract boolean applicationShouldHandleReopen(NSApplication nsapplication, boolean flag);
-
-        public abstract NSMenu applicationDockMenu(NSApplication nsapplication);
-
-        public abstract NSError applicationWillPresentError(NSApplication nsapplication, NSError nserror);
-    }
-
     public abstract NSArray windows();
 
     /**
@@ -124,7 +92,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :109</i>
      */
-    public abstract NSObject delegate();
+    public abstract org.rococoa.ID delegate();
 
     /**
      * Original signature : <code>NSGraphicsContext* context()</code><br>

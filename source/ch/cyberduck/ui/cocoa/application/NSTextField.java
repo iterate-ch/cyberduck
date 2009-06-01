@@ -124,7 +124,7 @@ public interface NSTextField extends NSControl {
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :30</i>
      */
-    NSObject delegate();
+    org.rococoa.ID delegate();
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>

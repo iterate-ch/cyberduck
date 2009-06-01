@@ -204,7 +204,7 @@ public interface NSTabView extends NSObject {
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :116</i>
      */
-    NSObject delegate();
+    org.rococoa.ID delegate();
     /**
      * <i>native declaration : :120</i><br>
      * Conversion Error : /// Original signature : <code>NSTabViewItem* tabViewItemAtPoint(null)</code><br>

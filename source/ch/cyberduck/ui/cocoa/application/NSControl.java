@@ -67,7 +67,7 @@ public interface NSControl extends NSView {
      * Original signature : <code>id cell()</code><br>
      * <i>native declaration : :32</i>
      */
-    NSObject cell();
+    NSCell cell();
 
     /**
      * Original signature : <code>void setCell(NSCell*)</code><br>

@@ -27,6 +27,8 @@ import org.rococoa.cocoa.CGFloat;
 public interface NSOutlineView extends NSTableView {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSOutlineView", _Class.class);
 
+    public static final int NSOutlineViewDropOnItemIndex = -1;
+
     public static interface DataSource {
         public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item);
 

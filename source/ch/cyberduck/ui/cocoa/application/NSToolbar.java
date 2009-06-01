@@ -57,25 +57,25 @@ abstract class NSToolbar implements NSObject {
     public static interface Delegate {
         /**
          * Original signature : <code>NSToolbarItem* toolbar(NSToolbar*, NSString*, BOOL)</code><br>
-         * <i>native declaration : /Users/dkocher/Desktop/null:149</i>
+         * <i>native declaration : :149</i>
          */
         NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, String itemIdentifier, boolean flag);
 
         /**
          * Original signature : <code>NSArray* toolbarDefaultItemIdentifiers(NSToolbar*)</code><br>
-         * <i>native declaration : /Users/dkocher/Desktop/null:152</i>
+         * <i>native declaration : :152</i>
          */
         NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar);
 
         /**
          * Original signature : <code>NSArray* toolbarAllowedItemIdentifiers(NSToolbar*)</code><br>
-         * <i>native declaration : /Users/dkocher/Desktop/null:155</i>
+         * <i>native declaration : :155</i>
          */
         NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar);
 
         /**
          * Original signature : <code>NSArray* toolbarSelectableItemIdentifiers(NSToolbar*)</code><br>
-         * <i>native declaration : /Users/dkocher/Desktop/null:159</i>
+         * <i>native declaration : :159</i>
          */
         NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar);
     }

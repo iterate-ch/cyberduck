@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-
 /// <i>native declaration : :10</i>
 public interface NSActionCell extends NSCell {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSActionCell", _Class.class);

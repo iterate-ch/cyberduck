@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import java.nio.IntBuffer;
 
-/// <i>native declaration : /Users/dkocher/Desktop/null:43</i>
+/// <i>native declaration : :43</i>
 public abstract class NSWorkspace implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWorkspace", _Class.class);
 
@@ -82,7 +82,7 @@ public abstract class NSWorkspace implements NSObject {
     public interface _Class extends org.rococoa.NSClass {
         /**
          * Original signature : <code>NSWorkspace* sharedWorkspace)</code><br>
-         * <i>native declaration : /Users/dkocher/Desktop/null:54</i>
+         * <i>native declaration : :54</i>
          */
         NSWorkspace sharedWorkspace();
     }
@@ -94,64 +94,64 @@ public abstract class NSWorkspace implements NSObject {
 
     /**
      * Original signature : <code>NSNotificationCenter* notificationCenter)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:56</i>
+     * <i>native declaration : :56</i>
      */
     public abstract NSNotificationCenter notificationCenter();
 
     /**
      * Original signature : <code>BOOL openFile(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:58</i>
+     * <i>native declaration : :58</i>
      */
     public abstract boolean openFile(String fullPath1);
 
     /**
      * Original signature : <code>BOOL openFile(NSString*, NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:59</i>
+     * <i>native declaration : :59</i>
      */
     public abstract boolean openFile_withApplication(String fullPath1, String appName2);
 
     /**
      * Original signature : <code>BOOL openFile(NSString*, NSString*, BOOL)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:60</i>
+     * <i>native declaration : :60</i>
      */
     public abstract boolean openFile_withApplication_andDeactivate(String appName2, boolean flag3);
 
     /**
      * Original signature : <code>BOOL openTempFile(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:62</i>
+     * <i>native declaration : :62</i>
      */
     public abstract boolean openTempFile(String fullPath1);
     /**
-     * <i>native declaration : /Users/dkocher/Desktop/null:64</i><br>
+     * <i>native declaration : :64</i><br>
      * Conversion Error : NSPoint
      */
     /**
      * Original signature : <code>BOOL openURL(NSURL*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:66</i>
+     * <i>native declaration : :66</i>
      */
     public abstract boolean openURL(NSURL url1);
 
     /**
      * Original signature : <code>BOOL launchApplication(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:68</i>
+     * <i>native declaration : :68</i>
      */
     public abstract boolean launchApplication(String appName1);
 
     /**
      * Original signature : <code>BOOL launchApplication(NSString*, BOOL, BOOL)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:69</i>
+     * <i>native declaration : :69</i>
      */
     public abstract boolean launchApplication_showIcon_autolaunch(String appName1, boolean showIcon2, boolean autolaunch3);
 
     /**
      * Original signature : <code>NSString* fullPathForApplication(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:70</i>
+     * <i>native declaration : :70</i>
      */
     public abstract String fullPathForApplication(String appName1);
 
     /**
      * Original signature : <code>BOOL selectFile(NSString*, NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:72</i>
+     * <i>native declaration : :72</i>
      */
     public abstract boolean selectFile_inFileViewerRootedAtPath(String fullPath1, String rootFullpath2);
 
@@ -161,86 +161,86 @@ public abstract class NSWorkspace implements NSObject {
 
     /**
      * Original signature : <code>void findApplications)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:74</i>
+     * <i>native declaration : :74</i>
      */
     public abstract void findApplications();
 
     /**
      * Original signature : <code>public abstract void noteFileSystemChanged)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:76</i>
+     * <i>native declaration : :76</i>
      */
     public abstract void noteFileSystemChanged();
 
     /**
      * Original signature : <code>public abstract void noteFileSystemChanged(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:77</i>
+     * <i>native declaration : :77</i>
      */
     public abstract void noteFileSystemChanged(String path1);
 
     /**
      * Original signature : <code>BOOL fileSystemChanged)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:78</i>
+     * <i>native declaration : :78</i>
      */
     public abstract boolean fileSystemChanged();
 
     /**
      * Original signature : <code>public abstract void noteUserDefaultsChanged)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:79</i>
+     * <i>native declaration : :79</i>
      */
     public abstract void noteUserDefaultsChanged();
 
     /**
      * Original signature : <code>BOOL userDefaultsChanged)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:80</i>
+     * <i>native declaration : :80</i>
      */
     public abstract boolean userDefaultsChanged();
 
     /**
      * Original signature : <code>BOOL getInfoForFile(NSString*, NSString**, NSString**)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:82</i>
+     * <i>native declaration : :82</i>
      */
     public abstract boolean getInfoForFile_application_type(com.sun.jna.Pointer fullPath1, com.sun.jna.ptr.PointerByReference appName2, com.sun.jna.ptr.PointerByReference type3);
 
     /**
      * Original signature : <code>BOOL isFilePackageAtPath(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:83</i>
+     * <i>native declaration : :83</i>
      */
     public abstract boolean isFilePackageAtPath(String fullPath1);
 
     /**
      * Original signature : <code>NSImage* iconForFile(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:85</i>
+     * <i>native declaration : :85</i>
      */
     public abstract NSImage iconForFile(String fullPath1);
 
     /**
      * Original signature : <code>NSImage* iconForFiles(NSArray*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:86</i>
+     * <i>native declaration : :86</i>
      */
     public abstract NSImage iconForFiles(com.sun.jna.Pointer fullPaths1);
 
     /**
      * Original signature : <code>NSImage* iconForFileType(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:87</i>
+     * <i>native declaration : :87</i>
      */
     public abstract NSImage iconForFileType(String fileType1);
 
     /**
      * Original signature : <code>BOOL setIcon(NSImage*, NSString*, NSWorkspaceIconCreationOptions)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:89</i>
+     * <i>native declaration : :89</i>
      */
     public abstract boolean setIcon_forFile_options(NSImage image1, String fullPath2, int options3);
 
     /**
      * Original signature : <code>BOOL getFileSystemInfoForPath(NSString*, BOOL*, BOOL*, BOOL*, NSString**, NSString**)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:92</i>
+     * <i>native declaration : :92</i>
      */
     public abstract boolean getFileSystemInfoForPath_isRemovable_isWritable_isUnmountable_description_type(com.sun.jna.Pointer fullPath1, boolean removableFlag2, boolean writableFlag3, boolean unmountableFlag4, com.sun.jna.ptr.PointerByReference description5, com.sun.jna.ptr.PointerByReference fileSystemType6);
 
     /**
      * Original signature : <code>BOOL performFileOperation(NSString*, NSString*, NSString*, NSArray*, NSInteger*)</code><br>
      * Returned tag < 0 on failure, 0 if sync, > 0 if async<br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:94</i>
+     * <i>native declaration : :94</i>
      */
     public abstract boolean performFileOperation_source_destination_files_tag(String operation1, String source2, String destination3, NSArray files4, java.nio.IntBuffer tag5);
 
@@ -250,78 +250,78 @@ public abstract class NSWorkspace implements NSObject {
 
     /**
      * Original signature : <code>BOOL unmountAndEjectDeviceAtPath(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:96</i>
+     * <i>native declaration : :96</i>
      */
     public abstract boolean unmountAndEjectDeviceAtPath(String path1);
 
     /**
      * Original signature : <code>NSInteger extendPowerOffBy(NSInteger)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:97</i>
+     * <i>native declaration : :97</i>
      */
     public abstract int extendPowerOffBy(int requested1);
     /**
-     * <i>native declaration : /Users/dkocher/Desktop/null:99</i><br>
+     * <i>native declaration : :99</i><br>
      * Conversion Error : NSPoint
      */
     /**
      * Original signature : <code>public abstract void hideOtherApplications)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:101</i>
+     * <i>native declaration : :101</i>
      */
     public abstract void hideOtherApplications();
 
     /**
      * Original signature : <code>NSArray* mountedLocalVolumePaths)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:103</i>
+     * <i>native declaration : :103</i>
      */
     public abstract NSArray mountedLocalVolumePaths();
 
     /**
      * Original signature : <code>NSArray* mountedRemovableMedia)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:104</i>
+     * <i>native declaration : :104</i>
      */
     public abstract NSArray mountedRemovableMedia();
 
     /**
      * Original signature : <code>NSArray* mountNewRemovableMedia)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:105</i>
+     * <i>native declaration : :105</i>
      */
     public abstract NSArray mountNewRemovableMedia();
 
     /**
      * Original signature : <code>public abstract void checkForRemovableMedia)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:106</i>
+     * <i>native declaration : :106</i>
      */
     public abstract void checkForRemovableMedia();
 
     /**
      * Original signature : <code>NSString* absolutePathForAppBundleWithIdentifier(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:110</i>
+     * <i>native declaration : :110</i>
      */
     public abstract String absolutePathForAppBundleWithIdentifier(String bundleIdentifier1);
 
     /**
      * Original signature : <code>BOOL launchAppWithBundleIdentifier(NSString*, NSWorkspaceLaunchOptions, NSAppleEventDescriptor*, NSNumber**)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:111</i>
+     * <i>native declaration : :111</i>
      */
     public abstract boolean launchAppWithBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifier(com.sun.jna.Pointer bundleIdentifier1, int options2, com.sun.jna.Pointer descriptor3, com.sun.jna.ptr.PointerByReference identifier4);
 
     /**
      * Original signature : <code>BOOL openURLs(NSArray*, NSString*, NSWorkspaceLaunchOptions, NSAppleEventDescriptor*, NSArray**)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:112</i>
+     * <i>native declaration : :112</i>
      */
     public abstract boolean openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers(com.sun.jna.Pointer urls1, com.sun.jna.Pointer bundleIdentifier2, int options3, com.sun.jna.Pointer descriptor4, com.sun.jna.ptr.PointerByReference identifiers5);
 
     /**
      * Original signature : <code>NSArray* launchedApplications)</code><br>
      * Returns an array of dictionaries, one for each running application.<br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:127</i>
+     * <i>native declaration : :127</i>
      */
     public abstract NSArray launchedApplications();
 
     /**
      * Original signature : <code>NSDictionary* activeApplication)</code><br>
      * Returns a dictionary with information about the current active application.<br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:128</i>
+     * <i>native declaration : :128</i>
      */
     public abstract NSArray activeApplication();
 
@@ -329,7 +329,7 @@ public abstract class NSWorkspace implements NSObject {
      * Given an absolute file path, return the uniform type identifier (UTI) of the file, if one can be determined. Otherwise, return nil after setting *outError to an NSError that encapsulates the reason why the file's type could not be determined. If the file at the end of the path is a symbolic link the type of the symbolic link will be returned.<br>
      * You can invoke this method to get the UTI of an existing file.<br>
      * Original signature : <code>NSString* typeOfFile(NSString*, NSError**)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:138</i>
+     * <i>native declaration : :138</i>
      */
     public abstract String typeOfFile_error(com.sun.jna.Pointer absoluteFilePath1, com.sun.jna.ptr.PointerByReference outError2);
 
@@ -337,7 +337,7 @@ public abstract class NSWorkspace implements NSObject {
      * Given a UTI, return a string that describes the document type and is fit to present to the user, or nil for failure.<br>
      * You can invoke this method to get the name of a type that must be shown to the user, in an alert about your application's inability to handle the type, for instance.<br>
      * Original signature : <code>NSString* localizedDescriptionForType(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:144</i>
+     * <i>native declaration : :144</i>
      */
     public abstract String localizedDescriptionForType(String typeName1);
 
@@ -345,7 +345,7 @@ public abstract class NSWorkspace implements NSObject {
      * Given a UTI, return the best file name extension to use when creating a file of that type, or nil for failure.<br>
      * You can invoke this method when your application has only the base name of a file that's being written and it has to append a file name extension so that the file's type can be reliably identified later on.<br>
      * Original signature : <code>NSString* preferredFilenameExtensionForType(NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:150</i>
+     * <i>native declaration : :150</i>
      */
     public abstract String preferredFilenameExtensionForType(String typeName1);
 
@@ -353,7 +353,7 @@ public abstract class NSWorkspace implements NSObject {
      * Given a file name extension and a UTI, return YES if the file name extension is a valid tag for the identified type, NO otherwise.<br>
      * You can invoke this method when your application needs to check if a file name extension can be used to reliably identify the type later on. For example, NSSavePanel uses this method to validate any extension that the user types in the panel's file name field.<br>
      * Original signature : <code>BOOL filenameExtension(NSString*, NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:156</i>
+     * <i>native declaration : :156</i>
      */
     public abstract boolean filenameExtension_isValidForType(String filenameExtension1, String typeName2);
 
@@ -362,7 +362,7 @@ public abstract class NSWorkspace implements NSObject {
      * You can invoke this method when your application must determine whether it can handle a file of a known type, returned by -typeOfFile:error: for instance.<br>
      * Use this method instead of merely comparing UTIs for equality.<br>
      * Original signature : <code>BOOL type(NSString*, NSString*)</code><br>
-     * <i>native declaration : /Users/dkocher/Desktop/null:164</i>
+     * <i>native declaration : :164</i>
      */
     public abstract boolean type_conformsToType(String firstTypeName1, String secondTypeName2);
 }

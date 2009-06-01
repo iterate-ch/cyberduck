@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSCoding;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.Selector;
 import org.rococoa.Rococoa;
+import org.rococoa.Selector;
 
 
 /// <i>native declaration : :14</i>

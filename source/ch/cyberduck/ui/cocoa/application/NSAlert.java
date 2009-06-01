@@ -32,10 +32,19 @@ public abstract class NSAlert implements NSObject {
         return CLASS.alertWithError(error);
     }
 
+    /**
+     *
+     * @param title Alert title
+     * @param message Informative text
+     * @param defaultButton
+     * @param alternateButton
+     * @param otherButton
+     * @return
+     */
     public static NSAlert alert(
-            String message, String defaultButton, String alternateButton, String otherButton, String format, NSObject... varargs) {
+            String title, String message, String defaultButton, String alternateButton, String otherButton) {
         return CLASS.alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat(
-                message, defaultButton, alternateButton, otherButton, format, varargs);
+                title, defaultButton, alternateButton, otherButton, message);
     }
 
     public interface _Class extends org.rococoa.NSClass {
@@ -52,7 +61,7 @@ public abstract class NSAlert implements NSObject {
          * <i>native declaration : :65</i>
          */
         NSAlert alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat(
-                String message, String defaultButton, String alternateButton, String otherButton, String format, NSObject... varargs);
+                String message, String defaultButton, String alternateButton, String otherButton, String format);
     }
 
     /**

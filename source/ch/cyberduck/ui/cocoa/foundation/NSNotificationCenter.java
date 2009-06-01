@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ID;
 import org.rococoa.Selector;
 
 /// <i>native declaration : :29</i>
@@ -37,7 +38,7 @@ public abstract class NSNotificationCenter implements NSObject {
         return CLASS.defaultCenter();
     }
 
-    public void addObserver(NSObject notificationObserver,
+    public void addObserver(ID notificationObserver,
                             Selector notificationSelector,
                             String notificationName,
                             NSObject notificationSender) {
@@ -49,7 +50,7 @@ public abstract class NSNotificationCenter implements NSObject {
      * Conversion Error : /// Original signature : <code>void addObserver(null, null, NSString*, null)</code><br>
      * - (void)addObserver:(null)observer selector:(null)aSelector name:(NSString*)aName object:(null)anObject; (Argument observer cannot be converted)
      */
-    public abstract void addObserver_selector_name_object(NSObject notificationObserver,
+    public abstract void addObserver_selector_name_object(ID notificationObserver,
                                                           Selector notificationSelector,
                                                           String notificationName,
                                                           NSObject notificationSender);

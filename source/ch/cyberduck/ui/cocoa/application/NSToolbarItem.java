@@ -22,9 +22,9 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.Selector;
-import org.rococoa.Rococoa;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.NSSize;
 
 /// <i>native declaration : :10</i>

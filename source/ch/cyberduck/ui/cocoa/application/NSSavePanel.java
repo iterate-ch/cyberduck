@@ -267,9 +267,9 @@ abstract class NSSavePanel implements NSPanel {
      * * /<br>
      * - (void)beginSheetForDirectory:(NSString*)path file:(NSString*)name modalForWindow:(NSWindow*)docWindow modalDelegate:(id)delegate didEndSelector:(null)didEndSelector contextInfo:(void*)contextInfo; (Argument didEndSelector cannot be converted)
      */
-    public abstract void beginSheetForDirectory_file_modalForWindow_modalDelegate_didEndSelector_contextInfo(String path, String name, NSWindow docWindow, NSObject delegate, org.rococoa.Selector didEndSelector, ID contextInfo);
+    public abstract void beginSheetForDirectory_file_modalForWindow_modalDelegate_didEndSelector_contextInfo(String path, String name, NSWindow docWindow, ID delegate, org.rococoa.Selector didEndSelector, ID contextInfo);
 
-    public void beginSheetForDirectory(String path, String name, NSWindow docWindow, NSObject delegate, org.rococoa.Selector didEndSelector, ID contextInfo) {
+    public void beginSheetForDirectory(String path, String name, NSWindow docWindow, ID delegate, org.rococoa.Selector didEndSelector, ID contextInfo) {
         this.beginSheetForDirectory_file_modalForWindow_modalDelegate_didEndSelector_contextInfo(path, name, docWindow, delegate, didEndSelector, contextInfo);
     }
 
