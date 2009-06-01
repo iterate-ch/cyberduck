@@ -18,28 +18,52 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSMutableArray;
-import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSObject;
+
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 /**
  * @version $Id$
  */
-public abstract class CDController extends NSObject {
+public abstract class CDController {
     private static Logger log = Logger.getLogger(CDController.class);
 
     public CDController() {
         // Add this object to the array to safe weak references
         // from being garbage collected (#hack)
-        synchronized(instances) {
-            instances.addObject(this);
-        }
+//        synchronized(instances) {
+//            instances.addObject(this.proxy());
+//        }
     }
 
-    protected static final NSMutableArray instances
-            = new NSMutableArray();
+//    protected static final NSMutableArray instances
+//            = NSMutableArray.arrayWithCapacity(0);
+
+    /**
+     * You need to keep a reference to the returned value for as long as it is
+     * active. When it is GCd, it will release the Objective-C proxy.
+     */
+    private NSObject proxy;
+
+    /**
+     * @return
+     */
+    public NSObject proxy() {
+        if(null == proxy) {
+            proxy = Rococoa.proxy(this, NSObject.class);
+        }
+        return proxy;
+    }
+
+    /**
+     * @return
+     */
+    public org.rococoa.ID id() {
+        return this.proxy().id();
+    }
 
     /**
      * Free all locked resources by this controller; also remove me from all observables;
@@ -49,10 +73,13 @@ public abstract class CDController extends NSObject {
         if(log.isDebugEnabled()) {
             log.debug("invalidate:" + this.toString());
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this);
-        synchronized(instances) {
-            instances.removeObject(this);
+        if(proxy != null) {
+            NSNotificationCenter.defaultCenter().removeObserver(proxy);
+//            synchronized(instances) {
+//                instances.removeObject(this.proxy());
+//            }
         }
+        proxy = null;
     }
 
     protected void finalize() throws java.lang.Throwable {

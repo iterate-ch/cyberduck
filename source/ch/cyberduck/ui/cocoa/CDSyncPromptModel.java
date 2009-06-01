@@ -18,10 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.foundation.NSAttributedString;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
 /**
  * @version $Id$
@@ -63,7 +61,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
         if(null != item) {
             if(identifier.equals(SIZE_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
-                return new NSAttributedString(Status.getSizeAsString(
+                return NSAttributedString.create(Status.getSizeAsString(
                         compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment());
             }

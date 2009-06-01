@@ -18,18 +18,20 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.License;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +44,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public class CDMainController extends CDController {
+public class CDMainController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
     // ----------------------------------------------------------
@@ -53,11 +55,8 @@ public class CDMainController extends CDController {
 
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
-        String[] charsets = ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets();
-        for(int i = 0; i < charsets.length; i++) {
-            NSMenuItem item = new NSMenuItem(charsets[i],
-                    new NSSelector("encodingMenuClicked", new Class[]{Object.class}),
-                    "");
+        for(String charset : availableCharsets()) {
+            NSMenuItem item = NSMenuItem.itemWithTitle(charset, Foundation.selector("encodingMenuClicked:"), "");
             this.encodingMenu.addItem(item);
         }
     }
@@ -67,29 +66,29 @@ public class CDMainController extends CDController {
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
-        columns.put("browser.columnKind", NSBundle.localizedString("Kind", ""));
-        columns.put("browser.columnSize", NSBundle.localizedString("Size", ""));
-        columns.put("browser.columnModification", NSBundle.localizedString("Modified", ""));
-        columns.put("browser.columnOwner", NSBundle.localizedString("Owner", ""));
-        columns.put("browser.columnGroup", NSBundle.localizedString("Group", ""));
-        columns.put("browser.columnPermissions", NSBundle.localizedString("Permissions", ""));
+        columns.put("browser.columnKind", Locale.localizedString("Kind", ""));
+        columns.put("browser.columnSize", Locale.localizedString("Size", ""));
+        columns.put("browser.columnModification", Locale.localizedString("Modified", ""));
+        columns.put("browser.columnOwner", Locale.localizedString("Owner", ""));
+        columns.put("browser.columnGroup", Locale.localizedString("Group", ""));
+        columns.put("browser.columnPermissions", Locale.localizedString("Permissions", ""));
         Iterator identifiers = columns.keySet().iterator();
         int i = 0;
         for(Iterator iter = columns.values().iterator(); iter.hasNext(); i++) {
-            NSMenuItem item = new NSMenuItem((String) iter.next(),
-                    new NSSelector("columnMenuClicked", new Class[]{Object.class}),
+            NSMenuItem item = NSMenuItem.itemWithTitle((String) iter.next(),
+                    Foundation.selector("columnMenuClicked:"),
                     "");
             final String identifier = (String) identifiers.next();
-            item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.OnState : NSCell.OffState);
+            item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(identifier);
-            this.columnMenu.insertItemAtIndex(item, i);
+            this.columnMenu.insertItem_atIndex(item, i);
         }
     }
 
     public void columnMenuClicked(final NSMenuItem sender) {
-        final String identifier = (String) sender.representedObject();
+        final String identifier = sender.representedObject();
         final boolean enabled = !Preferences.instance().getBoolean(identifier);
-        sender.setState(enabled ? NSCell.OnState : NSCell.OffState);
+        sender.setState(enabled ? NSCell.NSOnState : NSCell.NSOffState);
         Preferences.instance().setProperty(identifier, enabled);
         CDBrowserController.updateBrowserTableColumns();
     }
@@ -98,109 +97,79 @@ public class CDMainController extends CDController {
         NSWorkspace.sharedWorkspace().openFile(HistoryCollection.defaultCollection().getFile().getAbsolute());
     }
 
-    public void bugreportMenuClicked(final Object sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(Preferences.instance().getProperty("website.bug")));
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+    public void bugreportMenuClicked(final NSObject sender) {
+        NSWorkspace.sharedWorkspace().openURL(
+                NSURL.URLWithString(Preferences.instance().getProperty("website.bug")));
     }
 
-    public void helpMenuClicked(final Object sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(Preferences.instance().getProperty("website.help"))
-            );
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+    public void helpMenuClicked(final NSObject sender) {
+        NSWorkspace.sharedWorkspace().openURL(
+                NSURL.URLWithString(Preferences.instance().getProperty("website.help"))
+        );
     }
 
-    public void faqMenuClicked(final Object sender) {
+    public void faqMenuClicked(final NSObject sender) {
         NSWorkspace.sharedWorkspace().openFile(
-                new File(NSBundle.mainBundle().pathForResource("Cyberduck FAQ", "rtfd")).toString());
+                new File(NSBundle.mainBundle().pathForResource_ofType("Cyberduck FAQ", "rtfd")).toString());
     }
 
-    public void licenseMenuClicked(final Object sender) {
+    public void licenseMenuClicked(final NSObject sender) {
         NSWorkspace.sharedWorkspace().openFile(
-                new File(NSBundle.mainBundle().pathForResource("License", "txt")).toString());
+                new File(NSBundle.mainBundle().pathForResource_ofType("License", "txt")).toString());
     }
 
-    public void acknowledgmentsMenuClicked(final Object sender) {
+    public void acknowledgmentsMenuClicked(final NSObject sender) {
         NSWorkspace.sharedWorkspace().openFile(
-                new File(NSBundle.mainBundle().pathForResource("Acknowledgments", "rtf")).toString());
+                new File(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")).toString());
     }
 
-    public void websiteMenuClicked(final Object sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.home")));
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+    public void websiteMenuClicked(final NSObject sender) {
+        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.home")));
     }
 
-    public void forumMenuClicked(final Object sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.forum")));
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+    public void forumMenuClicked(final NSObject sender) {
+        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.forum")));
     }
 
-    public void donateMenuClicked(final Object sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("website.donate")));
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+    public void donateMenuClicked(final NSObject sender) {
+        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
     }
 
-    public void aboutMenuClicked(final Object sender) {
-        NSDictionary dict = new NSDictionary(
-                new String[]{(String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString"), ""},
-                new String[]{"ApplicationVersion", "Version"}
+    public void aboutMenuClicked(final NSObject sender) {
+        NSDictionary dict = NSDictionary.dictionaryWithObjectsForKeys(
+                NSArray.arrayWithObjects(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString(), ""),
+                NSArray.arrayWithObjects("ApplicationVersion", "Version")
         );
         NSApplication.sharedApplication().orderFrontStandardAboutPanelWithOptions(dict);
     }
 
-    public void feedbackMenuClicked(final Object sender) {
-        try {
-            String versionString = (String) NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion");
-            NSWorkspace.sharedWorkspace().openURL(new java.net.URL(Preferences.instance().getProperty("mail.feedback")
-                    + "?subject=" + NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "-" + versionString));
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+    public void feedbackMenuClicked(final NSObject sender) {
+        String versionString = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion").toString();
+        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("mail.feedback")
+                + "?subject=" + NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "-" + versionString));
     }
 
-    public void preferencesMenuClicked(final Object sender) {
+    public void preferencesMenuClicked(final NSObject sender) {
         CDPreferencesController controller = CDPreferencesController.instance();
         controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void newDownloadMenuClicked(final Object sender) {
+    public void newDownloadMenuClicked(final NSObject sender) {
         this.showTransferQueueClicked(sender);
         CDSheetController c = new CDDownloadController(CDTransferController.instance());
         c.beginSheet();
     }
 
-    public void newBrowserMenuClicked(final Object sender) {
-        this.openDefaultBookmark(this.newDocument(true));
+    public void newBrowserMenuClicked(final NSObject sender) {
+        this.openDefaultBookmark(CDMainController.newDocument(true));
     }
 
-    public void showTransferQueueClicked(final Object sender) {
+    public void showTransferQueueClicked(final NSObject sender) {
         CDTransferController c = CDTransferController.instance();
         c.window().makeKeyAndOrderFront(null);
     }
 
-    public void showActivityWindowClicked(final Object sender) {
+    public void showActivityWindowClicked(final NSObject sender) {
         CDActivityController c = CDActivityController.instance();
         if(c.window().isVisible()) {
             c.window().close();
@@ -210,13 +179,13 @@ public class CDMainController extends CDController {
         }
     }
 
-    public void downloadBookmarksFromDotMacClicked(final Object sender) {
+    public void downloadBookmarksFromDotMacClicked(final NSObject sender) {
         CDDotMacController controller = new CDDotMacController();
         controller.downloadBookmarks();
         controller.invalidate();
     }
 
-    public void uploadBookmarksToDotMacClicked(final Object sender) {
+    public void uploadBookmarksToDotMacClicked(final NSObject sender) {
         CDDotMacController c = new CDDotMacController();
         c.uploadBookmarks();
         c.invalidate();
@@ -231,14 +200,14 @@ public class CDMainController extends CDController {
      * @param filename
      * @return
      */
-    public boolean applicationOpenFile(NSApplication app, String filename) {
+    public boolean application_openFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
         Local f = new Local(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
                 try {
                     final Host host = new Host(f);
-                    this.newDocument().mount(host);
+                    CDMainController.newDocument().mount(host);
                     return true;
                 }
                 catch(IOException e) {
@@ -252,32 +221,32 @@ public class CDMainController extends CDController {
                     if(StringUtils.isBlank(to)) {
                         to = l.getValue("Email"); // primary key
                     }
-                    int choice = NSAlertPanel.runInformationalAlert(
-                            MessageFormat.format(NSBundle.localizedString("Registered to {0}", "License", ""), to),
-                            NSBundle.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License", "")
+                    int choice = NSAlert.alert(
+                            MessageFormat.format(Locale.localizedString("Registered to {0}", "License"), to),
+                            Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                     + "\n\n"
-                                    + NSBundle.localizedString("Your donation key has been copied to the Application Support folder.", "License", ""),
-                            NSBundle.localizedString("Continue", ""), //default
+                                    + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
+                            Locale.localizedString("Continue", ""), //default
                             null, //other
-                            null); //alternate
+                            null).runModal(); //alternate
                     if(choice == CDSheetCallback.DEFAULT_OPTION) {
                         f.copy(new Local(Preferences.instance().getProperty("application.support.path"), f.getName()));
                     }
                 }
                 else {
-                    int choice = NSAlertPanel.runCriticalAlert(
-                            NSBundle.localizedString("Not a valid donation key", "License", ""),
-                            NSBundle.localizedString("This donation key does not appear to be valid.", "License", ""),
-                            NSBundle.localizedString("Continue", ""), //default
+                    int choice = NSAlert.alert(
+                            Locale.localizedString("Not a valid donation key", "License"),
+                            Locale.localizedString("This donation key does not appear to be valid.", "License"),
+                            Locale.localizedString("Continue", ""), //default
                             null, //other
-                            null); //alternate
+                            null).runModal(); //alternate
                 }
                 return true;
             }
             final NSArray windows = NSApplication.sharedApplication().windows();
             int count = windows.count();
             while(0 != count--) {
-                NSWindow window = (NSWindow) windows.objectAtIndex(count);
+                NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
                 final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
                 if(null != controller) {
                     if(controller.isMounted()) {
@@ -305,9 +274,9 @@ public class CDMainController extends CDController {
      * @param filename
      * @return
      */
-    public boolean applicationOpenTempFile(NSApplication app, String filename) {
+    public boolean application_openTempFile(NSApplication app, String filename) {
         log.debug("applicationOpenTempFile:" + filename);
-        return this.applicationOpenFile(app, filename);
+        return this.application_openFile(app, filename);
     }
 
     /**
@@ -368,7 +337,7 @@ public class CDMainController extends CDController {
      * @param visibleWindowsFound
      * @return
      */
-    public boolean applicationShouldHandleReopen(NSApplication app, boolean visibleWindowsFound) {
+    public boolean applicationShouldHandleReopen_hasVisibleWindows(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
         // While an application is open, the Dock icon has a symbol below it.
         // When a user clicks an open application’s icon in the Dock, the application
@@ -378,20 +347,21 @@ public class CDMainController extends CDController {
         // be expanded and made active. If no documents are open, the application should
         // open a new window. (If your application is not document-based, display the
         // application’s main window.)
-        final NSArray browsers = this.orderedBrowsers();
+        final NSArray browsers = CDMainController.orderedBrowsers();
         if(browsers.count() == 0 && this.orderedTransfers().count() == 0) {
-            this.openDefaultBookmark(this.newDocument());
+            this.openDefaultBookmark(CDMainController.newDocument());
         }
-        java.util.Enumeration enumerator = browsers.objectEnumerator();
+        final NSEnumerator i = browsers.objectEnumerator();
         NSWindow miniaturized = null;
-        while(enumerator.hasMoreElements()) {
-            CDBrowserController controller = (CDBrowserController) enumerator.nextElement();
-            if(!controller.window().isMiniaturized()) {
-                return false;
-            }
-            if(null == miniaturized) {
-                miniaturized = controller.window();
-            }
+        NSObject next;
+        while(((next = i.nextObject()) != null)) {
+//            CDBrowserController controller = (CDBrowserController) next;
+//            if(!controller.window().isMiniaturized()) {
+//                return false;
+//            }
+//            if(null == miniaturized) {
+//                miniaturized = controller.window();
+//            }
         }
         if(null == miniaturized) {
             return false;
@@ -449,26 +419,27 @@ public class CDMainController extends CDController {
             if(sessions.size() == 0) {
                 // Open empty browser if no saved sessions
                 if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                    this.openDefaultBookmark(this.newDocument());
+                    this.openDefaultBookmark(CDMainController.newDocument());
                 }
             }
             for(Host host : sessions) {
-                this.newDocument(true).mount(host);
+                CDMainController.newDocument(true).mount(host);
             }
             sessions.clear();
         }
         else if(Preferences.instance().getBoolean("browser.openUntitled")) {
-            this.openDefaultBookmark(this.newDocument());
+            this.openDefaultBookmark(CDMainController.newDocument());
         }
         if(Preferences.instance().getBoolean("defaulthandler.reminder")) {
             if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
                     new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()})) {
-                int choice = NSAlertPanel.runInformationalAlert(
-                        NSBundle.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration", ""),
-                        NSBundle.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration", ""),
-                        NSBundle.localizedString("Change", "Configuration", ""), //default
-                        NSBundle.localizedString("Don't Ask Again", "Configuration", ""), //other
-                        NSBundle.localizedString("Cancel", "Configuration", "")); //alternate
+                final NSAlert alert = NSAlert.alert(
+                        Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
+                        Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
+                        Locale.localizedString("Change", "Configuration"), //default
+                        Locale.localizedString("Don't Ask Again", "Configuration"), //other
+                        Locale.localizedString("Cancel", "Configuration"));
+                int choice = alert.runModal(); //alternate
                 if(choice == CDSheetCallback.DEFAULT_OPTION) {
                     URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
                             new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()},
@@ -484,14 +455,14 @@ public class CDMainController extends CDController {
         // the NSWorkspace object, instead of going through the application’s default
         // notification center as most notifications do. To receive NSWorkspace notifications,
         // your application must register an observer with the NSWorkspace notification center.
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this,
-                new NSSelector("workspaceWillPowerOff", new Class[]{NSNotification.class}),
-                NSWorkspace.WorkspaceWillPowerOffNotification,
-                null);
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this,
-                new NSSelector("workspaceWillLogout", new Class[]{NSNotification.class}),
-                NSWorkspace.WorkspaceSessionDidResignActiveNotification,
-                null);
+//        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.proxy(),
+//                Foundation.selector("workspaceWillPowerOff:"),
+//                NSWorkspace.WorkspaceWillPowerOffNotification,
+//                null);
+//        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.proxy(),
+//                Foundation.selector("workspaceWillLogout:"),
+//                NSWorkspace.WorkspaceSessionDidResignActiveNotification,
+//                null);
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             Rendezvous.instance().init();
         }
@@ -541,8 +512,8 @@ public class CDMainController extends CDController {
 
                             public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
                                 this.neverShowDonationCheckbox = neverShowDonationCheckbox;
-                                this.neverShowDonationCheckbox.setTarget(this);
-                                this.neverShowDonationCheckbox.setState(NSCell.OffState);
+                                this.neverShowDonationCheckbox.setTarget(this.id());
+                                this.neverShowDonationCheckbox.setState(NSCell.NSOffState);
                             }
 
                             public void awakeFromNib() {
@@ -553,29 +524,24 @@ public class CDMainController extends CDController {
 
                             public void closeDonationSheet(final NSButton sender) {
                                 this.window().close();
-                                boolean never = neverShowDonationCheckbox.state() == NSCell.OnState;
+                                boolean never = neverShowDonationCheckbox.state() == NSCell.NSOnState;
                                 if(never) {
                                     Preferences.instance().setProperty("donate.reminder",
                                             NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
                                 }
                                 if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
-                                    try {
-                                        NSWorkspace.sharedWorkspace().openURL(
-                                                new java.net.URL(Preferences.instance().getProperty("website.donate")));
-                                    }
-                                    catch(java.net.MalformedURLException e) {
-                                        log.error(e.getMessage());
-                                    }
+                                    NSWorkspace.sharedWorkspace().openURL(
+                                            NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
                                 }
                                 // Remeber this reminder date
                                 Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
                                 // Quit again
-                                NSApplication.sharedApplication().terminate(null);
+                                NSApplication.sharedApplication().terminate(this.proxy().id());
                             }
                         };
                         c.loadBundle();
                         // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
-                        return NSApplication.TerminateCancel;
+                        return NSApplication.NSTerminateCancel;
                     }
                 }
             }
@@ -588,7 +554,7 @@ public class CDMainController extends CDController {
         int count = windows.count();
         // Determine if there are any open connections
         while(0 != count--) {
-            NSWindow window = (NSWindow) windows.objectAtIndex(count);
+            NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
             final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
             if(null != controller) {
                 if(Preferences.instance().getBoolean("browser.serialize")) {
@@ -606,15 +572,16 @@ public class CDMainController extends CDController {
                 }
                 if(controller.isConnected()) {
                     if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                        int choice = NSAlertPanel.runAlert(NSBundle.localizedString("Quit", ""),
-                                NSBundle.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-                                NSBundle.localizedString("Quit Anyway", ""), //default
-                                NSBundle.localizedString("Cancel", ""), //other
-                                NSBundle.localizedString("Review...", "")); //alternate
+                        final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit", ""),
+                                Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
+                                Locale.localizedString("Quit Anyway", ""), //default
+                                Locale.localizedString("Cancel", ""), //other
+                                Locale.localizedString("Review...", ""));
+                        int choice = alert.runModal(); //alternate
                         if(choice == CDSheetCallback.ALTERNATE_OPTION) {
                             // Review if at least one window reqested to terminate later, we shall wait
                             final int result = CDBrowserController.applicationShouldTerminate(app);
-                            if(NSApplication.TerminateNow == result) {
+                            if(NSApplication.NSTerminateNow == result) {
                                 return CDTransferController.applicationShouldTerminate(app);
                             }
                             return result;
@@ -622,7 +589,7 @@ public class CDMainController extends CDController {
                         if(choice == CDSheetCallback.CANCEL_OPTION) {
                             // Cancel. Quit has been interrupted. Delete any saved sessions so far.
                             sessions.clear();
-                            return NSApplication.TerminateCancel;
+                            return NSApplication.NSTerminateCancel;
                         }
                         if(choice == CDSheetCallback.DEFAULT_OPTION) {
                             // Quit
@@ -645,7 +612,7 @@ public class CDMainController extends CDController {
      */
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
-        NSNotificationCenter.defaultCenter().removeObserver(this);
+        NSNotificationCenter.defaultCenter().removeObserver(this.proxy());
         //Terminating rendezvous discovery
         Rendezvous.instance().quit();
         //Writing usage info
@@ -678,8 +645,8 @@ public class CDMainController extends CDController {
      *
      * @return A reference to a browser window
      */
-    public CDBrowserController newDocument() {
-        return this.newDocument(false);
+    public static CDBrowserController newDocument() {
+        return CDMainController.newDocument(false);
     }
 
     /**
@@ -688,17 +655,18 @@ public class CDMainController extends CDController {
      * @param force If true, open a new browser regardeless of any unused browser window
      * @return A reference to a browser window
      */
-    public CDBrowserController newDocument(boolean force) {
+    public static CDBrowserController newDocument(boolean force) {
         log.debug("newDocument");
-        final NSArray browsers = this.orderedBrowsers();
+        final NSArray browsers = CDMainController.orderedBrowsers();
         if(!force) {
-            java.util.Enumeration enumerator = browsers.objectEnumerator();
-            while(enumerator.hasMoreElements()) {
-                CDBrowserController controller = (CDBrowserController) enumerator.nextElement();
-                if(!controller.hasSession()) {
-                    controller.window().makeKeyAndOrderFront(null);
-                    return controller;
-                }
+            final NSEnumerator i = browsers.objectEnumerator();
+            NSObject next;
+            while(((next = i.nextObject()) != null)) {
+//                CDBrowserController controller = (CDBrowserController) next;
+//                if(!controller.hasSession()) {
+//                    controller.window().makeKeyAndOrderFront(null);
+//                    return controller;
+//                }
             }
         }
         CDBrowserController controller = new CDBrowserController();
@@ -718,33 +686,31 @@ public class CDMainController extends CDController {
     }
 
     public NSArray orderedTransfers() {
-        NSApplication app = NSApplication.sharedApplication();
-        NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
+        NSArray orderedWindows = NSApplication.sharedApplication().orderedWindows();
         int c = orderedWindows.count();
-        NSMutableArray orderedDocs = new NSMutableArray();
+        NSMutableArray orderedDocs = Rococoa.cast(NSMutableArray.array(), NSMutableArray.class);
         for(int i = 0; i < c; i++) {
-            if(((NSWindow) orderedWindows.objectAtIndex(i)).isVisible()) {
-                Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-                if((delegate != null) && (delegate instanceof CDTransferController)) {
-                    orderedDocs.addObject(delegate);
-                    return orderedDocs;
-                }
+            final NSWindow window = Rococoa.cast(orderedWindows.objectAtIndex(i), NSWindow.class);
+            if(window.isVisible()) {
+                org.rococoa.ID delegate = window.delegate();
+//                if((delegate != null) && (delegate instanceof CDTransferController)) {
+//                    orderedDocs.addObject(delegate);
+//                    return orderedDocs;
+//                }
             }
         }
         log.debug("orderedTransfers:" + orderedDocs);
         return orderedDocs;
     }
 
-    public NSArray orderedBrowsers() {
-        NSApplication app = NSApplication.sharedApplication();
-        NSArray orderedWindows = (NSArray) NSKeyValue.valueForKey(app, "orderedWindows");
-        int c = orderedWindows.count();
-        NSMutableArray orderedDocs = new NSMutableArray();
-        for(int i = 0; i < c; i++) {
-            Object delegate = ((NSWindow) orderedWindows.objectAtIndex(i)).delegate();
-            if((delegate != null) && (delegate instanceof CDBrowserController)) {
-                orderedDocs.addObject(delegate);
-            }
+    public static NSArray orderedBrowsers() {
+        NSArray orderedWindows = NSApplication.sharedApplication().orderedWindows();
+        NSMutableArray orderedDocs = Rococoa.cast(NSMutableArray.array(), NSMutableArray.class);
+        for(int i = 0; i < orderedWindows.count(); i++) {
+            org.rococoa.ID delegate = (Rococoa.cast(orderedWindows.objectAtIndex(i), NSWindow.class)).delegate();
+//            if((delegate != null) && (delegate instanceof CDBrowserController)) {
+//                orderedDocs.addObject(delegate);
+//            }
         }
         return orderedDocs;
     }
@@ -762,7 +728,7 @@ public class CDMainController extends CDController {
     /**
      * @return The available character sets available on this platform
      */
-    protected String[] availableCharsets() {
+    public static String[] availableCharsets() {
         List<String> charsets = new Collection<String>();
         for(Charset charset : Charset.availableCharsets().values()) {
             final String name = charset.displayName();
@@ -771,5 +737,14 @@ public class CDMainController extends CDController {
             }
         }
         return charsets.toArray(new String[charsets.size()]);
+    }
+
+    @Override
+    protected void awakeFromNib() {
+        ;
+    }
+
+    protected String getBundleName() {
+        return "Main";
     }
 }

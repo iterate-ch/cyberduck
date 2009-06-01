@@ -18,69 +18,84 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.application.NSEvent;
-import com.apple.cocoa.foundation.NSMutableDictionary;
-import com.apple.cocoa.foundation.NSPoint;
-
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.cocoa.NSAutoreleasePool;
+
+import java.awt.*;
 
 /**
  * @version $Id:$
  */
-public class CDMainApplication extends NSApplication {
+public class CDMainApplication {
     private static Logger log = Logger.getLogger(CDMainApplication.class);
 
-    public void sendEvent(final NSEvent event) {
-        if(event.type() == NSEvent.ApplicationDefined) {
-            try {
-                final MainAction runnable;
-                synchronized(events) {
-                    runnable = (MainAction) events.valueForKey(String.valueOf(event.subtype()));
+    private static boolean ROCOCOA_JNI_LOADED = false;
+
+    private static final Object lock = new Object();
+
+    private static boolean jni_load() {
+        synchronized(lock) {
+            if(!ROCOCOA_JNI_LOADED) {
+                try {
+                    NSBundle bundle = NSBundle.mainBundle();
+                    String lib = bundle.resourcePath() + "/Java/" + "librococoa.dylib";
+                    log.info("Locating librococoa.dylib at '" + lib + "'");
+                    System.load(lib);
+                    ROCOCOA_JNI_LOADED = true;
+                    log.info("librococoa.dylib loaded");
                 }
-                if(null == runnable) {
-                    log.fatal("Event for unknown runnable:" + event.subtype());
-                    return;
-                }
-                if(runnable.isValid()) {
-                    runnable.run();
-                }
-                else {
-                    log.warn("Received outdated event:" + runnable);
+                catch(UnsatisfiedLinkError e) {
+                    log.error("Could not load the librococoa.dylib library:" + e.getMessage());
+                    throw e;
                 }
             }
-            finally {
-                this.remove(String.valueOf(event.subtype()));
-                if(log.isDebugEnabled()) {
-                    System.gc();
-                }
+            return ROCOCOA_JNI_LOADED;
+        }
+    }
+
+    /**
+     * @param arguments
+     */
+    public static void main(String[] arguments) throws InterruptedException {
+        final NSAutoreleasePool pool = NSAutoreleasePool.new_();
+        try {
+            CDMainApplication.jni_load();
+
+            final Toolkit d = Toolkit.getDefaultToolkit();
+
+            // This method also makes a connection to the window server and completes other initialization.
+            // Your program should invoke this method as one of the first statements in main();
+            final NSApplication app = NSApplication.sharedApplication();
+            //app.run();
+
+            final CDMainController c = new CDMainController();
+
+            if(!NSBundle.loadNibNamed(c.getBundleName(), app.id())) {
+                log.fatal("Couldn't load " + c.getBundleName() + ".nib");
             }
-            return;
-        }
-        super.sendEvent(event);
-    }
 
-    private final NSMutableDictionary events
-            = new NSMutableDictionary();
+            //
+            app.setDelegate(c.id());
 
-    private void put(Object key, MainAction runnable) {
-        synchronized(events) {
-            events.setObjectForKey(runnable, String.valueOf(key));
-        }
-        if(log.isDebugEnabled()) {
-            log.debug("Event Queue Size:" + events.count());
-        }
-    }
+            final CDBrowserController browser = c.newDocument();
 
-    private void remove(Object key) {
-        synchronized(events) {
-            events.removeObjectForKey(key);
+            // Starts the main event loop.
+            //app.run();
+            synchronized(c) {
+                c.wait();
+            }
+        }
+        finally {
+            pool.release();
         }
     }
 
-    public static synchronized void invoke(final MainAction runnable) {
+    public static void invoke(final MainAction runnable) {
         invoke(runnable, false);
     }
 
@@ -91,23 +106,15 @@ public class CDMainApplication extends NSApplication {
      * @param front    The event is added to the front of the queue.
      *                 otherwise the event is added to the back of the queue.
      */
-    public static synchronized void invoke(final MainAction runnable, boolean front) {
+    public static void invoke(final MainAction runnable, boolean front) {
         if(isMainThread()) {
             runnable.run();
             return;
         }
-        final short key = runnable.id();
-        NSEvent event = NSEvent.otherEvent(NSEvent.ApplicationDefined,
-                new NSPoint(0, 0), 0, System.currentTimeMillis() / 1000.0, 0,
-                null, key, -1, -1);
-        final CDMainApplication app = (CDMainApplication) sharedApplication();
-        app.put(String.valueOf(key), runnable);
-        // This method can also be called in subthreads. Events posted
-        // in subthreads bubble up in the main thread event queue.
-        app.postEvent(event, front);
+        Foundation.runOnMainThread(runnable);
     }
 
-    private static final String MAIN_THREAD_NAME = "main";
+    private static final String MAIN_THREAD_NAME = "AWT-AppKit";
 
     public static boolean isMainThread() {
         return Thread.currentThread().getName().equals(MAIN_THREAD_NAME);

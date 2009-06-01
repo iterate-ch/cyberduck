@@ -18,18 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSCell;
-import com.apple.cocoa.application.NSImage;
-import com.apple.cocoa.application.NSOutlineView;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.foundation.NSAttributedString;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSOutlineView;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -90,11 +88,11 @@ public abstract class CDTransferPromptModel extends CDController {
     /**
      * @see com.apple.cocoa.application.NSTableView.DataSource
      */
-    public void outlineViewSetObjectValueForItem(final NSOutlineView outlineView, Number value,
+    public void outlineView_setObjectValueForItem(final NSOutlineView outlineView, Number value,
                                                  final NSTableColumn tableColumn, Path item) {
-        String identifier = (String)tableColumn.identifier();
+        String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            transfer.setSkipped(item, (value).intValue() == NSCell.OffState);
+            transfer.setSkipped(item, (value).intValue() == NSCell.NSOffState);
             if(item.attributes.isDirectory()) {
                 outlineView.setNeedsDisplay(true);
             }
@@ -159,7 +157,7 @@ public abstract class CDTransferPromptModel extends CDController {
                 });
             }
             log.warn("No cached listing for " + path.getName());
-            return new AttributedList<Path>(Collections.<Path>emptyList());
+            return new AttributedList<Path>();
         }
     }
 
@@ -173,10 +171,10 @@ public abstract class CDTransferPromptModel extends CDController {
                 // files
                 final boolean skipped = !transfer.isIncluded(item)
                         || ((CDTransferPrompt)controller).getAction().equals(TransferAction.ACTION_SKIP);
-                return skipped ? NSCell.OffState : NSCell.OnState;
+                return skipped ? NSCell.NSOffState : NSCell.NSOnState;
             }
             if(identifier.equals(FILENAME_COLUMN)) {
-                return new NSAttributedString(item.getName(),
+                return NSAttributedString.create(item.getName(),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
@@ -217,7 +215,7 @@ public abstract class CDTransferPromptModel extends CDController {
         if(null == item) {
             return _roots.get(index);
         }
-        List childs = this.childs(item);
+        final AttributedList<Path> childs = this.childs(item);
         if(childs.isEmpty()) {
             return null;
         }

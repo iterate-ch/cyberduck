@@ -18,13 +18,19 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 
 /**
  * @version $Id$
@@ -64,7 +70,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.transfer.getSession().addProgressListener(l);
         this.reloadData();
         if(browserView.numberOfRows() > 0) {
-            browserView.selectRow(0, false);
+            browserView.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(0), false);
         }
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
     }
@@ -82,7 +88,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             CDMainApplication.invoke(new WindowMainAction(CDTransferPrompt.this) {
                 public void run() {
                     // Update the status label at the bottom of the browser window
-                    statusLabel.setAttributedStringValue(new NSAttributedString(msg,
+                    statusLabel.setAttributedStringValue(NSAttributedString.create(msg,
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
             });
@@ -123,14 +129,14 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         statusIndicator.startAnimation(null);
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
-        statusLabel.setAttributedStringValue(new NSAttributedString(
-                browserView.numberOfRows() + " " + NSBundle.localizedString("files", ""),
+        statusLabel.setAttributedStringValue(NSAttributedString.create(
+                browserView.numberOfRows() + " " + Locale.localizedString("files", ""),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     public TransferAction prompt() {
         log.debug("prompt:" + transfer);
-        for(Path next: transfer.getRoots()) {
+        for(Path next : transfer.getRoots()) {
             if(browserModel.filter().accept(next)) {
                 browserModel.add(next);
             }
@@ -143,8 +149,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     // Outlets
     // ----------------------------------------------------------
 
-    private static final NSAttributedString UNKNOWN_STRING = new NSAttributedString(
-            NSBundle.localizedString("Unknown", ""),
+    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.create(
+            Locale.localizedString("Unknown", ""),
             TRUNCATE_MIDDLE_ATTRIBUTES);
 
     /**
@@ -152,19 +158,19 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
      */
     protected NSOutlineView browserView; // IBOutlet
     protected CDTransferPromptModel browserModel;
-    protected CDTableDelegate<Path> browserViewDelegate;
+    protected CDAbstractPathTableDelegate<Path> browserViewDelegate;
 
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
         this.browserView.setHeaderView(null);
-        this.browserView.setDataSource(this.browserModel);
-        this.browserView.setDelegate(this.browserViewDelegate = new CDAbstractPathTableDelegate() {
+        this.browserView.setDataSource(this.browserModel.id());
+        this.browserView.setDelegate((this.browserViewDelegate = new CDAbstractPathTableDelegate<Path>() {
 
-            public void enterKeyPressed(final Object sender) {
+            public void enterKeyPressed(final NSObject sender) {
                 ;
             }
 
-            public void deleteKeyPressed(final Object sender) {
+            public void deleteKeyPressed(final NSObject sender) {
                 ;
             }
 
@@ -172,14 +178,14 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 ;
             }
 
-            public void tableRowDoubleClicked(final Object sender) {
+            public void tableRowDoubleClicked(final NSObject sender) {
                 ;
             }
 
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow() != -1) {
                     Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
-                    localURLField.setAttributedStringValue(new NSAttributedString(
+                    localURLField.setAttributedStringValue(NSAttributedString.create(
                             p.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     localURLField.setHidden(false);
@@ -189,7 +195,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            localSizeField.setAttributedStringValue(new NSAttributedString(
+                            localSizeField.setAttributedStringValue(NSAttributedString.create(
                                     Status.getSizeAsString(p.getLocal().attributes.getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -198,7 +204,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             localModificationField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            localModificationField.setAttributedStringValue(new NSAttributedString(
+                            localModificationField.setAttributedStringValue(NSAttributedString.create(
                                     CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -209,7 +215,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         localModificationField.setHidden(true);
                     }
 
-                    remoteURLField.setAttributedStringValue(new NSAttributedString(
+                    remoteURLField.setAttributedStringValue(NSAttributedString.create(
                             p.getHost().toURL() + p.getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     remoteURLField.setHidden(false);
@@ -219,7 +225,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            remoteSizeField.setAttributedStringValue(new NSAttributedString(
+                            remoteSizeField.setAttributedStringValue(NSAttributedString.create(
                                     Status.getSizeAsString(p.attributes.getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -228,7 +234,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            remoteModificationField.setAttributedStringValue(new NSAttributedString(
+                            remoteModificationField.setAttributedStringValue(NSAttributedString.create(
                                     CDDateFormatter.getLongFormat(p.attributes.getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -260,29 +266,30 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             /**
              * @see NSOutlineView.Delegate
              */
-            public void outlineViewWillDisplayCell(NSOutlineView outlineView, NSCell cell,
-                                                   NSTableColumn tableColumn, Path item) {
-                String identifier = (String) tableColumn.identifier();
+            public void outlineView_willDisplayCell(NSOutlineView outlineView, NSCell cell,
+                                                    NSTableColumn tableColumn, NSObject item) {
+                String identifier = tableColumn.identifier();
                 if(item != null) {
                     if(identifier.equals(CDTransferPromptModel.INCLUDE_COLUMN)) {
-                        cell.setEnabled(transfer.isSelectable(item));
+//                        cell.setEnabled(transfer.isSelectable(item));
                     }
                     if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
-                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item, 16));
+//                        cell.setObjectValue(CDIconCache.instance().iconForPath(item, 16));
+//                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item, 16));
                     }
-                    if(cell instanceof NSTextFieldCell) {
-                        if(!transfer.isIncluded(item)) {
-                            ((NSTextFieldCell) cell).setTextColor(NSColor.disabledControlTextColor());
-                        }
-                        else {
-                            ((NSTextFieldCell) cell).setTextColor(NSColor.controlTextColor());
-                        }
+                    if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
+//                        if(!transfer.isIncluded(item)) {
+                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
+//                        }
+//                        else {
+//                            Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
+//                        }
                     }
                 }
             }
-        });
-        this.browserView.setRowHeight(new NSLayoutManager().defaultLineHeightForFont(
-                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))) + 2);
+        }).id());
+        this.browserView.setRowHeight(new CGFloat(NSLayoutManager.Factory.create().defaultLineHeightForFont(
+                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         // selection properties
         this.browserView.setAllowsMultipleSelection(true);
         this.browserView.setAllowsEmptySelection(true);
@@ -291,92 +298,66 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.browserView.setAllowsColumnReordering(true);
         this.browserView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
         if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-            this.browserView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask | NSTableView.SolidVerticalGridLineMask);
+            this.browserView.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask | NSTableView.NSTableViewSolidVerticalGridLineMask);
         }
         else if(Preferences.instance().getBoolean("browser.verticalLines")) {
-            this.browserView.setGridStyleMask(NSTableView.SolidVerticalGridLineMask);
+            this.browserView.setGridStyleMask(NSTableView.NSTableViewSolidVerticalGridLineMask);
         }
         else if(Preferences.instance().getBoolean("browser.horizontalLines")) {
-            this.browserView.setGridStyleMask(NSTableView.SolidHorizontalGridLineMask);
+            this.browserView.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
         else {
-            this.browserView.setGridStyleMask(NSTableView.GridNone);
+            this.browserView.setGridStyleMask(NSTableView.NSTableViewGridNone);
         }
-        NSSelector setResizableMaskSelector
-                = new NSSelector("setResizingMask", new Class[]{int.class});
         {
-            NSTableColumn c = new NSTableColumn();
-            c.headerCell().setStringValue(NSBundle.localizedString("Filename", "A column in the browser"));
-            c.setIdentifier(CDTransferPromptModel.FILENAME_COLUMN);
+            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.FILENAME_COLUMN);
+            c.headerCell().setStringValue(Locale.localizedString("Filename"));
             c.setMinWidth(100f);
             c.setWidth(220f);
             c.setMaxWidth(800f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(new CDOutlineCell());
+            c.setDataCell(CDOutlineCell.Factory.create());
             this.browserView.addTableColumn(c);
             this.browserView.setOutlineTableColumn(c);
         }
         {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDTransferPromptModel.SIZE_COLUMN);
+            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.SIZE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(100f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask | NSTableColumn.UserResizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(new NSTextFieldCell());
+            c.setDataCell(NSTextFieldCell.Factory.create());
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDTransferPromptModel.WARNING_COLUMN);
+            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.WARNING_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(new NSImageCell());
+            c.setDataCell(NSImageCell.Factory.create());
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDTransferPromptModel.INCLUDE_COLUMN);
+            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.INCLUDE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            NSButtonCell cell = new NSButtonCell();
+            NSButtonCell cell = NSButtonCell.Factory.create();
             cell.setTitle("");
-            cell.setControlSize(NSCell.SmallControlSize);
-            cell.setButtonType(NSButtonCell.SwitchButton);
+            cell.setControlSize(NSCell.NSSmallControlSize);
+            cell.setButtonType(NSButtonCell.NSSwitchButton);
             cell.setAllowsMixedState(false);
-            cell.setTarget(this);
+            cell.setTarget(this.id());
             c.setDataCell(cell);
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             this.browserView.addTableColumn(c);
@@ -458,19 +439,19 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             if(null == actions[i]) {
                 continue; //Not resumeable
             }
-            this.actionPopup.addItem(actions[i].getLocalizableString());
-            this.actionPopup.lastItem().setRepresentedObject(actions[i]);
+            this.actionPopup.addItemWithTitle(actions[i].getLocalizableString());
+            this.actionPopup.lastItem().setRepresentedObject(actions[i].toString());
             if(actions[i].equals(defaultAction)) {
                 this.actionPopup.selectItem(actionPopup.lastItem());
             }
         }
-        this.action = (TransferAction)this.actionPopup.selectedItem().representedObject();
-        this.actionPopup.setTarget(this);
-        this.actionPopup.setAction(new NSSelector("actionPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.action = TransferAction.forName(this.actionPopup.selectedItem().representedObject());
+        this.actionPopup.setTarget(this.id());
+        this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
     }
 
     public void actionPopupClicked(NSPopUpButton sender) {
-        final TransferAction selected = (TransferAction) sender.selectedItem().representedObject();
+        final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
 
         if(this.action.equals(selected)) {
             return;

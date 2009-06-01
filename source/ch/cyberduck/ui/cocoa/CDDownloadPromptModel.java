@@ -18,9 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSAttributedString;
-
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
 /**
  * @version $Id$
@@ -61,7 +63,7 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
     protected Object objectValueForItem(final Path item, final String identifier) {
         if(null != item) {
             if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-                return new NSAttributedString(Status.getSizeAsString(item.getLocal().attributes.getSize()),
+                return NSAttributedString.create(Status.getSizeAsString(item.getLocal().attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment());
             }
             if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {

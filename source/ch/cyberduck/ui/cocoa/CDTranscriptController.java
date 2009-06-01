@@ -18,38 +18,38 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSFont;
-import com.apple.cocoa.application.NSTextView;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.application.NSColor;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSRange;
-
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
 /**
  * @version $Id:$
  */
 public class CDTranscriptController extends CDBundleController implements TranscriptListener {
 
-    protected static final NSDictionary FIXED_WITH_FONT_REQUEST_ATTRIBUTES = new NSDictionary(
-            new Object[]{
+    protected static final NSDictionary FIXED_WITH_FONT_REQUEST_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+            NSArray.arrayWithObjects(
                     NSFont.userFixedPitchFontOfSize(9.0f)
-            },
-            new Object[]{
+            ),
+            NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName
-            }
+            )
     );
 
-    public static NSDictionary FIXED_WITH_FONT_RESPONSE_ATTRIBUTES = new NSDictionary(
-            new Object[]{
+    public static NSDictionary FIXED_WITH_FONT_RESPONSE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+            NSArray.arrayWithObjects(
                     NSFont.userFixedPitchFontOfSize(9.0f),
-                    NSColor.darkGrayColor()},
-            new Object[]{
+                    NSColor.darkGrayColor()),
+            NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName
-            }
+            )
     );
 
     private NSView logView;
@@ -86,10 +86,9 @@ public class CDTranscriptController extends CDBundleController implements Transc
 
     public void write(final NSDictionary font, final String transcript) {
         logTextView.textStorage().appendAttributedString(
-                new NSAttributedString(transcript+"\n", font)
+                NSAttributedString.create(transcript + "\n", font)
         );
-        logTextView.scrollRangeToVisible(
-                new NSRange(logTextView.textStorage().length(), 0));
+        logTextView.scrollRangeToVisible(NSRange.NSMakeRange(logTextView.textStorage().length(), 0));
     }
 
     public void clear() {

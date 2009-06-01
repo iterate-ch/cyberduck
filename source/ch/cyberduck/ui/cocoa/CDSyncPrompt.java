@@ -18,15 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSSelector;
-
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.SyncTransfer;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.ui.cocoa.application.*;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 /**
  * @version $Id$
@@ -45,41 +44,27 @@ public class CDSyncPrompt extends CDTransferPrompt {
 
     public void setBrowserView(NSOutlineView view) {
         super.setBrowserView(view);
-        NSSelector setResizableMaskSelector
-                = new NSSelector("setResizingMask", new Class[]{int.class});
         {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDSyncPromptModel.SYNC_COLUMN);
+            NSTableColumn c = NSTableColumn.Factory.create(CDSyncPromptModel.SYNC_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(new NSImageCell());
+            c.setDataCell(NSImageCell.Factory.create());
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             view.addTableColumn(c);
         }
         {
-            NSTableColumn c = new NSTableColumn();
-            c.setIdentifier(CDSyncPromptModel.CREATE_COLUMN);
+            NSTableColumn c = NSTableColumn.Factory.create(CDSyncPromptModel.CREATE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(new NSImageCell());
+            c.setDataCell(NSImageCell.Factory.create());
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             view.addTableColumn(c);
         }
@@ -112,23 +97,23 @@ public class CDSyncPrompt extends CDTransferPrompt {
                 SyncTransfer.ACTION_MIRROR
         };
 
-        for(int i = 0; i < actions.length; i++) {
-            if(null == actions[i]) {
+        for(TransferAction action : actions) {
+            if(null == action) {
                 continue; //Not resumeable
             }
-            this.actionPopup.addItem(actions[i].getLocalizableString());
-            this.actionPopup.lastItem().setRepresentedObject(actions[i]);
-            if(actions[i].equals(defaultAction)) {
+            this.actionPopup.addItemWithTitle(action.getLocalizableString());
+            this.actionPopup.lastItem().setRepresentedObject(action.toString());
+            if(action.equals(defaultAction)) {
                 this.actionPopup.selectItem(actionPopup.lastItem());
             }
         }
-        this.actionPopup.setTarget(this);
-        this.actionPopup.setAction(new NSSelector("actionPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.actionPopup.setTarget(this.id());
+        this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
     }
 
     public void actionPopupClicked(NSPopUpButton sender) {
         final TransferAction current = ((SyncTransfer) transfer).getAction();
-        final TransferAction selected = (TransferAction) sender.selectedItem().representedObject();
+        final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
 
         if(current.equals(selected)) {
             return;

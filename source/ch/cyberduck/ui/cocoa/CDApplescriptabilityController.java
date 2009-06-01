@@ -17,11 +17,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSApplication;
-import com.apple.cocoa.foundation.NSScriptCommand;
-import com.apple.cocoa.foundation.NSScriptCommandDescription;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,18 +27,20 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDApplescriptabilityController extends NSScriptCommand {
+public class CDApplescriptabilityController {//extends NSScriptCommand {
     private static Logger log = Logger.getLogger(CDApplescriptabilityController.class);
 
-    public CDApplescriptabilityController(NSScriptCommandDescription commandDescription) {
-        super(commandDescription);
-    }
+//    public CDApplescriptabilityController(NSScriptCommandDescription commandDescription) {
+//        super(commandDescription);
+//    }
 
     public Object performDefaultImplementation() {
         log.debug("performDefaultImplementation");
-        String arg = (String) this.directParameter();
+        String arg = null;
+//        String arg = (String) this.directParameter();
+        final org.rococoa.ID delegate = NSApplication.sharedApplication().delegate();
         if(null == arg) {
-            return ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+            return CDMainController.newDocument();
         }
         log.debug("Received URL from Apple Event:" + arg);
         final Host h = Host.parse(arg);
@@ -63,7 +62,7 @@ public class CDApplescriptabilityController extends NSScriptCommand {
 //            }
             }
         }
-        CDBrowserController doc = ((CDMainController) NSApplication.sharedApplication().delegate()).newDocument();
+        CDBrowserController doc = CDMainController.newDocument();
         doc.mount(h);
         return null;
     }

@@ -18,13 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -36,14 +36,14 @@ public class CDPortablePreferencesImpl extends Preferences {
 
     public Object getObject(String property) {
         Object value = dict.objectForKey(property);
-        if (null == value) {
+        if(null == value) {
             return super.getObject(property);
         }
         return value;
     }
 
     public void setProperty(String property, Object value) {
-        log.info("setProperty:"+property+","+value);
+        log.info("setProperty:" + property + "," + value);
         this.dict.setObjectForKey(value.toString(), property);
     }
 
@@ -53,52 +53,44 @@ public class CDPortablePreferencesImpl extends Preferences {
     }
 
     protected void load() {
-        File f = new File(NSPathUtilities.stringByExpandingTildeInPath(
-                (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")));
-        if (f.exists()) {
+        File f = new File(NSString.stringByExpandingTildeInPath(
+                NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString()));
+        if(f.exists()) {
             log.info("Found preferences file: " + f.toString());
-            NSData plistData = new NSData(f);
-            String[] errorString = new String[]{null};
+            NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(f.getAbsolutePath()));
             Object propertyListFromXMLData =
-                    NSPropertyListSerialization.propertyListFromData(plistData,
-                            NSPropertyListSerialization.PropertyListMutableContainersAndLeaves,
-                            new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                            errorString);
-            if (errorString[0] != null) {
-                log.error("Problem reading preferences file: " + errorString[0]);
+                    null;
+            try {
+                propertyListFromXMLData = NSPropertyListSerialization.propertyListFromData(plistData);
             }
-            if (propertyListFromXMLData instanceof NSDictionary) {
-                this.dict = (NSMutableDictionary)propertyListFromXMLData;
+            catch(IOException e) {
+                log.error("Problem reading preferences file: " + e.getMessage());
+            }
+            if(propertyListFromXMLData instanceof NSDictionary) {
+                this.dict = (NSMutableDictionary) propertyListFromXMLData;
             }
         }
         else {
-            this.dict = new NSMutableDictionary();
+            this.dict = NSMutableDictionary.dictionary();
         }
     }
 
     public void save() {
+        NSMutableData collection = NSMutableData.dataWithLength(0);
         try {
-            NSMutableData collection = new NSMutableData();
-            String[] errorString = new String[]{null};
-            collection.appendData(NSPropertyListSerialization.dataFromPropertyList(
-                    this.dict,
-                    NSPropertyListSerialization.PropertyListXMLFormat,
-                    errorString));
-            if (errorString[0] != null) {
-                log.error("Problem writing preferences file: " + errorString[0]);
-            }
-            File f = new File(NSPathUtilities.stringByExpandingTildeInPath(
-                    (String)NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")));
-            f.getParentFile().mkdirs();
-            if (collection.writeToURL(f.toURL(), true)) {
-                log.info("Preferences sucessfully saved to :" + f.toString());
-            }
-            else {
-                log.error("Error saving preferences to :" + f.toString());
-            }
+            collection.appendData(NSPropertyListSerialization.dataFromPropertyList(this.dict));
         }
-        catch (java.net.MalformedURLException e) {
-            log.error(e.getMessage());
+        catch(IOException e) {
+            log.error("Problem writing preferences file: " + e.getMessage());
+        }
+        File f = new File(NSString.stringByExpandingTildeInPath(
+                NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString()));
+        f.getParentFile().mkdirs();
+        if(collection.writeToURL(NSURL.fileURLWithPath(f.getAbsolutePath()))) {
+            log.info("Preferences sucessfully saved to :" + f.toString());
+        }
+        else {
+            log.error("Error saving preferences to :" + f.toString());
         }
     }
 }

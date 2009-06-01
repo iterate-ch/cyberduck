@@ -19,17 +19,18 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-
-import com.apple.cocoa.foundation.NSUserDefaults;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.NSUserDefaults;
 
 import org.apache.log4j.Logger;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes.
- * Warning: User defaults are not thread safe. 
+ * Warning: User defaults are not thread safe.
  *
  * @version $Id$
- * @see com.apple.cocoa.foundation.NSUserDefaults
+ * @see ch.cyberduck.ui.cocoa.foundation.NSUserDefaults
  */
 public class CDPreferencesImpl extends Preferences {
     private static Logger log = Logger.getLogger(Preferences.class);
@@ -37,24 +38,24 @@ public class CDPreferencesImpl extends Preferences {
     private NSUserDefaults props;
 
     public Object getObject(final String property) {
-        Object value = props.objectForKey(property);
-        if (null == value) {
+        NSObject value = props.objectForKey(property);
+        if(null == value) {
             return super.getObject(property);
         }
         return value;
     }
 
     public void setProperty(final String property, final Object value) {
-        log.info("setProperty:"+property+","+value);
+        log.info("setProperty:" + property + "," + value);
         // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
-        this.props.setObjectForKey(value.toString(), property);
+        this.props.setObjectForKey(NSString.stringWithString(value.toString()), property);
         this.save();
     }
 
     public void deleteProperty(final String property) {
-        log.debug("deleteProperty:"+property);
+        log.debug("deleteProperty:" + property);
         this.props.removeObjectForKey(property);
         this.save();
     }
@@ -78,13 +79,14 @@ public class CDPreferencesImpl extends Preferences {
 
         if(this.getBoolean("update.check")) {
             // Will override SUCheckAtStartup
-            this.props.setIntegerForKey(Integer.parseInt(super.getProperty("update.check.interval")),
+            this.props.setInteger_forKey(Integer.parseInt(super.getProperty("update.check.interval")),
                     "SUScheduledCheckInterval");
         }
     }
 
     /**
      * Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
+     *
      * @param property
      */
     private void _init(final String property) {

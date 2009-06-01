@@ -18,10 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSPathUtilities;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
@@ -57,7 +55,7 @@ public class CDCreateFileController extends CDFileController {
         final CDBrowserController c = (CDBrowserController)parent;
         c.background(new BrowserBackgroundAction(c) {
             final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
-                    new Local(NSPathUtilities.temporaryDirectory(), filename));
+                    new Local(Preferences.instance().getProperty("tmp.dir"), filename));
 
             public void run() {
                 int no = 0;
@@ -67,7 +65,7 @@ public class CDCreateFileController extends CDFileController {
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }
-                    file.setLocal(new Local(NSPathUtilities.temporaryDirectory(), proposal));
+                    file.setLocal(new Local(Preferences.instance().getProperty("tmp.dir"), proposal));
                 }
                 file.getLocal().touch();
                 TransferOptions options = new TransferOptions();
@@ -92,7 +90,7 @@ public class CDCreateFileController extends CDFileController {
             }
 
             public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Uploading {0}", "Status", ""),
+                return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         file.getName());
             }
 

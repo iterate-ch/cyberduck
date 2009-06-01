@@ -18,17 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSSelector;
-
 import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class CDActivityController extends CDWindowController {
+public class CDActivityController extends CDWindowController implements CDListDataSource {
     private static Logger log = Logger.getLogger(CDActivityController.class);
 
     private static CDActivityController instance;
@@ -97,7 +98,7 @@ public class CDActivityController extends CDWindowController {
 
     private void reload() {
         while(table.subviews().count() > 0) {
-            ((NSView) table.subviews().lastObject()).removeFromSuperviewWithoutNeedingDisplay();
+            (Rococoa.cast(table.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
         }
         table.reloadData();
     }
@@ -105,8 +106,8 @@ public class CDActivityController extends CDWindowController {
     public void setWindow(NSWindow window) {
         this.window = window;
         this.window.setReleasedWhenClosed(false);
-        this.window.setDelegate(this);
-        this.window.setTitle(NSBundle.localizedString("Activity", ""));
+        this.window.setDelegate(this.id());
+        this.window.setTitle(Locale.localizedString("Activity", ""));
     }
 
     /**
@@ -121,8 +122,18 @@ public class CDActivityController extends CDWindowController {
 
     public void setTable(NSTableView table) {
         this.table = table;
-        this.table.setDataSource(this);
-        this.table.setDelegate(this.delegate = new CDAbstractTableDelegate<CDTaskController>() {
+        this.table.setDataSource(this.id());
+        this.table.setDelegate((this.delegate = new CDAbstractTableDelegate<CDTaskController>() {
+            @Override
+            public void enterKeyPressed(NSObject sender) {
+
+            }
+
+            @Override
+            public void deleteKeyPressed(NSObject sender) {
+
+            }
+
             public String tooltip(CDTaskController c) {
                 return null;
             }
@@ -135,35 +146,20 @@ public class CDActivityController extends CDWindowController {
 
             }
 
-            public void tableRowDoubleClicked(Object sender) {
-
+            @Override
+            public void tableRowDoubleClicked(NSObject sender) {
             }
 
             public void selectionDidChange(NSNotification notification) {
 
             }
-
-            public void enterKeyPressed(Object sender) {
-
-            }
-
-            public void deleteKeyPressed(Object sender) {
-
-            }
-        });
-        NSSelector setResizableMaskSelector
-                = new NSSelector("setResizingMask", new Class[]{int.class});
+        }).id());
         {
-            NSTableColumn c = new NSTableColumn();
+            NSTableColumn c = NSTableColumn.Factory.create("Default");
             c.setMinWidth(80f);
             c.setWidth(300f);
-            if(setResizableMaskSelector.implementedByClass(NSTableColumn.class)) {
-                c.setResizingMask(NSTableColumn.AutoresizingMask);
-            }
-            else {
-                c.setResizable(true);
-            }
-            c.setDataCell(new CDControllerCell());
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setDataCell(CDControllerCell.Factory.create());
             this.table.addTableColumn(c);
         }
         this.table.sizeToFit();
@@ -191,10 +187,11 @@ public class CDActivityController extends CDWindowController {
      * @param tableColumn
      * @param row
      */
-    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+    @Override
+    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < this.numberOfRowsInTableView(view)) {
             final Collection<CDTaskController> values = tasks.values();
-            return values.toArray(new CDTaskController[values.size()])[row];
+            return values.toArray(new CDTaskController[values.size()])[row].view();
         }
         log.warn("tableViewObjectValueForLocation:" + row + " == null");
         return null;

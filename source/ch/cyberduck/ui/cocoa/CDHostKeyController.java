@@ -18,21 +18,19 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.ethz.ssh2.KnownHosts;
-import ch.ethz.ssh2.ServerHostKeyVerifier;
-
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
-
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSWindow;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSObject;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+
+import ch.ethz.ssh2.KnownHosts;
+import ch.ethz.ssh2.ServerHostKeyVerifier;
 
 /**
  * @version $Id$
@@ -52,14 +50,15 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
         this.parent = windowController;
         Local f = new Local(Preferences.instance().getProperty("ssh.knownhosts"));
         if(!f.exists()) {
-            f.getParent().mkdir(true); f.touch();
+            f.getParent().mkdir(true);
+            f.touch();
         }
         if(f.isReadable()) {
             try {
                 this.database = new KnownHosts(f.getAbsolute());
             }
             catch(IOException e) {
-                log.error("Cannot read "+f.getAbsolute());
+                log.error("Cannot read " + f.getAbsolute());
             }
         }
         if(null == this.database) {
@@ -74,15 +73,15 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
             return true; // We are happy
         }
         if(KnownHosts.HOSTKEY_IS_NEW == result) {
-            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Unknown host key for", "") + " "
+            NSWindow sheet = NSAlert.alert(Locale.localizedString("Unknown host key for", "") + " "
                     + hostname, //title
-                    NSBundle.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")
+                    Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")
                             + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
-                    NSBundle.localizedString("Allow", ""), // default button
-                    NSBundle.localizedString("Deny", ""), // alternate button
+                    Locale.localizedString("Allow", ""), // default button
+                    Locale.localizedString("Deny", ""), // alternate button
                     new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
-                            NSBundle.localizedString("Always", "") : null //other button
-            );
+                            Locale.localizedString("Always", "") : null //other button
+            ).window();
             CDSheetController c = new CDSheetController(parent, sheet) {
                 public void callback(final int returncode) {
                     if(returncode == DEFAULT_OPTION) {// allow host (once)
@@ -101,16 +100,16 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
                     || c.returnCode() == CDSheetCallback.ALTERNATE_OPTION;
         }
         if(KnownHosts.HOSTKEY_HAS_CHANGED == result) {
-            NSWindow sheet = NSAlertPanel.criticalAlertPanel(NSBundle.localizedString("Host key mismatch:", "") + " " + hostname, //title
-                    NSBundle.localizedString("The host key supplied is", "") + ": "
+            NSWindow sheet = NSAlert.alert(Locale.localizedString("Host key mismatch:", "") + " " + hostname, //title
+                    Locale.localizedString("The host key supplied is", "") + ": "
                             + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
-//                            + "\n" + NSBundle.localizedString("The current allowed key for this host is", "") + " : "
+//                            + "\n" + Locale.localizedString("The current allowed key for this host is", "") + " : "
 //                            + allowedHostKey.getFingerprint() + "\n"
-                            + NSBundle.localizedString("Do you want to allow the host access?", ""),
-                    NSBundle.localizedString("Allow", ""), // defaultbutton
-                    NSBundle.localizedString("Deny", ""), //alternative button
-                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? NSBundle.localizedString("Always", "") : null //other button
-            );
+                            + Locale.localizedString("Do you want to allow the host access?", ""),
+                    Locale.localizedString("Allow", ""), // defaultbutton
+                    Locale.localizedString("Deny", ""), //alternative button
+                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always", "") : null //other button
+            ).window();
             CDSheetController c = new CDSheetController(parent, sheet) {
                 public void callback(final int returncode) {
                     if(returncode == DEFAULT_OPTION) {
@@ -132,7 +131,7 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
     }
 
     private void allow(final String hostname, final String serverHostKeyAlgorithm,
-                                       final byte[] serverHostKey, boolean always) {
+                       final byte[] serverHostKey, boolean always) {
         // The following call will ONLY put the key into the memory cache!
         // To save it in a known hosts file, also call "KnownHosts.addHostkeyToFile(...)"
         String hashedHostname = KnownHosts.createHashedHostname(hostname);

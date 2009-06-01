@@ -18,9 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSAttributedString;
-
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
 /**
  * @version $Id$
@@ -66,7 +68,7 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
                 return null;
             }
             if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-                return new NSAttributedString(Status.getSizeAsString(item.attributes.getSize()),
+                return NSAttributedString.create(Status.getSizeAsString(item.attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment());
             }
         }

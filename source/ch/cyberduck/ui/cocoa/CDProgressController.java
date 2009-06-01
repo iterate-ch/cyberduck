@@ -18,23 +18,23 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSDictionary;
-import com.apple.cocoa.foundation.NSSelector;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Date;
 
 /**
  * @version $Id$
@@ -177,63 +177,63 @@ public class CDProgressController extends CDBundleController {
         if(messageText != null) {
             b.append(messageText);
         }
-        messageField.setAttributedStringValue(new NSAttributedString(b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
+        messageField.setAttributedStringValue(NSAttributedString.create(b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setProgressText() {
-        progressField.setAttributedStringValue(new NSAttributedString(meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
+        progressField.setAttributedStringValue(NSAttributedString.create(meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setStatusText() {
         StringBuffer b = new StringBuffer();
         if(!transfer.isRunning()) {
             if(transfer instanceof DownloadTransfer) {
-                b.append(transfer.isComplete() ? NSBundle.localizedString("Download complete", "Growl", "") :
-                        NSBundle.localizedString("Transfer incomplete", "Status", ""));
+                b.append(transfer.isComplete() ? Locale.localizedString("Download complete", "Growl") :
+                        Locale.localizedString("Transfer incomplete", "Status"));
             }
             if(transfer instanceof UploadTransfer) {
-                b.append(transfer.isComplete() ? NSBundle.localizedString("Upload complete", "Growl", "") :
-                        NSBundle.localizedString("Transfer incomplete", "Status", ""));
+                b.append(transfer.isComplete() ? Locale.localizedString("Upload complete", "Growl") :
+                        Locale.localizedString("Transfer incomplete", "Status"));
             }
             if(transfer instanceof SyncTransfer) {
-                b.append(transfer.isComplete() ? NSBundle.localizedString("Synchronization complete", "Growl", "") :
-                        NSBundle.localizedString("Transfer incomplete", "Status", ""));
+                b.append(transfer.isComplete() ? Locale.localizedString("Synchronization complete", "Growl") :
+                        Locale.localizedString("Transfer incomplete", "Status"));
             }
         }
-        statusField.setAttributedStringValue(new NSAttributedString(
+        statusField.setAttributedStringValue(NSAttributedString.create(
                 b.toString(),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    private static final NSDictionary NORMAL_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{
+    private static final NSDictionary NORMAL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+            NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName}
+                    NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{
+    private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+            NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
                     NSColor.whiteColor(),
-                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName}
+                    NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    private static final NSDictionary DARK_FONT_ATTRIBUTES = new NSDictionary(
-            new Object[]{
+    private static final NSDictionary DARK_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+            NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
                     NSColor.darkGrayColor(),
-                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL},
-            new Object[]{
+                    CDTableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+            NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName}
+                    NSAttributedString.ParagraphStyleAttributeName)
     );
 
     public void setHighlighted(final boolean highlighted) {
@@ -242,13 +242,13 @@ public class CDProgressController extends CDBundleController {
         messageField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         if(transfer.getRoot().getLocal().exists()) {
             filesPopup.itemAtIndex(0).setAttributedTitle(
-                    new NSAttributedString(filesPopup.itemAtIndex(0).title(),
+                    NSAttributedString.create(filesPopup.itemAtIndex(0).title(),
                             highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
             );
         }
         else {
             filesPopup.itemAtIndex(0).setAttributedTitle(
-                    new NSAttributedString(filesPopup.itemAtIndex(0).title(),
+                    NSAttributedString.create(filesPopup.itemAtIndex(0).title(),
                             highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
             );
         }
@@ -264,21 +264,18 @@ public class CDProgressController extends CDBundleController {
 
     public void setFilesPopup(NSPopUpButton filesPopup) {
         this.filesPopup = filesPopup;
-        this.filesPopup.setTarget(this);
+        this.filesPopup.setTarget(this.id());
         this.filesPopup.removeAllItems();
         {
             Path path = transfer.getRoot();
-            NSMenuItem item = new NSMenuItem();
-            item.setTitle(path.getName());
-            item.setAction(new NSSelector("reveal", new Class[]{NSMenuItem.class}));
-            item.setRepresentedObject(path);
+            NSMenuItem item = NSMenuItem.itemWithTitle(path.getName(), Foundation.selector("reveal:"), "");
+            item.setRepresentedObject(path.getAbsolute());
             item.setImage(CDIconCache.instance().iconForPath(path, 16));
             item.setEnabled(path.getLocal().exists());
             this.filesPopup.menu().addItem(item);
         }
-        this.filesPopup.menu().setDelegate(filesPopupMenuDelegate
-                = new TransferMenuDelegate(transfer.getRoots())
-        );
+        this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer.getRoots());
+        this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
     }
 
     private NSTextField progressField; // IBOutlet
@@ -314,9 +311,8 @@ public class CDProgressController extends CDBundleController {
         this.progressBar = progressBar;
         this.progressBar.setDisplayedWhenStopped(false);
         this.progressBar.setUsesThreadedAnimation(true);
-        this.progressBar.setControlTint(NSProgressIndicator.BlueControlTint);
-        this.progressBar.setControlSize(NSProgressIndicator.SmallControlSize);
-        this.progressBar.setStyle(NSProgressIndicator.ProgressIndicatorBarStyle);
+        this.progressBar.setControlSize(NSCell.NSSmallControlSize);
+        this.progressBar.setStyle(NSProgressIndicator.NSProgressIndicatorBarStyle);
         this.progressBar.setMinValue(0);
     }
 

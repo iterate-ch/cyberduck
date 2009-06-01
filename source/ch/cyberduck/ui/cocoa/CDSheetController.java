@@ -18,12 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSSelector;
-
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.ID;
 
 /**
  * @version $Id$
@@ -78,7 +81,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
         if(sender.tag() == DEFAULT_OPTION
                 || sender.tag() == ALTERNATE_OPTION) {
             if(!this.validateInput()) {
-                NSApplication.beep();
+//                NSApplication.beep();
                 return;
             }
         }
@@ -160,9 +163,8 @@ public abstract class CDSheetController extends CDWindowController implements CD
         final NSApplication app = NSApplication.sharedApplication();
         app.beginSheet(this.window(), //window
                 parent.window(), // modalForWindow
-                this, // modalDelegate
-                new NSSelector("sheetDidClose",
-                        new Class[]{NSPanel.class, int.class, Object.class}), // did end selector
+                this.proxy().id(), // modalDelegate
+                Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
                 null); //context
     }
 
@@ -175,7 +177,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param returncode Identifier for the button clicked by the user
      * @param context    Not used
      */
-    public void sheetDidClose(final NSPanel sheet, final int returncode, Object context) {
+    public void sheetDidClose_returnCode_contextInfo(final NSPanel sheet, final int returncode, ID context) {
         log.debug("sheetDidClose:" + sheet);
         this.returncode = returncode;
         sheet.orderOut(null);
@@ -191,7 +193,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * @return True if the class is a singleton and the object should
      *         not be invlidated upon the sheet is closed
-     * @see #sheetDidClose(com.apple.cocoa.application.NSPanel, int, Object)
+     * @see #sheetDidClose(ch.cyberduck.ui.cocoa.application.NSPanel, int, Object)
      */
     public boolean isSingleton() {
         return false;

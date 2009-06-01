@@ -18,18 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSOutlineView;
-import com.apple.cocoa.application.NSTableColumn;
-
-import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 
 /**
  * @version $Id:$
  */
-public interface CDOutlineDataSource {
-    int outlineViewNumberOfChildrenOfItem(NSOutlineView view, Path item);
-
-    Path outlineViewChildOfItem(NSOutlineView outlineView, int index, Path item);
-
-    Object outlineViewObjectValueForItem(NSOutlineView outlineView, NSTableColumn tableColumn, Path item);
+public interface CDOutlineDataSource extends NSOutlineView.DataSource {
+    ;
 }

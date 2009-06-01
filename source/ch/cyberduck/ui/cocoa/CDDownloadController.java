@@ -19,15 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.foundation.NSBundle;
-
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
-
-import java.net.MalformedURLException;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -58,7 +53,7 @@ public class CDDownloadController extends CDSheetController {
     }
 
     public void callback(final int returncode) {
-        if (returncode == DEFAULT_OPTION) {
+        if(returncode == DEFAULT_OPTION) {
             Host host = Host.parse(urlField.stringValue());
             final Transfer transfer = new DownloadTransfer(
                     PathFactory.createPath(SessionFactory.createSession(host),

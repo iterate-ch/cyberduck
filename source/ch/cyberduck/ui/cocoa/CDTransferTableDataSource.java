@@ -18,14 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSDictionary;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +36,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class CDTransferTableDataSource extends CDController {
+public class CDTransferTableDataSource extends CDController implements CDListDataSource {
     private static Logger log = Logger.getLogger(CDTransferTableDataSource.class);
 
     public static final String PROGRESS_COLUMN = "PROGRESS";
@@ -117,14 +119,14 @@ public class CDTransferTableDataSource extends CDController {
      * @param tableColumn
      * @param row
      */
-    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < numberOfRowsInTableView(view)) {
             final String identifier = (String) tableColumn.identifier();
             if(identifier.equals(PROGRESS_COLUMN)) {
-                return controllers.get(this.getSource().get(row));
+                return controllers.get(this.getSource().get(row)).view();
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return this.getSource().get(row).getName();
+                return NSString.stringWithString(this.getSource().get(row).getName());
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -137,13 +139,13 @@ public class CDTransferTableDataSource extends CDController {
 
     public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
-        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
-            tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+        if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
+            tableView.setDropRow_dropOperation(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.DragOperationCopy;
         }
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-        if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
-            tableView.setDropRowAndDropOperation(row, NSTableView.DropAbove);
+        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
+            tableView.setDropRow_dropOperation(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.DragOperationCopy;
         }
         log.debug("tableViewValidateDrop:DragOperationNone");
@@ -164,7 +166,7 @@ public class CDTransferTableDataSource extends CDController {
         if(row < 0) {
             row = 0;
         }
-        if(info.draggingPasteboard().availableTypeFromArray(new NSArray(NSPasteboard.StringPboardType)) != null) {
+        if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
@@ -177,20 +179,20 @@ public class CDTransferTableDataSource extends CDController {
         // we are only interested in our private pasteboard with a description of the queue
         // encoded in as a xml.
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-        log.debug("availableTypeFromArray:TransferPasteboardType: " + pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)));
-        if(pboard.availableTypeFromArray(new NSArray(CDPasteboards.TransferPasteboardType)) != null) {
+        log.debug("availableTypeFromArray:TransferPasteboardType: " + pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)));
+        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
             Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
             log.debug("tableViewAcceptDrop:" + o);
             if(o != null) {
                 NSArray elements = (NSArray) o;
                 for(int i = 0; i < elements.count(); i++) {
-                    NSDictionary dict = (NSDictionary) elements.objectAtIndex(i);
+                    NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     TransferCollection.instance().add(row, TransferFactory.create(dict));
                     tableView.reloadData();
-                    tableView.selectRow(row, false);
+                    tableView.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(row), false);
                     tableView.scrollRowToVisible(row);
                 }
-                pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
+                pboard.setPropertyList_forType(null, CDPasteboards.TransferPasteboardType);
                 return true;
             }
         }

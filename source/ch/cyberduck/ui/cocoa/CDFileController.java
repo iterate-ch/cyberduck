@@ -18,15 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSButton;
-import com.apple.cocoa.application.NSTextField;
-
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -53,8 +52,8 @@ public abstract class CDFileController extends CDSheetController {
 
     protected Path getWorkdir() {
         Path workdir;
-        if(((CDBrowserController)parent).getSelectionCount() == 1) {
-            workdir = (Path)((CDBrowserController)parent).getSelectedPath().getParent();
+        if(((CDBrowserController) parent).getSelectionCount() == 1) {
+            workdir = (Path) ((CDBrowserController) parent).getSelectedPath().getParent();
         }
         else {
             workdir = ((CDBrowserController) parent).workdir();
@@ -63,7 +62,7 @@ public abstract class CDFileController extends CDSheetController {
     }
 
     protected boolean validateInput() {
-        if (filenameField.stringValue().indexOf('/') != -1) {
+        if(filenameField.stringValue().indexOf('/') != -1) {
             return false;
         }
         if(StringUtils.isNotBlank(filenameField.stringValue())) {

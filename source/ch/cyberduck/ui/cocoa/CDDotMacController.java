@@ -18,15 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSAlertPanel;
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -51,13 +54,11 @@ public class CDDotMacController extends CDController {
     }
 
     /**
-     *
      * @return Member name of the MobileMe account configured in System Preferences
      */
     public native String getAccountName();
 
     /**
-     *
      * @param path
      */
     private native void downloadBookmarks(String path);
@@ -66,42 +67,35 @@ public class CDDotMacController extends CDController {
      *
      */
     public void downloadBookmarks() {
-        File f = new File(NSPathUtilities.temporaryDirectory(), "Favorites.plist");
+        File f = new File(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolutePath());
         if(f.exists()) {
-            NSData plistData = new NSData(f);
-            String[] errorString = new String[]{null};
-            Object propertyListFromXMLData =
-                    NSPropertyListSerialization.propertyListFromData(plistData,
-                            NSPropertyListSerialization.PropertyListImmutable,
-                            new int[]{NSPropertyListSerialization.PropertyListXMLFormat},
-                            errorString);
-            if(errorString[0] != null) {
-                log.error("Problem reading bookmark file: " + errorString[0]);
-            }
-            if(propertyListFromXMLData instanceof NSArray) {
+            NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(f.getAbsolutePath()));
+            try {
+                NSArray propertyListFromXMLData = Rococoa.cast(NSPropertyListSerialization.propertyListFromData(plistData), NSArray.class);
                 NSArray entries = (NSArray) propertyListFromXMLData;
-                java.util.Enumeration i = entries.objectEnumerator();
-                Object element;
-                while(i.hasMoreElements()) {
-                    element = i.nextElement();
-                    if(element instanceof NSDictionary) {
-                        final Host bookmark = new Host((NSDictionary) element);
-                        if(!HostCollection.defaultCollection().contains(bookmark)) {
-                            int choice = NSAlertPanel.runAlert((bookmark).getNickname(),
-                                    NSBundle.localizedString("Add this bookmark to your existing bookmarks?", "IDisk", ""),
-                                    NSBundle.localizedString("Add", "IDisk", ""), //default
-                                    NSBundle.localizedString("Cancel", ""), //alternate
-                                    NSBundle.localizedString("Skip", "IDisk", "")); //other
-                            if(choice == CDSheetCallback.DEFAULT_OPTION) {
-                                HostCollection.defaultCollection().add(bookmark);
-                            }
-                            if(choice == CDSheetCallback.ALTERNATE_OPTION) {
-                                return;
-                            }
+                final NSEnumerator i = entries.objectEnumerator();
+                NSObject next;
+                while(((next = i.nextObject()) != null)) {
+                    final Host bookmark = new Host(Rococoa.cast(next, NSDictionary.class));
+                    if(!HostCollection.defaultCollection().contains(bookmark)) {
+                        final NSAlert alert = NSAlert.alert((bookmark).getNickname(),
+                                Locale.localizedString("Add this bookmark to your existing bookmarks?", "IDisk"),
+                                Locale.localizedString("Add", "IDisk"), //default
+                                Locale.localizedString("Cancel"), //alternate
+                                Locale.localizedString("Skip", "IDisk"));
+                        int choice = alert.runModal(); //other
+                        if(choice == CDSheetCallback.DEFAULT_OPTION) {
+                            HostCollection.defaultCollection().add(bookmark);
+                        }
+                        if(choice == CDSheetCallback.ALTERNATE_OPTION) {
+                            return;
                         }
                     }
                 }
+            }
+            catch(IOException e) {
+                log.error("Problem reading bookmark file: " + e.getMessage());
             }
         }
         f.delete();

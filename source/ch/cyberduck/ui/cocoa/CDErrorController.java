@@ -18,11 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSTextField;
-import com.apple.cocoa.application.NSView;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSBundle;
-
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.commons.httpclient.HttpException;
@@ -52,11 +51,11 @@ public class CDErrorController extends CDBundleController {
         this.hostField = hostField;
         if(null == failure.getPath()) {
             this.hostField.setAttributedStringValue(
-                    new NSAttributedString(failure.getSession().getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
+                    NSAttributedString.create(failure.getSession().getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
         }
         else {
             this.hostField.setAttributedStringValue(
-                    new NSAttributedString(failure.getPath().getAbsolute(), FIXED_WITH_FONT_ATTRIBUTES));
+                    NSAttributedString.create(failure.getPath().getAbsolute(), FIXED_WITH_FONT_ATTRIBUTES));
         }
     }
 
@@ -66,7 +65,7 @@ public class CDErrorController extends CDBundleController {
         this.descriptionField = descriptionField;
         this.descriptionField.setSelectable(true);
         this.descriptionField.setAttributedStringValue(
-                new NSAttributedString(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
+                NSAttributedString.create(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSTextField errorField;
@@ -75,7 +74,7 @@ public class CDErrorController extends CDBundleController {
         this.errorField = errorField;
         this.errorField.setSelectable(true);
         this.errorField.setAttributedStringValue(
-                new NSAttributedString(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                NSAttributedString.create(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSView view;
@@ -98,30 +97,30 @@ public class CDErrorController extends CDBundleController {
     private String getReadableTitle(BackgroundException e) {
         final Throwable cause = e.getCause();
         if(cause instanceof FTPException) {
-            return "FTP " + NSBundle.localizedString("Error", "");
+            return "FTP " + Locale.localizedString("Error");
         }
         if(cause instanceof SFTPException) {
-            return "SSH " + NSBundle.localizedString("Error", "");
+            return "SSH " + Locale.localizedString("Error");
         }
         if(cause instanceof S3ServiceException) {
-            return "S3 " + NSBundle.localizedString("Error", "");
+            return "S3 " + Locale.localizedString("Error");
         }
         if(cause instanceof CloudFrontServiceException) {
-            return "CloudFront " + NSBundle.localizedString("Error", "");
+            return "CloudFront " + Locale.localizedString("Error");
         }
         if(cause instanceof HttpException) {
-            return "HTTP " + NSBundle.localizedString("Error", "");
+            return "HTTP " + Locale.localizedString("Error");
         }
         if(cause instanceof SocketException) {
-            return "Network " + NSBundle.localizedString("Error", "");
+            return "Network " + Locale.localizedString("Error");
         }
         if(cause instanceof UnknownHostException) {
-            return "DNS " + NSBundle.localizedString("Error", "");
+            return "DNS " + Locale.localizedString("Error");
         }
         if(cause instanceof IOException) {
-            return "I/O " + NSBundle.localizedString("Error", "");
+            return "I/O " + Locale.localizedString("Error");
         }
-        return NSBundle.localizedString("Error", "");
+        return Locale.localizedString("Error");
     }
 
     private String getDetailedCauseMessage(BackgroundException e) {
@@ -165,7 +164,7 @@ public class CDErrorController extends CDBundleController {
                 }
             }
         }
-        return NSBundle.localizedString(buffer.toString(), "Error", "");
+        return Locale.localizedString(buffer.toString(), "Error");
     }
 
     public void awakeFromNib() {

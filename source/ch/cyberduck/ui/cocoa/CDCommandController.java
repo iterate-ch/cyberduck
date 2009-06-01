@@ -18,14 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.NSAttributedString;
-import com.apple.cocoa.foundation.NSRange;
-import com.apple.cocoa.foundation.NSPathUtilities;
-
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +55,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         this.responseField.setSelectable(true);
         this.responseField.setUsesFontPanel(false);
         this.responseField.setRichText(false);
-        this.responseField.layoutManager().setDelegate(this);
+        this.responseField.layoutManager().setDelegate(this.id());
     }
 
     public void setProgress(NSProgressIndicator progress) {
@@ -71,10 +70,10 @@ public class CDCommandController extends CDSheetController implements Transcript
     }
 
     public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
-                                                               NSTextContainer textContainer,
+                                                               NSObject textContainer,
                                                                boolean finished) {
         if(finished && this.responseField.window().isVisible()) {
-            this.responseField.scrollRangeToVisible(new NSRange(this.responseField.textStorage().length(), 0));
+            this.responseField.scrollRangeToVisible(NSRange.NSMakeRange(this.responseField.textStorage().length(), 0));
         }
     }
 
@@ -135,8 +134,8 @@ public class CDCommandController extends CDSheetController implements Transcript
     public void log(boolean request, final String message) {
         CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
-                responseField.textStorage().replaceCharactersInRange(new NSRange(responseField.textStorage().length(), 0),
-                        new NSAttributedString(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                responseField.textStorage().replaceCharactersInRange_withAttributedString(NSRange.NSMakeRange(responseField.textStorage().length(), 0),
+                        NSAttributedString.create(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
             }
         });
     }

@@ -18,15 +18,21 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.NSPoint;
+import org.rococoa.cocoa.NSAutoreleasePool;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,7 +44,7 @@ import java.util.Set;
 public abstract class CDWindowController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDWindowController.class);
 
-    protected static final String DEFAULT = NSBundle.localizedString("Default", "");
+    protected static final String DEFAULT = "Default";
 
     public CDWindowController() {
         super();
@@ -70,7 +76,7 @@ public abstract class CDWindowController extends CDBundleController {
                     // An autorelease pool is used to manage Foundation's autorelease
                     // mechanism for Objective-C objects. If you start off a thread
                     // that calls Cocoa, there won't be a top-level pool.
-                    final int pool = NSAutoreleasePool.push();
+                    final NSAutoreleasePool pool = NSAutoreleasePool.new_();
                     try {
                         if(runnable.prepare()) {
                             // Execute the action of the runnable
@@ -90,7 +96,7 @@ public abstract class CDWindowController extends CDBundleController {
 
                         // Indicates that you are finished using the
                         // NSAutoreleasePool identified by pool.
-                        NSAutoreleasePool.pop(pool);
+                        pool.release();
 
                         log.info("Releasing lock for background runnable:" + runnable);
                     }
@@ -124,8 +130,8 @@ public abstract class CDWindowController extends CDBundleController {
 
     public void setWindow(NSWindow window) {
         this.window = window;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("windowWillClose", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("windowWillClose:"),
                 NSWindow.WindowWillCloseNotification,
                 this.window);
         this.window.setReleasedWhenClosed(true);
@@ -136,7 +142,7 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     /**
-     * @see com.apple.cocoa.application.NSWindow.Delegate
+     * @see ch.cyberduck.ui.cocoa.application.NSWindow.Delegate
      */
     public boolean windowShouldClose(NSWindow sender) {
         return true;
@@ -175,9 +181,9 @@ public abstract class CDWindowController extends CDBundleController {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count();
         if(count != 0) {
-            NSWindow window = (NSWindow) windows.objectAtIndex(count - 1);
-            NSPoint origin = window.frame().origin();
-            origin = new NSPoint(origin.x(), origin.y() + window.frame().size().height());
+            NSWindow window = Rococoa.cast(windows.objectAtIndex(count - 1), NSWindow.class);
+            NSPoint origin = window.frame().origin;
+            origin = new NSPoint(origin.x.intValue(), origin.y.intValue() + window.frame().size.height.intValue());
             this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
         }
     }
@@ -188,9 +194,9 @@ public abstract class CDWindowController extends CDBundleController {
      */
     protected void setState(NSButton toggle, boolean open) {
         if(open) {
-            toggle.performClick(null);
+//            toggle.performClick(null);
         }
-        toggle.setState(open ? NSCell.OnState : NSCell.OffState);
+        toggle.setState(open ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     /**
@@ -201,6 +207,23 @@ public abstract class CDWindowController extends CDBundleController {
             return false;
         }
         return this.window.attachedSheet() != null;
+    }
+
+    /**
+     *
+     * @param alert
+     */
+    protected void alert(final NSAlert alert) {
+        this.alert(alert.window());
+    }
+
+    /**
+     *
+     * @param alert
+     * @param callback
+     */
+    protected void alert(final NSAlert alert, final CDSheetCallback callback) {
+        this.alert(alert.window(), callback);
     }
 
     /**
@@ -233,7 +256,6 @@ public abstract class CDWindowController extends CDBundleController {
         c.beginSheet();
     }
 
-
     protected void updateField(final NSTextView f, final String value) {
         f.setString(StringUtils.isNotBlank(value) ? value : "");
     }
@@ -243,13 +265,8 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     public void helpButtonClicked(final NSButton sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(Preferences.instance().getProperty("website.help"))
-            );
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+        NSWorkspace.sharedWorkspace().openURL(
+                NSURL.URLWithString(Preferences.instance().getProperty("website.help"))
+        );
     }
 }

@@ -18,16 +18,20 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.ID;
+import org.rococoa.Rococoa;
+import org.rococoa.Selector;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,21 +51,22 @@ public class CDBookmarkController extends CDWindowController {
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
+        this.protocolPopup.setTarget(this.id());
+        this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(Protocol.getProtocolDescriptions()));
         final Protocol[] protocols = Protocol.getKnownProtocols();
         for(int i = 0; i < protocols.length; i++) {
-            final NSMenuItem item = this.protocolPopup.itemWithTitle(protocols[i].getDescription());
-            item.setRepresentedObject(protocols[i]);
+            final String title = protocols[i].getDescription();
+            this.protocolPopup.addItemWithTitle(title);
+            final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
+            item.setRepresentedObject(protocols[i].getIdentifier());
             item.setImage(CDIconCache.instance().iconForName(protocols[i].icon(), 16));
         }
-        this.protocolPopup.setTarget(this);
-        this.protocolPopup.setAction(new NSSelector("protocolSelectionChanged", new Class[]{Object.class}));
     }
 
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        final Protocol selected = (Protocol) protocolPopup.selectedItem().representedObject();
+        final Protocol selected = Protocol.forName(protocolPopup.selectedItem().representedObject());
         this.host.setPort(selected.getDefaultPort());
         if(this.host.getProtocol().getDefaultHostname().equals(this.host.getHostname())) {
             this.host.setHostname(selected.getDefaultHostname());
@@ -90,18 +95,17 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItem(DEFAULT);
-        this.encodingPopup.menu().addItem(new NSMenuItem().separatorItem());
-        this.encodingPopup.addItemsWithTitles(new NSArray(
-                ((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets()));
+        this.encodingPopup.addItemWithTitle(DEFAULT);
+        this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(CDMainController.availableCharsets()));
         if(null == this.host.getEncoding()) {
             this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
         else {
             this.encodingPopup.selectItemWithTitle(this.host.getEncoding());
         }
-        this.encodingPopup.setTarget(this);
-        final NSSelector action = new NSSelector("encodingSelectionChanged", new Class[]{Object.class});
+        this.encodingPopup.setTarget(this.id());
+        final Selector action = Foundation.selector("encodingSelectionChanged:");
         this.encodingPopup.setAction(action);
     }
 
@@ -120,8 +124,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setNicknameField(NSTextField nicknameField) {
         this.nicknameField = nicknameField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("nicknameInputDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("nicknameInputDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.nicknameField);
     }
@@ -130,8 +134,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("hostFieldDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("hostFieldDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
     }
@@ -141,8 +145,8 @@ public class CDBookmarkController extends CDWindowController {
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
         this.alertIcon.setHidden(true);
-        this.alertIcon.setTarget(this);
-        this.alertIcon.setAction(new NSSelector("launchNetworkAssistant", new Class[]{NSButton.class}));
+        this.alertIcon.setTarget(this.id());
+        this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
     }
 
     public void launchNetworkAssistant(final NSButton sender) {
@@ -153,8 +157,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("portInputDidEndEditing", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("portInputDidEndEditing:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.portField);
     }
@@ -163,8 +167,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("pathInputDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("pathInputDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.pathField);
     }
@@ -181,8 +185,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("usernameInputDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("usernameInputDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);
     }
@@ -191,11 +195,12 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setWebURLField(NSTextField webURLField) {
         this.webURLField = webURLField;
-        ((NSTextFieldCell) this.webURLField.cell()).setPlaceholderString(
+        final NSTextFieldCell cell = Rococoa.cast(this.webURLField.cell(), NSTextFieldCell.class);
+        cell.setPlaceholderString(
                 host.getDefaultWebURL()
         );
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("webURLInputDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("webURLInputDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.webURLField);
     }
@@ -204,8 +209,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setWebUrlImage(NSButton b) {
         this.webUrlImage = b;
-        this.webUrlImage.setTarget(this);
-        this.webUrlImage.setAction(new NSSelector("openWebUrl", new Class[]{NSButton.class}));
+        this.webUrlImage.setTarget(this.id());
+        this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
         this.webUrlImage.setImage(CDIconCache.instance().iconForName("site", 16));
         this.updateFavicon();
     }
@@ -232,7 +237,7 @@ public class CDBookmarkController extends CDWindowController {
                         if(bytes.length == 0) {
                             return;
                         }
-                        favicon = new NSImage(new NSData(bytes));
+//                        favicon = NSImage.imageWithData(new NSData(bytes));
                     }
                     catch(java.net.MalformedURLException e) {
                         log.warn(e.getMessage());
@@ -256,14 +261,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void openWebUrl(final NSButton sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(host.getWebURL())
-            );
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(host.getWebURL()));
     }
 
     private NSTextView commentField; // IBOutlet
@@ -271,8 +269,8 @@ public class CDBookmarkController extends CDWindowController {
     public void setCommentField(NSTextView commentField) {
         this.commentField = commentField;
         this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("commentInputDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("commentInputDidChange:"),
                 NSText.TextDidChangeNotification,
                 this.commentField);
     }
@@ -280,7 +278,7 @@ public class CDBookmarkController extends CDWindowController {
     /**
      * Calculate timezone
      */
-    protected static final String AUTO = NSBundle.localizedString("Auto", "");
+    protected static final String AUTO = Locale.localizedString("Auto", "");
 
     private NSPopUpButton timezonePopup; //IBOutlet
 
@@ -291,15 +289,15 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setTimezonePopup(NSPopUpButton timezonePopup) {
         this.timezonePopup = timezonePopup;
-        this.timezonePopup.setTarget(this);
-        this.timezonePopup.setAction(new NSSelector("timezonePopupClicked", new Class[]{NSPopUpButton.class}));
+        this.timezonePopup.setTarget(this.id());
+        this.timezonePopup.setAction(Foundation.selector("timezonePopupClicked:"));
         this.timezonePopup.removeAllItems();
         {
-            this.timezonePopup.addItem(UTC.getID());
+            this.timezonePopup.addItemWithTitle(UTC.getID());
         }
-        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+        this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
 //        this.timezonePopup.addItem(AUTO);
-//        this.timezonePopup.menu().addItem(new NSMenuItem().separatorItem());
+        this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
         final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
         Collections.sort(timezones, new Comparator<String>() {
             public int compare(String o1, String o2) {
@@ -308,7 +306,7 @@ public class CDBookmarkController extends CDWindowController {
         });
         for(String tz : timezones) {
             if(tz.matches(TIMEZONE_ID_PREFIXES)) {
-                this.timezonePopup.addItem(TimeZone.getTimeZone(tz).getID());
+                this.timezonePopup.addItemWithTitle(TimeZone.getTimeZone(tz).getID());
             }
         }
     }
@@ -320,8 +318,8 @@ public class CDBookmarkController extends CDWindowController {
         }
         else {
             String[] ids = TimeZone.getAvailableIDs();
-            TimeZone tz;
             for(int i = 0; i < ids.length; i++) {
+                TimeZone tz;
                 if((tz = TimeZone.getTimeZone(ids[i])).getID().equals(selected)) {
                     this.host.setTimezone(tz);
                     break;
@@ -333,17 +331,18 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSPopUpButton connectmodePopup; //IBOutlet
 
-    private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
-    private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive", "");
+    private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active", "");
+    private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive", "");
 
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
-        this.connectmodePopup.setTarget(this);
-        this.connectmodePopup.setAction(new NSSelector("connectmodePopupClicked", new Class[]{NSPopUpButton.class}));
+        this.connectmodePopup.setTarget(this.id());
+        this.connectmodePopup.setAction(Foundation.selector("connectmodePopupClicked:"));
         this.connectmodePopup.removeAllItems();
-        this.connectmodePopup.addItem(DEFAULT);
-        this.connectmodePopup.menu().addItem(new NSMenuItem().separatorItem());
-        this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
+        this.connectmodePopup.addItemWithTitle(DEFAULT);
+        this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
+        this.connectmodePopup.addItemWithTitle(CONNECTMODE_ACTIVE);
+        this.connectmodePopup.addItemWithTitle(CONNECTMODE_PASSIVE);
     }
 
     public void connectmodePopupClicked(final NSPopUpButton sender) {
@@ -361,17 +360,18 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSPopUpButton transferPopup; //IBOutlet
 
-    private static final String TRANSFER_NEWCONNECTION = NSBundle.localizedString("Open new connection", "");
-    private static final String TRANSFER_BROWSERCONNECTION = NSBundle.localizedString("Use browser connection", "");
+    private static final String TRANSFER_NEWCONNECTION = Locale.localizedString("Open new connection", "");
+    private static final String TRANSFER_BROWSERCONNECTION = Locale.localizedString("Use browser connection", "");
 
     public void setTransferPopup(NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
-        this.transferPopup.setTarget(this);
-        this.transferPopup.setAction(new NSSelector("transferPopupClicked", new Class[]{NSPopUpButton.class}));
+        this.transferPopup.setTarget(this.id());
+        this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
         this.transferPopup.removeAllItems();
-        this.transferPopup.addItem(DEFAULT);
-        this.transferPopup.menu().addItem(new NSMenuItem().separatorItem());
-        this.transferPopup.addItemsWithTitles(new NSArray(new String[]{TRANSFER_NEWCONNECTION, TRANSFER_BROWSERCONNECTION}));
+        this.transferPopup.addItemWithTitle(DEFAULT);
+        this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.transferPopup.addItemWithTitle(TRANSFER_NEWCONNECTION);
+        this.transferPopup.addItemWithTitle(TRANSFER_BROWSERCONNECTION);
     }
 
     public void transferPopupClicked(final NSPopUpButton sender) {
@@ -389,18 +389,18 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSPopUpButton downloadPathPopup; //IBOutlet
 
-    private static final String CHOOSE = NSBundle.localizedString("Choose", "") + "...";
+    private static final String CHOOSE = Locale.localizedString("Choose", "") + "...";
 
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
-        this.downloadPathPopup.setTarget(this);
-        final NSSelector action = new NSSelector("downloadPathPopupClicked", new Class[]{NSPopUpButton.class});
+        this.downloadPathPopup.setTarget(this.id());
+        final Selector action = Foundation.selector("downloadPathPopupClicked:");
         this.downloadPathPopup.setAction(action);
         this.downloadPathPopup.removeAllItems();
 
         // Default download folder
         this.addDownloadPath(action, host.getDownloadFolder());
-        this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
+        this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         // Shortcut to the Desktop
         this.addDownloadPath(action, new Local("~/Desktop"));
         // Shortcut to user home
@@ -410,16 +410,16 @@ public class CDBookmarkController extends CDWindowController {
         // Choose another folder
 
         // Choose another folder
-        this.downloadPathPopup.menu().addItem(new NSMenuItem().separatorItem());
-        this.downloadPathPopup.menu().addItem(CHOOSE, action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this);
+        this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.downloadPathPopup.menu().addItem(NSMenuItem.itemWithTitle(CHOOSE, action, ""));
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
     }
 
-    private void addDownloadPath(NSSelector action, Local f) {
+    private void addDownloadPath(Selector action, Local f) {
         if(f.exists()) {
-            this.downloadPathPopup.menu().addItem(NSPathUtilities.displayNameAtPath(
-                    f.getAbsolute()), action, "");
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this);
+            this.downloadPathPopup.menu().addItem(NSMenuItem.itemWithTitle(NSFileManager.defaultManager().displayNameAtPath(
+                    f.getAbsolute()), action, ""));
+            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
                     CDIconCache.instance().iconForPath(f, 16)
             );
@@ -440,34 +440,35 @@ public class CDBookmarkController extends CDWindowController {
             downloadPathPanel.setCanChooseDirectories(true);
             downloadPathPanel.setAllowsMultipleSelection(false);
             downloadPathPanel.setCanCreateDirectories(true);
-            downloadPathPanel.beginSheetForDirectory(null, null, null, this.window, this, new NSSelector("downloadPathPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+            downloadPathPanel.beginSheetForDirectory(null, null, this.window,
+                    new CDController() {
+                        public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
+                            if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+                                NSArray selected = sheet.filenames();
+                                if((selected.lastObject()) != null) {
+                                    host.setDownloadFolder(selected.lastObject().toString());
+                                }
+                            }
+                            else {
+                                host.setDownloadFolder(null);
+                            }
+                            downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(
+                                    host.getDownloadFolder().getAbsolute()));
+                            downloadPathPopup.itemAtIndex(0).setRepresentedObject(
+                                    host.getDownloadFolder().getAbsolute());
+                            downloadPathPopup.itemAtIndex(0).setImage(
+                                    CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
+                            downloadPathPopup.selectItemAtIndex(0);
+                            downloadPathPanel = null;
+                            itemChanged();
+                        }
+                    }.id(),
+                    Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            host.setDownloadFolder(sender.representedObject().toString());
+            host.setDownloadFolder(sender.representedObject());
             this.itemChanged();
         }
-    }
-
-    public void downloadPathPanelDidEnd(NSOpenPanel sheet, int returncode, Object contextInfo) {
-        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            NSArray selected = sheet.filenames();
-            String filename;
-            if((filename = (String) selected.lastObject()) != null) {
-                host.setDownloadFolder(filename);
-            }
-        }
-        else {
-            host.setDownloadFolder(null);
-        }
-        this.downloadPathPopup.itemAtIndex(0).setTitle(NSPathUtilities.displayNameAtPath(
-                host.getDownloadFolder().getAbsolute()));
-        this.downloadPathPopup.itemAtIndex(0).setRepresentedObject(
-                host.getDownloadFolder().getAbsolute());
-        this.downloadPathPopup.itemAtIndex(0).setImage(
-                CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
-        this.downloadPathPopup.selectItemAtIndex(0);
-        this.downloadPathPanel = null;
-        this.itemChanged();
     }
 
     private NSButton toggleOptionsButton;
@@ -489,8 +490,8 @@ public class CDBookmarkController extends CDWindowController {
             }
             final CDBookmarkController c = new CDBookmarkController(host) {
                 public void windowWillClose(NSNotification notification) {
-                    Factory.open.remove(host);
                     super.windowWillClose(notification);
+                    Factory.open.remove(host);
                 }
             };
             open.put(host, c);
@@ -549,44 +550,45 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setPkCheckbox(NSButton pkCheckbox) {
         this.pkCheckbox = pkCheckbox;
-        this.pkCheckbox.setTarget(this);
-        this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionChanged", new Class[]{Object.class}));
+        this.pkCheckbox.setTarget(this.id());
+        this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionChanged:"));
     }
 
     private NSOpenPanel publicKeyPanel;
 
     public void pkCheckboxSelectionChanged(final NSButton sender) {
         log.debug("pkCheckboxSelectionChanged");
-        if(this.pkLabel.stringValue().equals(NSBundle.localizedString("No Private Key selected", ""))) {
+        if(this.pkLabel.stringValue().equals(Locale.localizedString("No Private Key selected", ""))) {
             publicKeyPanel = NSOpenPanel.openPanel();
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.beginSheetForDirectory(NSPathUtilities.stringByExpandingTildeInPath("~/.ssh"), null, null, this.window(),
-                    this,
-                    new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}), null);
+            publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"), null, this.window(),
+                    new CDController() {
+                        public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, Object context) {
+                            log.debug("pkSelectionPanelDidEnd");
+                            if(returncode == NSPanel.NSOKButton) {
+                                NSArray selected = sheet.filenames();
+                                NSEnumerator enumerator = selected.objectEnumerator();
+                                NSObject next;
+                                while(((next = enumerator.nextObject()) != null)) {
+                                    host.getCredentials().setIdentity(
+                                            new Credentials.Identity(next.toString()));
+                                }
+                            }
+                            if(returncode == NSPanel.NSCancelButton) {
+                                host.getCredentials().setIdentity(null);
+                            }
+                            publicKeyPanel = null;
+                            itemChanged();
+                        }
+                    }.id(),
+                    Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             this.host.getCredentials().setIdentity(null);
             this.itemChanged();
         }
-    }
-
-    public void pkSelectionPanelDidEnd(NSOpenPanel sheet, int returncode, Object context) {
-        log.debug("pkSelectionPanelDidEnd");
-        if(returncode == NSPanel.OKButton) {
-            NSArray selected = sheet.filenames();
-            java.util.Enumeration enumerator = selected.objectEnumerator();
-            while(enumerator.hasMoreElements()) {
-                this.host.getCredentials().setIdentity(
-                        new Credentials.Identity((String) enumerator.nextElement()));
-            }
-        }
-        if(returncode == NSPanel.CancelButton) {
-            this.host.getCredentials().setIdentity(null);
-        }
-        publicKeyPanel = null;
-        this.itemChanged();
     }
 
     public void hostFieldDidChange(final NSNotification sender) {
@@ -652,7 +654,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     public void commentInputDidChange(final NSNotification sender) {
-        this.host.setComment(commentField.textStorage().stringReference().string());
+        this.host.setComment(commentField.textStorage().string());
         this.itemChanged();
     }
 
@@ -678,20 +680,20 @@ public class CDBookmarkController extends CDWindowController {
             url = host.toURL();
         }
         urlField.setAttributedStringValue(
-                HyperlinkAttributedStringFactory.create(
-                        new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+                HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
         );
         this.updateField(portField, String.valueOf(host.getPort()));
         portField.setEnabled(host.getProtocol().isHostnameConfigurable());
         this.updateField(pathField, host.getDefaultPath());
         this.updateField(usernameField, host.getCredentials().getUsername());
+        final NSTextFieldCell usernameCell = Rococoa.cast(usernameField.cell(), NSTextFieldCell.class);
         if(host.getProtocol().equals(Protocol.S3)) {
-            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("Access Key ID", "S3", "")
+            usernameCell.setPlaceholderString(
+                    Locale.localizedString("Access Key ID", "S3")
             );
         }
         else {
-            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString("");
+            usernameCell.setPlaceholderString("");
         }
         protocolPopup.selectItemWithTitle(host.getProtocol().getDescription());
         if(null == host.getMaxConnections()) {
@@ -719,17 +721,17 @@ public class CDBookmarkController extends CDWindowController {
         }
         pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
         if(host.getCredentials().isPublicKeyAuthentication()) {
-            pkCheckbox.setState(NSCell.OnState);
+            pkCheckbox.setState(NSCell.NSOnState);
             this.updateField(pkLabel, host.getCredentials().getIdentity().toURL());
         }
         else {
-            pkCheckbox.setState(NSCell.OffState);
-            pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+            pkCheckbox.setState(NSCell.NSOffState);
+            pkLabel.setStringValue(Locale.localizedString("No Private Key selected", ""));
         }
         webURLField.setEnabled(host.getProtocol().isWebUrlConfigurable());
         webUrlImage.setToolTip(host.getWebURL());
         this.updateField(webURLField, host.getWebURL());
-        this.updateField(commentField, host.getComment());        
+        this.updateField(commentField, host.getComment());
         final boolean tzEnabled = this.host.getProtocol().equals(Protocol.FTP)
                 || this.host.getProtocol().equals(Protocol.FTP_TLS);
         this.timezonePopup.setEnabled(tzEnabled);

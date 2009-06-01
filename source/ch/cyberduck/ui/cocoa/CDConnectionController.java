@@ -18,15 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.*;
-import com.apple.cocoa.foundation.*;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.HashMap;
@@ -45,14 +48,15 @@ public class CDConnectionController extends CDSheetController {
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
-        this.protocolPopup.setTarget(this);
-        this.protocolPopup.setAction(new NSSelector("protocolSelectionDidChange", new Class[]{Object.class}));
+        this.protocolPopup.setTarget(this.id());
+        this.protocolPopup.setAction(Foundation.selector("protocolSelectionDidChange:"));
         this.protocolPopup.removeAllItems();
-        this.protocolPopup.addItemsWithTitles(new NSArray(Protocol.getProtocolDescriptions()));
         final Protocol[] protocols = Protocol.getKnownProtocols();
         for(int i = 0; i < protocols.length; i++) {
-            final NSMenuItem item = this.protocolPopup.itemWithTitle(protocols[i].getDescription());
-            item.setRepresentedObject(protocols[i]);
+            final String title = protocols[i].getDescription();
+            this.protocolPopup.addItemWithTitle(title);
+            final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
+            item.setRepresentedObject(protocols[i].getIdentifier());
             item.setImage(CDIconCache.instance().iconForName(protocols[i].icon(), 16));
         }
         final Protocol defaultProtocol
@@ -62,8 +66,10 @@ public class CDConnectionController extends CDSheetController {
 
     public void protocolSelectionDidChange(final NSPopUpButton sender) {
         log.debug("protocolSelectionDidChange:" + sender);
-        final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
+        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
         portField.setIntValue(protocol.getDefaultPort());
+        final NSTextFieldCell usernameCell = Rococoa.cast(usernameField.cell(), NSTextFieldCell.class);
+        final NSTextFieldCell passwordCell = Rococoa.cast(this.passField.cell(), NSTextFieldCell.class);
         if(!protocol.isHostnameConfigurable()) {
             hostField.setStringValue(protocol.getDefaultHostname());
             hostField.setEnabled(false);
@@ -83,30 +89,30 @@ public class CDConnectionController extends CDSheetController {
             hostField.setEnabled(true);
             portField.setEnabled(true);
             pathField.setEnabled(true);
-            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString("");
-            ((NSTextFieldCell) passField.cell()).setPlaceholderString("");
+            usernameCell.setPlaceholderString("");
+            passwordCell.setPlaceholderString("");
         }
         if(protocol.equals(Protocol.S3)) {
             hostField.setStringValue(protocol.getDefaultHostname());
-            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("Access Key ID", "S3", "")
+            Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
+                    Locale.localizedString("Access Key ID", "S3")
             );
-            ((NSTextFieldCell) passField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("Secret Access Key", "S3", "")
+            Rococoa.cast(passField.cell(), NSTextFieldCell.class).setPlaceholderString(
+                    Locale.localizedString("Secret Access Key", "S3")
             );
         }
         if(protocol.equals(Protocol.MOSSO)) {
-            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString("");
-            ((NSTextFieldCell) passField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("API Access Key", "Mosso", "")
+            Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString("");
+            Rococoa.cast(passField.cell(), NSTextFieldCell.class).setPlaceholderString(
+                    Locale.localizedString("API Access Key", "Mosso")
             );
         }
         if(protocol.equals(Protocol.IDISK)) {
             CDDotMacController controller = new CDDotMacController();
             final String member = controller.getAccountName();
             controller.invalidate();
-            ((NSTextFieldCell) usernameField.cell()).setPlaceholderString(
-                    NSBundle.localizedString("MobileMe Member Name", "IDisk", "")
+            Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
+                    Locale.localizedString("MobileMe Member Name", "IDisk")
             );
             if(null != member) {
                 // Account name configured in System Preferences
@@ -138,22 +144,22 @@ public class CDConnectionController extends CDSheetController {
      * @param protocol
      */
     private void updateIdentity() {
-        final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
+        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
         pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
         if(protocol.equals(Protocol.SFTP)) {
             if(StringUtils.isNotEmpty(hostField.stringValue())) {
                 final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(hostField.stringValue());
                 if(null != entry.getIdentityFile()) {
-                    if(pkCheckbox.state() == NSCell.OffState) {
+                    if(pkCheckbox.state() == NSCell.NSOffState) {
                         // No previously manually selected key
-                        pkLabel.setStringValue(NSPathUtilities.stringByAbbreviatingWithTildeInPath(
+                        pkLabel.setStringValue(NSString.stringByAbbreviatingWithTildeInPath(
                                 entry.getIdentityFile().getAbsolutePath()));
-                        pkCheckbox.setState(NSCell.OnState);
+                        pkCheckbox.setState(NSCell.NSOnState);
                     }
                 }
                 else {
-                    pkCheckbox.setState(NSCell.OffState);
-                    pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+                    pkCheckbox.setState(NSCell.NSOffState);
+                    pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
                 }
                 if(StringUtils.isNotBlank(entry.getUser())) {
                     usernameField.setStringValue(entry.getUser());
@@ -161,33 +167,33 @@ public class CDConnectionController extends CDSheetController {
             }
         }
         else {
-            pkCheckbox.setState(NSCell.OffState);
-            pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+            pkCheckbox.setState(NSCell.NSOffState);
+            pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
         }
     }
 
     private NSComboBox hostField;
-    private NSObject hostPopupDataSource;
+    private CDController hostPopupDataSource;
 
     public void setHostPopup(NSComboBox hostPopup) {
         this.hostField = hostPopup;
-        this.hostField.setTarget(this);
-        this.hostField.setAction(new NSSelector("hostPopupSelectionDidChange", new Class[]{Object.class}));
+        this.hostField.setTarget(this.id());
+        this.hostField.setAction(Foundation.selector("hostPopupSelectionDidChange:"));
         this.hostField.setUsesDataSource(true);
-        this.hostField.setDataSource(this.hostPopupDataSource = new NSObject/*NSComboBox.DataSource*/() {
+        this.hostField.setDataSource((this.hostPopupDataSource = new CDController/*NSComboBox.DataSource*/() {
             public int numberOfItemsInComboBox(final NSComboBox sender) {
                 return HostCollection.defaultCollection().size();
             }
 
-            public Object comboBoxObjectValueForItemAtIndex(final NSComboBox sender, final int row) {
+            public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
                 if(row < this.numberOfItemsInComboBox(sender)) {
-                    return HostCollection.defaultCollection().get(row).getNickname();
+                    return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname());
                 }
                 return null;
             }
-        });
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("hostFieldTextDidChange", new Class[]{NSNotification.class}),
+        }).id());
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("hostFieldTextDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.hostField);
     }
@@ -228,10 +234,10 @@ public class CDConnectionController extends CDSheetController {
         this.updateField(portField, String.valueOf(host.getPort()));
         this.updateField(usernameField, host.getCredentials().getUsername());
         this.updateField(pathField, host.getDefaultPath());
-        anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.OnState : NSCell.OffState);
+        anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
         this.anonymousCheckboxClicked(anonymousCheckbox);
         if(host.getCredentials().isPublicKeyAuthentication()) {
-            pkCheckbox.setState(NSCell.OnState);
+            pkCheckbox.setState(NSCell.NSOnState);
             pkLabel.setStringValue(host.getCredentials().getIdentity().toURL());
         }
         else {
@@ -270,8 +276,8 @@ public class CDConnectionController extends CDSheetController {
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
         this.alertIcon.setHidden(true);
-        this.alertIcon.setTarget(this);
-        this.alertIcon.setAction(new NSSelector("launchNetworkAssistant", new Class[]{NSButton.class}));
+        this.alertIcon.setTarget(this.id());
+        this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
     }
 
     public void launchNetworkAssistant(final NSButton sender) {
@@ -282,8 +288,8 @@ public class CDConnectionController extends CDSheetController {
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("pathInputDidEndEditing", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("pathInputDidEndEditing:"),
                 NSControl.ControlTextDidEndEditingNotification,
                 this.pathField);
     }
@@ -300,15 +306,15 @@ public class CDConnectionController extends CDSheetController {
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("portFieldTextDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("portFieldTextDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.portField);
     }
 
     public void portFieldTextDidChange(final NSNotification sender) {
         if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
-            final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
+            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
             this.portField.setStringValue(String.valueOf(protocol.getDefaultPort()));
         }
         this.updateURLLabel();
@@ -319,12 +325,12 @@ public class CDConnectionController extends CDSheetController {
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("usernameFieldTextDidChange", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("usernameFieldTextDidChange:"),
                 NSControl.ControlTextDidChangeNotification,
                 this.usernameField);
-        NSNotificationCenter.defaultCenter().addObserver(this,
-                new NSSelector("usernameFieldTextDidEndEditing", new Class[]{NSNotification.class}),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("usernameFieldTextDidEndEditing:"),
                 NSControl.ControlTextDidEndEditingNotification,
                 this.usernameField);
     }
@@ -347,33 +353,33 @@ public class CDConnectionController extends CDSheetController {
 
     public void setPkLabel(NSTextField pkLabel) {
         this.pkLabel = pkLabel;
-        this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+        this.pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
     }
 
     private NSButton keychainCheckbox;
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
-        this.keychainCheckbox.setState(NSCell.OffState);
+        this.keychainCheckbox.setState(NSCell.NSOffState);
     }
 
     private NSButton anonymousCheckbox; //IBOutlet
 
     public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
         this.anonymousCheckbox = anonymousCheckbox;
-        this.anonymousCheckbox.setTarget(this);
-        this.anonymousCheckbox.setAction(new NSSelector("anonymousCheckboxClicked", new Class[]{NSButton.class}));
-        this.anonymousCheckbox.setState(NSCell.OffState);
+        this.anonymousCheckbox.setTarget(this.id());
+        this.anonymousCheckbox.setAction(Foundation.selector("anonymousCheckboxClicked:"));
+        this.anonymousCheckbox.setState(NSCell.NSOffState);
     }
 
     public void anonymousCheckboxClicked(final NSButton sender) {
-        if(sender.state() == NSCell.OnState) {
+        if(sender.state() == NSCell.NSOnState) {
             this.usernameField.setEnabled(false);
             this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.anon.name"));
             this.passField.setEnabled(false);
             this.passField.setStringValue("");
         }
-        if(sender.state() == NSCell.OffState) {
+        if(sender.state() == NSCell.NSOffState) {
             this.usernameField.setEnabled(true);
             this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
             this.passField.setEnabled(true);
@@ -385,9 +391,9 @@ public class CDConnectionController extends CDSheetController {
 
     public void setPkCheckbox(NSButton pkCheckbox) {
         this.pkCheckbox = pkCheckbox;
-        this.pkCheckbox.setTarget(this);
-        this.pkCheckbox.setAction(new NSSelector("pkCheckboxSelectionDidChange", new Class[]{Object.class}));
-        this.pkCheckbox.setState(NSCell.OffState);
+        this.pkCheckbox.setTarget(this.id());
+        this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionDidChange:"));
+        this.pkCheckbox.setState(NSCell.NSOffState);
         this.pkCheckbox.setEnabled(
                 Preferences.instance().getProperty("connection.protocol.default").equals(Protocol.SFTP.getIdentifier()));
     }
@@ -396,43 +402,43 @@ public class CDConnectionController extends CDSheetController {
 
     public void pkCheckboxSelectionDidChange(final NSButton sender) {
         log.debug("pkCheckboxSelectionDidChange");
-        if(sender.state() == NSCell.OnState) {
+        if(sender.state() == NSCell.NSOnState) {
             publicKeyPanel = NSOpenPanel.openPanel();
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.beginSheetForDirectory(NSPathUtilities.stringByExpandingTildeInPath("~/.ssh"),
-                    null,
+            publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"),
                     null,
                     this.window(),
-                    this,
-                    new NSSelector("pkSelectionPanelDidEnd", new Class[]{NSOpenPanel.class, int.class, Object.class}),
+                    new CDController() {
+                        public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel window, int returncode, ID context) {
+                            if(NSPanel.NSOKButton == returncode) {
+                                NSArray selected = window.filenames();
+                                final NSEnumerator enumerator = selected.objectEnumerator();
+                                NSObject next;
+                                while(null != (next = enumerator.nextObject())) {
+                                    String pk = NSString.stringByAbbreviatingWithTildeInPath(
+                                            Rococoa.cast(next, NSString.class).toString());
+                                    pkLabel.setStringValue(pk);
+                                }
+                                passField.setEnabled(false);
+                            }
+                            if(NSPanel.NSCancelButton == returncode) {
+                                passField.setEnabled(true);
+                                pkCheckbox.setState(NSCell.NSOffState);
+                                pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+                            }
+                            publicKeyPanel = null;
+                        }
+                    }.id(),
+                    Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"),
                     null);
         }
         else {
             this.passField.setEnabled(true);
-            this.pkCheckbox.setState(NSCell.OffState);
-            this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
+            this.pkCheckbox.setState(NSCell.NSOffState);
+            this.pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
         }
-    }
-
-    public void pkSelectionPanelDidEnd(NSOpenPanel window, int returncode, Object context) {
-        if(NSPanel.OKButton == returncode) {
-            NSArray selected = window.filenames();
-            java.util.Enumeration enumerator = selected.objectEnumerator();
-            while(enumerator.hasMoreElements()) {
-                String pk = NSPathUtilities.stringByAbbreviatingWithTildeInPath(
-                        (String) enumerator.nextElement());
-                this.pkLabel.setStringValue(pk);
-            }
-            this.passField.setEnabled(false);
-        }
-        if(NSPanel.CancelButton == returncode) {
-            this.passField.setEnabled(true);
-            this.pkCheckbox.setState(NSCell.OffState);
-            this.pkLabel.setStringValue(NSBundle.localizedString("No Private Key selected", ""));
-        }
-        publicKeyPanel = null;
     }
 
     private NSTextField urlLabel;
@@ -449,23 +455,24 @@ public class CDConnectionController extends CDSheetController {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItem(DEFAULT);
-        this.encodingPopup.menu().addItem(new NSMenuItem().separatorItem());
-        this.encodingPopup.addItemsWithTitles(new NSArray(((CDMainController) NSApplication.sharedApplication().delegate()).availableCharsets()));
+        this.encodingPopup.addItemWithTitle(DEFAULT);
+        this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(CDMainController.availableCharsets()));
         this.encodingPopup.selectItemWithTitle(DEFAULT);
     }
 
     private NSPopUpButton connectmodePopup; //IBOutlet
 
-    private static final String CONNECTMODE_ACTIVE = NSBundle.localizedString("Active", "");
-    private static final String CONNECTMODE_PASSIVE = NSBundle.localizedString("Passive", "");
+    private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active");
+    private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive");
 
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
         this.connectmodePopup.removeAllItems();
-        this.connectmodePopup.addItem(DEFAULT);
-        this.connectmodePopup.menu().addItem(new NSMenuItem().separatorItem());
-        this.connectmodePopup.addItemsWithTitles(new NSArray(new String[]{CONNECTMODE_ACTIVE, CONNECTMODE_PASSIVE}));
+        this.connectmodePopup.addItemWithTitle(DEFAULT);
+        this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
+        this.connectmodePopup.addItemWithTitle(CONNECTMODE_ACTIVE);
+        this.connectmodePopup.addItemWithTitle(CONNECTMODE_PASSIVE);
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
     }
 
@@ -531,7 +538,7 @@ public class CDConnectionController extends CDSheetController {
             if(StringUtils.isBlank(usernameField.stringValue())) {
                 return;
             }
-            final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
+            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
             this.updateField(this.passField, Keychain.instance().getInternetPasswordFromKeychain(protocol.getScheme(),
                     Integer.parseInt(portField.stringValue()),
                     hostField.stringValue(), usernameField.stringValue()));
@@ -542,13 +549,12 @@ public class CDConnectionController extends CDSheetController {
      */
     private void updateURLLabel() {
         if(StringUtils.isNotBlank(hostField.stringValue())) {
-            final Protocol protocol = (Protocol) protocolPopup.selectedItem().representedObject();
+            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue());
             urlLabel.setAttributedStringValue(
-                    HyperlinkAttributedStringFactory.create(
-                            new NSMutableAttributedString(new NSAttributedString(url, TRUNCATE_MIDDLE_ATTRIBUTES)), url)
+                    HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
             );
         }
         else {
@@ -556,28 +562,25 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
-    public void helpButtonClicked(final Object sender) {
-        try {
-            NSWorkspace.sharedWorkspace().openURL(
-                    new java.net.URL(Preferences.instance().getProperty("website.help")
-                            + "/" + ((Protocol) protocolPopup.selectedItem().representedObject()).getIdentifier())
-            );
-        }
-        catch(java.net.MalformedURLException e) {
-            log.error(e.getMessage());
-        }
+    public void helpButtonClicked(final NSObject sender) {
+        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+        NSWorkspace.sharedWorkspace().openURL(
+                NSURL.URLWithString(Preferences.instance().getProperty("website.help")
+                        + "/" + protocol.getIdentifier())
+        );
     }
 
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.window().endEditingForObject(null);
+            this.window().endEditingFor(null);
+            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
             Host host = new Host(
-                    (Protocol) protocolPopup.selectedItem().representedObject(),
+                    protocol,
                     hostField.stringValue(),
                     Integer.parseInt(portField.stringValue()),
                     pathField.stringValue());
-            if(protocolPopup.selectedItem().representedObject().equals(Protocol.FTP) ||
-                    protocolPopup.selectedItem().representedObject().equals(Protocol.FTP_TLS)) {
+            if(protocol.equals(Protocol.FTP) ||
+                    protocol.equals(Protocol.FTP_TLS)) {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
                     host.setFTPConnectMode(null);
                 }
@@ -591,9 +594,9 @@ public class CDConnectionController extends CDSheetController {
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(usernameField.stringValue());
             credentials.setPassword(passField.stringValue());
-            credentials.setUseKeychain(keychainCheckbox.state() == NSCell.OnState);
-            if(protocolPopup.selectedItem().representedObject().equals(Protocol.SFTP)) {
-                if(pkCheckbox.state() == NSCell.OnState) {
+            credentials.setUseKeychain(keychainCheckbox.state() == NSCell.NSOnState);
+            if(protocol.equals(Protocol.SFTP)) {
+                if(pkCheckbox.state() == NSCell.NSOnState) {
                     credentials.setIdentity(new Credentials.Identity(pkLabel.stringValue()));
                 }
             }

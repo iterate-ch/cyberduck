@@ -18,10 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSImageView;
-import com.apple.cocoa.foundation.NSBundle;
-
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
 
 import org.apache.log4j.Logger;
 
@@ -56,7 +55,7 @@ public class CDFolderController extends CDFileController {
     }
 
     protected void createFolder(final Path workdir, final String filename) {
-        final CDBrowserController c = (CDBrowserController)parent;
+        final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
             final Path folder
                     = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
@@ -75,7 +74,7 @@ public class CDFolderController extends CDFileController {
             }
 
             public String getActivity() {
-                return MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
+                return MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         folder.getName());
             }
 

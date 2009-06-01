@@ -18,14 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSDraggingInfo;
-import com.apple.cocoa.application.NSPasteboard;
-import com.apple.cocoa.application.NSTableColumn;
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.foundation.NSArray;
-import com.apple.cocoa.foundation.NSMutableArray;
-
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import java.util.List;
 
@@ -39,23 +41,23 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     }
 
     public int numberOfRowsInTableView(NSTableView view) {
-        if (controller.isMounted()) {
+        if(controller.isMounted()) {
             return this.childs(this.controller.workdir()).size();
         }
         return 0;
     }
 
-    public void tableViewSetObjectValueForLocation(NSTableView view, Object value, NSTableColumn tableColumn, int row) {
-        if (controller.isMounted()) {
-            super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row), value, (String) tableColumn.identifier());
+    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row) {
+        if(controller.isMounted()) {
+            super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row), value, tableColumn.identifier());
         }
     }
 
-    public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-        if (controller.isMounted()) {
-            List<Path> childs = this.childs(this.controller.workdir());
-            if (row < childs.size()) {
-                return super.objectValueForItem(childs.get(row), (String) tableColumn.identifier());
+    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+        if(controller.isMounted()) {
+            final List<Path> childs = this.childs(this.controller.workdir());
+            if(row < childs.size()) {
+                return super.objectValueForItem(childs.get(row), tableColumn.identifier());
             }
         }
         return null;
@@ -65,12 +67,12 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     // Drop methods
     // ----------------------------------------------------------
 
-    public int tableViewValidateDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
-        if (controller.isMounted()) {
+    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation) {
+        if(controller.isMounted()) {
             Path destination = controller.workdir();
             final int draggingColumn = view.columnAtPoint(info.draggingLocation());
             if(0 == draggingColumn || 1 == draggingColumn) {
-                if (row != -1 && row < view.numberOfRows()) {
+                if(row != -1 && row < view.numberOfRows()) {
                     Path p = this.childs(this.controller.workdir()).get(row);
                     if(p.attributes.isDirectory()) {
                         destination = p;
@@ -82,10 +84,10 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         return super.validateDrop(view, null, row, info);
     }
 
-    public boolean tableViewAcceptDrop(NSTableView view, NSDraggingInfo info, int row, int operation) {
-        if (controller.isMounted()) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info, int row, int operation) {
+        if(controller.isMounted()) {
             Path destination = controller.workdir();
-            if (row != -1 && row < view.numberOfRows()) {
+            if(row != -1 && row < view.numberOfRows()) {
                 destination = this.childs(this.controller.workdir()).get(row);
             }
             return super.acceptDrop(view, destination, info);
@@ -105,12 +107,12 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
      * @param rows is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data, owner, and so on).
      */
-    public boolean tableViewWriteRowsToPasteboard(NSTableView view, NSArray rows, NSPasteboard pboard) {
-        if (controller.isMounted()) {
-            NSMutableArray items = new NSMutableArray();
-            List childs = this.childs(this.controller.workdir());
-            for (int i = 0; i < rows.count(); i++) {
-                items.addObject(childs.get(((Number) rows.objectAtIndex(i)).intValue()));
+    public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
+        if(controller.isMounted()) {
+            NSMutableArray items = NSMutableArray.arrayWithCapacity(rowIndexes.count());
+            final AttributedList<Path> childs = this.childs(this.controller.workdir());
+            for(int index = rowIndexes.firstIndex(); index != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
+                items.addObject(NSString.stringWithString(childs.get(index).getAbsolute()));
             }
             return super.writeItemsToPasteBoard(view, items, pboard);
         }

@@ -18,14 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.application.NSTableView;
-import com.apple.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
 
 /**
  * @version $Id:$
  */
-public interface CDListDataSource {
-    int numberOfRowsInTableView(NSTableView view);
-
-    Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row);
+public interface CDListDataSource extends NSTableView.DataSource {
+    ;
 }
