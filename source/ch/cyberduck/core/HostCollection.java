@@ -23,8 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
-import java.io.IOException;
-
 /**
  * @version $Id$
  */
@@ -50,7 +48,7 @@ public class HostCollection extends BookmarkCollection {
      */
     public HostCollection(Local file) {
         this.setFile(file);
-//        this.load();
+        this.load();
     }
 
     /**
@@ -138,22 +136,7 @@ public class HostCollection extends BookmarkCollection {
             for(Host bookmark : this) {
                 list.addObject(bookmark.getAsDictionary());
             }
-            NSMutableData collection = NSMutableData.dataWithLength(0);
-            try {
-                collection.appendData(NSPropertyListSerialization.dataFromPropertyList(list));
-            }
-            catch(IOException e) {
-                log.error("Problem writing bookmark file: " + e.getMessage());
-
-            }
-            if(collection.writeToURL(NSURL.fileURLWithPath(file.getAbsolute()))) {
-                if(log.isInfoEnabled()) {
-                    log.info("Bookmarks sucessfully saved to :" + file.toString());
-                }
-            }
-            else {
-                log.error("Error saving Bookmarks to :" + file.toString());
-            }
+            list.writeToFile(file.getAbsolute());
         }
     }
 
@@ -163,24 +146,13 @@ public class HostCollection extends BookmarkCollection {
     protected void load() {
         if(file.exists()) {
             log.info("Found Bookmarks file: " + file.getAbsolute());
-            NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(file.getAbsolute()));
-            if(null == plistData) {
-                log.error("Invalid bookmark file:" + file);
-                return;
+            NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
+            final NSEnumerator i = list.objectEnumerator();
+            NSObject next;
+            while(((next = i.nextObject()) != null)) {
+                super.add(new Host(Rococoa.cast(next, NSDictionary.class)));
             }
-            try {
-                NSArray propertyListFromXMLData = Rococoa.cast(NSPropertyListSerialization.propertyListFromData(plistData), NSArray.class);
-                final NSEnumerator i = propertyListFromXMLData.objectEnumerator();
-                NSObject next;
-                while(((next = i.nextObject()) != null)) {
-                    super.add(new Host(Rococoa.cast(next, NSDictionary.class)));
-                }
-                this.sort();
-
-            }
-            catch(IOException e) {
-                log.error("Problem reading bookmark file:" + e.getMessage());
-            }
+            this.sort();
         }
     }
 

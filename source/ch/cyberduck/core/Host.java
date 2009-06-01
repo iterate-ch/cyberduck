@@ -798,16 +798,8 @@ public class Host implements Serializable {
      */
     private void read() throws IOException {
         log.info("Reading bookmark from:" + file.getAbsolute());
-        NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(file.getAbsolute()));
-        if(null == plistData) {
-            throw new IOException("Invalid file format:" + file);
-        }
-//        NSObject propertyListFromXMLData = NSPropertyListSerialization.propertyListFromData(plistData);
-//        if(propertyListFromXMLData.id().isNull()) {
-//            throw new IOException("Invalid file format:" + file);
-//         }
-//        NSDictionary dict = Rococoa.cast(propertyListFromXMLData, NSDictionary.class);
-//        this.init(dict);
+        NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
+        this.init(dict);
     }
 
     /**
@@ -817,15 +809,8 @@ public class Host implements Serializable {
      */
     public void write() throws IOException {
         log.info("Exporting bookmark " + this.toURL() + " to " + file);
-        NSMutableData collection = NSMutableData.dataWithLength(0);
-        collection.appendData(NSPropertyListSerialization.dataFromPropertyList(this.getAsDictionary()));
-        if(collection.writeToURL(NSURL.fileURLWithPath(file.getAbsolute()))) {
-            log.info("Bookmarks sucessfully saved in :" + file);
-            NSWorkspace.sharedWorkspace().noteFileSystemChanged(file.getAbsolute());
-        }
-        else {
-            throw new IOException("Error saving bookmark to:" + file);
-        }
+        NSDictionary dict = this.getAsDictionary();
+        dict.writeToFile(file.getAbsolute());
     }
 
     /**

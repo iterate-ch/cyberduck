@@ -23,8 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
-import java.io.IOException;
-
 
 /**
  * @version $Id$
@@ -91,50 +89,28 @@ public class TransferCollection extends Collection<Transfer> {
 
     private synchronized void save(Local f) {
         log.debug("save");
-        synchronized(this) {
-            if(Preferences.instance().getBoolean("queue.save")) {
-                NSMutableArray list = NSMutableArray.arrayWithCapacity(this.size());
-                for(Transfer transfer : this) {
-                    list.addObject(transfer.getAsDictionary());
-                }
-                NSMutableData collection = NSMutableData.dataWithLength(0);
-                try {
-                    collection.appendData(NSPropertyListSerialization.dataFromPropertyList(list));
-                }
-                catch(IOException e) {
-                    log.error("Problem writing queue file: " + e.getMessage());
-                }
-                if(collection.writeToURL(NSURL.fileURLWithPath(f.getAbsolute()))) {
-                    log.info("Queue sucessfully saved to :" + f.toString());
-                }
-                else {
-                    log.error("Error saving queue to :" + f.toString());
-                }
+        if(Preferences.instance().getBoolean("queue.save")) {
+            NSMutableArray list = NSMutableArray.arrayWithCapacity(this.size());
+            for(Transfer transfer : this) {
+                list.addObject(transfer.getAsDictionary());
             }
+            list.writeToFile(f.getAbsolute());
         }
     }
 
     public void load() {
-//        this.load(QUEUE_FILE);
+        this.load(QUEUE_FILE);
     }
 
     private synchronized void load(Local f) {
         log.debug("load");
-        synchronized(this) {
-            if(f.exists()) {
-                log.info("Found Queue file: " + f.toString());
-                NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(f.getAbsolute()));
-                try {
-                    NSArray propertyListFromXMLData = Rococoa.cast(NSPropertyListSerialization.propertyListFromData(plistData), NSArray.class);
-                    final NSEnumerator i = propertyListFromXMLData.objectEnumerator();
-                    NSObject next;
-                    while(((next = i.nextObject()) != null)) {
-                        super.add(TransferFactory.create(Rococoa.cast(next, NSDictionary.class)));
-                    }
-                }
-                catch(IOException e) {
-                    log.error("Problem reading queue file: " + e.getMessage());
-                }
+        if(f.exists()) {
+            log.info("Found Queue file: " + f.toString());
+            NSArray list = NSArray.arrayWithContentsOfFile(f.getAbsolute());
+            final NSEnumerator i = list.objectEnumerator();
+            NSObject next;
+            while(((next = i.nextObject()) != null)) {
+                super.add(TransferFactory.create(Rococoa.cast(next, NSDictionary.class)));
             }
         }
     }
