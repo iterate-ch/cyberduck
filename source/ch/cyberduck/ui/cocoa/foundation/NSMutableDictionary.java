@@ -45,6 +45,14 @@ public abstract class NSMutableDictionary extends NSDictionary {
      */
     public abstract void removeObjectForKey(String aKey);
 
+    /**
+     * If aKey already exists in the receiver, the receiver’s previous value
+     * object for that key is sent a release message and anObject takes its place.
+     *
+     * @param anObject The object receives a retain message before being added to
+     *                 the receiver. This value must not be nil.
+     * @param aKey     The key is copied (using copyWithZone:; keys must conform to the NSCopying protocol). The key must not be nil.
+     */
     public void setObjectForKey(String anObject, String aKey) {
         this.setObject_forKey(NSString.stringWithString(anObject), NSString.stringWithString(aKey));
     }

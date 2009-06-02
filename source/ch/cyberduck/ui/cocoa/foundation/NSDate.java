@@ -27,23 +27,23 @@ public abstract class NSDate implements NSObject {
     }
 
     public static NSDate dateWithTimeIntervalSinceNow(double secs) {
-        return CLASS.date();
+        return CLASS.dateWithTimeIntervalSinceNow(secs);
     }
 
     public static NSDate dateWithTimeIntervalSinceReferenceDate(double secs) {
-        return CLASS.date();
+        return CLASS.dateWithTimeIntervalSinceReferenceDate(secs);
     }
 
     public static NSDate dateWithTimeIntervalSince1970(double secs) {
-        return CLASS.date();
+        return CLASS.dateWithTimeIntervalSince1970(secs);
     }
 
     public static NSDate distantFuture() {
-        return CLASS.date();
+        return CLASS.distantFuture();
     }
 
     public static NSDate distantPast() {
-        return CLASS.date();
+        return CLASS.distantPast();
     }
 
 
@@ -76,13 +76,13 @@ public abstract class NSDate implements NSObject {
          * Original signature : <code>distantFuture()</code><br>
          * <i>from NSDateCreation native declaration : :47</i>
          */
-        NSObject distantFuture();
+        NSDate distantFuture();
 
         /**
          * Original signature : <code>distantPast()</code><br>
          * <i>from NSDateCreation native declaration : :48</i>
          */
-        NSObject distantPast();
+        NSDate distantPast();
     }
 
     /**

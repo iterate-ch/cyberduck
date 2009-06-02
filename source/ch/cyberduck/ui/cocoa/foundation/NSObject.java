@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
+import org.rococoa.Selector;
+
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -55,21 +57,28 @@ public interface NSObject extends org.rococoa.NSObject {
      * <i>native declaration : :22</i>
      */
     NSZone zone();
+
     /**
      * <i>native declaration : :24</i><br>
      * Conversion Error : /// Original signature : <code>performSelector(null)</code><br>
      * - (null)performSelector:(null)aSelector; (Argument aSelector cannot be converted)
      */
+    void performSelector(Selector aSelector);
+
     /**
      * <i>native declaration : :25</i><br>
      * Conversion Error : /// Original signature : <code>performSelector(null, null)</code><br>
      * - (null)performSelector:(null)aSelector withObject:(null)object; (Argument aSelector cannot be converted)
      */
+    void performSelector_widthObject(Selector sel, NSObject object);
+
     /**
      * <i>native declaration : :26</i><br>
      * Conversion Error : /// Original signature : <code>performSelector(null, null, null)</code><br>
      * - (null)performSelector:(null)aSelector withObject:(null)object1 withObject:(null)object2; (Argument aSelector cannot be converted)
      */
+    void performSelector_widthObject_withObject(Selector sel, NSObject object1, NSObject object2);
+
     /**
      * Original signature : <code>BOOL isProxy()</code><br>
      * <i>native declaration : :28</i>
@@ -91,15 +100,19 @@ public interface NSObject extends org.rococoa.NSObject {
      * <i>native declaration : :32</i>
      */
     boolean conformsToProtocol(org.rococoa.NSClass aProtocol);
+
     /**
      * <i>native declaration : :34</i><br>
      * Conversion Error : /// Original signature : <code>BOOL respondsToSelector(null)</code><br>
      * - (BOOL)respondsToSelector:(null)aSelector; (Argument aSelector cannot be converted)
      */
+    boolean respondsToSelector(Selector aSelector);
+
     /**
      * Original signature : <code>retain()</code><br>
      * <i>native declaration : :36</i>
      */
+    NSObject retain();
     /**
      * <i>native declaration : :37</i><br>
      * Conversion Error : oneway
