@@ -253,7 +253,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 this.errorView.setDataSource(this.id());
                 this.errorView.setDelegate(this.id());
                 {
-                    NSTableColumn c = NSTableColumn.Factory.create("Error");
+                    NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Error");
                     c.setMinWidth(50f);
                     c.setWidth(400f);
                     c.setMaxWidth(1000f);

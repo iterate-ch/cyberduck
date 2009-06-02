@@ -137,9 +137,7 @@ public class CDBookmarkTableDataSource extends CDController implements CDListDat
                     Preferences.instance().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(BOOKMARK_COLUMN)) {
-            final NSMutableDictionary dict = (NSMutableDictionary) host.getAsDictionary();
-            dict.setObjectForKey(host.getNickname(), Host.NICKNAME);
-            return dict;
+            return host.getAsDictionary();
         }
         if(identifier.equals(STATUS_COLUMN)) {
             if(controller.hasSession()) {

@@ -128,36 +128,53 @@ public abstract class CDAbstractTableDelegate<E> extends CDController implements
         this.tableColumnClicked(view, tableColumn);
     }
 
+    /**
+     *
+     * @param sender
+     */
     public abstract void tableRowDoubleClicked(final NSObject sender);
 
     /**
+     * @param notification
      * @see NSTableView.Notifications
      */
-    public void tableViewelectionDidChange(NSNotification notification) {
+    public void tableViewSelectionDidChange(NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
 
+    /**
+     * @param notification
+     * @see NSTableView.Notifications
+     */
     public void tableViewSelectionIsChanging(NSNotification notification) {
         this.selectionIsChanging(notification);
     }
 
     /**
+     * @param notification
      * @see NSOutlineView.Notifications
      */
-    public void outlineViewselectionDidChange(NSNotification notification) {
+    public void outlineViewSelectionDidChange(NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
     /**
+     * @param notification
      * @see NSOutlineView.Notifications
      */
-    public void outlineViewselectionIsChanging(NSNotification notification) {
+    public void outlineViewSelectionIsChanging(NSNotification notification) {
         this.selectionIsChanging(notification);
     }
 
+    /**
+     * @param notification
+     */
     public abstract void selectionDidChange(NSNotification notification);
 
+    /**
+     * @param notification
+     */
     public void selectionIsChanging(NSNotification notification) {
         ;
     }

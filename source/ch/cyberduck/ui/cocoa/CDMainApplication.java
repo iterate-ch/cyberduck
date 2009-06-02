@@ -91,7 +91,7 @@ public class CDMainApplication {
             }
         }
         finally {
-            pool.release();
+            pool.drain();
         }
     }
 

@@ -155,7 +155,7 @@ public class CDActivityController extends CDWindowController implements CDListDa
             }
         }).id());
         {
-            NSTableColumn c = NSTableColumn.Factory.create("Default");
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Default");
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);

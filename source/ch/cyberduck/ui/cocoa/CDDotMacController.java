@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -27,9 +28,6 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * @version $Id$
@@ -67,35 +65,28 @@ public class CDDotMacController extends CDController {
      *
      */
     public void downloadBookmarks() {
-        File f = new File(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
-        this.downloadBookmarks(f.getAbsolutePath());
+        Local f = new Local(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
+        this.downloadBookmarks(f.getAbsolute());
         if(f.exists()) {
-            NSData plistData = NSData.dataWithContentsOfURL(NSURL.fileURLWithPath(f.getAbsolutePath()));
-            try {
-                NSArray propertyListFromXMLData = Rococoa.cast(NSPropertyListSerialization.propertyListFromData(plistData), NSArray.class);
-                NSArray entries = (NSArray) propertyListFromXMLData;
-                final NSEnumerator i = entries.objectEnumerator();
-                NSObject next;
-                while(((next = i.nextObject()) != null)) {
-                    final Host bookmark = new Host(Rococoa.cast(next, NSDictionary.class));
-                    if(!HostCollection.defaultCollection().contains(bookmark)) {
-                        final NSAlert alert = NSAlert.alert((bookmark).getNickname(),
-                                Locale.localizedString("Add this bookmark to your existing bookmarks?", "IDisk"),
-                                Locale.localizedString("Add", "IDisk"), //default
-                                Locale.localizedString("Cancel"), //alternate
-                                Locale.localizedString("Skip", "IDisk"));
-                        int choice = alert.runModal(); //other
-                        if(choice == CDSheetCallback.DEFAULT_OPTION) {
-                            HostCollection.defaultCollection().add(bookmark);
-                        }
-                        if(choice == CDSheetCallback.ALTERNATE_OPTION) {
-                            return;
-                        }
+            NSArray entries = NSArray.arrayWithContentsOfFile(f.getAbsolute());
+            final NSEnumerator i = entries.objectEnumerator();
+            NSObject next;
+            while(((next = i.nextObject()) != null)) {
+                final Host bookmark = new Host(Rococoa.cast(next, NSDictionary.class));
+                if(!HostCollection.defaultCollection().contains(bookmark)) {
+                    final NSAlert alert = NSAlert.alert((bookmark).getNickname(),
+                            Locale.localizedString("Add this bookmark to your existing bookmarks?", "IDisk"),
+                            Locale.localizedString("Add", "IDisk"), //default
+                            Locale.localizedString("Cancel"), //alternate
+                            Locale.localizedString("Skip", "IDisk"));
+                    int choice = alert.runModal(); //other
+                    if(choice == CDSheetCallback.DEFAULT_OPTION) {
+                        HostCollection.defaultCollection().add(bookmark);
+                    }
+                    if(choice == CDSheetCallback.ALTERNATE_OPTION) {
+                        return;
                     }
                 }
-            }
-            catch(IOException e) {
-                log.error("Problem reading bookmark file: " + e.getMessage());
             }
         }
         f.delete();

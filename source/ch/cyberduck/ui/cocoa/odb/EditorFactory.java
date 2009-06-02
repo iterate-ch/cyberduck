@@ -82,10 +82,9 @@ public class EditorFactory {
 
 
     /**
-     *
      * @param file
      * @return The bundle identifier of the editor for this file.
-     * Null if no suitable and installed editor is found.
+     *         Null if no suitable and installed editor is found.
      */
     public static String editorBundleIdentifierForFile(final Local file) {
         final String defaultApplication = file.getDefaultEditor();
@@ -93,8 +92,7 @@ public class EditorFactory {
             // Use default editor
             return defaultEditor();
         }
-        for(Iterator<String> iter = INSTALLED_ODB_EDITORS.values().iterator(); iter.hasNext(); ) {
-            final String identifier = iter.next();
+        for(final String identifier : INSTALLED_ODB_EDITORS.values()) {
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
             if(null == path) {
                 continue;
@@ -115,7 +113,6 @@ public class EditorFactory {
     }
 
     /**
-     *
      * @param c
      * @return
      */

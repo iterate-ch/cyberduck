@@ -612,7 +612,9 @@ public class CDMainController extends CDBundleController {
      */
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
-        NSNotificationCenter.defaultCenter().removeObserver(this.proxy());
+
+        this.invalidate();
+
         //Terminating rendezvous discovery
         Rendezvous.instance().quit();
         //Writing usage info

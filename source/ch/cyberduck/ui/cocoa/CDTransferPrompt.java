@@ -288,7 +288,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 }
             }
         }).id());
-        this.browserView.setRowHeight(new CGFloat(NSLayoutManager.Factory.create().defaultLineHeightForFont(
+        this.browserView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         // selection properties
         this.browserView.setAllowsMultipleSelection(true);
@@ -310,49 +310,49 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             this.browserView.setGridStyleMask(NSTableView.NSTableViewGridNone);
         }
         {
-            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.FILENAME_COLUMN);
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.FILENAME_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Filename"));
             c.setMinWidth(100f);
             c.setWidth(220f);
             c.setMaxWidth(800f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(CDOutlineCell.Factory.create());
+            c.setDataCell(CDOutlineCell.outlineCell());
             this.browserView.addTableColumn(c);
             this.browserView.setOutlineTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.SIZE_COLUMN);
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.SIZE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(100f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(NSTextFieldCell.Factory.create());
+            c.setDataCell(NSTextFieldCell.textFieldCell());
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.WARNING_COLUMN);
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.WARNING_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(NSImageCell.Factory.create());
+            c.setDataCell(NSImageCell.imageCell());
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.Factory.create(CDTransferPromptModel.INCLUDE_COLUMN);
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.INCLUDE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            NSButtonCell cell = NSButtonCell.Factory.create();
+            NSButtonCell cell = NSButtonCell.buttonCell();
             cell.setTitle("");
             cell.setControlSize(NSCell.NSSmallControlSize);
             cell.setButtonType(NSButtonCell.NSSwitchButton);

@@ -37,7 +37,7 @@ public interface CDBookmarkCell extends NSCell {
     
     public static class Factory {
         public static CDBookmarkCell create() {
-            return Rococoa.cast(CLASS.alloc().init().autorelease(), CDBookmarkCell.class);
+            return Rococoa.cast(CLASS.alloc().init(), CDBookmarkCell.class);
         }
     }
 

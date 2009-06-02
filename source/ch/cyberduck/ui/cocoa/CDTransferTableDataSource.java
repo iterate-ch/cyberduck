@@ -83,8 +83,8 @@ public class CDTransferTableDataSource extends CDController implements CDListDat
             this.filter = new TransferFilter() {
                 public boolean accept(Transfer transfer) {
                     // Match for pathnames and hostname
-                    return transfer.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1
-                            || transfer.getSession().getHost().getHostname().toLowerCase().indexOf(searchString.toLowerCase()) != -1;
+                    return transfer.getName().toLowerCase().contains(searchString.toLowerCase())
+                            || transfer.getSession().getHost().getHostname().toLowerCase().contains(searchString.toLowerCase());
                 }
             };
         }

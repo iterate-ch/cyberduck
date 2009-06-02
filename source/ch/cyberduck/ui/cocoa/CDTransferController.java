@@ -374,7 +374,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 NSPasteboard.FilesPromisePboardType));
 
         {
-            NSTableColumn c = NSTableColumn.Factory.create(CDTransferTableDataSource.PROGRESS_COLUMN);
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferTableDataSource.PROGRESS_COLUMN);
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);

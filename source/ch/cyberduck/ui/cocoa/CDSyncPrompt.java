@@ -45,26 +45,26 @@ public class CDSyncPrompt extends CDTransferPrompt {
     public void setBrowserView(NSOutlineView view) {
         super.setBrowserView(view);
         {
-            NSTableColumn c = NSTableColumn.Factory.create(CDSyncPromptModel.SYNC_COLUMN);
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDSyncPromptModel.SYNC_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(NSImageCell.Factory.create());
+            c.setDataCell(NSImageCell.imageCell());
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             view.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.Factory.create(CDSyncPromptModel.CREATE_COLUMN);
+            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDSyncPromptModel.CREATE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(NSImageCell.Factory.create());
+            c.setDataCell(NSImageCell.imageCell());
             c.dataCell().setAlignment(NSText.CenterTextAlignment);
             view.addTableColumn(c);
         }
