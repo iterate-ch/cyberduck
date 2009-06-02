@@ -71,8 +71,7 @@ public class Rendezvous
     public void init() {
         log.debug("init");
         try {
-            for(int i = 0; i < serviceTypes.length; i++) {
-                String protocol = serviceTypes[i];
+            for(String protocol : serviceTypes) {
                 log.info("Adding Rendezvous service listener for " + protocol);
                 this.browsers.put(protocol, DNSSD.browse(protocol, this));
             }
@@ -87,8 +86,7 @@ public class Rendezvous
      * Halt all service discvery browsers
      */
     public void quit() {
-        for(int i = 0; i < serviceTypes.length; i++) {
-            String protocol = serviceTypes[i];
+        for(String protocol : serviceTypes) {
             log.info("Removing Rendezvous service listener for " + protocol);
             DNSSDService service = this.browsers.get(protocol);
             if(null == service) {
@@ -107,8 +105,8 @@ public class Rendezvous
             log.info("Service resolved:" + servicename);
             RendezvousListener[] l = listeners.toArray(
                     new RendezvousListener[listeners.size()]);
-            for(int i = 0; i < l.length; i++) {
-                l[i].serviceResolved(servicename, hostname);
+            for(RendezvousListener listener : l) {
+                listener.serviceResolved(servicename, hostname);
             }
         }
 
@@ -116,8 +114,8 @@ public class Rendezvous
             log.info("Service lost:" + servicename);
             RendezvousListener[] l = listeners.toArray(
                     new RendezvousListener[listeners.size()]);
-            for(int i = 0; i < l.length; i++) {
-                l[i].serviceLost(servicename);
+            for(RendezvousListener listener : l) {
+                listener.serviceLost(servicename);
             }
         }
     };
