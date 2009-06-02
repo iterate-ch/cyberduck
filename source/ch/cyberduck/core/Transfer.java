@@ -182,8 +182,16 @@ public abstract class Transfer implements Serializable {
         }
     }
 
+    /**
+     * Keep reference
+     */
+    private NSMutableDictionary dict;
+
     public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
+        if(null == dict) {
+            dict = NSMutableDictionary.dictionary();
+            dict.retain();
+        }
         dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
         NSMutableArray r = NSMutableArray.arrayWithCapacity(this.numberOfRoots());
         for(Path root : this.roots) {

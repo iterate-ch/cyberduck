@@ -51,7 +51,7 @@ public class Local extends AbstractPath {
                         log.error("No such file:" + getAbsolute());
                         return null;
                     }
-                    Object posix = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions.get().toString());
+                    Object posix = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions);
                     if(null == posix) {
                         log.error("No such file:" + getAbsolute());
                         return null;
@@ -145,7 +145,7 @@ public class Local extends AbstractPath {
                     log.error("No such file:" + getAbsolute());
                     return -1;
                 }
-                NSObject date = fileAttributes.objectForKey(NSFileManager.NSFileCreationDate.get().toString());
+                NSObject date = fileAttributes.objectForKey(NSFileManager.NSFileCreationDate);
                 if(null == date) {
                     // Returns an entry’s value given its key, or null if no value is associated with key.
                     log.error("No such file:" + getAbsolute());
@@ -159,7 +159,7 @@ public class Local extends AbstractPath {
                 boolean success = NSFileManager.defaultManager().changeFileAttributes(
                         NSDictionary.dictionaryWithObjectsForKeys(
                                 NSArray.arrayWithObject(date),
-                                NSArray.arrayWithObject(NSFileManager.NSFileCreationDate.get().toString())),
+                                NSArray.arrayWithObject(NSFileManager.NSFileCreationDate)),
                         _impl.getAbsolutePath());
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
@@ -414,14 +414,14 @@ public class Local extends AbstractPath {
     public void writePermissions(final Permission perm, final boolean recursive) {
         CDMainApplication.invoke(new DefaultMainAction() {
             public void run() {
-//                boolean success = NSFileManager.defaultManager().changeFileAttributes(
-//                        NSDictionary.dictionaryWithObjectsForKeys(
-//                                NSArray.arrayWithObject(perm.getOctalNumber()),
-//                                NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions.get().toString())),
-//                        _impl.getAbsolutePath());
-//                if(!success) {
-//                    log.error("File attribute changed failed:" + getAbsolute());
-//                }
+                boolean success = NSFileManager.defaultManager().changeFileAttributes(
+                        NSDictionary.dictionaryWithObjectsForKeys(
+                                NSArray.arrayWithObject(NSNumber.numberWithInt(perm.getOctalNumber())),
+                                NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
+                        _impl.getAbsolutePath());
+                if(!success) {
+                    log.error("File attribute changed failed:" + getAbsolute());
+                }
                 if(attributes.isDirectory() && recursive) {
                     for(AbstractPath child : childs()) {
                         child.writePermissions(perm, recursive);
@@ -437,7 +437,7 @@ public class Local extends AbstractPath {
                 boolean success = NSFileManager.defaultManager().changeFileAttributes(
                         NSDictionary.dictionaryWithObjectsForKeys(
                                 NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(millis / 1000)),
-                                NSArray.arrayWithObject(NSFileManager.NSFileModificationDate.get().toString())),
+                                NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
                         _impl.getAbsolutePath());
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());

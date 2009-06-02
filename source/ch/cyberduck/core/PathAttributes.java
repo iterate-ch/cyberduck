@@ -85,8 +85,16 @@ public class PathAttributes extends Attributes implements Serializable {
         }
     }
 
+    /**
+     * Keep reference
+     */
+    private NSMutableDictionary dict;
+
     public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
+        if(null == dict) {
+            dict = NSMutableDictionary.dictionary();
+            dict.retain();
+        }
         dict.setObjectForKey(String.valueOf(this.type), TYPE);
         if(this.size != -1) {
             dict.setObjectForKey(String.valueOf(this.size), SIZE);

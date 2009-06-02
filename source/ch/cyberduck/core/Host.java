@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -209,14 +208,20 @@ public class Host implements Serializable {
     }
 
     /**
+     * Keep reference
+     */
+    private NSMutableDictionary dict;
+
+    /**
      * @return
      */
     public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
-        dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
-        if(!this.getNickname().equals(this.getDefaultNickname())) {
-            dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
+        if(null == dict) {
+            dict = NSMutableDictionary.dictionary();
+            dict.retain();
         }
+        dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
+        dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         if(StringUtils.isNotBlank(this.hostname)) {
             dict.setObjectForKey(this.hostname, Host.HOSTNAME);
         }

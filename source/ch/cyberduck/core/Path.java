@@ -124,8 +124,16 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
+    /**
+     * Keep reference
+     */
+    private NSMutableDictionary dict;
+
     public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
+        if(null == dict) {
+            dict = NSMutableDictionary.dictionary();
+            dict.retain();
+        }
         dict.setObjectForKey(this.getAbsolute(), REMOTE);
         if(local != null) {
             dict.setObjectForKey(local.toString(), LOCAL);
@@ -133,7 +141,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(StringUtils.isNotBlank(this.getSymbolicLinkPath())) {
             dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
         }
-        dict.setObjectForKey(((PathAttributes) this.attributes).getAsDictionary(), ATTRIBUTES);
+        dict.setObjectForKey(((Serializable) this.attributes).getAsDictionary(), ATTRIBUTES);
         return dict;
     }
 
