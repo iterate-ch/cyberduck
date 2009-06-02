@@ -27,19 +27,15 @@ import org.rococoa.cocoa.CGFloat;
 
 
 /// <i>native declaration : :17</i>
-public
-
-abstract class NSTableColumn implements NSObject {
+public abstract class NSTableColumn implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTableColumn", _Class.class);
 
     public static final int NSTableColumnNoResizing = 0; // Disallow any kind of resizing.
     public static final int NSTableColumnAutoresizingMask = (1 << 0);     // This column can be resized as the table is resized.
     public static final int NSTableColumnUserResizingMask = (1 << 1);     // The user can resize this column manually.
 
-    public static class Factory {
-        public static NSTableColumn create(String identifier) {
-            return Rococoa.cast(CLASS.alloc().initWithIdentifier(NSString.stringWithString(identifier)).autorelease(), NSTableColumn.class);
-        }
+    public static NSTableColumn tableColumnWithIdentifier(String identifier) {
+        return Rococoa.cast(CLASS.alloc().initWithIdentifier(NSString.stringWithString(identifier)).autorelease(), NSTableColumn.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {

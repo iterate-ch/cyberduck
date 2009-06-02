@@ -27,13 +27,11 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :71</i>
-public interface NSLayoutManager extends NSObject {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSLayoutManager", _Class.class);
+public abstract class NSLayoutManager implements NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSLayoutManager", _Class.class);
 
-    public static class Factory {
-        public static NSLayoutManager create() {
-            return Rococoa.cast(CLASS.alloc().init().autorelease(), NSLayoutManager.class);
-        }
+    public static NSLayoutManager layoutManager() {
+        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSLayoutManager.class);
     }
 
     /// <i>native declaration : :36</i>
@@ -81,165 +79,165 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>id init()</code><br>
      * <i>native declaration : :179</i>
      */
-    NSLayoutManager init();
+    public abstract NSLayoutManager init();
 
     /**
      * Original signature : <code>NSTextStorage* textStorage()</code><br>
      * <i>native declaration : :184</i>
      */
-    NSTextStorage textStorage();
+    public abstract NSTextStorage textStorage();
 
     /**
      * Original signature : <code>void setTextStorage(NSTextStorage*)</code><br>
      * <i>native declaration : :185</i>
      */
-    void setTextStorage(NSTextStorage textStorage);
+    public abstract void setTextStorage(NSTextStorage textStorage);
 
     /**
      * Original signature : <code>NSAttributedString* attributedString()</code><br>
      * <i>native declaration : :188</i>
      */
-    NSAttributedString attributedString();
+    public abstract NSAttributedString attributedString();
 
     /**
      * Original signature : <code>void replaceTextStorage(NSTextStorage*)</code><br>
      * <i>native declaration : :191</i>
      */
-    void replaceTextStorage(NSTextStorage newTextStorage);
+    public abstract void replaceTextStorage(NSTextStorage newTextStorage);
 
     /**
      * Original signature : <code>NSGlyphGenerator* glyphGenerator()</code><br>
      * <i>native declaration : :195</i>
      */
-    com.sun.jna.Pointer glyphGenerator();
+    public abstract com.sun.jna.Pointer glyphGenerator();
 
     /**
      * Original signature : <code>void setGlyphGenerator(NSGlyphGenerator*)</code><br>
      * <i>native declaration : :196</i>
      */
-    void setGlyphGenerator(com.sun.jna.Pointer glyphGenerator);
+    public abstract void setGlyphGenerator(com.sun.jna.Pointer glyphGenerator);
 
     /**
      * Original signature : <code>NSTypesetter* typesetter()</code><br>
      * <i>native declaration : :200</i>
      */
-    com.sun.jna.Pointer typesetter();
+    public abstract com.sun.jna.Pointer typesetter();
 
     /**
      * Original signature : <code>void setTypesetter(NSTypesetter*)</code><br>
      * <i>native declaration : :201</i>
      */
-    void setTypesetter(com.sun.jna.Pointer typesetter);
+    public abstract void setTypesetter(com.sun.jna.Pointer typesetter);
 
     /**
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :204</i>
      */
-    NSObject delegate();
+    public abstract org.rococoa.ID delegate();
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>
      * <i>native declaration : :205</i>
      */
-    void setDelegate(org.rococoa.ID delegate);
+    public abstract void setDelegate(org.rococoa.ID delegate);
 
     /**
      * Original signature : <code>NSArray* textContainers()</code><br>
      * <i>native declaration : :210</i>
      */
-    NSArray textContainers();
+    public abstract NSArray textContainers();
 
     /**
      * Original signature : <code>void addTextContainer(NSTextContainer*)</code><br>
      * <i>native declaration : :212</i>
      */
-    void addTextContainer(com.sun.jna.Pointer container);
+    public abstract void addTextContainer(com.sun.jna.Pointer container);
 
     /**
      * Add a container to the end of the array.  Must invalidate layout of all glyphs after the previous last container (i.e., glyphs that were not previously laid out because they would not fit anywhere).<br>
      * Original signature : <code>void insertTextContainer(NSTextContainer*, NSUInteger)</code><br>
      * <i>native declaration : :214</i>
      */
-    void insertTextContainer_atIndex(com.sun.jna.Pointer container, int index);
+    public abstract void insertTextContainer_atIndex(com.sun.jna.Pointer container, int index);
 
     /**
      * Insert a container into the array before the container at index.  Must invalidate layout of all glyphs in the containers from the one previously at index to the last container.<br>
      * Original signature : <code>void removeTextContainerAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :216</i>
      */
-    void removeTextContainerAtIndex(int index);
+    public abstract void removeTextContainerAtIndex(int index);
 
     /**
      * Original signature : <code>void textContainerChangedGeometry(NSTextContainer*)</code><br>
      * <i>native declaration : :219</i>
      */
-    void textContainerChangedGeometry(com.sun.jna.Pointer container);
+    public abstract void textContainerChangedGeometry(com.sun.jna.Pointer container);
 
     /**
      * Original signature : <code>void textContainerChangedTextView(NSTextContainer*)</code><br>
      * <i>native declaration : :222</i>
      */
-    void textContainerChangedTextView(com.sun.jna.Pointer container);
+    public abstract void textContainerChangedTextView(com.sun.jna.Pointer container);
 
     /**
      * Original signature : <code>void setBackgroundLayoutEnabled(BOOL)</code><br>
      * <i>native declaration : :227</i>
      */
-    void setBackgroundLayoutEnabled(boolean flag);
+    public abstract void setBackgroundLayoutEnabled(boolean flag);
 
     /**
      * Original signature : <code>BOOL backgroundLayoutEnabled()</code><br>
      * <i>native declaration : :228</i>
      */
-    boolean backgroundLayoutEnabled();
+    public abstract boolean backgroundLayoutEnabled();
 
     /**
      * Original signature : <code>void setUsesScreenFonts(BOOL)</code><br>
      * <i>native declaration : :231</i>
      */
-    void setUsesScreenFonts(boolean flag);
+    public abstract void setUsesScreenFonts(boolean flag);
 
     /**
      * Original signature : <code>BOOL usesScreenFonts()</code><br>
      * <i>native declaration : :232</i>
      */
-    boolean usesScreenFonts();
+    public abstract boolean usesScreenFonts();
 
     /**
      * Original signature : <code>void setShowsInvisibleCharacters(BOOL)</code><br>
      * <i>native declaration : :235</i>
      */
-    void setShowsInvisibleCharacters(boolean flag);
+    public abstract void setShowsInvisibleCharacters(boolean flag);
 
     /**
      * Original signature : <code>BOOL showsInvisibleCharacters()</code><br>
      * <i>native declaration : :236</i>
      */
-    boolean showsInvisibleCharacters();
+    public abstract boolean showsInvisibleCharacters();
 
     /**
      * Original signature : <code>void setShowsControlCharacters(BOOL)</code><br>
      * <i>native declaration : :239</i>
      */
-    void setShowsControlCharacters(boolean flag);
+    public abstract void setShowsControlCharacters(boolean flag);
 
     /**
      * Original signature : <code>BOOL showsControlCharacters()</code><br>
      * <i>native declaration : :240</i>
      */
-    boolean showsControlCharacters();
+    public abstract boolean showsControlCharacters();
 
     /**
      * Original signature : <code>void setHyphenationFactor(float)</code><br>
      * <i>native declaration : :243</i>
      */
-    void setHyphenationFactor(float factor);
+    public abstract void setHyphenationFactor(float factor);
 
     /**
      * Original signature : <code>float hyphenationFactor()</code><br>
      * <i>native declaration : :244</i>
      */
-    float hyphenationFactor();
+    public abstract float hyphenationFactor();
     /**
      * <i>native declaration : :247</i><br>
      * Conversion Error : /// Original signature : <code>void setDefaultAttachmentScaling(null)</code><br>
@@ -249,44 +247,44 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>defaultAttachmentScaling()</code><br>
      * <i>native declaration : :248</i>
      */
-    NSObject defaultAttachmentScaling();
+    public abstract NSObject defaultAttachmentScaling();
 
     /**
      * Original signature : <code>void setTypesetterBehavior(NSTypesetterBehavior)</code><br>
      * <i>native declaration : :252</i>
      */
-    void setTypesetterBehavior(int theBehavior);
+    public abstract void setTypesetterBehavior(int theBehavior);
 
     /**
      * Original signature : <code>NSTypesetterBehavior typesetterBehavior()</code><br>
      * <i>native declaration : :253</i>
      */
-    int typesetterBehavior();
+    public abstract int typesetterBehavior();
 
     /**
      * Original signature : <code>NSUInteger layoutOptions()</code><br>
      * <i>native declaration : :258</i>
      */
-    int layoutOptions();
+    public abstract int layoutOptions();
 
     /**
      * Original signature : <code>void setAllowsNonContiguousLayout(BOOL)</code><br>
      * <i>native declaration : :263</i>
      */
-    void setAllowsNonContiguousLayout(boolean flag);
+    public abstract void setAllowsNonContiguousLayout(boolean flag);
 
     /**
      * Original signature : <code>BOOL allowsNonContiguousLayout()</code><br>
      * <i>native declaration : :264</i>
      */
-    boolean allowsNonContiguousLayout();
+    public abstract boolean allowsNonContiguousLayout();
 
     /**
      * If YES, then the layout manager may perform glyph generation and layout for a given portion of the text, without having glyphs or layout for preceding portions.  The default is NO.  Turning this setting on will significantly alter which portions of the text will have glyph generation or layout performed when a given generation-causing method is invoked.  It also gives significant performance benefits, especially for large documents.<br>
      * Original signature : <code>BOOL hasNonContiguousLayout()</code><br>
      * <i>native declaration : :266</i>
      */
-    boolean hasNonContiguousLayout();
+    public abstract boolean hasNonContiguousLayout();
     /**
      * <i>native declaration : :272</i><br>
      * Conversion Error : NSRange
@@ -331,7 +329,7 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>void ensureLayoutForTextContainer(NSTextContainer*)</code><br>
      * <i>native declaration : :295</i>
      */
-    void ensureLayoutForTextContainer(com.sun.jna.Pointer container);
+    public abstract void ensureLayoutForTextContainer(com.sun.jna.Pointer container);
     /**
      * <i>native declaration : :296</i><br>
      * Conversion Error : NSRect
@@ -340,7 +338,7 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>void insertGlyphs(const NSGlyph*, NSUInteger, NSUInteger, NSUInteger)</code><br>
      * <i>native declaration : :305</i>
      */
-    void insertGlyphs_length_forStartingGlyphAtIndex_characterIndex(com.sun.jna.Pointer glyphs, int length, int glyphIndex, int charIndex);
+    public abstract void insertGlyphs_length_forStartingGlyphAtIndex_characterIndex(com.sun.jna.Pointer glyphs, int length, int glyphIndex, int charIndex);
     /**
      * <i>native declaration : :309</i><br>
      * Conversion Error : NSGlyph
@@ -357,13 +355,13 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>void setCharacterIndex(NSUInteger, NSUInteger)</code><br>
      * <i>native declaration : :318</i>
      */
-    void setCharacterIndex_forGlyphAtIndex(int charIndex, int glyphIndex);
+    public abstract void setCharacterIndex_forGlyphAtIndex(int charIndex, int glyphIndex);
 
     /**
      * Original signature : <code>void setIntAttribute(NSInteger, NSInteger, NSUInteger)</code><br>
      * <i>native declaration : :321</i>
      */
-    void setIntAttribute_value_forGlyphAtIndex(int attributeTag, int val, int glyphIndex);
+    public abstract void setIntAttribute_value_forGlyphAtIndex(int attributeTag, int val, int glyphIndex);
     /**
      * <i>native declaration : :325</i><br>
      * Conversion Error : NSRange
@@ -372,7 +370,7 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>NSUInteger numberOfGlyphs()</code><br>
      * <i>native declaration : :331</i>
      */
-    int numberOfGlyphs();
+    public abstract int numberOfGlyphs();
     /**
      * <i>native declaration : :334</i><br>
      * Conversion Error : NSGlyph
@@ -385,25 +383,25 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>BOOL isValidGlyphIndex(NSUInteger)</code><br>
      * <i>native declaration : :336</i>
      */
-    boolean isValidGlyphIndex(int glyphIndex);
+    public abstract boolean isValidGlyphIndex(int glyphIndex);
 
     /**
      * Original signature : <code>NSUInteger characterIndexForGlyphAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :340</i>
      */
-    int characterIndexForGlyphAtIndex(int glyphIndex);
+    public abstract int characterIndexForGlyphAtIndex(int glyphIndex);
 
     /**
      * Original signature : <code>NSUInteger glyphIndexForCharacterAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :344</i>
      */
-    int glyphIndexForCharacterAtIndex(int charIndex);
+    public abstract int glyphIndexForCharacterAtIndex(int charIndex);
 
     /**
      * Original signature : <code>NSInteger intAttribute(NSInteger, NSUInteger)</code><br>
      * <i>native declaration : :348</i>
      */
-    int intAttribute_forGlyphAtIndex(int attributeTag, int glyphIndex);
+    public abstract int intAttribute_forGlyphAtIndex(int attributeTag, int glyphIndex);
     /**
      * <i>native declaration : :351</i><br>
      * Conversion Error : NSRange
@@ -441,13 +439,13 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>void setNotShownAttribute(BOOL, NSUInteger)</code><br>
      * <i>native declaration : :381</i>
      */
-    void setNotShownAttribute_forGlyphAtIndex(boolean flag, int glyphIndex);
+    public abstract void setNotShownAttribute_forGlyphAtIndex(boolean flag, int glyphIndex);
 
     /**
      * Original signature : <code>void setDrawsOutsideLineFragment(BOOL, NSUInteger)</code><br>
      * <i>native declaration : :384</i>
      */
-    void setDrawsOutsideLineFragment_forGlyphAtIndex(boolean flag, int glyphIndex);
+    public abstract void setDrawsOutsideLineFragment_forGlyphAtIndex(boolean flag, int glyphIndex);
     /**
      * <i>native declaration : :387</i><br>
      * Conversion Error : /// Original signature : <code>void setAttachmentSize(null, NSRange)</code><br>
@@ -460,25 +458,25 @@ public interface NSLayoutManager extends NSObject {
      * @deprecated use the safer method {@link #getFirstUnlaidCharacterIndex_glyphIndex(java.nio.IntBuffer, java.nio.IntBuffer)} instead
      */
     @java.lang.Deprecated
-    void getFirstUnlaidCharacterIndex_glyphIndex(com.sun.jna.ptr.IntByReference charIndex, com.sun.jna.ptr.IntByReference glyphIndex);
+    public abstract void getFirstUnlaidCharacterIndex_glyphIndex(com.sun.jna.ptr.IntByReference charIndex, com.sun.jna.ptr.IntByReference glyphIndex);
 
     /**
      * Original signature : <code>void getFirstUnlaidCharacterIndex(NSUInteger*, NSUInteger*)</code><br>
      * <i>native declaration : :394</i>
      */
-    void getFirstUnlaidCharacterIndex_glyphIndex(java.nio.IntBuffer charIndex, java.nio.IntBuffer glyphIndex);
+    public abstract void getFirstUnlaidCharacterIndex_glyphIndex(java.nio.IntBuffer charIndex, java.nio.IntBuffer glyphIndex);
 
     /**
      * Original signature : <code>NSUInteger firstUnlaidCharacterIndex()</code><br>
      * <i>native declaration : :395</i>
      */
-    int firstUnlaidCharacterIndex();
+    public abstract int firstUnlaidCharacterIndex();
 
     /**
      * Original signature : <code>NSUInteger firstUnlaidGlyphIndex()</code><br>
      * <i>native declaration : :396</i>
      */
-    int firstUnlaidGlyphIndex();
+    public abstract int firstUnlaidGlyphIndex();
     /**
      * <i>native declaration : :402</i><br>
      * Conversion Error : /// Original signature : <code>NSTextContainer* textContainerForGlyphAtIndex(NSUInteger, null)</code><br>
@@ -521,7 +519,7 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>NSTextContainer* extraLineFragmentTextContainer()</code><br>
      * <i>native declaration : :423</i>
      */
-    com.sun.jna.Pointer extraLineFragmentTextContainer();
+    public abstract com.sun.jna.Pointer extraLineFragmentTextContainer();
     /**
      * <i>native declaration : :426</i><br>
      * Conversion Error : NSPoint
@@ -530,19 +528,19 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>BOOL notShownAttributeForGlyphAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :429</i>
      */
-    boolean notShownAttributeForGlyphAtIndex(int glyphIndex);
+    public abstract boolean notShownAttributeForGlyphAtIndex(int glyphIndex);
 
     /**
      * Original signature : <code>BOOL drawsOutsideLineFragmentForGlyphAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :432</i>
      */
-    boolean drawsOutsideLineFragmentForGlyphAtIndex(int glyphIndex);
+    public abstract boolean drawsOutsideLineFragmentForGlyphAtIndex(int glyphIndex);
 
     /**
      * Original signature : <code>attachmentSizeForGlyphAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :435</i>
      */
-    NSObject attachmentSizeForGlyphAtIndex(int glyphIndex);
+    public abstract NSObject attachmentSizeForGlyphAtIndex(int glyphIndex);
     /**
      * <i>native declaration : :441</i><br>
      * Conversion Error : NSRect
@@ -622,13 +620,13 @@ public interface NSLayoutManager extends NSObject {
      * @deprecated use the safer method {@link #getLineFragmentInsertionPointsForCharacterAtIndex_alternatePositions_inDisplayOrder_positions_characterIndexes(int, boolean, boolean, java.nio.FloatBuffer, java.nio.IntBuffer)} instead
      */
     @java.lang.Deprecated
-    int getLineFragmentInsertionPointsForCharacterAtIndex_alternatePositions_inDisplayOrder_positions_characterIndexes(int charIndex, boolean aFlag, boolean dFlag, com.sun.jna.ptr.FloatByReference positions, com.sun.jna.ptr.IntByReference charIndexes);
+    public abstract int getLineFragmentInsertionPointsForCharacterAtIndex_alternatePositions_inDisplayOrder_positions_characterIndexes(int charIndex, boolean aFlag, boolean dFlag, com.sun.jna.ptr.FloatByReference positions, com.sun.jna.ptr.IntByReference charIndexes);
 
     /**
      * Original signature : <code>NSUInteger getLineFragmentInsertionPointsForCharacterAtIndex(NSUInteger, BOOL, BOOL, CGFloat*, NSUInteger*)</code><br>
      * <i>native declaration : :488</i>
      */
-    int getLineFragmentInsertionPointsForCharacterAtIndex_alternatePositions_inDisplayOrder_positions_characterIndexes(int charIndex, boolean aFlag, boolean dFlag, java.nio.FloatBuffer positions, java.nio.IntBuffer charIndexes);
+    public abstract int getLineFragmentInsertionPointsForCharacterAtIndex_alternatePositions_inDisplayOrder_positions_characterIndexes(int charIndex, boolean aFlag, boolean dFlag, java.nio.FloatBuffer positions, java.nio.IntBuffer charIndexes);
     /**
      * <i>native declaration : :494</i><br>
      * Conversion Error : /// Original signature : <code>NSDictionary* temporaryAttributesAtCharacterIndex(NSUInteger, null)</code><br>
@@ -669,33 +667,33 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>NSFont* substituteFontForFont(NSFont*)</code><br>
      * <i>native declaration : :510</i>
      */
-    com.sun.jna.Pointer substituteFontForFont(com.sun.jna.Pointer originalFont);
+    public abstract com.sun.jna.Pointer substituteFontForFont(com.sun.jna.Pointer originalFont);
 
     /**
      * Original signature : <code>CGFloat defaultLineHeightForFont(NSFont*)</code><br>
      * <i>native declaration : :514</i>
      */
-    CGFloat defaultLineHeightForFont(NSFont theFont);
+    public abstract CGFloat defaultLineHeightForFont(NSFont theFont);
 
     /**
      * Returns the default line height specified by the layout manager's typesetter behavior for the given font.<br>
      * Original signature : <code>CGFloat defaultBaselineOffsetForFont(NSFont*)</code><br>
      * <i>native declaration : :516</i>
      */
-    CGFloat defaultBaselineOffsetForFont(NSFont theFont);
+    public abstract CGFloat defaultBaselineOffsetForFont(NSFont theFont);
 
     /**
      * Returns the default baseline offset specified by the layout manager's typesetter behavior for the given font.<br>
      * Original signature : <code>BOOL usesFontLeading()</code><br>
      * <i>native declaration : :518</i>
      */
-    boolean usesFontLeading();
+    public abstract boolean usesFontLeading();
 
     /**
      * Original signature : <code>void setUsesFontLeading(BOOL)</code><br>
      * <i>native declaration : :519</i>
      */
-    void setUsesFontLeading(boolean flag);
+    public abstract void setUsesFontLeading(boolean flag);
 
     /// <i>native declaration : :99</i>
     public static class __lmFlags extends com.sun.jna.Structure {
@@ -742,31 +740,31 @@ public interface NSLayoutManager extends NSObject {
      * Original signature : <code>NSArray* rulerMarkersForTextView(NSTextView*, NSParagraphStyle*, NSRulerView*)</code><br>
      * <i>from NSTextViewSupport native declaration : :529</i>
      */
-    com.sun.jna.Pointer rulerMarkersForTextView_paragraphStyle_ruler(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler);
+    public abstract com.sun.jna.Pointer rulerMarkersForTextView_paragraphStyle_ruler(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler);
 
     /**
      * Original signature : <code>NSView* rulerAccessoryViewForTextView(NSTextView*, NSParagraphStyle*, NSRulerView*, BOOL)</code><br>
      * <i>from NSTextViewSupport native declaration : :530</i>
      */
-    com.sun.jna.Pointer rulerAccessoryViewForTextView_paragraphStyle_ruler_enabled(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler, boolean isEnabled);
+    public abstract com.sun.jna.Pointer rulerAccessoryViewForTextView_paragraphStyle_ruler_enabled(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler, boolean isEnabled);
 
     /**
      * Original signature : <code>BOOL layoutManagerOwnsFirstResponderInWindow(NSWindow*)</code><br>
      * <i>from NSTextViewSupport native declaration : :535</i>
      */
-    boolean layoutManagerOwnsFirstResponderInWindow(com.sun.jna.Pointer window);
+    public abstract boolean layoutManagerOwnsFirstResponderInWindow(com.sun.jna.Pointer window);
 
     /**
      * Original signature : <code>NSTextView* firstTextView()</code><br>
      * <i>from NSTextViewSupport native declaration : :538</i>
      */
-    com.sun.jna.Pointer firstTextView();
+    public abstract NSTextView firstTextView();
 
     /**
      * Original signature : <code>NSTextView* textViewForBeginningOfSelection()</code><br>
      * <i>from NSTextViewSupport native declaration : :540</i>
      */
-    com.sun.jna.Pointer textViewForBeginningOfSelection();
+    public abstract NSTextView textViewForBeginningOfSelection();
     /**
      * <i>from NSTextViewSupport native declaration : :545</i><br>
      * Conversion Error : NSRange

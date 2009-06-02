@@ -25,38 +25,36 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.NSRect;
 
 /// <i>native declaration : :15</i>
-public interface NSButton extends NSControl {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSButton", _Class.class);
+public abstract class NSButton implements NSControl {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButton", _Class.class);
 
-    public static class Factory {
-        public static NSButton create(NSRect frameRect) {
-            return Rococoa.cast(CLASS.alloc().initWithFrame(frameRect).autorelease(), NSButton.class);
-        }
+    public static NSButton buttonWithFrame(NSRect frameRect) {
+        return Rococoa.cast(CLASS.alloc().initWithFrame(frameRect).autorelease(), NSButton.class);
     }
 
-    int NSMomentaryLightButton = 0;    // was NSMomentaryPushButton
-    int NSMomentaryPushButtonButton = 1;
-    int NSToggleButton = 2;
-    int NSSwitchButton = 3;
-    int NSRadioButton = 4;
-    int NSMomentaryChangeButton = 5;
-    int NSOnOffButton = 6;
-    int NSMomentaryPushInButton = 7;    // was NSMomentaryLight
+    public static final int NSMomentaryLightButton = 0;    // was NSMomentaryPushButton
+    public static final int NSMomentaryPushButtonButton = 1;
+    public static final int NSToggleButton = 2;
+    public static final int NSSwitchButton = 3;
+    public static final int NSRadioButton = 4;
+    public static final int NSMomentaryChangeButton = 5;
+    public static final int NSOnOffButton = 6;
+    public static final int NSMomentaryPushInButton = 7;    // was NSMomentaryLight
 
-    int NSRoundedBezelStyle = 1;
-    int NSRegularSquareBezelStyle = 2;
-    int NSThickSquareBezelStyle = 3;
-    int NSThickerSquareBezelStyle = 4;
-    int NSDisclosureBezelStyle = 5;
-    int NSShadowlessSquareBezelStyle = 6;
-    int NSCircularBezelStyle = 7;
-    int NSTexturedSquareBezelStyle = 8;
-    int NSHelpButtonBezelStyle = 9;
-    int NSSmallSquareBezelStyle = 10;
-    int NSTexturedRoundedBezelStyle = 11;
-    int NSRoundRectBezelStyle = 12;
-    int NSRecessedBezelStyle = 13;
-    int NSRoundedDisclosureBezelStyle = 14;
+    public static final int NSRoundedBezelStyle = 1;
+    public static final int NSRegularSquareBezelStyle = 2;
+    public static final int NSThickSquareBezelStyle = 3;
+    public static final int NSThickerSquareBezelStyle = 4;
+    public static final int NSDisclosureBezelStyle = 5;
+    public static final int NSShadowlessSquareBezelStyle = 6;
+    public static final int NSCircularBezelStyle = 7;
+    public static final int NSTexturedSquareBezelStyle = 8;
+    public static final int NSHelpButtonBezelStyle = 9;
+    public static final int NSSmallSquareBezelStyle = 10;
+    public static final int NSTexturedRoundedBezelStyle = 11;
+    public static final int NSRoundRectBezelStyle = 12;
+    public static final int NSRecessedBezelStyle = 13;
+    public static final int NSRoundedDisclosureBezelStyle = 14;
 
     public interface _Class extends org.rococoa.NSClass {
         NSButton alloc();
@@ -66,111 +64,111 @@ public interface NSButton extends NSControl {
      * Original signature : <code>NSString* title()</code><br>
      * <i>native declaration : :17</i>
      */
-    String title();
+    public abstract String title();
 
     /**
      * Original signature : <code>void setTitle(NSString*)</code><br>
      * <i>native declaration : :18</i>
      */
-    void setTitle(String aString);
+    public abstract void setTitle(String aString);
 
     /**
      * Original signature : <code>NSString* alternateTitle()</code><br>
      * <i>native declaration : :19</i>
      */
-    String alternateTitle();
+    public abstract String alternateTitle();
 
     /**
      * Original signature : <code>void setAlternateTitle(NSString*)</code><br>
      * <i>native declaration : :20</i>
      */
-    void setAlternateTitle(String aString);
+    public abstract void setAlternateTitle(String aString);
 
     /**
      * Original signature : <code>NSImage* image()</code><br>
      * <i>native declaration : :21</i>
      */
-    NSImage image();
+    public abstract NSImage image();
 
     /**
      * Original signature : <code>void setImage(NSImage*)</code><br>
      * <i>native declaration : :22</i>
      */
-    void setImage(NSImage image);
+    public abstract void setImage(NSImage image);
 
     /**
      * Original signature : <code>NSImage* alternateImage()</code><br>
      * <i>native declaration : :23</i>
      */
-    NSImage alternateImage();
+    public abstract NSImage alternateImage();
 
     /**
      * Original signature : <code>void setAlternateImage(NSImage*)</code><br>
      * <i>native declaration : :24</i>
      */
-    void setAlternateImage(NSImage image);
+    public abstract void setAlternateImage(NSImage image);
 
     /**
      * Original signature : <code>imagePosition()</code><br>
      * <i>native declaration : :25</i>
      */
-    com.sun.jna.Pointer imagePosition();
+    public abstract com.sun.jna.Pointer imagePosition();
 
     /**
      * <i>native declaration : :26</i><br>
      * Conversion Error : /// Original signature : <code>void setImagePosition(null)</code><br>
      * - (void)setImagePosition:(null)aPosition; (Argument aPosition cannot be converted)
      */
-    public void setImagePosition(int position);
+    public abstract void setImagePosition(int position);
 
     /**
      * <i>native declaration : :27</i><br>
      * Conversion Error : /// Original signature : <code>void setButtonType(null)</code><br>
      * - (void)setButtonType:(null)aType; (Argument aType cannot be converted)
      */
-    void setButtonType(int type);
+    public abstract void setButtonType(int type);
 
     /**
      * Original signature : <code>NSInteger state()</code><br>
      * <i>native declaration : :28</i>
      */
-    int state();
+    public abstract int state();
 
     /**
      * Original signature : <code>void setState(NSInteger)</code><br>
      * <i>native declaration : :29</i>
      */
-    void setState(int value);
+    public abstract void setState(int value);
 
     /**
      * Original signature : <code>BOOL isBordered()</code><br>
      * <i>native declaration : :30</i>
      */
-    boolean isBordered();
+    public abstract boolean isBordered();
 
     /**
      * Original signature : <code>void setBordered(BOOL)</code><br>
      * <i>native declaration : :31</i>
      */
-    void setBordered(boolean flag);
+    public abstract void setBordered(boolean flag);
 
     /**
      * Original signature : <code>BOOL isTransparent()</code><br>
      * <i>native declaration : :32</i>
      */
-    boolean isTransparent();
+    public abstract boolean isTransparent();
 
     /**
      * Original signature : <code>void setTransparent(BOOL)</code><br>
      * <i>native declaration : :33</i>
      */
-    void setTransparent(boolean flag);
+    public abstract void setTransparent(boolean flag);
 
     /**
      * Original signature : <code>void setPeriodicDelay(float, float)</code><br>
      * <i>native declaration : :34</i>
      */
-    void setPeriodicDelay_interval(float delay, float interval);
+    public abstract void setPeriodicDelay_interval(float delay, float interval);
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
@@ -179,132 +177,132 @@ public interface NSButton extends NSControl {
      * @deprecated use the safer method {@link #getPeriodicDelay_interval(java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
      */
     @java.lang.Deprecated
-    void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
+    public abstract void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
      * <i>native declaration : :35</i>
      */
-    void getPeriodicDelay_interval(java.nio.FloatBuffer delay, java.nio.FloatBuffer interval);
+    public abstract void getPeriodicDelay_interval(java.nio.FloatBuffer delay, java.nio.FloatBuffer interval);
 
     /**
      * Original signature : <code>NSString* keyEquivalent()</code><br>
      * <i>native declaration : :36</i>
      */
-    String keyEquivalent();
+    public abstract String keyEquivalent();
 
     /**
      * Original signature : <code>void setKeyEquivalent(NSString*)</code><br>
      * <i>native declaration : :37</i>
      */
-    void setKeyEquivalent(String charCode);
+    public abstract void setKeyEquivalent(String charCode);
 
     /**
      * Original signature : <code>NSUInteger keyEquivalentModifierMask()</code><br>
      * <i>native declaration : :38</i>
      */
-    int keyEquivalentModifierMask();
+    public abstract int keyEquivalentModifierMask();
 
     /**
      * Original signature : <code>void setKeyEquivalentModifierMask(NSUInteger)</code><br>
      * <i>native declaration : :39</i>
      */
-    void setKeyEquivalentModifierMask(int mask);
+    public abstract void setKeyEquivalentModifierMask(int mask);
 
     /**
      * Original signature : <code>void highlight(BOOL)</code><br>
      * <i>native declaration : :40</i>
      */
-    void highlight(boolean flag);
+    public abstract void highlight(boolean flag);
 
     /**
      * Original signature : <code>BOOL performKeyEquivalent(NSEvent*)</code><br>
      * <i>native declaration : :41</i>
      */
-    boolean performKeyEquivalent(NSEvent key);
+    public abstract boolean performKeyEquivalent(NSEvent key);
 
     /**
      * Original signature : <code>void setTitleWithMnemonic(NSString*)</code><br>
      * <i>from NSKeyboardUI native declaration : :46</i>
      */
-    void setTitleWithMnemonic(String stringWithAmpersand);
+    public abstract void setTitleWithMnemonic(String stringWithAmpersand);
 
     /**
      * Original signature : <code>NSAttributedString* attributedTitle()</code><br>
      * <i>from NSButtonAttributedStringMethods native declaration : :50</i>
      */
-    NSAttributedString attributedTitle();
+    public abstract NSAttributedString attributedTitle();
 
     /**
      * Original signature : <code>void setAttributedTitle(NSAttributedString*)</code><br>
      * <i>from NSButtonAttributedStringMethods native declaration : :51</i>
      */
-    void setAttributedTitle(NSAttributedString aString);
+    public abstract void setAttributedTitle(NSAttributedString aString);
 
     /**
      * Original signature : <code>NSAttributedString* attributedAlternateTitle()</code><br>
      * <i>from NSButtonAttributedStringMethods native declaration : :52</i>
      */
-    NSAttributedString attributedAlternateTitle();
+    public abstract NSAttributedString attributedAlternateTitle();
 
     /**
      * Original signature : <code>void setAttributedAlternateTitle(NSAttributedString*)</code><br>
      * <i>from NSButtonAttributedStringMethods native declaration : :53</i>
      */
-    void setAttributedAlternateTitle(NSAttributedString obj);
+    public abstract void setAttributedAlternateTitle(NSAttributedString obj);
 
     /**
      * <i>from NSButtonBezelStyles native declaration : :57</i><br>
      * Conversion Error : /// Original signature : <code>void setBezelStyle(null)</code><br>
      * - (void)setBezelStyle:(null)bezelStyle; (Argument bezelStyle cannot be converted)
      */
-    void setBezelStyle(int style);
+    public abstract void setBezelStyle(int style);
 
     /**
      * Original signature : <code>bezelStyle()</code><br>
      * <i>from NSButtonBezelStyles native declaration : :58</i>
      */
-    int bezelStyle();
+    public abstract int bezelStyle();
 
     /**
      * Original signature : <code>void setAllowsMixedState(BOOL)</code><br>
      * <i>from NSButtonMixedState native declaration : :62</i>
      */
-    void setAllowsMixedState(boolean flag);
+    public abstract void setAllowsMixedState(boolean flag);
 
     /**
      * Original signature : <code>BOOL allowsMixedState()</code><br>
      * <i>from NSButtonMixedState native declaration : :63</i>
      */
-    boolean allowsMixedState();
+    public abstract boolean allowsMixedState();
 
     /**
      * Original signature : <code>void setNextState()</code><br>
      * <i>from NSButtonMixedState native declaration : :64</i>
      */
-    void setNextState();
+    public abstract void setNextState();
 
     /**
      * Original signature : <code>void setShowsBorderOnlyWhileMouseInside(BOOL)</code><br>
      * <i>from NSButtonBorder native declaration : :68</i>
      */
-    void setShowsBorderOnlyWhileMouseInside(boolean show);
+    public abstract void setShowsBorderOnlyWhileMouseInside(boolean show);
 
     /**
      * Original signature : <code>BOOL showsBorderOnlyWhileMouseInside()</code><br>
      * <i>from NSButtonBorder native declaration : :69</i>
      */
-    boolean showsBorderOnlyWhileMouseInside();
+    public abstract boolean showsBorderOnlyWhileMouseInside();
 
     /**
      * Original signature : <code>void setSound(NSSound*)</code><br>
      * <i>from NSButtonSoundExtensions native declaration : :73</i>
      */
-    void setSound(com.sun.jna.Pointer aSound);
+    public abstract void setSound(com.sun.jna.Pointer aSound);
 
     /**
      * Original signature : <code>NSSound* sound()</code><br>
      * <i>from NSButtonSoundExtensions native declaration : :74</i>
      */
-    com.sun.jna.Pointer sound();
+    public abstract com.sun.jna.Pointer sound();
 }

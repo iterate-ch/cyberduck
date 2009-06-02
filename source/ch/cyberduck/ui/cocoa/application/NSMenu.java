@@ -23,17 +23,15 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Rococoa;
 
-public interface NSMenu extends NSCopying, NSCoding {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSMenu", _Class.class);
+public abstract class NSMenu implements NSObject, NSCopying, NSCoding {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenu", _Class.class);
 
-    public static class Factory {
-        public static NSMenu create() {
-            return Rococoa.cast(CLASS.alloc().init().autorelease(), NSMenu.class);
-        }
+    public static NSMenu menu() {
+        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSMenu.class);
+    }
 
-        public static NSMenu create(String title) {
-            return Rococoa.cast(CLASS.alloc().initWithTitle(title).autorelease(), NSMenu.class);
-        }
+    public static NSMenu menuWithTitle(String title) {
+        return Rococoa.cast(CLASS.alloc().initWithTitle(title).autorelease(), NSMenu.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {
@@ -76,49 +74,49 @@ public interface NSMenu extends NSCopying, NSCoding {
         NSMenu alloc();
     }
 
-    NSMenu init();
+    public abstract NSMenu init();
 
     /**
      * Original signature : <code>id initWithTitle(NSString*)</code><br>
      * <i>native declaration : :54</i>
      */
-    NSMenu initWithTitle(String aTitle);
+    public abstract NSMenu initWithTitle(String aTitle);
 
     /**
      * Original signature : <code>void setTitle(NSString*)</code><br>
      * <i>native declaration : :56</i>
      */
-    void setTitle(String aString);
+    public abstract void setTitle(String aString);
 
     /**
      * Original signature : <code>NSString* title()</code><br>
      * <i>native declaration : :57</i>
      */
-    String title();
+    public abstract String title();
 
     /**
      * Original signature : <code>void setSupermenu(NSMenu*)</code><br>
      * <i>native declaration : :59</i>
      */
-    void setSupermenu(NSMenu supermenu);
+    public abstract void setSupermenu(NSMenu supermenu);
 
     /**
      * Original signature : <code>NSMenu* supermenu()</code><br>
      * <i>native declaration : :60</i>
      */
-    NSMenu supermenu();
+    public abstract NSMenu supermenu();
 
     /**
      * Original signature : <code>void insertItem(NSMenuItem*, NSInteger)</code><br>
      * <i>native declaration : :63</i>
      */
-    void insertItem_atIndex(NSMenuItem newItem, int index);
+    public abstract void insertItem_atIndex(NSMenuItem newItem, int index);
 
     /**
      * Original signature : <code>void addItem(NSMenuItem*)</code><br>
      * <i>native declaration : :64</i>
      */
-    void addItem(NSMenuItem newItem);
+    public abstract void addItem(NSMenuItem newItem);
     /**
      * <i>native declaration : :65</i><br>
      * Conversion Error : /// Original signature : <code>NSMenuItem* insertItemWithTitle(NSString*, null, NSString*, NSInteger)</code><br>
@@ -133,61 +131,61 @@ public interface NSMenu extends NSCopying, NSCoding {
      * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :67</i>
      */
-    void removeItemAtIndex(int index);
+    public abstract void removeItemAtIndex(int index);
 
     /**
      * Original signature : <code>void removeItem(NSMenuItem*)</code><br>
      * <i>native declaration : :68</i>
      */
-    void removeItem(NSMenuItem item);
+    public abstract void removeItem(NSMenuItem item);
 
     /**
      * Original signature : <code>void setSubmenu(NSMenu*, NSMenuItem*)</code><br>
      * <i>native declaration : :69</i>
      */
-    void setSubmenu_forItem(NSMenu aMenu, com.sun.jna.Pointer anItem);
+    public abstract void setSubmenu_forItem(NSMenu aMenu, com.sun.jna.Pointer anItem);
 
     /**
      * Original signature : <code>NSArray* itemArray()</code><br>
      * <i>native declaration : :71</i>
      */
-    NSArray itemArray();
+    public abstract NSArray itemArray();
 
     /**
      * Original signature : <code>NSInteger numberOfItems()</code><br>
      * <i>native declaration : :72</i>
      */
-    int numberOfItems();
+    public abstract int numberOfItems();
 
     /**
      * Original signature : <code>NSInteger indexOfItem(NSMenuItem*)</code><br>
      * <i>native declaration : :74</i>
      */
-    int indexOfItem(NSMenuItem index);
+    public abstract int indexOfItem(NSMenuItem index);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :75</i>
      */
-    int indexOfItemWithTitle(String aTitle);
+    public abstract int indexOfItemWithTitle(String aTitle);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :76</i>
      */
-    int indexOfItemWithTag(int aTag);
+    public abstract int indexOfItemWithTag(int aTag);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithRepresentedObject(id)</code><br>
      * <i>native declaration : :77</i>
      */
-    int indexOfItemWithRepresentedObject(String object);
+    public abstract int indexOfItemWithRepresentedObject(String object);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithSubmenu(NSMenu*)</code><br>
      * <i>native declaration : :78</i>
      */
-    int indexOfItemWithSubmenu(NSMenu submenu);
+    public abstract int indexOfItemWithSubmenu(NSMenu submenu);
     /**
      * <i>native declaration : :79</i><br>
      * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithTarget(id, null)</code><br>
@@ -197,188 +195,188 @@ public interface NSMenu extends NSCopying, NSCoding {
      * Original signature : <code>NSMenuItem* itemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :81</i>
      */
-    NSMenuItem itemAtIndex(int index);
+    public abstract NSMenuItem itemAtIndex(int index);
 
     /**
      * Original signature : <code>NSMenuItem* itemWithTitle(NSString*)</code><br>
      * <i>native declaration : :82</i>
      */
-    NSMenuItem itemWithTitle(String aTitle);
+    public abstract NSMenuItem itemWithTitle(String aTitle);
 
     /**
      * Original signature : <code>NSMenuItem* itemWithTag(NSInteger)</code><br>
      * <i>native declaration : :83</i>
      */
-    NSMenuItem itemWithTag(int tag);
+    public abstract NSMenuItem itemWithTag(int tag);
 
     /**
      * Original signature : <code>void setAutoenablesItems(BOOL)</code><br>
      * <i>native declaration : :85</i>
      */
-    void setAutoenablesItems(boolean flag);
+    public abstract void setAutoenablesItems(boolean flag);
 
     /**
      * Original signature : <code>BOOL autoenablesItems()</code><br>
      * <i>native declaration : :86</i>
      */
-    boolean autoenablesItems();
+    public abstract boolean autoenablesItems();
 
     /**
      * Original signature : <code>BOOL performKeyEquivalent(NSEvent*)</code><br>
      * <i>native declaration : :88</i>
      */
-    boolean performKeyEquivalent(NSEvent event);
+    public abstract boolean performKeyEquivalent(NSEvent event);
 
     /**
      * Original signature : <code>void update()</code><br>
      * <i>native declaration : :89</i>
      */
-    void update();
+    public abstract void update();
 
     /**
      * Original signature : <code>void setMenuChangedMessagesEnabled(BOOL)</code><br>
      * <i>native declaration : :91</i>
      */
-    void setMenuChangedMessagesEnabled(boolean flag);
+    public abstract void setMenuChangedMessagesEnabled(boolean flag);
 
     /**
      * Original signature : <code>BOOL menuChangedMessagesEnabled()</code><br>
      * <i>native declaration : :92</i>
      */
-    boolean menuChangedMessagesEnabled();
+    public abstract boolean menuChangedMessagesEnabled();
 
     /**
      * Original signature : <code>void itemChanged(NSMenuItem*)</code><br>
      * <i>native declaration : :94</i>
      */
-    void itemChanged(NSMenuItem item);
+    public abstract void itemChanged(NSMenuItem item);
 
     /**
      * Original signature : <code>void helpRequested(NSEvent*)</code><br>
      * <i>native declaration : :96</i>
      */
-    void helpRequested(NSEvent eventPtr);
+    public abstract void helpRequested(NSEvent eventPtr);
 
     /**
      * Original signature : <code>void setMenuRepresentation(id)</code><br>
      * <i>native declaration : :98</i>
      */
-    void setMenuRepresentation(org.rococoa.ID menuRep);
+    public abstract void setMenuRepresentation(org.rococoa.ID menuRep);
 
     /**
      * Original signature : <code>id menuRepresentation()</code><br>
      * <i>native declaration : :99</i>
      */
-    org.rococoa.ID menuRepresentation();
+    public abstract org.rococoa.ID menuRepresentation();
 
     /**
      * Original signature : <code>void setContextMenuRepresentation(id)</code><br>
      * <i>native declaration : :101</i>
      */
-    void setContextMenuRepresentation(org.rococoa.ID menuRep);
+    public abstract void setContextMenuRepresentation(org.rococoa.ID menuRep);
 
     /**
      * Original signature : <code>id contextMenuRepresentation()</code><br>
      * <i>native declaration : :102</i>
      */
-    org.rococoa.ID contextMenuRepresentation();
+    public abstract org.rococoa.ID contextMenuRepresentation();
 
     /**
      * Original signature : <code>void setTearOffMenuRepresentation(id)</code><br>
      * <i>native declaration : :104</i>
      */
-    void setTearOffMenuRepresentation(org.rococoa.ID menuRep);
+    public abstract void setTearOffMenuRepresentation(org.rococoa.ID menuRep);
 
     /**
      * Original signature : <code>id tearOffMenuRepresentation()</code><br>
      * <i>native declaration : :105</i>
      */
-    org.rococoa.ID tearOffMenuRepresentation();
+    public abstract org.rococoa.ID tearOffMenuRepresentation();
 
     /**
      * Original signature : <code>BOOL isTornOff()</code><br>
      * <i>native declaration : :107</i>
      */
-    boolean isTornOff();
+    public abstract boolean isTornOff();
 
     /**
      * These methods are platform specific.  They really make little sense on Windows.  Their use is discouraged.<br>
      * Original signature : <code>NSMenu* attachedMenu()</code><br>
      * <i>native declaration : :110</i>
      */
-    NSMenu attachedMenu();
+    public abstract NSMenu attachedMenu();
 
     /**
      * Original signature : <code>BOOL isAttached()</code><br>
      * <i>native declaration : :111</i>
      */
-    boolean isAttached();
+    public abstract boolean isAttached();
 
     /**
      * Original signature : <code>void sizeToFit()</code><br>
      * <i>native declaration : :112</i>
      */
-    void sizeToFit();
+    public abstract void sizeToFit();
 
     /**
      * Original signature : <code>locationForSubmenu(NSMenu*)</code><br>
      * <i>native declaration : :113</i>
      */
-    NSObject locationForSubmenu(NSMenu aSubmenu);
+    public abstract NSObject locationForSubmenu(NSMenu aSubmenu);
 
     /**
      * Original signature : <code>void performActionForItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :115</i>
      */
-    void performActionForItemAtIndex(int index);
+    public abstract void performActionForItemAtIndex(int index);
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>
      * <i>native declaration : :118</i>
      */
-    void setDelegate(org.rococoa.ID anObject);
+    public abstract void setDelegate(org.rococoa.ID anObject);
 
     /**
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :119</i>
      */
-    org.rococoa.ID delegate();
+    public abstract org.rococoa.ID delegate();
 
     /**
      * Original signature : <code>CGFloat menuBarHeight()</code><br>
      * <i>native declaration : :123</i>
      */
-    float menuBarHeight();
+    public abstract float menuBarHeight();
 
     /**
      * Dismisses the menu and ends all menu tracking<br>
      * Original signature : <code>void cancelTracking()</code><br>
      * <i>native declaration : :128</i>
      */
-    void cancelTracking();
+    public abstract void cancelTracking();
 
     /**
      * Returns the highlighted item in the menu, or nil if no item in the menu is highlighted<br>
      * Original signature : <code>NSMenuItem* highlightedItem()</code><br>
      * <i>native declaration : :131</i>
      */
-    NSMenuItem highlightedItem();
+    public abstract NSMenuItem highlightedItem();
 
     /**
      * Original signature : <code>void setShowsStateColumn(BOOL)</code><br>
      * <i>native declaration : :133</i>
      */
-    void setShowsStateColumn(boolean showsState);
+    public abstract void setShowsStateColumn(boolean showsState);
 
     /**
      * Original signature : <code>BOOL showsStateColumn()</code><br>
      * <i>native declaration : :134</i>
      */
-    boolean showsStateColumn();
+    public abstract boolean showsStateColumn();
 
     /**
      * Original signature : <code>void submenuAction(id)</code><br>
      * <i>from NSSubmenuAction native declaration : :140</i>
      */
-    void submenuAction(NSObject sender);
+    public abstract void submenuAction(NSObject sender);
 }

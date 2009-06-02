@@ -24,13 +24,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 
 import org.rococoa.Rococoa;
 
-public interface NSImageCell extends NSCell, NSCopying, NSCoding {
+public abstract class NSImageCell implements NSCell, NSCopying, NSCoding {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImageCell", _Class.class);
 
-    public static class Factory {
-        public static NSImageCell create() {
-            return Rococoa.cast(CLASS.alloc().init().autorelease(), NSImageCell.class);
-        }
+    public static NSImageCell imageCell() {
+        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSImageCell.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {

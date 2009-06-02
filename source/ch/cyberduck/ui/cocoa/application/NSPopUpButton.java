@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 
 /// <i>native declaration : :10</i>
-public interface NSPopUpButton extends NSButton {
+public abstract class NSPopUpButton extends NSButton {
     _Class CLASS = org.rococoa.Rococoa.createClass("NSPopUpButton", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
@@ -38,38 +38,38 @@ public interface NSPopUpButton extends NSButton {
      * Original signature : <code>void setMenu(NSMenu*)</code><br>
      * <i>native declaration : :25</i>
      */
-    void setMenu(NSMenu menu);
+    public abstract void setMenu(NSMenu menu);
 
     /**
      * Original signature : <code>NSMenu* menu()</code><br>
      * <i>native declaration : :26</i>
      */
-    NSMenu menu();
+    public abstract NSMenu menu();
 
     /**
      * Behavior settings<br>
      * Original signature : <code>void setPullsDown(BOOL)</code><br>
      * <i>native declaration : :29</i>
      */
-    void setPullsDown(boolean flag);
+    public abstract void setPullsDown(boolean flag);
 
     /**
      * Original signature : <code>BOOL pullsDown()</code><br>
      * <i>native declaration : :30</i>
      */
-    boolean pullsDown();
+    public abstract boolean pullsDown();
 
     /**
      * Original signature : <code>void setAutoenablesItems(BOOL)</code><br>
      * <i>native declaration : :32</i>
      */
-    void setAutoenablesItems(boolean flag);
+    public abstract void setAutoenablesItems(boolean flag);
 
     /**
      * Original signature : <code>BOOL autoenablesItems()</code><br>
      * <i>native declaration : :33</i>
      */
-    boolean autoenablesItems();
+    public abstract boolean autoenablesItems();
     /**
      * <i>native declaration : :35</i><br>
      * Conversion Error : /// Original signature : <code>void setPreferredEdge(null)</code><br>
@@ -79,75 +79,75 @@ public interface NSPopUpButton extends NSButton {
      * Original signature : <code>preferredEdge()</code><br>
      * <i>native declaration : :36</i>
      */
-    com.sun.jna.Pointer preferredEdge();
+    public abstract com.sun.jna.Pointer preferredEdge();
 
     /**
      * Adding and removing items<br>
      * Original signature : <code>void addItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :40</i>
      */
-    void addItemWithTitle(String title);
+    public abstract void addItemWithTitle(String title);
 
     /**
      * Original signature : <code>void addItemsWithTitles(NSArray*)</code><br>
      * <i>native declaration : :41</i>
      */
-    void addItemsWithTitles(NSArray itemTitles);
+    public abstract void addItemsWithTitles(NSArray itemTitles);
 
     /**
      * Original signature : <code>void insertItemWithTitle(NSString*, NSInteger)</code><br>
      * <i>native declaration : :42</i>
      */
-    void insertItemWithTitle_atIndex(String title, int index);
+    public abstract void insertItemWithTitle_atIndex(String title, int index);
 
     /**
      * Original signature : <code>void removeItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :44</i>
      */
-    void removeItemWithTitle(com.sun.jna.Pointer title);
+    public abstract void removeItemWithTitle(com.sun.jna.Pointer title);
 
     /**
      * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :45</i>
      */
-    void removeItemAtIndex(int index);
+    public abstract void removeItemAtIndex(int index);
 
     /**
      * Original signature : <code>void removeAllItems()</code><br>
      * <i>native declaration : :46</i>
      */
-    void removeAllItems();
+    public abstract void removeAllItems();
 
     /**
      * Accessing the items<br>
      * Original signature : <code>NSArray* itemArray()</code><br>
      * <i>native declaration : :50</i>
      */
-    com.sun.jna.Pointer itemArray();
+    public abstract NSArray itemArray();
 
     /**
      * Original signature : <code>NSInteger numberOfItems()</code><br>
      * <i>native declaration : :51</i>
      */
-    int numberOfItems();
+    public abstract int numberOfItems();
 
     /**
      * Original signature : <code>NSInteger indexOfItem(NSMenuItem*)</code><br>
      * <i>native declaration : :53</i>
      */
-    int indexOfItem(NSMenuItem item);
+    public abstract int indexOfItem(NSMenuItem item);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :54</i>
      */
-    int indexOfItemWithTitle(String title);
+    public abstract int indexOfItemWithTitle(String title);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :55</i>
      */
-    int indexOfItemWithTag(int tag);
+    public abstract int indexOfItemWithTag(int tag);
     /**
      * <i>native declaration : :56</i><br>
      * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithRepresentedObject(null)</code><br>
@@ -162,85 +162,85 @@ public interface NSPopUpButton extends NSButton {
      * Original signature : <code>NSMenuItem* itemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :59</i>
      */
-    NSMenuItem itemAtIndex(int index);
+    public abstract NSMenuItem itemAtIndex(int index);
 
     /**
      * Original signature : <code>NSMenuItem* itemWithTitle(NSString*)</code><br>
      * <i>native declaration : :60</i>
      */
-    NSMenuItem itemWithTitle(String title);
+    public abstract NSMenuItem itemWithTitle(String title);
 
     /**
      * Original signature : <code>NSMenuItem* lastItem()</code><br>
      * <i>native declaration : :61</i>
      */
-    NSMenuItem lastItem();
+    public abstract NSMenuItem lastItem();
 
     /**
      * Dealing with selection<br>
      * Original signature : <code>void selectItem(NSMenuItem*)</code><br>
      * <i>native declaration : :65</i>
      */
-    void selectItem(NSMenuItem item);
+    public abstract void selectItem(NSMenuItem item);
 
     /**
      * Original signature : <code>void selectItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :66</i>
      */
-    void selectItemAtIndex(int index);
+    public abstract void selectItemAtIndex(int index);
 
     /**
      * Original signature : <code>void selectItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :67</i>
      */
-    void selectItemWithTitle(String title);
+    public abstract void selectItemWithTitle(String title);
 
     /**
      * Original signature : <code>BOOL selectItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :69</i>
      */
-    boolean selectItemWithTag(int tag);
+    public abstract boolean selectItemWithTag(int tag);
 
     /**
      * Original signature : <code>void setTitle(NSString*)</code><br>
      * <i>native declaration : :71</i>
      */
-    void setTitle(String aString);
+    public abstract void setTitle(String aString);
 
     /**
      * Original signature : <code>NSMenuItem* selectedItem()</code><br>
      * <i>native declaration : :73</i>
      */
-    NSMenuItem selectedItem();
+    public abstract NSMenuItem selectedItem();
 
     /**
      * Original signature : <code>NSInteger indexOfSelectedItem()</code><br>
      * <i>native declaration : :74</i>
      */
-    int indexOfSelectedItem();
+    public abstract int indexOfSelectedItem();
 
     /**
      * Original signature : <code>void synchronizeTitleAndSelectedItem()</code><br>
      * <i>native declaration : :75</i>
      */
-    void synchronizeTitleAndSelectedItem();
+    public abstract void synchronizeTitleAndSelectedItem();
 
     /**
      * Title conveniences<br>
      * Original signature : <code>NSString* itemTitleAtIndex(NSInteger)</code><br>
      * <i>native declaration : :78</i>
      */
-    String itemTitleAtIndex(int index);
+    public abstract String itemTitleAtIndex(int index);
 
     /**
      * Original signature : <code>NSArray* itemTitles()</code><br>
      * <i>native declaration : :79</i>
      */
-    NSArray itemTitles();
+    public abstract NSArray itemTitles();
 
     /**
      * Original signature : <code>NSString* titleOfSelectedItem()</code><br>
      * <i>native declaration : :80</i>
      */
-    String titleOfSelectedItem();
+    public abstract    String titleOfSelectedItem();
 }

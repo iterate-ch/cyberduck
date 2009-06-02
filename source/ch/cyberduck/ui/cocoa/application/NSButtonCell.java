@@ -25,13 +25,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 
-public interface NSButtonCell extends NSActionCell {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSButtonCell", _Class.class);
+public abstract class NSButtonCell implements NSActionCell {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButtonCell", _Class.class);
 
-    public static class Factory {
-        public static NSButtonCell create() {
-            return Rococoa.cast(CLASS.alloc().init().autorelease(), NSButtonCell.class);
-        }
+    public static NSButtonCell buttonCell() {
+        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSButtonCell.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {
@@ -111,43 +109,43 @@ public interface NSButtonCell extends NSActionCell {
      * Original signature : <code>NSString* title()</code><br>
      * <i>native declaration : :143</i>
      */
-    String title();
+    public abstract String title();
 
     /**
      * Original signature : <code>void setTitle(NSString*)</code><br>
      * <i>native declaration : :144</i>
      */
-    void setTitle(String aString);
+    public abstract void setTitle(String aString);
 
     /**
      * Original signature : <code>NSString* alternateTitle()</code><br>
      * <i>native declaration : :145</i>
      */
-    String alternateTitle();
+    public abstract String alternateTitle();
 
     /**
      * Original signature : <code>void setAlternateTitle(NSString*)</code><br>
      * <i>native declaration : :146</i>
      */
-    void setAlternateTitle(String aString);
+    public abstract void setAlternateTitle(String aString);
 
     /**
      * Original signature : <code>NSImage* alternateImage()</code><br>
      * <i>native declaration : :148</i>
      */
-    NSImage alternateImage();
+    public abstract NSImage alternateImage();
 
     /**
      * Original signature : <code>void setAlternateImage(NSImage*)</code><br>
      * <i>native declaration : :149</i>
      */
-    void setAlternateImage(NSImage image);
+    public abstract void setAlternateImage(NSImage image);
 
     /**
      * Original signature : <code>imagePosition()</code><br>
      * <i>native declaration : :150</i>
      */
-    com.sun.jna.Pointer imagePosition();
+    public abstract com.sun.jna.Pointer imagePosition();
     /**
      * <i>native declaration : :151</i><br>
      * Conversion Error : /// Original signature : <code>void setImagePosition(null)</code><br>
@@ -157,7 +155,7 @@ public interface NSButtonCell extends NSActionCell {
      * Original signature : <code>imageScaling()</code><br>
      * <i>native declaration : :153</i>
      */
-    com.sun.jna.Pointer imageScaling();
+    public abstract com.sun.jna.Pointer imageScaling();
     /**
      * <i>native declaration : :154</i><br>
      * Conversion Error : /// Original signature : <code>void setImageScaling(null)</code><br>
@@ -167,61 +165,61 @@ public interface NSButtonCell extends NSActionCell {
      * Original signature : <code>NSInteger highlightsBy()</code><br>
      * <i>native declaration : :157</i>
      */
-    int highlightsBy();
+    public abstract int highlightsBy();
 
     /**
      * Original signature : <code>void setHighlightsBy(NSInteger)</code><br>
      * <i>native declaration : :158</i>
      */
-    void setHighlightsBy(int aType);
+    public abstract void setHighlightsBy(int aType);
 
     /**
      * Original signature : <code>NSInteger showsStateBy()</code><br>
      * <i>native declaration : :159</i>
      */
-    int showsStateBy();
+    public abstract int showsStateBy();
 
     /**
      * Original signature : <code>void setShowsStateBy(NSInteger)</code><br>
      * <i>native declaration : :160</i>
      */
-    void setShowsStateBy(int aType);
+    public abstract void setShowsStateBy(int aType);
 
     /**
      * Original signature : <code>void setButtonType(NSButtonType)</code><br>
      * <i>native declaration : :161</i>
      */
-    void setButtonType(int aType);
+    public abstract void setButtonType(int aType);
 
     /**
      * Original signature : <code>BOOL isOpaque()</code><br>
      * <i>native declaration : :162</i>
      */
-    boolean isOpaque();
+    public abstract boolean isOpaque();
 
     /**
      * Original signature : <code>void setFont(NSFont*)</code><br>
      * <i>native declaration : :163</i>
      */
-    void setFont(NSFont fontObj);
+    public abstract void setFont(NSFont fontObj);
 
     /**
      * Original signature : <code>BOOL isTransparent()</code><br>
      * <i>native declaration : :164</i>
      */
-    boolean isTransparent();
+    public abstract boolean isTransparent();
 
     /**
      * Original signature : <code>void setTransparent(BOOL)</code><br>
      * <i>native declaration : :165</i>
      */
-    void setTransparent(boolean flag);
+    public abstract void setTransparent(boolean flag);
 
     /**
      * Original signature : <code>void setPeriodicDelay(float, float)</code><br>
      * <i>native declaration : :166</i>
      */
-    void setPeriodicDelay_interval(float delay, float interval);
+    public abstract void setPeriodicDelay_interval(float delay, float interval);
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
@@ -230,62 +228,62 @@ public interface NSButtonCell extends NSActionCell {
      * @deprecated use the safer method {@link #getPeriodicDelay_interval(java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
      */
     @java.lang.Deprecated
-    void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
+    public abstract void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
      * <i>native declaration : :167</i>
      */
-    void getPeriodicDelay_interval(java.nio.FloatBuffer delay, java.nio.FloatBuffer interval);
+    public abstract void getPeriodicDelay_interval(java.nio.FloatBuffer delay, java.nio.FloatBuffer interval);
 
     /**
      * Original signature : <code>NSString* keyEquivalent()</code><br>
      * <i>native declaration : :168</i>
      */
-    String keyEquivalent();
+    public abstract String keyEquivalent();
 
     /**
      * Original signature : <code>void setKeyEquivalent(NSString*)</code><br>
      * <i>native declaration : :169</i>
      */
-    void setKeyEquivalent(String aKeyEquivalent);
+    public abstract void setKeyEquivalent(String aKeyEquivalent);
 
     /**
      * Original signature : <code>NSUInteger keyEquivalentModifierMask()</code><br>
      * <i>native declaration : :170</i>
      */
-    int keyEquivalentModifierMask();
+    public abstract int keyEquivalentModifierMask();
 
     /**
      * Original signature : <code>void setKeyEquivalentModifierMask(NSUInteger)</code><br>
      * <i>native declaration : :171</i>
      */
-    void setKeyEquivalentModifierMask(int mask);
+    public abstract void setKeyEquivalentModifierMask(int mask);
 
     /**
      * Original signature : <code>NSFont* keyEquivalentFont()</code><br>
      * <i>native declaration : :172</i>
      */
-    NSFont keyEquivalentFont();
+    public abstract NSFont keyEquivalentFont();
 
     /**
      * Original signature : <code>void setKeyEquivalentFont(NSFont*)</code><br>
      * <i>native declaration : :173</i>
      */
-    void setKeyEquivalentFont(NSFont fontObj);
+    public abstract void setKeyEquivalentFont(NSFont fontObj);
 
     /**
      * Original signature : <code>void setKeyEquivalentFont(NSString*, CGFloat)</code><br>
      * <i>native declaration : :174</i>
      */
-    void setKeyEquivalentFont_size(String fontName, CGFloat fontSize);
+    public abstract void setKeyEquivalentFont_size(String fontName, CGFloat fontSize);
 
     /**
      * Original signature : <code>void performClick(id)</code><br>
      * Significant NSCell override, actually clicks itself.<br>
      * <i>native declaration : :175</i>
      */
-    void performClick(NSObject sender);
+    public abstract void performClick(NSObject sender);
     /**
      * <i>native declaration : :178</i><br>
      * Conversion Error : /// Original signature : <code>void drawImage(NSImage*, null, NSView*)</code><br>
@@ -305,138 +303,138 @@ public interface NSButtonCell extends NSActionCell {
      * Original signature : <code>void setTitleWithMnemonic(NSString*)</code><br>
      * <i>from NSKeyboardUI native declaration : :185</i>
      */
-    void setTitleWithMnemonic(com.sun.jna.Pointer stringWithAmpersand);
+    public abstract void setTitleWithMnemonic(com.sun.jna.Pointer stringWithAmpersand);
 
     /**
      * Original signature : <code>void setAlternateTitleWithMnemonic(NSString*)</code><br>
      * <i>from NSKeyboardUI native declaration : :186</i>
      */
-    void setAlternateTitleWithMnemonic(com.sun.jna.Pointer stringWithAmpersand);
+    public abstract void setAlternateTitleWithMnemonic(com.sun.jna.Pointer stringWithAmpersand);
 
     /**
      * Original signature : <code>void setAlternateMnemonicLocation(NSUInteger)</code><br>
      * <i>from NSKeyboardUI native declaration : :187</i>
      */
-    void setAlternateMnemonicLocation(int location);
+    public abstract void setAlternateMnemonicLocation(int location);
 
     /**
      * Original signature : <code>NSUInteger alternateMnemonicLocation()</code><br>
      * <i>from NSKeyboardUI native declaration : :188</i>
      */
-    int alternateMnemonicLocation();
+    public abstract int alternateMnemonicLocation();
 
     /**
      * Original signature : <code>NSString* alternateMnemonic()</code><br>
      * <i>from NSKeyboardUI native declaration : :189</i>
      */
-    com.sun.jna.Pointer alternateMnemonic();
+    public abstract String alternateMnemonic();
 
     /**
      * Original signature : <code>NSGradientType gradientType()</code><br>
      * <i>from NSButtonCellExtensions native declaration : :209</i>
      */
-    int gradientType();
+    public abstract int gradientType();
 
     /**
      * Original signature : <code>void setGradientType(NSGradientType)</code><br>
      * <i>from NSButtonCellExtensions native declaration : :210</i>
      */
-    void setGradientType(int type);
+    public abstract void setGradientType(int type);
 
     /**
      * Radio buttons and switches use (imageDimsWhenDisabled == NO) so only their text is dimmed.<br>
      * Original signature : <code>void setImageDimsWhenDisabled(BOOL)</code><br>
      * <i>from NSButtonCellExtensions native declaration : :214</i>
      */
-    void setImageDimsWhenDisabled(boolean flag);
+    public abstract void setImageDimsWhenDisabled(boolean flag);
 
     /**
      * Original signature : <code>BOOL imageDimsWhenDisabled()</code><br>
      * <i>from NSButtonCellExtensions native declaration : :215</i>
      */
-    boolean imageDimsWhenDisabled();
+    public abstract boolean imageDimsWhenDisabled();
 
     /**
      * Original signature : <code>void setShowsBorderOnlyWhileMouseInside(BOOL)</code><br>
      * <i>from NSButtonCellExtensions native declaration : :217</i>
      */
-    void setShowsBorderOnlyWhileMouseInside(boolean show);
+    public abstract void setShowsBorderOnlyWhileMouseInside(boolean show);
 
     /**
      * Original signature : <code>BOOL showsBorderOnlyWhileMouseInside()</code><br>
      * <i>from NSButtonCellExtensions native declaration : :218</i>
      */
-    boolean showsBorderOnlyWhileMouseInside();
+    public abstract boolean showsBorderOnlyWhileMouseInside();
 
     /**
      * Original signature : <code>void mouseEntered(NSEvent*)</code><br>
      * <i>from NSButtonCellExtensions native declaration : :220</i>
      */
-    void mouseEntered(NSEvent event);
+    public abstract void mouseEntered(NSEvent event);
 
     /**
      * Original signature : <code>void mouseExited(NSEvent*)</code><br>
      * <i>from NSButtonCellExtensions native declaration : :221</i>
      */
-    void mouseExited(NSEvent event);
+    public abstract void mouseExited(NSEvent event);
 
     /**
      * Original signature : <code>NSColor* backgroundColor()</code><br>
      * <i>from NSButtonCellExtensions native declaration : :224</i>
      */
-    NSColor backgroundColor();
+    public abstract NSColor backgroundColor();
 
     /**
      * Original signature : <code>void setBackgroundColor(NSColor*)</code><br>
      * <i>from NSButtonCellExtensions native declaration : :225</i>
      */
-    void setBackgroundColor(NSColor color);
+    public abstract void setBackgroundColor(NSColor color);
 
     /**
      * Original signature : <code>NSAttributedString* attributedTitle()</code><br>
      * <i>from NSButtonCellAttributedStringMethods native declaration : :231</i>
      */
-    com.sun.jna.Pointer attributedTitle();
+    public abstract NSAttributedString attributedTitle();
 
     /**
      * Original signature : <code>void setAttributedTitle(NSAttributedString*)</code><br>
      * <i>from NSButtonCellAttributedStringMethods native declaration : :232</i>
      */
-    void setAttributedTitle(NSAttributedString obj);
+    public abstract void setAttributedTitle(NSAttributedString obj);
 
     /**
      * Original signature : <code>NSAttributedString* attributedAlternateTitle()</code><br>
      * <i>from NSButtonCellAttributedStringMethods native declaration : :233</i>
      */
-    NSAttributedString attributedAlternateTitle();
+    public abstract NSAttributedString attributedAlternateTitle();
 
     /**
      * Original signature : <code>void setAttributedAlternateTitle(NSAttributedString*)</code><br>
      * <i>from NSButtonCellAttributedStringMethods native declaration : :234</i>
      */
-    void setAttributedAlternateTitle(com.sun.jna.Pointer obj);
+    public abstract void setAttributedAlternateTitle(com.sun.jna.Pointer obj);
 
     /**
      * Original signature : <code>void setBezelStyle(NSBezelStyle)</code><br>
      * <i>from NSButtonCellBezelStyles native declaration : :239</i>
      */
-    void setBezelStyle(int bezelStyle);
+    public abstract void setBezelStyle(int bezelStyle);
 
     /**
      * Original signature : <code>NSBezelStyle bezelStyle()</code><br>
      * <i>from NSButtonCellBezelStyles native declaration : :240</i>
      */
-    int bezelStyle();
+    public abstract int bezelStyle();
 
     /**
      * Original signature : <code>void setSound(NSSound*)</code><br>
      * <i>from NSButtonCellSoundExtensions native declaration : :245</i>
      */
-    void setSound(com.sun.jna.Pointer aSound);
+    public abstract void setSound(com.sun.jna.Pointer aSound);
 
     /**
      * Original signature : <code>NSSound* sound()</code><br>
      * <i>from NSButtonCellSoundExtensions native declaration : :246</i>
      */
-    com.sun.jna.Pointer sound();
+    public abstract com.sun.jna.Pointer sound();
 }
