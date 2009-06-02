@@ -19,6 +19,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+
+import org.rococoa.Rococoa;
 
 /**
  * @version $Id$
@@ -30,10 +33,10 @@ public abstract class TransferFactory {
     public static final int KIND_SYNC = 2;
 
     public static Transfer create(NSDictionary dict, Session s) {
-        Object kindObj = dict.objectForKey("Kind");
-        if (kindObj != null) {
-            int kind = Integer.parseInt((String) kindObj);
-            switch (kind) {
+        NSObject kindObj = dict.objectForKey("Kind");
+        if(kindObj != null) {
+            int kind = Integer.parseInt(kindObj.toString());
+            switch(kind) {
                 case KIND_DOWNLOAD:
                     return new DownloadTransfer(dict, s);
                 case KIND_UPLOAD:
@@ -46,9 +49,9 @@ public abstract class TransferFactory {
     }
 
     public static Transfer create(NSDictionary dict) {
-        Object hostObj = dict.objectForKey("Host");
+        NSObject hostObj = dict.objectForKey("Host");
         if(hostObj != null) {
-            Host host = new Host((NSDictionary) hostObj);
+            Host host = new Host(Rococoa.cast(hostObj, NSDictionary.class));
             Session s = SessionFactory.createSession(host);
             return create(dict, s);
         }
