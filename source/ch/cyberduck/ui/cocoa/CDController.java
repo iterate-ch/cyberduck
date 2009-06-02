@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -30,17 +31,6 @@ import org.rococoa.Rococoa;
  */
 public abstract class CDController {
     private static Logger log = Logger.getLogger(CDController.class);
-
-    public CDController() {
-        // Add this object to the array to safe weak references
-        // from being garbage collected (#hack)
-//        synchronized(instances) {
-//            instances.addObject(this.proxy());
-//        }
-    }
-
-//    protected static final NSMutableArray instances
-//            = NSMutableArray.arrayWithCapacity(0);
 
     /**
      * You need to keep a reference to the returned value for as long as it is
@@ -73,13 +63,11 @@ public abstract class CDController {
         if(log.isDebugEnabled()) {
             log.debug("invalidate:" + this.toString());
         }
-        if(proxy != null) {
-            NSNotificationCenter.defaultCenter().removeObserver(proxy);
-//            synchronized(instances) {
-//                instances.removeObject(this.proxy());
-//            }
-        }
+        NSNotificationCenter.defaultCenter().removeObserver(this.proxy());
         proxy = null;
+        if(log.isDebugEnabled()) {
+            System.gc();
+        }
     }
 
     protected void finalize() throws java.lang.Throwable {
