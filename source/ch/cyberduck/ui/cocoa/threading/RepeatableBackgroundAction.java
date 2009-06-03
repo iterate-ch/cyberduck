@@ -21,11 +21,13 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.*;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import org.apache.log4j.Logger;
@@ -36,10 +38,10 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.ArrayList;
 
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
@@ -220,7 +222,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 this.diagnosticsButton.setTarget(this.id());
                 this.diagnosticsButton.setAction(Foundation.selector("diagnosticsButtonClicked:"));
                 boolean hidden = true;
-                for(BackgroundException e: exceptions) {
+                for(BackgroundException e : exceptions) {
                     final Throwable cause = e.getCause();
                     if(cause instanceof SocketException || cause instanceof UnknownHostException) {
                         hidden = false;
@@ -241,23 +243,65 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             }
 
             private NSTableView errorView;
+            private CDListDataSource model;
+            private CDAbstractTableDelegate<CDErrorController> delegate;
 
             private List<CDErrorController> errors;
 
             public void setErrorView(NSTableView errorView) {
                 this.errorView = errorView;
                 this.errors = new ArrayList<CDErrorController>();
-                for(BackgroundException e: exceptions) {
+                for(BackgroundException e : exceptions) {
                     errors.add(new CDErrorController(e));
                 }
-                this.errorView.setDataSource(this.id());
-                this.errorView.setDelegate(this.id());
+                this.errorView.setDataSource((model = new CDListDataSource() {
+                    @Override
+                    public int numberOfRowsInTableView(NSTableView view) {
+                        return errors.size();
+                    }
+
+                    @Override
+                    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+                        return errors.get(row).view();
+                    }
+                }).id());
+                this.errorView.setDelegate((delegate = new CDAbstractTableDelegate<CDErrorController>() {
+                    @Override
+                    public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+                    }
+
+                    @Override
+                    public void tableRowDoubleClicked(NSObject sender) {
+                    }
+
+                    @Override
+                    public boolean selectionShouldChange() {
+                        return false;
+                    }
+
+                    @Override
+                    public void selectionDidChange(NSNotification notification) {
+                    }
+
+                    @Override
+                    public void enterKeyPressed(NSObject sender) {
+                    }
+
+                    @Override
+                    public void deleteKeyPressed(NSObject sender) {
+                    }
+
+                    @Override
+                    public String tooltip(CDErrorController e) {
+                        return e.getTooltip();
+                    }
+                }).id());
                 {
                     NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Error");
                     c.setMinWidth(50f);
                     c.setWidth(400f);
                     c.setMaxWidth(1000f);
-                    c.setDataCell(CDControllerCell.Factory.create());
+                    c.setDataCell(CDControllerCell.controllerCell());
                     this.errorView.addTableColumn(c);
                 }
                 this.errorView.setRowHeight(new CGFloat(77f));
@@ -268,12 +312,12 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             public void setTranscriptView(NSTextView transcriptView) {
                 this.transcriptView = transcriptView;
                 this.transcriptView.textStorage().setAttributedString(
-                        NSAttributedString.create(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
+                        NSAttributedString.attributedStringWithAttributes(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
             }
 
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) { //Try Again
-                    for(BackgroundException e: exceptions) {
+                    for(BackgroundException e : exceptions) {
                         Path workdir = e.getPath();
                         if(null == workdir) {
                             continue;
@@ -285,27 +329,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     controller.background(RepeatableBackgroundAction.this);
                 }
                 Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
-            }
-
-            /**
-             * @see NSTableView.DataSource
-             */
-            public int numberOfRowsInTableView(NSTableView view) {
-                return errors.size();
-            }
-
-            /**
-             * @see NSTableView.DataSource
-             */
-            public Object tableViewObjectValueForLocation(NSTableView view, NSTableColumn tableColumn, int row) {
-                return errors.get(row);
-            }
-
-            /**
-             * @see NSTableView.Delegate
-             */
-            boolean selectionShouldChangeInTableView(NSTableView view) {
-                return false;
             }
         };
         CDMainApplication.invoke(new WindowMainAction(controller) {
