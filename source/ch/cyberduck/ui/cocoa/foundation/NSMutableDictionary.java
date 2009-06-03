@@ -54,11 +54,11 @@ public abstract class NSMutableDictionary extends NSDictionary {
      * @param aKey     The key is copied (using copyWithZone:; keys must conform to the NSCopying protocol). The key must not be nil.
      */
     public void setObjectForKey(String anObject, String aKey) {
-        this.setObject_forKey(NSString.stringWithString(anObject), NSString.stringWithString(aKey));
+        this.setObjectForKey(NSString.stringWithString(anObject), aKey);
     }
 
     public void setObjectForKey(NSObject anObject, String aKey) {
-        this.setObject_forKey(anObject, NSString.stringWithString(aKey));
+        this.setObject_forKey(anObject.retain(), NSString.stringWithString(aKey).retain());
     }
 
     /**

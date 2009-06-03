@@ -25,8 +25,8 @@ import org.rococoa.Rococoa;
 /**
  * @version $Id$
  */
-public interface CDBookmarkCell extends NSCell {
-    static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
+public abstract class CDBookmarkCell implements NSCell {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
 
     /// <i>native declaration : /Users/dkocher/null:22</i>
     public static final int SMALL_BOOKMARK_SIZE = 16;
@@ -35,10 +35,8 @@ public interface CDBookmarkCell extends NSCell {
     /// <i>native declaration : /Users/dkocher/null:24</i>
     public static final int LARGE_BOOKMARK_SIZE = 64;
     
-    public static class Factory {
-        public static CDBookmarkCell create() {
-            return Rococoa.cast(CLASS.alloc().init(), CDBookmarkCell.class);
-        }
+    public static CDBookmarkCell bookmarkCell() {
+        return Rococoa.cast(CLASS.alloc().init().autorelease(), CDBookmarkCell.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {

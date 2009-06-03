@@ -29,7 +29,6 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.CGFloat;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +38,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class CDActivityController extends CDWindowController implements CDListDataSource {
+public class CDActivityController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDActivityController.class);
 
     private static CDActivityController instance;
@@ -67,7 +66,7 @@ public class CDActivityController extends CDWindowController implements CDListDa
             public void collectionItemAdded(final BackgroundAction action) {
                 CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                     public void run() {
-                        log.debug("collectionItemAdded" + action);
+                        log.debug("collectionItemAdded:" + action);
                         tasks.put(action, new CDTaskController(action));
                         reload();
                     }
@@ -77,7 +76,7 @@ public class CDActivityController extends CDWindowController implements CDListDa
             public void collectionItemRemoved(final BackgroundAction action) {
                 CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                     public void run() {
-                        log.debug("collectionItemRemoved" + action);
+                        log.debug("collectionItemRemoved:" + action);
                         final CDTaskController controller = tasks.remove(action);
                         if(controller != null) {
                             controller.invalidate();
@@ -118,22 +117,47 @@ public class CDActivityController extends CDWindowController implements CDListDa
     }
 
     private NSTableView table;
+    private CDListDataSource model;
     private CDAbstractTableDelegate<CDTaskController> delegate;
 
     public void setTable(NSTableView table) {
         this.table = table;
-        this.table.setDataSource(this.id());
-        this.table.setDelegate((this.delegate = new CDAbstractTableDelegate<CDTaskController>() {
+        this.table.setDataSource((model = new CDListDataSource() {
+            /**
+             * @param view
+             */
+            @Override
+            public int numberOfRowsInTableView(NSTableView view) {
+                synchronized(tasks) {
+                    return tasks.size();
+                }
+            }
+
+            /**
+             * @param view
+             * @param tableColumn
+             * @param row
+             */
+            @Override
+            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+                if(row < this.numberOfRowsInTableView(view)) {
+                    final Collection<CDTaskController> values = tasks.values();
+                    return values.toArray(new CDTaskController[values.size()])[row].view();
+                }
+                log.warn("tableViewObjectValueForLocation:" + row + " == null");
+                return null;
+            }
+        }).id());
+        this.table.setDelegate((delegate = new CDAbstractTableDelegate<CDTaskController>() {
             @Override
             public void enterKeyPressed(NSObject sender) {
-
             }
 
             @Override
             public void deleteKeyPressed(NSObject sender) {
-
             }
 
+            @Override
             public String tooltip(CDTaskController c) {
                 return null;
             }
@@ -142,8 +166,8 @@ public class CDActivityController extends CDWindowController implements CDListDa
                 return false;
             }
 
+            @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-
             }
 
             @Override
@@ -151,7 +175,6 @@ public class CDActivityController extends CDWindowController implements CDListDa
             }
 
             public void selectionDidChange(NSNotification notification) {
-
             }
         }).id());
         {
@@ -159,7 +182,7 @@ public class CDActivityController extends CDWindowController implements CDListDa
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(CDControllerCell.Factory.create());
+            c.setDataCell(CDControllerCell.controllerCell());
             this.table.addTableColumn(c);
         }
         this.table.sizeToFit();
@@ -171,29 +194,5 @@ public class CDActivityController extends CDWindowController implements CDListDa
 
     protected String getBundleName() {
         return "Activity";
-    }
-
-    /**
-     * @param view
-     */
-    public int numberOfRowsInTableView(NSTableView view) {
-        synchronized(tasks) {
-            return tasks.size();
-        }
-    }
-
-    /**
-     * @param view
-     * @param tableColumn
-     * @param row
-     */
-    @Override
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
-        if(row < this.numberOfRowsInTableView(view)) {
-            final Collection<CDTaskController> values = tasks.values();
-            return values.toArray(new CDTaskController[values.size()])[row].view();
-        }
-        log.warn("tableViewObjectValueForLocation:" + row + " == null");
-        return null;
     }
 }

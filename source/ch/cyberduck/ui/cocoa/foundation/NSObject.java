@@ -29,11 +29,13 @@ public interface NSObject extends org.rococoa.NSObject {
         NSObject alloc();
     }
 
+    public org.rococoa.ID copy();
     /**
      * <i>native declaration : :16</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isEqual(null)</code><br>
      * - (BOOL)isEqual:(null)object; (Argument object cannot be converted)
      */
+    boolean isEqual(org.rococoa.ID object);
     /**
      * Original signature : <code>NSUInteger hash()</code><br>
      * <i>native declaration : :17</i>
@@ -90,11 +92,14 @@ public interface NSObject extends org.rococoa.NSObject {
      * Conversion Error : /// Original signature : <code>BOOL isKindOfClass(null)</code><br>
      * - (BOOL)isKindOfClass:(null)aClass; (Argument aClass cannot be converted)
      */
+    boolean isKindOfClass(NSClass aClass);
     /**
      * <i>native declaration : :31</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isMemberOfClass(null)</code><br>
      * - (BOOL)isMemberOfClass:(null)aClass; (Argument aClass cannot be converted)
      */
+    boolean isMemberOfClass(NSClass aClass);
+
     /**
      * Original signature : <code>BOOL conformsToProtocol(Protocol*)</code><br>
      * <i>native declaration : :32</i>

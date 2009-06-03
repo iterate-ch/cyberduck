@@ -88,7 +88,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             CDMainApplication.invoke(new WindowMainAction(CDTransferPrompt.this) {
                 public void run() {
                     // Update the status label at the bottom of the browser window
-                    statusLabel.setAttributedStringValue(NSAttributedString.create(msg,
+                    statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(msg,
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
             });
@@ -129,7 +129,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         statusIndicator.startAnimation(null);
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
-        statusLabel.setAttributedStringValue(NSAttributedString.create(
+        statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                 browserView.numberOfRows() + " " + Locale.localizedString("files", ""),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
@@ -149,7 +149,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     // Outlets
     // ----------------------------------------------------------
 
-    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.create(
+    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             Locale.localizedString("Unknown", ""),
             TRUNCATE_MIDDLE_ATTRIBUTES);
 
@@ -185,7 +185,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow() != -1) {
                     Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
-                    localURLField.setAttributedStringValue(NSAttributedString.create(
+                    localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     localURLField.setHidden(false);
@@ -195,7 +195,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            localSizeField.setAttributedStringValue(NSAttributedString.create(
+                            localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                                     Status.getSizeAsString(p.getLocal().attributes.getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -204,7 +204,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             localModificationField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            localModificationField.setAttributedStringValue(NSAttributedString.create(
+                            localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                                     CDDateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -215,7 +215,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         localModificationField.setHidden(true);
                     }
 
-                    remoteURLField.setAttributedStringValue(NSAttributedString.create(
+                    remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getHost().toURL() + p.getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     remoteURLField.setHidden(false);
@@ -225,7 +225,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            remoteSizeField.setAttributedStringValue(NSAttributedString.create(
+                            remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                                     Status.getSizeAsString(p.attributes.getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
@@ -234,7 +234,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
-                            remoteModificationField.setAttributedStringValue(NSAttributedString.create(
+                            remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                                     CDDateFormatter.getLongFormat(p.attributes.getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }

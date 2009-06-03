@@ -135,7 +135,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         CDMainApplication.invoke(new WindowMainAction(this) {
             public void run() {
                 responseField.textStorage().replaceCharactersInRange_withAttributedString(NSRange.NSMakeRange(responseField.textStorage().length(), 0),
-                        NSAttributedString.create(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                        NSAttributedString.attributedStringWithAttributes(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
             }
         });
     }

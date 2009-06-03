@@ -61,7 +61,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
         if(null != item) {
             if(identifier.equals(SIZE_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
-                return NSAttributedString.create(Status.getSizeAsString(
+                return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
                         compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment());
             }

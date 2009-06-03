@@ -174,7 +174,7 @@ public abstract class CDTransferPromptModel extends CDController {
                 return skipped ? NSCell.NSOffState : NSCell.NSOnState;
             }
             if(identifier.equals(FILENAME_COLUMN)) {
-                return NSAttributedString.create(item.getName(),
+                return NSAttributedString.attributedStringWithAttributes(item.getName(),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {

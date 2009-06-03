@@ -86,7 +86,7 @@ public class CDTranscriptController extends CDBundleController implements Transc
 
     public void write(final NSDictionary font, final String transcript) {
         logTextView.textStorage().appendAttributedString(
-                NSAttributedString.create(transcript + "\n", font)
+                NSAttributedString.attributedStringWithAttributes(transcript + "\n", font)
         );
         logTextView.scrollRangeToVisible(NSRange.NSMakeRange(logTextView.textStorage().length(), 0));
     }

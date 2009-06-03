@@ -510,11 +510,11 @@ public class CDInfoController extends CDWindowController {
                     file.getName());
             this.filenameField.setEnabled(1 == count && file.isRenameSupported());
             if(file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
-                this.pathField.setAttributedStringValue(NSAttributedString.create(file.getSymbolicLinkPath(),
+                this.pathField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.getSymbolicLinkPath(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             else {
-                this.pathField.setAttributedStringValue(NSAttributedString.create(file.getParent().getAbsolute(),
+                this.pathField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.getParent().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             this.groupField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
@@ -523,7 +523,7 @@ public class CDInfoController extends CDWindowController {
                 this.kindField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
-                this.kindField.setAttributedStringValue(NSAttributedString.create(file.kind(),
+                this.kindField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.kind(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             if(count > 1) {
@@ -531,13 +531,13 @@ public class CDInfoController extends CDWindowController {
             }
             else {
                 if(-1 == file.attributes.getModificationDate()) {
-                    this.modifiedField.setAttributedStringValue(NSAttributedString.create(
+                    this.modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             Locale.localizedString("Unknown"),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
 
                 }
                 else {
-                    this.modifiedField.setAttributedStringValue(NSAttributedString.create(
+                    this.modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             CDDateFormatter.getLongFormat(file.attributes.getModificationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
@@ -778,7 +778,7 @@ public class CDInfoController extends CDWindowController {
 
             public void cleanup() {
                 sizeField.setAttributedStringValue(
-                        NSAttributedString.create(Status.getSizeAsString(size) + " (" + size + " bytes)",
+                        NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(size) + " (" + size + " bytes)",
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                 sizeProgress.stopAnimation(null);
             }

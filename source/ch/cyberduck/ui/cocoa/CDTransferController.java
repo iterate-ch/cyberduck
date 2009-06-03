@@ -378,7 +378,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(CDControllerCell.Factory.create());
+            c.setDataCell(CDControllerCell.controllerCell());
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
@@ -427,11 +427,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
                             NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
             );
             if(transfer.numberOfRoots() == 1) {
-                localField.setAttributedStringValue(NSAttributedString.create(transfer.getRoot().getLocal().getAbsolute(),
+                localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(transfer.getRoot().getLocal().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             else {
-                localField.setAttributedStringValue(NSAttributedString.create(Locale.localizedString("Multiple files", ""),
+                localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Multiple files", ""),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         }

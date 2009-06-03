@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDBookmarkTableDataSource extends CDController implements CDListDataSource {
+public class CDBookmarkTableDataSource extends CDController implements NSTableView.DataSource {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";
@@ -100,8 +100,7 @@ public class CDBookmarkTableDataSource extends CDController implements CDListDat
                     return source.allowsEdit();
                 }
             };
-            for(Iterator<Host> i = source.iterator(); i.hasNext();) {
-                final Host bookmark = i.next();
+            for(final Host bookmark : source) {
                 if(filter.accept(bookmark)) {
                     filtered.add(bookmark);
                 }
@@ -122,6 +121,7 @@ public class CDBookmarkTableDataSource extends CDController implements CDListDat
     /**
      * @see NSTableView.DataSource
      */
+    @Override
     public int numberOfRowsInTableView(NSTableView view) {
         return this.getSource().size();
     }
@@ -129,6 +129,7 @@ public class CDBookmarkTableDataSource extends CDController implements CDListDat
     /**
      * @see NSTableView.DataSource
      */
+    @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         final String identifier = tableColumn.identifier();
         final Host host = this.getSource().get(row);

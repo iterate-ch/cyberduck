@@ -52,12 +52,12 @@ public class CDConnectionController extends CDSheetController {
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionDidChange:"));
         this.protocolPopup.removeAllItems();
         final Protocol[] protocols = Protocol.getKnownProtocols();
-        for(int i = 0; i < protocols.length; i++) {
-            final String title = protocols[i].getDescription();
+        for(Protocol protocol : protocols) {
+            final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            item.setRepresentedObject(protocols[i].getIdentifier());
-            item.setImage(CDIconCache.instance().iconForName(protocols[i].icon(), 16));
+            item.setRepresentedObject(protocol.getIdentifier());
+            item.setImage(CDIconCache.instance().iconForName(protocol.icon(), 16));
         }
         final Protocol defaultProtocol
                 = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));

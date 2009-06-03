@@ -177,11 +177,11 @@ public class CDProgressController extends CDBundleController {
         if(messageText != null) {
             b.append(messageText);
         }
-        messageField.setAttributedStringValue(NSAttributedString.create(b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
+        messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setProgressText() {
-        progressField.setAttributedStringValue(NSAttributedString.create(meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
+        progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setStatusText() {
@@ -200,7 +200,7 @@ public class CDProgressController extends CDBundleController {
                         Locale.localizedString("Transfer incomplete", "Status"));
             }
         }
-        statusField.setAttributedStringValue(NSAttributedString.create(
+        statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                 b.toString(),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
@@ -242,13 +242,13 @@ public class CDProgressController extends CDBundleController {
         messageField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         if(transfer.getRoot().getLocal().exists()) {
             filesPopup.itemAtIndex(0).setAttributedTitle(
-                    NSAttributedString.create(filesPopup.itemAtIndex(0).title(),
+                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(0).title(),
                             highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
             );
         }
         else {
             filesPopup.itemAtIndex(0).setAttributedTitle(
-                    NSAttributedString.create(filesPopup.itemAtIndex(0).title(),
+                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(0).title(),
                             highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
             );
         }

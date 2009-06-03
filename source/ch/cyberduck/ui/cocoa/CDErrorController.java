@@ -51,11 +51,11 @@ public class CDErrorController extends CDBundleController {
         this.hostField = hostField;
         if(null == failure.getPath()) {
             this.hostField.setAttributedStringValue(
-                    NSAttributedString.create(failure.getSession().getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
+                    NSAttributedString.attributedStringWithAttributes(failure.getSession().getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
         }
         else {
             this.hostField.setAttributedStringValue(
-                    NSAttributedString.create(failure.getPath().getAbsolute(), FIXED_WITH_FONT_ATTRIBUTES));
+                    NSAttributedString.attributedStringWithAttributes(failure.getPath().getAbsolute(), FIXED_WITH_FONT_ATTRIBUTES));
         }
     }
 
@@ -65,7 +65,7 @@ public class CDErrorController extends CDBundleController {
         this.descriptionField = descriptionField;
         this.descriptionField.setSelectable(true);
         this.descriptionField.setAttributedStringValue(
-                NSAttributedString.create(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
+                NSAttributedString.attributedStringWithAttributes(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSTextField errorField;
@@ -74,7 +74,7 @@ public class CDErrorController extends CDBundleController {
         this.errorField = errorField;
         this.errorField.setSelectable(true);
         this.errorField.setAttributedStringValue(
-                NSAttributedString.create(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                NSAttributedString.attributedStringWithAttributes(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private NSView view;
@@ -92,6 +92,14 @@ public class CDErrorController extends CDBundleController {
     public CDErrorController(BackgroundException e) {
         this.failure = e;
         this.loadBundle();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public String getTooltip() {
+        return this.getReadableTitle(failure);
     }
 
     private String getReadableTitle(BackgroundException e) {

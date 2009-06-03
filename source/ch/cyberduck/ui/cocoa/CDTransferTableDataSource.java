@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class CDTransferTableDataSource extends CDController implements CDListDataSource {
+public class CDTransferTableDataSource extends CDListDataSource {
     private static Logger log = Logger.getLogger(CDTransferTableDataSource.class);
 
     public static final String PROGRESS_COLUMN = "PROGRESS";
@@ -110,6 +110,7 @@ public class CDTransferTableDataSource extends CDController implements CDListDat
     /**
      * @param view
      */
+    @Override
     public int numberOfRowsInTableView(NSTableView view) {
         return this.getSource().size();
     }
@@ -119,6 +120,7 @@ public class CDTransferTableDataSource extends CDController implements CDListDat
      * @param tableColumn
      * @param row
      */
+    @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         if(row < numberOfRowsInTableView(view)) {
             final String identifier = (String) tableColumn.identifier();

@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class CDBrowserListViewModel extends CDBrowserTableDataSource implements CDListDataSource {
+public class CDBrowserListViewModel extends CDBrowserTableDataSource implements NSTableView.DataSource {
 
     public CDBrowserListViewModel(CDBrowserController controller) {
         super(controller);

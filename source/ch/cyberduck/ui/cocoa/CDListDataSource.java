@@ -23,6 +23,6 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 /**
  * @version $Id:$
  */
-public interface CDListDataSource extends NSTableView.DataSource {
+public abstract class CDListDataSource extends CDController implements NSTableView.DataSource {
     ;
 }

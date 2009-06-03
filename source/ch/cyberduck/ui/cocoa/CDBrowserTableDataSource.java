@@ -133,7 +133,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
         return CDIconCache.instance().iconForPath(item, 16);
     }
 
-    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.create(
+    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             Locale.localizedString("Unknown", ""),
             CDTableCellAttributes.browserFontLeftAlignment());
 
@@ -143,26 +143,26 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 return this.iconForPath(item);
             }
             if(identifier.equals(FILENAME_COLUMN)) {
-                return NSAttributedString.create(item.getName(),
+                return NSAttributedString.attributedStringWithAttributes(item.getName(),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(SIZE_COLUMN)) {
-                return NSAttributedString.create(Status.getSizeAsString(item.attributes.getSize()),
+                return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment());
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
                 if(item.attributes.getModificationDate() != -1) {
-                    return NSAttributedString.create(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
+                    return NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
                             CDTableCellAttributes.browserFontLeftAlignment());
                 }
                 return UNKNOWN_STRING;
             }
             if(identifier.equals(OWNER_COLUMN)) {
-                return NSAttributedString.create(item.attributes.getOwner(),
+                return NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(GROUP_COLUMN)) {
-                return NSAttributedString.create(item.attributes.getGroup(),
+                return NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {
@@ -170,11 +170,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 if(null == permission) {
                     return UNKNOWN_STRING;
                 }
-                return NSAttributedString.create(permission.toString(),
+                return NSAttributedString.attributedStringWithAttributes(permission.toString(),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(KIND_COLUMN)) {
-                return NSAttributedString.create(item.kind(),
+                return NSAttributedString.attributedStringWithAttributes(item.kind(),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
@@ -409,14 +409,14 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             fileTypes.addObject(NSString.stringWithString(promisedDragPaths[i].getExtension()));
                         }
                         else {
-                            fileTypes.addObject(NSFileManager.NSFileTypeRegular.get().value);
+                            fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeRegular));
                         }
                     }
                     else if(promisedDragPaths[i].attributes.isDirectory()) {
-                        fileTypes.addObject(NSFileManager.NSFileTypeDirectory.get().value);
+                        fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeDirectory));
                     }
                     else {
-                        fileTypes.addObject(NSFileManager.NSFileTypeUnknown.get().value);
+                        fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeUnknown));
                     }
                     roots.add(promisedDragPaths[i]);
                 }

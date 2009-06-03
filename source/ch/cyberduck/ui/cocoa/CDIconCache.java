@@ -57,11 +57,15 @@ public class CDIconCache extends HashMap<String, NSImage> {
         return super.put(extension, image);
     }
 
+    public NSImage get(String filetype) {
+        return this.iconForFileType(filetype);
+    }
+
     /**
      * @param key
      * @return
      */
-    public NSImage get(Object key) {
+    public NSImage iconForFileType(Object key) {
         NSImage img = super.get(key);
         if(null == img) {
             this.put((String) key, img = NSWorkspace.sharedWorkspace().iconForFileType((String) key));
@@ -155,7 +159,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
             }
             final NSImage symlink = NSImage.imageWithSize(new NSSize(size, size));
             symlink.lockFocus();
-            NSImage f = this.get(item.getExtension());
+            NSImage f = this.iconForFileType(item.getExtension());
             f.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
             NSImage o = NSImage.imageNamed("AliasBadgeIcon.icns");
@@ -170,7 +174,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
                     return this.convert(NSImage.imageNamed("executable.tiff"), size);
                 }
             }
-            return this.convert(this.get(item.getExtension()), size);
+            return this.convert(this.iconForFileType(item.getExtension()), size);
         }
         if(item.attributes.isVolume()) {
             return this.iconForName(item.getHost().getProtocol().disk(), size);
