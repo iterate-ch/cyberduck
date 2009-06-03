@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.NSObject;
-
 /// <i>native declaration : :80</i>
 public abstract class NSMutableArray extends NSArray {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableArray", _Class.class);

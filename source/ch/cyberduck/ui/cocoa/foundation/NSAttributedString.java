@@ -25,11 +25,11 @@ import org.rococoa.Rococoa;
 public abstract class NSAttributedString implements NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
 
-    public static NSAttributedString create(String str) {
+    public static NSAttributedString attributedString(String str) {
         return Rococoa.cast(CLASS.alloc().initWithString(str).autorelease(), NSAttributedString.class);
     }
 
-    public static NSAttributedString create(String str, NSDictionary attrs) {
+    public static NSAttributedString attributedStringWithAttributes(String str, NSDictionary attrs) {
         return Rococoa.cast(CLASS.alloc().initWithString_attributes(str, attrs).autorelease(), NSAttributedString.class);
     }
 
