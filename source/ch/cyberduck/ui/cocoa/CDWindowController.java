@@ -73,10 +73,6 @@ public abstract class CDWindowController extends CDBundleController {
                 // sequentially as they were initiated from the main interface thread
                 synchronized(runnable.lock()) {
                     log.info("Acquired lock for background runnable:" + runnable);
-                    // An autorelease pool is used to manage Foundation's autorelease
-                    // mechanism for Objective-C objects. If you start off a thread
-                    // that calls Cocoa, there won't be a top-level pool.
-                    final NSAutoreleasePool pool = NSAutoreleasePool.new_();
                     try {
                         if(runnable.prepare()) {
                             // Execute the action of the runnable
@@ -93,11 +89,6 @@ public abstract class CDWindowController extends CDBundleController {
                                 runnable.cleanup();
                             }
                         });
-
-                        // Indicates that you are finished using the
-                        // NSAutoreleasePool identified by pool.
-                        pool.release();
-
                         log.info("Releasing lock for background runnable:" + runnable);
                     }
                 }
@@ -163,8 +154,9 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     protected void invalidate() {
-        this.window = null;
         super.invalidate();
+        this.window.setDelegate(null);
+        this.window = null;
     }
 
     /**
