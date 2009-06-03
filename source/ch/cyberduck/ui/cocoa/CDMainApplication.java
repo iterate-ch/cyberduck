@@ -71,10 +71,8 @@ public class CDMainApplication {
             // This method also makes a connection to the window server and completes other initialization.
             // Your program should invoke this method as one of the first statements in main();
             final NSApplication app = NSApplication.sharedApplication();
-            //app.run();
 
             final CDMainController c = new CDMainController();
-
             if(!NSBundle.loadNibNamed(c.getBundleName(), app.id())) {
                 log.fatal("Couldn't load " + c.getBundleName() + ".nib");
             }
@@ -82,12 +80,12 @@ public class CDMainApplication {
             //
             app.setDelegate(c.id());
 
-            final CDBrowserController browser = c.newDocument();
-
-            // Starts the main event loop.
+            // Starts the main event loop. The loop continues until a stop: or terminate: message is
+            // received. Upon each iteration through the loop, the next available event
+            // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.
             //app.run();
-            synchronized(c) {
-                c.wait();
+            synchronized(app) {
+                app.wait();
             }
         }
         finally {
@@ -107,10 +105,6 @@ public class CDMainApplication {
      *                 otherwise the event is added to the back of the queue.
      */
     public static void invoke(final MainAction runnable, boolean front) {
-        if(isMainThread()) {
-            runnable.run();
-            return;
-        }
         Foundation.runOnMainThread(runnable);
     }
 
