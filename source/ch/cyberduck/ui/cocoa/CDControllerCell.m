@@ -20,9 +20,9 @@
 
 @implementation CDControllerCell
 
-- (id)objectValue 
+- (id)objectValue
 {
-	return controllerView;
+	return [[controllerView retain] autorelease];
 }
 
 - (void)setObjectValue:(NSView *)aView

@@ -20,9 +20,9 @@
 
 @implementation CDBookmarkCell
 
-- (id)objectValue 
+- (id)objectValue
 {
-	return bookmark;
+	return [[bookmark retain] autorelease];
 }
 
 - (void)setObjectValue:(NSDictionary*)aDict
