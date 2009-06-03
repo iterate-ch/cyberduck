@@ -197,7 +197,6 @@ public abstract class Session {
     protected abstract void login(Credentials credentials) throws IOException;
 
     /**
-     *
      * @return
      */
     public Path mount() {
@@ -416,8 +415,8 @@ public abstract class Session {
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionWillOpen();
+        for(ConnectionListener listener : l) {
+            listener.connectionWillOpen();
         }
         // Configuring proxy if any
         Proxy.configure(this.host.getHostname());
@@ -441,8 +440,8 @@ public abstract class Session {
         this.resolver = null;
 
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionDidOpen();
+        for(ConnectionListener listener : l) {
+            listener.connectionDidOpen();
         }
     }
 
@@ -456,8 +455,8 @@ public abstract class Session {
         this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                 this.getHost().getHostname()));
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionWillClose();
+        for(ConnectionListener listeneraL : l) {
+            listeneraL.connectionWillClose();
         }
     }
 
@@ -473,8 +472,8 @@ public abstract class Session {
         this.workdir = null;
 
         ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].connectionDidClose();
+        for(ConnectionListener listener : l) {
+            listener.connectionDidClose();
         }
     }
 
