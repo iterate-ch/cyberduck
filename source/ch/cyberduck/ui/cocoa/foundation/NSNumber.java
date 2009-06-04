@@ -329,7 +329,7 @@ public abstract class NSNumber extends NSValue implements NSObject {
 
     /**
      * Original signature : <code>decimalValue()</code><br>
-     * <i>from NSDecimalNumberExtensions native declaration : /Users/dkocher/null:141</i>
+     * <i>from NSDecimalNumberExtensions native declaration : :141</i>
      */
     public abstract NSObject decimalValue();
 }

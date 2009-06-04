@@ -30,34 +30,34 @@ import org.rococoa.cocoa.NSSize;
 public abstract class NSImage implements NSObject, NSCopying, NSCoding {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImage", _Class.class);
 
-    /// <i>native declaration : /Users/dkocher/null:13</i>
+    /// <i>native declaration : :13</i>
     public static final int NSImageLoadStatusCompleted = 0;
-    /// <i>native declaration : /Users/dkocher/null:14</i>
+    /// <i>native declaration : :14</i>
     public static final int NSImageLoadStatusCancelled = 1;
-    /// <i>native declaration : /Users/dkocher/null:15</i>
+    /// <i>native declaration : :15</i>
     public static final int NSImageLoadStatusInvalidData = 2;
-    /// <i>native declaration : /Users/dkocher/null:16</i>
+    /// <i>native declaration : :16</i>
     public static final int NSImageLoadStatusUnexpectedEOF = 3;
-    /// <i>native declaration : /Users/dkocher/null:17</i>
+    /// <i>native declaration : :17</i>
     public static final int NSImageLoadStatusReadError = 4;
     /**
      * unspecified. use image rep's default<br>
-     * <i>native declaration : /Users/dkocher/null:22</i>
+     * <i>native declaration : :22</i>
      */
     public static final int NSImageCacheDefault = 0;
     /**
      * always generate a cache when drawing<br>
-     * <i>native declaration : /Users/dkocher/null:23</i>
+     * <i>native declaration : :23</i>
      */
     public static final int NSImageCacheAlways = 1;
     /**
      * cache if cache size is smaller than original data<br>
-     * <i>native declaration : /Users/dkocher/null:24</i>
+     * <i>native declaration : :24</i>
      */
     public static final int NSImageCacheBySize = 2;
     /**
      * never cache, always draw direct<br>
-     * <i>native declaration : /Users/dkocher/null:25</i>
+     * <i>native declaration : :25</i>
      */
     public static final int NSImageCacheNever = 3;
     

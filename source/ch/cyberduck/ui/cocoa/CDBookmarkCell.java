@@ -28,11 +28,11 @@ import org.rococoa.Rococoa;
 public abstract class CDBookmarkCell implements NSCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
 
-    /// <i>native declaration : /Users/dkocher/null:22</i>
+    /// <i>native declaration : :22</i>
     public static final int SMALL_BOOKMARK_SIZE = 16;
-    /// <i>native declaration : /Users/dkocher/null:23</i>
+    /// <i>native declaration : :23</i>
     public static final int MEDIUM_BOOKMARK_SIZE = 32;
-    /// <i>native declaration : /Users/dkocher/null:24</i>
+    /// <i>native declaration : :24</i>
     public static final int LARGE_BOOKMARK_SIZE = 64;
     
     public static CDBookmarkCell bookmarkCell() {
