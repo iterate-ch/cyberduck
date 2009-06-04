@@ -31,8 +31,9 @@ import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.Rococoa;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.NSSize;
 
@@ -47,7 +48,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private NSToolbar toolbar;
 
     public void awakeFromNib() {
-        this.toolbar = NSToolbar.create("Queue Toolbar");
+        this.toolbar = NSToolbar.toolbarWithIdentifier("Queue Toolbar");
         this.toolbar.setDelegate(this.id());
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
@@ -300,8 +301,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                         Locale.localizedString("Cancel", ""), //alternative button
                         null //other button
                 );
-                NSWindow sheet = alert.window();
-                instance.alert(sheet, new CDSheetCallback() {
+                instance.alert(alert, new CDSheetCallback() {
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
                             for(int i = 0; i < TransferCollection.instance().size(); i++) {
@@ -312,7 +312,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                             }
                             app.replyToApplicationShouldTerminate(true);
                         }
-                        if(returncode == ALTERNATE_OPTION) { //Cancel
+                        if(returncode == OTHER_OPTION) { //Cancel
                             app.replyToApplicationShouldTerminate(false);
                         }
                     }
@@ -996,8 +996,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param item
      */
     public boolean validateMenuItem(NSMenuItem item) {
-        String identifier = item.action().getName();
-        if(item.action().getName().equals("paste:")) {
+        final Selector action = item.action();
+        if(action.equals(Foundation.selector("paste:"))) {
             boolean valid = false;
             NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
             if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
@@ -1024,46 +1024,46 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 item.setTitle(Locale.localizedString("Paste", "Menu item"));
             }
         }
-        return this.validateItem(identifier);
+        return this.validateItem(action);
     }
 
     /**
      * @param item
      */
     public boolean validateToolbarItem(NSToolbarItem item) {
-        return this.validateItem(item.action().getName());
+        return this.validateItem(item.action());
     }
 
     /**
      * Validates menu and toolbar items
      *
-     * @param identifier
+     * @param action
      * @return true if the item with the identifier should be selectable
      */
-    private boolean validateItem(String identifier) {
-        if(identifier.equals("paste:")) {
+    private boolean validateItem(final Selector action) {
+        if(action.equals(Foundation.selector("paste:"))) {
             NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
             if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
                 return pboard.propertyListForType(CDPasteboards.TransferPasteboardType) != null;
             }
             return false;
         }
-        if(identifier.equals("stopButtonClicked:")) {
+        if(action.equals(Foundation.selector("stopButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
                     return transfer.isRunning() || transfer.isQueued();
                 }
             });
         }
-        if(identifier.equals("reloadButtonClicked:")
-                || identifier.equals("deleteButtonClicked:")) {
+        if(action.equals(Foundation.selector("reloadButtonClicked:"))
+                || action.equals(Foundation.selector("deleteButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
                     return !transfer.isRunning() && !transfer.isQueued();
                 }
             });
         }
-        if(identifier.equals("resumeButtonClicked:")) {
+        if(action.equals(Foundation.selector("resumeButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
                     if(transfer.isRunning() || transfer.isQueued()) {
@@ -1073,8 +1073,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
             });
         }
-        if(identifier.equals("openButtonClicked:")
-                || identifier.equals("trashButtonClicked:")) {
+        if(action.equals(Foundation.selector("openButtonClicked:"))
+                || action.equals(Foundation.selector("trashButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
                     if(!transfer.isRunning()) {
@@ -1088,7 +1088,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
             });
         }
-        if(identifier.equals("revealButtonClicked:")) {
+        if(action.equals(Foundation.selector("revealButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
                     for(Path i : transfer.getRoots()) {
@@ -1100,7 +1100,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
             });
         }
-        if(identifier.equals("clearButtonClicked:")) {
+        if(action.equals(Foundation.selector("clearButtonClicked:"))) {
             return transferTable.numberOfRows() > 0;
         }
         return true;

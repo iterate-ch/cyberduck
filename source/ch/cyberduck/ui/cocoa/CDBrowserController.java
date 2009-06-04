@@ -547,7 +547,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             this.logDrawer.open();
         }
         // Configure Toolbar
-        this.toolbar = NSToolbar.create("Cyberduck Toolbar");
+        this.toolbar = NSToolbar.toolbarWithIdentifier("Cyberduck Toolbar");
         this.toolbar.setDelegate((this.id()));
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
@@ -2418,14 +2418,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         Locale.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
                         null //other button
                 );
-                CDSheetController c = new CDSheetController(this, alert.window()) {
+                this.alert(alert, new CDSheetCallback() {
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
                             CDBrowserController.this.background(action);
                         }
                     }
-                };
-                c.beginSheet();
+                });
             }
             else {
                 this.background(action);
@@ -2460,14 +2459,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         Locale.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
                         null //other button
                 );
-                CDSheetController c = new CDSheetController(this, alert.window()) {
+                this.alert(alert, new CDSheetCallback() {
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
                             checkOverwrite(selected, action);
                         }
                     }
-                };
-                c.beginSheet();
+                });
             }
             else {
                 this.checkOverwrite(selected, action);
@@ -2567,14 +2565,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     Locale.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
                     null //other button
             );
-            CDSheetController c = new CDSheetController(this, alert.window()) {
+            this.alert(alert, new CDSheetCallback() {
                 public void callback(final int returncode) {
                     if(returncode == DEFAULT_OPTION) {
                         CDBrowserController.this.deletePathsImpl(normalized);
                     }
                 }
-            };
-            c.beginSheet();
+            });
         }
     }
 
@@ -3839,7 +3836,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                                 app.terminate(null);
                             }
                         }
-                        if(returncode == ALTERNATE_OPTION) { //Cancel
+                        if(returncode == OTHER_OPTION) { //Cancel
                             app.replyToApplicationShouldTerminate(false);
                         }
                     }
@@ -3868,7 +3865,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @return true if the menu should be enabled
      */
     public boolean validateMenuItem(NSMenuItem item) {
-        final String action = item.action().getName();
+        final Selector action = item.action();
         if(action.equals("pasteFromFinder:")) {
             boolean valid = false;
             if(this.isMounted()) {
@@ -3974,11 +3971,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param action the method selector
      * @return true if the item by that identifier should be enabled
      */
-    private boolean validateItem(final String action) {
-        if(action.equals("cut:")) {
+    private boolean validateItem(final Selector action) {
+        if(action.equals(Foundation.selector("cut:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals("pasteFromFinder:")) {
+        if(action.equals(Foundation.selector("pasteFromFinder:"))) {
             if(this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.generalPasteboard();
                 if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -3990,7 +3987,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("paste:")) {
+        if(action.equals(Foundation.selector("paste:"))) {
             if(this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
                 if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
@@ -4002,22 +3999,22 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("encodingMenuClicked:")) {
+        if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             return !isActivityRunning();
         }
-        if(action.equals("connectBookmarkButtonClicked:")) {
+        if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
             return bookmarkTable.numberOfSelectedRows() == 1;
         }
-        if(action.equals("addBookmarkButtonClicked:")) {
+        if(action.equals(Foundation.selector("addBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsAdd();
         }
-        if(action.equals("deleteBookmarkButtonClicked:")) {
+        if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow() != -1;
         }
-        if(action.equals("editBookmarkButtonClicked:")) {
+        if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows() == 1;
         }
-        if(action.equals("editButtonClicked:")) {
+        if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 String editor = EditorFactory.getSelectedEditor();
                 if(null == editor) {
@@ -4032,7 +4029,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("editMenuClicked:")) {
+        if(action.equals(Foundation.selector("editMenuClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 for(Path selected : this.getSelectedPaths()) {
                     if(!this.isEditable(selected)) {
@@ -4043,31 +4040,31 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("searchButtonClicked:")) {
+        if(action.equals(Foundation.selector("searchButtonClicked:"))) {
             return this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
         }
-        if(action.equals("quicklookButtonClicked:")) {
+        if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
             return QuickLook.isAvailable() && this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals("openBrowserButtonClicked:")) {
+        if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("sendCustomCommandClicked:")) {
+        if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
             return this.isMounted() && this.getSession().isSendCommandSupported();
         }
-        if(action.equals("gotoButtonClicked:")) {
+        if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("infoButtonClicked:")) {
+        if(action.equals(Foundation.selector("infoButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals("createFolderButtonClicked:")) {
+        if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
             return this.isMounted() && this.workdir().isMkdirSupported();
         }
-        if(action.equals("createFileButtonClicked:")) {
+        if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("duplicateFileButtonClicked:")) {
+        if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -4077,7 +4074,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("renameFileButtonClicked:")) {
+        if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -4087,22 +4084,22 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("deleteFileButtonClicked:")) {
+        if(action.equals(Foundation.selector("deleteFileButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals("reloadButtonClicked:")) {
+        if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("newBrowserButtonClicked:")) {
+        if(action.equals(Foundation.selector("newBrowserButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("uploadButtonClicked:")) {
+        if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("syncButtonClicked:")) {
+        if(action.equals(Foundation.selector("syncButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("downloadAsButtonClicked:")) {
+        if(action.equals(Foundation.selector("downloadAsButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -4112,7 +4109,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("downloadToButtonClicked:") || action.equals("downloadButtonClicked:")) {
+        if(action.equals(Foundation.selector("downloadToButtonClicked:")) || action.equals(Foundation.selector("downloadButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -4122,40 +4119,40 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("insideButtonClicked:")) {
+        if(action.equals(Foundation.selector("insideButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals("upButtonClicked:")) {
+        if(action.equals(Foundation.selector("upButtonClicked:"))) {
             return this.isMounted() && !this.workdir().isRoot();
         }
-        if(action.equals("backButtonClicked:")) {
+        if(action.equals(Foundation.selector("backButtonClicked:"))) {
             return this.isMounted() && this.getBackHistory().size() > 1;
         }
-        if(action.equals("forwardButtonClicked:")) {
+        if(action.equals(Foundation.selector("forwardButtonClicked:"))) {
             return this.isMounted() && this.getForwardHistory().size() > 0;
         }
-        if(action.equals("copyURLButtonClicked:") || action.equals("copyWebURLButtonClicked:")) {
+        if(action.equals(Foundation.selector("copyURLButtonClicked:")) || action.equals(Foundation.selector("copyWebURLButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("printDocument:")) {
+        if(action.equals(Foundation.selector("printDocument:"))) {
             return this.isMounted();
         }
-        if(action.equals("disconnectButtonClicked:")) {
+        if(action.equals(Foundation.selector("disconnectButtonClicked:"))) {
             if(!this.isConnected()) {
                 return this.isActivityRunning();
             }
             return this.isConnected();
         }
-        if(action.equals("interruptButtonClicked:")) {
+        if(action.equals(Foundation.selector("interruptButtonClicked:"))) {
             return this.isActivityRunning();
         }
-        if(action.equals("gotofolderButtonClicked:")) {
+        if(action.equals(Foundation.selector("gotofolderButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals("openTerminalButtonClicked:")) {
+        if(action.equals(Foundation.selector("openTerminalButtonClicked:"))) {
             return this.isMounted() && this.getSession() instanceof SFTPSession;
         }
-        if(action.equals("archiveButtonClicked:") || action.equals("archiveMenuClicked:")) {
+        if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isMounted()) {
                 if(!this.getSession().isArchiveSupported()) {
                     return false;
@@ -4172,7 +4169,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals("unarchiveButtonClicked:")) {
+        if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
             if(this.isMounted()) {
                 if(!this.getSession().isUnarchiveSupported()) {
                     return false;
@@ -4219,6 +4216,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private static final String TOOLBAR_QUICKLOOK = "Quick Look";
 
     public boolean validateToolbarItem(NSToolbarItem item) {
+        final Selector action = item.action();
         if(item.itemIdentifier().equals(TOOLBAR_EDIT)) {
             final String selectedEditor = EditorFactory.getSelectedEditor();
             if(null == selectedEditor) {
@@ -4262,7 +4260,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(item.itemIdentifier().equals(TOOLBAR_QUICKLOOK)) {
             // Not called because custom view is set
         }
-        return validateItem(item.action().getName());
+        return validateItem(action);
     }
 
     /**
