@@ -51,12 +51,13 @@ public class Local extends AbstractPath {
                         log.error("No such file:" + getAbsolute());
                         return null;
                     }
-                    Object posix = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions);
-                    if(null == posix) {
+                    NSObject object = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions);
+                    if(null == object) {
                         log.error("No such file:" + getAbsolute());
                         return null;
                     }
-                    String posixString = Integer.toString(((Number) posix).intValue() & 0177777, 8);
+                    NSNumber posix = Rococoa.cast(object, NSNumber.class);
+                    String posixString = Integer.toString(posix.intValue() & 0177777, 8);
                     return new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
                 }
                 catch(NumberFormatException e) {

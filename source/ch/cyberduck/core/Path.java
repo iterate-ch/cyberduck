@@ -130,10 +130,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     private NSMutableDictionary dict;
 
     public NSDictionary getAsDictionary() {
-        if(null == dict) {
-            dict = NSMutableDictionary.dictionary();
-            dict.retain();
-        }
+        dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getAbsolute(), REMOTE);
         if(local != null) {
             dict.setObjectForKey(local.toString(), LOCAL);
@@ -578,8 +575,8 @@ public abstract class Path extends AbstractPath implements Serializable {
                     return TransferAction.ACTION_OVERWRITE;
                 }
             }, options);
-            ((Path)copy).setLocal(local);
-            UploadTransfer upload = new UploadTransfer(((Path)copy));
+            ((Path) copy).setLocal(local);
+            UploadTransfer upload = new UploadTransfer(((Path) copy));
             upload.start(new TransferPrompt() {
                 public TransferAction prompt() {
                     return TransferAction.ACTION_OVERWRITE;

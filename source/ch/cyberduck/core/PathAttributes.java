@@ -91,10 +91,7 @@ public class PathAttributes extends Attributes implements Serializable {
     private NSMutableDictionary dict;
 
     public NSDictionary getAsDictionary() {
-        if(null == dict) {
-            dict = NSMutableDictionary.dictionary();
-            dict.retain();
-        }
+        dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(String.valueOf(this.type), TYPE);
         if(this.size != -1) {
             dict.setObjectForKey(String.valueOf(this.size), SIZE);

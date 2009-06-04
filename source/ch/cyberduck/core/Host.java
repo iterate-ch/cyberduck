@@ -156,7 +156,7 @@ public class Host implements Serializable {
         if(usernameObj != null) {
             this.setCredentials(usernameObj.toString(), null);
         }
-        final NSObject keyObj = dict.objectForKey(Host.KEYFILE);
+        NSObject keyObj = dict.objectForKey(Host.KEYFILE);
         if(keyObj != null) {
             this.getCredentials().setIdentity(new Credentials.Identity(keyObj.toString()));
         }
@@ -216,10 +216,7 @@ public class Host implements Serializable {
      * @return
      */
     public NSDictionary getAsDictionary() {
-        if(null == dict) {
-            dict = NSMutableDictionary.dictionary();
-            dict.retain();
-        }
+        dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
         dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         if(StringUtils.isNotBlank(this.hostname)) {
