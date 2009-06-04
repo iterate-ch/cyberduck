@@ -365,8 +365,8 @@
                 debug="${debug}"
                 encoding="utf-8"
                 srcdir="${source}"
-                source="1.6"
-                target="1.6"
+                source="1.5"
+                target="1.5"
                 destdir="${build.classes}">
             <bootclasspath refid="build.bootclasspath"/>
             <classpath refid="build.classpath"/>
@@ -431,7 +431,7 @@
 
     <target name="manifest" description="Create a manifest used in the jar files">
         <manifest file="${build}/MANIFEST.MF">
-			<attribute name="Built-By" value="${user.name}"/>
+            <attribute name="Built-By" value="${user.name}"/>
             <attribute name="Specification-Title" value="${app.name}"/>
             <attribute name="Specification-Version" value="${svn.revision}"/>
             <attribute name="Specification-Vendor" value="David Kocher"/>
