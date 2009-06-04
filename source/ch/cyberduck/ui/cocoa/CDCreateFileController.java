@@ -46,7 +46,7 @@ public class CDCreateFileController extends CDFileController {
         if(returncode == DEFAULT_OPTION) {
             this.createFile(this.getWorkdir(), filenameField.stringValue(), false);
         }
-        if(returncode == ALTERNATE_OPTION) {
+        if(returncode == OTHER_OPTION) {
             this.createFile(this.getWorkdir(), filenameField.stringValue(), true);
         }
     }

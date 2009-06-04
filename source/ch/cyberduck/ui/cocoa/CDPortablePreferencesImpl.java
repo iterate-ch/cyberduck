@@ -57,12 +57,10 @@ public class CDPortablePreferencesImpl extends Preferences {
         if(f.exists()) {
             log.info("Found preferences file: " + f.toString());
             this.dict = NSMutableDictionary.dictionary();
-            this.dict.retain();
             this.dict.setDictionary(NSDictionary.dictionaryWithContentsOfFile(f.getAbsolute()));
         }
         else {
             this.dict = NSMutableDictionary.dictionary();
-            this.dict.retain();
         }
     }
 

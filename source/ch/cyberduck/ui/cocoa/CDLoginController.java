@@ -226,7 +226,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
         };
         c.beginSheet();
 
-        if(c.returnCode() == CDSheetCallback.CANCEL_OPTION) {
+        if(c.returnCode() == CDSheetCallback.ALTERNATE_OPTION) {
             throw new LoginCanceledException();
         }
     }

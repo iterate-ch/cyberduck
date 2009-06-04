@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSAutoreleasePool;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -153,19 +152,6 @@ public abstract class CDWindowController extends CDBundleController {
         this.invalidate();
     }
 
-    protected void invalidate() {
-        super.invalidate();
-        this.window.setDelegate(null);
-        this.window = null;
-    }
-
-    /**
-     * @return False if the window has been released
-     */
-    public boolean isShown() {
-        return this.window != null;
-    }
-
     /**
      * Position this controller's window relative to other open windows
      */
@@ -206,7 +192,7 @@ public abstract class CDWindowController extends CDBundleController {
      * @param alert
      */
     protected void alert(final NSAlert alert) {
-        this.alert(alert.window());
+        this.alert(alert);
     }
 
     /**
@@ -215,7 +201,12 @@ public abstract class CDWindowController extends CDBundleController {
      * @param callback
      */
     protected void alert(final NSAlert alert, final CDSheetCallback callback) {
-        this.alert(alert.window(), callback);
+        CDSheetController c = new CDAlertController(this, alert) {
+            public void callback(final int returncode) {
+                callback.callback(returncode);
+            }
+        };
+        c.beginSheet();
     }
 
     /**

@@ -35,7 +35,7 @@ public class CDTableCellAttributes {
     protected static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
 
     static {
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE = NSMutableParagraphStyle.alloc();
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE = NSMutableParagraphStyle.paragraphStyle();
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setAlignment(NSText.LeftTextAlignment);
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingMiddle);
@@ -44,7 +44,7 @@ public class CDTableCellAttributes {
     protected static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL;
 
     static {
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.alloc();
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.paragraphStyle();
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.LeftTextAlignment);
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingTail);
@@ -53,7 +53,7 @@ public class CDTableCellAttributes {
     protected static final NSMutableParagraphStyle PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL;
 
     static {
-        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.alloc();
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.paragraphStyle();
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setParagraphStyle(NSParagraphStyle.defaultParagraphStyle());
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.RightTextAlignment);
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingTail);

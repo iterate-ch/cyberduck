@@ -83,7 +83,7 @@ public class CDDotMacController extends CDController {
                     if(choice == CDSheetCallback.DEFAULT_OPTION) {
                         HostCollection.defaultCollection().add(bookmark);
                     }
-                    if(choice == CDSheetCallback.ALTERNATE_OPTION) {
+                    if(choice == CDSheetCallback.OTHER_OPTION) {
                         return;
                     }
                 }

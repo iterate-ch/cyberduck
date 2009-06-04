@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -42,8 +41,12 @@ public abstract class CDController {
      * @return
      */
     public NSObject proxy() {
+        return this.proxy(NSObject.class);
+    }
+
+    public NSObject proxy(Class<? extends NSObject> type) {
         if(null == proxy) {
-            proxy = Rococoa.proxy(this, NSObject.class);
+            proxy = Rococoa.proxy(this, type);
         }
         return proxy;
     }
@@ -52,7 +55,11 @@ public abstract class CDController {
      * @return
      */
     public org.rococoa.ID id() {
-        return this.proxy().id();
+        return this.id(NSObject.class);
+    }
+
+    public org.rococoa.ID id(Class<? extends NSObject> type) {
+        return this.proxy(type).id();
     }
 
     /**
@@ -64,7 +71,6 @@ public abstract class CDController {
             log.debug("invalidate:" + this.toString());
         }
         NSNotificationCenter.defaultCenter().removeObserver(this.proxy());
-        proxy = null;
         if(log.isDebugEnabled()) {
             System.gc();
         }

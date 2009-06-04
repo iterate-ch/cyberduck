@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
@@ -79,7 +76,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
     public void closeSheet(final NSButton sender) {
         log.debug("closeSheet:" + sender);
         if(sender.tag() == DEFAULT_OPTION
-                || sender.tag() == ALTERNATE_OPTION) {
+                || sender.tag() == OTHER_OPTION) {
             if(!this.validateInput()) {
 //                NSApplication.beep();
                 return;
@@ -113,6 +110,22 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param returncode
      */
     public abstract void callback(final int returncode);
+
+    /**
+     *
+     * @param returncode
+     * @param context
+     */
+    protected void callback(final int returncode, ID context) {
+        this.returncode = returncode;
+        this.callback(returncode);
+        synchronized(parent.window()) {
+            parent.window().notify();
+        }
+        if(!this.isSingleton()) {
+            this.invalidate();
+        }
+    }
 
     public void beginSheet() {
         if(!CDMainApplication.isMainThread()) {
@@ -178,16 +191,8 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param context    Not used
      */
     public void sheetDidClose_returnCode_contextInfo(final NSPanel sheet, final int returncode, ID context) {
-        log.debug("sheetDidClose:" + sheet);
-        this.returncode = returncode;
         sheet.orderOut(null);
-        this.callback(returncode);
-        synchronized(parent.window()) {
-            parent.window().notify();
-        }
-        if(!this.isSingleton()) {
-            this.invalidate();
-        }
+        this.callback(returncode, context);
     }
 
     /**

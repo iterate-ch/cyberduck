@@ -75,7 +75,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
         if(returncode == DEFAULT_OPTION) { // Continue
             action = TransferAction.ACTION_OVERWRITE;
         }
-        else if(returncode == CANCEL_OPTION) { // Abort
+        else if(returncode == ALTERNATE_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
         }
     }

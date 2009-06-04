@@ -115,7 +115,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     public void callback(final int returncode) {
         log.debug("callback:" + returncode);
-        if(returncode == CANCEL_OPTION) { // Abort
+        if(returncode == ALTERNATE_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
         }
         Preferences.instance().setProperty("transfer.toggle.details", this.toggleDetailsButton.state());

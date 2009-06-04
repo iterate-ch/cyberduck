@@ -66,7 +66,7 @@ public class CDDuplicateFileController extends CDFileController {
         if(returncode == DEFAULT_OPTION) {
             this.duplicateFile(selected, filenameField.stringValue(), false);
         }
-        if(returncode == ALTERNATE_OPTION) {
+        if(returncode == OTHER_OPTION) {
             this.duplicateFile(selected, filenameField.stringValue(), true);
         }
     }

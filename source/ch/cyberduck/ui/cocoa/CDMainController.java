@@ -446,7 +446,7 @@ public class CDMainController extends CDBundleController {
                             NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()
                     );
                 }
-                if(choice == CDSheetCallback.CANCEL_OPTION) {
+                if(choice == CDSheetCallback.ALTERNATE_OPTION) {
                     Preferences.instance().setProperty("defaulthandler.reminder", false);
                 }
             }
@@ -578,7 +578,7 @@ public class CDMainController extends CDBundleController {
                                 Locale.localizedString("Cancel", ""), //other
                                 Locale.localizedString("Review...", ""));
                         int choice = alert.runModal(); //alternate
-                        if(choice == CDSheetCallback.ALTERNATE_OPTION) {
+                        if(choice == CDSheetCallback.OTHER_OPTION) {
                             // Review if at least one window reqested to terminate later, we shall wait
                             final int result = CDBrowserController.applicationShouldTerminate(app);
                             if(NSApplication.NSTerminateNow == result) {
@@ -586,7 +586,7 @@ public class CDMainController extends CDBundleController {
                             }
                             return result;
                         }
-                        if(choice == CDSheetCallback.CANCEL_OPTION) {
+                        if(choice == CDSheetCallback.ALTERNATE_OPTION) {
                             // Cancel. Quit has been interrupted. Delete any saved sessions so far.
                             sessions.clear();
                             return NSApplication.NSTerminateCancel;
