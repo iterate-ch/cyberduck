@@ -1150,7 +1150,7 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void setWindowController(NSWindowController*)</code><br>
      * <i>native declaration : :507</i>
      */
-    void setWindowController(com.sun.jna.Pointer windowController);
+    void setWindowController(NSObject windowController);
 
     /**
      * Original signature : <code>BOOL isSheet()</code><br>
@@ -1168,7 +1168,7 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>NSButton* standardWindowButton(NSWindowButton)</code><br>
      * <i>native declaration : :514</i>
      */
-    com.sun.jna.Pointer standardWindowButton(int b);
+    NSButton standardWindowButton(int b);
     /**
      * <i>native declaration : :518</i><br>
      * Conversion Error : /// Original signature : <code>void addChildWindow(NSWindow*, null)</code><br>
@@ -1212,58 +1212,17 @@ public interface NSWindow extends NSObject {
      */
     float userSpaceScaleFactor();
 
-    /// <i>native declaration : :153</i>
-    public static class __wFlags extends com.sun.jna.Structure {
-        /// Allocate a new __wFlags struct on the heap
-        public __wFlags() {
-        }
-
-        /// Cast data at given memory location (pointer + offset) as an existing __wFlags struct
-        public __wFlags(com.sun.jna.Pointer pointer, int offset) {
-            super();
-            useMemory(pointer, offset);
-            read();
-        }
-
-        /// Create an instance that shares its memory with another __wFlags instance
-        public __wFlags(__wFlags struct) {
-            this(struct.getPointer(), 0);
-        }
-
-        public static class ByReference extends __wFlags implements com.sun.jna.Structure.ByReference {
-            /// Allocate a new __wFlags.ByRef struct on the heap
-            public ByReference() {
-            }
-
-            /// Create an instance that shares its memory with another __wFlags instance
-            public ByReference(__wFlags struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-
-        public static class ByValue extends __wFlags implements com.sun.jna.Structure.ByValue {
-            /// Allocate a new __wFlags.ByVal struct on the heap
-            public ByValue() {
-            }
-
-            /// Create an instance that shares its memory with another __wFlags instance
-            public ByValue(__wFlags struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-    }
-
     /**
      * Original signature : <code>void setInitialFirstResponder(NSView*)</code><br>
      * <i>from NSKeyboardUI native declaration : :539</i>
      */
-    void setInitialFirstResponder(com.sun.jna.Pointer view);
+    void setInitialFirstResponder(NSView view);
 
     /**
      * Original signature : <code>NSView* initialFirstResponder()</code><br>
      * <i>from NSKeyboardUI native declaration : :540</i>
      */
-    com.sun.jna.Pointer initialFirstResponder();
+    NSView initialFirstResponder();
 
     /**
      * Original signature : <code>void selectNextKeyView(id)</code><br>
@@ -1281,13 +1240,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void selectKeyViewFollowingView(NSView*)</code><br>
      * <i>from NSKeyboardUI native declaration : :543</i>
      */
-    void selectKeyViewFollowingView(com.sun.jna.Pointer aView);
+    void selectKeyViewFollowingView(NSView aView);
 
     /**
      * Original signature : <code>void selectKeyViewPrecedingView(NSView*)</code><br>
      * <i>from NSKeyboardUI native declaration : :544</i>
      */
-    void selectKeyViewPrecedingView(com.sun.jna.Pointer aView);
+    void selectKeyViewPrecedingView(NSView aView);
 
     /**
      * Original signature : <code>NSSelectionDirection keyViewSelectionDirection()</code><br>
@@ -1388,21 +1347,6 @@ public interface NSWindow extends NSObject {
      * <i>from NSDrag native declaration : :572</i>
      */
     void unregisterDraggedTypes();
-
-    /**
-     * create an NSWindow for a Carbon window - windowRef must be a Carbon WindowRef - see MacWindows.h<br>
-     * Original signature : <code>NSWindow* initWithWindowRef(void*)</code><br>
-     * WindowRef<br>
-     * <i>from NSCarbonExtensions native declaration : :577</i>
-     */
-    NSWindow initWithWindowRef(com.sun.jna.Pointer windowRef);
-
-    /**
-     * return the Carbon WindowRef for this window, creating if necessary: - see MacWindows.h<br>
-     * Original signature : <code>void* windowRef()</code><br>
-     * <i>from NSCarbonExtensions native declaration : :579</i>
-     */
-    com.sun.jna.Pointer windowRef();
 
     public static final String WindowDidBecomeKeyNotification = "NSWindowDidBecomeKeyNotification";
     public static final String WindowDidBecomeMainNotification = "NSWindowDidBecomeMainNotification";

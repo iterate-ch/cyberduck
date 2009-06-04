@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSCoding;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.CGFloat;
+
 
 /// <i>native declaration : :74</i>
 public abstract class NSParagraphStyle implements NSObject, NSCopying, NSCoding {
@@ -91,7 +93,7 @@ public abstract class NSParagraphStyle implements NSObject, NSCopying, NSCoding 
      * "Leading": distance between the bottom of one line fragment and top of next (applied between lines in the same container). Can't be negative. This value is included in the line fragment heights in layout manager.<br>
      * <i>native declaration : :106</i>
      */
-    public abstract float lineSpacing();
+    public abstract CGFloat lineSpacing();
 
     /**
      * Original signature : <code>CGpublic abstract float paragraphSpacing()</code><br>
@@ -215,45 +217,4 @@ public abstract class NSParagraphStyle implements NSObject, NSCopying, NSCoding 
      * <i>native declaration : :145</i>
      */
     public abstract int headerLevel();
-
-    /// <i>native declaration : :84</i>
-    public static class _flags_struct extends com.sun.jna.Structure {
-        /// Allocate a new _flags_struct struct on the heap
-        public _flags_struct() {
-        }
-
-        /// Cast data at given memory location (pointer + offset) as an existing _flags_struct struct
-        public _flags_struct(com.sun.jna.Pointer pointer, int offset) {
-            super();
-            useMemory(pointer, offset);
-            read();
-        }
-
-        /// Create an instance that shares its memory with another _flags_struct instance
-        public _flags_struct(_flags_struct struct) {
-            this(struct.getPointer(), 0);
-        }
-
-        public static class ByReference extends _flags_struct implements com.sun.jna.Structure.ByReference {
-            /// Allocate a new _flags_struct.ByRef struct on the heap
-            public ByReference() {
-            }
-
-            /// Create an instance that shares its memory with another _flags_struct instance
-            public ByReference(_flags_struct struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-
-        public static class ByValue extends _flags_struct implements com.sun.jna.Structure.ByValue {
-            /// Allocate a new _flags_struct.ByVal struct on the heap
-            public ByValue() {
-            }
-
-            /// Create an instance that shares its memory with another _flags_struct instance
-            public ByValue(_flags_struct struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-    }
 }

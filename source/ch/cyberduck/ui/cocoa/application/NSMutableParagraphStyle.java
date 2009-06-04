@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :150</i>
@@ -31,9 +32,11 @@ public abstract class NSMutableParagraphStyle extends NSParagraphStyle {
         NSMutableParagraphStyle alloc();
     }
 
-    public static NSMutableParagraphStyle alloc() {
-        return CLASS.alloc();
+    public static NSMutableParagraphStyle paragraphStyle() {
+        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSMutableParagraphStyle.class);
     }
+
+    public abstract NSMutableParagraphStyle init();
 
     /**
      * Original signature : <code>void setLineSpacing(CGFloat)</code><br>
