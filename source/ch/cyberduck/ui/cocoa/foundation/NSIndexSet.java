@@ -27,7 +27,7 @@ public abstract class NSIndexSet implements NSObject {
         return CLASS.indexSetWithIndex(value);
     }
 
-    public static final long NSNotFound = 2147483647L;
+    public static final long NSNotFound = -1;
 
     public interface _Class extends org.rococoa.NSClass {
         /**

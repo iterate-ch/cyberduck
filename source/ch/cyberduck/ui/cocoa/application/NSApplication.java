@@ -385,7 +385,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>void setMainMenu(NSMenu*)</code><br>
      * <i>native declaration : :176</i>
      */
-    public abstract void setMainMenu(com.sun.jna.Pointer aMenu);
+    public abstract void setMainMenu(NSMenu aMenu);
 
     /**
      * Original signature : <code>NSMenu* mainMenu()</code><br>

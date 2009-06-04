@@ -58,7 +58,7 @@ public abstract class NSMutableDictionary extends NSDictionary {
     }
 
     public void setObjectForKey(NSObject anObject, String aKey) {
-        this.setObject_forKey(anObject.retain(), NSString.stringWithString(aKey).retain());
+        this.setObject_forKey(anObject, NSString.stringWithString(aKey));
     }
 
     /**

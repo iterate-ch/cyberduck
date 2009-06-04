@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.Rococoa;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class NSDateFormatter implements NSFormatter {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDateFormatter", _Class.class);
