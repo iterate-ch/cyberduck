@@ -28,14 +28,18 @@ import org.rococoa.cocoa.NSError;
 public abstract class NSAlert implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSAlert", _Class.class);
 
+    public static final int NSAlertDefaultReturn = 1;
+    public static final int NSAlertAlternateReturn = 0;
+    public static final int NSAlertOtherReturn = -1;
+    public static final int NSAlertErrorReturn = -2;
+
     public static NSAlert alertWithError(NSError error) {
         return CLASS.alertWithError(error);
     }
 
     /**
-     *
-     * @param title Alert title
-     * @param message Informative text
+     * @param title           Alert title
+     * @param message         Informative text
      * @param defaultButton
      * @param alternateButton
      * @param otherButton
@@ -215,7 +219,11 @@ public abstract class NSAlert implements NSObject {
      * Original signature : <code>void beginSheetModalForWindow(NSWindow*, id, SEL, void*)</code><br>
      * <i>native declaration : :139</i>
      */
-    public abstract void beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo(NSWindow window, NSObject delegate, org.rococoa.Selector didEndSelector, com.sun.jna.Pointer contextInfo);
+    public abstract void beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo(NSWindow window, org.rococoa.ID delegate, org.rococoa.Selector didEndSelector, com.sun.jna.Pointer contextInfo);
+
+    public void beginSheet(NSWindow window, org.rococoa.ID delegate, org.rococoa.Selector didEndSelector, com.sun.jna.Pointer contextInfo) {
+        this.beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo(window, delegate, didEndSelector, contextInfo);
+    }
 
     /**
      * return the application-modal panel or the document-modal sheet corresponding to this alert<br>

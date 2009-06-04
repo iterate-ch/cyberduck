@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
-import java.nio.IntBuffer;
+import com.sun.jna.NativeLong;
 
 /// <i>native declaration : :43</i>
 public abstract class NSWorkspace implements NSObject {
@@ -242,10 +242,10 @@ public abstract class NSWorkspace implements NSObject {
      * Returned tag < 0 on failure, 0 if sync, > 0 if async<br>
      * <i>native declaration : :94</i>
      */
-    public abstract boolean performFileOperation_source_destination_files_tag(String operation1, String source2, String destination3, NSArray files4, java.nio.IntBuffer tag5);
+    public abstract boolean performFileOperation_source_destination_files_tag(String operation1, String source2, String destination3, NSArray files4, NativeLong tag5);
 
     public boolean performFileOperation(String operation, String source, String destination, NSArray files) {
-        return this.performFileOperation_source_destination_files_tag(operation, source, destination, files, IntBuffer.allocate(-1));
+        return this.performFileOperation_source_destination_files_tag(operation, source, destination, files, new NativeLong(0));
     }
 
     /**
