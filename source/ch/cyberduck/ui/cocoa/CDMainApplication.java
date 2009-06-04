@@ -26,8 +26,6 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.NSAutoreleasePool;
 
-import java.awt.*;
-
 /**
  * @version $Id:$
  */
@@ -66,8 +64,6 @@ public class CDMainApplication {
         try {
             CDMainApplication.jni_load();
 
-            final Toolkit d = Toolkit.getDefaultToolkit();
-
             // This method also makes a connection to the window server and completes other initialization.
             // Your program should invoke this method as one of the first statements in main();
             final NSApplication app = NSApplication.sharedApplication();
@@ -77,16 +73,13 @@ public class CDMainApplication {
                 log.fatal("Couldn't load " + c.getBundleName() + ".nib");
             }
 
-            //
+            // Must implement NSApplicationDelegate protocol
             app.setDelegate(c.id());
 
             // Starts the main event loop. The loop continues until a stop: or terminate: message is
             // received. Upon each iteration through the loop, the next available event
             // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.
-            //app.run();
-            synchronized(app) {
-                app.wait();
-            }
+            app.run();
         }
         finally {
             pool.drain();
@@ -108,7 +101,7 @@ public class CDMainApplication {
         Foundation.runOnMainThread(runnable);
     }
 
-    private static final String MAIN_THREAD_NAME = "AWT-AppKit";
+    private static final String MAIN_THREAD_NAME = "main";
 
     public static boolean isMainThread() {
         return Thread.currentThread().getName().equals(MAIN_THREAD_NAME);

@@ -136,7 +136,9 @@
             <key>WorkingDirectory</key>
             <string>$APP_PACKAGE/Contents/Resources/Java</string>
             <key>JVMVersion</key>
-            <string>1.6*</string>
+            <string>1.5+</string>
+            <key>StartOnMainThread</key>
+            <true/>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <string>YES</string>
