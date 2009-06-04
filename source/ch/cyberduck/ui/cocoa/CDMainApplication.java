@@ -19,12 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.cocoa.NSAutoreleasePool;
 
 /**
  * @version $Id:$
@@ -60,7 +60,7 @@ public class CDMainApplication {
      * @param arguments
      */
     public static void main(String[] arguments) throws InterruptedException {
-        final NSAutoreleasePool pool = NSAutoreleasePool.new_();
+        final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             CDMainApplication.jni_load();
 
@@ -103,6 +103,10 @@ public class CDMainApplication {
 
     private static final String MAIN_THREAD_NAME = "main";
 
+    /**
+     * 
+     * @return
+     */
     public static boolean isMainThread() {
         return Thread.currentThread().getName().equals(MAIN_THREAD_NAME);
     }
