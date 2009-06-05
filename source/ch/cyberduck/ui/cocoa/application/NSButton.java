@@ -25,7 +25,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.NSRect;
 
 /// <i>native declaration : :15</i>
-public abstract class NSButton implements NSControl {
+public abstract class NSButton extends NSControl {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButton", _Class.class);
 
     public static NSButton buttonWithFrame(NSRect frameRect) {

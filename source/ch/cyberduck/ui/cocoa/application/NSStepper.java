@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 /// <i>native declaration : :10</i>
-public interface NSStepper extends NSControl {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSStepper", _Class.class);
+public abstract class NSStepper extends NSControl {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSStepper", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSStepper alloc();
@@ -31,59 +31,59 @@ public interface NSStepper extends NSControl {
      * Original signature : <code>double minValue()</code><br>
      * <i>native declaration : :18</i>
      */
-    double minValue();
+    public abstract double minValue();
 
     /**
      * Original signature : <code>void setMinValue(double)</code><br>
      * <i>native declaration : :19</i>
      */
-    void setMinValue(double minValue);
+    public abstract void setMinValue(double minValue);
 
     /**
      * Original signature : <code>double maxValue()</code><br>
      * <i>native declaration : :21</i>
      */
-    double maxValue();
+    public abstract double maxValue();
 
     /**
      * Original signature : <code>void setMaxValue(double)</code><br>
      * <i>native declaration : :22</i>
      */
-    void setMaxValue(double maxValue);
+    public abstract void setMaxValue(double maxValue);
 
     /**
      * Original signature : <code>double increment()</code><br>
      * <i>native declaration : :24</i>
      */
-    double increment();
+    public abstract double increment();
 
     /**
      * Original signature : <code>void setIncrement(double)</code><br>
      * <i>native declaration : :25</i>
      */
-    void setIncrement(double increment);
+    public abstract void setIncrement(double increment);
 
     /**
      * Original signature : <code>BOOL valueWraps()</code><br>
      * <i>native declaration : :27</i>
      */
-    boolean valueWraps();
+    public abstract boolean valueWraps();
 
     /**
      * Original signature : <code>void setValueWraps(BOOL)</code><br>
      * <i>native declaration : :28</i>
      */
-    void setValueWraps(boolean valueWraps);
+    public abstract void setValueWraps(boolean valueWraps);
 
     /**
      * Original signature : <code>BOOL autorepeat()</code><br>
      * <i>native declaration : :30</i>
      */
-    boolean autorepeat();
+    public abstract boolean autorepeat();
 
     /**
      * Original signature : <code>void setAutorepeat(BOOL)</code><br>
      * <i>native declaration : :31</i>
      */
-    void setAutorepeat(boolean autorepeat);
+    public abstract void setAutorepeat(boolean autorepeat);
 }

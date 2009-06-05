@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import org.rococoa.cocoa.NSPoint;
 
 /// <i>native declaration : :32</i>
-public interface NSDraggingInfo extends NSObject {
+public interface NSDraggingInfo {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDraggingInfo", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {

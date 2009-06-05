@@ -27,7 +27,7 @@ import org.rococoa.cocoa.CGFloat;
 
 
 /// <i>native declaration : :74</i>
-public abstract class NSParagraphStyle implements NSObject, NSCopying, NSCoding {
+public abstract class NSParagraphStyle extends NSObject implements NSCopying, NSCoding {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSParagraphStyle", _Class.class);
 
     /// <i>native declaration : :12</i>

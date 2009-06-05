@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 
 import org.rococoa.Rococoa;
 
-public abstract class NSImageCell implements NSCell, NSCopying, NSCoding {
+public abstract class NSImageCell extends NSCell implements NSCopying, NSCoding {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImageCell", _Class.class);
 
     public static NSImageCell imageCell() {

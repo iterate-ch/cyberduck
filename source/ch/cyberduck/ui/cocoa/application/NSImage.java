@@ -27,7 +27,7 @@ import org.rococoa.cocoa.NSRect;
 import org.rococoa.cocoa.NSSize;
 
 /// <i>native declaration : :41</i>
-public abstract class NSImage implements NSObject, NSCopying, NSCoding {
+public abstract class NSImage extends NSObject implements NSCopying, NSCoding {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImage", _Class.class);
 
     /// <i>native declaration : :13</i>
@@ -60,9 +60,14 @@ public abstract class NSImage implements NSObject, NSCopying, NSCoding {
      * <i>native declaration : :25</i>
      */
     public static final int NSImageCacheNever = 3;
-    
+
     public static NSImage imageNamed(String name) {
-        return CLASS.imageNamed(name);
+        final NSImage image = CLASS.imageNamed(name);
+        if(null == image) {
+            return null;
+        }
+        image.retain();
+        return image;
     }
 
     public static NSImage imageWithData(NSData data) {
@@ -132,6 +137,7 @@ public abstract class NSImage implements NSObject, NSCopying, NSCoding {
      * Conversion Error : NSSize
      */
     public abstract NSImage initWithSize(NSSize aSize);
+
     /**
      * Original signature : <code>id initWithData(NSData*)</code><br>
      * When archived, saves contents<br>

@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public interface NSSecureTextField extends NSTextField {
+public abstract class NSSecureTextField extends NSTextField {
 }

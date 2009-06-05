@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :26</i>
-public abstract class NSSegmentedControl implements NSControl {
+public abstract class NSSegmentedControl extends NSControl {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSegmentedControl", _Class.class);
 
     @Override

@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 /// <i>native declaration : :10</i>
-public interface NSActionCell extends NSCell {
+public abstract class NSActionCell extends NSCell {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSActionCell", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
@@ -31,19 +31,19 @@ public interface NSActionCell extends NSCell {
      * Original signature : <code>NSView* controlView()</code><br>
      * <i>native declaration : :19</i>
      */
-    NSView controlView();
+    public abstract NSView controlView();
 
     /**
      * Original signature : <code>void setControlView(NSView*)</code><br>
      * <i>native declaration : :21</i>
      */
-    void setControlView(NSView view);
+    public abstract void setControlView(NSView view);
 
     /**
      * Original signature : <code>void setFont(NSFont*)</code><br>
      * <i>native declaration : :23</i>
      */
-    void setFont(NSFont fontObj);
+    public abstract void setFont(NSFont fontObj);
     /**
      * <i>native declaration : :24</i><br>
      * Conversion Error : /// Original signature : <code>void setAlignment(null)</code><br>
@@ -53,91 +53,91 @@ public interface NSActionCell extends NSCell {
      * Original signature : <code>void setBordered(BOOL)</code><br>
      * <i>native declaration : :25</i>
      */
-    void setBordered(boolean flag);
+    public abstract void setBordered(boolean flag);
 
     /**
      * Original signature : <code>void setBezeled(BOOL)</code><br>
      * <i>native declaration : :26</i>
      */
-    void setBezeled(boolean flag);
+    public abstract void setBezeled(boolean flag);
 
     /**
      * Original signature : <code>void setEnabled(BOOL)</code><br>
      * <i>native declaration : :27</i>
      */
-    void setEnabled(boolean flag);
+    public abstract void setEnabled(boolean flag);
 
     /**
      * Original signature : <code>void setFloatingPointFormat(BOOL, NSUInteger, NSUInteger)</code><br>
      * <i>native declaration : :28</i>
      */
-    void setFloatingPointFormat_left_right(boolean autoRange, int leftDigits, int rightDigits);
+    public abstract void setFloatingPointFormat_left_right(boolean autoRange, int leftDigits, int rightDigits);
 
     /**
      * Original signature : <code>void setImage(NSImage*)</code><br>
      * <i>native declaration : :29</i>
      */
-    void setImage(NSImage image);
+    public abstract void setImage(NSImage image);
 
     /**
      * Original signature : <code>id target()</code><br>
      * <i>native declaration : :30</i>
      */
-    org.rococoa.ID target();
+    public abstract org.rococoa.ID target();
 
     /**
      * Original signature : <code>void setTarget(id)</code><br>
      * <i>native declaration : :31</i>
      */
-    void setTarget(org.rococoa.ID anObject);
+    public abstract void setTarget(org.rococoa.ID anObject);
 
     /**
      * Original signature : <code>SEL action()</code><br>
      * <i>native declaration : :32</i>
      */
-    org.rococoa.Selector action();
+    public abstract org.rococoa.Selector action();
 
     /**
      * Original signature : <code>void setAction(SEL)</code><br>
      * <i>native declaration : :33</i>
      */
-    void setAction(org.rococoa.Selector aSelector);
+    public abstract void setAction(org.rococoa.Selector aSelector);
 
     /**
      * Original signature : <code>NSInteger tag()</code><br>
      * <i>native declaration : :34</i>
      */
-    int tag();
+    public abstract int tag();
 
     /**
      * Original signature : <code>void setTag(NSInteger)</code><br>
      * <i>native declaration : :35</i>
      */
-    void setTag(int anInt);
+    public abstract void setTag(int anInt);
 
     /**
      * Original signature : <code>NSString* stringValue()</code><br>
      * <i>native declaration : :36</i>
      */
-    String stringValue();
+    public abstract String stringValue();
 
     /**
      * Original signature : <code>int intValue()</code><br>
      * <i>native declaration : :37</i>
      */
-    int intValue();
+    public abstract int intValue();
 
     /**
      * Original signature : <code>float floatValue()</code><br>
      * <i>native declaration : :38</i>
      */
-    float floatValue();
+    public abstract float floatValue();
 
     /**
      * Original signature : <code>double doubleValue()</code><br>
      * <i>native declaration : :39</i>
      */
-    double doubleValue();
+    public abstract double doubleValue();
     /**
      * <i>native declaration : :40</i><br>
      * Conversion Error : id<NSCopying>
@@ -146,5 +146,5 @@ public interface NSActionCell extends NSCell {
      * Original signature : <code>NSInteger integerValue()</code><br>
      * <i>native declaration : :43</i>
      */
-    int integerValue();
+    public abstract int integerValue();
 }

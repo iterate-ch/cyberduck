@@ -21,13 +21,14 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.NSPoint;
 import org.rococoa.cocoa.NSRect;
 import org.rococoa.cocoa.NSSize;
 
 /// <i>native declaration : :119</i>
-public interface NSWindow extends NSObject {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSWindow", _Class.class);
+public abstract class NSWindow extends NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWindow", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         /**
@@ -90,13 +91,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>NSString* title()</code><br>
      * <i>native declaration : :230</i>
      */
-    String title();
+    public abstract String title();
 
     /**
      * Original signature : <code>void setTitle(NSString*)</code><br>
      * <i>native declaration : :231</i>
      */
-    void setTitle(String aString);
+    public abstract void setTitle(String aString);
 
     /**
      * setRepresentedURL:<br>
@@ -105,91 +106,91 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void setRepresentedURL(NSURL*)</code><br>
      * <i>native declaration : :237</i>
      */
-    void setRepresentedURL(NSURL url);
+    public abstract void setRepresentedURL(NSURL url);
 
     /**
      * Original signature : <code>NSURL* representedURL()</code><br>
      * <i>native declaration : :238</i>
      */
-    NSURL representedURL();
+    public abstract NSURL representedURL();
 
     /**
      * Original signature : <code>NSString* representedFilename()</code><br>
      * <i>native declaration : :240</i>
      */
-    String representedFilename();
+    public abstract String representedFilename();
 
     /**
      * Original signature : <code>void setRepresentedFilename(NSString*)</code><br>
      * <i>native declaration : :241</i>
      */
-    void setRepresentedFilename(String aString);
+    public abstract void setRepresentedFilename(String aString);
 
     /**
      * Original signature : <code>void setTitleWithRepresentedFilename(NSString*)</code><br>
      * <i>native declaration : :242</i>
      */
-    void setTitleWithRepresentedFilename(String filename);
+    public abstract void setTitleWithRepresentedFilename(String filename);
 
     /**
      * Original signature : <code>void setExcludedFromWindowsMenu(BOOL)</code><br>
      * <i>native declaration : :243</i>
      */
-    void setExcludedFromWindowsMenu(boolean flag);
+    public abstract void setExcludedFromWindowsMenu(boolean flag);
 
     /**
      * Original signature : <code>BOOL isExcludedFromWindowsMenu()</code><br>
      * <i>native declaration : :244</i>
      */
-    boolean isExcludedFromWindowsMenu();
+    public abstract boolean isExcludedFromWindowsMenu();
 
     /**
      * Original signature : <code>void setContentView(NSView*)</code><br>
      * <i>native declaration : :245</i>
      */
-    void setContentView(NSView aView);
+    public abstract void setContentView(NSView aView);
 
     /**
      * Original signature : <code>id contentView()</code><br>
      * <i>native declaration : :246</i>
      */
-    NSObject contentView();
+    public abstract NSObject contentView();
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>
      * <i>native declaration : :247</i>
      */
-    void setDelegate(org.rococoa.ID anObject);
+    public abstract void setDelegate(org.rococoa.ID anObject);
 
     /**
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :248</i>
      */
-    org.rococoa.ID delegate();
+    public abstract org.rococoa.ID delegate();
 
     /**
      * Original signature : <code>NSInteger windowNumber()</code><br>
      * <i>native declaration : :249</i>
      */
-    int windowNumber();
+    public abstract int windowNumber();
 
     /**
      * Original signature : <code>NSUInteger styleMask()</code><br>
      * <i>native declaration : :250</i>
      */
-    int styleMask();
+    public abstract int styleMask();
 
     /**
      * Original signature : <code>NSText* fieldEditor(BOOL, id)</code><br>
      * <i>native declaration : :251</i>
      */
-    com.sun.jna.Pointer fieldEditor_forObject(boolean createFlag, NSObject anObject);
+    public abstract com.sun.jna.Pointer fieldEditor_forObject(boolean createFlag, NSObject anObject);
 
     /**
      * Original signature : <code>void endEditingFor(id)</code><br>
      * <i>native declaration : :252</i>
      */
-    void endEditingFor(NSObject anObject);
+    public abstract void endEditingFor(NSObject anObject);
     /**
      * <i>native declaration : :254</i><br>
      * Conversion Error : NSRect
@@ -207,27 +208,27 @@ public interface NSWindow extends NSObject {
      * Conversion Error : /// Original signature : <code>void setFrameOrigin(null)</code><br>
      * - (void)setFrameOrigin:(null)aPoint; (Argument aPoint cannot be converted)
      */
-    void setFrameOrigin(NSPoint aPoint);
+    public abstract void setFrameOrigin(NSPoint aPoint);
 
     /**
      * <i>native declaration : :258</i><br>
      * Conversion Error : /// Original signature : <code>void setFrameTopLeftPoint(null)</code><br>
      * - (void)setFrameTopLeftPoint:(null)aPoint; (Argument aPoint cannot be converted)
      */
-    void setFrameTopLeftPoint(NSPoint aPoint);
+    public abstract void setFrameTopLeftPoint(NSPoint aPoint);
 
     /**
      * <i>native declaration : :259</i><br>
      * Conversion Error : /// Original signature : <code>cascadeTopLeftFromPoint(null)</code><br>
      * - (null)cascadeTopLeftFromPoint:(null)topLeftPoint; (Argument topLeftPoint cannot be converted)
      */
-    NSPoint cascadeTopLeftFromPoint(NSPoint topLeftPoint);
+    public abstract NSPoint cascadeTopLeftFromPoint(NSPoint topLeftPoint);
 
     /**
      * <i>native declaration : :260</i><br>
      * Conversion Error : NSRect
      */
-    NSRect frame();
+    public abstract NSRect frame();
     /**
      * <i>native declaration : :265</i><br>
      * Conversion Error : NSRect
@@ -241,13 +242,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void setShowsResizeIndicator(BOOL)</code><br>
      * <i>native declaration : :271</i>
      */
-    void setShowsResizeIndicator(boolean show);
+    public abstract void setShowsResizeIndicator(boolean show);
 
     /**
      * Original signature : <code>BOOL showsResizeIndicator()</code><br>
      * <i>native declaration : :272</i>
      */
-    boolean showsResizeIndicator();
+    public abstract boolean showsResizeIndicator();
     /**
      * <i>native declaration : :274</i><br>
      * Conversion Error : NSSize
@@ -284,163 +285,163 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void useOptimizedDrawing(BOOL)</code><br>
      * <i>native declaration : :286</i>
      */
-    void useOptimizedDrawing(boolean flag);
+    public abstract void useOptimizedDrawing(boolean flag);
 
     /**
      * Original signature : <code>void disableFlushWindow()</code><br>
      * <i>native declaration : :287</i>
      */
-    void disableFlushWindow();
+    public abstract void disableFlushWindow();
 
     /**
      * Original signature : <code>void enableFlushWindow()</code><br>
      * <i>native declaration : :288</i>
      */
-    void enableFlushWindow();
+    public abstract void enableFlushWindow();
 
     /**
      * Original signature : <code>BOOL isFlushWindowDisabled()</code><br>
      * <i>native declaration : :289</i>
      */
-    boolean isFlushWindowDisabled();
+    public abstract boolean isFlushWindowDisabled();
 
     /**
      * Original signature : <code>void flushWindow()</code><br>
      * <i>native declaration : :290</i>
      */
-    void flushWindow();
+    public abstract void flushWindow();
 
     /**
      * Original signature : <code>void flushWindowIfNeeded()</code><br>
      * <i>native declaration : :291</i>
      */
-    void flushWindowIfNeeded();
+    public abstract void flushWindowIfNeeded();
 
     /**
      * Original signature : <code>void setViewsNeedDisplay(BOOL)</code><br>
      * <i>native declaration : :292</i>
      */
-    void setViewsNeedDisplay(boolean flag);
+    public abstract void setViewsNeedDisplay(boolean flag);
 
     /**
      * Original signature : <code>BOOL viewsNeedDisplay()</code><br>
      * <i>native declaration : :293</i>
      */
-    boolean viewsNeedDisplay();
+    public abstract boolean viewsNeedDisplay();
 
     /**
      * Original signature : <code>void displayIfNeeded()</code><br>
      * <i>native declaration : :294</i>
      */
-    void displayIfNeeded();
+    public abstract void displayIfNeeded();
 
     /**
      * Original signature : <code>void display()</code><br>
      * <i>native declaration : :295</i>
      */
-    void display();
+    public abstract void display();
 
     /**
      * Original signature : <code>void setAutodisplay(BOOL)</code><br>
      * <i>native declaration : :296</i>
      */
-    void setAutodisplay(boolean flag);
+    public abstract void setAutodisplay(boolean flag);
 
     /**
      * Original signature : <code>BOOL isAutodisplay()</code><br>
      * <i>native declaration : :297</i>
      */
-    boolean isAutodisplay();
+    public abstract boolean isAutodisplay();
 
     /**
      * Original signature : <code>BOOL preservesContentDuringLiveResize()</code><br>
      * <i>native declaration : :300</i>
      */
-    boolean preservesContentDuringLiveResize();
+    public abstract boolean preservesContentDuringLiveResize();
 
     /**
      * Original signature : <code>void setPreservesContentDuringLiveResize(BOOL)</code><br>
      * <i>native declaration : :301</i>
      */
-    void setPreservesContentDuringLiveResize(boolean flag);
+    public abstract void setPreservesContentDuringLiveResize(boolean flag);
 
     /**
      * Original signature : <code>void update()</code><br>
      * <i>native declaration : :304</i>
      */
-    void update();
+    public abstract void update();
 
     /**
      * Original signature : <code>BOOL makeFirstResponder(NSResponder*)</code><br>
      * <i>native declaration : :305</i>
      */
-    boolean makeFirstResponder(NSResponder aResponder);
+    public abstract boolean makeFirstResponder(NSResponder aResponder);
 
     /**
      * Original signature : <code>NSResponder* firstResponder()</code><br>
      * <i>native declaration : :306</i>
      */
-    NSResponder firstResponder();
+    public abstract NSResponder firstResponder();
 
     /**
      * Original signature : <code>NSInteger resizeFlags()</code><br>
      * <i>native declaration : :307</i>
      */
-    int resizeFlags();
+    public abstract int resizeFlags();
 
     /**
      * Original signature : <code>void keyDown(NSEvent*)</code><br>
      * <i>native declaration : :308</i>
      */
-    void keyDown(NSEvent event);
+    public abstract void keyDown(NSEvent event);
 
     /**
      * Original signature : <code>void close()</code><br>
      * <i>native declaration : :309</i>
      */
-    void close();
+    public abstract void close();
 
     /**
      * Original signature : <code>void setReleasedWhenClosed(BOOL)</code><br>
      * <i>native declaration : :310</i>
      */
-    void setReleasedWhenClosed(boolean flag);
+    public abstract void setReleasedWhenClosed(boolean flag);
 
     /**
      * Original signature : <code>BOOL isReleasedWhenClosed()</code><br>
      * <i>native declaration : :311</i>
      */
-    boolean isReleasedWhenClosed();
+    public abstract boolean isReleasedWhenClosed();
 
     /**
      * Original signature : <code>void miniaturize(id)</code><br>
      * <i>native declaration : :312</i>
      */
-    void miniaturize(NSObject sender);
+    public abstract void miniaturize(NSObject sender);
 
     /**
      * Original signature : <code>void deminiaturize(id)</code><br>
      * <i>native declaration : :313</i>
      */
-    void deminiaturize(NSObject sender);
+    public abstract void deminiaturize(NSObject sender);
 
     /**
      * Original signature : <code>BOOL isZoomed()</code><br>
      * <i>native declaration : :314</i>
      */
-    boolean isZoomed();
+    public abstract boolean isZoomed();
 
     /**
      * Original signature : <code>void zoom(id)</code><br>
      * <i>native declaration : :315</i>
      */
-    void zoom(NSObject sender);
+    public abstract void zoom(NSObject sender);
 
     /**
      * Original signature : <code>BOOL isMiniaturized()</code><br>
      * <i>native declaration : :316</i>
      */
-    boolean isMiniaturized();
+    public abstract boolean isMiniaturized();
     /**
      * <i>native declaration : :317</i><br>
      * Conversion Error : /// Original signature : <code>BOOL tryToPerform(null, id)</code><br>
@@ -450,19 +451,19 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>id validRequestorForSendType(NSString*, NSString*)</code><br>
      * <i>native declaration : :318</i>
      */
-    NSObject validRequestorForSendType_returnType(com.sun.jna.Pointer sendType, com.sun.jna.Pointer returnType);
+    public abstract NSObject validRequestorForSendType_returnType(com.sun.jna.Pointer sendType, com.sun.jna.Pointer returnType);
 
     /**
      * Original signature : <code>void setBackgroundColor(NSColor*)</code><br>
      * <i>native declaration : :319</i>
      */
-    void setBackgroundColor(NSColor color);
+    public abstract void setBackgroundColor(NSColor color);
 
     /**
      * Original signature : <code>NSColor* backgroundColor()</code><br>
      * <i>native declaration : :320</i>
      */
-    NSColor backgroundColor();
+    public abstract NSColor backgroundColor();
     /**
      * <i>native declaration : :323</i><br>
      * Conversion Error : /// Original signature : <code>void setContentBorderThickness(CGFloat, null)</code><br>
@@ -487,68 +488,68 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void setMovableByWindowBackground(BOOL)</code><br>
      * <i>native declaration : :331</i>
      */
-    void setMovableByWindowBackground(boolean flag);
+    public abstract void setMovableByWindowBackground(boolean flag);
 
     /**
      * Original signature : <code>BOOL isMovableByWindowBackground()</code><br>
      * <i>native declaration : :332</i>
      */
-    boolean isMovableByWindowBackground();
+    public abstract boolean isMovableByWindowBackground();
 
     /**
      * Original signature : <code>void setHidesOnDeactivate(BOOL)</code><br>
      * <i>native declaration : :335</i>
      */
-    void setHidesOnDeactivate(boolean flag);
+    public abstract void setHidesOnDeactivate(boolean flag);
 
     /**
      * Original signature : <code>BOOL hidesOnDeactivate()</code><br>
      * <i>native declaration : :336</i>
      */
-    boolean hidesOnDeactivate();
+    public abstract boolean hidesOnDeactivate();
 
     /**
      * indicate whether a window can be hidden during -[NSApplication hide:].  Default is YES<br>
      * Original signature : <code>void setCanHide(BOOL)</code><br>
      * <i>native declaration : :339</i>
      */
-    void setCanHide(boolean flag);
+    public abstract void setCanHide(boolean flag);
 
     /**
      * Original signature : <code>BOOL canHide()</code><br>
      * <i>native declaration : :340</i>
      */
-    boolean canHide();
+    public abstract boolean canHide();
 
     /**
      * Original signature : <code>void center()</code><br>
      * <i>native declaration : :342</i>
      */
-    void center();
+    public abstract void center();
 
     /**
      * Original signature : <code>void makeKeyAndOrderFront(id)</code><br>
      * <i>native declaration : :343</i>
      */
-    void makeKeyAndOrderFront(NSObject sender);
+    public abstract void makeKeyAndOrderFront(NSObject sender);
 
     /**
      * Original signature : <code>void orderFront(id)</code><br>
      * <i>native declaration : :344</i>
      */
-    void orderFront(NSObject sender);
+    public abstract void orderFront(NSObject sender);
 
     /**
      * Original signature : <code>void orderBack(id)</code><br>
      * <i>native declaration : :345</i>
      */
-    void orderBack(NSObject sender);
+    public abstract void orderBack(NSObject sender);
 
     /**
      * Original signature : <code>void orderOut(id)</code><br>
      * <i>native declaration : :346</i>
      */
-    void orderOut(NSObject sender);
+    public abstract void orderOut(NSObject sender);
     /**
      * <i>native declaration : :347</i><br>
      * Conversion Error : /// Original signature : <code>void orderWindow(null, NSInteger)</code><br>
@@ -558,121 +559,121 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void orderFrontRegardless()</code><br>
      * <i>native declaration : :348</i>
      */
-    void orderFrontRegardless();
+    public abstract void orderFrontRegardless();
 
     /**
      * Original signature : <code>void setMiniwindowImage(NSImage*)</code><br>
      * <i>native declaration : :350</i>
      */
-    void setMiniwindowImage(NSImage image);
+    public abstract void setMiniwindowImage(NSImage image);
 
     /**
      * Original signature : <code>void setMiniwindowTitle(NSString*)</code><br>
      * <i>native declaration : :351</i>
      */
-    void setMiniwindowTitle(String title);
+    public abstract void setMiniwindowTitle(String title);
 
     /**
      * Original signature : <code>NSImage* miniwindowImage()</code><br>
      * <i>native declaration : :352</i>
      */
-    NSImage miniwindowImage();
+    public abstract NSImage miniwindowImage();
 
     /**
      * Original signature : <code>NSString* miniwindowTitle()</code><br>
      * <i>native declaration : :353</i>
      */
-    String miniwindowTitle();
+    public abstract String miniwindowTitle();
 
     /**
      * Original signature : <code>NSDockTile* dockTile()</code><br>
      * <i>native declaration : :356</i>
      */
-    com.sun.jna.Pointer dockTile();
+    public abstract com.sun.jna.Pointer dockTile();
 
     /**
      * Original signature : <code>void setDocumentEdited(BOOL)</code><br>
      * <i>native declaration : :359</i>
      */
-    void setDocumentEdited(boolean flag);
+    public abstract void setDocumentEdited(boolean flag);
 
     /**
      * Original signature : <code>BOOL isDocumentEdited()</code><br>
      * <i>native declaration : :360</i>
      */
-    boolean isDocumentEdited();
+    public abstract boolean isDocumentEdited();
 
     /**
      * Original signature : <code>BOOL isVisible()</code><br>
      * <i>native declaration : :361</i>
      */
-    boolean isVisible();
+    public abstract boolean isVisible();
 
     /**
      * Original signature : <code>BOOL isKeyWindow()</code><br>
      * <i>native declaration : :362</i>
      */
-    boolean isKeyWindow();
+    public abstract boolean isKeyWindow();
 
     /**
      * Original signature : <code>BOOL isMainWindow()</code><br>
      * <i>native declaration : :363</i>
      */
-    boolean isMainWindow();
+    public abstract boolean isMainWindow();
 
     /**
      * Original signature : <code>BOOL canBecomeKeyWindow()</code><br>
      * <i>native declaration : :364</i>
      */
-    boolean canBecomeKeyWindow();
+    public abstract boolean canBecomeKeyWindow();
 
     /**
      * Original signature : <code>BOOL canBecomeMainWindow()</code><br>
      * <i>native declaration : :365</i>
      */
-    boolean canBecomeMainWindow();
+    public abstract boolean canBecomeMainWindow();
 
     /**
      * Original signature : <code>void makeKeyWindow()</code><br>
      * <i>native declaration : :366</i>
      */
-    void makeKeyWindow();
+    public abstract void makeKeyWindow();
 
     /**
      * Original signature : <code>void makeMainWindow()</code><br>
      * <i>native declaration : :367</i>
      */
-    void makeMainWindow();
+    public abstract void makeMainWindow();
 
     /**
      * Original signature : <code>void becomeKeyWindow()</code><br>
      * <i>native declaration : :368</i>
      */
-    void becomeKeyWindow();
+    public abstract void becomeKeyWindow();
 
     /**
      * Original signature : <code>void resignKeyWindow()</code><br>
      * <i>native declaration : :369</i>
      */
-    void resignKeyWindow();
+    public abstract void resignKeyWindow();
 
     /**
      * Original signature : <code>void becomeMainWindow()</code><br>
      * <i>native declaration : :370</i>
      */
-    void becomeMainWindow();
+    public abstract void becomeMainWindow();
 
     /**
      * Original signature : <code>void resignMainWindow()</code><br>
      * <i>native declaration : :371</i>
      */
-    void resignMainWindow();
+    public abstract void resignMainWindow();
 
     /**
      * Original signature : <code>BOOL worksWhenModal()</code><br>
      * <i>native declaration : :373</i>
      */
-    boolean worksWhenModal();
+    public abstract boolean worksWhenModal();
     /**
      * <i>native declaration : :374</i><br>
      * Conversion Error : /// Original signature : <code>convertBaseToScreen(null)</code><br>
@@ -687,37 +688,37 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void performClose(id)</code><br>
      * <i>native declaration : :376</i>
      */
-    void performClose(NSObject sender);
+    public abstract void performClose(NSObject sender);
 
     /**
      * Original signature : <code>void performMiniaturize(id)</code><br>
      * <i>native declaration : :377</i>
      */
-    void performMiniaturize(NSObject sender);
+    public abstract void performMiniaturize(NSObject sender);
 
     /**
      * Original signature : <code>void performZoom(id)</code><br>
      * <i>native declaration : :378</i>
      */
-    void performZoom(NSObject sender);
+    public abstract void performZoom(NSObject sender);
 
     /**
      * Original signature : <code>NSInteger gState()</code><br>
      * <i>native declaration : :379</i>
      */
-    int gState();
+    public abstract int gState();
 
     /**
      * Original signature : <code>void setOneShot(BOOL)</code><br>
      * <i>native declaration : :380</i>
      */
-    void setOneShot(boolean flag);
+    public abstract void setOneShot(boolean flag);
 
     /**
      * Original signature : <code>BOOL isOneShot()</code><br>
      * <i>native declaration : :381</i>
      */
-    boolean isOneShot();
+    public abstract boolean isOneShot();
     /**
      * <i>native declaration : :382</i><br>
      * Conversion Error : NSRect
@@ -730,55 +731,55 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void print(id)</code><br>
      * <i>native declaration : :384</i>
      */
-    void print(NSObject sender);
+    public abstract void print(NSObject sender);
 
     /**
      * Original signature : <code>void disableCursorRects()</code><br>
      * <i>native declaration : :386</i>
      */
-    void disableCursorRects();
+    public abstract void disableCursorRects();
 
     /**
      * Original signature : <code>void enableCursorRects()</code><br>
      * <i>native declaration : :387</i>
      */
-    void enableCursorRects();
+    public abstract void enableCursorRects();
 
     /**
      * Original signature : <code>void discardCursorRects()</code><br>
      * <i>native declaration : :388</i>
      */
-    void discardCursorRects();
+    public abstract void discardCursorRects();
 
     /**
      * Original signature : <code>BOOL areCursorRectsEnabled()</code><br>
      * <i>native declaration : :389</i>
      */
-    boolean areCursorRectsEnabled();
+    public abstract boolean areCursorRectsEnabled();
 
     /**
      * Original signature : <code>void invalidateCursorRectsForView(NSView*)</code><br>
      * <i>native declaration : :390</i>
      */
-    void invalidateCursorRectsForView(com.sun.jna.Pointer aView);
+    public abstract void invalidateCursorRectsForView(com.sun.jna.Pointer aView);
 
     /**
      * Original signature : <code>void resetCursorRects()</code><br>
      * <i>native declaration : :391</i>
      */
-    void resetCursorRects();
+    public abstract void resetCursorRects();
 
     /**
      * Original signature : <code>void setAllowsToolTipsWhenApplicationIsInactive(BOOL)</code><br>
      * <i>native declaration : :394</i>
      */
-    void setAllowsToolTipsWhenApplicationIsInactive(boolean allowWhenInactive);
+    public abstract void setAllowsToolTipsWhenApplicationIsInactive(boolean allowWhenInactive);
 
     /**
      * Original signature : <code>BOOL allowsToolTipsWhenApplicationIsInactive()</code><br>
      * <i>native declaration : :397</i>
      */
-    boolean allowsToolTipsWhenApplicationIsInactive();
+    public abstract boolean allowsToolTipsWhenApplicationIsInactive();
     /**
      * <i>native declaration : :401</i><br>
      * Conversion Error : /// Original signature : <code>void setBackingType(null)</code><br>
@@ -788,19 +789,19 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>backingType()</code><br>
      * <i>native declaration : :402</i>
      */
-    NSObject backingType();
+    public abstract NSObject backingType();
 
     /**
      * Original signature : <code>void setLevel(NSInteger)</code><br>
      * <i>native declaration : :403</i>
      */
-    void setLevel(int newLevel);
+    public abstract void setLevel(int newLevel);
 
     /**
      * Original signature : <code>NSInteger level()</code><br>
      * <i>native declaration : :404</i>
      */
-    int level();
+    public abstract int level();
     /**
      * <i>native declaration : :405</i><br>
      * Conversion Error : /// Original signature : <code>void setDepthLimit(null)</code><br>
@@ -810,212 +811,212 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>depthLimit()</code><br>
      * <i>native declaration : :406</i>
      */
-    NSObject depthLimit();
+    public abstract NSObject depthLimit();
 
     /**
      * Original signature : <code>void setDynamicDepthLimit(BOOL)</code><br>
      * <i>native declaration : :407</i>
      */
-    void setDynamicDepthLimit(boolean flag);
+    public abstract void setDynamicDepthLimit(boolean flag);
 
     /**
      * Original signature : <code>BOOL hasDynamicDepthLimit()</code><br>
      * <i>native declaration : :408</i>
      */
-    boolean hasDynamicDepthLimit();
+    public abstract boolean hasDynamicDepthLimit();
 
     /**
      * Original signature : <code>NSScreen* screen()</code><br>
      * <i>native declaration : :409</i>
      */
-    com.sun.jna.Pointer screen();
+    public abstract com.sun.jna.Pointer screen();
 
     /**
      * Original signature : <code>NSScreen* deepestScreen()</code><br>
      * <i>native declaration : :410</i>
      */
-    com.sun.jna.Pointer deepestScreen();
+    public abstract com.sun.jna.Pointer deepestScreen();
 
     /**
      * Original signature : <code>BOOL canStoreColor()</code><br>
      * <i>native declaration : :411</i>
      */
-    boolean canStoreColor();
+    public abstract boolean canStoreColor();
 
     /**
      * Original signature : <code>void setHasShadow(BOOL)</code><br>
      * <i>native declaration : :412</i>
      */
-    void setHasShadow(boolean hasShadow);
+    public abstract void setHasShadow(boolean hasShadow);
 
     /**
      * Original signature : <code>BOOL hasShadow()</code><br>
      * <i>native declaration : :413</i>
      */
-    boolean hasShadow();
+    public abstract boolean hasShadow();
 
     /**
      * Original signature : <code>void invalidateShadow()</code><br>
      * <i>native declaration : :415</i>
      */
-    void invalidateShadow();
+    public abstract void invalidateShadow();
 
     /**
      * Original signature : <code>void setAlphaValue(CGFloat)</code><br>
      * <i>native declaration : :417</i>
      */
-    void setAlphaValue(float windowAlpha);
+    public abstract void setAlphaValue(float windowAlpha);
 
     /**
      * Original signature : <code>CGFloat alphaValue()</code><br>
      * <i>native declaration : :418</i>
      */
-    float alphaValue();
+    public abstract CGFloat alphaValue();
 
     /**
      * Original signature : <code>void setOpaque(BOOL)</code><br>
      * <i>native declaration : :419</i>
      */
-    void setOpaque(boolean isOpaque);
+    public abstract void setOpaque(boolean isOpaque);
 
     /**
      * Original signature : <code>BOOL isOpaque()</code><br>
      * <i>native declaration : :420</i>
      */
-    boolean isOpaque();
+    public abstract boolean isOpaque();
 
     /**
      * -setSharingType: specifies whether the window content can be read and/or written from another process.  The default sharing type is NSWindowSharingReadOnly, which means other processes can read the window content (eg. for window capture) but cannot modify it.  If you set your window sharing type to NSWindowSharingNone, so that the content cannot be captured, your window will also not be able to participate in a number of system services, so this setting should be used with caution.  If you set your window sharing type to NSWindowSharingReadWrite, other processes can both read and modify the window content.<br>
      * Original signature : <code>void setSharingType(NSWindowSharingType)</code><br>
      * <i>native declaration : :426</i>
      */
-    void setSharingType(int type);
+    public abstract void setSharingType(int type);
 
     /**
      * Original signature : <code>NSWindowSharingType sharingType()</code><br>
      * <i>native declaration : :427</i>
      */
-    int sharingType();
+    public abstract int sharingType();
 
     /**
      * -setPreferredBackingLocation: sets the preferred location for the window backing store.  In general, you should not use this API unless indicated by performance measurement.<br>
      * Original signature : <code>void setPreferredBackingLocation(NSWindowBackingLocation)</code><br>
      * <i>native declaration : :431</i>
      */
-    void setPreferredBackingLocation(int backingLocation);
+    public abstract void setPreferredBackingLocation(int backingLocation);
 
     /**
      * -preferredBackingLocation gets the preferred location for the window backing store.  This may be different from the actual location.<br>
      * Original signature : <code>NSWindowBackingLocation preferredBackingLocation()</code><br>
      * <i>native declaration : :434</i>
      */
-    int preferredBackingLocation();
+    public abstract int preferredBackingLocation();
 
     /**
      * -backingLocation gets the current location of the window backing store.<br>
      * Original signature : <code>NSWindowBackingLocation backingLocation()</code><br>
      * <i>native declaration : :437</i>
      */
-    int backingLocation();
+    public abstract int backingLocation();
 
     /**
      * Original signature : <code>BOOL displaysWhenScreenProfileChanges()</code><br>
      * <i>native declaration : :442</i>
      */
-    boolean displaysWhenScreenProfileChanges();
+    public abstract boolean displaysWhenScreenProfileChanges();
 
     /**
      * Original signature : <code>void setDisplaysWhenScreenProfileChanges(BOOL)</code><br>
      * <i>native declaration : :443</i>
      */
-    void setDisplaysWhenScreenProfileChanges(boolean flag);
+    public abstract void setDisplaysWhenScreenProfileChanges(boolean flag);
 
     /**
      * Original signature : <code>void disableScreenUpdatesUntilFlush()</code><br>
      * <i>native declaration : :445</i>
      */
-    void disableScreenUpdatesUntilFlush();
+    public abstract void disableScreenUpdatesUntilFlush();
 
     /**
      * This API controls whether the receiver is permitted onscreen before the user has logged in.  This property is off by default.  Alert panels and windows presented by input managers are examples of windows which should have this property set.<br>
      * Original signature : <code>BOOL canBecomeVisibleWithoutLogin()</code><br>
      * <i>native declaration : :451</i>
      */
-    boolean canBecomeVisibleWithoutLogin();
+    public abstract boolean canBecomeVisibleWithoutLogin();
 
     /**
      * Original signature : <code>void setCanBecomeVisibleWithoutLogin(BOOL)</code><br>
      * <i>native declaration : :452</i>
      */
-    void setCanBecomeVisibleWithoutLogin(boolean flag);
+    public abstract void setCanBecomeVisibleWithoutLogin(boolean flag);
 
     /**
      * Original signature : <code>void setCollectionBehavior(NSWindowCollectionBehavior)</code><br>
      * <i>native declaration : :455</i>
      */
-    void setCollectionBehavior(int behavior);
+    public abstract void setCollectionBehavior(int behavior);
 
     /**
      * Original signature : <code>NSWindowCollectionBehavior collectionBehavior()</code><br>
      * <i>native declaration : :456</i>
      */
-    int collectionBehavior();
+    public abstract int collectionBehavior();
 
     /**
      * -setCanBeVisibleOnAllSpaces: controls whether a window can be visible on all spaces (YES) or is associated with one space at a time (NO).  The default setting is NO.<br>
      * Original signature : <code>BOOL canBeVisibleOnAllSpaces()</code><br>
      * <i>native declaration : :462</i>
      */
-    boolean canBeVisibleOnAllSpaces();
+    public abstract boolean canBeVisibleOnAllSpaces();
 
     /**
      * Original signature : <code>void setCanBeVisibleOnAllSpaces(BOOL)</code><br>
      * <i>native declaration : :463</i>
      */
-    void setCanBeVisibleOnAllSpaces(boolean flag);
+    public abstract void setCanBeVisibleOnAllSpaces(boolean flag);
 
     /**
      * Original signature : <code>NSString* stringWithSavedFrame()</code><br>
      * <i>native declaration : :465</i>
      */
-    String stringWithSavedFrame();
+    public abstract String stringWithSavedFrame();
 
     /**
      * Original signature : <code>void setFrameFromString(NSString*)</code><br>
      * <i>native declaration : :466</i>
      */
-    void setFrameFromString(String string);
+    public abstract void setFrameFromString(String string);
 
     /**
      * Original signature : <code>void saveFrameUsingName(NSString*)</code><br>
      * <i>native declaration : :467</i>
      */
-    void saveFrameUsingName(String name);
+    public abstract void saveFrameUsingName(String name);
 
     /**
      * Set force=YES to use setFrameUsingName on a non-resizable window<br>
      * Original signature : <code>BOOL setFrameUsingName(NSString*, BOOL)</code><br>
      * <i>native declaration : :469</i>
      */
-    boolean setFrameUsingName_force(String name, boolean force);
+    public abstract boolean setFrameUsingName_force(String name, boolean force);
 
     /**
      * Original signature : <code>BOOL setFrameUsingName(NSString*)</code><br>
      * <i>native declaration : :470</i>
      */
-    boolean setFrameUsingName(String name);
+    public abstract boolean setFrameUsingName(String name);
 
     /**
      * Original signature : <code>BOOL setFrameAutosaveName(NSString*)</code><br>
      * <i>native declaration : :471</i>
      */
-    boolean setFrameAutosaveName(String name);
+    public abstract boolean setFrameAutosaveName(String name);
 
     /**
      * Original signature : <code>NSString* frameAutosaveName()</code><br>
      * <i>native declaration : :472</i>
      */
-    String frameAutosaveName();
+    public abstract String frameAutosaveName();
     /**
      * <i>native declaration : :476</i><br>
      * Conversion Error : NSRect
@@ -1024,13 +1025,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void restoreCachedImage()</code><br>
      * <i>native declaration : :477</i>
      */
-    void restoreCachedImage();
+    public abstract void restoreCachedImage();
 
     /**
      * Original signature : <code>void discardCachedImage()</code><br>
      * <i>native declaration : :478</i>
      */
-    void discardCachedImage();
+    public abstract void discardCachedImage();
     /**
      * <i>native declaration : :480</i><br>
      * Conversion Error : NSSize
@@ -1039,19 +1040,19 @@ public interface NSWindow extends NSObject {
      * <i>native declaration : :481</i><br>
      * Conversion Error : NSSize
      */
-    NSSize maxSize();
+    public abstract NSSize maxSize();
 
     /**
      * <i>native declaration : :482</i><br>
      * Conversion Error : NSSize
      */
-    void setMinSize(NSSize size);
+    public abstract void setMinSize(NSSize size);
 
     /**
      * <i>native declaration : :483</i><br>
      * Conversion Error : NSSize
      */
-    void setMaxSize(NSSize size);
+    public abstract void setMaxSize(NSSize size);
     /**
      * <i>native declaration : :485</i><br>
      * Conversion Error : NSSize
@@ -1072,103 +1073,103 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>NSEvent* nextEventMatchingMask(NSUInteger)</code><br>
      * <i>native declaration : :490</i>
      */
-    NSEvent nextEventMatchingMask(int mask);
+    public abstract NSEvent nextEventMatchingMask(int mask);
 
     /**
      * Original signature : <code>NSEvent* nextEventMatchingMask(NSUInteger, NSDate*, NSString*, BOOL)</code><br>
      * <i>native declaration : :491</i>
      */
-    NSEvent nextEventMatchingMask_untilDate_inMode_dequeue(int mask, NSDate expiration, String mode, boolean deqFlag);
+    public abstract NSEvent nextEventMatchingMask_untilDate_inMode_dequeue(int mask, NSDate expiration, String mode, boolean deqFlag);
 
     /**
      * Original signature : <code>void discardEventsMatchingMask(NSUInteger, NSEvent*)</code><br>
      * <i>native declaration : :492</i>
      */
-    void discardEventsMatchingMask_beforeEvent(int mask, com.sun.jna.Pointer lastEvent);
+    public abstract void discardEventsMatchingMask_beforeEvent(int mask, com.sun.jna.Pointer lastEvent);
 
     /**
      * Original signature : <code>void postEvent(NSEvent*, BOOL)</code><br>
      * <i>native declaration : :493</i>
      */
-    void postEvent_atStart(NSEvent event, boolean flag);
+    public abstract void postEvent_atStart(NSEvent event, boolean flag);
 
     /**
      * Original signature : <code>NSEvent* currentEvent()</code><br>
      * <i>native declaration : :494</i>
      */
-    NSEvent currentEvent();
+    public abstract NSEvent currentEvent();
 
     /**
      * Original signature : <code>void setAcceptsMouseMovedEvents(BOOL)</code><br>
      * <i>native declaration : :495</i>
      */
-    void setAcceptsMouseMovedEvents(boolean flag);
+    public abstract void setAcceptsMouseMovedEvents(boolean flag);
 
     /**
      * Original signature : <code>BOOL acceptsMouseMovedEvents()</code><br>
      * <i>native declaration : :496</i>
      */
-    boolean acceptsMouseMovedEvents();
+    public abstract boolean acceptsMouseMovedEvents();
 
     /**
      * Original signature : <code>void setIgnoresMouseEvents(BOOL)</code><br>
      * <i>native declaration : :498</i>
      */
-    void setIgnoresMouseEvents(boolean flag);
+    public abstract void setIgnoresMouseEvents(boolean flag);
 
     /**
      * Original signature : <code>BOOL ignoresMouseEvents()</code><br>
      * <i>native declaration : :499</i>
      */
-    boolean ignoresMouseEvents();
+    public abstract boolean ignoresMouseEvents();
 
     /**
      * Original signature : <code>NSDictionary* deviceDescription()</code><br>
      * <i>native declaration : :501</i>
      */
-    NSDictionary deviceDescription();
+    public abstract NSDictionary deviceDescription();
 
     /**
      * Original signature : <code>void sendEvent(NSEvent*)</code><br>
      * <i>native declaration : :502</i>
      */
-    void sendEvent(NSEvent theEvent);
+    public abstract void sendEvent(NSEvent theEvent);
 
     /**
      * Original signature : <code>mouseLocationOutsideOfEventStream()</code><br>
      * <i>native declaration : :503</i>
      */
-    NSObject mouseLocationOutsideOfEventStream();
+    public abstract NSObject mouseLocationOutsideOfEventStream();
 
     /**
      * Original signature : <code>id windowController()</code><br>
      * <i>native declaration : :506</i>
      */
-    NSObject windowController();
+    public abstract NSObject windowController();
 
     /**
      * Original signature : <code>void setWindowController(NSWindowController*)</code><br>
      * <i>native declaration : :507</i>
      */
-    void setWindowController(NSObject windowController);
+    public abstract void setWindowController(NSObject windowController);
 
     /**
      * Original signature : <code>BOOL isSheet()</code><br>
      * <i>native declaration : :509</i>
      */
-    boolean isSheet();
+    public abstract boolean isSheet();
 
     /**
      * Original signature : <code>NSWindow* attachedSheet()</code><br>
      * <i>native declaration : :510</i>
      */
-    NSWindow attachedSheet();
+    public abstract NSWindow attachedSheet();
 
     /**
      * Original signature : <code>NSButton* standardWindowButton(NSWindowButton)</code><br>
      * <i>native declaration : :514</i>
      */
-    NSButton standardWindowButton(int b);
+    public abstract NSButton standardWindowButton(int b);
     /**
      * <i>native declaration : :518</i><br>
      * Conversion Error : /// Original signature : <code>void addChildWindow(NSWindow*, null)</code><br>
@@ -1178,159 +1179,159 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void removeChildWindow(NSWindow*)</code><br>
      * <i>native declaration : :519</i>
      */
-    void removeChildWindow(NSWindow childWin);
+    public abstract void removeChildWindow(NSWindow childWin);
 
     /**
      * Original signature : <code>NSArray* childWindows()</code><br>
      * <i>native declaration : :520</i>
      */
-    NSArray childWindows();
+    public abstract NSArray childWindows();
 
     /**
      * Original signature : <code>NSWindow* parentWindow()</code><br>
      * <i>native declaration : :522</i>
      */
-    NSWindow parentWindow();
+    public abstract NSWindow parentWindow();
 
     /**
      * Original signature : <code>void setParentWindow(NSWindow*)</code><br>
      * <i>native declaration : :523</i>
      */
-    void setParentWindow(NSWindow window);
+    public abstract void setParentWindow(NSWindow window);
 
     /**
      * Returns NSGraphicsContext used to render the receiver's content on the screen for the calling thread.<br>
      * Original signature : <code>NSGraphicsContext* graphicsContext()</code><br>
      * <i>native declaration : :529</i>
      */
-    com.sun.jna.Pointer graphicsContext();
+    public abstract com.sun.jna.Pointer graphicsContext();
 
     /**
      * Returns scale factor applied to view coordinate system to get to base coordinate system of window<br>
      * Original signature : <code>CGFloat userSpaceScaleFactor()</code><br>
      * <i>native declaration : :533</i>
      */
-    float userSpaceScaleFactor();
+    public abstract float userSpaceScaleFactor();
 
     /**
      * Original signature : <code>void setInitialFirstResponder(NSView*)</code><br>
      * <i>from NSKeyboardUI native declaration : :539</i>
      */
-    void setInitialFirstResponder(NSView view);
+    public abstract void setInitialFirstResponder(NSView view);
 
     /**
      * Original signature : <code>NSView* initialFirstResponder()</code><br>
      * <i>from NSKeyboardUI native declaration : :540</i>
      */
-    NSView initialFirstResponder();
+    public abstract NSView initialFirstResponder();
 
     /**
      * Original signature : <code>void selectNextKeyView(id)</code><br>
      * <i>from NSKeyboardUI native declaration : :541</i>
      */
-    void selectNextKeyView(NSObject sender);
+    public abstract void selectNextKeyView(NSObject sender);
 
     /**
      * Original signature : <code>void selectPreviousKeyView(id)</code><br>
      * <i>from NSKeyboardUI native declaration : :542</i>
      */
-    void selectPreviousKeyView(NSObject sender);
+    public abstract void selectPreviousKeyView(NSObject sender);
 
     /**
      * Original signature : <code>void selectKeyViewFollowingView(NSView*)</code><br>
      * <i>from NSKeyboardUI native declaration : :543</i>
      */
-    void selectKeyViewFollowingView(NSView aView);
+    public abstract void selectKeyViewFollowingView(NSView aView);
 
     /**
      * Original signature : <code>void selectKeyViewPrecedingView(NSView*)</code><br>
      * <i>from NSKeyboardUI native declaration : :544</i>
      */
-    void selectKeyViewPrecedingView(NSView aView);
+    public abstract void selectKeyViewPrecedingView(NSView aView);
 
     /**
      * Original signature : <code>NSSelectionDirection keyViewSelectionDirection()</code><br>
      * <i>from NSKeyboardUI native declaration : :545</i>
      */
-    int keyViewSelectionDirection();
+    public abstract int keyViewSelectionDirection();
 
     /**
      * Original signature : <code>void setDefaultButtonCell(NSButtonCell*)</code><br>
      * <i>from NSKeyboardUI native declaration : :546</i>
      */
-    void setDefaultButtonCell(NSButtonCell defButt);
+    public abstract void setDefaultButtonCell(NSButtonCell defButt);
 
     /**
      * Original signature : <code>NSButtonCell* defaultButtonCell()</code><br>
      * <i>from NSKeyboardUI native declaration : :547</i>
      */
-    NSButtonCell defaultButtonCell();
+    public abstract NSButtonCell defaultButtonCell();
 
     /**
      * Original signature : <code>void disableKeyEquivalentForDefaultButtonCell()</code><br>
      * <i>from NSKeyboardUI native declaration : :548</i>
      */
-    void disableKeyEquivalentForDefaultButtonCell();
+    public abstract void disableKeyEquivalentForDefaultButtonCell();
 
     /**
      * Original signature : <code>void enableKeyEquivalentForDefaultButtonCell()</code><br>
      * <i>from NSKeyboardUI native declaration : :549</i>
      */
-    void enableKeyEquivalentForDefaultButtonCell();
+    public abstract void enableKeyEquivalentForDefaultButtonCell();
 
     /**
      * Original signature : <code>void setAutorecalculatesKeyViewLoop(BOOL)</code><br>
      * <i>from NSKeyboardUI native declaration : :551</i>
      */
-    void setAutorecalculatesKeyViewLoop(boolean flag);
+    public abstract void setAutorecalculatesKeyViewLoop(boolean flag);
 
     /**
      * Original signature : <code>BOOL autorecalculatesKeyViewLoop()</code><br>
      * <i>from NSKeyboardUI native declaration : :552</i>
      */
-    boolean autorecalculatesKeyViewLoop();
+    public abstract boolean autorecalculatesKeyViewLoop();
 
     /**
      * Original signature : <code>void recalculateKeyViewLoop()</code><br>
      * <i>from NSKeyboardUI native declaration : :553</i>
      */
-    void recalculateKeyViewLoop();
+    public abstract void recalculateKeyViewLoop();
 
     /**
      * Original signature : <code>void setToolbar(NSToolbar*)</code><br>
      * <i>from NSToolbarSupport native declaration : :558</i>
      */
-    void setToolbar(NSToolbar toolbar);
+    public abstract void setToolbar(NSToolbar toolbar);
 
     /**
      * Original signature : <code>NSToolbar* toolbar()</code><br>
      * <i>from NSToolbarSupport native declaration : :559</i>
      */
-    NSToolbar toolbar();
+    public abstract NSToolbar toolbar();
 
     /**
      * Original signature : <code>void toggleToolbarShown(id)</code><br>
      * <i>from NSToolbarSupport native declaration : :560</i>
      */
-    void toggleToolbarShown(NSObject sender);
+    public abstract void toggleToolbarShown(NSObject sender);
 
     /**
      * Original signature : <code>void runToolbarCustomizationPalette(id)</code><br>
      * <i>from NSToolbarSupport native declaration : :561</i>
      */
-    void runToolbarCustomizationPalette(NSObject sender);
+    public abstract void runToolbarCustomizationPalette(NSObject sender);
 
     /**
      * Original signature : <code>void setShowsToolbarButton(BOOL)</code><br>
      * <i>from NSToolbarSupport native declaration : :563</i>
      */
-    void setShowsToolbarButton(boolean show);
+    public abstract void setShowsToolbarButton(boolean show);
 
     /**
      * Original signature : <code>BOOL showsToolbarButton()</code><br>
      * <i>from NSToolbarSupport native declaration : :564</i>
      */
-    boolean showsToolbarButton();
+    public abstract boolean showsToolbarButton();
     /**
      * <i>from NSDrag native declaration : :569</i><br>
      * Conversion Error : /// Original signature : <code>void dragImage(NSImage*, null, NSSize, NSEvent*, NSPasteboard*, id, BOOL)</code><br>
@@ -1340,13 +1341,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void registerForDraggedTypes(NSArray*)</code><br>
      * <i>from NSDrag native declaration : :571</i>
      */
-    void registerForDraggedTypes(NSArray newTypes);
+    public abstract void registerForDraggedTypes(NSArray newTypes);
 
     /**
      * Original signature : <code>void unregisterDraggedTypes()</code><br>
      * <i>from NSDrag native declaration : :572</i>
      */
-    void unregisterDraggedTypes();
+    public abstract void unregisterDraggedTypes();
 
     public static final String WindowDidBecomeKeyNotification = "NSWindowDidBecomeKeyNotification";
     public static final String WindowDidBecomeMainNotification = "NSWindowDidBecomeMainNotification";

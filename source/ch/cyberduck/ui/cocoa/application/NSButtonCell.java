@@ -25,7 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 
-public abstract class NSButtonCell implements NSActionCell {
+public abstract class NSButtonCell extends NSActionCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButtonCell", _Class.class);
 
     public static NSButtonCell buttonCell() {

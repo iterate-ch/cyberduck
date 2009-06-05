@@ -33,7 +33,7 @@ import com.sun.jna.Pointer;
 /**
  * @version $Id$
  */
-public abstract class NSApplication implements NSObject {
+public abstract class NSApplication extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSApplication", _Class.class); //$NON-NLS-1$
 
     public static final int NSTerminateCancel = 0;

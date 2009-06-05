@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :35</i>
-public abstract class NSColor implements NSObject {
+public abstract class NSColor extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSColor", _Class.class);
 
     public static NSColor whiteColor() {
@@ -341,7 +341,7 @@ public abstract class NSColor implements NSObject {
          * Original signature : <code>NSColor* colorWithCalibratedRed(CGFloat, CGFloat, CGFloat, CGFloat)</code><br>
          * <i>native declaration : :45</i>
          */
-        NSColor colorWithCalibratedRed_green_blue_alpha(float red, float green, float blue, float alpha);
+        NSColor colorWithCalibratedRed_green_blue_alpha(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha);
 
         /**
          * Create colors in various device color spaces. In PostScript these colorspaces correspond directly to the device-dependent operators setgray, sethsbcolor, setrgbcolor, and setcmykcolor.<br>
@@ -354,19 +354,19 @@ public abstract class NSColor implements NSObject {
          * Original signature : <code>NSColor* colorWithDeviceHue(CGFloat, CGFloat, CGFloat, CGFloat)</code><br>
          * <i>native declaration : :51</i>
          */
-        NSColor colorWithDeviceHue_saturation_brightness_alpha(float hue, float saturation, float brightness, float alpha);
+        NSColor colorWithDeviceHue_saturation_brightness_alpha(CGFloat hue, CGFloat saturation, CGFloat brightness, CGFloat alpha);
 
         /**
-         * Original signature : <code>NSColor* colorWithDeviceRed(CGFloat, CGFloat, CGFloat, CGFloat)</code><br>
+         * Original signature : <code>NSColor* colorWithDeviceRed(CGCGFloat, CGCGFloat, CGCGFloat, CGCGFloat)</code><br>
          * <i>native declaration : :52</i>
          */
-        NSColor colorWithDeviceRed_green_blue_alpha(float red, float green, float blue, float alpha);
+        NSColor colorWithDeviceRed_green_blue_alpha(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha);
 
         /**
          * Original signature : <code>NSColor* colorWithDeviceCyan(CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)</code><br>
          * <i>native declaration : :53</i>
          */
-        NSColor colorWithDeviceCyan_magenta_yellow_black_alpha(float cyan, float magenta, float yellow, float black, float alpha);
+        NSColor colorWithDeviceCyan_magenta_yellow_black_alpha(CGFloat cyan, CGFloat magenta, CGFloat yellow, CGFloat black, CGFloat alpha);
 
         /**
          * Create named colors from standard color catalogs (such as Pantone).<br>
@@ -390,7 +390,7 @@ public abstract class NSColor implements NSObject {
          * Original signature : <code>NSColor* colorWithColorSpace(NSColorSpace*, const CGFloat*, NSInteger)</code><br>
          * <i>native declaration : :64</i>
          */
-        NSColor colorWithColorSpace_components_count(com.sun.jna.Pointer space, float components[], int numberOfComponents);
+        NSColor colorWithColorSpace_components_count(com.sun.jna.Pointer space, CGFloat components[], int numberOfComponents);
 
         /**
          * Create colors with arbitrary colorspace. The number of components in the provided array should match the number dictated by the specified colorspace, plus one for alpha (supply 1.0 for opaque colors); otherwise an exception will be raised.  If the colorspace is one which cannot be used with NSColors, nil is returned.<br>
@@ -781,14 +781,14 @@ public abstract class NSColor implements NSObject {
      * val = 0 => receiver, val = 1 => highlightColor<br>
      * <i>native declaration : :130</i>
      */
-    public abstract NSColor highlightWithLevel(float val);
+    public abstract NSColor highlightWithLevel(CGFloat val);
 
     /**
      * Original signature : <code>NSColor* shadowWithLevel(CGFloat)</code><br>
      * val = 0 => receiver, val = 1 => shadowColor<br>
      * <i>native declaration : :131</i>
      */
-    public abstract NSColor shadowWithLevel(float val);
+    public abstract NSColor shadowWithLevel(CGFloat val);
 
     /**
      * Set the color: Sets the fill and stroke colors in the current drawing context. If the color doesn't know about alpha, it's set to 1.0. Should be implemented by subclassers.<br>
@@ -845,14 +845,14 @@ public abstract class NSColor implements NSObject {
      * Original signature : <code>NSColor* blendedColorWithFraction(CGFloat, NSColor*)</code><br>
      * <i>native declaration : :177</i>
      */
-    public abstract NSColor blendedColorWithFraction_ofColor(float fraction, NSColor color);
+    public abstract NSColor blendedColorWithFraction_ofColor(CGFloat fraction, NSColor color);
 
     /**
      * Returns a color in the same color space as the receiver with the specified alpha component. The abstract implementation of this method returns the receiver if alpha is 1.0, otherwise it returns nil; subclassers who have explicit opacity components override this method to actually return a color with the specified alpha.<br>
      * Original signature : <code>NSColor* colorWithAlphaComponent(CGFloat)</code><br>
      * <i>native declaration : :182</i>
      */
-    public abstract NSColor colorWithAlphaComponent(float alpha);
+    public abstract NSColor colorWithAlphaComponent(CGFloat alpha);
 
     /**
      * Get the catalog and color name of standard colors from catalogs. These colors are special colors which are usually looked up on each device by their name.<br>

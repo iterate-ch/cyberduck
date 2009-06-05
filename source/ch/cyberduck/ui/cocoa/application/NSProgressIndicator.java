@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :42</i>
-public interface NSProgressIndicator extends NSView {
+public abstract class NSProgressIndicator extends NSView {
     _Class CLASS = org.rococoa.Rococoa.createClass("NSProgressIndicator", _Class.class);
 
     /// <i>native declaration : :22</i>
@@ -46,31 +46,31 @@ public interface NSProgressIndicator extends NSView {
      * Original signature : <code>BOOL isIndeterminate()</code><br>
      * <i>native declaration : :86</i>
      */
-    boolean isIndeterminate();
+    public abstract boolean isIndeterminate();
 
     /**
      * Original signature : <code>void setIndeterminate(BOOL)</code><br>
      * <i>native declaration : :87</i>
      */
-    void setIndeterminate(boolean flag);
+    public abstract void setIndeterminate(boolean flag);
 
     /**
      * Original signature : <code>BOOL isBezeled()</code><br>
      * <i>native declaration : :89</i>
      */
-    boolean isBezeled();
+    public abstract boolean isBezeled();
 
     /**
      * Original signature : <code>void setBezeled(BOOL)</code><br>
      * <i>native declaration : :90</i>
      */
-    void setBezeled(boolean flag);
+    public abstract void setBezeled(boolean flag);
 
     /**
      * Original signature : <code>controlTint()</code><br>
      * <i>native declaration : :92</i>
      */
-    int controlTint();
+    public abstract int controlTint();
     /**
      * <i>native declaration : :93</i><br>
      * Conversion Error : /// Original signature : <code>void setControlTint(null)</code><br>
@@ -80,55 +80,57 @@ public interface NSProgressIndicator extends NSView {
      * Original signature : <code>controlSize()</code><br>
      * <i>native declaration : :95</i>
      */
-    int controlSize();
+    public abstract int controlSize();
+
     /**
      * <i>native declaration : :96</i><br>
      * Conversion Error : /// Original signature : <code>void setControlSize(null)</code><br>
      * - (void)setControlSize:(null)size; (Argument size cannot be converted)
      */
-    int setControlSize(int size);
+    public abstract int setControlSize(int size);
+
     /**
      * Original signature : <code>double doubleValue()</code><br>
      * <i>native declaration : :100</i>
      */
-    double doubleValue();
+    public abstract double doubleValue();
 
     /**
      * Original signature : <code>void setDoubleValue(double)</code><br>
      * <i>native declaration : :101</i>
      */
-    void setDoubleValue(double doubleValue);
+    public abstract void setDoubleValue(double doubleValue);
 
     /**
      * Original signature : <code>void incrementBy(double)</code><br>
      * equivalent to [self setDoubleValue:[self doubleValue] + delta]<br>
      * <i>native declaration : :103</i>
      */
-    void incrementBy(double delta);
+    public abstract void incrementBy(double delta);
 
     /**
      * Original signature : <code>double minValue()</code><br>
      * <i>native declaration : :105</i>
      */
-    double minValue();
+    public abstract double minValue();
 
     /**
      * Original signature : <code>double maxValue()</code><br>
      * <i>native declaration : :106</i>
      */
-    double maxValue();
+    public abstract double maxValue();
 
     /**
      * Original signature : <code>void setMinValue(double)</code><br>
      * <i>native declaration : :107</i>
      */
-    void setMinValue(double newMinimum);
+    public abstract void setMinValue(double newMinimum);
 
     /**
      * Original signature : <code>void setMaxValue(double)</code><br>
      * <i>native declaration : :108</i>
      */
-    void setMaxValue(double newMaximum);
+    public abstract void setMaxValue(double newMaximum);
     /**
      * <i>native declaration : :112</i><br>
      * Conversion Error : NSTimeInterval
@@ -142,61 +144,61 @@ public interface NSProgressIndicator extends NSView {
      * returns YES if the PI uses a thread instead of a timer (default in NO)<br>
      * <i>native declaration : :115</i>
      */
-    boolean usesThreadedAnimation();
+    public abstract boolean usesThreadedAnimation();
 
     /**
      * Original signature : <code>void setUsesThreadedAnimation(BOOL)</code><br>
      * <i>native declaration : :116</i>
      */
-    void setUsesThreadedAnimation(boolean threadedAnimation);
+    public abstract void setUsesThreadedAnimation(boolean threadedAnimation);
 
     /**
      * Original signature : <code>void startAnimation(id)</code><br>
      * <i>native declaration : :118</i>
      */
-    void startAnimation(NSObject sender);
+    public abstract void startAnimation(NSObject sender);
 
     /**
      * Original signature : <code>void stopAnimation(id)</code><br>
      * <i>native declaration : :119</i>
      */
-    void stopAnimation(NSObject sender);
+    public abstract void stopAnimation(NSObject sender);
 
     /**
      * Original signature : <code>void animate(id)</code><br>
      * manual animation<br>
      * <i>native declaration : :121</i>
      */
-    void animate(NSObject sender);
+    public abstract void animate(NSObject sender);
 
     /**
      * Original signature : <code>void setStyle(NSProgressIndicatorStyle)</code><br>
      * <i>native declaration : :125</i>
      */
-    void setStyle(int style);
+    public abstract void setStyle(int style);
 
     /**
      * Original signature : <code>NSProgressIndicatorStyle style()</code><br>
      * <i>native declaration : :126</i>
      */
-    int style();
+    public abstract int style();
 
     /**
      * For the bar style, the height will be set to the recommended height.<br>
      * Original signature : <code>void sizeToFit()</code><br>
      * <i>native declaration : :130</i>
      */
-    void sizeToFit();
+    public abstract void sizeToFit();
 
     /**
      * Original signature : <code>BOOL isDisplayedWhenStopped()</code><br>
      * <i>native declaration : :132</i>
      */
-    boolean isDisplayedWhenStopped();
+    public abstract boolean isDisplayedWhenStopped();
 
     /**
      * Original signature : <code>void setDisplayedWhenStopped(BOOL)</code><br>
      * <i>native declaration : :133</i>
      */
-    void setDisplayedWhenStopped(boolean isDisplayed);
+    public abstract void setDisplayedWhenStopped(boolean isDisplayed);
 }

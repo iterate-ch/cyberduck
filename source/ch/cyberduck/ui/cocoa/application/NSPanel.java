@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 /// <i>native declaration : :83</i>
-public interface NSPanel extends NSWindow {
-    static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPanel", _Class.class);
+public abstract class NSPanel extends NSWindow {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPanel", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSPanel alloc();
@@ -31,37 +31,37 @@ public interface NSPanel extends NSWindow {
      * Original signature : <code>BOOL isFloatingPanel()</code><br>
      * <i>native declaration : :88</i>
      */
-    boolean isFloatingPanel();
+    public abstract boolean isFloatingPanel();
 
     /**
      * Original signature : <code>void setFloatingPanel(BOOL)</code><br>
      * <i>native declaration : :89</i>
      */
-    void setFloatingPanel(boolean flag);
+    public abstract void setFloatingPanel(boolean flag);
 
     /**
      * Original signature : <code>BOOL becomesKeyOnlyIfNeeded()</code><br>
      * <i>native declaration : :90</i>
      */
-    boolean becomesKeyOnlyIfNeeded();
+    public abstract boolean becomesKeyOnlyIfNeeded();
 
     /**
      * Original signature : <code>void setBecomesKeyOnlyIfNeeded(BOOL)</code><br>
      * <i>native declaration : :91</i>
      */
-    void setBecomesKeyOnlyIfNeeded(boolean flag);
+    public abstract void setBecomesKeyOnlyIfNeeded(boolean flag);
 
     /**
      * Original signature : <code>BOOL worksWhenModal()</code><br>
      * <i>native declaration : :92</i>
      */
-    boolean worksWhenModal();
+    public abstract boolean worksWhenModal();
 
     /**
      * Original signature : <code>void setWorksWhenModal(BOOL)</code><br>
      * <i>native declaration : :93</i>
      */
-    void setWorksWhenModal(boolean flag);
+    public abstract void setWorksWhenModal(boolean flag);
 
     /// <i>native declaration : :54</i>
     public static final int NSAlertDefaultReturn = 1;

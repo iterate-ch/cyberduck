@@ -61,19 +61,19 @@ public abstract class NSMutableParagraphStyle extends NSParagraphStyle {
      * Original signature : <code>public abstract void setFirstLineHeadIndent(CGFloat)</code><br>
      * <i>native declaration : :155</i>
      */
-    public abstract void setFirstLineHeadIndent(float aFloat);
+    public abstract void setFirstLineHeadIndent(CGFloat aFloat);
 
     /**
      * Original signature : <code>public abstract void setHeadIndent(CGFloat)</code><br>
      * <i>native declaration : :156</i>
      */
-    public abstract void setHeadIndent(float aFloat);
+    public abstract void setHeadIndent(CGFloat aFloat);
 
     /**
      * Original signature : <code>public abstract void setTailIndent(CGFloat)</code><br>
      * <i>native declaration : :157</i>
      */
-    public abstract void setTailIndent(float aFloat);
+    public abstract void setTailIndent(CGFloat aFloat);
 
     /**
      * Original signature : <code>public abstract void setLineBreakMode(NSLineBreakMode)</code><br>
@@ -85,13 +85,13 @@ public abstract class NSMutableParagraphStyle extends NSParagraphStyle {
      * Original signature : <code>public abstract void setMinimumLineHeight(CGFloat)</code><br>
      * <i>native declaration : :159</i>
      */
-    public abstract void setMinimumLineHeight(float aFloat);
+    public abstract void setMinimumLineHeight(CGFloat aFloat);
 
     /**
      * Original signature : <code>public abstract void setMaximumLineHeight(CGFloat)</code><br>
      * <i>native declaration : :160</i>
      */
-    public abstract void setMaximumLineHeight(float aFloat);
+    public abstract void setMaximumLineHeight(CGFloat aFloat);
     /**
      * Original signature : <code>public abstract void addTabStop(NSTextTab*)</code><br>
      * <i>native declaration : :161</i>
@@ -122,19 +122,19 @@ public abstract class NSMutableParagraphStyle extends NSParagraphStyle {
      * Original signature : <code>public abstract void setLineHeightMultiple(CGFloat)</code><br>
      * <i>native declaration : :169</i>
      */
-    public abstract void setLineHeightMultiple(float aFloat);
+    public abstract void setLineHeightMultiple(CGFloat aFloat);
 
     /**
      * Original signature : <code>public abstract void setParagraphSpacingBefore(CGFloat)</code><br>
      * <i>native declaration : :170</i>
      */
-    public abstract void setParagraphSpacingBefore(float aFloat);
+    public abstract void setParagraphSpacingBefore(CGFloat aFloat);
 
     /**
      * Original signature : <code>public abstract void setDefaultTabInterval(CGFloat)</code><br>
      * <i>native declaration : :171</i>
      */
-    public abstract void setDefaultTabInterval(float aFloat);
+    public abstract void setDefaultTabInterval(CGFloat aFloat);
 
     /**
      * Original signature : <code>public abstract void setTextBlocks(NSArray*)</code><br>

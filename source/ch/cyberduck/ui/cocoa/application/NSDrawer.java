@@ -25,8 +25,8 @@ import org.rococoa.ID;
 import org.rococoa.cocoa.NSSize;
 
 /// <i>native declaration : :31</i>
-public interface NSDrawer extends NSObject {
-    static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDrawer", _Class.class);
+public abstract class NSDrawer extends NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDrawer", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSDrawer alloc();
@@ -40,25 +40,25 @@ public interface NSDrawer extends NSObject {
      * Original signature : <code>void setParentWindow(NSWindow*)</code><br>
      * <i>native declaration : :59</i>
      */
-    void setParentWindow(NSWindow parent);
+    public abstract void setParentWindow(NSWindow parent);
 
     /**
      * Original signature : <code>NSWindow* parentWindow()</code><br>
      * <i>native declaration : :60</i>
      */
-    NSWindow parentWindow();
+    public abstract NSWindow parentWindow();
 
     /**
      * Original signature : <code>void setContentView(NSView*)</code><br>
      * <i>native declaration : :61</i>
      */
-    void setContentView(NSView aView);
+    public abstract void setContentView(NSView aView);
 
     /**
      * Original signature : <code>NSView* contentView()</code><br>
      * <i>native declaration : :62</i>
      */
-    NSView contentView();
+    public abstract NSView contentView();
     /**
      * <i>native declaration : :63</i><br>
      * Conversion Error : NSRectEdge
@@ -71,19 +71,19 @@ public interface NSDrawer extends NSObject {
      * Original signature : <code>void setDelegate(id)</code><br>
      * <i>native declaration : :65</i>
      */
-    void setDelegate(org.rococoa.ID anObject);
+    public abstract void setDelegate(org.rococoa.ID anObject);
 
     /**
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :66</i>
      */
-    NSObject delegate();
+    public abstract NSObject delegate();
 
     /**
      * Original signature : <code>void open()</code><br>
      * <i>native declaration : :68</i>
      */
-    void open();
+    public abstract void open();
     /**
      * <i>native declaration : :69</i><br>
      * Conversion Error : NSRectEdge
@@ -92,31 +92,31 @@ public interface NSDrawer extends NSObject {
      * Original signature : <code>void close()</code><br>
      * <i>native declaration : :70</i>
      */
-    void close();
+    public abstract void close();
 
     /**
      * Original signature : <code>void open(id)</code><br>
      * <i>native declaration : :72</i>
      */
-    void open(ID sender);
+    public abstract void open(ID sender);
 
     /**
      * Original signature : <code>void close(id)</code><br>
      * <i>native declaration : :73</i>
      */
-    void close(ID sender);
+    public abstract void close(ID sender);
 
     /**
      * Original signature : <code>void toggle(id)</code><br>
      * <i>native declaration : :74</i>
      */
-    void toggle(ID sender);
+    public abstract void toggle(ID sender);
 
     /**
      * Original signature : <code>NSInteger state()</code><br>
      * <i>native declaration : :76</i>
      */
-    int state();
+    public abstract int state();
     /**
      * <i>native declaration : :77</i><br>
      * Conversion Error : NSRectEdge
@@ -126,13 +126,13 @@ public interface NSDrawer extends NSObject {
      * Conversion Error : /// Original signature : <code>void setContentSize(null)</code><br>
      * - (void)setContentSize:(null)size; (Argument size cannot be converted)
      */
-    void setContentSize(NSSize size);
+    public abstract void setContentSize(NSSize size);
 
     /**
      * Original signature : <code>contentSize()</code><br>
      * <i>native declaration : :80</i>
      */
-    NSSize contentSize();
+    public abstract NSSize contentSize();
     /**
      * <i>native declaration : :81</i><br>
      * Conversion Error : /// Original signature : <code>void setMinContentSize(null)</code><br>
@@ -142,7 +142,7 @@ public interface NSDrawer extends NSObject {
      * Original signature : <code>minContentSize()</code><br>
      * <i>native declaration : :82</i>
      */
-    NSSize minContentSize();
+    public abstract NSSize minContentSize();
     /**
      * <i>native declaration : :83</i><br>
      * Conversion Error : /// Original signature : <code>void setMaxContentSize(null)</code><br>
@@ -152,31 +152,31 @@ public interface NSDrawer extends NSObject {
      * Original signature : <code>maxContentSize()</code><br>
      * <i>native declaration : :84</i>
      */
-    NSSize maxContentSize();
+    public abstract NSSize maxContentSize();
 
     /**
      * Original signature : <code>void setLeadingOffset(CGFloat)</code><br>
      * <i>native declaration : :86</i>
      */
-    void setLeadingOffset(float offset);
+    public abstract void setLeadingOffset(float offset);
 
     /**
      * Original signature : <code>CGFloat leadingOffset()</code><br>
      * <i>native declaration : :87</i>
      */
-    float leadingOffset();
+    public abstract float leadingOffset();
 
     /**
      * Original signature : <code>void setTrailingOffset(CGFloat)</code><br>
      * <i>native declaration : :88</i>
      */
-    void setTrailingOffset(float offset);
+    public abstract void setTrailingOffset(float offset);
 
     /**
      * Original signature : <code>CGFloat trailingOffset()</code><br>
      * <i>native declaration : :89</i>
      */
-    float trailingOffset();
+    public abstract float trailingOffset();
 
     public static final int NSDrawerClosedState = 0;
     public static final int NSDrawerOpeningState = 1;

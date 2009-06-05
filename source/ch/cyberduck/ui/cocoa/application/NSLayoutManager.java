@@ -27,7 +27,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :71</i>
-public abstract class NSLayoutManager implements NSObject {
+public abstract class NSLayoutManager extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSLayoutManager", _Class.class);
 
     public static NSLayoutManager layoutManager() {

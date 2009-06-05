@@ -23,8 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :23</i>
-public interface NSTabView extends NSObject {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSTabView", _Class.class);
+public abstract class NSTabView extends NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTabView", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSTabView alloc();
@@ -34,135 +34,135 @@ public interface NSTabView extends NSObject {
      * Original signature : <code>void selectTabViewItem(NSTabViewItem*)</code><br>
      * <i>native declaration : :74</i>
      */
-    void selectTabViewItem(NSTabViewItem tabViewItem);
+    public abstract void selectTabViewItem(NSTabViewItem tabViewItem);
 
     /**
      * Original signature : <code>void selectTabViewItemAtIndex(NSInteger)</code><br>
      * May raise an NSRangeException<br>
      * <i>native declaration : :75</i>
      */
-    void selectTabViewItemAtIndex(int index);
+    public abstract void selectTabViewItemAtIndex(int index);
 
     /**
      * Original signature : <code>void selectTabViewItemWithIdentifier(id)</code><br>
      * May raise an NSRangeException if identifier not found<br>
      * <i>native declaration : :76</i>
      */
-    void selectTabViewItemWithIdentifier(NSObject identifier);
+    public abstract void selectTabViewItemWithIdentifier(NSObject identifier);
 
     /**
      * Original signature : <code>void takeSelectedTabViewItemFromSender(id)</code><br>
      * May raise an NSRangeException<br>
      * <i>native declaration : :77</i>
      */
-    void takeSelectedTabViewItemFromSender(NSObject sender);
+    public abstract void takeSelectedTabViewItemFromSender(NSObject sender);
 
     /**
      * Original signature : <code>void selectFirstTabViewItem(id)</code><br>
      * <i>native declaration : :81</i>
      */
-    void selectFirstTabViewItem(NSTabViewItem sender);
+    public abstract void selectFirstTabViewItem(NSTabViewItem sender);
 
     /**
      * Original signature : <code>void selectLastTabViewItem(id)</code><br>
      * <i>native declaration : :82</i>
      */
-    void selectLastTabViewItem(NSTabViewItem sender);
+    public abstract void selectLastTabViewItem(NSTabViewItem sender);
 
     /**
      * Original signature : <code>void selectNextTabViewItem(id)</code><br>
      * <i>native declaration : :83</i>
      */
-    void selectNextTabViewItem(NSTabViewItem sender);
+    public abstract void selectNextTabViewItem(NSTabViewItem sender);
 
     /**
      * Original signature : <code>void selectPreviousTabViewItem(id)</code><br>
      * <i>native declaration : :84</i>
      */
-    void selectPreviousTabViewItem(NSTabViewItem sender);
+    public abstract void selectPreviousTabViewItem(NSTabViewItem sender);
 
     /**
      * Original signature : <code>NSTabViewItem* selectedTabViewItem()</code><br>
      * return nil if none are selected<br>
      * <i>native declaration : :88</i>
      */
-    NSTabViewItem selectedTabViewItem();
+    public abstract NSTabViewItem selectedTabViewItem();
 
     /**
      * Original signature : <code>NSFont* font()</code><br>
      * returns font used for all tab labels.<br>
      * <i>native declaration : :89</i>
      */
-    NSFont font();
+    public abstract NSFont font();
 
     /**
      * Original signature : <code>NSTabViewType tabViewType()</code><br>
      * <i>native declaration : :90</i>
      */
-    int tabViewType();
+    public abstract int tabViewType();
 
     /**
      * Original signature : <code>NSArray* tabViewItems()</code><br>
      * <i>native declaration : :91</i>
      */
-    NSArray tabViewItems();
+    public abstract NSArray tabViewItems();
 
     /**
      * Original signature : <code>BOOL allowsTruncatedLabels()</code><br>
      * <i>native declaration : :92</i>
      */
-    boolean allowsTruncatedLabels();
+    public abstract boolean allowsTruncatedLabels();
 
     /**
      * Original signature : <code>minimumSize()</code><br>
      * returns the minimum size of the tab view<br>
      * <i>native declaration : :93</i>
      */
-    NSObject minimumSize();
+    public abstract NSObject minimumSize();
 
     /**
      * Original signature : <code>BOOL drawsBackground()</code><br>
      * only relevant for borderless tab view type<br>
      * <i>native declaration : :94</i>
      */
-    boolean drawsBackground();
+    public abstract boolean drawsBackground();
 
     /**
      * Original signature : <code>controlTint()</code><br>
      * <i>native declaration : :95</i>
      */
-    NSObject controlTint();
+    public abstract NSObject controlTint();
 
     /**
      * Original signature : <code>controlSize()</code><br>
      * <i>native declaration : :96</i>
      */
-    NSObject controlSize();
+    public abstract NSObject controlSize();
 
     /**
      * Original signature : <code>void setFont(NSFont*)</code><br>
      * <i>native declaration : :100</i>
      */
-    void setFont(NSFont font);
+    public abstract void setFont(NSFont font);
 
     /**
      * Original signature : <code>void setTabViewType(NSTabViewType)</code><br>
      * <i>native declaration : :101</i>
      */
-    void setTabViewType(int tabViewType);
+    public abstract void setTabViewType(int tabViewType);
 
     /**
      * Original signature : <code>void setAllowsTruncatedLabels(BOOL)</code><br>
      * <i>native declaration : :102</i>
      */
-    void setAllowsTruncatedLabels(boolean allowTruncatedLabels);
+    public abstract void setAllowsTruncatedLabels(boolean allowTruncatedLabels);
 
     /**
      * Original signature : <code>void setDrawsBackground(BOOL)</code><br>
      * only relevant for borderless tab view type<br>
      * <i>native declaration : :103</i>
      */
-    void setDrawsBackground(boolean flag);
+    public abstract void setDrawsBackground(boolean flag);
     /**
      * <i>native declaration : :104</i><br>
      * Conversion Error : /// Original signature : <code>void setControlTint(null)</code><br>
@@ -178,33 +178,33 @@ public interface NSTabView extends NSObject {
      * Add tab at the end.<br>
      * <i>native declaration : :109</i>
      */
-    void addTabViewItem(NSTabViewItem tabViewItem);
+    public abstract void addTabViewItem(NSTabViewItem tabViewItem);
 
     /**
      * Original signature : <code>void insertTabViewItem(NSTabViewItem*, NSInteger)</code><br>
      * May raise an NSRangeException<br>
      * <i>native declaration : :110</i>
      */
-    void insertTabViewItem_atIndex(NSTabViewItem tabViewItem, int index);
+    public abstract void insertTabViewItem_atIndex(NSTabViewItem tabViewItem, int index);
 
     /**
      * Original signature : <code>void removeTabViewItem(NSTabViewItem*)</code><br>
      * tabViewItem must be an existing tabViewItem<br>
      * <i>native declaration : :111</i>
      */
-    void removeTabViewItem(NSTabViewItem tabViewItem);
+    public abstract void removeTabViewItem(NSTabViewItem tabViewItem);
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>
      * <i>native declaration : :115</i>
      */
-    void setDelegate(org.rococoa.ID anObject);
+    public abstract void setDelegate(org.rococoa.ID anObject);
 
     /**
      * Original signature : <code>id delegate()</code><br>
      * <i>native declaration : :116</i>
      */
-    org.rococoa.ID delegate();
+    public abstract org.rococoa.ID delegate();
     /**
      * <i>native declaration : :120</i><br>
      * Conversion Error : /// Original signature : <code>NSTabViewItem* tabViewItemAtPoint(null)</code><br>
@@ -216,32 +216,32 @@ public interface NSTabView extends NSObject {
      * Return the rect available for a "page".<br>
      * <i>native declaration : :124</i>
      */
-    NSObject contentRect();
+    public abstract NSObject contentRect();
 
     /**
      * Original signature : <code>NSInteger numberOfTabViewItems()</code><br>
      * <i>native declaration : :128</i>
      */
-    int numberOfTabViewItems();
+    public abstract int numberOfTabViewItems();
 
     /**
      * Original signature : <code>NSInteger indexOfTabViewItem(NSTabViewItem*)</code><br>
      * NSNotFound if not found<br>
      * <i>native declaration : :129</i>
      */
-    int indexOfTabViewItem(NSTabViewItem tabViewItem);
+    public abstract int indexOfTabViewItem(NSTabViewItem tabViewItem);
 
     /**
      * Original signature : <code>NSTabViewItem* tabViewItemAtIndex(NSInteger)</code><br>
      * May raise an NSRangeException<br>
      * <i>native declaration : :130</i>
      */
-    NSTabViewItem tabViewItemAtIndex(int index);
+    public abstract NSTabViewItem tabViewItemAtIndex(int index);
 
     /**
      * Original signature : <code>NSInteger indexOfTabViewItemWithIdentifier(id)</code><br>
      * NSNotFound if not found<br>
      * <i>native declaration : :131</i>
      */
-    int indexOfTabViewItemWithIdentifier(NSObject identifier);
+    public abstract int indexOfTabViewItemWithIdentifier(NSObject identifier);
 }

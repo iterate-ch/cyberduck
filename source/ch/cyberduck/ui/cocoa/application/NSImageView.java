@@ -21,8 +21,8 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-public interface NSImageView extends NSObject {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSImageView", _Class.class);
+public abstract class NSImageView extends NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImageView", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSImageView alloc();
@@ -32,19 +32,19 @@ public interface NSImageView extends NSObject {
      * Original signature : <code>NSImage* image()</code><br>
      * <i>native declaration : :26</i>
      */
-    NSImage image();
+    public abstract NSImage image();
 
     /**
      * Original signature : <code>void setImage(NSImage*)</code><br>
      * <i>native declaration : :27</i>
      */
-    void setImage(NSImage newImage);
+    public abstract void setImage(NSImage newImage);
 
     /**
      * Original signature : <code>imageAlignment()</code><br>
      * <i>native declaration : :29</i>
      */
-    com.sun.jna.Pointer imageAlignment();
+    public abstract com.sun.jna.Pointer imageAlignment();
     /**
      * <i>native declaration : :30</i><br>
      * Conversion Error : /// Original signature : <code>void setImageAlignment(null)</code><br>
@@ -54,7 +54,7 @@ public interface NSImageView extends NSObject {
      * Original signature : <code>imageScaling()</code><br>
      * <i>native declaration : :31</i>
      */
-    com.sun.jna.Pointer imageScaling();
+    public abstract com.sun.jna.Pointer imageScaling();
     /**
      * <i>native declaration : :32</i><br>
      * Conversion Error : /// Original signature : <code>void setImageScaling(null)</code><br>
@@ -64,7 +64,7 @@ public interface NSImageView extends NSObject {
      * Original signature : <code>imageFrameStyle()</code><br>
      * <i>native declaration : :33</i>
      */
-    com.sun.jna.Pointer imageFrameStyle();
+    public abstract com.sun.jna.Pointer imageFrameStyle();
     /**
      * <i>native declaration : :34</i><br>
      * Conversion Error : /// Original signature : <code>void setImageFrameStyle(null)</code><br>
@@ -74,35 +74,35 @@ public interface NSImageView extends NSObject {
      * Original signature : <code>void setEditable(BOOL)</code><br>
      * <i>native declaration : :35</i>
      */
-    void setEditable(boolean yn);
+    public abstract void setEditable(boolean yn);
 
     /**
      * Original signature : <code>BOOL isEditable()</code><br>
      * <i>native declaration : :36</i>
      */
-    boolean isEditable();
+    public abstract boolean isEditable();
 
     /**
      * Original signature : <code>void setAnimates(BOOL)</code><br>
      * <i>native declaration : :39</i>
      */
-    void setAnimates(boolean flag);
+    public abstract void setAnimates(boolean flag);
 
     /**
      * Original signature : <code>BOOL animates()</code><br>
      * <i>native declaration : :40</i>
      */
-    boolean animates();
+    public abstract boolean animates();
 
     /**
      * Original signature : <code>BOOL allowsCutCopyPaste()</code><br>
      * <i>native declaration : :44</i>
      */
-    boolean allowsCutCopyPaste();
+    public abstract boolean allowsCutCopyPaste();
 
     /**
      * Original signature : <code>void setAllowsCutCopyPaste(BOOL)</code><br>
      * <i>native declaration : :45</i>
      */
-    void setAllowsCutCopyPaste(boolean allow);
+    public abstract void setAllowsCutCopyPaste(boolean allow);
 }

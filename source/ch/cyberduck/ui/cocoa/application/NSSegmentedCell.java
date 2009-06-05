@@ -22,8 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :20</i>
-public interface NSSegmentedCell extends NSActionCell {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSSegmentedCell", _Class.class);
+public abstract class NSSegmentedCell extends NSActionCell {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSegmentedCell", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSSegmentedCell alloc();
@@ -50,82 +50,82 @@ public interface NSSegmentedCell extends NSActionCell {
      * Original signature : <code>void setSegmentCount(NSInteger)</code><br>
      * <i>native declaration : :46</i>
      */
-    void setSegmentCount(int count);
+    public abstract void setSegmentCount(int count);
 
     /**
      * Original signature : <code>NSInteger segmentCount()</code><br>
      * <i>native declaration : :47</i>
      */
-    int segmentCount();
+    public abstract int segmentCount();
 
     /**
      * Which button is active. May turn off other segments depending on mode.<br>
      * Original signature : <code>void setSelectedSegment(NSInteger)</code><br>
      * <i>native declaration : :51</i>
      */
-    void setSelectedSegment(int selectedSegment);
+    public abstract void setSelectedSegment(int selectedSegment);
 
     /**
      * Original signature : <code>NSInteger selectedSegment()</code><br>
      * <i>native declaration : :52</i>
      */
-    int selectedSegment();
+    public abstract int selectedSegment();
 
     /**
      * Original signature : <code>BOOL selectSegmentWithTag(NSInteger)</code><br>
      * <i>native declaration : :55</i>
      */
-    boolean selectSegmentWithTag(int tag);
+    public abstract boolean selectSegmentWithTag(int tag);
 
     /**
      * For keyboard UI. Wraps.<br>
      * Original signature : <code>void makeNextSegmentKey()</code><br>
      * <i>native declaration : :60</i>
      */
-    void makeNextSegmentKey();
+    public abstract void makeNextSegmentKey();
 
     /**
      * Original signature : <code>void makePreviousSegmentKey()</code><br>
      * <i>native declaration : :61</i>
      */
-    void makePreviousSegmentKey();
+    public abstract void makePreviousSegmentKey();
 
     /**
      * Original signature : <code>void setTrackingMode(NSSegmentSwitchTracking)</code><br>
      * <i>native declaration : :63</i>
      */
-    void setTrackingMode(int trackingMode);
+    public abstract void setTrackingMode(int trackingMode);
 
     /**
      * Original signature : <code>NSSegmentSwitchTracking trackingMode()</code><br>
      * <i>native declaration : :64</i>
      */
-    int trackingMode();
+    public abstract int trackingMode();
 
     /**
      * Width of 0 means autosize to fit<br>
      * Original signature : <code>void setWidth(CGFloat, NSInteger)</code><br>
      * <i>native declaration : :71</i>
      */
-    void setWidth_forSegment(CGFloat width, int segment);
+    public abstract void setWidth_forSegment(CGFloat width, int segment);
 
     /**
      * Original signature : <code>CGFloat widthForSegment(NSInteger)</code><br>
      * <i>native declaration : :72</i>
      */
-    CGFloat widthForSegment(int segment);
+    public abstract CGFloat widthForSegment(int segment);
 
     /**
      * Original signature : <code>void setImage(NSImage*, NSInteger)</code><br>
      * <i>native declaration : :74</i>
      */
-    void setImage_forSegment(com.sun.jna.Pointer image, int segment);
+    public abstract void setImage_forSegment(NSImage image, int segment);
 
     /**
      * Original signature : <code>NSImage* imageForSegment(NSInteger)</code><br>
      * <i>native declaration : :75</i>
      */
-    com.sun.jna.Pointer imageForSegment(int segment);
+    public abstract NSImage imageForSegment(int segment);
     /**
      * <i>native declaration : :79</i><br>
      * Conversion Error : /// Original signature : <code>void setImageScaling(null, NSInteger)</code><br>
@@ -135,79 +135,79 @@ public interface NSSegmentedCell extends NSActionCell {
      * Original signature : <code>imageScalingForSegment(NSInteger)</code><br>
      * <i>native declaration : :80</i>
      */
-    com.sun.jna.Pointer imageScalingForSegment(int segment);
+    public abstract com.sun.jna.Pointer imageScalingForSegment(int segment);
 
     /**
      * Original signature : <code>void setLabel(NSString*, NSInteger)</code><br>
      * <i>native declaration : :84</i>
      */
-    void setLabel_forSegment(com.sun.jna.Pointer label, int segment);
+    public abstract void setLabel_forSegment(String label, int segment);
 
     /**
      * Original signature : <code>NSString* labelForSegment(NSInteger)</code><br>
      * <i>native declaration : :85</i>
      */
-    com.sun.jna.Pointer labelForSegment(int segment);
+    public abstract String labelForSegment(int segment);
 
     /**
      * Original signature : <code>void setSelected(BOOL, NSInteger)</code><br>
      * <i>native declaration : :87</i>
      */
-    void setSelected_forSegment(boolean selected, int segment);
+    public abstract void setSelected_forSegment(boolean selected, int segment);
 
     /**
      * Original signature : <code>BOOL isSelectedForSegment(NSInteger)</code><br>
      * <i>native declaration : :88</i>
      */
-    boolean isSelectedForSegment(int segment);
+    public abstract boolean isSelectedForSegment(int segment);
 
     /**
      * Original signature : <code>void setEnabled(BOOL, NSInteger)</code><br>
      * <i>native declaration : :90</i>
      */
-    void setEnabled_forSegment(boolean enabled, int segment);
+    public abstract void setEnabled_forSegment(boolean enabled, int segment);
 
     /**
      * Original signature : <code>BOOL isEnabledForSegment(NSInteger)</code><br>
      * <i>native declaration : :91</i>
      */
-    boolean isEnabledForSegment(int segment);
+    public abstract boolean isEnabledForSegment(int segment);
 
     /**
      * Original signature : <code>void setMenu(NSMenu*, NSInteger)</code><br>
      * <i>native declaration : :93</i>
      */
-    void setMenu_forSegment(com.sun.jna.Pointer menu, int segment);
+    public abstract void setMenu_forSegment(com.sun.jna.Pointer menu, int segment);
 
     /**
      * Original signature : <code>NSMenu* menuForSegment(NSInteger)</code><br>
      * <i>native declaration : :94</i>
      */
-    com.sun.jna.Pointer menuForSegment(int segment);
+    public abstract NSMenu menuForSegment(int segment);
 
     /**
      * Original signature : <code>void setToolTip(NSString*, NSInteger)</code><br>
      * <i>native declaration : :96</i>
      */
-    void setToolTip_forSegment(com.sun.jna.Pointer toolTip, int segment);
+    public abstract void setToolTip_forSegment(com.sun.jna.Pointer toolTip, int segment);
 
     /**
      * Original signature : <code>NSString* toolTipForSegment(NSInteger)</code><br>
      * <i>native declaration : :97</i>
      */
-    com.sun.jna.Pointer toolTipForSegment(int segment);
+    public abstract String toolTipForSegment(int segment);
 
     /**
      * Original signature : <code>void setTag(NSInteger, NSInteger)</code><br>
      * <i>native declaration : :99</i>
      */
-    void setTag_forSegment(int tag, int segment);
+    public abstract void setTag_forSegment(int tag, int segment);
 
     /**
      * Original signature : <code>NSInteger tagForSegment(NSInteger)</code><br>
      * <i>native declaration : :100</i>
      */
-    int tagForSegment(int segment);
+    public abstract int tagForSegment(int segment);
     /**
      * <i>native declaration : :104</i><br>
      * Conversion Error : /**<br>
@@ -220,7 +220,7 @@ public interface NSSegmentedCell extends NSActionCell {
      * Original signature : <code>segmentStyle()</code><br>
      * <i>native declaration : :105</i>
      */
-    com.sun.jna.Pointer segmentStyle();
+    public abstract int segmentStyle();
     /**
      * <i>native declaration : :110</i><br>
      * Conversion Error : NSRect
@@ -230,5 +230,5 @@ public interface NSSegmentedCell extends NSActionCell {
      * Original signature : <code>interiorBackgroundStyleForSegment(NSInteger)</code><br>
      * <i>from NSSegmentBackgroundStyle native declaration : :119</i>
      */
-    com.sun.jna.Pointer interiorBackgroundStyleForSegment(int segment);
+    public abstract int interiorBackgroundStyleForSegment(int segment);
 }

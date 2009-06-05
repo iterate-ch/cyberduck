@@ -25,13 +25,20 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.NSError;
 
 /// <i>native declaration : :20</i>
-public abstract class NSAlert implements NSObject {
+public abstract class NSAlert extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSAlert", _Class.class);
 
     public static final int NSAlertDefaultReturn = 1;
     public static final int NSAlertAlternateReturn = 0;
     public static final int NSAlertOtherReturn = -1;
     public static final int NSAlertErrorReturn = -2;
+
+    /// <i>native declaration : line 12</i>
+    public static final int NSWarningAlertStyle = 0;
+    /// <i>native declaration : line 13</i>
+    public static final int NSInformationalAlertStyle = 1;
+    /// <i>native declaration : line 14</i>
+    public static final int NSCriticalAlertStyle = 2;
 
     public static NSAlert alertWithError(NSError error) {
         return CLASS.alertWithError(error);

@@ -23,7 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Rococoa;
 
-public abstract class NSMenu implements NSObject, NSCopying, NSCoding {
+public abstract class NSMenu extends NSObject implements NSCopying, NSCoding {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenu", _Class.class);
 
     public static NSMenu menu() {

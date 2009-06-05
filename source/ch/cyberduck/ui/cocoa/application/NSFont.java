@@ -27,7 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :45</i>
-public abstract class NSFont implements NSObject, NSCopying, NSCoding {
+public abstract class NSFont extends NSObject implements NSCopying, NSCoding {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFont", _Class.class);
 
     /**

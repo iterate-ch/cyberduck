@@ -23,8 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Selector;
 
-public interface NSCell extends NSObject, NSCopying, NSCoding {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSCell", _Class.class);
+public abstract class NSCell extends NSObject implements NSCopying, NSCoding {
 
     /// <i>native declaration : :11</i>
     public static final int NSAnyType = 0;
@@ -229,433 +228,437 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>id initTextCell(NSString*)</code><br>
      * <i>native declaration : :178</i>
      */
-    NSCell initTextCell(NSString aString);
+    public abstract NSCell initTextCell(NSString aString);
 
     /**
      * Original signature : <code>id initImageCell(NSImage*)</code><br>
      * <i>native declaration : :179</i>
      */
-    NSCell initImageCell(NSImage image);
+    public abstract NSCell initImageCell(NSImage image);
 
     /**
      * Original signature : <code>NSView* controlView()</code><br>
      * <i>native declaration : :181</i>
      */
-    NSView controlView();
+    public abstract NSView controlView();
 
     /**
      * Original signature : <code>void setControlView(NSView*)</code><br>
      * <i>native declaration : :183</i>
      */
-    void setControlView(NSView view);
+    public abstract void setControlView(NSView view);
 
     /**
      * Original signature : <code>NSCellType type()</code><br>
      * <i>native declaration : :185</i>
      */
-    int type();
+    public abstract int type();
 
     /**
      * Original signature : <code>void setType(NSCellType)</code><br>
      * <i>native declaration : :186</i>
      */
-    void setType(int aType);
+    public abstract void setType(int aType);
 
     /**
      * Original signature : <code>NSInteger state()</code><br>
      * <i>native declaration : :187</i>
      */
-    int state();
+    public abstract int state();
 
     /**
      * Original signature : <code>void setState(NSInteger)</code><br>
      * <i>native declaration : :188</i>
      */
-    void setState(int value);
+    public abstract void setState(int value);
 
     /**
      * Original signature : <code>action()</code><br>
      * <i>native declaration : :191</i>
      */
-    Selector action();
+    public abstract Selector action();
+
     /**
      * <i>native declaration : :192</i><br>
      * Conversion Error : /// Original signature : <code>void setAction(null)</code><br>
      * - (void)setAction:(null)aSelector; (Argument aSelector cannot be converted)
      */
-    void setAction(Selector action);
+    public abstract void setAction(Selector action);
+
     /**
      * Original signature : <code>NSInteger tag()</code><br>
      * <i>native declaration : :193</i>
      */
-    int tag();
+    public abstract int tag();
 
     /**
      * Original signature : <code>void setTag(NSInteger)</code><br>
      * <i>native declaration : :194</i>
      */
-    void setTag(int anInt);
+    public abstract void setTag(int anInt);
 
     /**
      * Original signature : <code>NSString* title()</code><br>
      * <i>native declaration : :195</i>
      */
-    String title();
+    public abstract String title();
 
     /**
      * Original signature : <code>void setTitle(NSString*)</code><br>
      * <i>native declaration : :196</i>
      */
-    void setTitle(String aString);
+    public abstract void setTitle(String aString);
 
     /**
      * Original signature : <code>BOOL isOpaque()</code><br>
      * <i>native declaration : :197</i>
      */
-    boolean isOpaque();
+    public abstract boolean isOpaque();
 
     /**
      * Original signature : <code>BOOL isEnabled()</code><br>
      * <i>native declaration : :198</i>
      */
-    boolean isEnabled();
+    public abstract boolean isEnabled();
 
     /**
      * Original signature : <code>void setEnabled(BOOL)</code><br>
      * <i>native declaration : :199</i>
      */
-    void setEnabled(boolean flag);
+    public abstract void setEnabled(boolean flag);
 
     /**
      * Original signature : <code>NSInteger sendActionOn(NSInteger)</code><br>
      * <i>native declaration : :200</i>
      */
-    int sendActionOn(int mask);
+    public abstract int sendActionOn(int mask);
 
     /**
      * Original signature : <code>BOOL isContinuous()</code><br>
      * <i>native declaration : :201</i>
      */
-    boolean isContinuous();
+    public abstract boolean isContinuous();
 
     /**
      * Original signature : <code>void setContinuous(BOOL)</code><br>
      * <i>native declaration : :202</i>
      */
-    void setContinuous(boolean flag);
+    public abstract void setContinuous(boolean flag);
 
     /**
      * Original signature : <code>BOOL isEditable()</code><br>
      * <i>native declaration : :203</i>
      */
-    boolean isEditable();
+    public abstract boolean isEditable();
 
     /**
      * Original signature : <code>void setEditable(BOOL)</code><br>
      * <i>native declaration : :204</i>
      */
-    void setEditable(boolean flag);
+    public abstract void setEditable(boolean flag);
 
     /**
      * Original signature : <code>BOOL isSelectable()</code><br>
      * <i>native declaration : :205</i>
      */
-    boolean isSelectable();
+    public abstract boolean isSelectable();
 
     /**
      * Original signature : <code>void setSelectable(BOOL)</code><br>
      * <i>native declaration : :206</i>
      */
-    void setSelectable(boolean flag);
+    public abstract void setSelectable(boolean flag);
 
     /**
      * Original signature : <code>BOOL isBordered()</code><br>
      * <i>native declaration : :207</i>
      */
-    boolean isBordered();
+    public abstract boolean isBordered();
 
     /**
      * Original signature : <code>void setBordered(BOOL)</code><br>
      * <i>native declaration : :208</i>
      */
-    void setBordered(boolean flag);
+    public abstract void setBordered(boolean flag);
 
     /**
      * Original signature : <code>BOOL isBezeled()</code><br>
      * <i>native declaration : :209</i>
      */
-    boolean isBezeled();
+    public abstract boolean isBezeled();
 
     /**
      * Original signature : <code>void setBezeled(BOOL)</code><br>
      * <i>native declaration : :210</i>
      */
-    void setBezeled(boolean flag);
+    public abstract void setBezeled(boolean flag);
 
     /**
      * Original signature : <code>BOOL isScrollable()</code><br>
      * <i>native declaration : :211</i>
      */
-    boolean isScrollable();
+    public abstract boolean isScrollable();
 
     /**
      * Original signature : <code>void setScrollable(BOOL)</code><br>
      * If YES, sets wraps to NO<br>
      * <i>native declaration : :212</i>
      */
-    void setScrollable(boolean flag);
+    public abstract void setScrollable(boolean flag);
 
     /**
      * Original signature : <code>BOOL isHighlighted()</code><br>
      * <i>native declaration : :213</i>
      */
-    boolean isHighlighted();
+    public abstract boolean isHighlighted();
 
     /**
      * Original signature : <code>void setHighlighted(BOOL)</code><br>
      * <i>native declaration : :214</i>
      */
-    void setHighlighted(boolean flag);
+    public abstract void setHighlighted(boolean flag);
 
     /**
      * Original signature : <code>alignment()</code><br>
      * <i>native declaration : :215</i>
      */
-    com.sun.jna.Pointer alignment();
+    public abstract com.sun.jna.Pointer alignment();
 
     /**
      * <i>native declaration : :216</i><br>
      * Conversion Error : /// Original signature : <code>void setAlignment(null)</code><br>
      * - (void)setAlignment:(null)mode; (Argument mode cannot be converted)
      */
-    void setAlignment(int mode);
+    public abstract void setAlignment(int mode);
 
     /**
      * Original signature : <code>BOOL wraps()</code><br>
      * <i>native declaration : :217</i>
      */
-    boolean wraps();
+    public abstract boolean wraps();
 
     /**
      * Original signature : <code>void setWraps(BOOL)</code><br>
      * If YES, sets scrollable to NO<br>
      * <i>native declaration : :218</i>
      */
-    void setWraps(boolean flag);
+    public abstract void setWraps(boolean flag);
 
     /**
      * Original signature : <code>NSFont* font()</code><br>
      * <i>native declaration : :219</i>
      */
-    NSFont font();
+    public abstract NSFont font();
 
     /**
      * Original signature : <code>void setFont(NSFont*)</code><br>
      * <i>native declaration : :220</i>
      */
-    void setFont(NSFont fontObj);
+    public abstract void setFont(NSFont fontObj);
 
     /**
      * Original signature : <code>NSInteger entryType()</code><br>
      * <i>native declaration : :221</i>
      */
-    int entryType();
+    public abstract int entryType();
 
     /**
      * Original signature : <code>void setEntryType(NSInteger)</code><br>
      * <i>native declaration : :222</i>
      */
-    void setEntryType(int aType);
+    public abstract void setEntryType(int aType);
 
     /**
      * Original signature : <code>BOOL isEntryAcceptable(NSString*)</code><br>
      * <i>native declaration : :223</i>
      */
-    boolean isEntryAcceptable(com.sun.jna.Pointer aString);
+    public abstract boolean isEntryAcceptable(com.sun.jna.Pointer aString);
 
     /**
      * Original signature : <code>void setFloatingPointFormat(BOOL, NSUInteger, NSUInteger)</code><br>
      * <i>native declaration : :224</i>
      */
-    void setFloatingPointFormat_left_right(boolean autoRange, int leftDigits, int rightDigits);
+    public abstract void setFloatingPointFormat_left_right(boolean autoRange, int leftDigits, int rightDigits);
 
     /**
      * Original signature : <code>NSString* keyEquivalent()</code><br>
      * <i>native declaration : :225</i>
      */
-    String keyEquivalent();
+    public abstract String keyEquivalent();
 
     /**
      * Original signature : <code>void setFormatter(NSFormatter*)</code><br>
      * <i>native declaration : :226</i>
      */
-    void setFormatter(com.sun.jna.Pointer newFormatter);
+    public abstract void setFormatter(com.sun.jna.Pointer newFormatter);
 
     /**
      * Original signature : <code>id formatter()</code><br>
      * <i>native declaration : :227</i>
      */
-    com.sun.jna.Pointer formatter();
+    public abstract org.rococoa.ID formatter();
 
     /**
      * Original signature : <code>id objectValue()</code><br>
      * <i>native declaration : :228</i>
      */
-    NSObject objectValue();
+    public abstract org.rococoa.ID objectValue();
+
     /**
      * <i>native declaration : :229</i><br>
      * Conversion Error : id<NSCopying>
      */
-    void setObjectValue(NSObject value);
+    public abstract void setObjectValue(org.rococoa.ID value);
+
     /**
      * Original signature : <code>BOOL hasValidObjectValue()</code><br>
      * <i>native declaration : :230</i>
      */
-    boolean hasValidObjectValue();
+    public abstract boolean hasValidObjectValue();
 
     /**
      * Original signature : <code>NSString* stringValue()</code><br>
      * <i>native declaration : :231</i>
      */
-    String stringValue();
+    public abstract String stringValue();
 
     /**
      * Original signature : <code>void setStringValue(NSString*)</code><br>
      * <i>native declaration : :232</i>
      */
-    void setStringValue(String aString);
+    public abstract void setStringValue(String aString);
 
     /**
      * Original signature : <code>compare(id)</code><br>
      * <i>native declaration : :233</i>
      */
-    com.sun.jna.Pointer compare(NSObject otherCell);
+    public abstract com.sun.jna.Pointer compare(NSObject otherCell);
 
     /**
      * Original signature : <code>int intValue()</code><br>
      * <i>native declaration : :234</i>
      */
-    int intValue();
+    public abstract int intValue();
 
     /**
      * Original signature : <code>void setIntValue(int)</code><br>
      * <i>native declaration : :235</i>
      */
-    void setIntValue(int anInt);
+    public abstract void setIntValue(int anInt);
 
     /**
      * Original signature : <code>float floatValue()</code><br>
      * <i>native declaration : :236</i>
      */
-    float floatValue();
+    public abstract float floatValue();
 
     /**
      * Original signature : <code>void setFloatValue(float)</code><br>
      * <i>native declaration : :237</i>
      */
-    void setFloatValue(float aFloat);
+    public abstract void setFloatValue(float aFloat);
 
     /**
      * Original signature : <code>double doubleValue()</code><br>
      * <i>native declaration : :238</i>
      */
-    double doubleValue();
+    public abstract double doubleValue();
 
     /**
      * Original signature : <code>void setDoubleValue(double)</code><br>
      * <i>native declaration : :239</i>
      */
-    void setDoubleValue(double aDouble);
+    public abstract void setDoubleValue(double aDouble);
 
     /**
      * Original signature : <code>void takeIntValueFrom(id)</code><br>
      * <i>native declaration : :240</i>
      */
-    void takeIntValueFrom(NSObject sender);
+    public abstract void takeIntValueFrom(NSObject sender);
 
     /**
      * Original signature : <code>void takeFloatValueFrom(id)</code><br>
      * <i>native declaration : :241</i>
      */
-    void takeFloatValueFrom(NSObject sender);
+    public abstract void takeFloatValueFrom(NSObject sender);
 
     /**
      * Original signature : <code>void takeDoubleValueFrom(id)</code><br>
      * <i>native declaration : :242</i>
      */
-    void takeDoubleValueFrom(NSObject sender);
+    public abstract void takeDoubleValueFrom(NSObject sender);
 
     /**
      * Original signature : <code>void takeStringValueFrom(id)</code><br>
      * <i>native declaration : :243</i>
      */
-    void takeStringValueFrom(NSObject sender);
+    public abstract void takeStringValueFrom(NSObject sender);
 
     /**
      * Original signature : <code>void takeObjectValueFrom(id)</code><br>
      * <i>native declaration : :244</i>
      */
-    void takeObjectValueFrom(NSObject sender);
+    public abstract void takeObjectValueFrom(NSObject sender);
 
     /**
      * Original signature : <code>NSImage* image()</code><br>
      * <i>native declaration : :245</i>
      */
-    com.sun.jna.Pointer image();
+    public abstract NSImage image();
 
     /**
      * Original signature : <code>void setImage(NSImage*)</code><br>
      * <i>native declaration : :246</i>
      */
-    void setImage(com.sun.jna.Pointer image);
+    public abstract void setImage(com.sun.jna.Pointer image);
 
     /**
      * Original signature : <code>void setControlTint(NSControlTint)</code><br>
      * <i>native declaration : :247</i>
      */
-    void setControlTint(int controlTint);
+    public abstract void setControlTint(int controlTint);
 
     /**
      * Original signature : <code>NSControlTint controlTint()</code><br>
      * <i>native declaration : :248</i>
      */
-    int controlTint();
+    public abstract int controlTint();
 
     /**
      * Original signature : <code>void setControlSize(NSControlSize)</code><br>
      * <i>native declaration : :249</i>
      */
-    void setControlSize(int size);
+    public abstract void setControlSize(int size);
 
     /**
      * Original signature : <code>NSControlSize controlSize()</code><br>
      * <i>native declaration : :250</i>
      */
-    int controlSize();
+    public abstract int controlSize();
 
     /**
      * Original signature : <code>id representedObject()</code><br>
      * <i>native declaration : :251</i>
      */
-    com.sun.jna.Pointer representedObject();
+    public abstract org.rococoa.ID representedObject();
 
     /**
      * Original signature : <code>void setRepresentedObject(id)</code><br>
      * <i>native declaration : :252</i>
      */
-    void setRepresentedObject(NSObject anObject);
+    public abstract void setRepresentedObject(org.rococoa.ID anObject);
 
     /**
      * Original signature : <code>NSInteger cellAttribute(NSCellAttribute)</code><br>
      * <i>native declaration : :253</i>
      */
-    int cellAttribute(int aParameter);
+    public abstract int cellAttribute(int aParameter);
 
     /**
      * Original signature : <code>void setCellAttribute(NSCellAttribute, NSInteger)</code><br>
      * <i>native declaration : :254</i>
      */
-    void setCellAttribute_to(int aParameter, int value);
+    public abstract void setCellAttribute_to(int aParameter, int value);
     /**
      * <i>native declaration : :255</i><br>
      * Conversion Error : /// Original signature : <code>imageRectForBounds(null)</code><br>
@@ -675,7 +678,7 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>cellSize()</code><br>
      * <i>native declaration : :258</i>
      */
-    com.sun.jna.Pointer cellSize();
+    public abstract com.sun.jna.Pointer cellSize();
     /**
      * <i>native declaration : :259</i><br>
      * Conversion Error : /// Original signature : <code>cellSizeForBounds(null)</code><br>
@@ -695,7 +698,7 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>NSText* setUpFieldEditorAttributes(NSText*)</code><br>
      * <i>native declaration : :262</i>
      */
-    com.sun.jna.Pointer setUpFieldEditorAttributes(com.sun.jna.Pointer textObj);
+    public abstract com.sun.jna.Pointer setUpFieldEditorAttributes(com.sun.jna.Pointer textObj);
     /**
      * <i>native declaration : :263</i><br>
      * Conversion Error : /// Original signature : <code>void drawInteriorWithFrame(null, NSView*)</code><br>
@@ -715,7 +718,7 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>NSInteger mouseDownFlags()</code><br>
      * <i>native declaration : :266</i>
      */
-    int mouseDownFlags();
+    public abstract int mouseDownFlags();
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
@@ -724,13 +727,13 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * @deprecated use the safer method {@link #getPeriodicDelay_interval(java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
      */
     @java.lang.Deprecated
-    void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
+    public abstract void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
      * <i>native declaration : :267</i>
      */
-    void getPeriodicDelay_interval(java.nio.FloatBuffer delay, java.nio.FloatBuffer interval);
+    public abstract void getPeriodicDelay_interval(java.nio.FloatBuffer delay, java.nio.FloatBuffer interval);
     /**
      * <i>native declaration : :268</i><br>
      * Conversion Error : /// Original signature : <code>BOOL startTrackingAt(null, NSView*)</code><br>
@@ -765,7 +768,7 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>void endEditing(NSText*)</code><br>
      * <i>native declaration : :274</i>
      */
-    void endEditing(com.sun.jna.Pointer textObj);
+    public abstract void endEditing(com.sun.jna.Pointer textObj);
     /**
      * <i>native declaration : :275</i><br>
      * Conversion Error : /// Original signature : <code>void resetCursorRect(null, NSView*)</code><br>
@@ -775,13 +778,13 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>void setMenu(NSMenu*)</code><br>
      * <i>native declaration : :277</i>
      */
-    void setMenu(com.sun.jna.Pointer aMenu);
+    public abstract void setMenu(com.sun.jna.Pointer aMenu);
 
     /**
      * Original signature : <code>NSMenu* menu()</code><br>
      * <i>native declaration : :278</i>
      */
-    NSMenu menu();
+    public abstract NSMenu menu();
     /**
      * <i>native declaration : :279</i><br>
      * Conversion Error : /// Original signature : <code>NSMenu* menuForEvent(NSEvent*, null, NSView*)</code><br>
@@ -791,19 +794,19 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>void setSendsActionOnEndEditing(BOOL)</code><br>
      * <i>native declaration : :282</i>
      */
-    void setSendsActionOnEndEditing(boolean flag);
+    public abstract void setSendsActionOnEndEditing(boolean flag);
 
     /**
      * Original signature : <code>BOOL sendsActionOnEndEditing()</code><br>
      * <i>native declaration : :283</i>
      */
-    boolean sendsActionOnEndEditing();
+    public abstract boolean sendsActionOnEndEditing();
 
     /**
      * Original signature : <code>baseWritingDirection()</code><br>
      * <i>native declaration : :286</i>
      */
-    com.sun.jna.Pointer baseWritingDirection();
+    public abstract com.sun.jna.Pointer baseWritingDirection();
     /**
      * <i>native declaration : :287</i><br>
      * Conversion Error : /// Original signature : <code>void setBaseWritingDirection(null)</code><br>
@@ -818,110 +821,110 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>lineBreakMode()</code><br>
      * <i>native declaration : :290</i>
      */
-    com.sun.jna.Pointer lineBreakMode();
+    public abstract com.sun.jna.Pointer lineBreakMode();
 
     /**
      * Original signature : <code>void setAllowsUndo(BOOL)</code><br>
      * <i>native declaration : :292</i>
      */
-    void setAllowsUndo(boolean allowsUndo);
+    public abstract void setAllowsUndo(boolean allowsUndo);
 
     /**
      * Original signature : <code>BOOL allowsUndo()</code><br>
      * <i>native declaration : :293</i>
      */
-    boolean allowsUndo();
+    public abstract boolean allowsUndo();
 
     /**
      * Original signature : <code>NSInteger integerValue()</code><br>
      * <i>native declaration : :297</i>
      */
-    int integerValue();
+    public abstract int integerValue();
 
     /**
      * Original signature : <code>void setIntegerValue(NSInteger)</code><br>
      * <i>native declaration : :298</i>
      */
-    void setIntegerValue(int anInteger);
+    public abstract void setIntegerValue(int anInteger);
 
     /**
      * Original signature : <code>void takeIntegerValueFrom(id)</code><br>
      * <i>native declaration : :299</i>
      */
-    void takeIntegerValueFrom(NSObject sender);
+    public abstract void takeIntegerValueFrom(NSObject sender);
 
     /**
      * Truncates and adds the ellipsis character to the last visible line if the text doesn't fit into the cell bounds. The setting is ignored if -lineBreakMode is neither NSLineBreakByWordWrapping nor NSLineBreakByCharWrapping.<br>
      * Original signature : <code>BOOL truncatesLastVisibleLine()</code><br>
      * <i>native declaration : :304</i>
      */
-    boolean truncatesLastVisibleLine();
+    public abstract boolean truncatesLastVisibleLine();
 
     /**
      * Original signature : <code>void setTruncatesLastVisibleLine(BOOL)</code><br>
      * <i>native declaration : :305</i>
      */
-    void setTruncatesLastVisibleLine(boolean flag);
+    public abstract void setTruncatesLastVisibleLine(boolean flag);
 
     /**
      * Original signature : <code>void setRefusesFirstResponder(BOOL)</code><br>
      * <i>from NSKeyboardUI native declaration : :309</i>
      */
-    void setRefusesFirstResponder(boolean flag);
+    public abstract void setRefusesFirstResponder(boolean flag);
 
     /**
      * Original signature : <code>BOOL refusesFirstResponder()</code><br>
      * <i>from NSKeyboardUI native declaration : :310</i>
      */
-    boolean refusesFirstResponder();
+    public abstract boolean refusesFirstResponder();
 
     /**
      * Original signature : <code>BOOL acceptsFirstResponder()</code><br>
      * <i>from NSKeyboardUI native declaration : :311</i>
      */
-    boolean acceptsFirstResponder();
+    public abstract boolean acceptsFirstResponder();
 
     /**
      * Original signature : <code>void setShowsFirstResponder(BOOL)</code><br>
      * <i>from NSKeyboardUI native declaration : :312</i>
      */
-    void setShowsFirstResponder(boolean showFR);
+    public abstract void setShowsFirstResponder(boolean showFR);
 
     /**
      * Original signature : <code>BOOL showsFirstResponder()</code><br>
      * <i>from NSKeyboardUI native declaration : :313</i>
      */
-    boolean showsFirstResponder();
+    public abstract boolean showsFirstResponder();
 
     /**
      * Original signature : <code>void setMnemonicLocation(NSUInteger)</code><br>
      * <i>from NSKeyboardUI native declaration : :314</i>
      */
-    void setMnemonicLocation(int location);
+    public abstract void setMnemonicLocation(int location);
 
     /**
      * Original signature : <code>NSUInteger mnemonicLocation()</code><br>
      * <i>from NSKeyboardUI native declaration : :315</i>
      */
-    int mnemonicLocation();
+    public abstract int mnemonicLocation();
 
     /**
      * Original signature : <code>NSString* mnemonic()</code><br>
      * <i>from NSKeyboardUI native declaration : :316</i>
      */
-    String mnemonic();
+    public abstract String mnemonic();
 
     /**
      * Original signature : <code>void setTitleWithMnemonic(NSString*)</code><br>
      * <i>from NSKeyboardUI native declaration : :317</i>
      */
-    void setTitleWithMnemonic(String stringWithAmpersand);
+    public abstract void setTitleWithMnemonic(String stringWithAmpersand);
 
     /**
      * Original signature : <code>void performClick(id)</code><br>
      * <i>from NSKeyboardUI native declaration : :318</i>
      */
-    void performClick(NSObject sender);
+    public abstract void performClick(NSObject sender);
     /**
      * <i>from NSKeyboardUI native declaration : :321</i><br>
      * Conversion Error : /// Original signature : <code>void setFocusRingType(null)</code><br>
@@ -931,80 +934,80 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>focusRingType()</code><br>
      * <i>from NSKeyboardUI native declaration : :322</i>
      */
-    com.sun.jna.Pointer focusRingType();
+    public abstract com.sun.jna.Pointer focusRingType();
 
     /**
      * Original signature : <code>BOOL wantsNotificationForMarkedText()</code><br>
      * If the receiver returns YES, the field editor initiated by it posts text change notifications (i.e. NSTextDidChangeNotification) while editing marked text; otherwise, they are delayed until the marked text confirmation. The NSCell's implementation returns NO.<br>
      * <i>from NSKeyboardUI native declaration : :326</i>
      */
-    boolean wantsNotificationForMarkedText();
+    public abstract boolean wantsNotificationForMarkedText();
 
     /**
      * Original signature : <code>NSAttributedString* attributedStringValue()</code><br>
      * <i>from NSCellAttributedStringMethods native declaration : :331</i>
      */
-    NSAttributedString attributedStringValue();
+    public abstract NSAttributedString attributedStringValue();
 
     /**
      * Original signature : <code>void setAttributedStringValue(NSAttributedString*)</code><br>
      * <i>from NSCellAttributedStringMethods native declaration : :332</i>
      */
-    void setAttributedStringValue(NSAttributedString obj);
+    public abstract void setAttributedStringValue(NSAttributedString obj);
 
     /**
      * These methods determine whether the user can modify text attributes and import graphics in a rich cell.  Note that whatever these flags are, cells can still contain attributed text if programmatically set.<br>
      * Original signature : <code>BOOL allowsEditingTextAttributes()</code><br>
      * <i>from NSCellAttributedStringMethods native declaration : :334</i>
      */
-    boolean allowsEditingTextAttributes();
+    public abstract boolean allowsEditingTextAttributes();
 
     /**
      * Original signature : <code>void setAllowsEditingTextAttributes(BOOL)</code><br>
      * If NO, also clears setImportsGraphics:<br>
      * <i>from NSCellAttributedStringMethods native declaration : :335</i>
      */
-    void setAllowsEditingTextAttributes(boolean flag);
+    public abstract void setAllowsEditingTextAttributes(boolean flag);
 
     /**
      * Original signature : <code>BOOL importsGraphics()</code><br>
      * <i>from NSCellAttributedStringMethods native declaration : :336</i>
      */
-    boolean importsGraphics();
+    public abstract boolean importsGraphics();
 
     /**
      * Original signature : <code>void setImportsGraphics(BOOL)</code><br>
      * If YES, also sets setAllowsEditingTextAttributes:<br>
      * <i>from NSCellAttributedStringMethods native declaration : :337</i>
      */
-    void setImportsGraphics(boolean flag);
+    public abstract void setImportsGraphics(boolean flag);
 
     /**
      * Original signature : <code>void setAllowsMixedState(BOOL)</code><br>
      * allow button to have mixed state value<br>
      * <i>from NSCellMixedState native declaration : :341</i>
      */
-    void setAllowsMixedState(boolean flag);
+    public abstract void setAllowsMixedState(boolean flag);
 
     /**
      * Original signature : <code>BOOL allowsMixedState()</code><br>
      * <i>from NSCellMixedState native declaration : :342</i>
      */
-    boolean allowsMixedState();
+    public abstract boolean allowsMixedState();
 
     /**
      * Original signature : <code>NSInteger nextState()</code><br>
      * get next state state in cycle<br>
      * <i>from NSCellMixedState native declaration : :343</i>
      */
-    int nextState();
+    public abstract int nextState();
 
     /**
      * Original signature : <code>void setNextState()</code><br>
      * toggle/cycle through states<br>
      * <i>from NSCellMixedState native declaration : :344</i>
      */
-    void setNextState();
+    public abstract void setNextState();
     /**
      * <i>from NSCellHitTest native declaration : :382</i><br>
      * Conversion Error : /**<br>
@@ -1045,13 +1048,13 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>NSBackgroundStyle backgroundStyle()</code><br>
      * <i>from NSCellBackgroundStyle native declaration : :407</i>
      */
-    int backgroundStyle();
+    public abstract int backgroundStyle();
 
     /**
      * Original signature : <code>void setBackgroundStyle(NSBackgroundStyle)</code><br>
      * <i>from NSCellBackgroundStyle native declaration : :408</i>
      */
-    void setBackgroundStyle(int style);
+    public abstract void setBackgroundStyle(int style);
 
     /**
      * Describes the surface drawn onto in -[NSCell drawInteriorWithFrame:inView:]. This is often the same as the backgroundStyle, but a button that draws a bezel would have a different interiorBackgroundStyle.  <br>
@@ -1059,5 +1062,5 @@ public interface NSCell extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>NSBackgroundStyle interiorBackgroundStyle()</code><br>
      * <i>from NSCellBackgroundStyle native declaration : :415</i>
      */
-    int interiorBackgroundStyle();
+    public abstract int interiorBackgroundStyle();
 }

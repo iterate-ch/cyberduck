@@ -19,11 +19,12 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :16</i>
-public interface NSComboBox extends NSTextField {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSComboBox", _Class.class);
+public abstract class NSComboBox extends NSTextField {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSComboBox", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSComboBox alloc();
@@ -33,19 +34,19 @@ public interface NSComboBox extends NSTextField {
      * Original signature : <code>BOOL hasVerticalScroller()</code><br>
      * <i>native declaration : :21</i>
      */
-    boolean hasVerticalScroller();
+    public abstract boolean hasVerticalScroller();
 
     /**
      * Original signature : <code>void setHasVerticalScroller(BOOL)</code><br>
      * <i>native declaration : :22</i>
      */
-    void setHasVerticalScroller(boolean flag);
+    public abstract void setHasVerticalScroller(boolean flag);
 
     /**
      * Original signature : <code>intercellSpacing()</code><br>
      * <i>native declaration : :23</i>
      */
-    NSObject intercellSpacing();
+    public abstract NSObject intercellSpacing();
     /**
      * <i>native declaration : :24</i><br>
      * Conversion Error : /// Original signature : <code>void setIntercellSpacing(null)</code><br>
@@ -55,189 +56,189 @@ public interface NSComboBox extends NSTextField {
      * Original signature : <code>CGFloat itemHeight()</code><br>
      * <i>native declaration : :25</i>
      */
-    float itemHeight();
+    public abstract float itemHeight();
 
     /**
      * Original signature : <code>void setItemHeight(CGFloat)</code><br>
      * <i>native declaration : :26</i>
      */
-    void setItemHeight(float itemHeight);
+    public abstract void setItemHeight(float itemHeight);
 
     /**
      * Original signature : <code>NSInteger numberOfVisibleItems()</code><br>
      * <i>native declaration : :27</i>
      */
-    int numberOfVisibleItems();
+    public abstract int numberOfVisibleItems();
 
     /**
      * Original signature : <code>void setNumberOfVisibleItems(NSInteger)</code><br>
      * <i>native declaration : :28</i>
      */
-    void setNumberOfVisibleItems(int visibleItems);
+    public abstract void setNumberOfVisibleItems(int visibleItems);
 
     /**
      * Original signature : <code>void setButtonBordered(BOOL)</code><br>
      * <i>native declaration : :31</i>
      */
-    void setButtonBordered(boolean flag);
+    public abstract void setButtonBordered(boolean flag);
 
     /**
      * Original signature : <code>BOOL isButtonBordered()</code><br>
      * <i>native declaration : :32</i>
      */
-    boolean isButtonBordered();
+    public abstract boolean isButtonBordered();
 
     /**
      * Original signature : <code>void reloadData()</code><br>
      * <i>native declaration : :35</i>
      */
-    void reloadData();
+    public abstract void reloadData();
 
     /**
      * Original signature : <code>void noteNumberOfItemsChanged()</code><br>
      * <i>native declaration : :36</i>
      */
-    void noteNumberOfItemsChanged();
+    public abstract void noteNumberOfItemsChanged();
 
     /**
      * Original signature : <code>void setUsesDataSource(BOOL)</code><br>
      * <i>native declaration : :38</i>
      */
-    void setUsesDataSource(boolean flag);
+    public abstract void setUsesDataSource(boolean flag);
 
     /**
      * Original signature : <code>BOOL usesDataSource()</code><br>
      * <i>native declaration : :39</i>
      */
-    boolean usesDataSource();
+    public abstract boolean usesDataSource();
 
     /**
      * Original signature : <code>void scrollItemAtIndexToTop(NSInteger)</code><br>
      * <i>native declaration : :41</i>
      */
-    void scrollItemAtIndexToTop(int index);
+    public abstract void scrollItemAtIndexToTop(int index);
 
     /**
      * Original signature : <code>void scrollItemAtIndexToVisible(NSInteger)</code><br>
      * <i>native declaration : :42</i>
      */
-    void scrollItemAtIndexToVisible(int index);
+    public abstract void scrollItemAtIndexToVisible(int index);
 
     /**
      * Original signature : <code>void selectItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :44</i>
      */
-    void selectItemAtIndex(int index);
+    public abstract void selectItemAtIndex(int index);
 
     /**
      * Original signature : <code>void deselectItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :45</i>
      */
-    void deselectItemAtIndex(int index);
+    public abstract void deselectItemAtIndex(int index);
 
     /**
      * Original signature : <code>NSInteger indexOfSelectedItem()</code><br>
      * <i>native declaration : :46</i>
      */
-    int indexOfSelectedItem();
+    public abstract int indexOfSelectedItem();
 
     /**
      * Original signature : <code>NSInteger numberOfItems()</code><br>
      * <i>native declaration : :47</i>
      */
-    int numberOfItems();
+    public abstract int numberOfItems();
 
     /**
      * Original signature : <code>BOOL completes()</code><br>
      * <i>native declaration : :49</i>
      */
-    boolean completes();
+    public abstract boolean completes();
 
     /**
      * Original signature : <code>void setCompletes(BOOL)</code><br>
      * <i>native declaration : :50</i>
      */
-    void setCompletes(boolean completes);
+    public abstract void setCompletes(boolean completes);
 
     /**
      * These two methods can only be used when usesDataSource is YES<br>
      * Original signature : <code>id dataSource()</code><br>
      * <i>native declaration : :53</i>
      */
-    org.rococoa.ID dataSource();
+    public abstract org.rococoa.ID dataSource();
 
     /**
      * Original signature : <code>void setDataSource(id)</code><br>
      * <i>native declaration : :54</i>
      */
-    void setDataSource(org.rococoa.ID aSource);
+    public abstract void setDataSource(org.rococoa.ID aSource);
 
     /**
      * These methods can only be used when usesDataSource is NO<br>
      * Original signature : <code>void addItemWithObjectValue(id)</code><br>
      * <i>native declaration : :57</i>
      */
-    void addItemWithObjectValue(NSObject object);
+    public abstract void addItemWithObjectValue(NSObject object);
 
     /**
      * Original signature : <code>void addItemsWithObjectValues(NSArray*)</code><br>
      * <i>native declaration : :58</i>
      */
-    void addItemsWithObjectValues(com.sun.jna.Pointer objects);
+    public abstract void addItemsWithObjectValues(com.sun.jna.Pointer objects);
 
     /**
      * Original signature : <code>void insertItemWithObjectValue(id, NSInteger)</code><br>
      * <i>native declaration : :59</i>
      */
-    void insertItemWithObjectValue_atIndex(NSObject object, int index);
+    public abstract void insertItemWithObjectValue_atIndex(NSObject object, int index);
 
     /**
      * Original signature : <code>void removeItemWithObjectValue(id)</code><br>
      * <i>native declaration : :60</i>
      */
-    void removeItemWithObjectValue(NSObject object);
+    public abstract void removeItemWithObjectValue(NSObject object);
 
     /**
      * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :61</i>
      */
-    void removeItemAtIndex(int index);
+    public abstract void removeItemAtIndex(int index);
 
     /**
      * Original signature : <code>void removeAllItems()</code><br>
      * <i>native declaration : :62</i>
      */
-    void removeAllItems();
+    public abstract void removeAllItems();
 
     /**
      * Original signature : <code>void selectItemWithObjectValue(id)</code><br>
      * <i>native declaration : :63</i>
      */
-    void selectItemWithObjectValue(NSObject object);
+    public abstract void selectItemWithObjectValue(NSObject object);
 
     /**
      * Original signature : <code>id itemObjectValueAtIndex(NSInteger)</code><br>
      * <i>native declaration : :64</i>
      */
-    NSObject itemObjectValueAtIndex(int index);
+    public abstract NSObject itemObjectValueAtIndex(int index);
 
     /**
      * Original signature : <code>id objectValueOfSelectedItem()</code><br>
      * <i>native declaration : :65</i>
      */
-    NSObject objectValueOfSelectedItem();
+    public abstract NSObject objectValueOfSelectedItem();
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithObjectValue(id)</code><br>
      * <i>native declaration : :66</i>
      */
-    int indexOfItemWithObjectValue(NSObject object);
+    public abstract int indexOfItemWithObjectValue(NSObject object);
 
     /**
      * Original signature : <code>NSArray* objectValues()</code><br>
      * <i>native declaration : :67</i>
      */
-    com.sun.jna.Pointer objectValues();
+    public abstract NSArray objectValues();
 
     public static final String ComboBoxWillPopUpNotification = "NSComboBoxWillPopUpNotification";
     public static final String ComboBoxWillDismissNotification = "NSComboBoxWillDismissNotification";

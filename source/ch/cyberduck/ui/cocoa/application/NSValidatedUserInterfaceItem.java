@@ -19,12 +19,10 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-
 import org.rococoa.Selector;
 
 /// <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSUserInterfaceValidation.h:69</i>
-public interface NSValidatedUserInterfaceItem extends NSObject {
+public interface NSValidatedUserInterfaceItem {
     /**
      * Original signature : <code>action()</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSUserInterfaceValidation.h:70</i>

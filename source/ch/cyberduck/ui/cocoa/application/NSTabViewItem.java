@@ -22,8 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :18</i>
-public interface NSTabViewItem extends NSObject {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSTabViewItem", _Class.class);
+public abstract class NSTabViewItem extends NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTabViewItem", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSTabViewItem alloc();
@@ -33,79 +33,79 @@ public interface NSTabViewItem extends NSObject {
      * Original signature : <code>id initWithIdentifier(id)</code><br>
      * <i>native declaration : :52</i>
      */
-    NSTabViewItem initWithIdentifier(String identifier);
+    public abstract NSTabViewItem initWithIdentifier(String identifier);
 
     /**
      * Original signature : <code>id identifier()</code><br>
      * <i>native declaration : :56</i>
      */
-    String identifier();
+    public abstract String identifier();
 
     /**
      * Original signature : <code>id view()</code><br>
      * <i>native declaration : :57</i>
      */
-    NSView view();
+    public abstract NSView view();
 
     /**
      * Original signature : <code>id initialFirstResponder()</code><br>
      * <i>native declaration : :58</i>
      */
-    NSView initialFirstResponder();
+    public abstract NSView initialFirstResponder();
 
     /**
      * Original signature : <code>NSString* label()</code><br>
      * <i>native declaration : :59</i>
      */
-    String label();
+    public abstract String label();
 
     /**
      * Original signature : <code>NSColor* color()</code><br>
      * <i>native declaration : :60</i>
      */
-    NSColor color();
+    public abstract NSColor color();
 
     /**
      * Original signature : <code>NSTabState tabState()</code><br>
      * <i>native declaration : :61</i>
      */
-    int tabState();
+    public abstract int tabState();
 
     /**
      * Original signature : <code>NSTabView* tabView()</code><br>
      * <i>native declaration : :62</i>
      */
-    NSTabView tabView();
+    public abstract NSTabView tabView();
 
     /**
      * Original signature : <code>void setIdentifier(id)</code><br>
      * <i>native declaration : :66</i>
      */
-    void setIdentifier(String identifier);
+    public abstract void setIdentifier(String identifier);
 
     /**
      * Original signature : <code>void setLabel(NSString*)</code><br>
      * <i>native declaration : :67</i>
      */
-    void setLabel(String label);
+    public abstract void setLabel(String label);
 
     /**
      * Original signature : <code>void setColor(NSColor*)</code><br>
      * <i>native declaration : :68</i>
      */
-    void setColor(NSColor color);
+    public abstract void setColor(NSColor color);
 
     /**
      * Original signature : <code>void setView(NSView*)</code><br>
      * <i>native declaration : :69</i>
      */
-    void setView(NSView view);
+    public abstract void setView(NSView view);
 
     /**
      * Original signature : <code>void setInitialFirstResponder(NSView*)</code><br>
      * <i>native declaration : :70</i>
      */
-    void setInitialFirstResponder(NSView view);
+    public abstract void setInitialFirstResponder(NSView view);
     /**
      * <i>native declaration : :76</i><br>
      * Conversion Error : NSRect

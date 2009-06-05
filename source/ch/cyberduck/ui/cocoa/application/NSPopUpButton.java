@@ -242,5 +242,5 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>NSString* titleOfSelectedItem()</code><br>
      * <i>native declaration : :80</i>
      */
-    public abstract    String titleOfSelectedItem();
+    public abstract String titleOfSelectedItem();
 }

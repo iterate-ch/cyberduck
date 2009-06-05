@@ -25,8 +25,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 
 /// <i>native declaration : :72</i>
-public interface NSTextView extends NSText {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSTextView", _Class.class);
+public abstract class NSTextView extends NSText {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextView", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         /**
@@ -51,19 +51,19 @@ public interface NSTextView extends NSText {
      * Original signature : <code>NSTextContainer* textContainer()</code><br>
      * <i>native declaration : :88</i>
      */
-    com.sun.jna.Pointer textContainer();
+    public abstract com.sun.jna.Pointer textContainer();
 
     /**
      * Original signature : <code>void setTextContainer(NSTextContainer*)</code><br>
      * <i>native declaration : :89</i>
      */
-    void setTextContainer(com.sun.jna.Pointer container);
+    public abstract void setTextContainer(com.sun.jna.Pointer container);
 
     /**
      * Original signature : <code>void replaceTextContainer(NSTextContainer*)</code><br>
      * <i>native declaration : :92</i>
      */
-    void replaceTextContainer(com.sun.jna.Pointer newContainer);
+    public abstract void replaceTextContainer(com.sun.jna.Pointer newContainer);
     /**
      * <i>native declaration : :95</i><br>
      * Conversion Error : /// Original signature : <code>void setTextContainerInset(null)</code><br>
@@ -73,31 +73,31 @@ public interface NSTextView extends NSText {
      * Original signature : <code>textContainerInset()</code><br>
      * <i>native declaration : :96</i>
      */
-    NSObject textContainerInset();
+    public abstract NSObject textContainerInset();
 
     /**
      * Original signature : <code>textContainerOrigin()</code><br>
      * <i>native declaration : :99</i>
      */
-    NSObject textContainerOrigin();
+    public abstract NSObject textContainerOrigin();
 
     /**
      * Original signature : <code>void invalidateTextContainerOrigin()</code><br>
      * <i>native declaration : :100</i>
      */
-    void invalidateTextContainerOrigin();
+    public abstract void invalidateTextContainerOrigin();
 
     /**
      * Original signature : <code>NSLayoutManager* layoutManager()</code><br>
      * <i>native declaration : :103</i>
      */
-    NSLayoutManager layoutManager();
+    public abstract NSLayoutManager layoutManager();
 
     /**
      * Original signature : <code>NSTextStorage* textStorage()</code><br>
      * <i>native declaration : :104</i>
      */
-    NSTextStorage textStorage();
+    public abstract NSTextStorage textStorage();
     /**
      * <i>native declaration : :109</i><br>
      * Conversion Error : /// Original signature : <code>void insertText(null)</code><br>
@@ -230,55 +230,55 @@ public interface NSTextView extends NSText {
      * Original signature : <code>void rulerView(NSRulerView*, NSRulerMarker*)</code><br>
      * <i>native declaration : :166</i>
      */
-    void rulerView_didMoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
+    public abstract void rulerView_didMoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
 
     /**
      * Original signature : <code>void rulerView(NSRulerView*, NSRulerMarker*)</code><br>
      * <i>native declaration : :167</i>
      */
-    void rulerView_didRemoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
+    public abstract void rulerView_didRemoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
 
     /**
      * Original signature : <code>void rulerView(NSRulerView*, NSRulerMarker*)</code><br>
      * <i>native declaration : :168</i>
      */
-    void rulerView_didAddMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
+    public abstract void rulerView_didAddMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
 
     /**
      * Original signature : <code>BOOL rulerView(NSRulerView*, NSRulerMarker*)</code><br>
      * <i>native declaration : :169</i>
      */
-    boolean rulerView_shouldMoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
+    public abstract boolean rulerView_shouldMoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
 
     /**
      * Original signature : <code>BOOL rulerView(NSRulerView*, NSRulerMarker*)</code><br>
      * <i>native declaration : :170</i>
      */
-    boolean rulerView_shouldAddMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
+    public abstract boolean rulerView_shouldAddMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
 
     /**
      * Original signature : <code>CGFloat rulerView(NSRulerView*, NSRulerMarker*, CGFloat)</code><br>
      * <i>native declaration : :171</i>
      */
-    float rulerView_willMoveMarker_toLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, float location);
+    public abstract float rulerView_willMoveMarker_toLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, float location);
 
     /**
      * Original signature : <code>BOOL rulerView(NSRulerView*, NSRulerMarker*)</code><br>
      * <i>native declaration : :172</i>
      */
-    boolean rulerView_shouldRemoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
+    public abstract boolean rulerView_shouldRemoveMarker(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker);
 
     /**
      * Original signature : <code>CGFloat rulerView(NSRulerView*, NSRulerMarker*, CGFloat)</code><br>
      * <i>native declaration : :173</i>
      */
-    float rulerView_willAddMarker_atLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, float location);
+    public abstract float rulerView_willAddMarker_atLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, float location);
 
     /**
      * Original signature : <code>void rulerView(NSRulerView*, NSEvent*)</code><br>
      * <i>native declaration : :174</i>
      */
-    void rulerView_handleMouseDown(com.sun.jna.Pointer ruler, NSEvent event);
+    public abstract void rulerView_handleMouseDown(com.sun.jna.Pointer ruler, NSEvent event);
     /**
      * <i>native declaration : :178</i><br>
      * Conversion Error : /// Original signature : <code>void setNeedsDisplayInRect(null, BOOL)</code><br>
@@ -288,7 +288,7 @@ public interface NSTextView extends NSText {
      * Original signature : <code>BOOL shouldDrawInsertionPoint()</code><br>
      * <i>native declaration : :181</i>
      */
-    boolean shouldDrawInsertionPoint();
+    public abstract boolean shouldDrawInsertionPoint();
     /**
      * <i>native declaration : :182</i><br>
      * Conversion Error : /// Original signature : <code>void drawInsertionPointInRect(null, NSColor*, BOOL)</code><br>
@@ -303,19 +303,19 @@ public interface NSTextView extends NSText {
      * Original signature : <code>void updateRuler()</code><br>
      * <i>native declaration : :191</i>
      */
-    void updateRuler();
+    public abstract void updateRuler();
 
     /**
      * Original signature : <code>void updateFontPanel()</code><br>
      * <i>native declaration : :192</i>
      */
-    void updateFontPanel();
+    public abstract void updateFontPanel();
 
     /**
      * Original signature : <code>void updateDragTypeRegistration()</code><br>
      * <i>native declaration : :194</i>
      */
-    void updateDragTypeRegistration();
+    public abstract void updateDragTypeRegistration();
     /**
      * <i>native declaration : :196</i><br>
      * Conversion Error : /// Original signature : <code>selectionRangeForProposedRange(null, NSSelectionGranularity)</code><br>
@@ -350,7 +350,7 @@ public interface NSTextView extends NSText {
      * Original signature : <code>rangeForUserCompletion()</code><br>
      * <i>from NSCompletion native declaration : :225</i>
      */
-    NSObject rangeForUserCompletion();
+    public abstract NSObject rangeForUserCompletion();
     /**
      * <i>from NSCompletion native declaration : :228</i><br>
      * Conversion Error : /// Original signature : <code>NSArray* completionsForPartialWordRange(null, NSInteger*)</code><br>
@@ -365,43 +365,43 @@ public interface NSTextView extends NSText {
      * Original signature : <code>NSArray* writablePasteboardTypes()</code><br>
      * <i>from NSPasteboard native declaration : :248</i>
      */
-    com.sun.jna.Pointer writablePasteboardTypes();
+    public abstract com.sun.jna.Pointer writablePasteboardTypes();
 
     /**
      * Original signature : <code>BOOL writeSelectionToPasteboard(NSPasteboard*, NSString*)</code><br>
      * <i>from NSPasteboard native declaration : :251</i>
      */
-    boolean writeSelectionToPasteboard_type(com.sun.jna.Pointer pboard, com.sun.jna.Pointer type);
+    public abstract boolean writeSelectionToPasteboard_type(com.sun.jna.Pointer pboard, com.sun.jna.Pointer type);
 
     /**
      * Original signature : <code>BOOL writeSelectionToPasteboard(NSPasteboard*, NSArray*)</code><br>
      * <i>from NSPasteboard native declaration : :254</i>
      */
-    boolean writeSelectionToPasteboard_types(com.sun.jna.Pointer pboard, com.sun.jna.Pointer types);
+    public abstract boolean writeSelectionToPasteboard_types(com.sun.jna.Pointer pboard, com.sun.jna.Pointer types);
 
     /**
      * Original signature : <code>NSArray* readablePasteboardTypes()</code><br>
      * <i>from NSPasteboard native declaration : :258</i>
      */
-    NSArray readablePasteboardTypes();
+    public abstract NSArray readablePasteboardTypes();
 
     /**
      * Original signature : <code>NSString* preferredPasteboardTypeFromArray(NSArray*, NSArray*)</code><br>
      * <i>from NSPasteboard native declaration : :261</i>
      */
-    String preferredPasteboardTypeFromArray_restrictedToTypesFromArray(NSArray availableTypes, NSArray allowedTypes);
+    public abstract String preferredPasteboardTypeFromArray_restrictedToTypesFromArray(NSArray availableTypes, NSArray allowedTypes);
 
     /**
      * Original signature : <code>BOOL readSelectionFromPasteboard(NSPasteboard*, NSString*)</code><br>
      * <i>from NSPasteboard native declaration : :264</i>
      */
-    boolean readSelectionFromPasteboard_type(NSPasteboard pboard, String type);
+    public abstract boolean readSelectionFromPasteboard_type(NSPasteboard pboard, String type);
 
     /**
      * Original signature : <code>BOOL readSelectionFromPasteboard(NSPasteboard*)</code><br>
      * <i>from NSPasteboard native declaration : :267</i>
      */
-    boolean readSelectionFromPasteboard(com.sun.jna.Pointer pboard);
+    public abstract boolean readSelectionFromPasteboard(com.sun.jna.Pointer pboard);
 
     /**
      * Original signature : <code>validRequestorForSendType(NSString*, NSString*)</code><br>
@@ -431,7 +431,7 @@ public interface NSTextView extends NSText {
      * Original signature : <code>NSArray* acceptableDragTypes()</code><br>
      * <i>from NSDragging native declaration : :290</i>
      */
-    NSArray acceptableDragTypes();
+    public abstract NSArray acceptableDragTypes();
     /**
      * <i>from NSDragging native declaration : :293</i><br>
      * Conversion Error : id<NSDraggingInfo>
@@ -440,25 +440,25 @@ public interface NSTextView extends NSText {
      * Original signature : <code>void cleanUpAfterDragOperation()</code><br>
      * <i>from NSDragging native declaration : :296</i>
      */
-    void cleanUpAfterDragOperation();
+    public abstract void cleanUpAfterDragOperation();
 
     /**
      * Original signature : <code>NSArray* selectedRanges()</code><br>
      * <i>from NSSharing native declaration : :308</i>
      */
-    NSArray selectedRanges();
+    public abstract NSArray selectedRanges();
 
     /**
      * Original signature : <code>void setSelectedRanges(NSArray*, NSSelectionAffinity, BOOL)</code><br>
      * <i>from NSSharing native declaration : :309</i>
      */
-    void setSelectedRanges_affinity_stillSelecting(com.sun.jna.Pointer ranges, int affinity, boolean stillSelectingFlag);
+    public abstract void setSelectedRanges_affinity_stillSelecting(com.sun.jna.Pointer ranges, int affinity, boolean stillSelectingFlag);
 
     /**
      * Original signature : <code>void setSelectedRanges(NSArray*)</code><br>
      * <i>from NSSharing native declaration : :310</i>
      */
-    void setSelectedRanges(NSArray ranges);
+    public abstract void setSelectedRanges(NSArray ranges);
     /**
      * <i>from NSSharing native declaration : :314</i><br>
      * Conversion Error : /// Original signature : <code>void setSelectedRange(null, NSSelectionAffinity, BOOL)</code><br>
@@ -468,127 +468,127 @@ public interface NSTextView extends NSText {
      * Original signature : <code>NSSelectionAffinity selectionAffinity()</code><br>
      * <i>from NSSharing native declaration : :315</i>
      */
-    int selectionAffinity();
+    public abstract int selectionAffinity();
 
     /**
      * Original signature : <code>NSSelectionGranularity selectionGranularity()</code><br>
      * <i>from NSSharing native declaration : :316</i>
      */
-    int selectionGranularity();
+    public abstract int selectionGranularity();
 
     /**
      * Original signature : <code>void setSelectionGranularity(NSSelectionGranularity)</code><br>
      * <i>from NSSharing native declaration : :317</i>
      */
-    void setSelectionGranularity(int granularity);
+    public abstract void setSelectionGranularity(int granularity);
 
     /**
      * Original signature : <code>void setSelectedTextAttributes(NSDictionary*)</code><br>
      * <i>from NSSharing native declaration : :319</i>
      */
-    void setSelectedTextAttributes(NSDictionary attributeDictionary);
+    public abstract void setSelectedTextAttributes(NSDictionary attributeDictionary);
 
     /**
      * Original signature : <code>NSDictionary* selectedTextAttributes()</code><br>
      * <i>from NSSharing native declaration : :320</i>
      */
-    com.sun.jna.Pointer selectedTextAttributes();
+    public abstract com.sun.jna.Pointer selectedTextAttributes();
 
     /**
      * Original signature : <code>void setInsertionPointColor(NSColor*)</code><br>
      * <i>from NSSharing native declaration : :323</i>
      */
-    void setInsertionPointColor(com.sun.jna.Pointer color);
+    public abstract void setInsertionPointColor(com.sun.jna.Pointer color);
 
     /**
      * Original signature : <code>NSColor* insertionPointColor()</code><br>
      * <i>from NSSharing native declaration : :324</i>
      */
-    com.sun.jna.Pointer insertionPointColor();
+    public abstract com.sun.jna.Pointer insertionPointColor();
 
     /**
      * Original signature : <code>void updateInsertionPointStateAndRestartTimer(BOOL)</code><br>
      * <i>from NSSharing native declaration : :326</i>
      */
-    void updateInsertionPointStateAndRestartTimer(boolean restartFlag);
+    public abstract void updateInsertionPointStateAndRestartTimer(boolean restartFlag);
 
     /**
      * Original signature : <code>void setMarkedTextAttributes(NSDictionary*)</code><br>
      * <i>from NSSharing native declaration : :328</i>
      */
-    void setMarkedTextAttributes(com.sun.jna.Pointer attributeDictionary);
+    public abstract void setMarkedTextAttributes(com.sun.jna.Pointer attributeDictionary);
 
     /**
      * Original signature : <code>NSDictionary* markedTextAttributes()</code><br>
      * <i>from NSSharing native declaration : :329</i>
      */
-    com.sun.jna.Pointer markedTextAttributes();
+    public abstract com.sun.jna.Pointer markedTextAttributes();
 
     /**
      * Original signature : <code>void setLinkTextAttributes(NSDictionary*)</code><br>
      * <i>from NSSharing native declaration : :333</i>
      */
-    void setLinkTextAttributes(com.sun.jna.Pointer attributeDictionary);
+    public abstract void setLinkTextAttributes(com.sun.jna.Pointer attributeDictionary);
 
     /**
      * Original signature : <code>NSDictionary* linkTextAttributes()</code><br>
      * <i>from NSSharing native declaration : :334</i>
      */
-    com.sun.jna.Pointer linkTextAttributes();
+    public abstract com.sun.jna.Pointer linkTextAttributes();
 
     /**
      * Original signature : <code>BOOL displaysLinkToolTips()</code><br>
      * <i>from NSSharing native declaration : :339</i>
      */
-    boolean displaysLinkToolTips();
+    public abstract boolean displaysLinkToolTips();
 
     /**
      * Original signature : <code>void setDisplaysLinkToolTips(BOOL)</code><br>
      * <i>from NSSharing native declaration : :340</i>
      */
-    void setDisplaysLinkToolTips(boolean flag);
+    public abstract void setDisplaysLinkToolTips(boolean flag);
 
     /**
      * Original signature : <code>BOOL acceptsGlyphInfo()</code><br>
      * <i>from NSSharing native declaration : :347</i>
      */
-    boolean acceptsGlyphInfo();
+    public abstract boolean acceptsGlyphInfo();
 
     /**
      * Original signature : <code>void setAcceptsGlyphInfo(BOOL)</code><br>
      * <i>from NSSharing native declaration : :348</i>
      */
-    void setAcceptsGlyphInfo(boolean flag);
+    public abstract void setAcceptsGlyphInfo(boolean flag);
 
     /**
      * Original signature : <code>void setRulerVisible(BOOL)</code><br>
      * <i>from NSSharing native declaration : :353</i>
      */
-    void setRulerVisible(boolean flag);
+    public abstract void setRulerVisible(boolean flag);
 
     /**
      * Original signature : <code>BOOL usesRuler()</code><br>
      * <i>from NSSharing native declaration : :354</i>
      */
-    boolean usesRuler();
+    public abstract boolean usesRuler();
 
     /**
      * Original signature : <code>void setUsesRuler(BOOL)</code><br>
      * <i>from NSSharing native declaration : :355</i>
      */
-    void setUsesRuler(boolean flag);
+    public abstract void setUsesRuler(boolean flag);
 
     /**
      * Original signature : <code>void setContinuousSpellCheckingEnabled(BOOL)</code><br>
      * <i>from NSSharing native declaration : :357</i>
      */
-    void setContinuousSpellCheckingEnabled(boolean flag);
+    public abstract void setContinuousSpellCheckingEnabled(boolean flag);
 
     /**
      * Original signature : <code>BOOL isContinuousSpellCheckingEnabled()</code><br>
      * <i>from NSSharing native declaration : :358</i>
      */
-    boolean isContinuousSpellCheckingEnabled();
+    public abstract boolean isContinuousSpellCheckingEnabled();
     /**
      * <i>from NSSharing native declaration : :359</i><br>
      * Conversion Error : /// Original signature : <code>void toggleContinuousSpellChecking(null)</code><br>
@@ -598,19 +598,19 @@ public interface NSTextView extends NSText {
      * Original signature : <code>NSInteger spellCheckerDocumentTag()</code><br>
      * <i>from NSSharing native declaration : :361</i>
      */
-    int spellCheckerDocumentTag();
+    public abstract int spellCheckerDocumentTag();
 
     /**
      * Original signature : <code>void setGrammarCheckingEnabled(BOOL)</code><br>
      * <i>from NSSharing native declaration : :364</i>
      */
-    void setGrammarCheckingEnabled(boolean flag);
+    public abstract void setGrammarCheckingEnabled(boolean flag);
 
     /**
      * Original signature : <code>BOOL isGrammarCheckingEnabled()</code><br>
      * <i>from NSSharing native declaration : :365</i>
      */
-    boolean isGrammarCheckingEnabled();
+    public abstract boolean isGrammarCheckingEnabled();
     /**
      * <i>from NSSharing native declaration : :366</i><br>
      * Conversion Error : /// Original signature : <code>void toggleGrammarChecking(null)</code><br>
@@ -625,38 +625,38 @@ public interface NSTextView extends NSText {
      * Original signature : <code>NSDictionary* typingAttributes()</code><br>
      * <i>from NSSharing native declaration : :373</i>
      */
-    com.sun.jna.Pointer typingAttributes();
+    public abstract com.sun.jna.Pointer typingAttributes();
 
     /**
      * Original signature : <code>void setTypingAttributes(NSDictionary*)</code><br>
      * <i>from NSSharing native declaration : :374</i>
      */
-    void setTypingAttributes(com.sun.jna.Pointer attrs);
+    public abstract void setTypingAttributes(com.sun.jna.Pointer attrs);
 
     /**
      * These multiple-range methods supersede the corresponding single-range methods.  For the first method, the affectedRanges argument obeys the same restrictions as the argument to setSelectedRanges:, and the replacementStrings array should either be nil (for attribute-only changes) or have the same number of elements as affectedRanges.  For the remaining three methods, the return values obey the same restrictions as that for selectedRanges, except that they will be nil if the corresponding change is not permitted, where the corresponding single-range methods return (NSNotFound, 0).<br>
      * Original signature : <code>BOOL shouldChangeTextInRanges(NSArray*, NSArray*)</code><br>
      * <i>from NSSharing native declaration : :378</i>
      */
-    boolean shouldChangeTextInRanges_replacementStrings(com.sun.jna.Pointer affectedRanges, com.sun.jna.Pointer replacementStrings);
+    public abstract boolean shouldChangeTextInRanges_replacementStrings(com.sun.jna.Pointer affectedRanges, com.sun.jna.Pointer replacementStrings);
 
     /**
      * Original signature : <code>NSArray* rangesForUserTextChange()</code><br>
      * <i>from NSSharing native declaration : :379</i>
      */
-    com.sun.jna.Pointer rangesForUserTextChange();
+    public abstract com.sun.jna.Pointer rangesForUserTextChange();
 
     /**
      * Original signature : <code>NSArray* rangesForUserCharacterAttributeChange()</code><br>
      * <i>from NSSharing native declaration : :380</i>
      */
-    com.sun.jna.Pointer rangesForUserCharacterAttributeChange();
+    public abstract com.sun.jna.Pointer rangesForUserCharacterAttributeChange();
 
     /**
      * Original signature : <code>NSArray* rangesForUserParagraphAttributeChange()</code><br>
      * <i>from NSSharing native declaration : :381</i>
      */
-    com.sun.jna.Pointer rangesForUserParagraphAttributeChange();
+    public abstract com.sun.jna.Pointer rangesForUserParagraphAttributeChange();
     /**
      * <i>from NSSharing native declaration : :384</i><br>
      * Conversion Error : /// Original signature : <code>BOOL shouldChangeTextInRange(null, NSString*)</code><br>
@@ -666,91 +666,91 @@ public interface NSTextView extends NSText {
      * Original signature : <code>void didChangeText()</code><br>
      * <i>from NSSharing native declaration : :385</i>
      */
-    void didChangeText();
+    public abstract void didChangeText();
 
     /**
      * Original signature : <code>rangeForUserTextChange()</code><br>
      * <i>from NSSharing native declaration : :387</i>
      */
-    NSObject rangeForUserTextChange();
+    public abstract NSObject rangeForUserTextChange();
 
     /**
      * Original signature : <code>rangeForUserCharacterAttributeChange()</code><br>
      * <i>from NSSharing native declaration : :388</i>
      */
-    NSObject rangeForUserCharacterAttributeChange();
+    public abstract NSObject rangeForUserCharacterAttributeChange();
 
     /**
      * Original signature : <code>rangeForUserParagraphAttributeChange()</code><br>
      * <i>from NSSharing native declaration : :389</i>
      */
-    NSObject rangeForUserParagraphAttributeChange();
+    public abstract NSObject rangeForUserParagraphAttributeChange();
 
     /**
      * Original signature : <code>void setUsesFindPanel(BOOL)</code><br>
      * <i>from NSSharing native declaration : :392</i>
      */
-    void setUsesFindPanel(boolean flag);
+    public abstract void setUsesFindPanel(boolean flag);
 
     /**
      * Original signature : <code>BOOL usesFindPanel()</code><br>
      * <i>from NSSharing native declaration : :393</i>
      */
-    boolean usesFindPanel();
+    public abstract boolean usesFindPanel();
 
     /**
      * Original signature : <code>void setAllowsDocumentBackgroundColorChange(BOOL)</code><br>
      * <i>from NSSharing native declaration : :395</i>
      */
-    void setAllowsDocumentBackgroundColorChange(boolean flag);
+    public abstract void setAllowsDocumentBackgroundColorChange(boolean flag);
 
     /**
      * Original signature : <code>BOOL allowsDocumentBackgroundColorChange()</code><br>
      * <i>from NSSharing native declaration : :396</i>
      */
-    boolean allowsDocumentBackgroundColorChange();
+    public abstract boolean allowsDocumentBackgroundColorChange();
 
     /**
      * Original signature : <code>void setDefaultParagraphStyle(NSParagraphStyle*)</code><br>
      * <i>from NSSharing native declaration : :398</i>
      */
-    void setDefaultParagraphStyle(com.sun.jna.Pointer paragraphStyle);
+    public abstract void setDefaultParagraphStyle(com.sun.jna.Pointer paragraphStyle);
 
     /**
      * Original signature : <code>NSParagraphStyle* defaultParagraphStyle()</code><br>
      * <i>from NSSharing native declaration : :399</i>
      */
-    com.sun.jna.Pointer defaultParagraphStyle();
+    public abstract com.sun.jna.Pointer defaultParagraphStyle();
 
     /**
      * Original signature : <code>void setAllowsUndo(BOOL)</code><br>
      * <i>from NSSharing native declaration : :402</i>
      */
-    void setAllowsUndo(boolean flag);
+    public abstract void setAllowsUndo(boolean flag);
 
     /**
      * Original signature : <code>BOOL allowsUndo()</code><br>
      * <i>from NSSharing native declaration : :403</i>
      */
-    boolean allowsUndo();
+    public abstract boolean allowsUndo();
 
     /**
      * Original signature : <code>void breakUndoCoalescing()</code><br>
      * <i>from NSSharing native declaration : :406</i>
      */
-    void breakUndoCoalescing();
+    public abstract void breakUndoCoalescing();
 
     /**
      * Original signature : <code>BOOL allowsImageEditing()</code><br>
      * <i>from NSSharing native declaration : :411</i>
      */
-    boolean allowsImageEditing();
+    public abstract boolean allowsImageEditing();
 
     /**
      * Original signature : <code>void setAllowsImageEditing(BOOL)</code><br>
      * <i>from NSSharing native declaration : :412</i>
      */
-    void setAllowsImageEditing(boolean flag);
+    public abstract void setAllowsImageEditing(boolean flag);
     /**
      * <i>from NSSharing native declaration : :415</i><br>
      * Conversion Error : /// Original signature : <code>void showFindIndicatorForRange(null)</code><br>
@@ -761,12 +761,13 @@ public interface NSTextView extends NSText {
      * Conversion Error : /// Original signature : <code>void setDelegate(null)</code><br>
      * - (void)setDelegate:(null)anObject; (Argument anObject cannot be converted)
      */
-    public void setDelegate(org.rococoa.ID anObject);
+    public abstract void setDelegate(org.rococoa.ID anObject);
+
     /**
      * Original signature : <code>void setBackgroundColor(NSColor*)</code><br>
      * <i>from NSSharing native declaration : :434</i>
      */
-    void setBackgroundColor(NSColor color);
+    public abstract void setBackgroundColor(NSColor color);
     /**
      * <i>from NSSharing native declaration : :440</i><br>
      * Conversion Error : /// Original signature : <code>void setSelectedRange(null)</code><br>
@@ -776,13 +777,13 @@ public interface NSTextView extends NSText {
      * Original signature : <code>BOOL smartInsertDeleteEnabled()</code><br>
      * <i>from NSSharing native declaration : :445</i>
      */
-    boolean smartInsertDeleteEnabled();
+    public abstract boolean smartInsertDeleteEnabled();
 
     /**
      * Original signature : <code>void setSmartInsertDeleteEnabled(BOOL)</code><br>
      * <i>from NSSharing native declaration : :446</i>
      */
-    void setSmartInsertDeleteEnabled(boolean flag);
+    public abstract void setSmartInsertDeleteEnabled(boolean flag);
     /**
      * <i>from NSSharing native declaration : :447</i><br>
      * Conversion Error : /// Original signature : <code>smartDeleteRangeForProposedRange(null)</code><br>
@@ -812,13 +813,13 @@ public interface NSTextView extends NSText {
      * Original signature : <code>void setAutomaticQuoteSubstitutionEnabled(BOOL)</code><br>
      * <i>from NSSharing native declaration : :458</i>
      */
-    void setAutomaticQuoteSubstitutionEnabled(boolean flag);
+    public abstract void setAutomaticQuoteSubstitutionEnabled(boolean flag);
 
     /**
      * Original signature : <code>BOOL isAutomaticQuoteSubstitutionEnabled()</code><br>
      * <i>from NSSharing native declaration : :459</i>
      */
-    boolean isAutomaticQuoteSubstitutionEnabled();
+    public abstract boolean isAutomaticQuoteSubstitutionEnabled();
     /**
      * <i>from NSSharing native declaration : :460</i><br>
      * Conversion Error : /// Original signature : <code>void toggleAutomaticQuoteSubstitution(null)</code><br>
@@ -828,13 +829,13 @@ public interface NSTextView extends NSText {
      * Original signature : <code>void setAutomaticLinkDetectionEnabled(BOOL)</code><br>
      * <i>from NSSharing native declaration : :461</i>
      */
-    void setAutomaticLinkDetectionEnabled(boolean flag);
+    public abstract void setAutomaticLinkDetectionEnabled(boolean flag);
 
     /**
      * Original signature : <code>BOOL isAutomaticLinkDetectionEnabled()</code><br>
      * <i>from NSSharing native declaration : :462</i>
      */
-    boolean isAutomaticLinkDetectionEnabled();
+    public abstract boolean isAutomaticLinkDetectionEnabled();
     /**
      * <i>from NSSharing native declaration : :463</i><br>
      * Conversion Error : /// Original signature : <code>void toggleAutomaticLinkDetection(null)</code><br>
@@ -845,11 +846,11 @@ public interface NSTextView extends NSText {
      * Original signature : <code>NSArray* allowedInputSourceLocales()</code><br>
      * <i>from NSSharing native declaration : :470</i>
      */
-    NSArray allowedInputSourceLocales();
+    public abstract NSArray allowedInputSourceLocales();
 
     /**
      * Original signature : <code>void setAllowedInputSourceLocales(NSArray*)</code><br>
      * <i>from NSSharing native declaration : :471</i>
      */
-    void setAllowedInputSourceLocales(NSArray localeIdentifiers);
+    public abstract void setAllowedInputSourceLocales(NSArray localeIdentifiers);
 }

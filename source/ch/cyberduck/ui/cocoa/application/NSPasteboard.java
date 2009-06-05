@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :52</i>
-public abstract class NSPasteboard implements NSObject {
+public abstract class NSPasteboard extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPasteboard", _Class.class);
 
     public static NSPasteboard generalPasteboard() {

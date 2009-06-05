@@ -25,8 +25,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.NSPoint;
 
-public interface NSEvent extends NSObject, NSCopying, NSCoding {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSEvent", _Class.class);
+public abstract class NSEvent extends NSObject implements NSCopying, NSCoding {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSEvent", _Class.class);
 
     /// <i>native declaration : :12</i>
     public static final int NSLeftMouseDown = 1;
@@ -361,13 +361,13 @@ public interface NSEvent extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>NSEventType type()</code><br>
      * <i>native declaration : :177</i>
      */
-    int type();
+    public abstract int type();
 
     /**
      * Original signature : <code>NSUInteger modifierFlags()</code><br>
      * <i>native declaration : :178</i>
      */
-    int modifierFlags();
+    public abstract int modifierFlags();
     /**
      * <i>native declaration : :179</i><br>
      * Conversion Error : NSTimeInterval
@@ -376,92 +376,93 @@ public interface NSEvent extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>NSWindow* window()</code><br>
      * <i>native declaration : :180</i>
      */
-    NSWindow window();
+    public abstract NSWindow window();
 
     /**
      * Original signature : <code>NSInteger windowNumber()</code><br>
      * <i>native declaration : :181</i>
      */
-    int windowNumber();
+    public abstract int windowNumber();
 
     /**
      * Original signature : <code>NSGraphicsContext* context()</code><br>
      * <i>native declaration : :182</i>
      */
-    com.sun.jna.Pointer context();
+    public abstract com.sun.jna.Pointer context();
 
     /**
      * these messages are valid for all mouse down/up/drag events<br>
      * Original signature : <code>NSInteger clickCount()</code><br>
      * <i>native declaration : :185</i>
      */
-    int clickCount();
+    public abstract int clickCount();
 
     /**
      * Original signature : <code>NSInteger buttonNumber()</code><br>
      * for NSOtherMouse events, but will return valid constants for NSLeftMouse and NSRightMouse<br>
      * <i>native declaration : :186</i>
      */
-    int buttonNumber();
+    public abstract int buttonNumber();
 
     /**
      * these messages are valid for all mouse down/up/drag and enter/exit events<br>
      * Original signature : <code>NSInteger eventNumber()</code><br>
      * <i>native declaration : :188</i>
      */
-    int eventNumber();
+    public abstract int eventNumber();
 
     /**
      * These messages are also valid for NSTabletPoint events on 10.4 or later<br>
      * Original signature : <code>float pressure()</code><br>
      * <i>native declaration : :192</i>
      */
-    float pressure();
+    public abstract float pressure();
+
     /**
      * <i>native declaration : :193</i><br>
      * Conversion Error : NSPoint
      */
-    NSPoint locationInWindow();
+    public abstract NSPoint locationInWindow();
 
     /**
      * these messages are valid for scroll wheel events and mouse move/drag events<br>
      * Original signature : <code>CGFloat deltaX()</code><br>
      * <i>native declaration : :196</i>
      */
-    float deltaX();
+    public abstract float deltaX();
 
     /**
      * Original signature : <code>CGFloat deltaY()</code><br>
      * <i>native declaration : :197</i>
      */
-    float deltaY();
+    public abstract float deltaY();
 
     /**
      * Original signature : <code>CGFloat deltaZ()</code><br>
      * 0 for most scroll wheel and mouse events<br>
      * <i>native declaration : :198</i>
      */
-    float deltaZ();
+    public abstract float deltaZ();
 
     /**
      * these messages are valid for keyup and keydown events<br>
      * Original signature : <code>NSString* characters()</code><br>
      * <i>native declaration : :201</i>
      */
-    String characters();
+    public abstract String characters();
 
     /**
      * Original signature : <code>NSString* charactersIgnoringModifiers()</code><br>
      * <i>native declaration : :202</i>
      */
-    String charactersIgnoringModifiers();
+    public abstract String charactersIgnoringModifiers();
 
     /**
      * the chars that would have been generated, regardless of modifier keys (except shift)<br>
      * Original signature : <code>BOOL isARepeat()</code><br>
      * <i>native declaration : :204</i>
      */
-    boolean isARepeat();
+    public abstract boolean isARepeat();
 
     /**
      * this message is valid for keyup, keydown and flagschanged events<br>
@@ -469,96 +470,96 @@ public interface NSEvent extends NSObject, NSCopying, NSCoding {
      * device-independent key number<br>
      * <i>native declaration : :206</i>
      */
-    short keyCode();
+    public abstract short keyCode();
 
     /**
      * these messages are valid for enter and exit events<br>
      * Original signature : <code>NSInteger trackingNumber()</code><br>
      * <i>native declaration : :209</i>
      */
-    int trackingNumber();
+    public abstract int trackingNumber();
 
     /**
      * Original signature : <code>void* userData()</code><br>
      * <i>native declaration : :210</i>
      */
-    NSObject userData();
+    public abstract NSObject userData();
 
     /**
      * -trackingArea returns the NSTrackingArea that generated this event.  It is possible for there to be no trackingArea associated with the event in some cases where the event corresponds to a trackingRect installed with -[NSView addTrackingRect:owner:userData:assumeInside:], in which case nil is returned.<br>
      * Original signature : <code>NSTrackingArea* trackingArea()</code><br>
      * <i>native declaration : :213</i>
      */
-    com.sun.jna.Pointer trackingArea();
+    public abstract com.sun.jna.Pointer trackingArea();
 
     /**
      * this message is also valid for mouse events on 10.4 or later<br>
      * Original signature : <code>short subtype()</code><br>
      * <i>native declaration : :218</i>
      */
-    short subtype();
+    public abstract short subtype();
 
     /**
      * these messages are valid for kit, system, and app-defined events<br>
      * Original signature : <code>NSInteger data1()</code><br>
      * <i>native declaration : :221</i>
      */
-    int data1();
+    public abstract int data1();
 
     /**
      * Original signature : <code>NSInteger data2()</code><br>
      * <i>native declaration : :222</i>
      */
-    int data2();
+    public abstract int data2();
 
     /**
      * -eventRef returns an EventRef corresponding to the NSEvent.  The EventRef is retained by the NSEvent, so will be valid as long as the NSEvent is valid, and will be released when the NSEvent is freed.  You can use RetainEvent to extend the lifetime of the EventRef, with a corresponding ReleaseEvent when you are done with it.  If there is no EventRef corresponding to the NSEvent, -eventRef will return NULL.<br>
      * Original signature : <code>const void* eventRef()</code><br>
      * <i>native declaration : :229</i>
      */
-    NSEvent eventRef();
+    public abstract NSEvent eventRef();
 
     /**
      * -CGEvent returns an autoreleased CGEventRef corresponding to the NSEvent.  If there is no CGEventRef corresponding to the NSEvent, -CGEvent will return NULL.<br>
      * Original signature : <code>CGEvent()</code><br>
      * <i>native declaration : :236</i>
      */
-    com.sun.jna.Pointer CGEvent();
+    public abstract com.sun.jna.Pointer CGEvent();
 
     /**
      * this message is valid for mouse events with subtype NSTabletPointEventSubtype or NSTabletProximityEventSubtype, and for NSTabletPoint and NSTabletProximity events<br>
      * Original signature : <code>NSUInteger deviceID()</code><br>
      * <i>native declaration : :251</i>
      */
-    int deviceID();
+    public abstract int deviceID();
 
     /**
      * absolute x coordinate in tablet space at full tablet resolution<br>
      * Original signature : <code>NSInteger absoluteX()</code><br>
      * <i>native declaration : :255</i>
      */
-    int absoluteX();
+    public abstract int absoluteX();
 
     /**
      * absolute y coordinate in tablet space at full tablet resolution<br>
      * Original signature : <code>NSInteger absoluteY()</code><br>
      * <i>native declaration : :257</i>
      */
-    int absoluteY();
+    public abstract int absoluteY();
 
     /**
      * absolute z coordinate in tablet space at full tablet resolution<br>
      * Original signature : <code>NSInteger absoluteZ()</code><br>
      * <i>native declaration : :259</i>
      */
-    int absoluteZ();
+    public abstract int absoluteZ();
 
     /**
      * mask indicating which buttons are pressed.<br>
      * Original signature : <code>NSUInteger buttonMask()</code><br>
      * <i>native declaration : :261</i>
      */
-    int buttonMask();
+    public abstract int buttonMask();
     /**
      * <i>native declaration : :263</i><br>
      * Conversion Error : NSPoint
@@ -568,362 +569,89 @@ public interface NSEvent extends NSObject, NSCopying, NSCoding {
      * Original signature : <code>float rotation()</code><br>
      * <i>native declaration : :265</i>
      */
-    float rotation();
+    public abstract float rotation();
 
     /**
      * tangential pressure on the device; range is -1 to 1<br>
      * Original signature : <code>float tangentialPressure()</code><br>
      * <i>native declaration : :267</i>
      */
-    float tangentialPressure();
+    public abstract float tangentialPressure();
 
     /**
      * NSArray of 3 vendor defined shorts<br>
      * Original signature : <code>vendorDefined()</code><br>
      * <i>native declaration : :269</i>
      */
-    com.sun.jna.Pointer vendorDefined();
+    public abstract com.sun.jna.Pointer vendorDefined();
 
     /**
      * vendor defined, typically USB vendor ID<br>
      * Original signature : <code>NSUInteger vendorID()</code><br>
      * <i>native declaration : :273</i>
      */
-    int vendorID();
+    public abstract int vendorID();
 
     /**
      * vendor defined tablet ID<br>
      * Original signature : <code>NSUInteger tabletID()</code><br>
      * <i>native declaration : :275</i>
      */
-    int tabletID();
+    public abstract int tabletID();
 
     /**
      * index of the device on the tablet.  Usually 0, except for tablets that support multiple concurrent devices<br>
      * Original signature : <code>NSUInteger pointingDeviceID()</code><br>
      * <i>native declaration : :277</i>
      */
-    int pointingDeviceID();
+    public abstract int pointingDeviceID();
 
     /**
      * system assigned unique tablet ID<br>
      * Original signature : <code>NSUInteger systemTabletID()</code><br>
      * <i>native declaration : :279</i>
      */
-    int systemTabletID();
+    public abstract int systemTabletID();
 
     /**
      * vendor defined pointing device type<br>
      * Original signature : <code>NSUInteger vendorPointingDeviceType()</code><br>
      * <i>native declaration : :281</i>
      */
-    int vendorPointingDeviceType();
+    public abstract int vendorPointingDeviceType();
 
     /**
      * vendor defined serial number of pointing device<br>
      * Original signature : <code>NSUInteger pointingDeviceSerialNumber()</code><br>
      * <i>native declaration : :283</i>
      */
-    int pointingDeviceSerialNumber();
+    public abstract int pointingDeviceSerialNumber();
 
     /**
      * vendor defined unique ID<br>
      * Original signature : <code>unsigned long long uniqueID()</code><br>
      * <i>native declaration : :285</i>
      */
-    long uniqueID();
+    public abstract long uniqueID();
 
     /**
      * mask representing capabilities of device<br>
      * Original signature : <code>NSUInteger capabilityMask()</code><br>
      * <i>native declaration : :287</i>
      */
-    int capabilityMask();
+    public abstract int capabilityMask();
 
     /**
      * mask representing capabilities of device<br>
      * Original signature : <code>NSPointingDeviceType pointingDeviceType()</code><br>
      * <i>native declaration : :289</i>
      */
-    int pointingDeviceType();
+    public abstract int pointingDeviceType();
 
     /**
      * YES - entering; NO - leaving<br>
      * Original signature : <code>BOOL isEnteringProximity()</code><br>
      * <i>native declaration : :291</i>
      */
-    boolean isEnteringProximity();
-
-    /// <i>native declaration : :114</i>
-    public static class _data_union extends com.sun.jna.Union {
-        /// Allocate a new _data_union struct on the heap
-        public _data_union() {
-        }
-
-        /// Cast data at given memory location (pointer + offset) as an existing _data_union struct
-        public _data_union(com.sun.jna.Pointer pointer, int offset) {
-            super();
-            useMemory(pointer, offset);
-            read();
-        }
-
-        /// Create an instance that shares its memory with another _data_union instance
-        public _data_union(_data_union struct) {
-            this(struct.getPointer(), 0);
-        }
-
-        public static class ByReference extends _data_union implements com.sun.jna.Structure.ByReference {
-            /// Allocate a new _data_union.ByRef struct on the heap
-            public ByReference() {
-            }
-
-            /// Create an instance that shares its memory with another _data_union instance
-            public ByReference(_data_union struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-
-        public static class ByValue extends _data_union implements com.sun.jna.Structure.ByValue {
-            /// Allocate a new _data_union.ByVal struct on the heap
-            public ByValue() {
-            }
-
-            /// Create an instance that shares its memory with another _data_union instance
-            public ByValue(_data_union struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-
-        public mouse_struct.ByValue mouse;
-        public key_struct.ByValue key;
-        public tracking_struct.ByValue tracking;
-        public scrollWheel_struct.ByValue scrollWheel;
-        public misc_struct.ByValue misc;
-
-        /// <i>native declaration : :115</i>
-        public static class mouse_struct extends com.sun.jna.Structure {
-            /// Allocate a new mouse_struct struct on the heap
-            public mouse_struct() {
-            }
-
-            /// Cast data at given memory location (pointer + offset) as an existing mouse_struct struct
-            public mouse_struct(com.sun.jna.Pointer pointer, int offset) {
-                super();
-                useMemory(pointer, offset);
-                read();
-            }
-
-            /// Create an instance that shares its memory with another mouse_struct instance
-            public mouse_struct(mouse_struct struct) {
-                this(struct.getPointer(), 0);
-            }
-
-            public static class ByReference extends mouse_struct implements com.sun.jna.Structure.ByReference {
-                /// Allocate a new mouse_struct.ByRef struct on the heap
-                public ByReference() {
-                }
-
-                /// Create an instance that shares its memory with another mouse_struct instance
-                public ByReference(mouse_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public static class ByValue extends mouse_struct implements com.sun.jna.Structure.ByValue {
-                /// Allocate a new mouse_struct.ByVal struct on the heap
-                public ByValue() {
-                }
-
-                /// Create an instance that shares its memory with another mouse_struct instance
-                public ByValue(mouse_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public int eventNumber;
-            public int clickCount;
-            public float pressure;
-        }
-
-        /// <i>native declaration : :128</i>
-        public static class key_struct extends com.sun.jna.Structure {
-            /// Allocate a new key_struct struct on the heap
-            public key_struct() {
-            }
-
-            /// Cast data at given memory location (pointer + offset) as an existing key_struct struct
-            public key_struct(com.sun.jna.Pointer pointer, int offset) {
-                super();
-                useMemory(pointer, offset);
-                read();
-            }
-
-            /// Create an instance that shares its memory with another key_struct instance
-            public key_struct(key_struct struct) {
-                this(struct.getPointer(), 0);
-            }
-
-            public static class ByReference extends key_struct implements com.sun.jna.Structure.ByReference {
-                /// Allocate a new key_struct.ByRef struct on the heap
-                public ByReference() {
-                }
-
-                /// Create an instance that shares its memory with another key_struct instance
-                public ByReference(key_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public static class ByValue extends key_struct implements com.sun.jna.Structure.ByValue {
-                /// Allocate a new key_struct.ByVal struct on the heap
-                public ByValue() {
-                }
-
-                /// Create an instance that shares its memory with another key_struct instance
-                public ByValue(key_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public com.sun.jna.Pointer keys;
-            public com.sun.jna.Pointer unmodKeys;
-            public short keyCode;
-            public boolean isARepeat;
-        }
-
-        /// <i>native declaration : :137</i>
-        public static class tracking_struct extends com.sun.jna.Structure {
-            /// Allocate a new tracking_struct struct on the heap
-            public tracking_struct() {
-            }
-
-            /// Cast data at given memory location (pointer + offset) as an existing tracking_struct struct
-            public tracking_struct(com.sun.jna.Pointer pointer, int offset) {
-                super();
-                useMemory(pointer, offset);
-                read();
-            }
-
-            /// Create an instance that shares its memory with another tracking_struct instance
-            public tracking_struct(tracking_struct struct) {
-                this(struct.getPointer(), 0);
-            }
-
-            public static class ByReference extends tracking_struct implements com.sun.jna.Structure.ByReference {
-                /// Allocate a new tracking_struct.ByRef struct on the heap
-                public ByReference() {
-                }
-
-                /// Create an instance that shares its memory with another tracking_struct instance
-                public ByReference(tracking_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public static class ByValue extends tracking_struct implements com.sun.jna.Structure.ByValue {
-                /// Allocate a new tracking_struct.ByVal struct on the heap
-                public ByValue() {
-                }
-
-                /// Create an instance that shares its memory with another tracking_struct instance
-                public ByValue(tracking_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public int eventNumber;
-            public int trackingNumber;
-            public com.sun.jna.Pointer userData;
-        }
-
-        /// <i>native declaration : :145</i>
-        public static class scrollWheel_struct extends com.sun.jna.Structure {
-            /// Allocate a new scrollWheel_struct struct on the heap
-            public scrollWheel_struct() {
-            }
-
-            /// Cast data at given memory location (pointer + offset) as an existing scrollWheel_struct struct
-            public scrollWheel_struct(com.sun.jna.Pointer pointer, int offset) {
-                super();
-                useMemory(pointer, offset);
-                read();
-            }
-
-            /// Create an instance that shares its memory with another scrollWheel_struct instance
-            public scrollWheel_struct(scrollWheel_struct struct) {
-                this(struct.getPointer(), 0);
-            }
-
-            public static class ByReference extends scrollWheel_struct implements com.sun.jna.Structure.ByReference {
-                /// Allocate a new scrollWheel_struct.ByRef struct on the heap
-                public ByReference() {
-                }
-
-                /// Create an instance that shares its memory with another scrollWheel_struct instance
-                public ByReference(scrollWheel_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public static class ByValue extends scrollWheel_struct implements com.sun.jna.Structure.ByValue {
-                /// Allocate a new scrollWheel_struct.ByVal struct on the heap
-                public ByValue() {
-                }
-
-                /// Create an instance that shares its memory with another scrollWheel_struct instance
-                public ByValue(scrollWheel_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public float deltaX;
-            public float deltaY;
-            public float deltaZ;
-        }
-
-        /// <i>native declaration : :155</i>
-        public static class misc_struct extends com.sun.jna.Structure {
-            /// Allocate a new misc_struct struct on the heap
-            public misc_struct() {
-            }
-
-            /// Cast data at given memory location (pointer + offset) as an existing misc_struct struct
-            public misc_struct(com.sun.jna.Pointer pointer, int offset) {
-                super();
-                useMemory(pointer, offset);
-                read();
-            }
-
-            /// Create an instance that shares its memory with another misc_struct instance
-            public misc_struct(misc_struct struct) {
-                this(struct.getPointer(), 0);
-            }
-
-            public static class ByReference extends misc_struct implements com.sun.jna.Structure.ByReference {
-                /// Allocate a new misc_struct.ByRef struct on the heap
-                public ByReference() {
-                }
-
-                /// Create an instance that shares its memory with another misc_struct instance
-                public ByReference(misc_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public static class ByValue extends misc_struct implements com.sun.jna.Structure.ByValue {
-                /// Allocate a new misc_struct.ByVal struct on the heap
-                public ByValue() {
-                }
-
-                /// Create an instance that shares its memory with another misc_struct instance
-                public ByValue(misc_struct struct) {
-                    super(struct.getPointer(), 0);
-                }
-            }
-
-            public int subtype;
-            public int data1;
-            public int data2;
-        }
-    }
+    public abstract boolean isEnteringProximity();
 }
