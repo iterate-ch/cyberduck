@@ -27,7 +27,7 @@ import org.rococoa.cocoa.NSRect;
 import org.rococoa.cocoa.NSSize;
 
 /// <i>native declaration : :41</i>
-public abstract class NSImage extends NSObject implements NSCopying, NSCoding {
+public abstract class NSImage extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImage", _Class.class);
 
     /// <i>native declaration : :13</i>

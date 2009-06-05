@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public interface NSZone extends NSObject {
+public abstract class NSZone extends NSObject {
 }

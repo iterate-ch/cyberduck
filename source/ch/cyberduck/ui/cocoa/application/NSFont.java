@@ -20,14 +20,13 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSCoding;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :45</i>
-public abstract class NSFont extends NSObject implements NSCopying, NSCoding {
+public abstract class NSFont extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFont", _Class.class);
 
     /**

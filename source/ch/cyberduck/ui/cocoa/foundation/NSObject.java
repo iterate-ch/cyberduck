@@ -1,5 +1,6 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Selector;
 
 /*
@@ -22,102 +23,105 @@ import org.rococoa.Selector;
  */
 
 /// <i>native declaration : :14</i>
-public interface NSObject extends org.rococoa.NSObject {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSObject", _Class.class);
+public abstract class NSObject implements org.rococoa.NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSObject", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSObject alloc();
     }
 
-    public org.rococoa.ID copy();
+    public abstract org.rococoa.ID copy();
+
     /**
      * <i>native declaration : :16</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isEqual(null)</code><br>
      * - (BOOL)isEqual:(null)object; (Argument object cannot be converted)
      */
-    boolean isEqual(org.rococoa.ID object);
+    public abstract boolean isEqual(org.rococoa.ID object);
+
     /**
      * Original signature : <code>NSUInteger hash()</code><br>
      * <i>native declaration : :17</i>
      */
-    int hash();
+    public abstract int hash();
 
     /**
      * Original signature : <code>superclass()</code><br>
      * <i>native declaration : :19</i>
      */
-    NSObject superclass();
+    public abstract NSObject superclass();
 
     /**
      * Original signature : <code>self()</code><br>
      * <i>native declaration : :21</i>
      */
-    NSObject self();
+    public abstract NSObject self();
 
     /**
      * Original signature : <code>NSZone* zone()</code><br>
      * <i>native declaration : :22</i>
      */
-    NSZone zone();
+    public abstract NSZone zone();
 
     /**
      * <i>native declaration : :24</i><br>
      * Conversion Error : /// Original signature : <code>performSelector(null)</code><br>
      * - (null)performSelector:(null)aSelector; (Argument aSelector cannot be converted)
      */
-    void performSelector(Selector aSelector);
+    public abstract void performSelector(Selector aSelector);
 
     /**
      * <i>native declaration : :25</i><br>
      * Conversion Error : /// Original signature : <code>performSelector(null, null)</code><br>
      * - (null)performSelector:(null)aSelector withObject:(null)object; (Argument aSelector cannot be converted)
      */
-    void performSelector_widthObject(Selector sel, NSObject object);
+    public abstract void performSelector_widthObject(Selector sel, NSObject object);
 
     /**
      * <i>native declaration : :26</i><br>
      * Conversion Error : /// Original signature : <code>performSelector(null, null, null)</code><br>
      * - (null)performSelector:(null)aSelector withObject:(null)object1 withObject:(null)object2; (Argument aSelector cannot be converted)
      */
-    void performSelector_widthObject_withObject(Selector sel, NSObject object1, NSObject object2);
+    public abstract void performSelector_widthObject_withObject(Selector sel, NSObject object1, NSObject object2);
 
     /**
      * Original signature : <code>BOOL isProxy()</code><br>
      * <i>native declaration : :28</i>
      */
-    boolean isProxy();
+    public abstract boolean isProxy();
 
     /**
      * <i>native declaration : :30</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isKindOfClass(null)</code><br>
      * - (BOOL)isKindOfClass:(null)aClass; (Argument aClass cannot be converted)
      */
-    boolean isKindOfClass(NSClass aClass);
+    public abstract boolean isKindOfClass(NSClass aClass);
+
     /**
      * <i>native declaration : :31</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isMemberOfClass(null)</code><br>
      * - (BOOL)isMemberOfClass:(null)aClass; (Argument aClass cannot be converted)
      */
-    boolean isMemberOfClass(NSClass aClass);
+    public abstract boolean isMemberOfClass(NSClass aClass);
 
     /**
      * Original signature : <code>BOOL conformsToProtocol(Protocol*)</code><br>
      * <i>native declaration : :32</i>
      */
-    boolean conformsToProtocol(org.rococoa.NSClass aProtocol);
+    public abstract boolean conformsToProtocol(org.rococoa.NSClass aProtocol);
 
     /**
      * <i>native declaration : :34</i><br>
      * Conversion Error : /// Original signature : <code>BOOL respondsToSelector(null)</code><br>
      * - (BOOL)respondsToSelector:(null)aSelector; (Argument aSelector cannot be converted)
      */
-    boolean respondsToSelector(Selector aSelector);
+    public abstract boolean respondsToSelector(Selector aSelector);
 
     /**
      * Original signature : <code>retain()</code><br>
      * <i>native declaration : :36</i>
      */
-    NSObject retain();
+    public abstract NSObject retain();
     /**
      * <i>native declaration : :37</i><br>
      * Conversion Error : oneway
@@ -126,5 +130,14 @@ public interface NSObject extends org.rococoa.NSObject {
      * Original signature : <code>autorelease()</code><br>
      * <i>native declaration : :38</i>
      */
-    NSObject autorelease();
+    public abstract NSObject autorelease();
+
+    private static Logger log = Logger.getLogger(NSObject.class);
+
+    protected void finalize() throws java.lang.Throwable {
+        if(log.isTraceEnabled()) {
+            log.trace("finalize:" + this.toString());
+        }
+        super.finalize();
+    }
 }

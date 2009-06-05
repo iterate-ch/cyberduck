@@ -24,7 +24,7 @@ import org.rococoa.Rococoa;
 /**
  * @version $Id$
  */
-public abstract class NSDateFormatter implements NSFormatter {
+public abstract class NSDateFormatter extends NSFormatter {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDateFormatter", _Class.class);
 
     /// <i>native declaration : :24</i>

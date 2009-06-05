@@ -19,8 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-public interface NSFormatter extends NSObject {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSFormatter", _Class.class);
+public abstract class NSFormatter extends NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFormatter", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSFormatter alloc();
@@ -31,7 +31,7 @@ public interface NSFormatter extends NSObject {
      * Conversion Error : /// Original signature : <code>NSString* stringForObjectValue(null)</code><br>
      * - (NSString*)stringForObjectValue:(null)obj; (Argument obj cannot be converted)
      */
-    String stringForObjectValue(NSObject obj);
+    public abstract String stringForObjectValue(NSObject obj);
     /**
      * <i>native declaration : :17</i><br>
      * Conversion Error : /// Original signature : <code>NSAttributedString* attributedStringForObjectValue(null, NSDictionary*)</code><br>
@@ -46,13 +46,13 @@ public interface NSFormatter extends NSObject {
      * Original signature : <code>BOOL getObjectValue(id*, NSString*, NSString**)</code><br>
      * <i>native declaration : :21</i>
      */
-    boolean getObjectValue_forString_errorDescription(NSObject obj, com.sun.jna.Pointer string, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean getObjectValue_forString_errorDescription(NSObject obj, com.sun.jna.Pointer string, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>BOOL isPartialStringValid(NSString*, NSString**, NSString**)</code><br>
      * <i>native declaration : :23</i>
      */
-    boolean isPartialStringValid_newEditingString_errorDescription(com.sun.jna.Pointer partialString, com.sun.jna.ptr.PointerByReference newString, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean isPartialStringValid_newEditingString_errorDescription(com.sun.jna.Pointer partialString, com.sun.jna.ptr.PointerByReference newString, com.sun.jna.ptr.PointerByReference error);
     /**
      * <i>native declaration : :26</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isPartialStringValid(NSString**, null, NSString*, null, NSString**)</code><br>

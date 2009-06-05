@@ -32,5 +32,5 @@ public abstract class NSClass implements org.rococoa.NSClass {
         public NSClass classWithName(String className) {
             return Rococoa.createClass(className, NSClass.class);
         }
-    }   
+    }
 }

@@ -20,11 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :45</i>
-public interface NSCopying extends NSObject {
-    
-    public interface _Class extends org.rococoa.NSClass {
-        NSCopying alloc();
-    }
+public interface NSCopying {
 
     /**
      * Original signature : <code>copyWithZone(NSZone*)</code><br>

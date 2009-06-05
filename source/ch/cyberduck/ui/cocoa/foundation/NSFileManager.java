@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :12</i>
-public abstract class NSFileManager implements NSObject {
+public abstract class NSFileManager extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFileManager", _Class.class);
 
     public static NSFileManager defaultManager() {
@@ -66,15 +66,17 @@ public abstract class NSFileManager implements NSObject {
          */
         NSFileManager defaultManager();
     }
+
     /**
      * <i>native declaration : :22</i><br>
      * Conversion Error : /**<br>
-     *  * CLASSs of NSFileManager may now have delegates. Each CLASS has one delegate, and the delegate is not retained. In versions of Mac OS X prior to 10.5, the behavior of calling [[NSFileManager alloc] init] was undefined. In Mac OS X 10.5 "Leopard" and later, calling [[NSFileManager alloc] init] returns a new CLASS of an NSFileManager.<br>
-     *  * Original signature : <code>void setDelegate(null)</code><br>
-     *  * /<br>
+     * * CLASSs of NSFileManager may now have delegates. Each CLASS has one delegate, and the delegate is not retained. In versions of Mac OS X prior to 10.5, the behavior of calling [[NSFileManager alloc] init] was undefined. In Mac OS X 10.5 "Leopard" and later, calling [[NSFileManager alloc] init] returns a new CLASS of an NSFileManager.<br>
+     * * Original signature : <code>void setDelegate(null)</code><br>
+     * * /<br>
      * - (void)setDelegate:(null)delegate; (Argument delegate cannot be converted)
      */
     public abstract void setDelegate(org.rococoa.ID delegate);
+
     /**
      * Original signature : <code>delegate()</code><br>
      * <i>native declaration : :23</i>
@@ -362,29 +364,23 @@ public abstract class NSFileManager implements NSObject {
      */
     public abstract com.sun.jna.Pointer stringWithFileSystemRepresentation_length(java.lang.String str, int len);
 
-    public interface NSDirectoryEnumerator extends NSObject {
-        _Class CLASS = org.rococoa.Rococoa.createClass("NSDirectoryEnumerator", _Class.class);
-
-        public interface _Class extends org.rococoa.NSClass {
-            NSDirectoryEnumerator alloc();
-        }
-
+    public abstract class NSDirectoryEnumerator extends NSObject {
         /**
          * Original signature : <code>NSDictionary* fileAttributes()</code><br>
          * <i>native declaration : :211</i>
          */
-        NSDictionary fileAttributes();
+        public abstract NSDictionary fileAttributes();
 
         /**
          * Original signature : <code>NSDictionary* directoryAttributes()</code><br>
          * <i>native declaration : :212</i>
          */
-        NSDictionary directoryAttributes();
+        public abstract NSDictionary directoryAttributes();
 
         /**
          * Original signature : <code>void skipDescendents()</code><br>
          * <i>native declaration : :213</i>
          */
-        void skipDescendents();
+        public abstract void skipDescendents();
     }
 }

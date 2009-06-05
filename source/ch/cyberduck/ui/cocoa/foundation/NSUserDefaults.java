@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.cocoa.NSData;
 
 /// <i>native declaration : :14</i>
-public abstract class NSUserDefaults implements NSObject {
+public abstract class NSUserDefaults extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSUserDefaults", _Class.class);
 
     public static NSUserDefaults standardUserDefaults() {

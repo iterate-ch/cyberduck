@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :27</i>
-public abstract class NSData implements NSObject {
+public abstract class NSData extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSData", _Class.class);
 
     public static NSData dataWithContentsOfURL(NSURL url) {
@@ -139,7 +139,7 @@ public abstract class NSData implements NSObject {
      */
     public abstract byte writeToFile_atomically(String path, boolean useAuxiliaryFile);
 
-    public byte writeToFile(String path ) {
+    public byte writeToFile(String path) {
         return this.writeToFile_atomically(path, true);
     }
 
@@ -150,7 +150,7 @@ public abstract class NSData implements NSObject {
      */
     public abstract boolean writeToURL_atomically(NSURL url, boolean atomically);
 
-    public boolean writeToURL(NSURL url ) {
+    public boolean writeToURL(NSURL url) {
         return this.writeToURL_atomically(url, true);
     }
 

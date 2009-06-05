@@ -19,10 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.cocoa.NSValue;
-
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:37</i>
-public abstract class NSNumber extends NSValue implements NSObject {
+public abstract class NSNumber extends NSValue {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSNumber", _Class.class);
 
     public static NSNumber numberWithInt(int value) {

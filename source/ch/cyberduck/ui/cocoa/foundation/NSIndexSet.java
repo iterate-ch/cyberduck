@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :28</i>
-public abstract class NSIndexSet implements NSObject {
+public abstract class NSIndexSet extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSIndexSet", _Class.class);
 
     public static NSIndexSet indexSetWithIndex(int value) {

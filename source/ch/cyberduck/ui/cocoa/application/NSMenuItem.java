@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSCoding;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
@@ -29,7 +28,7 @@ import org.rococoa.Selector;
 
 
 /// <i>native declaration : :14</i>
-public abstract class NSMenuItem extends NSObject implements NSCopying, NSCoding, NSValidatedUserInterfaceItem {
+public abstract class NSMenuItem extends NSObject implements NSCopying, NSValidatedUserInterfaceItem {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenuItem", _Class.class);
 
     public static NSMenuItem separatorItem() {

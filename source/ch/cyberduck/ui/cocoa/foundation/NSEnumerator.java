@@ -20,22 +20,17 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSEnumerator.h:33</i>
-public interface NSEnumerator extends NSObject, NSFastEnumeration {
-    final _Class CLASS = org.rococoa.Rococoa.createClass("NSEnumerator", _Class.class);
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSEnumerator alloc();
-    }
+public abstract class NSEnumerator extends NSObject {
 
     /**
      * Original signature : <code>id nextObject()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSEnumerator.h:35</i>
      */
-    NSObject nextObject();
+    public abstract NSObject nextObject();
 
     /**
      * Original signature : <code>NSArray* allObjects()</code><br>
      * <i>from NSExtendedEnumerator native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSEnumerator.h:41</i>
      */
-    NSArray allObjects();
+    public abstract NSArray allObjects();
 }

@@ -56,9 +56,18 @@ public abstract class NSTableView extends NSControl {
     public static interface DataSource {
         int numberOfRowsInTableView(NSTableView view);
 
-//        void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row);
+        void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row);
 
         NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row);
+
+        boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard);
+
+        NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes);
+
+        int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
+
+        boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
+
     }
 
     /**
@@ -434,6 +443,14 @@ public abstract class NSTableView extends NSControl {
     public abstract void setDropRow_dropOperation(int row, int op);
 
     /**
+     * @param row
+     * @param op  operation
+     */
+    public void setDropRow(int row, int op) {
+        this.setDropRow_dropOperation(row, op);
+    }
+
+    /**
      * Selection<br>
      * Original signature : <code>void setAllowsMultipleSelection(BOOL)</code><br>
      * <i>native declaration : :226</i>
@@ -735,6 +752,10 @@ public abstract class NSTableView extends NSControl {
      * <i>from NSDeprecated native declaration : :513</i>
      */
     public abstract void selectRow_byExtendingSelection(int row, boolean extend);
+
+    public void selectRow(int row, boolean extend) {
+        this.selectRow_byExtendingSelection(row, extend);
+    }
 
     /**
      * Deprecated in Mac OS 10.3.  You should use selectedColumnIndexes instead.<br>

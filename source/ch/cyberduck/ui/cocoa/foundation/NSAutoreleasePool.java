@@ -22,13 +22,13 @@ import org.rococoa.Rococoa;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class NSAutoreleasePool implements NSObject {
+public abstract class NSAutoreleasePool extends NSObject {
     public static NSAutoreleasePool push() {
         return Rococoa.create("NSAutoreleasePool", NSAutoreleasePool.class);
     }
-    
+
     public interface _Class extends org.rococoa.NSClass {
         /**
          * <i>native declaration : :16</i><br>

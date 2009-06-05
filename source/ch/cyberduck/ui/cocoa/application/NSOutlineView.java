@@ -19,7 +19,10 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.cocoa.CGFloat;
 
@@ -30,16 +33,24 @@ public abstract class NSOutlineView extends NSTableView {
     public static final int NSOutlineViewDropOnItemIndex = -1;
 
     public static interface DataSource {
-        public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item);
+        int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item);
 
-        public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSObject item);
+        NSObject outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSObject item);
 
-        public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                                     final NSTableColumn tableColumn, NSObject item);
+        void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
+                                                              final NSTableColumn tableColumn, NSObject item);
 
-        public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item);
+        NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item);
 
-        public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item);
+        boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item);
+
+        int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row);
+
+        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row);
+
+        boolean outlineView_writeItems_ToPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard);
+
+        NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items);
     }
 
     public interface _Class extends org.rococoa.NSClass {
@@ -194,6 +205,10 @@ public abstract class NSOutlineView extends NSTableView {
      * <i>native declaration : :179</i>
      */
     public abstract void setDropItem_dropChildIndex(NSObject item, int index);
+
+    public void setDropItem(NSObject item, int index) {
+        this.setDropItem_dropChildIndex(item, index);
+    }
 
     /**
      * This method returns YES to indicate that auto expanded items should return to their original collapsed state.  Override this method to provide custom behavior.  'deposited' tells wether or not the drop terminated due to a successful drop (as indicated by the return value from acceptDrop:).  Note that exiting the view will be treated the same as a failed drop.<br>

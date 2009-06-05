@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :10</i>
-public abstract class NSDictionary implements NSObject {
+public abstract class NSDictionary extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDictionary", _Class.class);
 
     public static NSDictionary dictionaryWithObjectsForKeys(NSArray objects, NSArray keys) {
@@ -164,10 +164,10 @@ public abstract class NSDictionary implements NSObject {
      */
     public abstract boolean writeToFile_atomically(String path, boolean useAuxiliaryFile);
 
-    public boolean writeToFile(String path ) {
+    public boolean writeToFile(String path) {
         return this.writeToFile_atomically(path, true);
     }
-    
+
     /**
      * Original signature : <code>BOOL writeToURL(NSURL*, BOOL)</code><br>
      * the atomically flag is ignored if url of a type that cannot be written atomically.<br>
@@ -175,7 +175,7 @@ public abstract class NSDictionary implements NSObject {
      */
     public abstract boolean writeToURL_atomically(NSURL url, boolean atomically);
 
-    public boolean writeToURL(NSURL url ) {
+    public boolean writeToURL(NSURL url) {
         return this.writeToURL_atomically(url, true);
     }
 

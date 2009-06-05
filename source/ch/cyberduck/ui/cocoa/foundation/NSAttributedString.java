@@ -22,15 +22,15 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.Rococoa;
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:9</i>
-public abstract class NSAttributedString implements NSObject {
+public abstract class NSAttributedString extends NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
 
     public static NSAttributedString attributedString(String str) {
-        return Rococoa.cast(CLASS.alloc().initWithString(str).autorelease(), NSAttributedString.class);
+        return Rococoa.cast(CLASS.alloc().initWithString(str), NSAttributedString.class);
     }
 
     public static NSAttributedString attributedStringWithAttributes(String str, NSDictionary attrs) {
-        return Rococoa.cast(CLASS.alloc().initWithString_attributes(str, attrs).autorelease(), NSAttributedString.class);
+        return Rococoa.cast(CLASS.alloc().initWithString_attributes(str, attrs), NSAttributedString.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {

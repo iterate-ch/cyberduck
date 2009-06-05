@@ -19,11 +19,14 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSCopying;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.Selector;
 
-public abstract class NSCell extends NSObject implements NSCopying, NSCoding {
+public abstract class NSCell extends NSObject implements NSCopying {
 
     /// <i>native declaration : :11</i>
     public static final int NSAnyType = 0;

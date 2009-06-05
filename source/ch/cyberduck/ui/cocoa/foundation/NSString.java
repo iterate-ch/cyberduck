@@ -24,7 +24,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 
 /// <i>native declaration : :85</i>
-public abstract class NSString implements NSObject, NSCopying, NSCoding {
+public abstract class NSString extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
 
     public static NSString stringWithString(String string) {
@@ -700,13 +700,13 @@ public abstract class NSString implements NSObject, NSCopying, NSCoding {
      * Original signature : <code>initWithString(NSString*)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :255</i>
      */
-    public abstract NSString initWithString(NSString aString);
+    public abstract NSString initWithString(String aString);
 
     /**
      * Original signature : <code>initWithFormat(NSString*, null)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :256</i>
      */
-    public abstract NSString initWithFormat(NSString format, NSObject... varargs);
+    public abstract NSString initWithFormat(String format, NSObject... varargs);
     /**
      * <i>from NSStringExtensionMethods native declaration : :257</i><br>
      * Conversion Error : /// Original signature : <code>initWithFormat(NSString*, null)</code><br>

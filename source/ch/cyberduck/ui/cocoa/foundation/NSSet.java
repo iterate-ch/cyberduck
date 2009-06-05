@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:13</i>
-public interface NSSet extends NSObject, NSFastEnumeration {
-    static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSet", _Class.class);
+public abstract class NSSet extends NSObject {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSet", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         /**
@@ -63,7 +63,7 @@ public interface NSSet extends NSObject, NSFastEnumeration {
      * Original signature : <code>NSUInteger count()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:15</i>
      */
-    int count();
+    public abstract int count();
     /**
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:16</i><br>
      * Conversion Error : /// Original signature : <code>member(null)</code><br>
@@ -73,19 +73,19 @@ public interface NSSet extends NSObject, NSFastEnumeration {
      * Original signature : <code>NSEnumerator* objectEnumerator()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:17</i>
      */
-    NSEnumerator objectEnumerator();
+    public abstract NSEnumerator objectEnumerator();
 
     /**
      * Original signature : <code>NSArray* allObjects()</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:23</i>
      */
-    NSArray allObjects();
+    public abstract NSArray allObjects();
 
     /**
      * Original signature : <code>anyObject()</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:24</i>
      */
-    NSObject anyObject();
+    public abstract NSObject anyObject();
     /**
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:25</i><br>
      * Conversion Error : /// Original signature : <code>BOOL containsObject(null)</code><br>
@@ -95,7 +95,7 @@ public interface NSSet extends NSObject, NSFastEnumeration {
      * Original signature : <code>NSString* description()</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:26</i>
      */
-    String description();
+    public abstract String description();
     /**
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:27</i><br>
      * Conversion Error : /// Original signature : <code>NSString* descriptionWithLocale(null)</code><br>
@@ -105,19 +105,19 @@ public interface NSSet extends NSObject, NSFastEnumeration {
      * Original signature : <code>BOOL intersectsSet(NSSet*)</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:28</i>
      */
-    boolean intersectsSet(NSSet otherSet);
+    public abstract boolean intersectsSet(NSSet otherSet);
 
     /**
      * Original signature : <code>BOOL isEqualToSet(NSSet*)</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:29</i>
      */
-    boolean isEqualToSet(NSSet otherSet);
+    public abstract boolean isEqualToSet(NSSet otherSet);
 
     /**
      * Original signature : <code>BOOL isSubsetOfSet(NSSet*)</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:30</i>
      */
-    boolean isSubsetOfSet(NSSet otherSet);
+    public abstract boolean isSubsetOfSet(NSSet otherSet);
     /**
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:32</i><br>
      * Conversion Error : /// Original signature : <code>void makeObjectsPerformSelector(null)</code><br>
@@ -137,55 +137,55 @@ public interface NSSet extends NSObject, NSFastEnumeration {
      * Original signature : <code>NSSet* setByAddingObjectsFromSet(NSSet*)</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:36</i>
      */
-    NSSet setByAddingObjectsFromSet(NSSet other);
+    public abstract NSSet setByAddingObjectsFromSet(NSSet other);
 
     /**
      * Original signature : <code>NSSet* setByAddingObjectsFromArray(NSArray*)</code><br>
      * <i>from NSExtendedSet native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:37</i>
      */
-    NSSet setByAddingObjectsFromArray(NSArray other);
+    public abstract NSSet setByAddingObjectsFromArray(NSArray other);
 
     /**
      * Original signature : <code>id initWithObjects(id*, NSUInteger)</code><br>
      * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:50</i>
      */
-    NSSet initWithObjects_count(NSObject objects, int cnt);
+    public abstract NSSet initWithObjects_count(NSObject objects, int cnt);
 
     /**
      * Original signature : <code>id initWithObjects(id, null)</code><br>
      * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:51</i>
      */
-    NSSet initWithObjects(NSObject firstObj, NSObject... varargs);
+    public abstract NSSet initWithObjects(NSObject firstObj, NSObject... varargs);
 
     /**
      * Original signature : <code>id initWithSet(NSSet*)</code><br>
      * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:52</i>
      */
-    NSSet initWithSet(NSSet set);
+    public abstract NSSet initWithSet(NSSet set);
 
     /**
      * Original signature : <code>id initWithSet(NSSet*, BOOL)</code><br>
      * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:53</i>
      */
-    NSSet initWithSet_copyItems(NSSet set, boolean flag);
+    public abstract NSSet initWithSet_copyItems(NSSet set, boolean flag);
 
     /**
      * Original signature : <code>id initWithArray(NSArray*)</code><br>
      * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:54</i>
      */
-    NSSet initWithArray(NSArray array);
+    public abstract NSSet initWithArray(NSArray array);
 
     /**
      * Return a set containing the results of invoking -valueForKey: on each of the receiver's members. The returned set might not have the same number of members as the receiver. The returned set will not contain any elements corresponding to instances of -valueForKey: returning nil (in contrast with -[NSArray(NSKeyValueCoding) valueForKey:], which may put NSNulls in the arrays it returns).<br>
      * Original signature : <code>id valueForKey(NSString*)</code><br>
      * <i>from NSKeyValueCoding native declaration : :191</i>
      */
-    NSObject valueForKey(String key);
+    public abstract NSObject valueForKey(String key);
 
     /**
      * Invoke -setValue:forKey: on each of the receiver's members.<br>
      * Original signature : <code>void setValue(id, NSString*)</code><br>
      * <i>from NSKeyValueCoding native declaration : :195</i>
      */
-    void setValue_forKey(NSObject value, String key);
+    public abstract void setValue_forKey(NSObject value, String key);
 }

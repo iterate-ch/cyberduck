@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSCoding;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
@@ -27,7 +26,7 @@ import org.rococoa.cocoa.CGFloat;
 
 
 /// <i>native declaration : :74</i>
-public abstract class NSParagraphStyle extends NSObject implements NSCopying, NSCoding {
+public abstract class NSParagraphStyle extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSParagraphStyle", _Class.class);
 
     /// <i>native declaration : :12</i>

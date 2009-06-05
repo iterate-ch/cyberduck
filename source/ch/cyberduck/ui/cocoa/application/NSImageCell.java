@@ -19,12 +19,11 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSCoding;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 
 import org.rococoa.Rococoa;
 
-public abstract class NSImageCell extends NSCell implements NSCopying, NSCoding {
+public abstract class NSImageCell extends NSCell implements NSCopying {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImageCell", _Class.class);
 
     public static NSImageCell imageCell() {
