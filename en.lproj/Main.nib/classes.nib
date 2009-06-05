@@ -1,116 +1,171 @@
-{
-    IBClasses =     (
-                {
-            ACTIONS =             {
-                addBookmarkButtonClicked = id;
-                archiveButtonClicked = id;
-                backButtonClicked = id;
-                bookmarkSwitchClicked = id;
-                browserSwitchMenuClicked = id;
-                connectButtonClicked = id;
-                copyURLButtonClicked = id;
-                createFileButtonClicked = id;
-                createFolderButtonClicked = id;
-                deleteBookmarkButtonClicked = id;
-                deleteFileButtonClicked = id;
-                disconnectButtonClicked = id;
-                downloadAsButtonClicked = id;
-                downloadButtonClicked = id;
-                downloadToButtonClicked = id;
-                duplicateFileButtonClicked = id;
-                editBookmarkButtonClicked = id;
-                editButtonClicked = id;
-                forwardButtonClicked = id;
-                gotoButtonClicked = id;
-                infoButtonClicked = id;
-                insideButtonClicked = id;
-                interruptButtonClicked = id;
-                openBrowserButtonClicked = id;
-                pasteFromFinder = id;
-                quicklookButtonClicked = id;
-                reloadButtonClicked = id;
-                renameFileButtonClicked = id;
-                searchButtonClicked = id;
-                sendCustomCommandClicked = id;
-                showActivityWindowClicked = id;
-                showHiddenFilesClicked = id;
-                showTransferQueueClicked = id;
-                syncButtonClicked = id;
-                toggleLogDrawer = id;
-                unarchiveButtonClicked = id;
-                upButtonClicked = id;
-                uploadButtonClicked = id;
-            };
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                checkForUpdates = id;
-            };
-            CLASS = SUUpdater;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = UKCrashReporter;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                aboutMenuClicked = id;
-                acknowledgmentsMenuClicked = id;
-                bugreportMenuClicked = id;
-                donateMenuClicked = id;
-                downloadBookmarksFromDotMacClicked = id;
-                faqMenuClicked = id;
-                feedbackMenuClicked = id;
-                forumMenuClicked = id;
-                helpMenuClicked = id;
-                historyMenuClicked = id;
-                licenseMenuClicked = id;
-                newBrowserMenuClicked = id;
-                newDownloadMenuClicked = id;
-                preferencesMenuClicked = id;
-                updateMenuClicked = id;
-                uploadBookmarksToDotMacClicked = id;
-                websiteMenuClicked = id;
-            };
-            CLASS = "ch.cyberduck.ui.cocoa.CDMainController";
-            LANGUAGE = Java;
-            OUTLETS =             {
-                columnMenu = NSMenu;
-                encodingMenu = NSMenu;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.RendezvousMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        }
-    );
-    IBVersion = 1;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>addBookmarkButtonClicked</key>
+				<string>id</string>
+				<key>archiveButtonClicked</key>
+				<string>id</string>
+				<key>backButtonClicked</key>
+				<string>id</string>
+				<key>bookmarkSwitchClicked</key>
+				<string>id</string>
+				<key>browserSwitchMenuClicked</key>
+				<string>id</string>
+				<key>connectButtonClicked</key>
+				<string>id</string>
+				<key>copyURLButtonClicked</key>
+				<string>id</string>
+				<key>createFileButtonClicked</key>
+				<string>id</string>
+				<key>createFolderButtonClicked</key>
+				<string>id</string>
+				<key>deleteBookmarkButtonClicked</key>
+				<string>id</string>
+				<key>deleteFileButtonClicked</key>
+				<string>id</string>
+				<key>disconnectButtonClicked</key>
+				<string>id</string>
+				<key>downloadAsButtonClicked</key>
+				<string>id</string>
+				<key>downloadButtonClicked</key>
+				<string>id</string>
+				<key>downloadToButtonClicked</key>
+				<string>id</string>
+				<key>duplicateFileButtonClicked</key>
+				<string>id</string>
+				<key>editBookmarkButtonClicked</key>
+				<string>id</string>
+				<key>editButtonClicked</key>
+				<string>id</string>
+				<key>forwardButtonClicked</key>
+				<string>id</string>
+				<key>gotoButtonClicked</key>
+				<string>id</string>
+				<key>infoButtonClicked</key>
+				<string>id</string>
+				<key>insideButtonClicked</key>
+				<string>id</string>
+				<key>interruptButtonClicked</key>
+				<string>id</string>
+				<key>openBrowserButtonClicked</key>
+				<string>id</string>
+				<key>pasteFromFinder</key>
+				<string>id</string>
+				<key>quicklookButtonClicked</key>
+				<string>id</string>
+				<key>reloadButtonClicked</key>
+				<string>id</string>
+				<key>renameFileButtonClicked</key>
+				<string>id</string>
+				<key>searchButtonClicked</key>
+				<string>id</string>
+				<key>sendCustomCommandClicked</key>
+				<string>id</string>
+				<key>showActivityWindowClicked</key>
+				<string>id</string>
+				<key>showHiddenFilesClicked</key>
+				<string>id</string>
+				<key>showTransferQueueClicked</key>
+				<string>id</string>
+				<key>syncButtonClicked</key>
+				<string>id</string>
+				<key>toggleLogDrawer</key>
+				<string>id</string>
+				<key>unarchiveButtonClicked</key>
+				<string>id</string>
+				<key>upButtonClicked</key>
+				<string>id</string>
+				<key>uploadButtonClicked</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>UKCrashReporter</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>aboutMenuClicked</key>
+				<string>id</string>
+				<key>acknowledgmentsMenuClicked</key>
+				<string>id</string>
+				<key>bugreportMenuClicked</key>
+				<string>id</string>
+				<key>donateMenuClicked</key>
+				<string>id</string>
+				<key>downloadBookmarksFromDotMacClicked</key>
+				<string>id</string>
+				<key>helpMenuClicked</key>
+				<string>id</string>
+				<key>historyMenuClicked</key>
+				<string>id</string>
+				<key>licenseMenuClicked</key>
+				<string>id</string>
+				<key>newBrowserMenuClicked</key>
+				<string>id</string>
+				<key>newDownloadMenuClicked</key>
+				<string>id</string>
+				<key>preferencesMenuClicked</key>
+				<string>id</string>
+				<key>uploadBookmarksToDotMacClicked</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>CDMainController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>archiveMenu</key>
+				<string>NSMenu</string>
+				<key>bookmarkMenu</key>
+				<string>NSMenu</string>
+				<key>columnMenu</key>
+				<string>NSMenu</string>
+				<key>editMenu</key>
+				<string>NSMenu</string>
+				<key>encodingMenu</key>
+				<string>NSMenu</string>
+				<key>historyMenu</key>
+				<string>NSMenu</string>
+				<key>rendezvousMenu</key>
+				<string>NSMenu</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>checkForUpdates</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>SUUpdater</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

@@ -2,6 +2,34 @@
     IBClasses =     (
                 {
             ACTIONS =             {
+                aboutMenuClicked = id;
+                acknowledgmentsMenuClicked = id;
+                bugreportMenuClicked = id;
+                donateMenuClicked = id;
+                downloadBookmarksFromDotMacClicked = id;
+                helpMenuClicked = id;
+                historyMenuClicked = id;
+                licenseMenuClicked = id;
+                newBrowserMenuClicked = id;
+                newDownloadMenuClicked = id;
+                preferencesMenuClicked = id;
+                uploadBookmarksToDotMacClicked = id;
+            };
+            CLASS = CDMainController;
+            LANGUAGE = ObjC;
+            OUTLETS =             {
+                archiveMenu = NSMenu;
+                bookmarkMenu = NSMenu;
+                columnMenu = NSMenu;
+                editMenu = NSMenu;
+                encodingMenu = NSMenu;
+                historyMenu = NSMenu;
+                rendezvousMenu = NSMenu;
+            };
+            SUPERCLASS = NSObject;
+        },
+                {
+            ACTIONS =             {
                 addBookmarkButtonClicked = id;
                 archiveButtonClicked = id;
                 backButtonClicked = id;
@@ -56,59 +84,6 @@
                 {
             CLASS = UKCrashReporter;
             LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                aboutMenuClicked = id;
-                acknowledgmentsMenuClicked = id;
-                bugreportMenuClicked = id;
-                donateMenuClicked = id;
-                downloadBookmarksFromDotMacClicked = id;
-                faqMenuClicked = id;
-                feedbackMenuClicked = id;
-                forumMenuClicked = id;
-                helpMenuClicked = id;
-                historyMenuClicked = id;
-                licenseMenuClicked = id;
-                newBrowserMenuClicked = id;
-                newDownloadMenuClicked = id;
-                preferencesMenuClicked = id;
-                updateMenuClicked = id;
-                uploadBookmarksToDotMacClicked = id;
-                websiteMenuClicked = id;
-            };
-            CLASS = "ch.cyberduck.ui.cocoa.CDMainController";
-            LANGUAGE = Java;
-            OUTLETS =             {
-                columnMenu = NSMenu;
-                encodingMenu = NSMenu;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.RendezvousMenuDelegate";
-            LANGUAGE = Java;
             SUPERCLASS = NSObject;
         }
     );
