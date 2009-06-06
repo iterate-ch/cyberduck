@@ -18,11 +18,38 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 /**
  * @version $Id:$
  */
 public abstract class CDListDataSource extends CDController implements NSTableView.DataSource {
-    ;
+
+    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row) {
+        throw new RuntimeException("Not editable");
+    }
+
+    public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
+        return false;
+    }
+
+    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
+        return NSArray.array();
+    }
+
+    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation) {
+        return NSDraggingInfo.DragOperationNone;
+    }
+
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info, int row, int operation) {
+        return false;
+    }
+
 }

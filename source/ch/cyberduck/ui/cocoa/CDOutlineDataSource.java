@@ -18,11 +18,40 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 /**
  * @version $Id:$
  */
-public interface CDOutlineDataSource extends NSOutlineView.DataSource {
-    ;
+public abstract class CDOutlineDataSource extends CDController implements NSOutlineView.DataSource {
+    public static CDOutlineCell OUTLINE_CELL_PROTOTYPE = CDOutlineCell.outlineCell();
+
+    public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
+                                                                 final NSTableColumn tableColumn, NSObject item) {
+        throw new RuntimeException("Not editable");
+    }
+
+    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
+        return NSDraggingInfo.DragOperationNone;
+    }
+
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row) {
+        return false;
+    }
+
+    public boolean outlineView_writeItems_ToPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
+        return false;
+    }
+
+    public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items) {
+        return NSArray.array();
+    }
+
 }
