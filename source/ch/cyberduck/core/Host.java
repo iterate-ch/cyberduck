@@ -208,15 +208,10 @@ public class Host implements Serializable {
     }
 
     /**
-     * Keep reference
-     */
-    private NSMutableDictionary dict;
-
-    /**
      * @return
      */
     public NSDictionary getAsDictionary() {
-        dict = NSMutableDictionary.dictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
         dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
         if(StringUtils.isNotBlank(this.hostname)) {
@@ -734,7 +729,9 @@ public class Host implements Serializable {
     }
 
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:" + super.toString());
+        if(log.isTraceEnabled()) {
+            log.trace("finalize:" + this.toString());
+        }
         super.finalize();
     }
 

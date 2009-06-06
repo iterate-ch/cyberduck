@@ -579,7 +579,9 @@ public abstract class Session {
     }
 
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:" + super.toString());
+        if(log.isTraceEnabled()) {
+            log.trace("finalize:" + this.toString());
+        }
         super.finalize();
     }
 }

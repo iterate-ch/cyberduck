@@ -124,13 +124,8 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
-    /**
-     * Keep reference
-     */
-    private NSMutableDictionary dict;
-
     public NSDictionary getAsDictionary() {
-        dict = NSMutableDictionary.dictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getAbsolute(), REMOTE);
         if(local != null) {
             dict.setObjectForKey(local.toString(), LOCAL);
@@ -683,7 +678,9 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:" + super.toString());
+        if(log.isTraceEnabled()) {
+            log.trace("finalize:" + this.toString());
+        }
         super.finalize();
     }
 

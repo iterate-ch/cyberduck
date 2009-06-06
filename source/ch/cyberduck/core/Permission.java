@@ -46,13 +46,8 @@ public class Permission implements Serializable {
         this.init(dict.objectForKey("Mask").toString());
     }
 
-    /**
-     * Keep reference
-     */
-    private NSMutableDictionary dict;
-
     public NSMutableDictionary getAsDictionary() {
-        dict = NSMutableDictionary.dictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getMask(), "Mask");
         return dict;
     }

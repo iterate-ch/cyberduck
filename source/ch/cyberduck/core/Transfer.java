@@ -182,13 +182,8 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    /**
-     * Keep reference
-     */
-    private NSMutableDictionary dict;
-
     public NSMutableDictionary getAsDictionary() {
-        dict = NSMutableDictionary.dictionary();
+        NSMutableDictionary dict = NSMutableDictionary.dictionary();
         dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
         NSMutableArray r = NSMutableArray.arrayWithCapacity(this.numberOfRoots());
         for(Path root : this.roots) {
@@ -794,7 +789,9 @@ public abstract class Transfer implements Serializable {
     }
 
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:" + super.toString());
+        if(log.isTraceEnabled()) {
+            log.trace("finalize:" + this.toString());
+        }
         super.finalize();
     }
 }

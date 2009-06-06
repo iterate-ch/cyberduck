@@ -207,11 +207,11 @@ public abstract class AbstractPath {
             }
             // Remove duplicated delimiters
             String[] segments = normalized.split(Path.DELIMITER);
-            for(int i = 0; i < segments.length; i++) {
-                if(segments[i].equals("")) {
+            for(String segment : segments) {
+                if(segment.equals("")) {
                     continue;
                 }
-                n.append(segments[i]);
+                n.append(segment);
                 n.append(DELIMITER);
             }
             normalized = n.toString();
