@@ -29,6 +29,9 @@ public abstract class MenuDelegate extends CDController {
 
     public abstract int numberOfItemsInMenu(NSMenu menu);
 
-    public abstract boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel);
+    public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+        return this.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
+    }
 
+    public abstract boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel);
 }
