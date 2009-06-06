@@ -69,9 +69,6 @@ public class CDMainApplication {
             final NSApplication app = NSApplication.sharedApplication();
 
             final CDMainController c = new CDMainController();
-            if(!NSBundle.loadNibNamed(c.getBundleName(), app.id())) {
-                log.fatal("Couldn't load " + c.getBundleName() + ".nib");
-            }
 
             // Must implement NSApplicationDelegate protocol
             app.setDelegate(c.id());
@@ -101,11 +98,14 @@ public class CDMainApplication {
         Foundation.runOnMainThread(runnable);
     }
 
+    /**
+     * We ensure the application runs on the AppKit thread using the <code>StartOnMainThread</code>
+     * key in the Java section of the Info.plist
+     */
     private static final String MAIN_THREAD_NAME = "main";
 
     /**
-     * 
-     * @return
+     * @return True if the current thread is not a background worker thread
      */
     public static boolean isMainThread() {
         return Thread.currentThread().getName().equals(MAIN_THREAD_NAME);
