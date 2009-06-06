@@ -53,6 +53,7 @@ public abstract class CDBundleController extends CDController {
     }
 
     protected void loadBundle(final String bundleName) {
+        log.info("Loading bundle " + bundleName);
         if(!NSBundle.loadNibNamed(bundleName, this.id())) {
             log.fatal("Couldn't load " + bundleName + ".nib");
         }

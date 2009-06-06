@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 public class CDDownloadController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDDownloadController.class);
 
+    @Outlet
     private NSTextField urlField;
 
     public void setUrlField(NSTextField urlField) {
@@ -48,6 +49,7 @@ public class CDDownloadController extends CDSheetController {
         this.url = url;
     }
 
+    @Override
     protected String getBundleName() {
         return "Download";
     }

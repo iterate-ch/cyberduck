@@ -472,6 +472,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.loadBundle();
     }
 
+    @Override
     protected String getBundleName() {
         return "Browser";
     }
@@ -538,6 +539,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private NSToolbar toolbar;
 
+    @Override
     public void awakeFromNib() {
         log.debug("awakeFromNib");
         this._updateBrowserColumns(this.browserListView);
@@ -644,7 +646,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             if(this.isMounted()) {
                 int row = this.bookmarkModel.getSource().indexOf(this.getSession().getHost());
                 if(row != -1) {
-                    this.bookmarkTable.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(row), false);
+                    this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                     this.bookmarkTable.scrollRowToVisible(row);
                 }
             }
@@ -731,7 +733,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private void selectRow(int row, boolean expand) {
         log.debug("selectRow:" + row);
         final NSTableView browser = this.getSelectedBrowserView();
-        browser.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(row), expand);
+        browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), expand);
         browser.scrollRowToVisible(row);
     }
 
@@ -751,25 +753,18 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         log.debug("setSelectedPaths");
         this.deselectAll();
         if(!selected.isEmpty()) {
-            switch(this.browserSwitchView.selectedSegment()) {
+            switch(browserSwitchView.selectedSegment()) {
                 case SWITCH_LIST_VIEW: {
                     //selection handling
-                    for(Iterator<Path> iter = selected.iterator(); iter.hasNext();) {
-                        this.selectRow(iter.next(), true);
+                    for(Path path : selected) {
+                        this.selectRow(path, true);
                     }
                     break;
                 }
                 case SWITCH_OUTLINE_VIEW: {
-                    for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
-                        final Object o = this.browserOutlineView.itemAtRow(i);
-                        if(null == o) {
-                            continue;
-                        }
-                        if(o instanceof Path) {
-                            if(selected.contains(o)) {
-                                this.selectRow((Path) o, true);
-                            }
-                        }
+                    for(Path path : selected) {
+                        this.selectRow(
+                                browserOutlineView.rowForItem(NSString.stringWithString(path.getAbsolute())), true);
                     }
                     break;
                 }
@@ -965,6 +960,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return null;
     }
 
+    @Outlet
     private NSButton bonjourButton;
 
     public void setBonjourButton(NSButton bonjourButton) {
@@ -975,6 +971,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.bonjourButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
     }
 
+    @Outlet
     private NSButton historyButton;
 
     public void setHistoryButton(NSButton historyButton) {
@@ -985,6 +982,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.historyButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
     }
 
+    @Outlet
     private NSButton bookmarkButton;
 
     public void setBookmarkButton(NSButton bookmarkButton) {
@@ -1138,6 +1136,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         public AbstractBrowserTableDelegate() {
             CDBrowserController.this.addListener(new CDWindowListener() {
+                @Override
                 public void windowWillClose() {
                     if(QuickLook.isAvailable()) {
                         if(QuickLook.isOpen()) {
@@ -1307,14 +1306,15 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     private CDBrowserOutlineViewModel browserOutlineModel;
-    private NSOutlineView browserOutlineView; // IBOutlet
+    @Outlet
+    private NSOutlineView browserOutlineView;
     private AbstractBrowserTableDelegate<Path> browserOutlineViewDelegate;
 
-    public void setBrowserOutlineView(NSOutlineView browserOutlineView) {
-        this.browserOutlineView = browserOutlineView;
-        this.browserOutlineView.setAutosaveExpandedItems(true);
+    public void setBrowserOutlineView(NSOutlineView view) {
+        browserOutlineView = view;
+        browserOutlineView.setAutosaveExpandedItems(true);
         // receive drag events from types
-        this.browserOutlineView.registerForDraggedTypes(NSArray.arrayWithObjects(
+        browserOutlineView.registerForDraggedTypes(NSArray.arrayWithObjects(
                 CDPasteboards.TransferPasteboardType,
                 NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
@@ -1322,24 +1322,24 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         ));
 
         // setting appearance attributes
-        this.browserOutlineView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
+        browserOutlineView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
-        this._updateBrowserAttributes(this.browserOutlineView);
+        this._updateBrowserAttributes(browserOutlineView);
         // selection properties
-        this.browserOutlineView.setAllowsMultipleSelection(true);
-        this.browserOutlineView.setAllowsEmptySelection(true);
-        this.browserOutlineView.setAllowsColumnResizing(true);
-        this.browserOutlineView.setAllowsColumnSelection(false);
-        this.browserOutlineView.setAllowsColumnReordering(true);
+        browserOutlineView.setAllowsMultipleSelection(true);
+        browserOutlineView.setAllowsEmptySelection(true);
+        browserOutlineView.setAllowsColumnResizing(true);
+        browserOutlineView.setAllowsColumnSelection(false);
+        browserOutlineView.setAllowsColumnReordering(true);
 
-        this.browserOutlineView.setDataSource((this.browserOutlineModel = new CDBrowserOutlineViewModel(this)).id());
-        this.browserOutlineView.setDelegate((this.browserOutlineViewDelegate = new AbstractBrowserTableDelegate<Path>() {
+        browserOutlineView.setDataSource((this.browserOutlineModel = new CDBrowserOutlineViewModel(this)).id());
+        browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserTableDelegate<Path>() {
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
-                    if(CDBrowserController.this.browserOutlineView.numberOfSelectedRows() == 1) {
-                        CDBrowserController.this.browserOutlineView.editColumn_row_withEvent_select(
-                                CDBrowserController.this.browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                CDBrowserController.this.browserOutlineView.selectedRow(),
+                    if(browserOutlineView.numberOfSelectedRows() == 1) {
+                        browserOutlineView.editColumn_row_withEvent_select(
+                                browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                browserOutlineView.selectedRow(),
                                 null, true);
                     }
                 }
@@ -1427,13 +1427,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     private CDBrowserListViewModel browserListModel;
-    private NSTableView browserListView; // IBOutlet
+    @Outlet
+    private NSTableView browserListView;
     private AbstractBrowserTableDelegate<Path> browserListViewDelegate;
 
     public void setBrowserListView(NSTableView view) {
-        this.browserListView = view;
+        browserListView = view;
         // receive drag events from types
-        this.browserListView.registerForDraggedTypes(NSArray.arrayWithObjects(
+        browserListView.registerForDraggedTypes(NSArray.arrayWithObjects(
                 CDPasteboards.TransferPasteboardType,
                 NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
@@ -1441,24 +1442,24 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         ));
 
         // setting appearance attributes
-        this.browserListView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
+        browserListView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
-        this._updateBrowserAttributes(this.browserListView);
+        this._updateBrowserAttributes(browserListView);
         // selection properties
-        this.browserListView.setAllowsMultipleSelection(true);
-        this.browserListView.setAllowsEmptySelection(true);
-        this.browserListView.setAllowsColumnResizing(true);
-        this.browserListView.setAllowsColumnSelection(false);
-        this.browserListView.setAllowsColumnReordering(true);
+        browserListView.setAllowsMultipleSelection(true);
+        browserListView.setAllowsEmptySelection(true);
+        browserListView.setAllowsColumnResizing(true);
+        browserListView.setAllowsColumnSelection(false);
+        browserListView.setAllowsColumnReordering(true);
 
-        this.browserListView.setDataSource((this.browserListModel = new CDBrowserListViewModel(this)).id());
-        this.browserListView.setDelegate((this.browserListViewDelegate = new AbstractBrowserTableDelegate<Path>() {
+        browserListView.setDataSource((this.browserListModel = new CDBrowserListViewModel(this)).id());
+        browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserTableDelegate<Path>() {
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
-                    if(CDBrowserController.this.browserListView.numberOfSelectedRows() == 1) {
-                        CDBrowserController.this.browserListView.editColumn_row_withEvent_select(
-                                CDBrowserController.this.browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                CDBrowserController.this.browserListView.selectedRow(),
+                    if(browserListView.numberOfSelectedRows() == 1) {
+                        browserListView.editColumn_row_withEvent_select(
+                                browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
+                                browserListView.selectedRow(),
                                 null, true);
                     }
                 }
@@ -1500,8 +1501,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(NSImageCell.imageCell());
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
-            this.browserListView.addTableColumn(c);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            browserListView.addTableColumn(c);
         }
         {
             NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN);
@@ -1635,7 +1636,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private CDBookmarkTableDataSource bookmarkModel;
 
-    private NSTableView bookmarkTable; // IBOutlet
+    private NSTableView bookmarkTable;
     private CDAbstractTableDelegate<Host> bookmarkTableDelegate;
 
     public void setBookmarkTable(NSTableView view) {
@@ -1705,7 +1706,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(NSImageCell.imageCell());
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
             this.bookmarkTable.addTableColumn(c);
         }
 
@@ -1783,6 +1784,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         });
     }
 
+    @Outlet
     private NSPopUpButton actionPopupButton;
 
     public void setActionPopupButton(NSPopUpButton actionPopupButton) {
@@ -1792,7 +1794,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.actionPopupButton.itemAtIndex(0).setImage(NSImage.imageNamed("gear.tiff"));
     }
 
-    private NSComboBox quickConnectPopup; // IBOutlet
+    @Outlet
+    private NSComboBox quickConnectPopup;
 
     private CDController quickConnectPopupModel;
 
@@ -1847,7 +1850,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.mount(Host.parse(input));
     }
 
-    private NSTextField searchField; // IBOutlet
+    @Outlet
+    private NSTextField searchField;
 
     public void setSearchField(NSTextField searchField) {
         this.searchField = searchField;
@@ -1910,7 +1914,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    private NSButton editBookmarkButton; // IBOutlet
+    @Outlet
+    private NSButton editBookmarkButton;
 
     public void setEditBookmarkButton(NSButton editBookmarkButton) {
         this.editBookmarkButton = editBookmarkButton;
@@ -1926,7 +1931,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         c.window().makeKeyAndOrderFront(null);
     }
 
-    private NSButton addBookmarkButton; // IBOutlet
+    @Outlet
+    private NSButton addBookmarkButton;
 
     public void setAddBookmarkButton(NSButton addBookmarkButton) {
         this.addBookmarkButton = addBookmarkButton;
@@ -1955,13 +1961,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         bookmarkModel.setFilter(null);
         bookmarkModel.getSource().add(item);
         final int index = bookmarkModel.getSource().lastIndexOf(item);
-        bookmarkTable.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(index), false);
+        bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
         CDBookmarkController c = CDBookmarkController.Factory.create(item);
         c.window().makeKeyAndOrderFront(null);
     }
 
-    private NSButton deleteBookmarkButton; // IBOutlet
+    @Outlet
+    private NSButton deleteBookmarkButton;
 
     public void setDeleteBookmarkButton(NSButton deleteBookmarkButton) {
         this.deleteBookmarkButton = deleteBookmarkButton;
@@ -1982,7 +1989,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         int j = 0;
         for(i = 0; i < indexes.length; i++) {
             int row = indexes[i] - j;
-            bookmarkTable.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(row), false);
+            bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             bookmarkTable.scrollRowToVisible(row);
             Host host = (Host) bookmarkModel.getSource().get(row);
             final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark", ""),
@@ -2009,7 +2016,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private static final int NAVIGATION_UP_SEGMENT_BUTTON = 0;
 
-    private NSSegmentedControl navigationButton; // IBOutlet
+    private NSSegmentedControl navigationButton;
 
     public void setNavigationButton(NSSegmentedControl navigationButton) {
         this.navigationButton = navigationButton;
@@ -2048,7 +2055,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    private NSSegmentedControl upButton; // IBOutlet
+    @Outlet
+    private NSSegmentedControl upButton;
 
     public void setUpButton(NSSegmentedControl upButton) {
         this.upButton = upButton;
@@ -2064,7 +2072,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private Path workdir;
 
-    private NSPopUpButton pathPopupButton; // IBOutlet
+    @Outlet
+    private NSPopUpButton pathPopupButton;
 
     public void setPathPopup(NSPopUpButton pathPopupButton) {
         this.pathPopupButton = pathPopupButton;
@@ -2113,7 +2122,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 pathPopupButton.indexOfSelectedItem()).representedObject();
         final Path previous = this.workdir();
         if(selected != null) {
-            final Path path = this.lookup(selected);
+            final Path path = PathFactory.createPath(session, selected, Path.DIRECTORY_TYPE);
             this.setWorkdir(path);
             if(previous.getParent().equals(path)) {
                 this.setSelectedPath(previous);
@@ -2121,6 +2130,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
+    @Outlet
     private NSPopUpButton encodingPopup;
 
     public void setEncodingPopup(NSPopUpButton encodingPopup) {
@@ -2186,7 +2196,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     // Status
     // ----------------------------------------------------------
 
-    protected NSProgressIndicator spinner; // IBOutlet
+    @Outlet
+    protected NSProgressIndicator spinner;
 
     public void setSpinner(NSProgressIndicator spinner) {
         this.spinner = spinner;
@@ -2194,7 +2205,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.spinner.setIndeterminate(true);
     }
 
-    private NSTextField statusLabel; // IBOutlet
+    @Outlet
+    private NSTextField statusLabel;
 
     public void setStatusLabel(NSTextField statusLabel) {
         this.statusLabel = statusLabel;
@@ -2213,7 +2225,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    private NSButton securityLabel; // IBOutlet
+    @Outlet
+    private NSButton securityLabel;
 
     public void setSecurityLabel(NSButton securityLabel) {
         this.securityLabel = securityLabel;
@@ -2263,8 +2276,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
-                    for(int i = 0; i < this.browserOutlineView.numberOfRows(); i++) {
-                        final NSObject path = this.browserOutlineView.itemAtRow(i);
+                    for(int i = 0; i < browserOutlineView.numberOfRows(); i++) {
+                        final NSObject path = browserOutlineView.itemAtRow(i);
                         if(null == path) {
                             break;
                         }
@@ -2910,6 +2923,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         });
         this.addListener(new CDWindowListener() {
+            @Override
             public void windowWillClose() {
                 transfer.removeListener(l);
             }
@@ -2972,6 +2986,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             });
             this.addListener(new CDWindowListener() {
+                @Override
                 public void windowWillClose() {
                     transfer.removeListener(l);
                 }
@@ -3023,6 +3038,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void connectButtonClicked(final NSObject sender) {
         final CDSheetController controller = CDConnectionController.instance(this);
         this.addListener(new CDWindowListener() {
+            @Override
             public void windowWillClose() {
                 controller.invalidate();
             }
@@ -3325,6 +3341,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @return
      */
     protected Path lookup(String path) {
+        if(null == path) {
+            return null;
+        }
         if(this.isMounted()) {
             final Session session = this.getSession();
             final Cache<Path> cache = session.cache();
@@ -3769,6 +3788,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
                 private final Object lock = new Object();
 
+                @Override
                 public Object lock() {
                     // No synchronization with other tasks
                     return lock;
@@ -3852,6 +3872,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return NSApplication.NSTerminateNow;
     }
 
+    @Override
     public boolean windowShouldClose(final NSWindow sender) {
         return this.unmount(new Runnable() {
             public void run() {
@@ -4271,7 +4292,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
-        final NSToolbarItem item = NSToolbarItem.create(itemIdentifier);
+        final NSToolbarItem item = NSToolbarItem.itemWithIdentifier(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_BROWSER_VIEW)) {
             item.setLabel(Locale.localizedString("View"));
             item.setPaletteLabel(Locale.localizedString("View"));
@@ -4301,7 +4322,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setImage(NSImage.imageNamed("connect.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("connectButtonClicked:"));
-            Selector sel = item.action();
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_TRANSFERS)) {
@@ -4520,7 +4540,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                 quicklookButton.setImage(NSImage.imageNamed("NSQuickLookTemplate"));
                 quicklookButton.sizeToFit();
-                quicklookButton.setEnabled(false);
                 quicklookButton.setTarget(this.id());
                 quicklookButton.setAction(Foundation.selector("quicklookButtonClicked:"));
                 item.setView(quicklookButton);
@@ -4538,6 +4557,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return null;
     }
 
+    @Outlet
     private NSButton quicklookButton;
 
     /**
@@ -4601,6 +4621,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     /**
      * Overrriden to remove any listeners from the session
      */
+    @Override
     protected void invalidate() {
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);

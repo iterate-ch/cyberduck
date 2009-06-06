@@ -59,10 +59,12 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * @return Null by default, a sheet with no custom NIB
      */
+    @Override
     protected String getBundleName() {
         return null;
     }
 
+    @Override
     public void awakeFromNib() {
         ;
     }

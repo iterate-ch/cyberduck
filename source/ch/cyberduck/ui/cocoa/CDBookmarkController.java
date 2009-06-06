@@ -46,7 +46,8 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 public class CDBookmarkController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDBookmarkController.class);
 
-    private NSPopUpButton protocolPopup; // IBOutlet
+    @Outlet
+    private NSPopUpButton protocolPopup;
 
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
         this.protocolPopup = protocolPopup;
@@ -55,12 +56,12 @@ public class CDBookmarkController extends CDWindowController {
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
         final Protocol[] protocols = Protocol.getKnownProtocols();
-        for(int i = 0; i < protocols.length; i++) {
-            final String title = protocols[i].getDescription();
+        for(Protocol protocol : protocols) {
+            final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            item.setRepresentedObject(protocols[i].getIdentifier());
-            item.setImage(CDIconCache.instance().iconForName(protocols[i].icon(), 16));
+            item.setRepresentedObject(protocol.getIdentifier());
+            item.setImage(CDIconCache.instance().iconForName(protocol.icon(), 16));
         }
     }
 
@@ -89,7 +90,8 @@ public class CDBookmarkController extends CDWindowController {
         this.reachable();
     }
 
-    private NSPopUpButton encodingPopup; // IBOutlet
+    @Outlet
+    private NSPopUpButton encodingPopup;
 
     public void setEncodingPopup(NSPopUpButton encodingPopup) {
         this.encodingPopup = encodingPopup;
@@ -120,7 +122,8 @@ public class CDBookmarkController extends CDWindowController {
         this.itemChanged();
     }
 
-    private NSTextField nicknameField; // IBOutlet
+    @Outlet
+    private NSTextField nicknameField;
 
     public void setNicknameField(NSTextField nicknameField) {
         this.nicknameField = nicknameField;
@@ -130,7 +133,8 @@ public class CDBookmarkController extends CDWindowController {
                 this.nicknameField);
     }
 
-    private NSTextField hostField; // IBOutlet
+    @Outlet
+    private NSTextField hostField;
 
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
@@ -140,7 +144,8 @@ public class CDBookmarkController extends CDWindowController {
                 this.hostField);
     }
 
-    private NSButton alertIcon; // IBOutlet
+    @Outlet
+    private NSButton alertIcon;
 
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
@@ -153,7 +158,8 @@ public class CDBookmarkController extends CDWindowController {
         this.host.diagnose();
     }
 
-    private NSTextField portField; // IBOutlet
+    @Outlet
+    private NSTextField portField;
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
@@ -163,7 +169,8 @@ public class CDBookmarkController extends CDWindowController {
                 this.portField);
     }
 
-    private NSTextField pathField; // IBOutlet
+    @Outlet
+    private NSTextField pathField;
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
@@ -173,7 +180,8 @@ public class CDBookmarkController extends CDWindowController {
                 this.pathField);
     }
 
-    private NSTextField urlField; // IBOutlet
+    @Outlet
+    private NSTextField urlField;
 
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
@@ -181,7 +189,8 @@ public class CDBookmarkController extends CDWindowController {
         this.urlField.setSelectable(true);
     }
 
-    private NSTextField usernameField; // IBOutlet
+    @Outlet
+    private NSTextField usernameField;
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
@@ -191,6 +200,7 @@ public class CDBookmarkController extends CDWindowController {
                 this.usernameField);
     }
 
+    @Outlet
     private NSTextField webURLField;
 
     public void setWebURLField(NSTextField webURLField) {
@@ -205,7 +215,8 @@ public class CDBookmarkController extends CDWindowController {
                 this.webURLField);
     }
 
-    private NSButton webUrlImage; // IBOutlet
+    @Outlet
+    private NSButton webUrlImage;
 
     public void setWebUrlImage(NSButton b) {
         this.webUrlImage = b;
@@ -264,7 +275,8 @@ public class CDBookmarkController extends CDWindowController {
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(host.getWebURL()));
     }
 
-    private NSTextView commentField; // IBOutlet
+    @Outlet
+    private NSTextView commentField;
 
     public void setCommentField(NSTextView commentField) {
         this.commentField = commentField;
@@ -280,6 +292,7 @@ public class CDBookmarkController extends CDWindowController {
      */
     protected static final String AUTO = Locale.localizedString("Auto", "");
 
+    @Outlet
     private NSPopUpButton timezonePopup; //IBOutlet
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -318,9 +331,9 @@ public class CDBookmarkController extends CDWindowController {
         }
         else {
             String[] ids = TimeZone.getAvailableIDs();
-            for(int i = 0; i < ids.length; i++) {
+            for(String id : ids) {
                 TimeZone tz;
-                if((tz = TimeZone.getTimeZone(ids[i])).getID().equals(selected)) {
+                if((tz = TimeZone.getTimeZone(id)).getID().equals(selected)) {
                     this.host.setTimezone(tz);
                     break;
                 }
@@ -329,6 +342,7 @@ public class CDBookmarkController extends CDWindowController {
         this.itemChanged();
     }
 
+    @Outlet
     private NSPopUpButton connectmodePopup; //IBOutlet
 
     private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active", "");
@@ -358,6 +372,7 @@ public class CDBookmarkController extends CDWindowController {
         this.itemChanged();
     }
 
+    @Outlet
     private NSPopUpButton transferPopup; //IBOutlet
 
     private static final String TRANSFER_NEWCONNECTION = Locale.localizedString("Open new connection", "");
@@ -387,6 +402,7 @@ public class CDBookmarkController extends CDWindowController {
         this.itemChanged();
     }
 
+    @Outlet
     private NSPopUpButton downloadPathPopup; //IBOutlet
 
     private static final String CHOOSE = Locale.localizedString("Choose", "") + "...";
@@ -471,6 +487,7 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
+    @Outlet
     private NSButton toggleOptionsButton;
 
     public void setToggleOptionsButton(NSButton toggleOptionsButton) {
@@ -489,6 +506,7 @@ public class CDBookmarkController extends CDWindowController {
                 return open.get(host);
             }
             final CDBookmarkController c = new CDBookmarkController(host) {
+                @Override
                 public void windowWillClose(NSNotification notification) {
                     super.windowWillClose(notification);
                     Factory.open.remove(host);
@@ -524,15 +542,18 @@ public class CDBookmarkController extends CDWindowController {
         this.loadBundle();
     }
 
+    @Override
     public void windowWillClose(NSNotification notification) {
         Preferences.instance().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
         super.windowWillClose(notification);
     }
 
+    @Override
     protected String getBundleName() {
         return "Bookmark";
     }
 
+    @Override
     public void awakeFromNib() {
         this.cascade();
         this.init();
@@ -540,12 +561,14 @@ public class CDBookmarkController extends CDWindowController {
         this.reachable();
     }
 
+    @Outlet
     private NSTextField pkLabel;
 
     public void setPkLabel(NSTextField pkLabel) {
         this.pkLabel = pkLabel;
     }
 
+    @Outlet
     private NSButton pkCheckbox;
 
     public void setPkCheckbox(NSButton pkCheckbox) {

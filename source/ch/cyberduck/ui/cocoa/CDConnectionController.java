@@ -43,6 +43,7 @@ import com.enterprisedt.net.ftp.FTPConnectMode;
 public class CDConnectionController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDConnectionController.class);
 
+    @Outlet
     private NSPopUpButton protocolPopup;
 
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
@@ -271,7 +272,8 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
-    private NSButton alertIcon; // IBOutlet
+    @Outlet
+    private NSButton alertIcon;
 
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
@@ -284,6 +286,7 @@ public class CDConnectionController extends CDSheetController {
         Host.parse(urlLabel.stringValue()).diagnose();
     }
 
+    @Outlet
     private NSTextField pathField;
 
     public void setPathField(NSTextField pathField) {
@@ -302,6 +305,7 @@ public class CDConnectionController extends CDSheetController {
         this.pathField.setStringValue(Path.normalize(pathField.stringValue(), false));
     }
 
+    @Outlet
     private NSTextField portField;
 
     public void setPortField(NSTextField portField) {
@@ -320,6 +324,7 @@ public class CDConnectionController extends CDSheetController {
         this.updateURLLabel();
     }
 
+    @Outlet
     private NSTextField usernameField;
 
     public void setUsernameField(NSTextField usernameField) {
@@ -343,12 +348,14 @@ public class CDConnectionController extends CDSheetController {
         this.readPasswordFromKeychain();
     }
 
+    @Outlet
     private NSTextField passField;
 
     public void setPassField(NSTextField passField) {
         this.passField = passField;
     }
 
+    @Outlet
     private NSTextField pkLabel;
 
     public void setPkLabel(NSTextField pkLabel) {
@@ -356,6 +363,7 @@ public class CDConnectionController extends CDSheetController {
         this.pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
     }
 
+    @Outlet
     private NSButton keychainCheckbox;
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
@@ -363,6 +371,7 @@ public class CDConnectionController extends CDSheetController {
         this.keychainCheckbox.setState(NSCell.NSOffState);
     }
 
+    @Outlet
     private NSButton anonymousCheckbox; //IBOutlet
 
     public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
@@ -387,6 +396,7 @@ public class CDConnectionController extends CDSheetController {
         this.updateURLLabel();
     }
 
+    @Outlet
     private NSButton pkCheckbox;
 
     public void setPkCheckbox(NSButton pkCheckbox) {
@@ -441,6 +451,7 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
+    @Outlet
     private NSTextField urlLabel;
 
     public void setUrlLabel(NSTextField urlLabel) {
@@ -449,7 +460,8 @@ public class CDConnectionController extends CDSheetController {
         this.urlLabel.setSelectable(true);
     }
 
-    private NSPopUpButton encodingPopup; // IBOutlet
+    @Outlet
+    private NSPopUpButton encodingPopup;
 
     public void setEncodingPopup(NSPopUpButton encodingPopup) {
         this.encodingPopup = encodingPopup;
@@ -461,6 +473,7 @@ public class CDConnectionController extends CDSheetController {
         this.encodingPopup.selectItemWithTitle(DEFAULT);
     }
 
+    @Outlet
     private NSPopUpButton connectmodePopup; //IBOutlet
 
     private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active");
@@ -476,6 +489,7 @@ public class CDConnectionController extends CDSheetController {
         this.connectmodePopup.selectItemWithTitle(DEFAULT);
     }
 
+    @Outlet
     private NSButton toggleOptionsButton; //IBOutlet
 
     public void setToggleOptionsButton(NSButton b) {
@@ -488,12 +502,13 @@ public class CDConnectionController extends CDSheetController {
     public static CDConnectionController instance(final CDWindowController parent) {
         if(!controllers.containsKey(parent)) {
             final CDConnectionController controller = new CDConnectionController(parent) {
+                @Override
                 protected void invalidate() {
                     controllers.remove(parent);
                     super.invalidate();
                 }
             };
-            controller.loadBundle("Connection");
+            controller.loadBundle();
             controllers.put(parent, controller);
         }
         final CDConnectionController c = controllers.get(parent);
@@ -512,10 +527,12 @@ public class CDConnectionController extends CDSheetController {
         super(parent);
     }
 
+    @Override
     protected String getBundleName() {
-        return null;
+        return "Connection";
     }
 
+    @Override
     public void awakeFromNib() {
         this.protocolSelectionDidChange(null);
         this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));

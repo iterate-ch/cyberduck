@@ -38,6 +38,7 @@ public class CDCreateFileController extends CDFileController {
         super(parent);
     }
 
+    @Override
     protected String getBundleName() {
         return "File";
     }
@@ -52,7 +53,7 @@ public class CDCreateFileController extends CDFileController {
     }
 
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
-        final CDBrowserController c = (CDBrowserController)parent;
+        final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
             final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
                     new Local(Preferences.instance().getProperty("tmp.dir"), filename));
@@ -61,7 +62,7 @@ public class CDCreateFileController extends CDFileController {
                 int no = 0;
                 while(file.getLocal().exists()) {
                     no++;
-                    String proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                    String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }

@@ -33,12 +33,14 @@ import org.apache.log4j.Logger;
 public abstract class CDFileController extends CDSheetController {
     protected static Logger log = Logger.getLogger(CDFileController.class);
 
+    @Outlet
     protected NSTextField filenameField; //IBOutlet
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
     }
 
+    @Outlet
     private NSButton editButton; //IBOutlet
 
     public void setEditButton(NSButton editButton) {

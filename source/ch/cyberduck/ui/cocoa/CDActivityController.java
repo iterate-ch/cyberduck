@@ -41,7 +41,7 @@ import java.util.Map;
 public class CDActivityController extends CDWindowController {
     private static Logger log = Logger.getLogger(CDActivityController.class);
 
-    private static CDActivityController instance;
+    private static CDActivityController instance = null;
 
     public static CDActivityController instance() {
         synchronized(NSApplication.sharedApplication()) {
@@ -102,6 +102,7 @@ public class CDActivityController extends CDWindowController {
         table.reloadData();
     }
 
+    @Override
     public void setWindow(NSWindow window) {
         this.window = window;
         this.window.setReleasedWhenClosed(false);
@@ -112,6 +113,7 @@ public class CDActivityController extends CDWindowController {
     /**
      * @param notification
      */
+    @Override
     public void windowWillClose(NSNotification notification) {
         // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
@@ -140,12 +142,8 @@ public class CDActivityController extends CDWindowController {
              */
             @Override
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
-                if(row < this.numberOfRowsInTableView(view)) {
-                    final Collection<CDTaskController> values = tasks.values();
-                    return values.toArray(new CDTaskController[values.size()])[row].view();
-                }
-                log.warn("tableViewObjectValueForLocation:" + row + " == null");
-                return null;
+                final Collection<CDTaskController> values = tasks.values();
+                return values.toArray(new CDTaskController[values.size()])[row].view();
             }
         }).id());
         this.table.setDelegate((delegate = new CDAbstractTableDelegate<CDTaskController>() {
@@ -188,10 +186,12 @@ public class CDActivityController extends CDWindowController {
         this.table.sizeToFit();
     }
 
+    @Override
     public void awakeFromNib() {
         ;
     }
 
+    @Override
     protected String getBundleName() {
         return "Activity";
     }

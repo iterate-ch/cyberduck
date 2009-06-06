@@ -35,6 +35,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         return controller;
     }
 
+    @Override
     public void init() {
         // Add to the registry so it will be displayed in the activity window.
         BackgroundActionRegistry.instance().add(this);
@@ -44,6 +45,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         return controller.getSession();
     }
 
+    @Override
     public boolean prepare() {
         CDMainApplication.invoke(new WindowMainAction(controller) {
             public void run() {
@@ -53,6 +55,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         return super.prepare();
     }
 
+    @Override
     public void cancel() {
         if(this.isRunning()) {
             this.getSession().interrupt();
@@ -60,6 +63,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         super.cancel();
     }
 
+    @Override
     public void finish() {
         super.finish();
         CDMainApplication.invoke(new WindowMainAction(controller) {
@@ -70,6 +74,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         });
     }
 
+    @Override
     public boolean isCanceled() {
         if(!controller.window().isVisible()) {
             return false;
@@ -77,6 +82,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         return super.isCanceled();
     }
 
+    @Override
     public Object lock() {
         return controller.getSession();
     }

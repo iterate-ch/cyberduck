@@ -24,6 +24,7 @@ import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
@@ -47,10 +48,11 @@ import java.util.*;
 public class CDMainController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
+    public CDMainController() {
+        this.loadBundle();
+    }
 
+    @Outlet
     private NSMenu encodingMenu;
 
     public void setEncodingMenu(NSMenu encodingMenu) {
@@ -61,6 +63,7 @@ public class CDMainController extends CDBundleController {
         }
     }
 
+    @Outlet
     private NSMenu columnMenu;
 
     public void setColumnMenu(NSMenu columnMenu) {
@@ -91,6 +94,56 @@ public class CDMainController extends CDBundleController {
         sender.setState(enabled ? NSCell.NSOnState : NSCell.NSOffState);
         Preferences.instance().setProperty(identifier, enabled);
         CDBrowserController.updateBrowserTableColumns();
+    }
+
+    @Outlet
+    private NSMenu editMenu;
+    private EditMenuDelegate editMenuDelegate;
+
+    public void setEditMenu(NSMenu editMenu) {
+        this.editMenu = editMenu;
+        this.editMenuDelegate = new EditMenuDelegate();
+        this.editMenu.setDelegate(editMenuDelegate.id());
+    }
+
+    @Outlet
+    private NSMenu archiveMenu;
+    private ArchiveMenuDelegate archiveMenuDelegate;
+
+    public void setArchiveMenu(NSMenu archiveMenu) {
+        this.archiveMenu = archiveMenu;
+        this.archiveMenuDelegate = new ArchiveMenuDelegate();
+        this.archiveMenu.setDelegate(archiveMenuDelegate.id());
+    }
+
+    @Outlet
+    private NSMenu bookmarkMenu;
+    private BookmarkMenuDelegate bookmarkMenuDelegate;
+
+    public void setBookmarkMenu(NSMenu bookmarkMenu) {
+        this.bookmarkMenu = bookmarkMenu;
+        this.bookmarkMenuDelegate = new BookmarkMenuDelegate();
+        this.bookmarkMenu.setDelegate(bookmarkMenuDelegate.id());
+    }
+
+    @Outlet
+    private NSMenu historyMenu;
+    private HistoryMenuDelegate historyMenuDelegate;
+
+    public void setHistoryMenu(NSMenu historyMenu) {
+        this.historyMenu = historyMenu;
+        this.historyMenuDelegate = new HistoryMenuDelegate();
+        this.historyMenu.setDelegate(historyMenuDelegate.id());
+    }
+
+    @Outlet
+    private NSMenu rendezvousMenu;
+    private RendezvousMenuDelegate rendezvousMenuDelegate;
+
+    public void setRendezvousMenu(NSMenu rendezvousMenu) {
+        this.rendezvousMenu = rendezvousMenu;
+        this.rendezvousMenuDelegate = new RendezvousMenuDelegate();
+        this.rendezvousMenu.setDelegate(rendezvousMenuDelegate.id());
     }
 
     public void historyMenuClicked(NSMenuItem sender) {
@@ -504,10 +557,12 @@ public class CDMainController extends CDBundleController {
                             !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
                         final int uses = Preferences.instance().getInteger("uses");
                         CDWindowController c = new CDWindowController() {
+                            @Override
                             protected String getBundleName() {
                                 return "Donate";
                             }
 
+                            @Outlet
                             private NSButton neverShowDonationCheckbox;
 
                             public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
@@ -516,6 +571,7 @@ public class CDMainController extends CDBundleController {
                                 this.neverShowDonationCheckbox.setState(NSCell.NSOffState);
                             }
 
+                            @Override
                             public void awakeFromNib() {
                                 this.window().setTitle(this.window().title() + " (" + uses + ")");
                                 this.window().center();
@@ -746,6 +802,7 @@ public class CDMainController extends CDBundleController {
         ;
     }
 
+    @Override
     protected String getBundleName() {
         return "Main";
     }

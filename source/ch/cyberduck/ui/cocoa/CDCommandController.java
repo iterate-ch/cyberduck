@@ -40,10 +40,14 @@ import com.enterprisedt.net.ftp.FTPException;
 public class CDCommandController extends CDSheetController implements TranscriptListener {
     private static Logger log = Logger.getLogger(CDCommandController.class);
 
-    private NSTextField inputField; //IBOutlet
-    private NSTextView responseField; //IBOutlet
-    private NSProgressIndicator progress; //IBOutlet
-    private NSImageView image; //IBOutlet
+    @Outlet
+    private NSTextField inputField;
+    @Outlet
+    private NSTextView responseField;
+    @Outlet
+    private NSProgressIndicator progress;
+    @Outlet
+    private NSImageView image;
 
     public void setInputField(NSTextField inputField) {
         this.inputField = inputField;
@@ -89,6 +93,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         this.session.addTranscriptListener(this);
     }
 
+    @Override
     protected String getBundleName() {
         return "Command";
     }

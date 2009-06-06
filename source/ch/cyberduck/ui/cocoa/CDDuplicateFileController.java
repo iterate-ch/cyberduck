@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CDDuplicateFileController extends CDFileController {
 
+    @Outlet
     private NSImageView iconView;
 
     public void setIconView(NSImageView iconView) {
@@ -45,6 +46,7 @@ public class CDDuplicateFileController extends CDFileController {
         super(parent);
     }
 
+    @Override
     protected String getBundleName() {
         return "Duplicate";
     }

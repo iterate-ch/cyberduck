@@ -52,6 +52,7 @@ public abstract class CDWindowController extends CDBundleController {
     /**
      * Called by the runtime after the NIB file has been loaded sucessfully
      */
+    @Override
     public abstract void awakeFromNib();
 
     /**
@@ -99,7 +100,8 @@ public abstract class CDWindowController extends CDBundleController {
     /**
      * The window this controller is owner of
      */
-    protected NSWindow window; // IBOutlet
+    @Outlet
+    protected NSWindow window;
 
     private Set<CDWindowListener> listeners
             = Collections.synchronizedSet(new HashSet<CDWindowListener>());
@@ -172,7 +174,7 @@ public abstract class CDWindowController extends CDBundleController {
      */
     protected void setState(NSButton toggle, boolean open) {
         if(open) {
-//            toggle.performClick(null);
+            toggle.performClick(null);
         }
         toggle.setState(open ? NSCell.NSOnState : NSCell.NSOffState);
     }
@@ -188,15 +190,17 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     /**
-     *
      * @param alert
      */
     protected void alert(final NSAlert alert) {
-        this.alert(alert);
+        this.alert(alert, new CDSheetCallback() {
+            public void callback(final int returncode) {
+                ;
+            }
+        });
     }
 
     /**
-     *
      * @param alert
      * @param callback
      */

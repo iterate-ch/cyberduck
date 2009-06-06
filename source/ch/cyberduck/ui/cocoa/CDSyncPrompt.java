@@ -37,6 +37,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
         super(parent, transfer);
     }
 
+    @Override
     public TransferAction prompt() {
         this.browserModel = new CDSyncPromptModel(this, transfer);
         return super.prompt();
@@ -53,7 +54,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(NSImageCell.imageCell());
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
             view.addTableColumn(c);
         }
         {
@@ -65,7 +66,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(NSImageCell.imageCell());
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
             view.addTableColumn(c);
         }
         view.sizeToFit();

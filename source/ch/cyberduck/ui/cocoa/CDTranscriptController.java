@@ -52,6 +52,7 @@ public class CDTranscriptController extends CDBundleController implements Transc
             )
     );
 
+    @Outlet
     private NSView logView;
 
     public void setLogView(NSView logView) {
@@ -62,12 +63,14 @@ public class CDTranscriptController extends CDBundleController implements Transc
         return logView;
     }
 
+    @Outlet
     private NSTextView logTextView;
 
     public void setLogTextView(NSTextView logTextView) {
         this.logTextView = logTextView;
     }
 
+    @Override
     protected String getBundleName() {
         return "Transcript";
     }
@@ -76,6 +79,7 @@ public class CDTranscriptController extends CDBundleController implements Transc
         this.loadBundle();
     }
 
+    @Override
     protected void awakeFromNib() {
         ;
     }

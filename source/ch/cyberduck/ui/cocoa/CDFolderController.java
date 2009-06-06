@@ -33,6 +33,7 @@ import java.util.Collections;
 public class CDFolderController extends CDFileController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
+    @Outlet
     protected NSImageView iconView; //IBOutlet
 
     public void setIconView(NSImageView iconView) {
@@ -44,6 +45,7 @@ public class CDFolderController extends CDFileController {
         super(parent);
     }
 
+    @Override
     protected String getBundleName() {
         return "Folder";
     }

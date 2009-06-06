@@ -106,6 +106,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         this.exceptions = new Collection<BackgroundException>();
     }
 
+    @Override
     public Object lock() {
         return controller;
     }
@@ -166,6 +167,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     protected int repeatCount;
 
+    @Override
     public void finish() {
         while(this.hasFailed() && this.retry() > 0) {
             log.info("Retry failed background action:" + this);
@@ -205,16 +207,19 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public void alert() {
         final CDSheetController c = new CDSheetController(controller) {
 
+            @Override
             protected String getBundleName() {
                 return "Alert";
             }
 
+            @Override
             public void awakeFromNib() {
                 this.setState(this.transcriptButton,
                         transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
                 super.awakeFromNib();
             }
 
+            @Outlet
             private NSButton diagnosticsButton;
 
             public void setDiagnosticsButton(NSButton diagnosticsButton) {
@@ -236,6 +241,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
             }
 
+            @Outlet
             private NSButton transcriptButton;
 
             public void setTranscriptButton(NSButton transcriptButton) {

@@ -36,6 +36,7 @@ import org.rococoa.Foundation;
 public class CDTaskController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDTaskController.class);
 
+    @Outlet
     private NSTextField name;
 
     public void setName(NSTextField name) {
@@ -43,6 +44,7 @@ public class CDTaskController extends CDBundleController {
         this.name.setStringValue(task.toString());
     }
 
+    @Outlet
     private NSTextField text;
 
     public void setText(NSTextField text) {
@@ -50,6 +52,7 @@ public class CDTaskController extends CDBundleController {
         this.text.setStringValue(task.getActivity());
     }
 
+    @Outlet
     private NSProgressIndicator progress;
 
     public void setProgress(NSProgressIndicator progress) {
@@ -58,6 +61,7 @@ public class CDTaskController extends CDBundleController {
         this.progress.setIndeterminate(true);
     }
 
+    @Outlet
     private NSButton stopButton;
 
     public void setStopButton(NSButton stopButton) {
@@ -70,6 +74,7 @@ public class CDTaskController extends CDBundleController {
         task.cancel();
     }
 
+    @Outlet
     private NSView view;
 
     public void setView(NSView view) {
@@ -116,10 +121,12 @@ public class CDTaskController extends CDBundleController {
         });
     }
 
+    @Override
     public void awakeFromNib() {
         ;
     }
 
+    @Override
     protected String getBundleName() {
         return "Task";
     }

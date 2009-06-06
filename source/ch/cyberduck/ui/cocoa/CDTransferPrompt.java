@@ -38,6 +38,20 @@ import org.rococoa.cocoa.CGFloat;
 public abstract class CDTransferPrompt extends CDSheetController implements TransferPrompt {
     private static Logger log = Logger.getLogger(CDTransferPrompt.class);
 
+    @Outlet
+    private NSButtonCell BUTTON_CELL_PROTOTYPE;
+
+    {
+        BUTTON_CELL_PROTOTYPE = NSButtonCell.buttonCell();
+        BUTTON_CELL_PROTOTYPE.setTitle("");
+        BUTTON_CELL_PROTOTYPE.setControlSize(NSCell.NSSmallControlSize);
+        BUTTON_CELL_PROTOTYPE.setButtonType(NSButtonCell.NSSwitchButton);
+        BUTTON_CELL_PROTOTYPE.setAllowsMixedState(false);
+        BUTTON_CELL_PROTOTYPE.setTarget(this.id());
+        BUTTON_CELL_PROTOTYPE.setAlignment(NSText.NSCenterTextAlignment);
+
+    }
+
     public static TransferPrompt create(CDWindowController parent, final Transfer transfer) {
         if(transfer instanceof DownloadTransfer) {
             return new CDDownloadPrompt(parent, transfer);
@@ -56,25 +70,29 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.transfer = transfer;
     }
 
+    @Override
     protected String getBundleName() {
         return "Prompt";
     }
 
+    @Outlet
     private NSButton toggleDetailsButton;
 
     public void setToggleDetailsButton(NSButton toggleDetailsButton) {
         this.toggleDetailsButton = toggleDetailsButton;
     }
 
+    @Override
     public void awakeFromNib() {
         this.transfer.getSession().addProgressListener(l);
         this.reloadData();
         if(browserView.numberOfRows() > 0) {
-            browserView.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(0), false);
+            browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(0), false);
         }
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
     }
 
+    @Override
     public void invalidate() {
         this.transfer.getSession().removeProgressListener(l);
         super.invalidate();
@@ -134,6 +152,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
+    @Override
     public TransferAction prompt() {
         log.debug("prompt:" + transfer);
         for(Path next : transfer.getRoots()) {
@@ -145,10 +164,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         return action;
     }
 
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             Locale.localizedString("Unknown", ""),
             TRUNCATE_MIDDLE_ATTRIBUTES);
@@ -156,7 +171,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     /**
      * A browsable listing of duplicate files and folders
      */
-    protected NSOutlineView browserView; // IBOutlet
+    @Outlet
+    protected NSOutlineView browserView;
     protected CDTransferPromptModel browserModel;
     protected CDAbstractPathTableDelegate<Path> browserViewDelegate;
 
@@ -184,7 +200,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow() != -1) {
-                    Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
+//                    Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
+                    Path p = null;
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -317,7 +334,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(800f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(CDOutlineCell.outlineCell());
+            c.setDataCell(CDOutlineDataSource.OUTLINE_CELL_PROTOTYPE);
             this.browserView.addTableColumn(c);
             this.browserView.setOutlineTableColumn(c);
         }
@@ -341,7 +358,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(NSImageCell.imageCell());
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
             this.browserView.addTableColumn(c);
         }
         {
@@ -352,75 +369,78 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            NSButtonCell cell = NSButtonCell.buttonCell();
-            cell.setTitle("");
-            cell.setControlSize(NSCell.NSSmallControlSize);
-            cell.setButtonType(NSButtonCell.NSSwitchButton);
-            cell.setAllowsMixedState(false);
-            cell.setTarget(this.id());
-            c.setDataCell(cell);
-            c.dataCell().setAlignment(NSText.CenterTextAlignment);
+            BUTTON_CELL_PROTOTYPE = NSButtonCell.buttonCell();
+            c.setDataCell(BUTTON_CELL_PROTOTYPE);
             this.browserView.addTableColumn(c);
         }
         this.browserView.sizeToFit();
     }
 
-    private NSTextField remoteURLField; // IBOutlet
+    @Outlet
+    private NSTextField remoteURLField;
 
     public void setRemoteURLField(final NSTextField f) {
         this.remoteURLField = f;
         this.remoteURLField.setHidden(true);
     }
 
-    private NSTextField remoteSizeField; // IBOutlet
+    @Outlet
+    private NSTextField remoteSizeField;
 
     public void setRemoteSizeField(final NSTextField f) {
         this.remoteSizeField = f;
         this.remoteSizeField.setHidden(true);
     }
 
-    private NSTextField remoteModificationField; // IBOutlet
+    @Outlet
+    private NSTextField remoteModificationField;
 
     public void setRemoteModificationField(final NSTextField f) {
         this.remoteModificationField = f;
         this.remoteModificationField.setHidden(true);
     }
 
-    private NSTextField localURLField; // IBOutlet
+    @Outlet
+    private NSTextField localURLField;
 
     public void setLocalURLField(final NSTextField f) {
         this.localURLField = f;
         this.localURLField.setHidden(true);
     }
 
-    private NSTextField localSizeField; // IBOutlet
+    @Outlet
+    private NSTextField localSizeField;
 
     public void setLocalSizeField(final NSTextField f) {
         this.localSizeField = f;
         this.localSizeField.setHidden(true);
     }
 
-    private NSTextField localModificationField; // IBOutlet
+    @Outlet
+    private NSTextField localModificationField;
 
     public void setLocalModificationField(final NSTextField f) {
         this.localModificationField = f;
         this.localModificationField.setHidden(true);
     }
 
-    private NSProgressIndicator statusIndicator; // IBOutlet
+    @Outlet
+    private NSProgressIndicator statusIndicator;
 
     public void setStatusIndicator(final NSProgressIndicator f) {
         this.statusIndicator = f;
         this.statusIndicator.setDisplayedWhenStopped(false);
     }
 
-    private NSTextField statusLabel; // IBOutlet
+    @Outlet
+    private NSTextField statusLabel;
 
     public void setStatusLabel(final NSTextField f) {
         this.statusLabel = f;
     }
 
-    protected NSPopUpButton actionPopup; // IBOutlet
+    @Outlet
+    protected NSPopUpButton actionPopup;
 
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
@@ -435,13 +455,13 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 TransferAction.ACTION_RENAME,
                 TransferAction.ACTION_SKIP};
 
-        for(int i = 0; i < actions.length; i++) {
-            if(null == actions[i]) {
+        for(TransferAction action : actions) {
+            if(null == action) {
                 continue; //Not resumeable
             }
-            this.actionPopup.addItemWithTitle(actions[i].getLocalizableString());
-            this.actionPopup.lastItem().setRepresentedObject(actions[i].toString());
-            if(actions[i].equals(defaultAction)) {
+            this.actionPopup.addItemWithTitle(action.getLocalizableString());
+            this.actionPopup.lastItem().setRepresentedObject(action.toString());
+            if(action.equals(defaultAction)) {
                 this.actionPopup.selectItem(actionPopup.lastItem());
             }
         }

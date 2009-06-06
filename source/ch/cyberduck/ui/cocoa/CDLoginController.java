@@ -34,7 +34,7 @@ import org.rococoa.Rococoa;
 public class CDLoginController extends AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(CDLoginController.class);
 
-    CDWindowController parent;
+    private CDWindowController parent;
 
     public CDLoginController(final CDWindowController parent) {
         this.parent = parent;
@@ -46,22 +46,26 @@ public class CDLoginController extends AbstractLoginController implements LoginC
         final Credentials credentials = host.getCredentials();
 
         CDSheetController c = new CDSheetController(parent) {
+            @Override
             protected String getBundleName() {
                 return "Login";
             }
 
+            @Override
             public void awakeFromNib() {
                 this.update();
             }
 
-            private NSTextField titleField; // IBOutlet
+            @Outlet
+            private NSTextField titleField;
 
             public void setTitleField(NSTextField titleField) {
                 this.titleField = titleField;
                 this.updateField(this.titleField, reason);
             }
 
-            private NSTextField userField; // IBOutlet
+            @Outlet
+            private NSTextField userField;
 
             public void setUserField(NSTextField userField) {
                 this.userField = userField;
@@ -82,14 +86,16 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.update();
             }
 
-            private NSTextField textField; // IBOutlet
+            @Outlet
+            private NSTextField textField;
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
                 this.updateField(this.textField, message);
             }
 
-            private NSSecureTextField passField; // IBOutlet
+            @Outlet
+            private NSSecureTextField passField;
 
             public void setPassField(NSSecureTextField passField) {
                 this.passField = passField;
@@ -109,6 +115,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 credentials.setPassword(passField.stringValue());
             }
 
+            @Outlet
             private NSButton keychainCheckbox;
 
             public void setKeychainCheckbox(NSButton keychainCheckbox) {
@@ -123,6 +130,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 credentials.setUseKeychain(sender.state() == NSCell.NSOnState);
             }
 
+            @Outlet
             private NSButton anonymousCheckbox;
 
             public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
@@ -145,12 +153,14 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.update();
             }
 
+            @Outlet
             private NSTextField pkLabel;
 
             public void setPkLabel(NSTextField pkLabel) {
                 this.pkLabel = pkLabel;
             }
 
+            @Outlet
             private NSButton pkCheckbox;
 
             public void setPkCheckbox(NSButton pkCheckbox) {
@@ -168,7 +178,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     publicKeyPanel.setCanChooseDirectories(false);
                     publicKeyPanel.setCanChooseFiles(true);
                     publicKeyPanel.setAllowsMultipleSelection(false);
-                    publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"), 
+                    publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"),
                             null, this.window(),
                             new CDController() {
                                 public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, Object context) {
@@ -229,9 +239,5 @@ public class CDLoginController extends AbstractLoginController implements LoginC
         if(c.returnCode() == CDSheetCallback.ALTERNATE_OPTION) {
             throw new LoginCanceledException();
         }
-    }
-
-    protected String getBundleName() {
-        return null;
     }
 }

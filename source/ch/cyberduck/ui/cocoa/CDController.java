@@ -76,8 +76,11 @@ public abstract class CDController {
         }
     }
 
+    @Override
     protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:" + this.toString());
+        if(log.isTraceEnabled()) {
+            log.trace("finalize:" + this.toString());
+        }
         super.finalize();
     }
 }

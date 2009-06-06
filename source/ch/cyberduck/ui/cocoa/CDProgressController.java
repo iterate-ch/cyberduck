@@ -69,11 +69,13 @@ public class CDProgressController extends CDBundleController {
 
     private TransferListener tl;
 
+    @Override
     protected void invalidate() {
         this.transfer.getSession().removeProgressListener(pl);
         this.transfer.removeListener(tl);
     }
 
+    @Override
     protected String getBundleName() {
         return "Progress.nib";
     }
@@ -166,6 +168,7 @@ public class CDProgressController extends CDBundleController {
     /**
      * Resets both the progress and status field
      */
+    @Override
     public void awakeFromNib() {
         this.setProgressText();
         this.setMessageText();
@@ -258,7 +261,8 @@ public class CDProgressController extends CDBundleController {
     // Outlets
     // ----------------------------------------------------------
 
-    private NSPopUpButton filesPopup; // IBOutlet
+    @Outlet
+    private NSPopUpButton filesPopup;
 
     private MenuDelegate filesPopupMenuDelegate;
 
@@ -278,7 +282,8 @@ public class CDProgressController extends CDBundleController {
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
     }
 
-    private NSTextField progressField; // IBOutlet
+    @Outlet
+    private NSTextField progressField;
 
     public void setProgressField(final NSTextField progressField) {
         this.progressField = progressField;
@@ -287,7 +292,8 @@ public class CDProgressController extends CDBundleController {
         this.progressField.setTextColor(NSColor.darkGrayColor());
     }
 
-    private NSTextField statusField; // IBOutlet
+    @Outlet
+    private NSTextField statusField;
 
     public void setStatusField(final NSTextField statusField) {
         this.statusField = statusField;
@@ -296,7 +302,8 @@ public class CDProgressController extends CDBundleController {
         this.statusField.setTextColor(NSColor.darkGrayColor());
     }
 
-    private NSTextField messageField; // IBOutlet
+    @Outlet
+    private NSTextField messageField;
 
     public void setMessageField(final NSTextField messageField) {
         this.messageField = messageField;
@@ -305,7 +312,8 @@ public class CDProgressController extends CDBundleController {
         this.messageField.setTextColor(NSColor.darkGrayColor());
     }
 
-    private NSProgressIndicator progressBar; // IBOutlet
+    @Outlet
+    private NSProgressIndicator progressBar;
 
     public void setProgressBar(final NSProgressIndicator progressBar) {
         this.progressBar = progressBar;
@@ -316,6 +324,7 @@ public class CDProgressController extends CDBundleController {
         this.progressBar.setMinValue(0);
     }
 
+    @Outlet
     private NSImageView statusIconView; //IBOutlet
 
     private static final NSImage RED_ICON = NSImage.imageNamed("statusRed.tiff");
@@ -327,6 +336,7 @@ public class CDProgressController extends CDBundleController {
         this.statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
     }
 
+    @Outlet
     private NSImageView iconImageView; //IBOutlet
 
     public void setIconImageView(final NSImageView iconImageView) {
@@ -345,7 +355,7 @@ public class CDProgressController extends CDBundleController {
     /**
      * The view drawn in the table cell
      */
-    private NSView progressView; // IBOutlet
+    private NSView progressView;
 
     public void setProgressView(final NSView v) {
         this.progressView = v;

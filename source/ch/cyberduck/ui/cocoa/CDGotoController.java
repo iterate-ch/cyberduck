@@ -18,11 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -42,7 +45,8 @@ public class CDGotoController extends CDSheetController {
         this.iconView.setImage(CDIconCache.FOLDER_ICON);
     }
 
-    private NSComboBox folderCombobox; // IBOutlet
+    @Outlet
+    private NSComboBox folderCombobox;
     private CDController folderComboboxModel;
 
     public void setFolderCombobox(NSComboBox folderCombobox) {
@@ -82,6 +86,7 @@ public class CDGotoController extends CDSheetController {
         super(parent);
     }
 
+    @Override
     public String getBundleName() {
         return "Goto";
     }
@@ -92,6 +97,7 @@ public class CDGotoController extends CDSheetController {
         }
     }
 
+    @Override
     protected boolean validateInput() {
         return StringUtils.isNotBlank(folderCombobox.stringValue());
     }

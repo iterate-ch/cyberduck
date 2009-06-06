@@ -33,6 +33,7 @@ public class CDUploadPrompt extends CDTransferPrompt {
         super(parent, transfer);
     }
 
+    @Override
     public TransferAction prompt() {
         this.browserModel = new CDUploadPromptModel(this, transfer);
         return super.prompt();

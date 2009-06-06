@@ -51,6 +51,7 @@ public class CDInfoController extends CDWindowController {
     // Outlets
     // ----------------------------------------------------------
 
+    @Outlet
     private NSTextField filenameField; //IBOutlet
 
     public void setFilenameField(NSTextField filenameField) {
@@ -61,42 +62,49 @@ public class CDInfoController extends CDWindowController {
                 filenameField);
     }
 
+    @Outlet
     private NSTextField groupField; //IBOutlet
 
     public void setGroupField(NSTextField t) {
         this.groupField = t;
     }
 
+    @Outlet
     private NSTextField kindField; //IBOutlet
 
     public void setKindField(NSTextField t) {
         this.kindField = t;
     }
 
+    @Outlet
     private NSTextField modifiedField; //IBOutlet
 
     public void setModifiedField(NSTextField t) {
         this.modifiedField = t;
     }
 
+    @Outlet
     private NSTextField ownerField; //IBOutlet
 
     public void setOwnerField(NSTextField ownerField) {
         this.ownerField = ownerField;
     }
 
+    @Outlet
     private NSTextField sizeField; //IBOutlet
 
     public void setSizeField(NSTextField sizeField) {
         this.sizeField = sizeField;
     }
 
+    @Outlet
     private NSTextField pathField; //IBOutlet
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
     }
 
+    @Outlet
     private NSTextField webUrlField; //IBOutlet
 
     public void setWebUrlField(NSTextField webUrlField) {
@@ -105,12 +113,14 @@ public class CDInfoController extends CDWindowController {
         this.webUrlField.setSelectable(true);
     }
 
+    @Outlet
     private NSTextField permissionsBox; //IBOutlet
 
     public void setPermissionsBox(NSTextField t) {
         this.permissionsBox = t;
     }
 
+    @Outlet
     private NSButton recursiveCheckbox;
 
     public void setRecursiveCheckbox(NSButton b) {
@@ -118,6 +128,7 @@ public class CDInfoController extends CDWindowController {
         this.recursiveCheckbox.setState(NSCell.NSOffState);
     }
 
+    @Outlet
     private NSButton permissionApplyButton;
 
     public void setPermissionApplyButton(NSButton b) {
@@ -126,6 +137,7 @@ public class CDInfoController extends CDWindowController {
         this.permissionApplyButton.setAction(Foundation.selector("permissionApplyButtonClicked:"));
     }
 
+    @Outlet
     private NSButton distributionApplyButton;
 
     public void setDistributionApplyButton(NSButton b) {
@@ -134,6 +146,7 @@ public class CDInfoController extends CDWindowController {
         this.distributionApplyButton.setAction(Foundation.selector("distributionApplyButtonClicked:"));
     }
 
+    @Outlet
     private NSButton distributionStatusButton;
 
     public void setDistributionStatusButton(NSButton b) {
@@ -142,6 +155,7 @@ public class CDInfoController extends CDWindowController {
         this.distributionStatusButton.setAction(Foundation.selector("distributionStatusButtonClicked:"));
     }
 
+    @Outlet
     private NSButton sizeButton;
 
     public void setSizeButton(NSButton b) {
@@ -150,7 +164,8 @@ public class CDInfoController extends CDWindowController {
         this.sizeButton.setAction(Foundation.selector("calculateSizeButtonClicked:"));
     }
 
-    private NSProgressIndicator sizeProgress; // IBOutlet
+    @Outlet
+    private NSProgressIndicator sizeProgress;
 
     public void setSizeProgress(final NSProgressIndicator p) {
         this.sizeProgress = p;
@@ -158,7 +173,8 @@ public class CDInfoController extends CDWindowController {
         this.sizeProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
     }
 
-    private NSProgressIndicator permissionProgress; // IBOutlet
+    @Outlet
+    private NSProgressIndicator permissionProgress;
 
     public void setPermissionProgress(final NSProgressIndicator p) {
         this.permissionProgress = p;
@@ -166,7 +182,8 @@ public class CDInfoController extends CDWindowController {
         this.permissionProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
     }
 
-    private NSProgressIndicator s3Progress; // IBOutlet
+    @Outlet
+    private NSProgressIndicator s3Progress;
 
     public void setS3Progress(final NSProgressIndicator p) {
         this.s3Progress = p;
@@ -174,7 +191,8 @@ public class CDInfoController extends CDWindowController {
         this.s3Progress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
     }
 
-    private NSProgressIndicator distributionProgress; // IBOutlet
+    @Outlet
+    private NSProgressIndicator distributionProgress;
 
     public void setDistributionProgress(final NSProgressIndicator p) {
         this.distributionProgress = p;
@@ -182,18 +200,21 @@ public class CDInfoController extends CDWindowController {
         this.distributionProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
     }
 
+    @Outlet
     private NSButton distributionEnableButton;
 
     public void setDistributionEnableButton(NSButton b) {
         this.distributionEnableButton = b;
     }
 
+    @Outlet
     private NSButton distributionLoggingButton;
 
     public void setDistributionLoggingButton(NSButton b) {
         this.distributionLoggingButton = b;
     }
 
+    @Outlet
     private NSTextField bucketLocationField;
 
     public void setBucketLocationField(NSTextField t) {
@@ -203,6 +224,7 @@ public class CDInfoController extends CDWindowController {
         );
     }
 
+    @Outlet
     private NSButton bucketLoggingButton;
 
     public void setBucketLoggingButton(NSButton b) {
@@ -210,6 +232,7 @@ public class CDInfoController extends CDWindowController {
         this.bucketLoggingButton.setAction(Foundation.selector("bucketLoggingButtonClicked:"));
     }
 
+    @Outlet
     private NSTextField s3PublicUrlField;
 
     public void setS3PublicUrlField(NSTextField t) {
@@ -221,6 +244,7 @@ public class CDInfoController extends CDWindowController {
         );
     }
 
+    @Outlet
     private NSTextField s3torrentUrlField;
 
     public void setS3torrentUrlField(NSTextField t) {
@@ -229,6 +253,7 @@ public class CDInfoController extends CDWindowController {
         this.s3torrentUrlField.setSelectable(true);
     }
 
+    @Outlet
     private NSPopUpButton s3CachePopup; //IBOutlet
 
     public void setS3CachePopup(NSPopUpButton b) {
@@ -278,18 +303,21 @@ public class CDInfoController extends CDWindowController {
         }
     }
 
+    @Outlet
     private NSTextField distributionCnameField;
 
     public void setDistributionCnameField(NSTextField t) {
         this.distributionCnameField = t;
     }
 
+    @Outlet
     private NSTextField distributionStatusField;
 
     public void setDistributionStatusField(NSTextField t) {
         this.distributionStatusField = t;
     }
 
+    @Outlet
     private NSTextField distributionUrlField;
 
     public void setDistributionUrlField(NSTextField t) {
@@ -298,6 +326,7 @@ public class CDInfoController extends CDWindowController {
         this.distributionUrlField.setSelectable(true);
     }
 
+    @Outlet
     private NSTextField distributionCnameUrlField;
 
     public void setDistributionCnameUrlField(NSTextField t) {
@@ -358,18 +387,21 @@ public class CDInfoController extends CDWindowController {
         this.iconImageView = iconImageView;
     }
 
+    @Outlet
     private NSButton distributionToggle;
 
     public void setDistributionToggle(NSButton b) {
         this.distributionToggle = b;
     }
 
+    @Outlet
     private NSButton permissionToggle;
 
     public void setPermissionToggle(NSButton t) {
         this.permissionToggle = t;
     }
 
+    @Outlet
     private NSButton s3Toggle;
 
     public void setS3Toggle(NSButton s3Toggle) {
@@ -381,6 +413,7 @@ public class CDInfoController extends CDWindowController {
         this.window.setReleasedWhenClosed(false);
     }
 
+    @Override
     public void windowWillClose(NSNotification notification) {
         this.window().endEditingFor(null);
 
@@ -407,6 +440,7 @@ public class CDInfoController extends CDWindowController {
                 return open.get(files);
             }
             final CDInfoController c = new CDInfoController(controller, files) {
+                @Override
                 public void windowWillClose(NSNotification notification) {
                     Factory.open.remove(files);
                     super.windowWillClose(notification);
@@ -453,6 +487,7 @@ public class CDInfoController extends CDWindowController {
                 && Preferences.instance().getBoolean("info.toggle.s3"));
     }
 
+    @Override
     protected String getBundleName() {
         return "Info";
     }
@@ -464,6 +499,7 @@ public class CDInfoController extends CDWindowController {
 
     private static NSPoint cascadedWindowPoint;
 
+    @Override
     public void awakeFromNib() {
         if(null == cascadedWindowPoint) {
             cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(this.window.frame().origin);
@@ -667,11 +703,6 @@ public class CDInfoController extends CDWindowController {
      * @param condition
      */
     private void updateCheckbox(NSButton checkbox, boolean condition) {
-//                if(null == condition) {
-//                    checkbox.setEnabled(false);
-//                    checkbox.setState(NSCell.NSOffState);
-//                    return;
-//                }
         // Sets the cell's state to value, which can be NSCell.NSOnState, NSCell.NSOffState, or NSCell.MixedState.
         // If necessary, this method also redraws the receiver.
         if((checkbox.state() == NSCell.NSOffState || !checkbox.isEnabled()) && !condition) {
@@ -1181,6 +1212,7 @@ public class CDInfoController extends CDWindowController {
         });
     }
 
+    @Override
     public void helpButtonClicked(final NSButton sender) {
         NSWorkspace.sharedWorkspace().openURL(
                 NSURL.URLWithString(Preferences.instance().getProperty("website.help")

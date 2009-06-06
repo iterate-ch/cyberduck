@@ -45,6 +45,7 @@ import com.mosso.client.cloudfiles.FilesException;
 public class CDErrorController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDTaskController.class);
 
+    @Outlet
     private NSTextField hostField;
 
     public void setHostField(NSTextField hostField) {
@@ -59,6 +60,7 @@ public class CDErrorController extends CDBundleController {
         }
     }
 
+    @Outlet
     private NSTextField descriptionField;
 
     public void setDescriptionField(NSTextField descriptionField) {
@@ -68,6 +70,7 @@ public class CDErrorController extends CDBundleController {
                 NSAttributedString.attributedStringWithAttributes(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
+    @Outlet
     private NSTextField errorField;
 
     public void setErrorField(NSTextField errorField) {
@@ -77,6 +80,7 @@ public class CDErrorController extends CDBundleController {
                 NSAttributedString.attributedStringWithAttributes(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
+    @Outlet
     private NSView view;
 
     public void setView(NSView view) {
@@ -95,7 +99,6 @@ public class CDErrorController extends CDBundleController {
     }
 
     /**
-     * 
      * @return
      */
     public String getTooltip() {
@@ -175,10 +178,12 @@ public class CDErrorController extends CDBundleController {
         return Locale.localizedString(buffer.toString(), "Error");
     }
 
+    @Override
     public void awakeFromNib() {
         ;
     }
 
+    @Override
     protected String getBundleName() {
         return "Error";
     }
