@@ -31,11 +31,24 @@ public abstract class CDAlertController extends CDSheetController {
      */
     private NSAlert alert;
 
+    /**
+     * @param parent
+     * @param alert
+     */
     public CDAlertController(final CDWindowController parent, NSAlert alert) {
-        super(parent);
-        this.alert = alert;
+        this(parent, alert, NSAlert.NSWarningAlertStyle);
     }
 
+    /**
+     * @param parent
+     * @param alert
+     * @param style
+     */
+    public CDAlertController(final CDWindowController parent, NSAlert alert, int style) {
+        super(parent);
+        this.alert = alert;
+        this.alert.setAlertStyle(style);
+    }
 
     public void beginSheet() {
         alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
