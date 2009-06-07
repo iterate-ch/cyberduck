@@ -202,21 +202,19 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public abstract void cleanup();
 
     /**
+     *
+     */
+    private CDSheetController alert;
+
+    /**
      * Display an alert dialog with a summary of all failed tasks
      */
     public void alert() {
-        final CDSheetController c = new CDSheetController(controller) {
+        alert = new CDSheetController(controller) {
 
             @Override
             protected String getBundleName() {
                 return "Alert";
-            }
-
-            @Override
-            public void awakeFromNib() {
-                this.setState(this.transcriptButton,
-                        transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
-                super.awakeFromNib();
             }
 
             @Outlet
@@ -246,6 +244,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
             public void setTranscriptButton(NSButton transcriptButton) {
                 this.transcriptButton = transcriptButton;
+                this.setState(this.transcriptButton,
+                        transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
             }
 
             private NSTableView errorView;
@@ -339,7 +339,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         };
         CDMainApplication.invoke(new WindowMainAction(controller) {
             public void run() {
-                c.beginSheet();
+                alert.beginSheet();
             }
         });
     }
