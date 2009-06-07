@@ -29,7 +29,7 @@ public abstract class NSButton extends NSControl {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButton", _Class.class);
 
     public static NSButton buttonWithFrame(NSRect frameRect) {
-        return Rococoa.cast(CLASS.alloc().initWithFrame(frameRect).autorelease(), NSButton.class);
+        return CLASS.alloc().initWithFrame(frameRect);
     }
 
     public static final int NSMomentaryLightButton = 0;    // was NSMomentaryPushButton
@@ -59,6 +59,8 @@ public abstract class NSButton extends NSControl {
     public interface _Class extends org.rococoa.NSClass {
         NSButton alloc();
     }
+
+    public abstract NSButton initWithFrame(NSRect frameRect);
 
     /**
      * Original signature : <code>NSString* title()</code><br>

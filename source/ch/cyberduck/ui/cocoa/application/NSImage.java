@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.*;
 
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.NSRect;
 import org.rococoa.cocoa.NSSize;
@@ -71,11 +70,11 @@ public abstract class NSImage extends NSObject implements NSCopying {
     }
 
     public static NSImage imageWithData(NSData data) {
-        return Rococoa.cast(CLASS.alloc().initWithData(data).autorelease(), NSImage.class);
+        return CLASS.alloc().initWithData(data);
     }
 
     public static NSImage imageWithSize(NSSize size) {
-        return Rococoa.cast(CLASS.alloc().initWithSize(size).autorelease(), NSImage.class);
+        return CLASS.alloc().initWithSize(size);
     }
 
     public interface _Class extends org.rococoa.NSClass {

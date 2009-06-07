@@ -67,7 +67,6 @@ public abstract class NSTableView extends NSControl {
         int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
 
         boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
-
     }
 
     /**

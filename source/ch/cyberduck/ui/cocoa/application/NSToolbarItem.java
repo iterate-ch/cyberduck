@@ -46,7 +46,7 @@ public abstract class NSToolbarItem extends NSObject implements NSCopying, NSVal
     public static final int VisibilityPriorityUser = 2000;
 
     public static NSToolbarItem itemWithIdentifier(String itemIdentifier) {
-        return Rococoa.cast(CLASS.alloc().initWithItemIdentifier(itemIdentifier).autorelease(), NSToolbarItem.class);
+        return CLASS.alloc().initWithItemIdentifier(itemIdentifier);
     }
 
     public interface _Class extends org.rococoa.NSClass {

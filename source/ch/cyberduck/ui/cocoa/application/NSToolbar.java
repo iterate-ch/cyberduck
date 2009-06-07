@@ -45,7 +45,7 @@ public abstract class NSToolbar extends NSObject {
     public static final int NSToolbarSizeModeSmall = 2;
 
     public static NSToolbar toolbarWithIdentifier(String identifier) {
-        return Rococoa.cast(CLASS.alloc().initWithIdentifier(identifier).autorelease(), NSToolbar.class);
+        return CLASS.alloc().initWithIdentifier(identifier);
     }
 
     public interface _Class extends org.rococoa.NSClass {

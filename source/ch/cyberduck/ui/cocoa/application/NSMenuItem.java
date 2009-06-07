@@ -23,7 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 
 
@@ -36,7 +35,7 @@ public abstract class NSMenuItem extends NSObject implements NSCopying, NSValida
     }
 
     public static NSMenuItem itemWithTitle(String title, Selector selector, String charCode) {
-        return Rococoa.cast(CLASS.alloc().initWithTitle_action_keyEquivalent(title, selector, charCode).autorelease(), NSMenuItem.class);
+        return CLASS.alloc().initWithTitle_action_keyEquivalent(title, selector, charCode);
     }
 
     public interface _Class extends org.rococoa.NSClass {

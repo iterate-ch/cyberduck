@@ -30,6 +30,19 @@ import com.sun.jna.NativeLong;
 public abstract class NSWorkspace extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWorkspace", _Class.class);
 
+    public static final String WorkspaceDidLaunchApplicationNotification = "NSWorkspaceDidLaunchApplicationNotification";
+    public static final String WorkspaceDidMountNotification = "NSWorkspaceDidMountNotification";
+    public static final String WorkspaceDidPerformFileOperationNotification = "NSWorkspaceDidPerformFileOperationNotification";
+    public static final String WorkspaceDidTerminateApplicationNotification = "NSWorkspaceDidTerminateApplicationNotification";
+    public static final String WorkspaceDidUnmountNotification = "NSWorkspaceDidUnmountNotification";
+    public static final String WorkspaceDidWakeNotification = "NSWorkspaceDidWakeNotification";
+    public static final String WorkspaceWillLaunchApplicationNotification = "NSWorkspaceWillLaunchApplicationNotification";
+    public static final String WorkspaceWillPowerOffNotification = "NSWorkspaceWillPowerOffNotification";
+    public static final String WorkspaceWillSleepNotification = "NSWorkspaceWillSleepNotification";
+    public static final String WorkspaceWillUnmountNotification = "NSWorkspaceWillUnmountNotification";
+    public static final String WorkspaceSessionDidBecomeActiveNotification = "NSWorkspaceSessionDidBecomeActiveNotification";
+    public static final String WorkspaceSessionDidResignActiveNotification = "NSWorkspaceSessionDidResignActiveNotification";
+    
     /// <i>native declaration : :13</i>
     public static final int NSWorkspaceLaunchAndPrint = 2;
     /// <i>native declaration : :14</i>
