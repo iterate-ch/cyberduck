@@ -507,7 +507,7 @@
  *	 object to use as the application icon; if this is not implemented, the
  *	 application's own icon is used.  This is not generally needed.
  *	@result The <code>NSData</code> to treat as the application icon.
- *	@deprecated In version 1.1, in favor of {{{-applicationIconForGrowl}}}.
+ *	@deprecated In version 0.8, in favor of {{{-applicationIconForGrowl}}}.
  */
 - (NSData *) applicationIconDataForGrowl;
 

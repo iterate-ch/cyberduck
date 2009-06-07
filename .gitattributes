@@ -74,16 +74,6 @@ build/DotMacKit.framework/Versions/Current/Resources/English.lproj/InfoPlist.str
 build/DotMacKit.framework/Versions/Current/Resources/English.lproj/locversion.plist -text
 build/DotMacKit.framework/Versions/Current/Resources/Info.plist -text
 build/DotMacKit.framework/Versions/Current/Resources/version.plist -text
-build/Growl.framework/Growl -text
-build/Growl.framework/Headers -text
-build/Growl.framework/Resources -text
-build/Growl.framework/Versions/A/Growl -text
-build/Growl.framework/Versions/A/Headers/Growl.h -text
-build/Growl.framework/Versions/A/Headers/GrowlApplicationBridge-Carbon.h -text
-build/Growl.framework/Versions/A/Headers/GrowlApplicationBridge.h -text
-build/Growl.framework/Versions/A/Headers/GrowlDefines.h -text
-build/Growl.framework/Versions/A/Resources/Info.plist -text
-build/Growl.framework/Versions/Current -text
 build/Sparkle.framework/Headers -text
 build/Sparkle.framework/Resources -text
 build/Sparkle.framework/Sparkle -text
@@ -1266,6 +1256,12 @@ ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
 ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
+lib/Growl.framework/Growl -text
+lib/Growl.framework/Headers -text
+lib/Growl.framework/Resources -text
+lib/Growl.framework/Versions/A/Growl -text
+lib/Growl.framework/Versions/A/Resources/Info.plist -text
+lib/Growl.framework/Versions/Current -text
 lib/asm-3.1.jar -text
 lib/cglib-2.2.jar -text
 lib/cloudfiles-1.3.1.jar -text
