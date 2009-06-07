@@ -26,55 +26,72 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import org.rococoa.cocoa.NSPoint;
 
 /// <i>native declaration : :32</i>
-public interface NSDraggingInfo {
+public abstract class NSDraggingInfo extends NSObject {
+
+    /// <i>native declaration : line 15</i>
+    public static final int NSDragOperationNone = 0;
+    /// <i>native declaration : line 16</i>
+    public static final int NSDragOperationCopy = 1;
+    /// <i>native declaration : line 17</i>
+    public static final int NSDragOperationLink = 2;
+    /// <i>native declaration : line 18</i>
+    public static final int NSDragOperationGeneric = 4;
+    /// <i>native declaration : line 19</i>
+    public static final int NSDragOperationPrivate = 8;
+    /// <i>native declaration : line 20</i>
+    public static final int NSDragOperationAll_Obsolete = 15;
+    /// <i>native declaration : line 21</i>
+    public static final int NSDragOperationMove = 16;
+    /// <i>native declaration : line 22</i>
+    public static final int NSDragOperationDelete = 32;
 
     /**
      * Original signature : <code>NSWindow* draggingDestinationWindow()</code><br>
      * <i>native declaration : :33</i>
      */
-    NSWindow draggingDestinationWindow();
+    public abstract NSWindow draggingDestinationWindow();
 
     /**
      * Original signature : <code>NSDragOperation draggingSourceOperationMask()</code><br>
      * <i>native declaration : :34</i>
      */
-    int draggingSourceOperationMask();
+    public abstract int draggingSourceOperationMask();
 
     /**
      * Original signature : <code>draggingLocation()</code><br>
      * <i>native declaration : :35</i>
      */
-    NSPoint draggingLocation();
+    public abstract NSPoint draggingLocation();
 
     /**
      * Original signature : <code>draggedImageLocation()</code><br>
      * <i>native declaration : :36</i>
      */
-    NSPoint draggedImageLocation();
+    public abstract NSPoint draggedImageLocation();
 
     /**
      * Original signature : <code>NSImage* draggedImage()</code><br>
      * <i>native declaration : :37</i>
      */
-    NSImage draggedImage();
+    public abstract NSImage draggedImage();
 
     /**
      * Original signature : <code>NSPasteboard* draggingPasteboard()</code><br>
      * <i>native declaration : :38</i>
      */
-    NSPasteboard draggingPasteboard();
+    public abstract NSPasteboard draggingPasteboard();
 
     /**
      * Original signature : <code>draggingSource()</code><br>
      * <i>native declaration : :39</i>
      */
-    NSObject draggingSource();
+    public abstract NSObject draggingSource();
 
     /**
      * Original signature : <code>NSInteger draggingSequenceNumber()</code><br>
      * <i>native declaration : :40</i>
      */
-    int draggingSequenceNumber();
+    public abstract int draggingSequenceNumber();
     /**
      * <i>native declaration : :41</i><br>
      * Conversion Error : /// Original signature : <code>void slideDraggedImageTo(null)</code><br>
@@ -84,15 +101,5 @@ public interface NSDraggingInfo {
      * Original signature : <code>NSArray* namesOfPromisedFilesDroppedAtDestination(NSURL*)</code><br>
      * <i>native declaration : :43</i>
      */
-    NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination);
-
-    public static final int DragOperationNone = 0;
-    public static final int DragOperationCopy = 1;
-    public static final int DragOperationLink = 2;
-    public static final int DragOperationGeneric = 4;
-    public static final int DragOperationPrivate = 8;
-    public static final int DragOperationAll = 15;
-    public static final int DragOperationMove = 16;
-    public static final int DragOperationDelete = 32;
-    public static final int DragOperationEvery = -1;
+    public abstract   NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination);
 }
