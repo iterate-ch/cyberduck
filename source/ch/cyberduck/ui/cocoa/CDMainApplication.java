@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CDMainApplication {
     private static Logger log = Logger.getLogger(CDMainApplication.class);
@@ -95,7 +95,9 @@ public class CDMainApplication {
      *                 otherwise the event is added to the back of the queue.
      */
     public static void invoke(final MainAction runnable, boolean front) {
-        Foundation.runOnMainThread(runnable);
+        synchronized(NSApplication.sharedApplication()) {
+            Foundation.runOnMainThread(runnable);
+        }
     }
 
     /**
