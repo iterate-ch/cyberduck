@@ -18,10 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.collections.map.LRUMap;
+
 import java.util.*;
 
 /**
  * A cache for remote directory listings
+ *
  * @version $Id$
  */
 public class Cache<E extends AbstractPath> {
@@ -29,7 +32,9 @@ public class Cache<E extends AbstractPath> {
     /**
      *
      */
-    private HashMap<String, AttributedList<E>> _impl = new HashMap<String, AttributedList<E>>();
+    private Map<String, AttributedList<E>> _impl = new LRUMap(
+            Preferences.instance().getInteger("browser.cache.size")
+    );
 
     /**
      *
@@ -47,7 +52,6 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     *
      * @param path
      * @return
      */
@@ -76,7 +80,6 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     *
      * @param path
      * @return
      */
@@ -95,7 +98,6 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     *
      * @param path
      * @param comparator
      * @param filter
