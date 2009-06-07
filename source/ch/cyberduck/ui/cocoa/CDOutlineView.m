@@ -68,11 +68,11 @@ static NSTableColumn *localSelectionColumn;
 	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
 		if([[NSUserDefaults standardUserDefaults] boolForKey:@"browser.view.autoexpand.useDelay"]) {
 			if(nil == autoexpand_timer) {
-				autoexpand_timer = [NSTimer scheduledTimerWithTimeInterval:[[NSUserDefaults standardUserDefaults] floatForKey:@"browser.view.autoexpand.delay"]
+				autoexpand_timer = [[NSTimer scheduledTimerWithTimeInterval:[[NSUserDefaults standardUserDefaults] floatForKey:@"browser.view.autoexpand.delay"]
 																target:self
 															  selector:@selector(_scheduleAutoExpandTimerForItemDelayed:) 
 															  userInfo:[NSValue valueWithPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil]] 
-															   repeats:NO];
+															   repeats:NO] retain];
 			}
 			return;
 		}
@@ -97,6 +97,7 @@ static NSTableColumn *localSelectionColumn;
 			}
 		}
 	}
+	[autoexpand_timer release];
 	autoexpand_timer = nil;
 }
 
@@ -289,19 +290,20 @@ static NSTableColumn *localSelectionColumn;
 		if([select_string length] == 1) {
 			[self selectRow];
 			// Fix for http://trac.cyberduck.ch/ticket/896
-			select_timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+			select_timer = [[NSTimer scheduledTimerWithTimeInterval:0.5
 															target:self 
 														  selector:@selector(clearSelectString:) 
 														  userInfo:nil 
-														   repeats:NO];
+														   repeats:NO] retain];
 		}
 		else {
 			[select_timer invalidate];
-			select_timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+			[select_timer release];
+			select_timer = [[NSTimer scheduledTimerWithTimeInterval:0.5
 															target:self 
 														  selector:@selector(selectRowWithTimer:) 
 														  userInfo:nil 
-														   repeats:NO];
+														   repeats:NO] retain];
 		}
 		return;
 	} 
@@ -380,18 +382,18 @@ static NSTableColumn *localSelectionColumn;
 	return localSelectionColumn;
 }
 
-- (NSImage *)dragImageForRows:(NSArray *)dragRows 
-						event:(NSEvent *)dragEvent 
-			  dragImageOffset:(NSPointPointer)dragImageOffset 
+- (NSImage *)dragImageForRows:(NSArray *)dragRows
+						event:(NSEvent *)dragEvent
+			  dragImageOffset:(NSPointPointer)dragImageOffset
 {
 	NSImage *img = [NSImage imageNamed: @"transparent.tiff"];
 	return img;
 }
 
-- (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows 
-							tableColumns:(NSArray *)tableColumns 
-								   event:(NSEvent*)dragEvent 
-								  offset:(NSPointPointer)dragImageOffset 
+- (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows
+							tableColumns:(NSArray *)tableColumns
+								   event:(NSEvent*)dragEvent
+								  offset:(NSPointPointer)dragImageOffset
 {
 	NSImage *img = [NSImage imageNamed: @"transparent.tiff"];
 	return img;
