@@ -779,9 +779,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
         log.debug("paste");
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
+            NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
             if(o != null) {
-                NSArray elements = (NSArray) o;
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     TransferCollection.instance().add(TransferFactory.create(dict));
@@ -1012,9 +1012,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
             boolean valid = false;
             NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
             if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-                Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
+                NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                 if(o != null) {
-                    NSArray elements = (NSArray) o;
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                         final Transfer transfer = TransferFactory.create(dict);
