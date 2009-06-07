@@ -224,7 +224,7 @@ public class CDMainController extends CDBundleController {
 
     public void showActivityWindowClicked(final NSObject sender) {
         CDActivityController c = CDActivityController.instance();
-        if(c.window().isVisible()) {
+        if(c.isVisible()) {
             c.window().close();
         }
         else {
@@ -400,21 +400,17 @@ public class CDMainController extends CDBundleController {
         // be expanded and made active. If no documents are open, the application should
         // open a new window. (If your application is not document-based, display the
         // application’s main window.)
-        final NSArray browsers = CDMainController.orderedBrowsers();
-        if(browsers.count() == 0 && this.orderedTransfers().count() == 0) {
+        if(browsers.size() == 0 && !CDTransferController.instance().isVisible()) {
             this.openDefaultBookmark(CDMainController.newDocument());
         }
-        final NSEnumerator i = browsers.objectEnumerator();
         NSWindow miniaturized = null;
-        NSObject next;
-        while(((next = i.nextObject()) != null)) {
-//            CDBrowserController controller = (CDBrowserController) next;
-//            if(!controller.window().isMiniaturized()) {
-//                return false;
-//            }
-//            if(null == miniaturized) {
-//                miniaturized = controller.window();
-//            }
+        for(CDBrowserController controller : browsers) {
+            if(!controller.window().isMiniaturized()) {
+                return false;
+            }
+            if(null == miniaturized) {
+                miniaturized = controller.window();
+            }
         }
         if(null == miniaturized) {
             return false;
@@ -508,14 +504,14 @@ public class CDMainController extends CDBundleController {
         // the NSWorkspace object, instead of going through the application’s default
         // notification center as most notifications do. To receive NSWorkspace notifications,
         // your application must register an observer with the NSWorkspace notification center.
-//        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.proxy(),
-//                Foundation.selector("workspaceWillPowerOff:"),
-//                NSWorkspace.WorkspaceWillPowerOffNotification,
-//                null);
-//        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.proxy(),
-//                Foundation.selector("workspaceWillLogout:"),
-//                NSWorkspace.WorkspaceSessionDidResignActiveNotification,
-//                null);
+        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
+                Foundation.selector("workspaceWillPowerOff:"),
+                NSWorkspace.WorkspaceWillPowerOffNotification,
+                null);
+        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
+                Foundation.selector("workspaceWillLogout:"),
+                NSWorkspace.WorkspaceSessionDidResignActiveNotification,
+                null);
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             Rendezvous.instance().init();
         }
@@ -708,6 +704,12 @@ public class CDMainController extends CDBundleController {
     }
 
     /**
+     *
+     */
+    private static List<CDBrowserController> browsers
+            = new ArrayList<CDBrowserController>();
+
+    /**
      * Makes a unmounted browser window the key window and brings it to the front
      *
      * @param force If true, open a new browser regardeless of any unused browser window
@@ -715,62 +717,27 @@ public class CDMainController extends CDBundleController {
      */
     public static CDBrowserController newDocument(boolean force) {
         log.debug("newDocument");
-        final NSArray browsers = CDMainController.orderedBrowsers();
         if(!force) {
-            final NSEnumerator i = browsers.objectEnumerator();
-            NSObject next;
-            while(((next = i.nextObject()) != null)) {
-//                CDBrowserController controller = (CDBrowserController) next;
-//                if(!controller.hasSession()) {
-//                    controller.window().makeKeyAndOrderFront(null);
-//                    return controller;
-//                }
+            for(CDBrowserController controller : browsers) {
+                if(!controller.hasSession()) {
+                    controller.window().makeKeyAndOrderFront(null);
+                    return controller;
+                }
             }
         }
-        CDBrowserController controller = new CDBrowserController();
-        if(browsers.count() > 0) {
+        final CDBrowserController controller = new CDBrowserController();
+        controller.addListener(new CDWindowListener() {
+            @Override
+            public void windowWillClose() {
+                browsers.remove(controller);
+            }
+        });
+        if(browsers.size() > 0) {
             controller.cascade();
         }
         controller.window().makeKeyAndOrderFront(null);
+        browsers.add(controller);
         return controller;
-    }
-
-    // ----------------------------------------------------------
-    // Applescriptability
-    // ----------------------------------------------------------
-
-    public boolean applicationDelegateHandlesKey(NSApplication application, String key) {
-        return key.equals("orderedBrowsers") || key.equals("orderedTransfers");
-    }
-
-    public NSArray orderedTransfers() {
-        NSArray orderedWindows = NSApplication.sharedApplication().orderedWindows();
-        int c = orderedWindows.count();
-        NSMutableArray orderedDocs = Rococoa.cast(NSMutableArray.array(), NSMutableArray.class);
-        for(int i = 0; i < c; i++) {
-            final NSWindow window = Rococoa.cast(orderedWindows.objectAtIndex(i), NSWindow.class);
-            if(window.isVisible()) {
-                org.rococoa.ID delegate = window.delegate();
-//                if((delegate != null) && (delegate instanceof CDTransferController)) {
-//                    orderedDocs.addObject(delegate);
-//                    return orderedDocs;
-//                }
-            }
-        }
-        log.debug("orderedTransfers:" + orderedDocs);
-        return orderedDocs;
-    }
-
-    public static NSArray orderedBrowsers() {
-        NSArray orderedWindows = NSApplication.sharedApplication().orderedWindows();
-        NSMutableArray orderedDocs = Rococoa.cast(NSMutableArray.array(), NSMutableArray.class);
-        for(int i = 0; i < orderedWindows.count(); i++) {
-            org.rococoa.ID delegate = (Rococoa.cast(orderedWindows.objectAtIndex(i), NSWindow.class)).delegate();
-//            if((delegate != null) && (delegate instanceof CDBrowserController)) {
-//                orderedDocs.addObject(delegate);
-//            }
-        }
-        return orderedDocs;
     }
 
     /**

@@ -36,6 +36,6 @@ public abstract class WindowMainAction extends MainAction {
      * @return True if hte window is still on screen
      */
     public boolean isValid() {
-        return controller.window().isVisible();
+        return controller.isVisible();
     }
 }

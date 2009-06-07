@@ -134,6 +134,13 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     /**
+     * @return True if the controller window is on screen.
+     */
+    public boolean isVisible() {
+        return this.window().isVisible();
+    }
+
+    /**
      * @see ch.cyberduck.ui.cocoa.application.NSWindow.Delegate
      */
     public boolean windowShouldClose(NSWindow sender) {

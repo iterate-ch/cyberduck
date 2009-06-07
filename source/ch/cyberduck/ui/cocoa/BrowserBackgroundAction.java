@@ -76,7 +76,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
 
     @Override
     public boolean isCanceled() {
-        if(!controller.window().isVisible()) {
+        if(!controller.isVisible()) {
             return false;
         }
         return super.isCanceled();
