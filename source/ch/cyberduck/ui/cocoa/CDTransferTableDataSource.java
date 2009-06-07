@@ -122,36 +122,35 @@ public class CDTransferTableDataSource extends CDListDataSource {
      */
     @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
-        if(row < numberOfRowsInTableView(view)) {
-            final String identifier = (String) tableColumn.identifier();
-            if(identifier.equals(PROGRESS_COLUMN)) {
-                return controllers.get(this.getSource().get(row)).view();
-            }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return NSString.stringWithString(this.getSource().get(row).getName());
-            }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        final String identifier = tableColumn.identifier();
+        if(identifier.equals(PROGRESS_COLUMN)) {
+            return controllers.get(this.getSource().get(row)).view();
         }
-        return null;
+        if(identifier.equals(TYPEAHEAD_COLUMN)) {
+            return NSString.stringWithString(this.getSource().get(row).getName());
+        }
+        throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }
 
     // ----------------------------------------------------------
     // Drop methods
     // ----------------------------------------------------------
 
-    public int tableViewValidateDrop(NSTableView tableView, NSDraggingInfo info, int row, int operation) {
+    @Override
+    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int row, int operation) {
+        final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
-        if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
-            tableView.setDropRow_dropOperation(row, NSTableView.NSTableViewDropAbove);
-            return NSDraggingInfo.DragOperationCopy;
+        if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
+            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+            return NSDraggingInfo.NSDragOperationCopy;
         }
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            tableView.setDropRow_dropOperation(row, NSTableView.NSTableViewDropAbove);
-            return NSDraggingInfo.DragOperationCopy;
+            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+            return NSDraggingInfo.NSDragOperationCopy;
         }
         log.debug("tableViewValidateDrop:DragOperationNone");
-        return NSDraggingInfo.DragOperationNone;
+        return NSDraggingInfo.NSDragOperationNone;
     }
 
     /**
@@ -162,14 +161,11 @@ public class CDTransferTableDataSource extends CDListDataSource {
      *              The data source should
      *              incorporate the data from the dragging pasteboard at this time.
      */
-    public boolean tableViewAcceptDrop(NSTableView tableView, NSDraggingInfo info, int index, int operation) {
-        log.debug("tableViewAcceptDrop:row:" + index + ",operation:" + operation);
-        int row = index;
-        if(row < 0) {
-            row = 0;
-        }
-        if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
-            String droppedText = info.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
+    @Override
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation) {
+        final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
+        if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
+            String droppedText = draggingInfo.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
                 CDDownloadController c = new CDDownloadController(CDTransferController.instance(), droppedText);
@@ -183,16 +179,16 @@ public class CDTransferTableDataSource extends CDListDataSource {
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
         log.debug("availableTypeFromArray:TransferPasteboardType: " + pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)));
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
+            NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
             log.debug("tableViewAcceptDrop:" + o);
             if(o != null) {
-                NSArray elements = (NSArray) o;
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     TransferCollection.instance().add(row, TransferFactory.create(dict));
-                    tableView.reloadData();
-                    tableView.selectRowIndexes_byExtendingSelection(NSIndexSet.indexSetWithIndex(row), false);
-                    tableView.scrollRowToVisible(row);
+                    view.reloadData();
+                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                    view.scrollRowToVisible(row);
                 }
                 pboard.setPropertyList_forType(null, CDPasteboards.TransferPasteboardType);
                 return true;
