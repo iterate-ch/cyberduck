@@ -44,13 +44,13 @@ public abstract class NSOutlineView extends NSTableView {
 
         boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item);
 
-        int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row);
+        int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSObject info, NSObject item, int row);
 
-        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row);
+        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSObject info, NSObject item, int row);
 
-        boolean outlineView_writeItems_ToPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard);
+        boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard);
 
-        NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items);
+        //NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items);
     }
 
     public interface _Class extends org.rococoa.NSClass {

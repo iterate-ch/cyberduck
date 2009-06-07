@@ -1107,14 +1107,25 @@ public abstract class NSView extends NSResponder {
      * <i>from NSDrag native declaration : :407</i>
      */
     public abstract void unregisterDraggedTypes();
+
     /**
      * <i>from NSDrag native declaration : :409</i><br>
      * Conversion Error : NSRect
      */
+    public abstract boolean dragFile_fromRect_slideBack_event(String filename, NSRect rect, boolean slideBack, NSEvent event);
+
     /**
      * <i>from NSDrag native declaration : :411</i><br>
      * Conversion Error : NSRect
      */
+    public abstract boolean dragPromisedFilesOfTypes_fromRect_source_slideBack_event(
+            NSArray typeArray, NSRect rect, org.rococoa.ID sourceObject, boolean slideBack, NSEvent event);
+
+    public boolean dragPromisedFilesOfTypes(
+            NSArray typeArray, NSRect rect, org.rococoa.ID sourceObject, boolean slideBack, NSEvent event) {
+        return this.dragPromisedFilesOfTypes_fromRect_source_slideBack_event(typeArray, rect, sourceObject, slideBack, event);
+    }
+
     /**
      * Original signature : <code>BOOL enterFullScreenMode(NSScreen*, NSDictionary*)</code><br>
      * <i>from NSFullScreenMode native declaration : :417</i>

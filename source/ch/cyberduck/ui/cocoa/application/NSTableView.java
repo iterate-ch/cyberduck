@@ -62,11 +62,11 @@ public abstract class NSTableView extends NSControl {
 
         boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard);
 
-        NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes);
+        int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int row, int operation);
 
-        int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
+        boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation);
 
-        boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
+        //NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes);
     }
 
     /**
