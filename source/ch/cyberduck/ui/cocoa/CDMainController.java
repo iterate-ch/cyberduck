@@ -300,7 +300,7 @@ public class CDMainController extends CDBundleController {
             int count = windows.count();
             while(0 != count--) {
                 NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-                final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+                final CDBrowserController controller = CDMainController.controllerForWindow(window);
                 if(null != controller) {
                     if(controller.isMounted()) {
                         final Path workdir = controller.workdir();
@@ -607,7 +607,7 @@ public class CDMainController extends CDBundleController {
         // Determine if there are any open connections
         while(0 != count--) {
             NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            final CDBrowserController controller = CDMainController.controllerForWindow(window);
             if(null != controller) {
                 if(Preferences.instance().getBoolean("browser.serialize")) {
                     if(controller.isMounted()) {
@@ -708,6 +708,28 @@ public class CDMainController extends CDBundleController {
      */
     private static List<CDBrowserController> browsers
             = new ArrayList<CDBrowserController>();
+
+    /**
+     *
+     * @return
+     */
+    public static List<CDBrowserController> getBrowsers() {
+        return browsers;
+    }
+
+
+    /**
+     * @param window
+     * @return
+     */
+    public static CDBrowserController controllerForWindow(NSWindow window) {
+        for(CDBrowserController controller : browsers) {
+            if(controller.window().equals(window)) {
+                return controller;
+            }
+        }
+        return null;
+    }
 
     /**
      * Makes a unmounted browser window the key window and brings it to the front

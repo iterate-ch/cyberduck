@@ -477,63 +477,29 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return "Browser";
     }
 
-    public static CDBrowserController controllerForWindow(NSWindow window) {
-        if(window.isVisible()) {
-            ID delegate = window.delegate();
-//            if(delegate != null && delegate instanceof CDBrowserController) {
-            //              return (CDBrowserController) delegate;
-            //        }
-        }
-        return null;
-    }
-
     public static void validateToolbarItems() {
-        NSArray windows = NSApplication.sharedApplication().windows();
-        int count = windows.count();
-        while(0 != count--) {
-            NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if(null != controller) {
-                window.toolbar().validateVisibleItems();
-            }
+        for(CDBrowserController controller : CDMainController.getBrowsers()) {
+            controller.window().toolbar().validateVisibleItems();
         }
     }
 
     public static void updateBookmarkTableRowHeight() {
-        NSArray windows = NSApplication.sharedApplication().windows();
-        int count = windows.count();
-        while(0 != count--) {
-            NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if(null != controller) {
-                controller._updateBookmarkCell();
-            }
+        for(CDBrowserController controller : CDMainController.getBrowsers()) {
+            controller._updateBookmarkCell();
         }
     }
 
     public static void updateBrowserTableAttributes() {
-        NSArray windows = NSApplication.sharedApplication().windows();
-        int count = windows.count();
-        while(0 != count--) {
-            NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if(null != controller) {
-                controller._updateBrowserAttributes(controller.browserListView);
-                controller._updateBrowserAttributes(controller.browserOutlineView);
-            }
+        for(CDBrowserController controller : CDMainController.getBrowsers()) {
+            controller._updateBrowserAttributes(controller.browserListView);
+            controller._updateBrowserAttributes(controller.browserOutlineView);
         }
     }
 
     public static void updateBrowserTableColumns() {
-        NSArray windows = NSApplication.sharedApplication().windows();
-        int count = windows.count();
-        while(0 != count--) {
-            NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            CDBrowserController controller = CDBrowserController.controllerForWindow(window);
-            if(null != controller) {
-                controller._updateBrowserColumns(controller.browserListView);
-                controller._updateBrowserColumns(controller.browserOutlineView);
-            }
+        for(CDBrowserController controller : CDMainController.getBrowsers()) {
+            controller._updateBrowserColumns(controller.browserListView);
+            controller._updateBrowserColumns(controller.browserOutlineView);
         }
     }
 
@@ -1308,7 +1274,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void setBrowserOutlineView(NSOutlineView view) {
         browserOutlineView = view;
-        browserOutlineView.setAutosaveExpandedItems(true);
         // receive drag events from types
         browserOutlineView.registerForDraggedTypes(NSArray.arrayWithObjects(
                 CDPasteboards.TransferPasteboardType,
@@ -1349,20 +1314,17 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
              */
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
                                                                         NSTableColumn tableColumn, NSObject item) {
-                final String identifier = tableColumn.identifier();
-                if(item != null) {
-                    if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                        final Path path = lookup(item.toString());
-                        cell.setEditable(path.isRenameSupported());
-                        (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
+                if(tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
+                    final Path path = lookup(item.toString());
+                    cell.setEditable(path.isRenameSupported());
+                    (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
+                }
+                if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
+                    if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
+                        (Rococoa.cast(cell, NSTextFieldCell.class)).setTextColor(NSColor.disabledControlTextColor());
                     }
-                    if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                        if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
-                            (Rococoa.cast(cell, NSTextFieldCell.class)).setTextColor(NSColor.disabledControlTextColor());
-                        }
-                        else {
-                            (Rococoa.cast(cell, NSTextFieldCell.class)).setTextColor(NSColor.controlTextColor());
-                        }
+                    else {
+                        (Rococoa.cast(cell, NSTextFieldCell.class)).setTextColor(NSColor.controlTextColor());
                     }
                 }
             }
@@ -1390,9 +1352,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 return true;
             }
 
-            public String outlineView_toolTipForCell(NSOutlineView view, NSCell cell, NSRect rect,
-                                                     NSTableColumn tableColumn,
-                                                     final NSObject item, NSPoint mouseLocation) {
+            public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView view,
+                                                                                         NSCell cell,
+                                                                                         org.rococoa.NSObjectByReference rect,
+                                                                                         NSTableColumn tableColumn,
+                                                                                         final NSObject item,
+                                                                                         NSPoint mouseLocation) {
                 return this.tooltip(lookup(item.toString()));
             }
 
@@ -1486,8 +1451,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
-            public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView view, NSCell cell, NSRect rect,
-                                                                                      NSTableColumn tc, int row, NSPoint mouseLocation) {
+            public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView view,
+                                                                                      NSCell cell,
+                                                                                      org.rococoa.NSObjectByReference rect,
+                                                                                      NSTableColumn tc,
+                                                                                      int row,
+                                                                                      NSPoint mouseLocation) {
                 return this.tooltip(browserListModel.childs(CDBrowserController.this.workdir()).get(row));
             }
         }).id());
@@ -3131,7 +3100,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void paste(final NSObject sender) {
         final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
+            NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
             if(o != null) {
                 final Map<Path, Path> files = new HashMap<Path, Path>();
                 Path parent = this.workdir();
@@ -3144,7 +3113,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         parent = (Path) selected.getParent();
                     }
                 }
-                final NSArray elements = (NSArray) o;
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     Transfer q = TransferFactory.create(dict);
@@ -3166,9 +3135,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void pasteFromFinder(final NSObject sender) {
         NSPasteboard pboard = NSPasteboard.generalPasteboard();
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-            Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+            NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
-                NSArray elements = (NSArray) o;
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
                 final Path workdir = this.workdir();
                 final Session session = this.getTransferSession();
                 final List<Path> roots = new Collection<Path>();
@@ -3844,7 +3813,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         // Determine if there are any open connections
         while(0 != count--) {
             final NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            final CDBrowserController controller = CDBrowserController.controllerForWindow(window);
+            final CDBrowserController controller = CDMainController.controllerForWindow(window);
             if(null != controller) {
                 if(!controller.unmount(new CDSheetCallback() {
                     public void callback(final int returncode) {
@@ -3889,9 +3858,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             boolean valid = false;
             if(this.isMounted()) {
                 if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                    Object o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+                    NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                     if(o != null) {
-                        NSArray elements = (NSArray) o;
+                        final NSArray elements = Rococoa.cast(o, NSArray.class);
                         if(elements.count() == 1) {
                             item.setTitle(Locale.localizedString("Paste", "Menu item") + " \""
                                     + elements.objectAtIndex(0) + "\"");
@@ -3914,9 +3883,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             if(this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
                 if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-                    Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
+                    NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                     if(o != null) {
-                        NSArray elements = (NSArray) o;
+                        final NSArray elements = Rococoa.cast(o, NSArray.class);
                         for(int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                             Transfer q = TransferFactory.create(dict);
