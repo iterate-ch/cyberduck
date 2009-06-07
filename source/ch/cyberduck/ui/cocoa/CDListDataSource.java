@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CDListDataSource extends CDController implements NSTableView.DataSource {
 
@@ -44,11 +44,11 @@ public abstract class CDListDataSource extends CDController implements NSTableVi
         return NSArray.array();
     }
 
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation) {
-        return NSDraggingInfo.DragOperationNone;
+    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int row, int operation) {
+        return NSDraggingInfo.NSDragOperationNone;
     }
 
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info, int row, int operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation) {
         return false;
     }
 
