@@ -25,10 +25,6 @@
 		4717BE1C0F3096FD00BB4496 /* sftp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE150F3096FD00BB4496 /* sftp.icns */; };
 		4719A59E0BD95D2C0068CCFD /* bandwidth.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4719A59D0BD95D2C0068CCFD /* bandwidth.tiff */; };
 		4719A6040BD964780068CCFD /* connection.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4719A6030BD964780068CCFD /* connection.tiff */; };
-		471DFD890BCEDA2D00AE81F9 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
-		471DFD8A0BCEDA2D00AE81F9 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		471DFF210BCEDB0000AE81F9 /* CDPreferencesImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471DFF1E0BCEDB0000AE81F9 /* CDPreferencesImpl.h */; };
-		471DFF230BCEDB0000AE81F9 /* CDPreferencesImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471DFF200BCEDB0000AE81F9 /* CDPreferencesImpl.m */; };
 		47215AA707FC9A3E00451725 /* login.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47215AA607FC9A3E00451725 /* login.tiff */; };
 		472404590AFF4B75008FAFBB /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4724050D0AFF4BA7008FAFBB /* FileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 472404400AFF4B5C008FAFBB /* FileWatcher.h */; };
@@ -543,7 +539,6 @@
 		4719A6030BD964780068CCFD /* connection.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = connection.tiff; sourceTree = "<group>"; };
 		471D2C5405A2505600675163 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		471DFD900BCEDA2D00AE81F9 /* libPreferences.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libPreferences.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		471DFF1E0BCEDB0000AE81F9 /* CDPreferencesImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDPreferencesImpl.h; sourceTree = "<group>"; };
 		471DFF200BCEDB0000AE81F9 /* CDPreferencesImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDPreferencesImpl.m; sourceTree = "<group>"; wrapsLines = 1; };
 		47215AA607FC9A3E00451725 /* login.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = login.tiff; sourceTree = "<group>"; };
@@ -1588,15 +1583,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		471DFD880BCEDA2D00AE81F9 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				471DFD890BCEDA2D00AE81F9 /* JavaVM.framework in Frameworks */,
-				471DFD8A0BCEDA2D00AE81F9 /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		472404580AFF4B75008FAFBB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1726,7 +1712,6 @@
 				4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */,
 				4724045F0AFF4B75008FAFBB /* libKQueue.dylib */,
 				47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */,
-				471DFD900BCEDA2D00AE81F9 /* libPreferences.dylib */,
 				478ECD180DAD5743008A5B1F /* libQuickLook.dylib */,
 				478CFE820F9932B3000560EF /* libPrime.dylib */,
 				477A104D0FD08DBA00BAD4AD /* librococoa.dylib */,
@@ -2386,14 +2371,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		471DFD840BCEDA2D00AE81F9 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				471DFF210BCEDB0000AE81F9 /* CDPreferencesImpl.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		472404540AFF4B75008FAFBB /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2603,25 +2580,6 @@
 			productName = Cyberduck;
 			productReference = 471D2C5505A2505600675163 /* Cyberduck.app */;
 			productType = "com.apple.product-type.application";
-		};
-		471DFD830BCEDA2D00AE81F9 /* libPreferences */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 471DFD8E0BCEDA2D00AE81F9 /* Build configuration list for PBXNativeTarget "libPreferences" */;
-			buildPhases = (
-				471DFD840BCEDA2D00AE81F9 /* Headers */,
-				471DFD860BCEDA2D00AE81F9 /* Sources */,
-				471DFD880BCEDA2D00AE81F9 /* Frameworks */,
-				471DFD8D0BCEDA2D00AE81F9 /* Rez */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = libPreferences;
-			productInstallPath = /usr/local/lib;
-			productName = keychainLib;
-			productReference = 471DFD900BCEDA2D00AE81F9 /* libPreferences.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
 		};
 		472404530AFF4B75008FAFBB /* libKQueue */ = {
 			isa = PBXNativeTarget;
@@ -2900,7 +2858,6 @@
 				4762DAB809FC42EC0034C662 /* libDiagnostics */,
 				472404530AFF4B75008FAFBB /* libKQueue */,
 				47BEDAF60B92960400141EB4 /* libURLSchemeHandlerConfiguration */,
-				471DFD830BCEDA2D00AE81F9 /* libPreferences */,
 				478ECD000DAD5743008A5B1F /* libQuickLook */,
 				478CFE760F9932B3000560EF /* libPrime */,
 				477A10400FD08DBA00BAD4AD /* libRococoa */,
@@ -3053,13 +3010,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		471DFD8D0BCEDA2D00AE81F9 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EF700856981300405FD3 /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
@@ -3155,14 +3105,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4716D96D0877538700938886 /* CDDotMacController.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		471DFD860BCEDA2D00AE81F9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				471DFF230BCEDB0000AE81F9 /* CDPreferencesImpl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4525,31 +4467,6 @@
 			};
 			name = Deployment;
 		};
-		471DFD8F0BCEDA2D00AE81F9 /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "ppc i386 ppc64 x86_64";
-				COPY_PHASE_STRIP = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
-				LIBRARY_STYLE = DYNAMIC;
-				MACH_O_TYPE = mh_dylib;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				PREBINDING = NO;
-				PRODUCT_NAME = libPreferences;
-				REZ_EXECUTABLE = YES;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
 		4724045E0AFF4B75008FAFBB /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4911,14 +4828,6 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4716D8B70877533B00938886 /* Deployment */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
-		};
-		471DFD8E0BCEDA2D00AE81F9 /* Build configuration list for PBXNativeTarget "libPreferences" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				471DFD8F0BCEDA2D00AE81F9 /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
