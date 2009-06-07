@@ -27,11 +27,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 /**
  * @version $Id$
  */
-public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implements CDOutlineDataSource {
+public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implements NSOutlineView.DataSource {
     protected static Logger log = Logger.getLogger(CDBrowserOutlineViewModel.class);
 
     public CDBrowserOutlineViewModel(CDBrowserController controller) {
@@ -53,6 +54,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     /**
      * @see NSOutlineView.DataSource
      */
+    @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(log.isDebugEnabled()) {
             log.debug("outlineViewIsItemExpandable:" + item);
@@ -60,12 +62,17 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         if(null == item) {
             return false;
         }
-        return controller.lookup(item.toString()).attributes.isDirectory();
+        final Path path = controller.lookup(item.toString());
+        if(null == path) {
+            return false;
+        }
+        return path.attributes.isDirectory();
     }
 
     /**
      * @see NSOutlineView.DataSource
      */
+    @Override
     public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(controller.isMounted()) {
             if(null == item || item.id().isNull()) {
@@ -88,8 +95,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                     }
                 }
             }
-            final String path = item.toString();
-            return this.childs(path).size();
+            return this.childs(item.toString()).size();
         }
         return 0;
     }
@@ -100,9 +106,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
      *      of a given parent item are accessed sequentially. If item is null, this method should
      *      return the appropriate child item of the root object
      */
+    @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSObject item) {
         final Path path;
-        if(null == item || item.id().isNull()) {
+        if(item.id().isNull()) {
             path = controller.workdir();
         }
         else {
@@ -112,71 +119,67 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return NSString.stringWithString(childs.get(index).getAbsolute());
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     */
+    @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
         super.setObjectValueForItem(controller.lookup(item.toString()), value, tableColumn.identifier());
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     */
+    @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
         return super.objectValueForItem(controller.lookup(item.toString()), tableColumn.identifier());
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     */
-    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
+    @Override
+    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSObject info, NSObject item, int row) {
+        final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
+        Path destination = null;
         if(controller.isMounted()) {
-            final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-            if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null
-                    || info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+            destination = controller.lookup(item.toString());
+            if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null
+                    || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(null != destination) {
                     // Dragging over file or folder
-                    final int draggingColumn = outlineView.columnAtPoint(info.draggingLocation());
+                    final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation());
                     if(0 == draggingColumn && destination.attributes.isDirectory()) {
                         // Drop target is directory
-                        outlineView.setDropItem_dropChildIndex(NSString.stringWithString(destination.getAbsolute()), NSOutlineView.NSOutlineViewDropOnItemIndex);
-                        return super.validateDrop(outlineView, destination, row, info);
+                        outlineView.setDropItem(NSString.stringWithString(destination.getAbsolute()), NSOutlineView.NSOutlineViewDropOnItemIndex);
+                        return super.validateDrop(outlineView, destination, row, draggingInfo);
                     }
                     else {
-                        outlineView.setDropItem_dropChildIndex(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
-                        return super.validateDrop(outlineView, controller.workdir(), row, info);
+                        outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+                        return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                     }
                 }
                 else {
                     // Dragging over empty rows
-                    outlineView.setDropItem_dropChildIndex(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
-                    return super.validateDrop(outlineView, controller.workdir(), row, info);
+                    outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+                    return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                 }
             }
         }
-        if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            outlineView.setDropItem_dropChildIndex(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+        if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
+            outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
         }
-        return super.validateDrop(outlineView, destination, row, info);
+        return super.validateDrop(outlineView, destination, row, draggingInfo);
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     */
-    public boolean outlineViewAcceptDrop(final NSOutlineView outlineView, final NSDraggingInfo info, Path destination, int row) {
+    @Override
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSObject info, NSObject item, int row) {
+        Path destination = null;
         if(controller.isMounted()) {
-            if(null == destination) {
+            if(null == item) {
                 destination = controller.workdir();
             }
+            else {
+                destination = controller.lookup(item.toString());
+            }
         }
-        return super.acceptDrop(outlineView, destination, info);
+        return super.acceptDrop(outlineView, destination, Rococoa.cast(info, NSDraggingInfo.class));
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     */
-    public boolean outlineViewWriteItemsToPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
+    @Override
+    public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
         return super.writeItemsToPasteBoard(outlineView, items, pboard);
     }
 }

@@ -19,20 +19,22 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSSize;
-import org.rococoa.cocoa.NSRect;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.NSPoint;
+import org.rococoa.cocoa.NSRect;
+import org.rococoa.cocoa.NSSize;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -52,6 +54,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
     // virtual column to implement quick look
     protected static final String LOCAL_COLUMN = "LOCAL";
+
+    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
+            Locale.localizedString("Unknown", ""),
+            CDTableCellAttributes.browserFontLeftAlignment());
 
     /**
      * Container for all paths currently being listed in the background
@@ -118,10 +124,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
         return this.childs(controller.workdir()).contains(p);
     }
 
-    public void setObjectValueForItem(final Path item, final Object value, final String identifier) {
+    public void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
         log.debug("setObjectValueForItem:" + item);
         if(identifier.equals(FILENAME_COLUMN)) {
-            if(!item.getName().equals(value) && StringUtils.isNotBlank(value.toString())) {
+            if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
                         item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
                 controller.renamePath(item, renamed);
@@ -133,60 +139,52 @@ public abstract class CDBrowserTableDataSource extends CDController {
         return CDIconCache.instance().iconForPath(item, 16);
     }
 
-    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
-            Locale.localizedString("Unknown", ""),
-            CDTableCellAttributes.browserFontLeftAlignment());
-
     protected NSObject objectValueForItem(Path item, String identifier) {
-        if(null != item) {
-            if(identifier.equals(ICON_COLUMN)) {
-                return this.iconForPath(item);
-            }
-            if(identifier.equals(FILENAME_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(item.getName(),
+        if(identifier.equals(ICON_COLUMN)) {
+            return this.iconForPath(item);
+        }
+        if(identifier.equals(FILENAME_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(item.getName(),
+                    CDTableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(SIZE_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
+                    CDTableCellAttributes.browserFontRightAlignment());
+        }
+        if(identifier.equals(MODIFIED_COLUMN)) {
+            if(item.attributes.getModificationDate() != -1) {
+                return NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
                         CDTableCellAttributes.browserFontLeftAlignment());
             }
-            if(identifier.equals(SIZE_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
-                        CDTableCellAttributes.browserFontRightAlignment());
-            }
-            if(identifier.equals(MODIFIED_COLUMN)) {
-                if(item.attributes.getModificationDate() != -1) {
-                    return NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
-                            CDTableCellAttributes.browserFontLeftAlignment());
-                }
+            return UNKNOWN_STRING;
+        }
+        if(identifier.equals(OWNER_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
+                    CDTableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(GROUP_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
+                    CDTableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(PERMISSIONS_COLUMN)) {
+            Permission permission = item.attributes.getPermission();
+            if(null == permission) {
                 return UNKNOWN_STRING;
             }
-            if(identifier.equals(OWNER_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
-                        CDTableCellAttributes.browserFontLeftAlignment());
-            }
-            if(identifier.equals(GROUP_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
-                        CDTableCellAttributes.browserFontLeftAlignment());
-            }
-            if(identifier.equals(PERMISSIONS_COLUMN)) {
-                Permission permission = item.attributes.getPermission();
-                if(null == permission) {
-                    return UNKNOWN_STRING;
-                }
-                return NSAttributedString.attributedStringWithAttributes(permission.toString(),
-                        CDTableCellAttributes.browserFontLeftAlignment());
-            }
-            if(identifier.equals(KIND_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(item.kind(),
-                        CDTableCellAttributes.browserFontLeftAlignment());
-            }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return NSString.stringWithString(item.getName());
-            }
-            if(identifier.equals(LOCAL_COLUMN)) {
-                return NSString.stringWithString(item.getLocal().getAbsolute());
-            }
-            throw new IllegalArgumentException("Unknown identifier: " + identifier);
+            return NSAttributedString.attributedStringWithAttributes(permission.toString(),
+                    CDTableCellAttributes.browserFontLeftAlignment());
         }
-        log.warn("objectValueForItem:" + item + "," + identifier);
-        return null;
+        if(identifier.equals(KIND_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(item.kind(),
+                    CDTableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(TYPEAHEAD_COLUMN)) {
+            return NSString.stringWithString(item.getName());
+        }
+        if(identifier.equals(LOCAL_COLUMN)) {
+            return NSString.stringWithString(item.getLocal().getAbsolute());
+        }
+        throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }
 
     /**
@@ -209,9 +207,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
     public int draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {
-            return NSDraggingInfo.DragOperationMove | NSDraggingInfo.DragOperationCopy;
+            return NSDraggingInfo.NSDragOperationMove | NSDraggingInfo.NSDragOperationCopy;
         }
-        return NSDraggingInfo.DragOperationCopy | NSDraggingInfo.DragOperationDelete;
+        return NSDraggingInfo.NSDragOperationCopy | NSDraggingInfo.NSDragOperationDelete;
     }
 
     public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
@@ -221,7 +219,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
-                    NSArray elements = (NSArray) o;
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
                     final Session session = controller.getTransferSession();
                     final List<Path> roots = new Collection<Path>();
                     for(int i = 0; i < elements.count(); i++) {
@@ -242,7 +240,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
-                NSArray elements = (NSArray) o;
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
                         controller.mount(Host.parse(elements.objectAtIndex(i).toString()));
@@ -258,9 +256,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                 if(o != null) {
                     // A file dragged within the browser has been received
-                    final NSArray elements = (NSArray) o;
-                    if((info.draggingSourceOperationMask() & NSDraggingInfo.DragOperationMove)
-                            == NSDraggingInfo.DragOperationMove) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    if((info.draggingSourceOperationMask() & NSDraggingInfo.NSDragOperationMove)
+                            == NSDraggingInfo.NSDragOperationMove) {
                         // The file should be renamed
                         final Map<Path, Path> files = new HashMap<Path, Path>();
                         for(int i = 0; i < elements.count(); i++) {
@@ -277,7 +275,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         controller.renamePaths(files);
                         return true;
                     }
-                    if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
+                    if(info.draggingSourceOperationMask() == NSDraggingInfo.NSDragOperationCopy) {
                         // The file should be duplicated
                         final Map<Path, Path> files = new HashMap<Path, Path>();
                         for(int i = 0; i < elements.count(); i++) {
@@ -306,9 +304,9 @@ public abstract class CDBrowserTableDataSource extends CDController {
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(destination.attributes.isDirectory()) {
                     this.setDropRowAndDropOperation(view, destination, row);
-                    return NSDraggingInfo.DragOperationCopy;
+                    return NSDraggingInfo.NSDragOperationCopy;
                 }
-                return NSDraggingInfo.DragOperationNone;
+                return NSDraggingInfo.NSDragOperationNone;
             }
         }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
@@ -319,12 +317,12 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
                         // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
                         // entire table view to be highlighted rather than a specific row.
-                        view.setDropRow_dropOperation(-1, NSTableView.NSTableViewDropOn);
-                        return NSDraggingInfo.DragOperationCopy;
+                        view.setDropRow(-1, NSTableView.NSTableViewDropOn);
+                        return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
             }
-            return NSDraggingInfo.DragOperationNone;
+            return NSDraggingInfo.NSDragOperationNone;
         }
         if(controller.isMounted()) {
             final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
@@ -339,37 +337,37 @@ public abstract class CDBrowserTableDataSource extends CDController {
                             if(!next.getSession().equals(this.controller.getSession())) {
                                 // Don't allow dragging between two browser windows if not connected
                                 // to the same server using the same protocol
-                                return NSDraggingInfo.DragOperationNone;
+                                return NSDraggingInfo.NSDragOperationNone;
                             }
                             if(destination.equals(next)) {
                                 // Do not allow dragging onto myself
-                                return NSDraggingInfo.DragOperationNone;
+                                return NSDraggingInfo.NSDragOperationNone;
                             }
                             if(next.attributes.isDirectory() && destination.isChild(next)) {
                                 // Do not allow dragging a directory into its own containing items
-                                return NSDraggingInfo.DragOperationNone;
+                                return NSDraggingInfo.NSDragOperationNone;
                             }
                             if(next.getParent().equals(destination)) {
                                 // Moving to the same destination makes no sense
-                                return NSDraggingInfo.DragOperationNone;
+                                return NSDraggingInfo.NSDragOperationNone;
                             }
                         }
                     }
                     log.debug("Operation Mask:" + info.draggingSourceOperationMask());
                     if(destination.attributes.isDirectory()) {
                         this.setDropRowAndDropOperation(view, destination, row);
-                        if(info.draggingSourceOperationMask() == NSDraggingInfo.DragOperationCopy) {
-                            return NSDraggingInfo.DragOperationCopy;
+                        if(info.draggingSourceOperationMask() == NSDraggingInfo.NSDragOperationCopy) {
+                            return NSDraggingInfo.NSDragOperationCopy;
                         }
                         if(destination.isRenameSupported()) {
-                            return NSDraggingInfo.DragOperationMove;
+                            return NSDraggingInfo.NSDragOperationMove;
                         }
                     }
                 }
-                return NSDraggingInfo.DragOperationNone;
+                return NSDraggingInfo.NSDragOperationNone;
             }
         }
-        return NSDraggingInfo.DragOperationNone;
+        return NSDraggingInfo.NSDragOperationNone;
     }
 
     private void setDropRowAndDropOperation(NSTableView view, Path destination, int row) {
@@ -377,23 +375,18 @@ public abstract class CDBrowserTableDataSource extends CDController {
             log.debug("setDropRowAndDropOperation:-1");
             // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
             // entire table view to be highlighted rather than a specific row.
-            view.setDropRow_dropOperation(-1, NSTableView.NSTableViewDropOn);
+            view.setDropRow(-1, NSTableView.NSTableViewDropOn);
         }
         else if(destination.attributes.isDirectory()) {
             log.debug("setDropRowAndDropOperation:" + row);
-            view.setDropRow_dropOperation(row, NSTableView.NSTableViewDropOn);
+            view.setDropRow(row, NSTableView.NSTableViewDropOn);
         }
     }
 
-    /**
-     * The files dragged from the browser to the Finder
-     */
-    private Path[] promisedDragPaths;
-
     public boolean writeItemsToPasteBoard(NSTableView view, NSArray items, NSPasteboard pboard) {
+        log.debug("writeItemsToPasteBoard");
         if(controller.isMounted()) {
             if(items.count() > 0) {
-                this.promisedDragPaths = new Path[items.count()];
                 // The fileTypes argument is the list of fileTypes being promised.
                 // The array elements can consist of file extensions and HFS types encoded
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
@@ -402,23 +395,22 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 final List<Path> roots = new Collection<Path>();
                 final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
-                    final Path path = controller.lookup(items.objectAtIndex(i).toString());
-                    promisedDragPaths[i] = PathFactory.createPath(session, path.getAsDictionary());
-                    if(promisedDragPaths[i].attributes.isFile()) {
-                        if(StringUtils.isNotEmpty(promisedDragPaths[i].getExtension())) {
-                            fileTypes.addObject(NSString.stringWithString(promisedDragPaths[i].getExtension()));
+                    final Path path = PathFactory.createPath(session, controller.lookup(items.objectAtIndex(i).toString()).getAsDictionary());
+                    if(path.attributes.isFile()) {
+                        if(StringUtils.isNotEmpty(path.getExtension())) {
+                            fileTypes.addObject(NSString.stringWithString(path.getExtension()));
                         }
                         else {
                             fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeRegular));
                         }
                     }
-                    else if(promisedDragPaths[i].attributes.isDirectory()) {
+                    else if(path.attributes.isDirectory()) {
                         fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeDirectory));
                     }
                     else {
                         fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeUnknown));
                     }
-                    roots.add(promisedDragPaths[i]);
+                    roots.add(path);
                 }
                 final Transfer q = new DownloadTransfer(roots);
 
@@ -432,7 +424,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 if(event != null) {
                     NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
                     NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.intValue() - 16, dragPosition.y.intValue() - 16), new NSSize(32, 32));
-//                    view.dragPromisedFilesOfTypes(fileTypes, imageRect, this, true, event);
+                    view.dragPromisedFilesOfTypes(fileTypes, imageRect, this.id(), true, event);
                     // @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
                     return true;
                 }
@@ -441,15 +433,17 @@ public abstract class CDBrowserTableDataSource extends CDController {
         return false;
     }
 
+    private List<Path> promisedDragPaths = new ArrayList<Path>();
+
     //see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
         log.debug("finishedDraggingImage:" + operation);
-        if(NSDraggingInfo.DragOperationDelete == operation) {
+        if(NSDraggingInfo.NSDragOperationDelete == operation) {
             for(Path promisedDragPath : promisedDragPaths) {
-                controller.deletePaths(Arrays.asList(promisedDragPaths));
+                controller.deletePaths(promisedDragPaths);
             }
         }
-        this.promisedDragPaths = null;
+        promisedDragPaths.clear();
     }
 
     /**
@@ -461,33 +455,27 @@ public abstract class CDBrowserTableDataSource extends CDController {
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
-        NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragPaths.length);
+        NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragPaths.size());
         if(null != dropDestination) {
-//                final String d = java.net.URLDecoder.decode(dropDestination.getFile().replaceAll("\\+", "%2B"), "UTF-8");
             for(Path promisedDragPath : promisedDragPaths) {
                 promisedDragPath.setLocal(new Local(dropDestination.path(), promisedDragPath.getName()));
                 promisedDragNames.addObject(NSString.stringWithString(promisedDragPath.getName()));
             }
         }
-        if(promisedDragPaths.length == 1) {
-            if(promisedDragPaths[0].attributes.isFile()) {
-                promisedDragPaths[0].getLocal().touch();
+        if(promisedDragPaths.size() == 1) {
+            if(promisedDragPaths.get(0).attributes.isFile()) {
+                promisedDragPaths.get(0).getLocal().touch();
             }
-            if(promisedDragPaths[0].attributes.isDirectory()) {
-                promisedDragPaths[0].getLocal().mkdir();
+            if(promisedDragPaths.get(0).attributes.isDirectory()) {
+                promisedDragPaths.get(0).getLocal().mkdir();
             }
         }
         final List<Path> roots = new Collection<Path>();
-        roots.addAll(Arrays.asList(promisedDragPaths));
+        roots.addAll(promisedDragPaths);
         final Transfer q = new DownloadTransfer(roots);
         if(q.numberOfRoots() > 0) {
             controller.transfer(q);
         }
         return promisedDragNames;
-    }
-
-    protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:" + this.toString());
-        super.finalize();
     }
 }
