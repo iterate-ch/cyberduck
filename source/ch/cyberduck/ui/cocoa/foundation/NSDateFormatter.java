@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.Rococoa;
-
 /**
  * @version $Id$
  */
@@ -39,7 +37,7 @@ public abstract class NSDateFormatter extends NSFormatter {
     public static final int kCFDateFormatterFullStyle = 4;
 
     public static NSDateFormatter dateFormatter() {
-        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSDateFormatter.class);
+        return CLASS.alloc().init();
     }
 
     public interface _Class extends org.rococoa.NSClass {

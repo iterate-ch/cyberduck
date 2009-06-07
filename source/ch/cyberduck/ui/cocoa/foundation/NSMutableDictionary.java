@@ -29,14 +29,16 @@ public abstract class NSMutableDictionary extends NSDictionary {
          * <i>from NSMutableDictionaryCreation native declaration : :80</i>
          */
         NSMutableDictionary dictionaryWithCapacity(int numItems);
+
+        NSMutableDictionary alloc();
     }
 
     public static NSMutableDictionary dictionary() {
-        return CLASS.dictionaryWithCapacity(0);
+        return CLASS.alloc().initWithCapacity(0);
     }
 
     public static NSMutableDictionary dictionaryWithCapacity(int numItems) {
-        return CLASS.dictionaryWithCapacity(numItems);
+        return CLASS.alloc().initWithCapacity(numItems);
     }
 
     /**
