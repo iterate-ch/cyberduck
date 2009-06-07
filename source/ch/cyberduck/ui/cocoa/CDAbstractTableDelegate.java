@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
@@ -28,8 +27,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
-import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSRect;
 
 import java.util.Comparator;
 
@@ -129,7 +126,6 @@ public abstract class CDAbstractTableDelegate<E> extends CDController implements
     }
 
     /**
-     *
      * @param sender
      */
     public abstract void tableRowDoubleClicked(final NSObject sender);
@@ -177,16 +173,6 @@ public abstract class CDAbstractTableDelegate<E> extends CDController implements
      */
     public void selectionIsChanging(NSNotification notification) {
         ;
-    }
-
-    /**
-     * @see NSOutlineView.Delegate
-     */
-    public String outlineView_toolTipForCell(NSOutlineView view, NSCell cell, NSRect rect,
-                                             NSTableColumn tableColumn,
-                                             final NSObject item, NSPoint mouseLocation) {
-//        return this.tooltip(item);
-        return "";
     }
 
     // ----------------------------------------------------------

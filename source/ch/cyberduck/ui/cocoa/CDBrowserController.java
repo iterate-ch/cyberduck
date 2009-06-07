@@ -838,10 +838,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return item;
     }
 
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-
     public void setWindow(NSWindow window) {
         window.setDelegate(this.id());
         window.setTitle(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
@@ -1269,7 +1265,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                if(inspector != null && inspector.window() != null && inspector.window().isVisible()) {
+                if(inspector != null && inspector.isVisible()) {
                     if(selected.size() > 0) {
                         background(new BrowserBackgroundAction(CDBrowserController.this) {
                             public void run() {
@@ -1394,6 +1390,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 return true;
             }
 
+            public String outlineView_toolTipForCell(NSOutlineView view, NSCell cell, NSRect rect,
+                                                     NSTableColumn tableColumn,
+                                                     final NSObject item, NSPoint mouseLocation) {
+                return this.tooltip(lookup(item.toString()));
+            }
+
             /**
              * @see NSOutlineView.Notifications
              */
@@ -1486,11 +1488,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
             public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView view, NSCell cell, NSRect rect,
                                                                                       NSTableColumn tc, int row, NSPoint mouseLocation) {
-                if(row < browserListModel.childs(CDBrowserController.this.workdir()).size()) {
-                    Path p = browserListModel.childs(CDBrowserController.this.workdir()).get(row);
-                    return this.tooltip(p);
-                }
-                return null;
+                return this.tooltip(browserListModel.childs(CDBrowserController.this.workdir()).get(row));
             }
         }).id());
         {
@@ -3723,11 +3721,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
             public void cleanup() {
                 inspector = null;
-                if(null != session) {
-                    // Clear the cache on the main thread to make sure the browser model is not in an invalid state
-                    session.cache().clear();
-                    session.getHost().getCredentials().setPassword(null);
-                }
+
+                // Clear the cache on the main thread to make sure the browser model is not in an invalid state
+                session.cache().clear();
+                session.getHost().getCredentials().setPassword(null);
+
                 disconnected.run();
             }
 

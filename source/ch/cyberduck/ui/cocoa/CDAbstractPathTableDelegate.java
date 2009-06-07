@@ -29,7 +29,7 @@ import java.util.Locale;
 /**
  * @version $Id:$
  */
-public abstract class CDAbstractPathTableDelegate<E> extends CDAbstractTableDelegate<Path> {
+public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegate<Path> {
     private static Logger log = Logger.getLogger(CDAbstractTableDelegate.class);
 
     /**
