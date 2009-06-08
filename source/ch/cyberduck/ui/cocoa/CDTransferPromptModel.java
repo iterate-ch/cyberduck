@@ -24,16 +24,21 @@ import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSNumber;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.NSSize;
 
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public abstract class CDTransferPromptModel extends CDController {
+public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     protected static Logger log = Logger.getLogger(CDTransferPromptModel.class);
 
     /**
@@ -78,6 +83,10 @@ public abstract class CDTransferPromptModel extends CDController {
         }
     }
 
+    protected Path lookup(String path) {
+        return transfer.getSession().cache().lookup(path);
+    }
+
     protected static final String INCLUDE_COLUMN = "INCLUDE";
     protected static final String WARNING_COLUMN = "WARNING";
     protected static final String FILENAME_COLUMN = "FILENAME";
@@ -85,15 +94,14 @@ public abstract class CDTransferPromptModel extends CDController {
     // virtual column to implement keyboard selection
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
-    /**
-     * @see com.apple.cocoa.application.NSTableView.DataSource
-     */
-    public void outlineView_setObjectValueForItem(final NSOutlineView outlineView, Number value,
-                                                 final NSTableColumn tableColumn, Path item) {
+    @Override
+    public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
+                                                                 final NSTableColumn tableColumn, NSObject item) {
         String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            transfer.setSkipped(item, (value).intValue() == NSCell.NSOffState);
-            if(item.attributes.isDirectory()) {
+            final Path path = this.lookup(item.toString());
+            transfer.setSkipped(path, Rococoa.cast(value, NSNumber.class).intValue() == NSCell.NSOffState);
+            if(path.attributes.isDirectory()) {
                 outlineView.setNeedsDisplay(true);
             }
         }
@@ -150,7 +158,7 @@ public abstract class CDTransferPromptModel extends CDController {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
                             if(transfer.isCached(path) && isLoadingListingInBackground.isEmpty()) {
-                                ((CDTransferPrompt)controller).reloadData();
+                                ((CDTransferPrompt) controller).reloadData();
                             }
                         }
                     }
@@ -162,70 +170,62 @@ public abstract class CDTransferPromptModel extends CDController {
     }
 
     protected static final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
-
-    protected Object objectValueForItem(final Path item, final String identifier) {
-        if(null != item) {
-            if(identifier.equals(INCLUDE_COLUMN)) {
-                // Not included if the particular path should be skipped or skip
-                // existing is selected as the default transfer action for duplicate
-                // files
-                final boolean skipped = !transfer.isIncluded(item)
-                        || ((CDTransferPrompt)controller).getAction().equals(TransferAction.ACTION_SKIP);
-                return skipped ? NSCell.NSOffState : NSCell.NSOnState;
-            }
-            if(identifier.equals(FILENAME_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                        CDTableCellAttributes.browserFontLeftAlignment());
-            }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return item.getName();
-            }
-        }
-        log.warn("objectValueForItem:" + item + "," + identifier);
-        return null;
-    }
+    protected static final NSImage NO_ICON = NSImage.imageWithSize(new NSSize(0, 0));
 
     /**
-     * @see NSOutlineView.DataSource
+     * @param item
+     * @param identifier
+     * @return
      */
-    public boolean outlineViewIsItemExpandable(final NSOutlineView view, final Path item) {
+    protected NSObject objectValueForItem(final Path item, final String identifier) {
+        if(identifier.equals(INCLUDE_COLUMN)) {
+            // Not included if the particular path should be skipped or skip
+            // existing is selected as the default transfer action for duplicate
+            // files
+            final boolean skipped = !transfer.isIncluded(item)
+                    || ((CDTransferPrompt) controller).getAction().equals(TransferAction.ACTION_SKIP);
+            return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
+        }
+        if(identifier.equals(FILENAME_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(item.getName(),
+                    CDTableCellAttributes.browserFontLeftAlignment());
+        }
+        if(identifier.equals(TYPEAHEAD_COLUMN)) {
+            return NSString.stringWithString(item.getName());
+        }
+        throw new IllegalArgumentException("Unknown identifier: " + identifier);
+    }
+
+    @Override
+    public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(null == item) {
             return false;
         }
-        return item.attributes.isDirectory();
+        return this.lookup(item.toString()).attributes.isDirectory();
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     */
-    public int outlineViewNumberOfChildrenOfItem(final NSOutlineView view, Path item) {
+    @Override
+    public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(null == item) {
             return _roots.size();
         }
-        return this.childs(item).size();
+        return this.childs(this.lookup(item.toString())).size();
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     *      Invoked by outlineView, and returns the child item at the specified index. Children
-     *      of a given parent item are accessed sequentially. If item is null, this method should
-     *      return the appropriate child item of the root object
-     */
-    public Path outlineViewChildOfItem(final NSOutlineView view, int index, Path item) {
+    @Override
+    public NSObject outlineView_child_ofItem(final NSOutlineView view, int index, NSObject item) {
         if(null == item) {
-            return _roots.get(index);
+            return NSString.stringWithString(_roots.get(index).getAbsolute());
         }
-        final AttributedList<Path> childs = this.childs(item);
+        final AttributedList<Path> childs = this.childs(this.lookup(item.toString()));
         if(childs.isEmpty()) {
             return null;
         }
-        return (Path)childs.get(index);
+        return NSString.stringWithString(childs.get(index).getAbsolute());
     }
 
-    /**
-     * @see NSOutlineView.DataSource
-     */
-    public Object outlineViewObjectValueForItem(final NSOutlineView view, final NSTableColumn tableColumn, Path item) {
-        return this.objectValueForItem(item, (String)tableColumn.identifier());
+    @Override
+    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
+        return this.objectValueForItem(this.lookup(item.toString()), tableColumn.identifier());
     }
 }

@@ -23,6 +23,10 @@ import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+
+import org.rococoa.cocoa.NSSize;
 
 /**
  * @version $Id$
@@ -54,23 +58,21 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
         return filter;
     }
 
-    protected Object objectValueForItem(final Path item, final String identifier) {
-        if(null != item) {
-            if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
-                if(item.attributes.isFile()) {
-                    if(item.getLocal().attributes.getSize() == 0) {
-                        return ALERT_ICON;
-                    }
-                    if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
-                        return ALERT_ICON;
-                    }
+    protected NSObject objectValueForItem(final Path item, final String identifier) {
+        if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
+            if(item.attributes.isFile()) {
+                if(item.getLocal().attributes.getSize() == 0) {
+                    return ALERT_ICON;
                 }
-                return null;
+                if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
+                    return ALERT_ICON;
+                }
             }
-            if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
-                        CDTableCellAttributes.browserFontRightAlignment());
-            }
+            return NO_ICON;
+        }
+        if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
+                    CDTableCellAttributes.browserFontRightAlignment());
         }
         return super.objectValueForItem(item, identifier);
     }

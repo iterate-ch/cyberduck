@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /**
  * @version $Id$
@@ -57,45 +58,43 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
      */
     protected static final String CREATE_COLUMN = "CREATE";
 
-    protected Object objectValueForItem(final Path item, final String identifier) {
-        if(null != item) {
-            if(identifier.equals(SIZE_COLUMN)) {
-                SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
-                return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
-                        compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
-                        CDTableCellAttributes.browserFontRightAlignment());
+    protected NSObject objectValueForItem(final Path item, final String identifier) {
+        if(identifier.equals(SIZE_COLUMN)) {
+            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
+                    compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
+                    CDTableCellAttributes.browserFontRightAlignment());
+        }
+        if(identifier.equals(SYNC_COLUMN)) {
+            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+            if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
+                return CDIconCache.instance().iconForName("arrowDown", 16);
             }
-            if(identifier.equals(SYNC_COLUMN)) {
-                SyncTransfer.Comparison compare = ((SyncTransfer)transfer).compare(item);
-                if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return CDIconCache.instance().iconForName("arrowDown", 16);
-                }
-                if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return CDIconCache.instance().iconForName("arrowUp", 16);
-                }
-                return null;
+            if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
+                return CDIconCache.instance().iconForName("arrowUp", 16);
             }
-            if(identifier.equals(WARNING_COLUMN)) {
-                if(item.attributes.isFile()) {
-                    if(transfer.exists(item)) {
-                        if(item.attributes.getSize() == 0) {
-                            return ALERT_ICON;
-                        }
-                    }
-                    if(transfer.exists(item.getLocal())) {
-                        if(item.getLocal().attributes.getSize() == 0) {
-                            return ALERT_ICON;
-                        }
+            return NO_ICON;
+        }
+        if(identifier.equals(WARNING_COLUMN)) {
+            if(item.attributes.isFile()) {
+                if(transfer.exists(item)) {
+                    if(item.attributes.getSize() == 0) {
+                        return ALERT_ICON;
                     }
                 }
-                return null;
-            }
-            if(identifier.equals(CREATE_COLUMN)) {
-                if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
-                    return CDIconCache.instance().iconForName("plus", 16);
+                if(transfer.exists(item.getLocal())) {
+                    if(item.getLocal().attributes.getSize() == 0) {
+                        return ALERT_ICON;
+                    }
                 }
-                return null;
             }
+            return NO_ICON;
+        }
+        if(identifier.equals(CREATE_COLUMN)) {
+            if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
+                return CDIconCache.instance().iconForName("plus", 16);
+            }
+            return NO_ICON;
         }
         return super.objectValueForItem(item, identifier);
     }

@@ -38,20 +38,6 @@ import org.rococoa.cocoa.CGFloat;
 public abstract class CDTransferPrompt extends CDSheetController implements TransferPrompt {
     private static Logger log = Logger.getLogger(CDTransferPrompt.class);
 
-    @Outlet
-    private NSButtonCell BUTTON_CELL_PROTOTYPE;
-
-    {
-        BUTTON_CELL_PROTOTYPE = NSButtonCell.buttonCell();
-        BUTTON_CELL_PROTOTYPE.setTitle("");
-        BUTTON_CELL_PROTOTYPE.setControlSize(NSCell.NSSmallControlSize);
-        BUTTON_CELL_PROTOTYPE.setButtonType(NSButtonCell.NSSwitchButton);
-        BUTTON_CELL_PROTOTYPE.setAllowsMixedState(false);
-        BUTTON_CELL_PROTOTYPE.setTarget(this.id());
-        BUTTON_CELL_PROTOTYPE.setAlignment(NSText.NSCenterTextAlignment);
-
-    }
-
     public static TransferPrompt create(CDWindowController parent, final Transfer transfer) {
         if(transfer instanceof DownloadTransfer) {
             return new CDDownloadPrompt(parent, transfer);
@@ -174,13 +160,13 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     @Outlet
     protected NSOutlineView browserView;
     protected CDTransferPromptModel browserModel;
-    protected CDAbstractPathTableDelegate<Path> browserViewDelegate;
+    protected CDAbstractPathTableDelegate browserViewDelegate;
 
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
         this.browserView.setHeaderView(null);
         this.browserView.setDataSource(this.browserModel.id());
-        this.browserView.setDelegate((this.browserViewDelegate = new CDAbstractPathTableDelegate<Path>() {
+        this.browserView.setDelegate((this.browserViewDelegate = new CDAbstractPathTableDelegate() {
 
             public void enterKeyPressed(final NSObject sender) {
                 ;
@@ -199,9 +185,12 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             }
 
             public void selectionDidChange(NSNotification notification) {
-                if(browserView.selectedRow() != -1) {
-//                    Path p = (Path) browserView.itemAtRow(browserView.selectedRow());
-                    Path p = null;
+                if(browserView.selectedRow() == -1) {
+                    hideLocalDetails(true);
+                    hideRemoteDetails(true);
+                }
+                else {
+                    final Path p = browserModel.lookup(browserView.itemAtRow(browserView.selectedRow()).toString());
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -262,10 +251,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         remoteModificationField.setHidden(true);
                     }
                 }
-                else {
-                    hideLocalDetails(true);
-                    hideRemoteDetails(true);
-                }
             }
 
             private void hideRemoteDetails(boolean hidden) {
@@ -287,20 +272,21 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                                                     NSTableColumn tableColumn, NSObject item) {
                 String identifier = tableColumn.identifier();
                 if(item != null) {
+                    final Path path = browserModel.lookup(item.toString());
                     if(identifier.equals(CDTransferPromptModel.INCLUDE_COLUMN)) {
-//                        cell.setEnabled(transfer.isSelectable(item));
+                        cell.setEnabled(transfer.isSelectable(path));
                     }
                     if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
-//                        cell.setObjectValue(CDIconCache.instance().iconForPath(item, 16));
-//                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(item, 16));
+                        cell.setObjectValue(CDIconCache.instance().iconForPath(path, 16));
+                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(path, 16));
                     }
                     if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-//                        if(!transfer.isIncluded(item)) {
-                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
-//                        }
-//                        else {
-//                            Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
-//                        }
+                        if(!transfer.isIncluded(path)) {
+                            Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
+                        }
+                        else {
+                            Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
+                        }
                     }
                 }
             }
@@ -369,8 +355,14 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            BUTTON_CELL_PROTOTYPE = NSButtonCell.buttonCell();
-            c.setDataCell(BUTTON_CELL_PROTOTYPE);
+            final NSButtonCell cell = NSButtonCell.buttonCell();
+            cell.setTitle("");
+            cell.setControlSize(NSCell.NSSmallControlSize);
+            cell.setButtonType(NSButtonCell.NSSwitchButton);
+            cell.setAllowsMixedState(false);
+            cell.setTarget(this.id());
+            cell.setAlignment(NSText.NSCenterTextAlignment);
+            c.setDataCell(cell);
             this.browserView.addTableColumn(c);
         }
         this.browserView.sizeToFit();

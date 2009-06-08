@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /**
  * @version $Id$
@@ -60,23 +61,21 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
         return filter;
     }
 
-    protected Object objectValueForItem(final Path item, final String identifier) {
-        if(null != item) {
-            if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-                return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
-                        CDTableCellAttributes.browserFontRightAlignment());
-            }
-            if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
-                if(item.attributes.isFile()) {
-                    if(item.attributes.getSize() == 0) {
-                        return ALERT_ICON;
-                    }
-                    if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
-                        return ALERT_ICON;
-                    }
+    protected NSObject objectValueForItem(final Path item, final String identifier) {
+        if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
+                    CDTableCellAttributes.browserFontRightAlignment());
+        }
+        if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
+            if(item.attributes.isFile()) {
+                if(item.attributes.getSize() == 0) {
+                    return ALERT_ICON;
                 }
-                return null;
+                if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
+                    return ALERT_ICON;
+                }
             }
+            return NO_ICON;
         }
         return super.objectValueForItem(item, identifier);
     }
