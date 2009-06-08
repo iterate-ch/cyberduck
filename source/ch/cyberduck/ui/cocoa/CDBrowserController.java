@@ -3314,12 +3314,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(this.isMounted()) {
             final Session session = this.getSession();
             final Cache<Path> cache = session.cache();
-            final String parent = Path.getParent(path);
-            if(cache.containsKey(parent)) {
-                final AttributedList<Path> childs = cache.get(parent);
-                return childs.get(childs.indexOf(PathFactory.createPath(session, path, Path.DIRECTORY_TYPE)));
-            }
-            log.warn("Lookup failed for " + path + " in cache");
+            return cache.lookup(path);
         }
         return null;
     }

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
@@ -28,6 +29,7 @@ import java.util.*;
  * @version $Id$
  */
 public class Cache<E extends AbstractPath> {
+    protected static Logger log = Logger.getLogger(Cache.class);
 
     /**
      *
@@ -42,6 +44,28 @@ public class Cache<E extends AbstractPath> {
     public Cache() {
         ;
     }
+
+    /**
+     * @param path
+     * @return
+     */
+    public E lookup(String path) {
+        if(null == path) {
+            return null;
+        }
+        final String parent = Path.getParent(path);
+        if(this.containsKey(parent)) {
+            final AttributedList<E> childs = this.get(parent);
+            for(E child : childs) {
+                if(child.getAbsolute().equals(path)) {
+                    return child;
+                }
+            }
+        }
+        log.warn("Lookup failed for " + path + " in cache");
+        return null;
+    }
+
 
     /**
      * @param path
