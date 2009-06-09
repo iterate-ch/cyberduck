@@ -103,7 +103,6 @@ public class CDProgressController extends CDBundleController {
 
             public void transferWillStart() {
                 progressBar.setIndeterminate(true);
-                progressBar.setHidden(false);
                 progressBar.startAnimation(null);
                 CDMainApplication.invoke(new DefaultMainAction() {
                     public void run() {
@@ -127,7 +126,6 @@ public class CDProgressController extends CDBundleController {
                         setMessageText();
                         setProgressText();
                         setStatusText();
-                        progressBar.setHidden(true);
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
                         filesPopup.itemAtIndex(0).setEnabled(transfer.getRoot().getLocal().exists());
                     }

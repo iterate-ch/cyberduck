@@ -178,7 +178,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
         final NSApplication app = NSApplication.sharedApplication();
         app.beginSheet(this.window(), //window
                 parent.window(), // modalForWindow
-                this.proxy().id(), // modalDelegate
+                this.id(), // modalDelegate
                 Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
                 null); //context
     }
