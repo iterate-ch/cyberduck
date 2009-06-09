@@ -65,10 +65,11 @@ public class CDIconCache extends HashMap<String, NSImage> {
      * @param key
      * @return
      */
-    public NSImage iconForFileType(Object key) {
+    public NSImage iconForFileType(String key) {
         NSImage img = super.get(key);
         if(null == img) {
-            this.put((String) key, img = NSWorkspace.sharedWorkspace().iconForFileType((String) key));
+            img = NSWorkspace.sharedWorkspace().iconForFileType(key);
+            this.put(key, img);
         }
         return img;
     }
@@ -81,14 +82,6 @@ public class CDIconCache extends HashMap<String, NSImage> {
 
     static {
         FOLDER_ICON.setSize(new NSSize(128, 128));
-    }
-
-    /**
-     * @param name
-     * @return
-     */
-    public NSImage iconForName(final String name) {
-        return NSImage.imageNamed(name);
     }
 
     /**
