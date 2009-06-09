@@ -26,42 +26,36 @@ public abstract class NSArray extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSArray", _Class.class);
 
     public static NSArray array() {
-        return CLASS.array();
-    }
-
-    public static NSArray arrayWithArray(NSArray array) {
-        return CLASS.arrayWithArray(array);
+        return CLASS.alloc().init();
     }
 
     public static NSArray arrayWithContentsOfFile(String path) {
-        return CLASS.arrayWithContentsOfFile(path);
+        return CLASS.alloc().initWithContentsOfFile(path);
     }
 
     public static NSArray arrayWithContentsOfURL(NSURL url) {
-        return CLASS.arrayWithContentsOfURL(url);
+        return CLASS.alloc().initWithContentsOfURL(url);
     }
 
     public static NSArray arrayWithObject(NSObject anObject) {
-        return CLASS.arrayWithObject(anObject);
+        return CLASS.alloc().initWithObjects(anObject);
     }
 
     public static NSArray arrayWithObject(String anObject) {
-        return CLASS.arrayWithObject(anObject);
+        return CLASS.alloc().initWithObjects(NSString.stringWithString(anObject));
     }
 
     public static NSArray arrayWithObjects(NSObject... arrayWithObjects) {
-        return CLASS.arrayWithObjects(arrayWithObjects);
+        return CLASS.alloc().initWithObjects(arrayWithObjects);
     }
 
     public static NSArray arrayWithObjects(String... arrayWithObjects) {
-        return CLASS.arrayWithObjects(arrayWithObjects);
-    }
-
-    public static NSArray arrayWithObjects_count(NSObject objects, int cnt) {
-        return CLASS.arrayWithObjects_count(objects, cnt);
+        return CLASS.alloc().initWithObjects(arrayWithObjects);
     }
 
     public interface _Class extends org.rococoa.NSClass {
+        public NSArray alloc();
+
         /**
          * Original signature : <code>id array()</code><br>
          * <i>from NSArrayCreation native declaration : :60</i>
@@ -108,6 +102,8 @@ public abstract class NSArray extends NSObject {
          */
         NSArray arrayWithContentsOfURL(NSURL url);
     }
+
+    public abstract NSArray init();
 
     /**
      * Original signature : <code>NSUInteger count()</code><br>
@@ -278,7 +274,9 @@ public abstract class NSArray extends NSObject {
      * Original signature : <code>id initWithObjects(id, null)</code><br>
      * <i>from NSArrayCreation native declaration : :67</i>
      */
-    public abstract NSArray initWithObjects(NSObject firstObj, NSObject... varargs);
+    public abstract NSArray initWithObjects(NSObject... varargs);
+
+    public abstract NSArray initWithObjects(String... varargs);
 
     /**
      * Original signature : <code>id initWithArray(NSArray*)</code><br>
@@ -296,11 +294,11 @@ public abstract class NSArray extends NSObject {
      * Original signature : <code>id initWithContentsOfFile(NSString*)</code><br>
      * <i>from NSArrayCreation native declaration : :73</i>
      */
-    public abstract NSArray initWithContentsOfFile(com.sun.jna.Pointer path);
+    public abstract NSArray initWithContentsOfFile(String path);
 
     /**
      * Original signature : <code>id initWithContentsOfURL(NSURL*)</code><br>
      * <i>from NSArrayCreation native declaration : :74</i>
      */
-    public abstract NSArray initWithContentsOfURL(com.sun.jna.Pointer url);
+    public abstract NSArray initWithContentsOfURL(NSURL url);
 }

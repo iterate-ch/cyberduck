@@ -28,15 +28,15 @@ public abstract class NSString extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
 
     public static NSString stringWithString(String string) {
-        return CLASS.stringWithString(string);
+        return CLASS.alloc().initWithString(string);
     }
 
     public static String stringByAbbreviatingWithTildeInPath(String string) {
-        return CLASS.stringWithString(string).stringByAbbreviatingWithTildeInPath().toString();
+        return CLASS.alloc().initWithString(string).stringByAbbreviatingWithTildeInPath().toString();
     }
 
     public static String stringByExpandingTildeInPath(String string) {
-        return CLASS.stringWithString(string).stringByExpandingTildeInPath().toString();
+        return CLASS.alloc().initWithString(string).stringByExpandingTildeInPath().toString();
     }
 
     @Override
@@ -53,6 +53,8 @@ public abstract class NSString extends NSObject implements NSCopying {
     }
 
     public interface _Class extends org.rococoa.NSClass {
+        NSString alloc();
+
         /**
          * User-dependent encoding who value is derived from user's default language and potentially other factors. The use of this encoding might sometimes be needed when interpreting user documents with unknown encodings, in the absence of other hints.  This encoding should be used rarely, if at all. Note that some potential values here might result in unexpected encoding conversions of even fairly straightforward NSString content --- for instance, punctuation characters with a bidirectional encoding.<br>
          * Original signature : <code>NSStringEncoding defaultCStringEncoding()</code><br>

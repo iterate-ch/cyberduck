@@ -75,7 +75,7 @@ public abstract class NSNotificationCenter extends NSObject {
      * Conversion Error : /// Original signature : <code>void removeObserver(null)</code><br>
      * - (void)removeObserver:(null)observer; (Argument observer cannot be converted)
      */
-    public abstract void removeObserver(NSObject notificationObserver);
+    public abstract void removeObserver(org.rococoa.ID notificationObserver);
     /**
      * <i>native declaration : :45</i><br>
      * Conversion Error : /// Original signature : <code>void removeObserver(null, NSString*, null)</code><br>

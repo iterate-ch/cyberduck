@@ -505,13 +505,13 @@ public abstract class NSCell extends NSObject implements NSCopying {
      * Original signature : <code>id objectValue()</code><br>
      * <i>native declaration : :228</i>
      */
-    public abstract org.rococoa.ID objectValue();
+    public abstract NSObject objectValue();
 
     /**
      * <i>native declaration : :229</i><br>
      * Conversion Error : id<NSCopying>
      */
-    public abstract void setObjectValue(org.rococoa.ID value);
+    public abstract void setObjectValue(NSObject value);
 
     /**
      * Original signature : <code>BOOL hasValidObjectValue()</code><br>

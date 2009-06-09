@@ -101,5 +101,5 @@ public abstract class NSDraggingInfo extends NSObject {
      * Original signature : <code>NSArray* namesOfPromisedFilesDroppedAtDestination(NSURL*)</code><br>
      * <i>native declaration : :43</i>
      */
-    public abstract   NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination);
+    public abstract NSArray namesOfPromisedFilesDroppedAtDestination(NSURL dropDestination);
 }
