@@ -378,11 +378,10 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
      *         finishedDraggingImage method to avoid blocking the destination application.
      * @see NSTableView.DataSource
      */
-    @Override
-    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
-        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count());
-        for(int index = rowIndexes.firstIndex(); index != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
-            Host promisedDragBookmark = this.getSource().get(index);
+    public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
+        log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
+        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragBookmarks.size());
+        for(Host promisedDragBookmark : promisedDragBookmarks) {
             Local file = new Local(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
             promisedDragBookmark.setFile(file);
             try {
