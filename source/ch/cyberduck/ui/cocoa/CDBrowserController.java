@@ -949,7 +949,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        this.bookmarkButton.setImage(CDIconCache.instance().iconForName("bookmarks"));
+        this.bookmarkButton.setImage(CDIconCache.instance().iconForName("bookmarks", 16));
         this.setRecessedBezelStyle(this.bookmarkButton);
         this.bookmarkButton.setTarget(this.id());
         this.bookmarkButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
@@ -3308,9 +3308,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @return
      */
     protected Path lookup(String path) {
-        if(null == path) {
-            return null;
-        }
         if(this.isMounted()) {
             final Session session = this.getSession();
             final Cache<Path> cache = session.cache();
@@ -3803,32 +3800,25 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     public static int applicationShouldTerminate(final NSApplication app) {
         // Determine if there are any open connections
-        NSArray windows = app.windows();
-        int count = windows.count();
-        // Determine if there are any open connections
-        while(0 != count--) {
-            final NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            final CDBrowserController controller = CDMainController.controllerForWindow(window);
-            if(null != controller) {
-                if(!controller.unmount(new CDSheetCallback() {
-                    public void callback(final int returncode) {
-                        if(returncode == DEFAULT_OPTION) { //Disconnect
-                            window.close();
-                            if(NSApplication.NSTerminateNow == CDBrowserController.applicationShouldTerminate(app)) {
-                                app.terminate(null);
-                            }
-                        }
-                        if(returncode == OTHER_OPTION) { //Cancel
-                            app.replyToApplicationShouldTerminate(false);
+        for(final CDBrowserController controller : CDMainController.getBrowsers()) {
+            if(!controller.unmount(new CDSheetCallback() {
+                public void callback(final int returncode) {
+                    if(returncode == DEFAULT_OPTION) { //Disconnect
+                        controller.window().close();
+                        if(NSApplication.NSTerminateNow == CDBrowserController.applicationShouldTerminate(app)) {
+                            app.terminate(null);
                         }
                     }
-                }, new Runnable() {
-                    public void run() {
-                        ;
+                    if(returncode == OTHER_OPTION) { //Cancel
+                        app.replyToApplicationShouldTerminate(false);
                     }
-                })) {
-                    return NSApplication.NSTerminateLater;
                 }
+            }, new Runnable() {
+                public void run() {
+                    ;
+                }
+            })) {
+                return NSApplication.NSTerminateLater;
             }
         }
         return NSApplication.NSTerminateNow;

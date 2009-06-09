@@ -32,7 +32,6 @@ import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.Rococoa;
 
 import java.io.File;
 import java.io.IOException;
@@ -296,21 +295,15 @@ public class CDMainController extends CDBundleController {
                 }
                 return true;
             }
-            final NSArray windows = NSApplication.sharedApplication().windows();
-            int count = windows.count();
-            while(0 != count--) {
-                NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-                final CDBrowserController controller = CDMainController.controllerForWindow(window);
-                if(null != controller) {
-                    if(controller.isMounted()) {
-                        final Path workdir = controller.workdir();
-                        final Session session = controller.getTransferSession();
-                        final Transfer q = new UploadTransfer(
-                                PathFactory.createPath(session, workdir.getAbsolute(), f)
-                        );
-                        controller.transfer(q, workdir);
-                        break;
-                    }
+            for(CDBrowserController controller : browsers) {
+                if(controller.isMounted()) {
+                    final Path workdir = controller.workdir();
+                    final Session session = controller.getTransferSession();
+                    final Transfer q = new UploadTransfer(
+                            PathFactory.createPath(session, workdir.getAbsolute(), f)
+                    );
+                    controller.transfer(q, workdir);
+                    break;
                 }
             }
         }
@@ -588,7 +581,7 @@ public class CDMainController extends CDBundleController {
                                 // Remeber this reminder date
                                 Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
                                 // Quit again
-                                NSApplication.sharedApplication().terminate(this.proxy().id());
+                                NSApplication.sharedApplication().terminate(this.id());
                             }
                         };
                         c.loadBundle();
@@ -602,55 +595,49 @@ public class CDMainController extends CDBundleController {
                 prompt = false;
             }
         }
-        NSArray windows = app.windows();
-        int count = windows.count();
         // Determine if there are any open connections
-        while(0 != count--) {
-            NSWindow window = Rococoa.cast(windows.objectAtIndex(count), NSWindow.class);
-            final CDBrowserController controller = CDMainController.controllerForWindow(window);
-            if(null != controller) {
-                if(Preferences.instance().getBoolean("browser.serialize")) {
-                    if(controller.isMounted()) {
-                        // The workspace should be saved. Serialize all open browser sessions
-                        final Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
-                        try {
-                            serialized.setDefaultPath(controller.getSession().workdir().getAbsolute());
-                        }
-                        catch(IOException e) {
-                            log.warn(e.getMessage());
-                        }
-                        sessions.add(serialized);
+        for(CDBrowserController controller : CDMainController.browsers) {
+            if(Preferences.instance().getBoolean("browser.serialize")) {
+                if(controller.isMounted()) {
+                    // The workspace should be saved. Serialize all open browser sessions
+                    final Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
+                    try {
+                        serialized.setDefaultPath(controller.getSession().workdir().getAbsolute());
                     }
+                    catch(IOException e) {
+                        log.warn(e.getMessage());
+                    }
+                    sessions.add(serialized);
                 }
-                if(controller.isConnected()) {
-                    if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                        final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit", ""),
-                                Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-                                Locale.localizedString("Quit Anyway", ""), //default
-                                Locale.localizedString("Cancel", ""), //other
-                                Locale.localizedString("Review...", ""));
-                        int choice = alert.runModal(); //alternate
-                        if(choice == CDSheetCallback.OTHER_OPTION) {
-                            // Review if at least one window reqested to terminate later, we shall wait
-                            final int result = CDBrowserController.applicationShouldTerminate(app);
-                            if(NSApplication.NSTerminateNow == result) {
-                                return CDTransferController.applicationShouldTerminate(app);
-                            }
-                            return result;
-                        }
-                        if(choice == CDSheetCallback.ALTERNATE_OPTION) {
-                            // Cancel. Quit has been interrupted. Delete any saved sessions so far.
-                            sessions.clear();
-                            return NSApplication.NSTerminateCancel;
-                        }
-                        if(choice == CDSheetCallback.DEFAULT_OPTION) {
-                            // Quit
+            }
+            if(controller.isConnected()) {
+                if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                    final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit", ""),
+                            Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
+                            Locale.localizedString("Quit Anyway", ""), //default
+                            Locale.localizedString("Cancel", ""), //other
+                            Locale.localizedString("Review...", ""));
+                    int choice = alert.runModal(); //alternate
+                    if(choice == CDSheetCallback.OTHER_OPTION) {
+                        // Review if at least one window reqested to terminate later, we shall wait
+                        final int result = CDBrowserController.applicationShouldTerminate(app);
+                        if(NSApplication.NSTerminateNow == result) {
                             return CDTransferController.applicationShouldTerminate(app);
                         }
+                        return result;
                     }
-                    else {
-                        controller.unmount();
+                    if(choice == CDSheetCallback.ALTERNATE_OPTION) {
+                        // Cancel. Quit has been interrupted. Delete any saved sessions so far.
+                        sessions.clear();
+                        return NSApplication.NSTerminateCancel;
                     }
+                    if(choice == CDSheetCallback.DEFAULT_OPTION) {
+                        // Quit
+                        return CDTransferController.applicationShouldTerminate(app);
+                    }
+                }
+                else {
+                    controller.unmount();
                 }
             }
         }
@@ -710,26 +697,12 @@ public class CDMainController extends CDBundleController {
             = new ArrayList<CDBrowserController>();
 
     /**
-     *
      * @return
      */
     public static List<CDBrowserController> getBrowsers() {
         return browsers;
     }
 
-
-    /**
-     * @param window
-     * @return
-     */
-    public static CDBrowserController controllerForWindow(NSWindow window) {
-        for(CDBrowserController controller : browsers) {
-            if(controller.window().equals(window)) {
-                return controller;
-            }
-        }
-        return null;
-    }
 
     /**
      * Makes a unmounted browser window the key window and brings it to the front
