@@ -40,8 +40,13 @@ public abstract class NSBundle extends NSObject {
         return NSBundle.mainBundle().localizedStringForKey_value_table(key, key, tableName);
     }
 
+    private static NSBundle mainBundle = null;
+
     public static NSBundle mainBundle() {
-        return CLASS.mainBundle();
+        if(null == mainBundle) {
+            mainBundle = CLASS.mainBundle();
+        }
+        return mainBundle;
     }
 
     public static NSArray allBundles() {
