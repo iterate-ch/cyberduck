@@ -383,6 +383,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
         }
     }
 
+    /**
+     * The files dragged from the browser to the Finder
+     */
+    private List<Path> promisedDragPaths = new ArrayList<Path>();
+
     public boolean writeItemsToPasteBoard(NSTableView view, NSArray items, NSPasteboard pboard) {
         log.debug("writeItemsToPasteBoard");
         if(controller.isMounted()) {
@@ -412,6 +417,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     }
                     roots.add(path);
                 }
+                promisedDragPaths.clear();
+                promisedDragPaths.addAll(roots);
                 final Transfer q = new DownloadTransfer(roots);
 
                 // Writing data for private use when the item gets dragged to the transfer queue.
@@ -432,8 +439,6 @@ public abstract class CDBrowserTableDataSource extends CDController {
         }
         return false;
     }
-
-    private List<Path> promisedDragPaths = new ArrayList<Path>();
 
     //see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
     public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {

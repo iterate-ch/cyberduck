@@ -48,7 +48,11 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     }
 
     protected AttributedList<Path> childs(final String path) {
-        return super.childs(controller.lookup(path));
+        final Path lookup = controller.lookup(path);
+        if(null == lookup) {
+            return new AttributedList<Path>();
+        }
+        return super.childs(lookup);
     }
 
     /**
@@ -75,7 +79,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     @Override
     public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(controller.isMounted()) {
-            if(null == item || item.id().isNull()) {
+            if(null == item) {
                 return this.childs(controller.workdir()).size();
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
@@ -109,13 +113,17 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSObject item) {
         final Path path;
-        if(item.id().isNull()) {
+        if(null == item) {
             path = controller.workdir();
         }
         else {
             path = controller.lookup(item.toString());
         }
         final AttributedList<Path> childs = this.childs(path);
+        if(index >= childs.size()) {
+            log.warn("Index " + index + " out of bound for " + item);
+            return null;
+        }
         return NSString.stringWithString(childs.get(index).getAbsolute());
     }
 
@@ -127,7 +135,14 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
 
     @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
-        return super.objectValueForItem(controller.lookup(item.toString()), tableColumn.identifier());
+        if(null == item) {
+            return super.objectValueForItem(null, tableColumn.identifier());
+        }
+        final Path path = controller.lookup(item.toString());
+        if(null == path) {
+            return null;
+        }
+        return super.objectValueForItem(path, tableColumn.identifier());
     }
 
     @Override
@@ -135,8 +150,14 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
         Path destination = null;
         if(controller.isMounted()) {
-            destination = controller.lookup(item.toString());
-            if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null
+            if(null == item) {
+                destination = controller.workdir();
+            }
+            else {
+                destination = controller.lookup(item.toString());
+            }
+            final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
+            if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null
                     || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(null != destination) {
                     // Dragging over file or folder
