@@ -1,6 +1,39 @@
 {
     IBClasses =     (
                 {
+            CLASS = CDBrowserController;
+            LANGUAGE = ObjC;
+            OUTLETS =             {
+                actionPopupButton = NSPopUpButton;
+                addBookmarkButton = NSButton;
+                archiveMenu = NSMenu;
+                bonjourButton = NSButton;
+                bookmarkButton = NSButton;
+                bookmarkSwitchView = NSSegmentedControl;
+                bookmarkTable = NSTableView;
+                browserListView = NSTableView;
+                browserOutlineView = NSOutlineView;
+                browserSwitchView = NSSegmentedControl;
+                browserTabView = NSTabView;
+                deleteBookmarkButton = NSButton;
+                editBookmarkButton = NSButton;
+                editMenu = NSMenu;
+                encodingPopup = NSPopUpButton;
+                historyButton = NSButton;
+                logDrawer = NSDrawer;
+                navigationButton = NSSegmentedControl;
+                pathPopup = NSPopUpButton;
+                quickConnectPopup = NSComboBox;
+                searchField = NSView;
+                securityLabel = NSButton;
+                spinner = NSProgressIndicator;
+                statusLabel = NSTextField;
+                upButton = NSSegmentedControl;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        },
+                {
             CLASS = CDListView;
             LANGUAGE = ObjC;
             SUPERCLASS = NSTableView;
@@ -58,47 +91,6 @@
             CLASS = SKWSegmentedControl;
             LANGUAGE = ObjC;
             SUPERCLASS = NSSegmentedControl;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.CDBrowserController";
-            LANGUAGE = Java;
-            OUTLETS =             {
-                actionPopupButton = NSPopUpButton;
-                addBookmarkButton = NSButton;
-                bonjourButton = NSButton;
-                bookmarkButton = NSButton;
-                bookmarkSwitchView = NSSegmentedControl;
-                bookmarkTable = NSTableView;
-                browserListView = NSTableView;
-                browserOutlineView = NSOutlineView;
-                browserSwitchView = NSSegmentedControl;
-                browserTabView = NSTabView;
-                deleteBookmarkButton = NSButton;
-                editBookmarkButton = NSButton;
-                encodingPopup = NSPopUpButton;
-                historyButton = NSButton;
-                logDrawer = NSDrawer;
-                navigationButton = NSSegmentedControl;
-                pathPopup = NSPopUpButton;
-                quickConnectPopup = NSComboBox;
-                searchField = NSView;
-                securityLabel = NSButton;
-                spinner = NSProgressIndicator;
-                statusLabel = NSTextField;
-                upButton = NSSegmentedControl;
-                window = NSWindow;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate";
-            LANGUAGE = Java;
-            SUPERCLASS = NSObject;
         }
     );
     IBVersion = 1;
