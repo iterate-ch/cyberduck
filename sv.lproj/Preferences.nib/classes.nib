@@ -1,42 +1,8 @@
 {
     IBClasses =     (
                 {
-            ACTIONS =             {
-                "" = id;
-                help = id;
-            };
-            CLASS = FirstResponder;
+            CLASS = CDPreferencesController;
             LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = NSLevelIndicator;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSControl;
-        },
-                {
-            ACTIONS =             {
-                checkForUpdates = id;
-            };
-            CLASS = SUUpdater;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                changePanes = id;
-                orderFrontPrefsPanel = id;
-            };
-            CLASS = UKPrefsPanel;
-            LANGUAGE = ObjC;
-            OUTLETS =             {
-                tabView = NSTabView;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.CDPreferencesController";
-            LANGUAGE = Java;
             OUTLETS =             {
                 alternatingRowBackgroundCheckbox = NSButton;
                 anonymousField = NSTextField;
@@ -123,6 +89,40 @@
                 uploadSkipRegexField = NSTextView;
                 verticalLinesCheckbox = NSButton;
                 window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        },
+                {
+            ACTIONS =             {
+                "" = id;
+                help = id;
+            };
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = NSLevelIndicator;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSControl;
+        },
+                {
+            ACTIONS =             {
+                checkForUpdates = id;
+            };
+            CLASS = SUUpdater;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            ACTIONS =             {
+                changePanes = id;
+                orderFrontPrefsPanel = id;
+            };
+            CLASS = UKPrefsPanel;
+            LANGUAGE = ObjC;
+            OUTLETS =             {
+                tabView = NSTabView;
             };
             SUPERCLASS = NSObject;
         }
