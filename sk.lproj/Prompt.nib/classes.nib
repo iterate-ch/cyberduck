@@ -11,16 +11,11 @@
             SUPERCLASS = NSOutlineView;
         },
                 {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
             ACTIONS =             {
                 closeSheet = id;
             };
-            CLASS = "ch.sudo.cyberduck.ui.cocoa.CDTransferPrompt";
-            LANGUAGE = Java;
+            CLASS = CDTransferPrompt;
+            LANGUAGE = ObjC;
             OUTLETS =             {
                 actionPopup = NSPopUpButton;
                 browserView = NSTableView;
@@ -35,6 +30,11 @@
                 toggleDetailsButton = NSButton;
                 window = NSWindow;
             };
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
             SUPERCLASS = NSObject;
         }
     );
