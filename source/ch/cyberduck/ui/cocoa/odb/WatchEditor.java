@@ -18,15 +18,19 @@ package ch.cyberduck.ui.cocoa.odb;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.io.AbstractFileWatcherListener;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+import org.rococoa.NSObject;
+
+import java.io.IOException;
 
 /**
  * @version $Id:$
@@ -52,40 +56,47 @@ public class WatchEditor extends Editor {
     /**
      * Edit and watch the file for changes
      */
+    @Override
     public void edit() {
-//        edited.getLocal().watch(new AbstractFileWatcherListener() {
-//            public void fileWritten(Local file) {
-//                log.debug("fileWritten:" + file);
-//                save();
-//                if(!isOpen()) {
-//                    delete();
-//                }
-//            }
-//        });
-//        if(null == bundleIdentifier) {
-//            NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
-//        }
-//        else {
-//            NSWorkspace.sharedWorkspace().openFile(
-//                    edited.getLocal().getAbsolute(),
-//                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier)
-//            );
-//        }
+        try {
+            edited.getLocal().watch(new AbstractFileWatcherListener() {
+                public void fileWritten(Local file) {
+                    log.debug("fileWritten:" + file);
+                    save();
+                    if(!isOpen()) {
+                        delete();
+                    }
+                }
+            });
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
+            return;
+        }
+        if(null == bundleIdentifier) {
+            NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
+        }
+        else {
+            NSWorkspace.sharedWorkspace().openFile(
+                    edited.getLocal().getAbsolute(),
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier)
+            );
+        }
     }
 
     public boolean isOpen() {
-//        if(null == bundleIdentifier) {
-//            final String fullpath = NSWorkspace.sharedWorkspace().applicationForFile(edited.getLocal().getAbsolute());
-//            final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
-//            NSObject next;
-//            while(((next = apps.nextObject()) != null)) {
-//                NSDictionary app = Rococoa.cast(next, NSDictionary.class);
-//                if(fullpath.equals(app.objectForKey("NSApplicationPath").toString())) {
-//                    return true;
-//                }
-//            }
-//            return false;
-//        }
+        if(null == bundleIdentifier) {
+            final String fullpath = edited.getLocal().getDefaultEditor();
+            final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
+            NSObject next;
+            while(((next = apps.nextObject()) != null)) {
+                NSDictionary app = Rococoa.cast(next, NSDictionary.class);
+                if(fullpath.equals(app.objectForKey("NSApplicationPath").toString())) {
+                    return true;
+                }
+            }
+            return false;
+        }
         return super.isOpen();
     }
 }

@@ -107,7 +107,7 @@ public abstract class Editor extends CDController {
     }
 
     /**
-     * @return True if the editor is open
+     * @return True if the editor application is running
      */
     public boolean isOpen() {
         final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();

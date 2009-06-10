@@ -84,7 +84,7 @@ public class CDCreateFileController extends CDFileController {
                 }
                 if(file.exists()) {
                     if(edit) {
-                        Editor editor = EditorFactory.createEditor(c, file.getLocal(), file);
+                        Editor editor = EditorFactory.createEditor(c, file);
                         editor.open();
                     }
                 }

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
@@ -36,8 +37,8 @@ import java.util.Map;
 public class EditorFactory {
     private static Logger log = Logger.getLogger(EditorFactory.class);
 
-    public static final Map<String, String> SUPPORTED_ODB_EDITORS = new HashMap<String, String>();
-    public static final Map<String, String> INSTALLED_ODB_EDITORS = new HashMap<String, String>();
+    private static final Map<String, String> SUPPORTED_ODB_EDITORS = new HashMap<String, String>();
+    private static final Map<String, String> INSTALLED_ODB_EDITORS = new HashMap<String, String>();
 
     static {
         SUPPORTED_ODB_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
@@ -92,6 +93,9 @@ public class EditorFactory {
             // Use default editor
             return defaultEditor();
         }
+        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
+            return NSBundle.bundleWithPath(defaultApplication).bundleIdentifier();
+        }
         for(final String identifier : INSTALLED_ODB_EDITORS.values()) {
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
             if(null == path) {
@@ -105,48 +109,40 @@ public class EditorFactory {
             // Use default editor
             return defaultEditor();
         }
+        log.warn("No editor for file type " + file.getExtension());
         return null;
-    }
-
-    public static Editor createEditor(CDBrowserController c, Local file, final Path path) {
-        return createEditor(c, editorBundleIdentifierForFile(file), path);
     }
 
     /**
      * @param c
+     * @param path
      * @return
      */
     public static Editor createEditor(CDBrowserController c, final Path path) {
-//        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
-//            return createEditor(c, null);
-//        }
-        return createEditor(c, Preferences.instance().getProperty("editor.bundleIdentifier"), path);
+        return createEditor(c, editorBundleIdentifierForFile(path.getLocal()), path);
     }
 
     /**
      * @param c
      * @param bundleIdentifier
+     * @param path
      * @return
      */
     public static Editor createEditor(CDBrowserController c, String bundleIdentifier, final Path path) {
-        return new ODBEditor(c, bundleIdentifier, path);
-//        if(null == bundleIdentifier) {
-//            return new WatchEditor(c);
-//        }
-//        if(INSTALLED_ODB_EDITORS.containsValue(bundleIdentifier)) {
-//            return new ODBEditor(c, bundleIdentifier);
-//        }
-//        if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
-//            log.error("Support for non ODB editors must be enabled first");
-//            return null;
-//        }
-//        return new WatchEditor(c, bundleIdentifier);
+        if(getInstalledOdbEditors().containsValue(bundleIdentifier)) {
+            return new ODBEditor(c, bundleIdentifier, path);
+        }
+        if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
+            log.error("Support for non ODB editors must be enabled first");
+            return null;
+        }
+        return new WatchEditor(c, bundleIdentifier, path);
     }
 
-    private static String SELECTED_EDITOR;
+    private static String SELECTED_EDITOR = null;
 
     static {
-        if(INSTALLED_ODB_EDITORS.containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+        if(getInstalledOdbEditors().containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
             SELECTED_EDITOR = Preferences.instance().getProperty("editor.bundleIdentifier");
         }
     }
@@ -157,5 +153,13 @@ public class EditorFactory {
 
     public static String getSelectedEditor() {
         return SELECTED_EDITOR;
+    }
+
+    public static Map<String, String> getSupportedOdbEditors() {
+        return SUPPORTED_ODB_EDITORS;
+    }
+
+    public static Map<String, String> getInstalledOdbEditors() {
+        return INSTALLED_ODB_EDITORS;
     }
 }

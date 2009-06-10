@@ -19,107 +19,51 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.CDController;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
 
-import java.util.*;
+import java.io.IOException;
 
 public class FileWatcher extends CDController {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
-    private static final String UKKQueueFileRenamedNotification = "UKKQueueFileRenamedNotification";
-    private static final String UKKQueueFileWrittenToNotification = "UKKQueueFileWrittenToNotification";
-    private static final String UKKQueueFileDeletedNotification = "UKKQueueFileDeletedNotification";
+//    private FileMonitor monitor = FileMonitor.getInstance();
 
-    /**
-     *
-     */
-    private static final Map<Local, FileWatcher> instances = new HashMap<Local, FileWatcher>();
+    private static FileWatcher instance = null;
 
-    static {
-        // Ensure native odb library is loaded
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libKQueue.dylib";
-            log.info("Locating libKQueue.dylib at '" + lib + "'");
-            System.load(lib);
-        }
-        catch(UnsatisfiedLinkError e) {
-            log.error("Could not load the libKQueue library:" + e.getMessage());
-            throw e;
+    private FileWatcher() {
+        //
+    }
+
+    private static final Object lock = new Object();
+
+    public static FileWatcher instance() {
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new FileWatcher();
+            }
+            return instance;
         }
     }
 
-    public static FileWatcher instance(final Local path) {
-        if(!instances.containsKey(path)) {
-            instances.put(path, new FileWatcher(path));
-        }
-        return instances.get(path);
+    public void watch(final Local file, final FileWatcherListener listener) throws IOException {
+//        monitor.addWatch(new File(file.getAbsolute()));
+//        monitor.addFileListener(new FileMonitor.FileListener() {
+//
+//            @Override
+//            public void fileChanged(FileMonitor.FileEvent e) {
+//                if(e.getType() == FileMonitor.FILE_MODIFIED) {
+//                    listener.fileWritten(new Local(e.getFile()));
+//                }
+//                if(e.getType() == FileMonitor.FILE_DELETED) {
+//                    listener.fileDeleted(new Local(e.getFile()));
+//                    monitor.unwatch(e.getFile());
+//                }
+//                if(e.getType() == FileMonitor.FILE_RENAMED) {
+//                    listener.fileRenamed(new Local(e.getFile()));
+//                }
+//            }
+//        });
     }
-
-    /**
-     * The file to be watched
-     */
-    private Local file;
-
-    /**
-     * The listeners to get notified about file system changes
-     */
-    private Set<FileWatcherListener> listeners
-            = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
-
-    /**
-     * @param file
-     */
-    private FileWatcher(final Local file) {
-        this.file = file;
-    }
-
-    public void fileWritten(NSNotification notification) {
-        for(FileWatcherListener listener : listeners) {
-            listener.fileWritten(new Local(notification.userInfo().objectForKey("path").toString()));
-        }
-    }
-
-    public void fileRenamed(NSNotification notification) {
-        for(FileWatcherListener listener : listeners) {
-            listener.fileRenamed(new Local(notification.userInfo().objectForKey("path").toString()));
-        }
-    }
-
-    public void fileDeleted(NSNotification notification) {
-        for(FileWatcherListener listener : listeners) {
-            listener.fileDeleted(new Local(notification.userInfo().objectForKey("path").toString()));
-        }
-        removePath(file.getAbsolute());
-    }
-
-    public void watch(final FileWatcherListener listener) {
-        this.listeners.add(listener);
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(
-                this.id(),
-                Foundation.selector("fileWritten:"),
-                UKKQueueFileWrittenToNotification,
-                null);
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(
-                this.id(),
-                Foundation.selector("fileRenamed:"),
-                UKKQueueFileRenamedNotification,
-                null);
-        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(
-                this.id(),
-                Foundation.selector("fileDeleted:"),
-                UKKQueueFileDeletedNotification,
-                null);
-        this.addPath(file.getAbsolute());
-    }
-
-    private native void addPath(String local);
-
-    private native void removePath(String local);
 }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
@@ -814,6 +815,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private CDTranscriptController transcript;
 
+    @Outlet
     private NSDrawer logDrawer;
 
     private CDController logDrawerNotifications = new CDController() {
@@ -920,6 +922,26 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         log.fatal("No selected brower view");
         return null;
+    }
+
+    @Outlet
+    private NSMenu editMenu;
+    private EditMenuDelegate editMenuDelegate;
+
+    public void setEditMenu(NSMenu editMenu) {
+        this.editMenu = editMenu;
+        this.editMenuDelegate = new EditMenuDelegate();
+        this.editMenu.setDelegate(editMenuDelegate.id());
+    }
+
+    @Outlet
+    private NSMenu archiveMenu;
+    private ArchiveMenuDelegate archiveMenuDelegate;
+
+    public void setArchiveMenu(NSMenu archiveMenu) {
+        this.archiveMenu = archiveMenu;
+        this.archiveMenuDelegate = new ArchiveMenuDelegate();
+        this.archiveMenu.setDelegate(archiveMenuDelegate.id());
     }
 
     @Outlet
@@ -2307,8 +2329,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 for(Iterator<Path> iter = normalized.values().iterator(); iter.hasNext();) {
                     Path duplicate = iter.next();
                     if(edit) {
-                        Editor editor = EditorFactory.createEditor(CDBrowserController.this, duplicate.getLocal(),
-                                duplicate);
+                        Editor editor = EditorFactory.createEditor(CDBrowserController.this, duplicate);
                         editor.open();
                     }
                     if(duplicate.getName().charAt(0) == '.') {
@@ -2621,8 +2642,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         for(Path selected : this.getSelectedPaths()) {
             String identifier = EditorFactory.getSupportedOdbEditors().get(sender.title());
             if(identifier != null) {
-                Editor editor = EditorFactory.createEditor(
-                        this, identifier.toString(), selected);
+                Editor editor = EditorFactory.createEditor(this, identifier.toString(), selected);
                 editor.open();
             }
         }
@@ -2630,7 +2650,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void editButtonClicked(final NSObject sender) {
         for(Path selected : this.getSelectedPaths()) {
-            Editor editor = EditorFactory.createEditor(this, selected.getLocal(), selected);
+            Editor editor = EditorFactory.createEditor(this, selected);
             editor.open();
         }
     }
@@ -4229,12 +4249,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return validateItem(action);
     }
 
-    /**
-     *
-     */
-    private final EditMenuDelegate editMenuDelegate
-            = new EditMenuDelegate();
-
     @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
         final NSToolbarItem item = NSToolbarItem.itemWithIdentifier(itemIdentifier);
@@ -4319,7 +4333,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             NSMenu charsetMenu = NSMenu.menu();
             for(int i = 0; i < charsets.length; i++) {
                 charsetMenu.addItem(NSMenuItem.itemWithTitle(charsets[i],
-                        Foundation.selector("encodingMenuClicked"),
+                        Foundation.selector("encodingMenuClicked:"),
                         ""));
             }
             encodingMenu.setSubmenu(charsetMenu);
@@ -4361,7 +4375,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setToolTip(Locale.localizedString("Synchronize files"));
             item.setImage(NSImage.imageNamed("sync.tiff"));
             item.setTarget(this.id());
-            item.setAction(Foundation.selector("syncButtonClicked"));
+            item.setAction(Foundation.selector("syncButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_GET_INFO)) {
@@ -4404,7 +4418,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("editButtonClicked:"));
             // Add a menu representation for text mode of toolbar
             NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_EDIT),
-                    Foundation.selector("editMenuClicked"),
+                    Foundation.selector("editMenuClicked:"),
                     "");
             NSMenu editMenu = NSMenu.menu();
             editMenu.setAutoenablesItems(true);

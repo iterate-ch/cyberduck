@@ -18,12 +18,14 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.rococoa.Foundation;
 
 /**
@@ -36,7 +38,7 @@ public class EditMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public int numberOfItemsInMenu(NSMenu menu) {
-        int n = EditorFactory.INSTALLED_ODB_EDITORS.size();
+        int n = EditorFactory.getInstalledOdbEditors().size();
         if(0 == n) {
             return 1;
         }
@@ -47,15 +49,15 @@ public class EditMenuDelegate extends MenuDelegate {
      * @see com.apple.cocoa.application.NSMenu.Delegate
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-        if(EditorFactory.INSTALLED_ODB_EDITORS.size() == 0) {
+        if(EditorFactory.getInstalledOdbEditors().size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
-        String identifier = EditorFactory.INSTALLED_ODB_EDITORS.values().toArray(
-                new String[EditorFactory.INSTALLED_ODB_EDITORS.size()])[index];
+        String identifier = EditorFactory.getInstalledOdbEditors().values().toArray(
+                new String[EditorFactory.getInstalledOdbEditors().size()])[index];
         item.setRepresentedObject(identifier);
-        String editor = EditorFactory.INSTALLED_ODB_EDITORS.keySet().toArray(
-                new String[EditorFactory.INSTALLED_ODB_EDITORS.size()])[index];
+        String editor = EditorFactory.getInstalledOdbEditors().keySet().toArray(
+                new String[EditorFactory.getInstalledOdbEditors().size()])[index];
         item.setTitle(editor);
         if(identifier.equals(EditorFactory.getSelectedEditor())) {
             item.setKeyEquivalent("k");
@@ -64,9 +66,9 @@ public class EditMenuDelegate extends MenuDelegate {
         else {
             item.setKeyEquivalent("");
         }
-        String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
-        if(path != null) {
-            item.setImage(CDIconCache.instance().convert(NSWorkspace.sharedWorkspace().iconForFile(path), 16));
+        final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+        if(StringUtils.isNotEmpty(path)) {
+            item.setImage(CDIconCache.instance().iconForPath(new Local(path), 16));
         }
         else {
             // Used to provide a custom icon for the edit menu and disable the menu
