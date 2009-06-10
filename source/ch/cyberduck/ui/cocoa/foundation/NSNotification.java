@@ -44,6 +44,10 @@ public abstract class NSNotification implements org.rococoa.cocoa.NSNotification
         return CLASS.notificationWithName_object(notificationName, object);
     }
 
+    public static NSNotification notificationWithName(String notificationName, String object) {
+        return CLASS.notificationWithName_object(notificationName, NSString.stringWithString(object));
+    }
+
     /**
      * Original signature : <code>NSString* name()</code><br>
      * <i>native declaration : :14</i>

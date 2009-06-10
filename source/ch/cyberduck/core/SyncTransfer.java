@@ -233,7 +233,7 @@ public class SyncTransfer extends Transfer {
                 public void run() {
                     Growl.instance().notify("Synchronization complete", getName());
                 }
-            }, true);
+            });
         }
         super.fireTransferDidEnd();
     }

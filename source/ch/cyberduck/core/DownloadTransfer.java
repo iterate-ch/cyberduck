@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
@@ -377,11 +379,12 @@ public class DownloadTransfer extends Transfer {
                     if(DownloadTransfer.this.shouldOpenWhenComplete()) {
                         NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
                     }
-//                    NSDistributedNotificationCenter.defaultCenter().postNotification(
-//                            NSNotification.notificationWithName("com.apple.DownloadFileFinished", getRoot().getLocal().getAbsolute())
-//                    );
+                    NSDistributedNotificationCenter.defaultCenter().postNotification(
+                            NSNotification.notificationWithName("com.apple.DownloadFileFinished", 
+                                    getRoot().getLocal().getAbsolute())
+                    );
                 }
-            }, true);
+            });
         }
         super.fireTransferDidEnd();
     }

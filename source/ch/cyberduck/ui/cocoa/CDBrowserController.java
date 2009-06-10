@@ -3513,7 +3513,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     public void run() {
                         updateStatusLabel(message);
                     }
-                }, true);
+                });
             }
         });
         session.addConnectionListener(listener = new ConnectionAdapter() {

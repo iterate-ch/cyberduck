@@ -148,9 +148,6 @@ public abstract class Preferences {
          */
         defaults.put("logging", "ERROR");
 
-        final Logger root = Logger.getRootLogger();
-        root.setLevel(Level.toLevel(this.getProperty("logging")));
-
         defaults.put("version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
 

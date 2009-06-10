@@ -129,7 +129,7 @@ public class CDProgressController extends CDBundleController {
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
                         filesPopup.itemAtIndex(0).setEnabled(transfer.getRoot().getLocal().exists());
                     }
-                }, true);
+                });
             }
 
             public void willTransferPath(final Path path) {

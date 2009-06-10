@@ -18,11 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
@@ -60,41 +62,37 @@ public class CDMainApplication {
      * @param arguments
      */
     public static void main(String[] arguments) throws InterruptedException {
+        CDMainApplication.jni_load();
+
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
-        try {
-            CDMainApplication.jni_load();
 
-            // This method also makes a connection to the window server and completes other initialization.
-            // Your program should invoke this method as one of the first statements in main();
-            final NSApplication app = NSApplication.sharedApplication();
+        final Logger root = Logger.getRootLogger();
+        root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
-            final CDMainController c = new CDMainController();
+        // This method also makes a connection to the window server and completes other initialization.
+        // Your program should invoke this method as one of the first statements in main();
+        final NSApplication app = NSApplication.sharedApplication();
 
-            // Must implement NSApplicationDelegate protocol
-            app.setDelegate(c.id());
+        final CDMainController c = new CDMainController();
 
-            // Starts the main event loop. The loop continues until a stop: or terminate: message is
-            // received. Upon each iteration through the loop, the next available event
-            // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.
-            app.run();
-        }
-        finally {
-            pool.drain();
-        }
-    }
+        // Must implement NSApplicationDelegate protocol
+        app.setDelegate(c.id());
 
-    public static void invoke(final MainAction runnable) {
-        invoke(runnable, false);
+        // Starts the main event loop. The loop continues until a stop: or terminate: message is
+        // received. Upon each iteration through the loop, the next available event
+        // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.
+        app.run();
+
+        // 
+        pool.drain();
     }
 
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
      * @param runnable The <code>Runnable</code> to run
-     * @param front    The event is added to the front of the queue.
-     *                 otherwise the event is added to the back of the queue.
      */
-    public static void invoke(final MainAction runnable, boolean front) {
+    public static void invoke(final MainAction runnable) {
         synchronized(NSApplication.sharedApplication()) {
             Foundation.runOnMainThread(runnable);
         }

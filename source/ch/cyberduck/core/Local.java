@@ -309,7 +309,7 @@ public class Local extends AbstractPath {
                             log.warn("Failed to move " + file.getAbsolute() + " to Trash");
                         }
                     }
-                }, true);
+                });
             }
             else {
                 _impl.delete();
