@@ -1,21 +1,21 @@
 {
     IBClasses =     (
                 {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
             ACTIONS =             {
                 closeSheet = id;
             };
-            CLASS = "ch.cyberduck.ui.cocoa.CDFolderController";
-            LANGUAGE = Java;
+            CLASS = CDFolderController;
+            LANGUAGE = ObjC;
             OUTLETS =             {
                 filenameField = NSTextField;
                 iconView = NSImageView;
                 window = NSWindow;
             };
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
             SUPERCLASS = NSObject;
         }
     );

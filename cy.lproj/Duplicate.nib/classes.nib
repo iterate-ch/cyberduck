@@ -1,18 +1,24 @@
 {
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            ACTIONS = {closeSheet = id; }; 
-            CLASS = "ch.cyberduck.ui.cocoa.CDFileController"; 
-            LANGUAGE = Java; 
-            OUTLETS = {
-                editButton = NSButton; 
-                filenameField = NSTextField; 
-                iconView = NSImageView; 
-                window = NSWindow; 
-            }; 
-            SUPERCLASS = NSObject; 
+    IBClasses =     (
+                {
+            ACTIONS =             {
+                closeSheet = id;
+            };
+            CLASS = CDFileController;
+            LANGUAGE = ObjC;
+            OUTLETS =             {
+                editButton = NSButton;
+                filenameField = NSTextField;
+                iconView = NSImageView;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
         }
-    ); 
-    IBVersion = 1; 
+    );
+    IBVersion = 1;
 }
