@@ -32,6 +32,14 @@ import org.rococoa.cocoa.NSSize;
 public abstract class NSView extends NSResponder {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSView", _Class.class);
 
+    public static final int NSViewNotSizable = 0;
+    public static final int NSViewMinXMargin = 1;
+    public static final int NSViewWidthSizable = 2;
+    public static final int NSViewMaxXMargin = 4;
+    public static final int NSViewMinYMargin = 8;
+    public static final int NSViewHeightSizable = 16;
+    public static final int NSViewMaxYMargin = 32;
+
     public interface _Class extends org.rococoa.NSClass {
         /**
          * Original signature : <code>NSView* focusView()</code><br>

@@ -416,8 +416,8 @@ public abstract class NSControl extends NSView {
      */
     public abstract void setAttributedStringValue(NSAttributedString obj);
 
-    public static final String ControlTextDidBeginEditingNotification = "NSControlTextDidBeginEditingNotification";
-    public static final String ControlTextDidEndEditingNotification = "NSControlTextDidEndEditingNotification";
-    public static final String ControlTextDidChangeNotification = "NSControlTextDidChangeNotification";
+    public static final String NSControlTextDidBeginEditingNotification = "NSControlTextDidBeginEditingNotification";
+    public static final String NSControlTextDidEndEditingNotification = "NSControlTextDidEndEditingNotification";
+    public static final String NSControlTextDidChangeNotification = "NSControlTextDidChangeNotification";
 
 }

@@ -22,9 +22,16 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.NSRect;
+import org.rococoa.Rococoa;
+
 /// <i>native declaration : :16</i>
 public abstract class NSComboBox extends NSTextField {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSComboBox", _Class.class);
+
+    public static NSComboBox comboBox() {
+        return Rococoa.cast(CLASS.alloc().initWithFrame(new NSRect(0, 0)), NSComboBox.class);
+    }
 
     public interface _Class extends org.rococoa.NSClass {
         NSComboBox alloc();

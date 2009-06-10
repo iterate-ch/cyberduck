@@ -123,6 +123,10 @@ public abstract class NSWorkspace extends NSObject {
      */
     public abstract boolean openFile_withApplication(String fullPath1, String appName2);
 
+    public boolean openFile(String fullPath1, String appName2) {
+        return this.openFile_withApplication(fullPath1, appName2);
+    }
+
     /**
      * Original signature : <code>BOOL openFile(NSString*, NSString*, BOOL)</code><br>
      * <i>native declaration : :60</i>
