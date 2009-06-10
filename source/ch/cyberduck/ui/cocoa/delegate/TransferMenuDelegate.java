@@ -42,7 +42,7 @@ public class TransferMenuDelegate extends MenuDelegate {
      */
     private List<Path> roots;
 
-    public TransferMenuDelegate(List roots) {
+    public TransferMenuDelegate(List<Path> roots) {
         this.roots = roots;
     }
 
