@@ -1,32 +1,12 @@
 {
     IBClasses =     (
                 {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                hide = id;
-                show = id;
-                toggleDisclosure = id;
-            };
-            CLASS = SNDisclosableView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSView;
-        },
-                {
-            CLASS = SNDisclosureButton;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSButton;
-        },
-                {
             ACTIONS =             {
                 closeSheet = id;
                 helpButtonClicked = id;
             };
-            CLASS = "ch.cyberduck.ui.cocoa.CDConnectionController";
-            LANGUAGE = Java;
+            CLASS = CDConnectionController;
+            LANGUAGE = ObjC;
             OUTLETS =             {
                 alertIcon = NSButton;
                 anonymousCheckbox = NSButton;
@@ -46,6 +26,21 @@
                 window = NSWindow;
             };
             SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            ACTIONS =             {
+                hide = id;
+                show = id;
+                toggleDisclosure = id;
+            };
+            CLASS = SNDisclosableView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
         }
     );
     IBVersion = 1;
