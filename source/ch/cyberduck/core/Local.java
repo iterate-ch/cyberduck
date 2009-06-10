@@ -332,13 +332,13 @@ public class Local extends AbstractPath {
 
     public AttributedList<Local> list() {
         final AttributedList<Local> childs = new AttributedList<Local>();
-        File[] f = _impl.listFiles();
-        if(null == f) {
+        File[] files = _impl.listFiles();
+        if(null == files) {
             log.error("_impl.listFiles == null");
             return childs;
         }
-        for(int i = 0; i < f.length; i++) {
-            childs.add(new Local(f[i]));
+        for(File file : files) {
+            childs.add(new Local(file));
         }
         return childs;
     }
@@ -590,7 +590,7 @@ public class Local extends AbstractPath {
 
     public String toURL() {
         try {
-            return _impl.toURL().toString();
+            return _impl.toURI().toURL().toString();
         }
         catch(MalformedURLException e) {
             log.error(e.getMessage());
