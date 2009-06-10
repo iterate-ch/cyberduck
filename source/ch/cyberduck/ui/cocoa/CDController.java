@@ -19,10 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
+import org.rococoa.ID;
 import org.rococoa.Rococoa;
 
 /**
@@ -31,25 +33,20 @@ import org.rococoa.Rococoa;
 public abstract class CDController {
     private static Logger log = Logger.getLogger(CDController.class);
 
+    private NSAutoreleasePool pool;
+
+    public CDController() {
+        pool = NSAutoreleasePool.push();
+    }
+
+
     /**
      * You need to keep a reference to the returned value for as long as it is
      * active. When it is GCd, it will release the Objective-C proxy.
      */
     private NSObject proxy;
 
-    /**
-     * @return
-     */
-    public NSObject proxy() {
-        return this.proxy(NSObject.class);
-    }
-
-    public NSObject proxy(Class<? extends NSObject> type) {
-        if(null == proxy) {
-            proxy = Rococoa.proxy(this, type);
-        }
-        return proxy;
-    }
+    private ID id;
 
     /**
      * @return
@@ -59,7 +56,13 @@ public abstract class CDController {
     }
 
     public org.rococoa.ID id(Class<? extends NSObject> type) {
-        return this.proxy(type).id();
+        if(null == proxy) {
+            proxy = Rococoa.proxy(this, type);
+        }
+        if(null == id) {
+            id = proxy.id();
+        }
+        return id;
     }
 
     /**
@@ -70,7 +73,11 @@ public abstract class CDController {
         if(log.isDebugEnabled()) {
             log.debug("invalidate:" + this.toString());
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this.proxy());
+        NSNotificationCenter.defaultCenter().removeObserver(this.id());
+        proxy = null;
+        id = null;
+//        pool.drain();
+        pool = null;
         if(log.isDebugEnabled()) {
             System.gc();
         }
