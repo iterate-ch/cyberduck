@@ -1,6 +1,17 @@
 {
     IBClasses =     (
                 {
+            ACTIONS =             {
+                closeDonationSheet = id;
+            };
+            CLASS = CDWindowController;
+            LANGUAGE = ObjC;
+            OUTLETS =             {
+                neverShowDonationCheckbox = NSButton;
+                window = NSWindow;
+            };
+        },
+                {
             CLASS = FirstResponder;
             LANGUAGE = ObjC;
             SUPERCLASS = NSObject;
