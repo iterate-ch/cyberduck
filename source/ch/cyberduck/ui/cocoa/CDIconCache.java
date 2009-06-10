@@ -40,7 +40,7 @@ import java.util.HashMap;
 public class CDIconCache extends HashMap<String, NSImage> {
     private static Logger log = Logger.getLogger(CDIconCache.class);
 
-    private static CDIconCache instance;
+    private static CDIconCache instance = null;
 
     private static final Object lock = new Object();
 
@@ -57,21 +57,17 @@ public class CDIconCache extends HashMap<String, NSImage> {
         return super.put(extension, image);
     }
 
-    public NSImage get(String filetype) {
-        return this.iconForFileType(filetype);
-    }
-
     /**
      * @param key
      * @return
      */
-    public NSImage iconForFileType(String key) {
-        NSImage img = super.get(key);
+    public NSImage iconForFileType(String key, int size) {
+        NSImage img = this.get(key);
         if(null == img) {
             img = NSWorkspace.sharedWorkspace().iconForFileType(key);
             this.put(key, img);
         }
-        return img;
+        return this.convert(img, size);
     }
 
     private static String FOLDER_PATH
@@ -84,20 +80,24 @@ public class CDIconCache extends HashMap<String, NSImage> {
         FOLDER_ICON.setSize(new NSSize(128, 128));
     }
 
+    public NSImage iconForName(final String name, int size) {
+        return this.iconForName(name, size, size);
+    }
+
     /**
      * @param name
      * @param size
      * @return
      */
-    public NSImage iconForName(final String name, int size) {
-        NSImage loaded = NSImage.imageNamed(name + size);
+    public NSImage iconForName(final String name, int width, int height) {
+        NSImage loaded = NSImage.imageNamed(name + width);
         if(null == loaded) {
             loaded = NSImage.imageNamed(name);
             if(null == loaded) {
                 log.error("No icon named " + name);
                 return null;
             }
-            loaded.setName(name + size);
+            loaded.setName(name + width);
         }
 //        if(null == image) {
 //            // Look for icon in system System Core Types Bundle
@@ -109,7 +109,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
 //            }
 //            image = new NSImage(l.getAbsolute(), false);
 //        }
-        return this.convert(loaded, size);
+        return this.convert(loaded, width, height);
     }
 
     /**
@@ -152,14 +152,14 @@ public class CDIconCache extends HashMap<String, NSImage> {
             }
             final NSImage symlink = NSImage.imageWithSize(new NSSize(size, size));
             symlink.lockFocus();
-            NSImage f = this.iconForFileType(item.getExtension());
+            NSImage f = this.iconForFileType(item.getExtension(), size);
             f.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
             NSImage o = NSImage.imageNamed("AliasBadgeIcon.icns");
             o.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
             symlink.unlockFocus();
-            return this.convert(symlink, size);
+            return symlink;
         }
         if(item.attributes.isFile()) {
             if(StringUtils.isEmpty(item.getExtension()) && null != item.attributes.getPermission()) {
@@ -167,7 +167,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
                     return this.convert(NSImage.imageNamed("executable.tiff"), size);
                 }
             }
-            return this.convert(this.iconForFileType(item.getExtension()), size);
+            return this.iconForFileType(item.getExtension(), size);
         }
         if(item.attributes.isVolume()) {
             return this.iconForName(item.getHost().getProtocol().disk(), size);
@@ -224,7 +224,11 @@ public class CDIconCache extends HashMap<String, NSImage> {
         return this.convert(NSImage.imageNamed("notfound.tiff"), size);
     }
 
-    public NSImage convert(NSImage icon, int size) {
+    protected NSImage convert(NSImage icon, int size) {
+        return this.convert(icon, size, size);
+    }
+
+    protected NSImage convert(NSImage icon, int width, int height) {
         if(null == icon) {
             log.warn("Icon is null");
             return null;
@@ -233,7 +237,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
 //        icon.setCacheMode(NSImage.NSImageCacheBySize);
 //        icon.setCachedSeparately(true);
 //        icon.setMatchesOnMultipleResolution(false);
-        icon.setSize(new NSSize(size, size));
+        icon.setSize(new NSSize(width, height));
         return icon;
     }
 }
