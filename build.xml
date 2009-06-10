@@ -341,6 +341,7 @@
             <fileset dir="${lib}">
                 <include name="*.jar"/>
                 <include name="*.dylib"/>
+                <include name="*.jnilib"/>
             </fileset>
         </copy>
         <copy todir="${app.java}">
