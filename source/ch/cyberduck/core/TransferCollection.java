@@ -84,7 +84,7 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     public void save() {
-//        this.save(QUEUE_FILE);
+        this.save(QUEUE_FILE);
     }
 
     private synchronized void save(Local f) {
