@@ -254,16 +254,11 @@ public class Local extends AbstractPath {
 //        }
     }
 
-    private FileWatcher uk;
-
     /**
      * @param listener
      */
-    public void watch(FileWatcherListener listener) {
-        if(null == uk) {
-            uk = FileWatcher.instance(this);
-        }
-        uk.watch(listener);
+    public void watch(FileWatcherListener listener) throws IOException {
+        FileWatcher.instance().watch(this, listener);
     }
 
     public boolean isReadable() {
@@ -453,6 +448,9 @@ public class Local extends AbstractPath {
     }
 
     public void copy(AbstractPath copy) {
+        if(copy.equals(this)) {
+            return;
+        }
         FileInputStream in = null;
         FileOutputStream out = null;
         try {
@@ -540,7 +538,7 @@ public class Local extends AbstractPath {
             });
         }
         // Disabled because of #221
-        // NSWorkspace.sharedWorkspace().noteFileSystemChangedAtPath(this.getAbsolute());
+        // NSWorkspace.sharedWorkspace().noteFileSystemChanged(this.getAbsolute());
     }
 
     /**
