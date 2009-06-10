@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.model.S3Bucket;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -239,20 +240,21 @@ public class CDPreferencesController extends CDWindowController {
         this.editorCombobox = editorCombobox;
         this.editorCombobox.setAutoenablesItems(false);
         this.editorCombobox.removeAllItems();
-        java.util.Map editors = EditorFactory.SUPPORTED_ODB_EDITORS;
+        java.util.Map editors = EditorFactory.getSupportedOdbEditors();
         java.util.Iterator editorNames = editors.keySet().iterator();
         java.util.Iterator editorIdentifiers = editors.values().iterator();
         while(editorNames.hasNext()) {
             String editor = (String) editorNames.next();
             String identifier = (String) editorIdentifiers.next();
             this.editorCombobox.addItemWithTitle(editor);
-            final boolean enabled = EditorFactory.INSTALLED_ODB_EDITORS.containsValue(identifier);
+            final boolean enabled = EditorFactory.getInstalledOdbEditors().containsValue(identifier);
             this.editorCombobox.itemWithTitle(editor).setEnabled(enabled);
             if(enabled) {
-                NSImage icon = NSWorkspace.sharedWorkspace().iconForFile(
-                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier)
-                );
-                this.editorCombobox.itemWithTitle(editor).setImage(CDIconCache.instance().convert(icon, 16));
+                final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+                if(StringUtils.isNotEmpty(path)) {
+                    this.editorCombobox.itemWithTitle(editor).setImage(CDIconCache.instance().iconForPath(
+                        new Local(path), 16));
+                }
             }
         }
         this.editorCombobox.setTarget(this.id());
@@ -262,7 +264,7 @@ public class CDPreferencesController extends CDWindowController {
 
     public void editorComboboxClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
-        final String selected = EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.titleOfSelectedItem());
+        final String selected = EditorFactory.getSupportedOdbEditors().get(sender.titleOfSelectedItem());
         Preferences.instance().setProperty("editor.bundleIdentifier", selected);
         EditorFactory.setSelectedEditor(selected);
         CDBrowserController.validateToolbarItems();
@@ -1004,7 +1006,7 @@ public class CDPreferencesController extends CDWindowController {
         this.anonymousField.setStringValue(Preferences.instance().getProperty("connection.login.anon.pass"));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("anonymousFieldDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.anonymousField);
     }
 
@@ -1020,7 +1022,7 @@ public class CDPreferencesController extends CDWindowController {
         this.textFileTypeRegexField.setStringValue(Preferences.instance().getProperty("filetype.text.regex"));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("textFileTypeRegexFieldDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.textFileTypeRegexField);
     }
 
@@ -1223,7 +1225,7 @@ public class CDPreferencesController extends CDWindowController {
         this.loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("loginFieldDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.loginField);
     }
 
@@ -1685,8 +1687,8 @@ public class CDPreferencesController extends CDWindowController {
         log.debug("Default Protocol Handler for " + protocol + ":" + defaultHandler);
         final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol.getScheme());
         for(String bundleIdentifier : bundleIdentifiers) {
-            String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
-            if(null == path) {
+            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
+            if(StringUtils.isEmpty(path)) {
                 continue;
             }
             NSBundle app = NSBundle.bundleWithPath(path);
@@ -1698,7 +1700,7 @@ public class CDPreferencesController extends CDWindowController {
             }
             defaultProtocolHandlerCombobox.addItemWithTitle(app.infoDictionary().objectForKey("CFBundleName").toString());
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-            item.setImage(CDIconCache.instance().convert(NSWorkspace.sharedWorkspace().iconForFile(path), 16));
+            item.setImage(CDIconCache.instance().iconForPath(new Local(path), 16));
             item.setRepresentedObject(bundleIdentifier);
             if(bundleIdentifier.equals(defaultHandler)) {
                 defaultProtocolHandlerCombobox.selectItem(item);

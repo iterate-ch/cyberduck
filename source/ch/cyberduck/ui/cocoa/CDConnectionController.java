@@ -195,7 +195,7 @@ public class CDConnectionController extends CDSheetController {
         }).id());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("hostFieldTextDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.hostField);
     }
 
@@ -293,7 +293,7 @@ public class CDConnectionController extends CDSheetController {
         this.pathField = pathField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("pathInputDidEndEditing:"),
-                NSControl.ControlTextDidEndEditingNotification,
+                NSControl.NSControlTextDidEndEditingNotification,
                 this.pathField);
     }
 
@@ -312,7 +312,7 @@ public class CDConnectionController extends CDSheetController {
         this.portField = portField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("portFieldTextDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.portField);
     }
 
@@ -332,11 +332,11 @@ public class CDConnectionController extends CDSheetController {
         this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("usernameFieldTextDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.usernameField);
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("usernameFieldTextDidEndEditing:"),
-                NSControl.ControlTextDidEndEditingNotification,
+                NSControl.NSControlTextDidEndEditingNotification,
                 this.usernameField);
     }
 

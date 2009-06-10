@@ -136,7 +136,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.filterField = filterField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("filterFieldTextDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.filterField);
     }
 

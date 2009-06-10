@@ -273,25 +273,28 @@ public class CDMainController extends CDBundleController {
                     if(StringUtils.isBlank(to)) {
                         to = l.getValue("Email"); // primary key
                     }
-                    int choice = NSAlert.alert(
+                    final NSAlert alert = NSAlert.alert(
                             MessageFormat.format(Locale.localizedString("Registered to {0}", "License"), to),
                             Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                     + "\n\n"
                                     + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
                             Locale.localizedString("Continue", ""), //default
                             null, //other
-                            null).runModal(); //alternate
-                    if(choice == CDSheetCallback.DEFAULT_OPTION) {
+                            null);
+                    alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                    if(alert.runModal() == CDSheetCallback.DEFAULT_OPTION) {
                         f.copy(new Local(Preferences.instance().getProperty("application.support.path"), f.getName()));
                     }
                 }
                 else {
-                    int choice = NSAlert.alert(
+                    final NSAlert alert = NSAlert.alert(
                             Locale.localizedString("Not a valid donation key", "License"),
                             Locale.localizedString("This donation key does not appear to be valid.", "License"),
                             Locale.localizedString("Continue", ""), //default
                             null, //other
-                            null).runModal(); //alternate
+                            null);
+                    alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
+                    alert.runModal(); //alternate
                 }
                 return true;
             }
@@ -481,6 +484,7 @@ public class CDMainController extends CDBundleController {
                         Locale.localizedString("Change", "Configuration"), //default
                         Locale.localizedString("Don't Ask Again", "Configuration"), //other
                         Locale.localizedString("Cancel", "Configuration"));
+                alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                 int choice = alert.runModal(); //alternate
                 if(choice == CDSheetCallback.DEFAULT_OPTION) {
                     URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
@@ -617,6 +621,7 @@ public class CDMainController extends CDBundleController {
                             Locale.localizedString("Quit Anyway", ""), //default
                             Locale.localizedString("Cancel", ""), //other
                             Locale.localizedString("Review...", ""));
+                    alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     int choice = alert.runModal(); //alternate
                     if(choice == CDSheetCallback.OTHER_OPTION) {
                         // Review if at least one window reqested to terminate later, we shall wait

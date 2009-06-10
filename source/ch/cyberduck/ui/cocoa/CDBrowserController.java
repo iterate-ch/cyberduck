@@ -949,7 +949,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        this.bookmarkButton.setImage(CDIconCache.instance().iconForName("bookmarks", 16));
+        this.bookmarkButton.setImage(CDIconCache.instance().iconForName("bookmarks", 20, 16));
         this.setRecessedBezelStyle(this.bookmarkButton);
         this.bookmarkButton.setTarget(this.id());
         this.bookmarkButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
@@ -1825,7 +1825,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.searchField.setEnabled(false);
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("searchFieldTextDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.searchField);
     }
 
@@ -1835,22 +1835,15 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param sender
      */
     public void searchButtonClicked(final NSObject sender) {
-        this.window().makeFirstResponder(this.searchField);
+        this.window().makeFirstResponder(searchField);
     }
 
     public void searchFieldTextDidChange(NSNotification notification) {
-        NSDictionary userInfo = notification.userInfo();
-        if(null != userInfo) {
-            NSObject o = userInfo.allValues().lastObject();
-            if(null != o) {
-                final String searchString = o.toString();
-                if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-                    this.setBookmarkFilter(searchString);
-                }
-                else { // TAB_LIST_VIEW || TAB_OUTLINE_VIEW
-                    this.setPathFilter(searchString);
-                }
-            }
+        if(this.getSelectedTabView() == TAB_BOOKMARKS) {
+            this.setBookmarkFilter(searchField.stringValue());
+        }
+        else { // TAB_LIST_VIEW || TAB_OUTLINE_VIEW
+            this.setPathFilter(searchField.stringValue());
         }
     }
 
@@ -2626,7 +2619,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void editMenuClicked(final NSMenuItem sender) {
         for(Path selected : this.getSelectedPaths()) {
-            String identifier = EditorFactory.SUPPORTED_ODB_EDITORS.get(sender.title());
+            String identifier = EditorFactory.getSupportedOdbEditors().get(sender.title());
             if(identifier != null) {
                 Editor editor = EditorFactory.createEditor(
                         this, identifier.toString(), selected);

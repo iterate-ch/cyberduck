@@ -66,28 +66,28 @@ public abstract class CDAbstractTableDelegate<E> extends CDController implements
     /**
      * @see NSTableView.DataSource
      */
-    public boolean tableViewShouldSelectRow(NSTableView view, int rowIndex) {
+    public boolean tableView_shouldSelectRow(NSTableView view, int rowIndex) {
         return true;
     }
 
     /**
      * @see NSTableView.DataSource
      */
-    public boolean outlineViewShouldSelectItem(NSOutlineView view, Object item) {
+    public boolean outlineView_shouldSelectItem(NSOutlineView view, NSObject item) {
         return true;
     }
 
     /**
      * @see NSTableView.DataSource
      */
-    public boolean tableViewShouldEditLocation(NSTableView view, NSTableColumn tableColumn, int row) {
+    public boolean tableView_shouldEditTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         return false;
     }
 
     /**
      * @see NSTableView.DataSource
      */
-    public boolean outlineViewShouldEditTableColumn(NSOutlineView view, NSTableColumn tableColumn, Object item) {
+    public boolean outlineView_shouldEditTableColumn_item(NSOutlineView view, NSTableColumn tableColumn, NSObject item) {
         return false;
     }
 

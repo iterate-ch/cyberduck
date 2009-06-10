@@ -18,7 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
@@ -114,7 +117,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
     public abstract void callback(final int returncode);
 
     /**
-     *
      * @param returncode
      * @param context
      */

@@ -77,7 +77,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 }
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("userFieldTextDidChange:"),
-                        NSControl.ControlTextDidChangeNotification,
+                        NSControl.NSControlTextDidChangeNotification,
                         this.userField);
             }
 
@@ -107,7 +107,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 }
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("passFieldTextDidChange:"),
-                        NSControl.ControlTextDidChangeNotification,
+                        NSControl.NSControlTextDidChangeNotification,
                         this.passField);
             }
 

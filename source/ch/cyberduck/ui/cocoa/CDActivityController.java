@@ -160,7 +160,7 @@ public class CDActivityController extends CDWindowController {
                 return null;
             }
 
-            public boolean tableViewShouldSelectRow(NSTableView view, int row) {
+            public boolean tableView_shouldSelectRow(NSTableView view, int row) {
                 return false;
             }
 

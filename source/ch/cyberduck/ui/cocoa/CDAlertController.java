@@ -20,16 +20,18 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSControl;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.cocoa.NSRect;
 
 public abstract class CDAlertController extends CDSheetController {
 
     /**
      * If using alert and no custom window
      */
-    private NSAlert alert;
+    protected NSAlert alert;
 
     /**
      * @param parent
@@ -50,8 +52,25 @@ public abstract class CDAlertController extends CDSheetController {
         this.alert.setAlertStyle(style);
     }
 
+    protected void setAccessoryView(NSControl view) {
+        view.sizeToFit();
+        view.setFrame(new NSRect(300, view.frame().size.height.doubleValue()));
+        alert.setAccessoryView(view);
+    }
+
     public void beginSheet() {
+        alert.layout();
         alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
+    }
+
+    protected void callback(int returnCode, ID context) {
+        if(DEFAULT_OPTION == returnCode) {
+            if(!this.validateInput()) {
+//                NSApplication.beep();
+                return;
+            }
+        }
+        super.callback(returnCode, context);
     }
 
     public void alertDidEnd_returnCode_contextInfo(NSAlert alert, int returnCode, ID context) {

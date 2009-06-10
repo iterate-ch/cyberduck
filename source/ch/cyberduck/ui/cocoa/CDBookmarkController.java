@@ -129,7 +129,7 @@ public class CDBookmarkController extends CDWindowController {
         this.nicknameField = nicknameField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("nicknameInputDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.nicknameField);
     }
 
@@ -140,7 +140,7 @@ public class CDBookmarkController extends CDWindowController {
         this.hostField = hostField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("hostFieldDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.hostField);
     }
 
@@ -165,7 +165,7 @@ public class CDBookmarkController extends CDWindowController {
         this.portField = portField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("portInputDidEndEditing:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.portField);
     }
 
@@ -176,7 +176,7 @@ public class CDBookmarkController extends CDWindowController {
         this.pathField = pathField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("pathInputDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.pathField);
     }
 
@@ -196,7 +196,7 @@ public class CDBookmarkController extends CDWindowController {
         this.usernameField = usernameField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("usernameInputDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.usernameField);
     }
 
@@ -211,7 +211,7 @@ public class CDBookmarkController extends CDWindowController {
         );
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("webURLInputDidChange:"),
-                NSControl.ControlTextDidChangeNotification,
+                NSControl.NSControlTextDidChangeNotification,
                 this.webURLField);
     }
 

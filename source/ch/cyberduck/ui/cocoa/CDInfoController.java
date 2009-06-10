@@ -58,7 +58,7 @@ public class CDInfoController extends CDWindowController {
         this.filenameField = filenameField;
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("filenameInputDidEndEditing:"),
-                NSControl.ControlTextDidEndEditingNotification,
+                NSControl.NSControlTextDidEndEditingNotification,
                 filenameField);
     }
 
