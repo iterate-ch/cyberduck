@@ -6,6 +6,22 @@
             SUPERCLASS = NSTableView;
         },
                 {
+            CLASS = CDQueueController;
+            LANGUAGE = ObjC;
+            OUTLETS =             {
+                bandwidthPopup = NSPopUpButton;
+                filterField = NSSearchField;
+                iconView = NSImageView;
+                localField = NSTextField;
+                logDrawer = NSDrawer;
+                queueSizeStepper = NSStepper;
+                queueTable = NSTableView;
+                urlField = NSTextField;
+                window = NSWindow;
+            };
+            SUPERCLASS = NSObject;
+        },
+                {
             ACTIONS =             {
                 changeAngle = id;
                 changeStyle = id;
@@ -32,22 +48,6 @@
             CLASS = NSDatePicker;
             LANGUAGE = ObjC;
             SUPERCLASS = NSControl;
-        },
-                {
-            CLASS = "ch.cyberduck.core.CDQueueController";
-            LANGUAGE = Java;
-            OUTLETS =             {
-                bandwidthPopup = NSPopUpButton;
-                filterField = NSSearchField;
-                iconView = NSImageView;
-                localField = NSTextField;
-                logDrawer = NSDrawer;
-                queueSizeStepper = NSStepper;
-                queueTable = NSTableView;
-                urlField = NSTextField;
-                window = NSWindow;
-            };
-            SUPERCLASS = NSObject;
         }
     );
     IBVersion = 1;
