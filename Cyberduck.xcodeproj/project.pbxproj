@@ -26,14 +26,6 @@
 		4719A59E0BD95D2C0068CCFD /* bandwidth.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4719A59D0BD95D2C0068CCFD /* bandwidth.tiff */; };
 		4719A6040BD964780068CCFD /* connection.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4719A6030BD964780068CCFD /* connection.tiff */; };
 		47215AA707FC9A3E00451725 /* login.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47215AA607FC9A3E00451725 /* login.tiff */; };
-		472404590AFF4B75008FAFBB /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
-		4724050D0AFF4BA7008FAFBB /* FileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 472404400AFF4B5C008FAFBB /* FileWatcher.h */; };
-		4724050E0AFF4BA7008FAFBB /* UKKQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 472404440AFF4B5D008FAFBB /* UKKQueue.h */; };
-		4724050F0AFF4BA7008FAFBB /* UKMainThreadProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 472404460AFF4B5D008FAFBB /* UKMainThreadProxy.h */; };
-		472405100AFF4BB5008FAFBB /* FileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 472404420AFF4B5C008FAFBB /* FileWatcher.m */; };
-		472405110AFF4BB5008FAFBB /* UKKQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 472404450AFF4B5D008FAFBB /* UKKQueue.m */; };
-		472405120AFF4BB5008FAFBB /* UKMainThreadProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 472404470AFF4B5D008FAFBB /* UKMainThreadProxy.m */; };
-		472405230AFF4C14008FAFBB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4726277F0FD5743C001D5BA5 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		472759650AF3BE6000EBE267 /* update.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 472759640AF3BE6000EBE267 /* update.tiff */; };
@@ -146,8 +138,6 @@
 		4762DB8509FC47380034C662 /* Host.m in Sources */ = {isa = PBXBuildFile; fileRef = 4762DB8309FC47380034C662 /* Host.m */; };
 		4762DB8609FC47380034C662 /* Host.h in Headers */ = {isa = PBXBuildFile; fileRef = 4762DB8409FC47380034C662 /* Host.h */; };
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
-		476B03360D05CFA100CE8ADE /* UKFileWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 476B03340D05CFA100CE8ADE /* UKFileWatcher.m */; };
-		476B03370D05CFA100CE8ADE /* UKFileWatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 476B03350D05CFA100CE8ADE /* UKFileWatcher.h */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
 		47742E080BECF13600EC4DEA /* Transfer.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47742E060BECF13600EC4DEA /* Transfer.nib */; };
 		47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */ = {isa = PBXBuildFile; fileRef = 4774897F085825460030AED1 /* Cyberduck.scriptTerminology */; };
@@ -470,11 +460,6 @@
 		470913210C36FDE50049FBCE /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_BR; path = pt_BR.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470913220C36FDEA0049FBCE /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_PT; path = pt_PT.lproj/Prompt.nib; sourceTree = "<group>"; };
 		4709E81A0F864B16005A06CE /* sync.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = sync.tiff; sourceTree = "<group>"; };
-		470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MacOSXForkerIO.c; sourceTree = "<group>"; };
-		470E56D108BE3E1E00BDF3CD /* TinAlias.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinAlias.h; sourceTree = "<group>"; };
-		470E56D208BE3E1E00BDF3CD /* TinFSFork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSFork.h; sourceTree = "<group>"; };
-		470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinFSRefItem.h; sourceTree = "<group>"; };
-		470E56D408BE3E1E00BDF3CD /* TinWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TinWatcher.h; sourceTree = "<group>"; };
 		470FDC67099E4A9B008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Info.nib; sourceTree = "<group>"; };
 		470FDC68099E4A9B008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Download.nib; sourceTree = "<group>"; };
 		470FDC6A099E4A9B008DE09C /* he */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = he; path = he.lproj/Login.nib; sourceTree = "<group>"; };
@@ -550,7 +535,6 @@
 		472404450AFF4B5D008FAFBB /* UKKQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKKQueue.m; sourceTree = "<group>"; };
 		472404460AFF4B5D008FAFBB /* UKMainThreadProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKMainThreadProxy.h; sourceTree = "<group>"; };
 		472404470AFF4B5D008FAFBB /* UKMainThreadProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKMainThreadProxy.m; sourceTree = "<group>"; };
-		4724045F0AFF4B75008FAFBB /* libKQueue.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libKQueue.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4725BE0A05D2E27000C7CCBD /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
 		4726277E0FD5743C001D5BA5 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = lib/Growl.framework; sourceTree = "<group>"; };
 		47271D8E09F4050B00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1583,15 +1567,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		472404580AFF4B75008FAFBB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				472405230AFF4C14008FAFBB /* Cocoa.framework in Frameworks */,
-				472404590AFF4B75008FAFBB /* JavaVM.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EF6C0856981300405FD3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1710,7 +1685,6 @@
 				4739EFC10856991300405FD3 /* libLocal.dylib */,
 				4716D8B80877533B00938886 /* libDotMac.dylib */,
 				4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */,
-				4724045F0AFF4B75008FAFBB /* libKQueue.dylib */,
 				47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */,
 				478ECD180DAD5743008A5B1F /* libQuickLook.dylib */,
 				478CFE820F9932B3000560EF /* libPrime.dylib */,
@@ -1761,11 +1735,6 @@
 		470E56CF08BE3E1E00BDF3CD /* forker */ = {
 			isa = PBXGroup;
 			children = (
-				470E56D008BE3E1E00BDF3CD /* MacOSXForkerIO.c */,
-				470E56D108BE3E1E00BDF3CD /* TinAlias.h */,
-				470E56D208BE3E1E00BDF3CD /* TinFSFork.h */,
-				470E56D308BE3E1E00BDF3CD /* TinFSRefItem.h */,
-				470E56D408BE3E1E00BDF3CD /* TinWatcher.h */,
 				47354D4C09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.m */,
 				47354D4D09C6CC9B00426BE0 /* NSString+CarbonFSRefCreation.h */,
 				47EF997009006EF500D4B4FF /* IconFamily.m */,
@@ -2371,17 +2340,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		472404540AFF4B75008FAFBB /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4724050D0AFF4BA7008FAFBB /* FileWatcher.h in Headers */,
-				4724050E0AFF4BA7008FAFBB /* UKKQueue.h in Headers */,
-				4724050F0AFF4BA7008FAFBB /* UKMainThreadProxy.h in Headers */,
-				476B03370D05CFA100CE8ADE /* UKFileWatcher.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4739EF680856981300405FD3 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2580,24 +2538,6 @@
 			productName = Cyberduck;
 			productReference = 471D2C5505A2505600675163 /* Cyberduck.app */;
 			productType = "com.apple.product-type.application";
-		};
-		472404530AFF4B75008FAFBB /* libKQueue */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4724045D0AFF4B75008FAFBB /* Build configuration list for PBXNativeTarget "libKQueue" */;
-			buildPhases = (
-				472404540AFF4B75008FAFBB /* Headers */,
-				472404560AFF4B75008FAFBB /* Sources */,
-				472404580AFF4B75008FAFBB /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = libKQueue;
-			productInstallPath = /usr/local/lib;
-			productName = keychainLib;
-			productReference = 4724045F0AFF4B75008FAFBB /* libKQueue.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
 		};
 		4739EF670856981300405FD3 /* libKeychain */ = {
 			isa = PBXNativeTarget;
@@ -2856,7 +2796,6 @@
 				4739EFB10856991200405FD3 /* libLocal */,
 				4716D8AC0877533B00938886 /* libDotMac */,
 				4762DAB809FC42EC0034C662 /* libDiagnostics */,
-				472404530AFF4B75008FAFBB /* libKQueue */,
 				47BEDAF60B92960400141EB4 /* libURLSchemeHandlerConfiguration */,
 				478ECD000DAD5743008A5B1F /* libQuickLook */,
 				478CFE760F9932B3000560EF /* libPrime */,
@@ -3105,17 +3044,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4716D96D0877538700938886 /* CDDotMacController.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		472404560AFF4B75008FAFBB /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				472405100AFF4BB5008FAFBB /* FileWatcher.m in Sources */,
-				472405110AFF4BB5008FAFBB /* UKKQueue.m in Sources */,
-				472405120AFF4BB5008FAFBB /* UKMainThreadProxy.m in Sources */,
-				476B03360D05CFA100CE8ADE /* UKFileWatcher.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4467,30 +4395,6 @@
 			};
 			name = Deployment;
 		};
-		4724045E0AFF4B75008FAFBB /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/build\"";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
-				LIBRARY_SEARCH_PATHS = "";
-				LIBRARY_STYLE = DYNAMIC;
-				MACH_O_TYPE = mh_dylib;
-				PREBINDING = NO;
-				PRODUCT_NAME = libKQueue;
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
 		4739EF720856981300405FD3 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4828,14 +4732,6 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				4716D8B70877533B00938886 /* Deployment */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
-		};
-		4724045D0AFF4B75008FAFBB /* Build configuration list for PBXNativeTarget "libKQueue" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4724045E0AFF4B75008FAFBB /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
