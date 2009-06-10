@@ -1,31 +1,11 @@
 {
     IBClasses =     (
                 {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = NSDatePicker;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSControl;
-        },
-                {
-            ACTIONS =             {
-                hide = id;
-                show = id;
-                toggleDisclosure = id;
-            };
-            CLASS = SNDisclosableView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSView;
-        },
-                {
             ACTIONS =             {
                 helpButtonClicked = id;
             };
-            CLASS = "ch.cyberduck.ui.cocoa.CDInfoController";
-            LANGUAGE = Java;
+            CLASS = CDInfoController;
+            LANGUAGE = ObjC;
             OUTLETS =             {
                 bucketLocationField = id;
                 bucketLoggingButton = id;
@@ -72,6 +52,26 @@
                 window = id;
             };
             SUPERCLASS = "java.lang.Object";
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = NSDatePicker;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSControl;
+        },
+                {
+            ACTIONS =             {
+                hide = id;
+                show = id;
+                toggleDisclosure = id;
+            };
+            CLASS = SNDisclosableView;
+            LANGUAGE = ObjC;
+            SUPERCLASS = NSView;
         }
     );
     IBVersion = 1;
