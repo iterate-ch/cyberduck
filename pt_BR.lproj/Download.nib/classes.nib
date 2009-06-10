@@ -1,20 +1,20 @@
 {
     IBClasses =     (
                 {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
             ACTIONS =             {
                 closeSheet = id;
             };
-            CLASS = "ch.cyberduck.ui.cocoa.CDDownloadController";
-            LANGUAGE = Java;
+            CLASS = CDDownloadController;
+            LANGUAGE = ObjC;
             OUTLETS =             {
                 urlField = NSTextField;
                 window = NSWindow;
             };
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
             SUPERCLASS = NSObject;
         }
     );
