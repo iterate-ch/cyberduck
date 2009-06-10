@@ -1,16 +1,11 @@
 {
     IBClasses =     (
                 {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
             ACTIONS =             {
                 closeSheet = id;
             };
-            CLASS = "ch.cyberduck.ui.cocoa.CDLoginController";
-            LANGUAGE = Java;
+            CLASS = CDLoginController;
+            LANGUAGE = ObjC;
             OUTLETS =             {
                 anonymousCheckbox = NSButton;
                 keychainCheckbox = NSButton;
@@ -22,6 +17,11 @@
                 userField = NSTextField;
                 window = NSWindow;
             };
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
             SUPERCLASS = NSObject;
         }
     );
