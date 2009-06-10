@@ -1,13 +1,8 @@
 {
     IBClasses =     (
                 {
-            CLASS = FirstResponder;
+            CLASS = CDBookmarkController;
             LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = "ch.cyberduck.ui.cocoa.CDBookmarkController";
-            LANGUAGE = Java;
             OUTLETS =             {
                 alertIcon = NSButton;
                 commentField = NSTextView;
@@ -30,6 +25,11 @@
                 webUrlImage = NSButton;
                 window = NSWindow;
             };
+            SUPERCLASS = NSObject;
+        },
+                {
+            CLASS = FirstResponder;
+            LANGUAGE = ObjC;
             SUPERCLASS = NSObject;
         }
     );
