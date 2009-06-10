@@ -1272,6 +1272,7 @@ lib/commons-io-1.4.jar -text
 lib/commons-lang-2.4.jar -text
 lib/commons-logging-1.1.1.jar -text
 lib/commons-net-1.5.0-dev.jar -text
+lib/dns_sd.jar -text
 lib/ext/junit-4.6.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
@@ -1281,6 +1282,7 @@ lib/jdom-1.1.jar -text
 lib/jets3t-0.7.1.jar -text
 lib/jna-3.1.0.jar -text
 lib/libAquaticPrime.a -text
+lib/libjdns_sd.jnilib -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mime.types -text
