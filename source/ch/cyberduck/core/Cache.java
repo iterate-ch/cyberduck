@@ -51,6 +51,7 @@ public class Cache<E extends AbstractPath> {
      */
     public E lookup(String path) {
         if(null == path) {
+            log.warn("Path to lookup is null");
             return null;
         }
         final String parent = Path.getParent(path);
