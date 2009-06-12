@@ -523,7 +523,9 @@ public class CDMainController extends CDBundleController {
     /**
      * Display donation reminder dialog
      */
-    private boolean prompt = true;
+    private boolean donationPrompt = true;
+    private CDWindowController donationController;
+
 
     /**
      * Invoked from within the terminate method immediately before the
@@ -536,20 +538,20 @@ public class CDMainController extends CDBundleController {
      */
     public int applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
-        if(prompt) {
+        if(donationPrompt) {
             try {
                 final License l = License.find();
                 if(!l.verify()) {
                     final Calendar lastreminder = Calendar.getInstance();
                     lastreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
-                    // Display prompt every n days
+                    // Display donationPrompt every n days
                     lastreminder.roll(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("donate.reminder.interval"));
                     // Display after upgrade
                     final String lastversion = Preferences.instance().getProperty("donate.reminder");
                     if(lastreminder.getTime().before(new Date(System.currentTimeMillis())) ||
                             !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
                         final int uses = Preferences.instance().getInteger("uses");
-                        CDWindowController c = new CDWindowController() {
+                        donationController = new CDWindowController() {
                             @Override
                             protected String getBundleName() {
                                 return "Donate";
@@ -588,7 +590,7 @@ public class CDMainController extends CDBundleController {
                                 NSApplication.sharedApplication().terminate(this.id());
                             }
                         };
-                        c.loadBundle();
+                        donationController.loadBundle();
                         // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
                         return NSApplication.NSTerminateCancel;
                     }
@@ -596,7 +598,7 @@ public class CDMainController extends CDBundleController {
             }
             finally {
                 // Disable until next launch
-                prompt = false;
+                donationPrompt = false;
             }
         }
         // Determine if there are any open connections
@@ -764,7 +766,7 @@ public class CDMainController extends CDBundleController {
     }
 
     @Override
-    protected void awakeFromNib() {
+    public void awakeFromNib() {
         ;
     }
 
