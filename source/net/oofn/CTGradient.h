@@ -2,36 +2,37 @@
 //  CTGradient.h
 //
 //  Created by Chad Weider on 2/14/07.
-//  Copyright (c) 2007 Chad Weider.
-//  Some rights reserved: <http://creativecommons.org/licenses/by/2.5/>
+//  Writtin by Chad Weider.
 //
-//  Version: 1.6
+//  Released into public domain on 4/10/08.
+//  
+//  Version: 1.8
 
 #import <Cocoa/Cocoa.h>
 
 typedef struct _CTGradientElement 
 	{
-	float red, green, blue, alpha;
-	float position;
-	
-	struct _CTGradientElement *nextElement;
+		CGFloat red, green, blue, alpha;
+		float position;
+		
+		struct _CTGradientElement *nextElement;
 	} CTGradientElement;
 
 typedef enum  _CTBlendingMode
 	{
-	CTLinearBlendingMode,
-	CTChromaticBlendingMode,
-	CTInverseChromaticBlendingMode
+		CTLinearBlendingMode,
+		CTChromaticBlendingMode,
+		CTInverseChromaticBlendingMode
 	} CTGradientBlendingMode;
 
 
 @interface CTGradient : NSObject <NSCopying, NSCoding>
-	{
+{
 	CTGradientElement* elementList;
 	CTGradientBlendingMode blendingMode;
 	
 	CGFunctionRef gradientFunction;
-	}
+}
 
 + (id)gradientWithBeginningColor:(NSColor *)begin endingColor:(NSColor *)end;
 
@@ -50,22 +51,22 @@ typedef enum  _CTBlendingMode
 + (id)rainbowGradient;
 + (id)hydrogenSpectrumGradient;
 
-- (CTGradient *)gradientWithAlphaComponent:(float)alpha;
+- (CTGradient *)gradientWithAlphaComponent:(CGFloat)alpha;
 
-- (CTGradient *)addColorStop:(NSColor *)color atPosition:(float)position;	//positions given relative to [0,1]
+- (CTGradient *)addColorStop:(NSColor *)color atPosition:(CGFloat)position;	//positions given relative to [0,1]
 - (CTGradient *)removeColorStopAtIndex:(unsigned)index;
-- (CTGradient *)removeColorStopAtPosition:(float)position;
+- (CTGradient *)removeColorStopAtPosition:(CGFloat)position;
 
 - (CTGradientBlendingMode)blendingMode;
 - (NSColor *)colorStopAtIndex:(unsigned)index;
-- (NSColor *)colorAtPosition:(float)position;
+- (NSColor *)colorAtPosition:(CGFloat)position;
 
 
 - (void)drawSwatchInRect:(NSRect)rect;
 - (void)fillRect:(NSRect)rect angle:(float)angle;					//fills rect with axial gradient
-																	//	angle in degrees
+//	angle in degrees
 - (void)radialFillRect:(NSRect)rect;								//fills rect with radial gradient
-																	//  gradient from center outwards
+//  gradient from center outwards
 - (void)fillBezierPath:(NSBezierPath *)path angle:(float)angle;
 - (void)radialFillBezierPath:(NSBezierPath *)path;
 
