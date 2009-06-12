@@ -133,11 +133,4 @@ public abstract class NSObject implements org.rococoa.NSObject {
     public abstract NSObject autorelease();
 
     private static Logger log = Logger.getLogger(NSObject.class);
-
-    protected void finalize() throws java.lang.Throwable {
-        if(log.isTraceEnabled()) {
-            log.trace("finalize:" + this.toString());
-        }
-        super.finalize();
-    }
 }
