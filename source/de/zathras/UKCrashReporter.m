@@ -11,6 +11,7 @@
 // -----------------------------------------------------------------------------
 
 #import "UKCrashReporter.h"
+#import <Cocoa/Cocoa.h>
 
 NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString* crashLogsFolder );
 
