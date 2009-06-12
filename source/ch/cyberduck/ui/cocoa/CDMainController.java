@@ -727,7 +727,6 @@ public class CDMainController extends CDBundleController {
         }
         final CDBrowserController controller = new CDBrowserController();
         controller.addListener(new CDWindowListener() {
-            @Override
             public void windowWillClose() {
                 browsers.remove(controller);
             }

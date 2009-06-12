@@ -1120,7 +1120,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         public AbstractBrowserTableDelegate() {
             CDBrowserController.this.addListener(new CDWindowListener() {
-                @Override
                 public void windowWillClose() {
                     if(QuickLook.isAvailable()) {
                         if(QuickLook.isOpen()) {
@@ -2903,7 +2902,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         });
         this.addListener(new CDWindowListener() {
-            @Override
             public void windowWillClose() {
                 transfer.removeListener(l);
             }
@@ -2966,7 +2964,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             });
             this.addListener(new CDWindowListener() {
-                @Override
                 public void windowWillClose() {
                     transfer.removeListener(l);
                 }
@@ -3018,7 +3015,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void connectButtonClicked(final NSObject sender) {
         final CDSheetController controller = CDConnectionController.instance(this);
         this.addListener(new CDWindowListener() {
-            @Override
             public void windowWillClose() {
                 controller.invalidate();
             }
@@ -4249,7 +4245,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return validateItem(action);
     }
 
-    @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
         final NSToolbarItem item = NSToolbarItem.itemWithIdentifier(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_BROWSER_VIEW)) {
@@ -4523,7 +4518,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param toolbar
      * @return The default configuration of toolbar items
      */
-    @Override
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_NEW_CONNECTION,
@@ -4542,7 +4536,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param toolbar
      * @return All available toolbar items
      */
-    @Override
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_NEW_CONNECTION,
@@ -4572,7 +4565,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         );
     }
 
-    @Override
     public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
         return NSArray.array();
     }

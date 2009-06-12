@@ -138,7 +138,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    @Override
     public TransferAction prompt() {
         log.debug("prompt:" + transfer);
         for(Path next : transfer.getRoots()) {

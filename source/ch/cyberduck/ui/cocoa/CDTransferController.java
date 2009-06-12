@@ -687,7 +687,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
      * @param itemIdentifier
      * @param flag
      */
-    @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
         final NSToolbarItem item = NSToolbarItem.itemWithIdentifier(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_STOP)) {
@@ -960,14 +959,13 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      * @param toolbar
      */
-    @Override
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_RESUME,
                 TOOLBAR_RELOAD,
                 TOOLBAR_STOP,
                 TOOLBAR_REMOVE,
-//                NSToolbarItem.FlexibleSpaceItemIdentifier,
+                NSToolbarItem.NSToolbarFlexibleItemIdentifier,
                 TOOLBAR_OPEN,
                 TOOLBAR_SHOW,
                 TOOLBAR_FILTER
@@ -979,7 +977,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      * @param toolbar
      */
-    @Override
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_RESUME,
@@ -998,7 +995,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
         );
     }
 
-    @Override
     public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
         return NSArray.array();
     }

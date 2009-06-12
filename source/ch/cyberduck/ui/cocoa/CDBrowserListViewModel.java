@@ -42,7 +42,6 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         super(controller);
     }
 
-    @Override
     public int numberOfRowsInTableView(NSTableView view) {
         if(controller.isMounted()) {
             return this.childs(this.controller.workdir()).size();
@@ -50,14 +49,12 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         return 0;
     }
 
-    @Override
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row) {
         if(controller.isMounted()) {
             super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row), value, tableColumn.identifier());
         }
     }
 
-    @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         if(controller.isMounted()) {
             final List<Path> childs = this.childs(this.controller.workdir());
@@ -72,7 +69,6 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     // Drop methods
     // ----------------------------------------------------------
 
-    @Override
     public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int row, int operation) {
         final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
         if(controller.isMounted()) {
@@ -91,7 +87,6 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         return super.validateDrop(view, null, row, draggingInfo);
     }
 
-    @Override
     public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation) {
         final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
         if(controller.isMounted()) {
@@ -116,7 +111,6 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
      * @param rows is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data, owner, and so on).
      */
-    @Override
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
         if(controller.isMounted()) {
             NSMutableArray items = NSMutableArray.arrayWithCapacity(rowIndexes.count());

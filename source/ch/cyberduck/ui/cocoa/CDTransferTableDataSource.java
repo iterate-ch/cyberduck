@@ -110,7 +110,6 @@ public class CDTransferTableDataSource extends CDListDataSource {
     /**
      * @param view
      */
-    @Override
     public int numberOfRowsInTableView(NSTableView view) {
         return this.getSource().size();
     }
@@ -120,7 +119,6 @@ public class CDTransferTableDataSource extends CDListDataSource {
      * @param tableColumn
      * @param row
      */
-    @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         final String identifier = tableColumn.identifier();
         if(identifier.equals(PROGRESS_COLUMN)) {

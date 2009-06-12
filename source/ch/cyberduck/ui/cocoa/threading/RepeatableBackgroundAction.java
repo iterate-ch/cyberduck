@@ -261,12 +261,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     errors.add(new CDErrorController(e));
                 }
                 this.errorView.setDataSource((model = new CDListDataSource() {
-                    @Override
                     public int numberOfRowsInTableView(NSTableView view) {
                         return errors.size();
                     }
 
-                    @Override
                     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
                         return errors.get(row).view();
                     }
@@ -289,15 +287,12 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     public void selectionDidChange(NSNotification notification) {
                     }
 
-                    @Override
                     public void enterKeyPressed(NSObject sender) {
                     }
 
-                    @Override
                     public void deleteKeyPressed(NSObject sender) {
                     }
 
-                    @Override
                     public String tooltip(CDErrorController e) {
                         return e.getTooltip();
                     }

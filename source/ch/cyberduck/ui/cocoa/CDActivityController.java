@@ -128,7 +128,6 @@ public class CDActivityController extends CDWindowController {
             /**
              * @param view
              */
-            @Override
             public int numberOfRowsInTableView(NSTableView view) {
                 synchronized(tasks) {
                     return tasks.size();
@@ -140,22 +139,18 @@ public class CDActivityController extends CDWindowController {
              * @param tableColumn
              * @param row
              */
-            @Override
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
                 final Collection<CDTaskController> values = tasks.values();
                 return values.toArray(new CDTaskController[values.size()])[row].view();
             }
         }).id());
         this.table.setDelegate((delegate = new CDAbstractTableDelegate<CDTaskController>() {
-            @Override
             public void enterKeyPressed(NSObject sender) {
             }
 
-            @Override
             public void deleteKeyPressed(NSObject sender) {
             }
 
-            @Override
             public String tooltip(CDTaskController c) {
                 return null;
             }
@@ -164,11 +159,9 @@ public class CDActivityController extends CDWindowController {
                 return false;
             }
 
-            @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
             }
 
-            @Override
             public void tableRowDoubleClicked(NSObject sender) {
             }
 

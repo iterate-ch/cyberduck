@@ -196,7 +196,6 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }
 
-    @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(null == item) {
             return false;
@@ -204,7 +203,6 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         return this.lookup(item.toString()).attributes.isDirectory();
     }
 
-    @Override
     public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(null == item) {
             return _roots.size();
@@ -212,7 +210,6 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         return this.childs(this.lookup(item.toString())).size();
     }
 
-    @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, int index, NSObject item) {
         if(null == item) {
             return NSString.stringWithString(_roots.get(index).getAbsolute());
@@ -224,7 +221,6 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         return NSString.stringWithString(childs.get(index).getAbsolute());
     }
 
-    @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
         return this.objectValueForItem(this.lookup(item.toString()), tableColumn.identifier());
     }

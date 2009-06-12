@@ -120,12 +120,10 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
     /**
      * @see NSTableView.DataSource
      */
-    @Override
     public int numberOfRowsInTableView(NSTableView view) {
         return this.getSource().size();
     }
 
-    @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         final String identifier = tableColumn.identifier();
         final Host host = this.getSource().get(row);
@@ -315,7 +313,6 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
      * @see NSDraggingSource
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
-    @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
         if(NSDraggingInfo.NSDragOperationDelete == operation) {
             controller.deleteBookmarkButtonClicked(null);
@@ -329,7 +326,6 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
      * @return
      * @see NSDraggingSource
      */
-    @Override
     public int draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {

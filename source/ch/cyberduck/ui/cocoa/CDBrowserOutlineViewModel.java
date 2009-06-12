@@ -58,7 +58,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     /**
      * @see NSOutlineView.DataSource
      */
-    @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(log.isDebugEnabled()) {
             log.debug("outlineViewIsItemExpandable:" + item);
@@ -76,7 +75,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     /**
      * @see NSOutlineView.DataSource
      */
-    @Override
     public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(controller.isMounted()) {
             if(null == item) {
@@ -110,7 +108,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
      *      of a given parent item are accessed sequentially. If item is null, this method should
      *      return the appropriate child item of the root object
      */
-    @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSObject item) {
         final Path path;
         if(null == item) {
@@ -127,13 +124,11 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return NSString.stringWithString(childs.get(index).getAbsolute());
     }
 
-    @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
         super.setObjectValueForItem(controller.lookup(item.toString()), value, tableColumn.identifier());
     }
 
-    @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
         if(null == item) {
             return super.objectValueForItem(null, tableColumn.identifier());
@@ -145,7 +140,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return super.objectValueForItem(path, tableColumn.identifier());
     }
 
-    @Override
     public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSObject info, NSObject item, int row) {
         final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
         Path destination = null;
@@ -185,7 +179,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return super.validateDrop(outlineView, destination, row, draggingInfo);
     }
 
-    @Override
     public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSObject info, NSObject item, int row) {
         Path destination = null;
         if(controller.isMounted()) {
@@ -199,7 +192,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return super.acceptDrop(outlineView, destination, Rococoa.cast(info, NSDraggingInfo.class));
     }
 
-    @Override
     public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
         return super.writeItemsToPasteBoard(outlineView, items, pboard);
     }
