@@ -332,11 +332,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
             }
         };
-        CDMainApplication.invoke(new WindowMainAction(controller) {
-            public void run() {
-                alert.beginSheet();
-            }
-        });
+        alert.beginSheet();
     }
 
     /**
