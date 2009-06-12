@@ -76,7 +76,9 @@ public class URLSchemeHandlerConfiguration {
      * @return True if this application is the default handler for the scheme
      */
     public boolean isDefaultHandlerForURLScheme(String scheme) {
-        return false;
+        return NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString().equals(
+                this.getDefaultHandlerForURLScheme(scheme)
+        );
     }
 
     /**
