@@ -20,10 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,8 +36,9 @@ public class CDDuplicateFileController extends CDFileController {
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
-        NSImage icon = NSWorkspace.sharedWorkspace().iconForFileType(((CDBrowserController) parent).getSelectedPath().getExtension());
-        this.iconView.setImage(CDIconCache.instance().convert(icon, 64));
+        this.iconView.setImage(
+                CDIconCache.instance().iconForFileType(((CDBrowserController) parent).getSelectedPath().getExtension(), 64)
+        );
     }
 
     public CDDuplicateFileController(final CDWindowController parent) {
