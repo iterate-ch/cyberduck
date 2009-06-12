@@ -536,6 +536,8 @@ public class CDInfoController extends CDWindowController {
         this.otherx.setTarget(this.id());
         this.otherx.setAction(Foundation.selector("permissionSelectionChanged:"));
         this.otherx.setAllowsMixedState(true);
+
+        super.awakeFromNib();
     }
 
     private void init() {

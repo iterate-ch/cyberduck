@@ -54,6 +54,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             @Override
             public void awakeFromNib() {
                 this.update();
+                super.awakeFromNib();
             }
 
             @Outlet
@@ -61,7 +62,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setTitleField(NSTextField titleField) {
                 this.titleField = titleField;
-                this.updateField(this.titleField, reason);
+                this.updateField(this.titleField, Locale.localizedString(reason, "Credentials"));
             }
 
             @Outlet
@@ -91,7 +92,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                this.updateField(this.textField, message);
+                this.updateField(this.textField, Locale.localizedString(message, "Credentials"));
             }
 
             @Outlet

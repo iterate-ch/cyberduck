@@ -67,11 +67,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
         return null;
     }
 
-    @Override
-    public void awakeFromNib() {
-        ;
-    }
-
     /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
      * and close the sheet; #sheetDidClose will be called afterwards

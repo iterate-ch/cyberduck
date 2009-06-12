@@ -571,6 +571,8 @@ public class CDMainController extends CDBundleController {
                                 this.window().setTitle(this.window().title() + " (" + uses + ")");
                                 this.window().center();
                                 this.window().makeKeyAndOrderFront(null);
+
+                                super.awakeFromNib();
                             }
 
                             public void closeDonationSheet(final NSButton sender) {
@@ -763,11 +765,6 @@ public class CDMainController extends CDBundleController {
             }
         }
         return charsets.toArray(new String[charsets.size()]);
-    }
-
-    @Override
-    public void awakeFromNib() {
-        ;
     }
 
     @Override

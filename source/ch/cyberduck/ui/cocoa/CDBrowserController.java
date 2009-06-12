@@ -508,7 +508,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     @Override
     public void awakeFromNib() {
-        log.debug("awakeFromNib");
         this._updateBrowserColumns(this.browserListView);
         this._updateBrowserColumns(this.browserOutlineView);
 
@@ -531,6 +530,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
 
         this.validateNavigationButtons();
+
+        super.awakeFromNib();
     }
 
     protected Comparator<Path> getComparator() {
@@ -1664,11 +1665,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }).id());
         // receive drag events from types
         this.bookmarkTable.registerForDraggedTypes(NSArray.arrayWithObjects(
-                NSString.stringWithString(NSPasteboard.URLPboardType),
-                NSString.stringWithString(NSPasteboard.StringPboardType),
-                NSString.stringWithString(NSPasteboard.FilenamesPboardType), //accept bookmark files dragged from the Finder
-                NSString.stringWithString(NSPasteboard.FilesPromisePboardType),
-                NSString.stringWithString("HostPBoardType") //moving bookmarks
+                NSPasteboard.URLPboardType,
+                NSPasteboard.StringPboardType,
+                NSPasteboard.FilenamesPboardType, //accept bookmark files dragged from the Finder
+                NSPasteboard.FilesPromisePboardType,
+                "HostPBoardType" //moving bookmarks
         ));
 
         {

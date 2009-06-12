@@ -79,11 +79,6 @@ public class CDTranscriptController extends CDBundleController implements Transc
         this.loadBundle();
     }
 
-    @Override
-    protected void awakeFromNib() {
-        ;
-    }
-
     public void log(final boolean request, final String transcript) {
         this.write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
     }

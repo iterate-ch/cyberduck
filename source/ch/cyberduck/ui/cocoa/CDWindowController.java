@@ -50,12 +50,6 @@ public abstract class CDWindowController extends CDBundleController {
     }
 
     /**
-     * Called by the runtime after the NIB file has been loaded sucessfully
-     */
-    @Override
-    public abstract void awakeFromNib();
-
-    /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.
      *

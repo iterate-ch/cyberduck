@@ -54,6 +54,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
+
+        super.awakeFromNib();
     }
 
     @Override

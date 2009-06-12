@@ -171,6 +171,8 @@ public class CDProgressController extends CDBundleController {
         this.setProgressText();
         this.setMessageText();
         this.setStatusText();
+
+        super.awakeFromNib();
     }
 
     private void setMessageText() {

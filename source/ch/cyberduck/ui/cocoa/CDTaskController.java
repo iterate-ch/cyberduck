@@ -122,11 +122,6 @@ public class CDTaskController extends CDBundleController {
     }
 
     @Override
-    public void awakeFromNib() {
-        ;
-    }
-
-    @Override
     protected String getBundleName() {
         return "Task";
     }

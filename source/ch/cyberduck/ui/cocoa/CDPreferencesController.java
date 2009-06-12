@@ -219,6 +219,8 @@ public class CDPreferencesController extends CDWindowController {
         tabView.tabViewItemAtIndex(++i).setView(panelBandwidth);
         tabView.tabViewItemAtIndex(++i).setView(panelAdvanced);
         tabView.tabViewItemAtIndex(++i).setView(panelUpdate);
+
+        super.awakeFromNib();
     }
 
     private static final String TRANSFERMODE_AUTO = Locale.localizedString("Auto");

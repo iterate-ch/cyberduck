@@ -180,11 +180,6 @@ public class CDActivityController extends CDWindowController {
     }
 
     @Override
-    public void awakeFromNib() {
-        ;
-    }
-
-    @Override
     protected String getBundleName() {
         return "Activity";
     }

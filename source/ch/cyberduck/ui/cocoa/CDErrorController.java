@@ -179,11 +179,6 @@ public class CDErrorController extends CDBundleController {
     }
 
     @Override
-    public void awakeFromNib() {
-        ;
-    }
-
-    @Override
     protected String getBundleName() {
         return "Error";
     }

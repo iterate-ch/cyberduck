@@ -76,6 +76,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(0), false);
         }
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
+
+        super.awakeFromNib();
     }
 
     @Override
