@@ -24,7 +24,7 @@ public abstract class NSMutableArray extends NSArray {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableArray", _Class.class);
 
     public static NSMutableArray arrayWithCapacity(int numItems) {
-        return CLASS.alloc().initWithCapacity(numItems);
+        return CLASS.arrayWithCapacity(numItems);
     }
 
     public interface _Class extends org.rococoa.NSClass {

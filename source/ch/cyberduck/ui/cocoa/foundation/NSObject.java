@@ -30,7 +30,7 @@ public abstract class NSObject implements org.rococoa.NSObject {
         NSObject alloc();
     }
 
-    public abstract org.rococoa.ID copy();
+    public abstract NSObject copy();
 
     /**
      * <i>native declaration : :16</i><br>

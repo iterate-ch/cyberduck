@@ -34,11 +34,11 @@ public abstract class NSMutableDictionary extends NSDictionary {
     }
 
     public static NSMutableDictionary dictionary() {
-        return CLASS.alloc().initWithCapacity(0);
+        return CLASS.dictionaryWithCapacity(0);
     }
 
     public static NSMutableDictionary dictionaryWithCapacity(int numItems) {
-        return CLASS.alloc().initWithCapacity(numItems);
+        return CLASS.dictionaryWithCapacity(numItems);
     }
 
     /**

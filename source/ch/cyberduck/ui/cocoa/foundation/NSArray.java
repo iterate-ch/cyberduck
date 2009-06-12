@@ -26,31 +26,31 @@ public abstract class NSArray extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSArray", _Class.class);
 
     public static NSArray array() {
-        return CLASS.alloc().init();
+        return CLASS.array();
     }
 
     public static NSArray arrayWithContentsOfFile(String path) {
-        return CLASS.alloc().initWithContentsOfFile(path);
+        return CLASS.arrayWithContentsOfFile(path);
     }
 
     public static NSArray arrayWithContentsOfURL(NSURL url) {
-        return CLASS.alloc().initWithContentsOfURL(url);
+        return CLASS.arrayWithContentsOfURL(url);
     }
 
     public static NSArray arrayWithObject(NSObject anObject) {
-        return CLASS.alloc().initWithObjects(anObject);
+        return CLASS.arrayWithObject(anObject);
     }
 
     public static NSArray arrayWithObject(String anObject) {
-        return CLASS.alloc().initWithObjects(NSString.stringWithString(anObject));
+        return CLASS.arrayWithObject(NSString.stringWithString(anObject));
     }
 
     public static NSArray arrayWithObjects(NSObject... arrayWithObjects) {
-        return CLASS.alloc().initWithObjects(arrayWithObjects);
+        return CLASS.arrayWithObjects(arrayWithObjects);
     }
 
     public static NSArray arrayWithObjects(String... arrayWithObjects) {
-        return CLASS.alloc().initWithObjects(arrayWithObjects);
+        return CLASS.arrayWithObjects(arrayWithObjects);
     }
 
     public interface _Class extends org.rococoa.NSClass {
