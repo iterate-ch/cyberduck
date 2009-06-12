@@ -20,23 +20,6 @@
 
 @implementation CDBookmarkCell
 
-- (id)objectValue
-{
-	return [[bookmark retain] autorelease];
-}
-
-- (void)setObjectValue:(NSDictionary*)aDict
-{
-	[bookmark autorelease];
-	bookmark = [aDict retain];
-}
-
-- (void) dealloc
-{
-    [bookmark release];
-    [super dealloc];
-}
-
 - (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView
 {
 	return NSCellHitContentArea;
@@ -44,6 +27,8 @@
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
+    NSDictionary *bookmark = (NSDictionary *)[self objectValue];
+
 	static NSMutableParagraphStyle *PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = nil;
 	if(nil == PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL) {
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = [[NSMutableParagraphStyle alloc] init];

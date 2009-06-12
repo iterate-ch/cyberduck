@@ -27,8 +27,6 @@ typedef NSUInteger BOOKMARK_SIZE;
 
 @interface CDBookmarkCell : NSCell {
 
-@private
-	NSDictionary *bookmark;
 }
 
 @end

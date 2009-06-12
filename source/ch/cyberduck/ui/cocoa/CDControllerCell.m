@@ -37,6 +37,13 @@
     [super dealloc];
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+    CDControllerCell *cell = (CDControllerCell *)[super copyWithZone:zone];
+    // The icon ivar will be directly copied; we need to retain or copy it.
+    cell->controllerView = [controllerView retain];
+    return cell;
+}
+
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
 	[controllerView setFrame:cellFrame];
