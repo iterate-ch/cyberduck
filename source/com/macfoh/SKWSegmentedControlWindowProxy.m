@@ -47,7 +47,7 @@ name:NSWindowWillCloseNotification object:window];
     }
 }
 
-- (unsigned int)styleMask
+- (NSUInteger)styleMask
 {
     return ([realWindow styleMask] &~ NSUnifiedTitleAndToolbarWindowMask);
 }

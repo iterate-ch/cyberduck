@@ -15,6 +15,6 @@
 - (id)initWithWindow:(id)window;
 - (id)window;
 - (void)setWindow:(NSWindow *)window;
-- (unsigned int)styleMask;
+- (NSUInteger)styleMask;
 
 @end
