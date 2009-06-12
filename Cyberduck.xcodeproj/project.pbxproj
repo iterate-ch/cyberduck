@@ -4716,8 +4716,12 @@
 		47D286EF0855740D008142CF /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "ppc i386 ppc64 x86_64";
+				ARCHS = (
+					ppc7400,
+					ppc64,
+					i386,
+					x86_64,
+				);
 				GCC_ENABLE_OBJC_GC = supported;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
