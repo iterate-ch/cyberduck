@@ -256,8 +256,8 @@ public class CFPath extends CloudPath {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
-            session.message(Locale.localizedString("Listing directory", "Status") + " "
-                    + this.getAbsolute());
+            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                    this.getName()));
 
             if(this.isRoot()) {
                 // List all containers
