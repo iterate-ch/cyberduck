@@ -34,27 +34,17 @@ import org.rococoa.Foundation;
 public class CDMainApplication {
     private static Logger log = Logger.getLogger(CDMainApplication.class);
 
-    private static boolean ROCOCOA_JNI_LOADED = false;
-
-    private static final Object lock = new Object();
-
-    private static boolean jni_load() {
-        synchronized(lock) {
-            if(!ROCOCOA_JNI_LOADED) {
-                try {
-                    NSBundle bundle = NSBundle.mainBundle();
-                    String lib = bundle.resourcePath() + "/Java/" + "librococoa.dylib";
-                    log.info("Locating librococoa.dylib at '" + lib + "'");
-                    System.load(lib);
-                    ROCOCOA_JNI_LOADED = true;
-                    log.info("librococoa.dylib loaded");
-                }
-                catch(UnsatisfiedLinkError e) {
-                    log.error("Could not load the librococoa.dylib library:" + e.getMessage());
-                    throw e;
-                }
-            }
-            return ROCOCOA_JNI_LOADED;
+    static {
+        try {
+            NSBundle bundle = NSBundle.mainBundle();
+            String lib = bundle.resourcePath() + "/Java/" + "librococoa.dylib";
+            log.info("Locating librococoa.dylib at '" + lib + "'");
+            System.load(lib);
+            log.info("librococoa.dylib loaded");
+        }
+        catch(UnsatisfiedLinkError e) {
+            log.error("Could not load the librococoa.dylib library:" + e.getMessage());
+            throw e;
         }
     }
 
@@ -62,8 +52,6 @@ public class CDMainApplication {
      * @param arguments
      */
     public static void main(String[] arguments) throws InterruptedException {
-        CDMainApplication.jni_load();
-
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
         final Logger root = Logger.getRootLogger();
