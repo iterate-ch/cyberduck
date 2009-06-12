@@ -45,7 +45,7 @@ public abstract class CDBundleController extends CDController {
 
     protected void loadBundle() {
         final String bundleName = this.getBundleName();
-        if(null == bundleName) {
+        if (null == bundleName) {
             log.debug("No bundle to load for " + this.toString());
             return;
         }
@@ -54,12 +54,28 @@ public abstract class CDBundleController extends CDController {
 
     protected void loadBundle(final String bundleName) {
         log.info("Loading bundle " + bundleName);
-        if(!NSBundle.loadNibNamed(bundleName, this.id())) {
+        if (!NSBundle.loadNibNamed(bundleName, this.id())) {
             log.fatal("Couldn't load " + bundleName + ".nib");
+            return;
+        }
+        if (!awaked) {
+            this.awakeFromNib();
         }
     }
 
-    protected abstract void awakeFromNib();
+    /**
+     * After loading the NIB, awakeFromNib from NSNibLoading protocol was called.
+     * Not the case on 10.6 for unknown reasons.
+     */
+    private boolean awaked;
+
+    /**
+     * Called by the runtime after the NIB file has been loaded sucessfully
+     */
+    public void awakeFromNib() {
+        log.debug("awakeFromNib");
+        awaked = true;
+    }
 
     /**
      * @return The top level view object or null if unknown
