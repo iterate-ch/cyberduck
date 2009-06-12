@@ -39,8 +39,8 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
         canceled = true;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].cancel(this);
+        for(BackgroundActionListener listener : l) {
+            listener.cancel(this);
         }
     }
 
@@ -67,8 +67,8 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
         running = true;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].start(this);
+        for(BackgroundActionListener listener : l) {
+            listener.start(this);
         }
         return true;
     }
@@ -77,8 +77,8 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
         running = false;
         BackgroundActionListener[] l = listeners.toArray(
                 new BackgroundActionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].stop(this);
+        for(BackgroundActionListener listener : l) {
+            listener.stop(this);
         }
     }
 
