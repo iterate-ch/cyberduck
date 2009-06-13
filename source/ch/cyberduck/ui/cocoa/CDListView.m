@@ -60,8 +60,8 @@ static NSTableColumn *localSelectionColumn;
 - (void)handleBrowserClick:(id)sender {
 	mBrowserWasDoubleClicked = NO;
 	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
-	int row = [self rowAtPoint:where];
-	int col = [self columnAtPoint:where];
+	NSInteger row = [self rowAtPoint:where];
+	NSInteger col = [self columnAtPoint:where];
 	if(row >= 0 && col >= 0) {
 		NSTableColumn *column = [[self tableColumns] objectAtIndex:col];
 		if([[self delegate] respondsToSelector:@selector(isColumnEditable:)]) {

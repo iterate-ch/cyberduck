@@ -174,8 +174,8 @@ static NSTableColumn *localSelectionColumn;
 - (NSMenu *) menuForEvent:(NSEvent *) event 
 {
 	NSPoint where = [self convertPoint:[event locationInWindow] fromView:nil];
-	int row = [self rowAtPoint:where];
-	int col = [self columnAtPoint:where];
+	NSInteger row = [self rowAtPoint:where];
+	NSInteger col = [self columnAtPoint:where];
 	if(row >= 0) {
 		NSTableColumn *column = nil;
 		if(col >= 0) {
