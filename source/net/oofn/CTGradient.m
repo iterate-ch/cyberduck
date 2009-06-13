@@ -782,15 +782,18 @@ static void resolveHSV(CGFloat *color1, CGFloat *color2);
 	blendingMode = mode;
 	
 	//Choose what blending function to use
-	void *evaluationFunction;
+	void *evaluationFunction = NULL;
 	switch(blendingMode)
 	{
 		case CTLinearBlendingMode:
-			evaluationFunction = &linearEvaluation;			break;
+			evaluationFunction = &linearEvaluation;
+			break;
 		case CTChromaticBlendingMode:
-			evaluationFunction = &chromaticEvaluation;			break;
+			evaluationFunction = &chromaticEvaluation;
+			break;
 		case CTInverseChromaticBlendingMode:
-			evaluationFunction = &inverseChromaticEvaluation;	break;
+			evaluationFunction = &inverseChromaticEvaluation;
+			break;
 	}
 	
 	//replace the current CoreGraphics Function with new one
@@ -1199,7 +1202,7 @@ void inverseChromaticEvaluation(void *info, const CGFloat *in, CGFloat *out)
 
 void transformRGB_HSV(CGFloat *components) //H,S,B -> R,G,B
 {
-	CGFloat H, S, V;
+	CGFloat H = NAN, S, V;
 	CGFloat R = components[0],
 	G = components[1],
 	B = components[2];
@@ -1229,7 +1232,7 @@ void transformRGB_HSV(CGFloat *components) //H,S,B -> R,G,B
 
 void transformHSV_RGB(CGFloat *components) //H,S,B -> R,G,B
 {
-	CGFloat R, G, B;
+	CGFloat R = NAN, G = NAN, B = NAN;
 	CGFloat H = fmodf(components[0],359),	//map to [0,360)
 	S = components[1],
 	V = components[2];
