@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
@@ -52,13 +51,14 @@ public class CDMainApplication {
      * @param arguments
      */
     public static void main(String[] arguments) throws InterruptedException {
-        final NSAutoreleasePool pool = NSAutoreleasePool.push();
-
         final Logger root = Logger.getRootLogger();
         root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
         // This method also makes a connection to the window server and completes other initialization.
         // Your program should invoke this method as one of the first statements in main();
+        // The NSApplication class sets up autorelease pools (instances of the NSAutoreleasePool class)
+        // during initialization and inside the event loop—specifically, within its initialization
+        // (or sharedApplication) and run methods.
         final NSApplication app = NSApplication.sharedApplication();
 
         final CDMainController c = new CDMainController();
@@ -69,10 +69,8 @@ public class CDMainApplication {
         // Starts the main event loop. The loop continues until a stop: or terminate: message is
         // received. Upon each iteration through the loop, the next available event
         // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.
+        // The global application object uses autorelease pools in its run method.
         app.run();
-
-        // 
-        pool.drain();
     }
 
     /**

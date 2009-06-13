@@ -20,10 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
@@ -67,6 +64,10 @@ public abstract class CDWindowController extends CDBundleController {
                 // sequentially as they were initiated from the main interface thread
                 synchronized(runnable.lock()) {
                     log.info("Acquired lock for background runnable:" + runnable);
+                    // An autorelease pool is used to manage Foundation's autorelease
+                    // mechanism for Objective-C objects. If you start off a thread
+                    // that calls Cocoa, there won't be a top-level pool.
+                    final NSAutoreleasePool pool = NSAutoreleasePool.push();
                     try {
                         if(runnable.prepare()) {
                             // Execute the action of the runnable
@@ -83,6 +84,10 @@ public abstract class CDWindowController extends CDBundleController {
                                 runnable.cleanup();
                             }
                         });
+
+                        // Indicates that you are finished using the NSAutoreleasePool identified by pool.
+                        pool.drain();
+
                         log.info("Releasing lock for background runnable:" + runnable);
                     }
                 }
@@ -201,17 +206,20 @@ public abstract class CDWindowController extends CDBundleController {
         });
     }
 
+    private CDAlertController alert;
+
     /**
      * @param alert
      * @param callback
      */
     protected void alert(final NSAlert alert, final CDSheetCallback callback) {
-        CDSheetController c = new CDAlertController(this, alert) {
+        this.alert = new CDAlertController(this, alert) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
+                CDWindowController.this.alert = null;
             }
         };
-        c.beginSheet();
+        this.alert.beginSheet();
     }
 
     /**
@@ -228,6 +236,8 @@ public abstract class CDWindowController extends CDBundleController {
         });
     }
 
+    private CDSheetController sheet;
+
     /**
      * Attach a sheet to this window
      *
@@ -236,12 +246,13 @@ public abstract class CDWindowController extends CDBundleController {
      * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet()
      */
     protected void alert(final NSWindow sheet, final CDSheetCallback callback) {
-        CDSheetController c = new CDSheetController(this, sheet) {
+         this.sheet = new CDSheetController(this, sheet) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
+                CDWindowController.this.sheet = null;
             }
         };
-        c.beginSheet();
+        this.sheet.beginSheet();
     }
 
     protected void updateField(final NSTextView f, final String value) {
