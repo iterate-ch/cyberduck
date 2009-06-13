@@ -559,6 +559,8 @@ public class CDBookmarkController extends CDWindowController {
         this.init();
         this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("bookmark.toggle.options"));
         this.reachable();
+
+        super.awakeFromNib();
     }
 
     @Outlet
