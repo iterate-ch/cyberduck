@@ -42,6 +42,8 @@ import java.text.MessageFormat;
 import java.util.*;
 
 /**
+ * Setting the main menu and implements application delegate methods
+ *
  * @version $Id$
  */
 public class CDMainController extends CDBundleController {
@@ -741,6 +743,28 @@ public class CDMainController extends CDBundleController {
         controller.window().makeKeyAndOrderFront(null);
         browsers.add(controller);
         return controller;
+    }
+
+    /**
+     * Sent by Cocoa’s built-in scripting support during execution of get or set script commands to
+     * find out if the delegate can handle operations on the specified key-value key.
+     *
+     * @param application
+     * @param key
+     * @return
+     */
+    @Applescript
+    public boolean application_delegateHandlesKey(NSApplication application, String key) {
+        return key.equals("orderedBrowsers");
+    }
+
+    @Applescript
+    public NSArray orderedBrowsers() {
+        NSMutableArray orderedDocs = NSMutableArray.arrayWithCapacity(browsers.size());
+        for(CDBrowserController browser : browsers) {
+            orderedDocs.addObject(browser.proxy());
+        }
+        return orderedDocs;
     }
 
     /**
