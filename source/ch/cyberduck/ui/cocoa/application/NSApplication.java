@@ -140,19 +140,19 @@ public abstract class NSApplication extends NSObject {
      * Original signature : <code>BOOL isActive()</code><br>
      * <i>native declaration : :117</i>
      */
-    public abstract byte isActive();
+    public abstract boolean isActive();
 
     /**
      * Original signature : <code>BOOL isHidden()</code><br>
      * <i>native declaration : :118</i>
      */
-    public abstract byte isHidden();
+    public abstract boolean isHidden();
 
     /**
      * Original signature : <code>BOOL isRunning()</code><br>
      * <i>native declaration : :119</i>
      */
-    public abstract byte isRunning();
+    public abstract boolean isRunning();
 
     /**
      * Original signature : <code>void deactivate()</code><br>
@@ -164,7 +164,7 @@ public abstract class NSApplication extends NSObject {
      * Original signature : <code>void activateIgnoringOtherApps(BOOL)</code><br>
      * <i>native declaration : :121</i>
      */
-    public abstract void activateIgnoringOtherApps(byte flag);
+    public abstract void activateIgnoringOtherApps(boolean flag);
 
     /**
      * Original signature : <code>void hideOtherApplications(id)</code><br>
