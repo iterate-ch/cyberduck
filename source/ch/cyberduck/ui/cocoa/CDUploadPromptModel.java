@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSSize;
 
 /**
  * @version $Id$

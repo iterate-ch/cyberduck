@@ -45,9 +45,9 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSRect;
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.io.File;
 import java.security.cert.X509Certificate;

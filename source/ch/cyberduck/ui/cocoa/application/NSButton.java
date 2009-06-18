@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.NSRect;
+import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :15</i>
 public abstract class NSButton extends NSControl {

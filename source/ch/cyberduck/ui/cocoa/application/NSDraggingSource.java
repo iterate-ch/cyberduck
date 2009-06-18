@@ -1,6 +1,6 @@
 package ch.cyberduck.ui.cocoa.application;
 
-import org.rococoa.cocoa.NSPoint;
+import org.rococoa.cocoa.foundation.NSPoint;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -22,7 +22,7 @@ import org.rococoa.cocoa.NSPoint;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface NSDraggingSource {
     /**

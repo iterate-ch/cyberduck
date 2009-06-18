@@ -28,9 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSRect;
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.*;
 
 import java.util.HashMap;
 

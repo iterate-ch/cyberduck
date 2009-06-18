@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.cocoa.NSError;
+import org.rococoa.cocoa.foundation.NSError;
 
 /// <i>native declaration : :11</i>
 public abstract class NSResponder extends NSObject {

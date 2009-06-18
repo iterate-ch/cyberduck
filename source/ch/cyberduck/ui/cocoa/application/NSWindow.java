@@ -22,9 +22,9 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSRect;
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 /// <i>native declaration : :119</i>
 public abstract class NSWindow extends NSObject {

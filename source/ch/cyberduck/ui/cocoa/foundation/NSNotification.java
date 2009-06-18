@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :12</i>
-public abstract class NSNotification implements org.rococoa.cocoa.NSNotification {
+public abstract class NSNotification implements org.rococoa.cocoa.foundation.NSNotification {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSNotification", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {

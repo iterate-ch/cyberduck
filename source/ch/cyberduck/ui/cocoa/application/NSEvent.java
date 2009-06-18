@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.cocoa.NSPoint;
+import org.rococoa.cocoa.foundation.NSPoint;
 
 public abstract class NSEvent extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSEvent", _Class.class);

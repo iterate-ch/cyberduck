@@ -25,9 +25,9 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSRect;
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.io.IOException;
 import java.util.ArrayList;

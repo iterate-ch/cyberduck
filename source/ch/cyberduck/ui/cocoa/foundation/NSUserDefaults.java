@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.cocoa.NSData;
+import org.rococoa.cocoa.foundation.NSData;
 
 /// <i>native declaration : :14</i>
 public abstract class NSUserDefaults extends NSObject {

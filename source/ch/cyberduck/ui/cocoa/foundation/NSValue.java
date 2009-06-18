@@ -1,6 +1,6 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSSize;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.

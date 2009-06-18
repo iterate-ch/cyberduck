@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.NSPoint;
+import org.rococoa.cocoa.foundation.NSPoint;
 
 /// <i>native declaration : :69</i>
 public abstract class NSTableView extends NSControl {

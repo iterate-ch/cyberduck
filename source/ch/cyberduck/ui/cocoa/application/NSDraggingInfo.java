@@ -23,7 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
-import org.rococoa.cocoa.NSPoint;
+import org.rococoa.cocoa.foundation.NSPoint;
 
 /// <i>native declaration : :32</i>
 public abstract class NSDraggingInfo extends NSObject {

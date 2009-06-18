@@ -35,7 +35,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSSize;
 
 /**
  * @version $Id$

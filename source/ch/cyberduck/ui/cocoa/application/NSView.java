@@ -25,9 +25,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.NSPoint;
-import org.rococoa.cocoa.NSRect;
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 public abstract class NSView extends NSResponder {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSView", _Class.class);

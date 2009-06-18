@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.cocoa.NSNumber;
+import org.rococoa.cocoa.foundation.NSNumber;
 
 /// <i>native declaration : :15</i>
 public abstract class NSURL extends NSObject {

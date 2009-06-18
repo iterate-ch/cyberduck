@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.NSPoint;
+import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.text.MessageFormat;
 import java.util.HashMap;

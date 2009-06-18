@@ -31,7 +31,7 @@ import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.NSSize;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.List;
 

@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.application.NSControl;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.cocoa.NSRect;
+import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class CDAlertController extends CDSheetController {
 
