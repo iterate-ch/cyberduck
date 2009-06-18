@@ -36,6 +36,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -1374,15 +1375,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 return true;
             }
 
-            public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView view,
-                                                                                         NSCell cell,
-                                                                                         org.rococoa.NSObjectByReference rect,
-                                                                                         NSTableColumn tableColumn,
-                                                                                         final NSObject item,
-                                                                                         NSPoint mouseLocation) {
-                return this.tooltip(lookup(item.toString()));
-            }
-
             /**
              * @see NSOutlineView.Notifications
              */
@@ -1471,15 +1463,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
                     }
                 }
-            }
-
-            public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView view,
-                                                                                      NSCell cell,
-                                                                                      org.rococoa.NSObjectByReference rect,
-                                                                                      NSTableColumn tc,
-                                                                                      int row,
-                                                                                      NSPoint mouseLocation) {
-                return this.tooltip(browserListModel.childs(CDBrowserController.this.workdir()).get(row));
             }
         }).id());
         {
@@ -1757,11 +1740,19 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         Rendezvous.instance().addListener(new RendezvousListener() {
             public void serviceResolved(String servicename, String hostname) {
-                this.reloadBookmarks();
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        reloadBookmarks();
+                    }
+                });
             }
 
             public void serviceLost(String servicename) {
-                this.reloadBookmarks();
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        reloadBookmarks();
+                    }
+                });
             }
 
             private void reloadBookmarks() {
