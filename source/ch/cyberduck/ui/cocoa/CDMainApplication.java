@@ -80,7 +80,7 @@ public class CDMainApplication {
      */
     public static void invoke(final MainAction runnable) {
         synchronized(NSApplication.sharedApplication()) {
-            Foundation.runOnMainThread(runnable);
+            Foundation.runOnMainThread(runnable, false);
         }
     }
 
