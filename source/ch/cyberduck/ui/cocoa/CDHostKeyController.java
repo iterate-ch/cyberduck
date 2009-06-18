@@ -134,8 +134,8 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
         // The following call will ONLY put the key into the memory cache!
         // To save it in a known hosts file, also call "KnownHosts.addHostkeyToFile(...)"
         String hashedHostname = KnownHosts.createHashedHostname(hostname);
-        // Add the hostkey to the in-memory database
         try {
+            // Add the hostkey to the in-memory database
             database.addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
         }
         catch(IOException e) {
