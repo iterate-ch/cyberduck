@@ -152,7 +152,6 @@
                 <key>UTTypeConformsTo</key>
                 <array>
                     <string>public.data</string>
-                    <string>public.xml</string>
                 </array>
                 <key>UTTypeDescription</key>
                 <string>Cyberduck Bookmark</string>
@@ -172,7 +171,6 @@
                 <key>UTTypeConformsTo</key>
                 <array>
                     <string>public.data</string>
-                    <string>public.xml</string>
                 </array>
                 <key>UTTypeDescription</key>
                 <string>Cyberduck Donation Key</string>
