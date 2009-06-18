@@ -29,9 +29,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public class Rendezvous
-        implements BrowseListener, ResolveListener {
-
+public class Rendezvous implements BrowseListener, ResolveListener {
     private static Logger log = Logger.getLogger(Rendezvous.class);
 
     private static final String SERVICE_TYPE_SFTP = "_sftp._tcp.";
@@ -46,7 +44,7 @@ public class Rendezvous
     private Map<String, Host> services;
     private Map<String, DNSSDService> browsers;
 
-    private static Rendezvous instance;
+    private static Rendezvous instance = null;
 
     private static final Object lock = new Object();
 
@@ -264,7 +262,7 @@ public class Rendezvous
      * @param txtRecord
      */
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
-                                String fullname, String hostname, int port, TXTRecord txtRecord) {
+                                final String fullname, final String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + hostname);
         try {
             final Host host = new Host(this.getProtocol(fullname, port), hostname, port);

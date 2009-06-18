@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 public abstract class Growl {
     private static Logger log = Logger.getLogger(Growl.class);
 
-    private static Growl instance;
+    private static Growl instance = null;
 
     protected Growl() {
         //
