@@ -54,13 +54,13 @@ public abstract class NSDateFormatter extends NSFormatter {
      * Original signature : <code>NSString* stringFromDate(NSDate*)</code><br>
      * <i>native declaration : :29</i>
      */
-    public abstract String stringFromDate(com.sun.jna.Pointer date);
+    public abstract String stringFromDate(NSDate date);
 
     /**
      * Original signature : <code>NSDate* dateFromString(NSString*)</code><br>
      * <i>native declaration : :30</i>
      */
-    public abstract String dateFromString(com.sun.jna.Pointer string);
+    public abstract String dateFromString(String string);
 
     /**
      * Original signature : <code>NSString* dateFormat()</code><br>
@@ -89,8 +89,9 @@ public abstract class NSDateFormatter extends NSFormatter {
     /**
      * <i>native declaration : :45</i><br>
      * Conversion Error : /// Original signature : <code>void setTimeStyle(null)</code><br>
-     * - (void)setTimeStyle:(null)style; (Argument style cannot be converted)
      */
+     public abstract void setTimeStyle(int style);
+
     /**
      * Original signature : <code>NSLocale* locale()</code><br>
      * <i>native declaration : :47</i>
@@ -114,4 +115,26 @@ public abstract class NSDateFormatter extends NSFormatter {
      * <i>native declaration : :51</i>
      */
     public abstract void setGeneratesCalendarDates(boolean b);
+
+    /**
+     * Original signature : <code>-(NSTimeZone*)timeZone</code><br>
+     * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:55</i>
+     */
+    public abstract NSTimeZone timeZone();
+    /**
+     * Original signature : <code>-(void)setTimeZone:(NSTimeZone*)</code><br>
+     * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:56</i>
+     */
+    public abstract void setTimeZone(NSTimeZone tz);
+
+    /**
+     * Original signature : <code>-(BOOL)isLenient</code><br>
+     * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:61</i>
+     */
+    public abstract boolean isLenient();
+    /**
+     * Original signature : <code>-(void)setLenient:(BOOL)</code><br>
+     * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:62</i>
+     */
+    public abstract void setLenient(boolean b);
 }
