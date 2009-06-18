@@ -346,10 +346,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 return t.getName();
             }
 
-            public String tooltip(int row) {
-                return this.tooltip(transferModel.getSource().get(row));
-            }
-
             public void enterKeyPressed(final NSObject sender) {
                 this.tableRowDoubleClicked(sender);
             }
