@@ -554,12 +554,15 @@ public abstract class Session {
     /**
      * Caching files listings of previously visited directories
      */
-    private Cache<Path> cache = new Cache<Path>();
+    private Cache<Path> cache;
 
     /**
      * @return The directory listing cache
      */
     public Cache<Path> cache() {
+        if(null == cache) {
+            cache =  new Cache<Path>();
+        }
         return this.cache;
     }
 
@@ -576,12 +579,5 @@ public abstract class Session {
                     && this.getHost().getProtocol().equals(((Session) other).getHost().getProtocol());
         }
         return false;
-    }
-
-    protected void finalize() throws java.lang.Throwable {
-        if(log.isTraceEnabled()) {
-            log.trace("finalize:" + this.toString());
-        }
-        super.finalize();
     }
 }

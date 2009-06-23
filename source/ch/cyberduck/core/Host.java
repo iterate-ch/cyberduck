@@ -728,13 +728,6 @@ public class Host implements Serializable {
         return false;
     }
 
-    protected void finalize() throws java.lang.Throwable {
-        if(log.isTraceEnabled()) {
-            log.trace("finalize:" + this.toString());
-        }
-        super.finalize();
-    }
-
     private static boolean JNI_LOADED = false;
 
     private static final Object lock = new Object();

@@ -324,9 +324,12 @@ public class Local extends AbstractPath {
         return false;
     }
 
-    private Cache<Local> cache = new Cache<Local>();
+    private Cache<Local> cache;
 
     public Cache<Local> cache() {
+        if(null == cache) {
+            cache =  new Cache<Local>();
+        }
         return this.cache;
     }
 

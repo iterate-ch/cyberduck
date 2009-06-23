@@ -787,11 +787,4 @@ public abstract class Transfer implements Serializable {
     public String toString() {
         return this.getName();
     }
-
-    protected void finalize() throws java.lang.Throwable {
-        if(log.isTraceEnabled()) {
-            log.trace("finalize:" + this.toString());
-        }
-        super.finalize();
-    }
 }

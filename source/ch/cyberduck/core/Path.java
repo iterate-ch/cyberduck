@@ -677,13 +677,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         return host + absolute;
     }
 
-    protected void finalize() throws java.lang.Throwable {
-        if(log.isTraceEnabled()) {
-            log.trace("finalize:" + this.toString());
-        }
-        super.finalize();
-    }
-
     /**
      * @see Session#error(Path,String,Throwable)
      */
