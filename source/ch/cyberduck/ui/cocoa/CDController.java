@@ -70,9 +70,8 @@ public abstract class CDController {
         if(log.isDebugEnabled()) {
             log.debug("invalidate:" + this.toString());
         }
-        NSNotificationCenter.defaultCenter().removeObserver(this.id());
-        if(log.isDebugEnabled()) {
-            System.gc();
+        if(id != null) {
+            NSNotificationCenter.defaultCenter().removeObserver(id);
         }
     }
 
