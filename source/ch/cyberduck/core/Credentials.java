@@ -23,12 +23,6 @@ import com.apple.cocoa.foundation.NSPathUtilities;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import sun.misc.BASE64Encoder;
-
 /**
  * Stores the login credentials
  *
