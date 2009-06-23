@@ -126,11 +126,13 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Override
-    public void windowWillClose(NSNotification notification) {
-        super.windowWillClose(notification);
+    protected void invalidate() {
+        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
+        super.invalidate();
         instance = null;
     }
 
+    @Override
     public void setWindow(NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
         super.setWindow(window);
@@ -340,6 +342,28 @@ public class CDPreferencesController extends CDWindowController {
     @Outlet
     private NSPopUpButton defaultBookmarkCombobox; //IBOutlet
 
+    private final CollectionListener<Host> bookmarkCollectionListener = new CollectionListener<Host>() {
+        public void collectionItemAdded(Host bookmark) {
+            CDPreferencesController.this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
+            CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
+            CDPreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getNickname());
+        }
+
+        public void collectionItemRemoved(Host bookmark) {
+            if(CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
+                Preferences.instance().deleteProperty("browser.defaultBookmark");
+            }
+            int i = CDPreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getNickname());
+            if(i > -1) {
+                CDPreferencesController.this.defaultBookmarkCombobox.removeItemAtIndex(i);
+            }
+        }
+
+        public void collectionItemChanged(Host bookmark) {
+            ;
+        }
+    };
+
     public void setDefaultBookmarkCombobox(NSPopUpButton defaultBookmarkCombobox) {
         this.defaultBookmarkCombobox = defaultBookmarkCombobox;
         this.defaultBookmarkCombobox.setToolTip(Locale.localizedString("Bookmarks"));
@@ -351,27 +375,7 @@ public class CDPreferencesController extends CDWindowController {
             this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getNickname());
         }
-        HostCollection.defaultCollection().addListener(new CollectionListener<Host>() {
-            public void collectionItemAdded(Host bookmark) {
-                CDPreferencesController.this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
-                CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
-                CDPreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getNickname());
-            }
-
-            public void collectionItemRemoved(Host bookmark) {
-                if(CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
-                    Preferences.instance().deleteProperty("browser.defaultBookmark");
-                }
-                int i = CDPreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getNickname());
-                if(i > -1) {
-                    CDPreferencesController.this.defaultBookmarkCombobox.removeItemAtIndex(i);
-                }
-            }
-
-            public void collectionItemChanged(Host bookmark) {
-                ;
-            }
-        });
+        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
         this.defaultBookmarkCombobox.setTarget(this.id());
         final Selector action = Foundation.selector("defaultBookmarkComboboxClicked:");
         this.defaultBookmarkCombobox.setAction(action);

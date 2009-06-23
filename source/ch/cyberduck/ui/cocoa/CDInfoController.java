@@ -408,6 +408,7 @@ public class CDInfoController extends CDWindowController {
         this.s3Toggle = s3Toggle;
     }
 
+    @Override
     public void setWindow(NSWindow window) {
         super.setWindow(window);
         this.window.setReleasedWhenClosed(false);
@@ -453,20 +454,22 @@ public class CDInfoController extends CDWindowController {
 
     private CDBrowserController controller;
 
+    private final CDWindowListener browserWindowListener = new CDWindowListener() {
+        public void windowWillClose() {
+            final NSWindow window = window();
+            if(null != window) {
+                window.close();
+            }
+        }
+    };
+
     /**
      * @param controller
      * @param files
      */
     private CDInfoController(final CDBrowserController controller, List<Path> files) {
         this.controller = controller;
-        this.controller.addListener(new CDWindowListener() {
-            public void windowWillClose() {
-                final NSWindow window = window();
-                if(null != window) {
-                    window.close();
-                }
-            }
-        });
+        this.controller.addListener(browserWindowListener);
         this.loadBundle();
         this.setFiles(files);
 
@@ -488,6 +491,11 @@ public class CDInfoController extends CDWindowController {
     }
 
     @Override
+    protected void invalidate() {
+        this.controller.removeListener(browserWindowListener);
+        super.invalidate();
+    }
+
     protected String getBundleName() {
         return "Info";
     }

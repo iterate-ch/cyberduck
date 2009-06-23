@@ -153,6 +153,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         ;
     }
 
+    @Override
     protected void invalidate() {
         session.removeTranscriptListener(this);
         super.invalidate();
