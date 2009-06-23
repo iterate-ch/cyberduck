@@ -1039,71 +1039,10 @@
 		477839320BA1BE8E0037E145 /* statusRed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusRed.tiff; sourceTree = "<group>"; };
 		477839330BA1BE8E0037E145 /* statusYellow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusYellow.tiff; sourceTree = "<group>"; };
 		477A104D0FD08DBA00BAD4AD /* librococoa.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = librococoa.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		477A105F0FD08DE800BAD4AD /* CFIndex.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CFIndex.java; sourceTree = "<group>"; };
-		477A10600FD08DE800BAD4AD /* CFRange.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CFRange.java; sourceTree = "<group>"; };
-		477A10610FD08DE800BAD4AD /* CGFloat.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CGFloat.java; sourceTree = "<group>"; };
-		477A10620FD08DE800BAD4AD /* NSArray.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSArray.java; sourceTree = "<group>"; };
-		477A10630FD08DE800BAD4AD /* NSAutoreleasePool.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSAutoreleasePool.java; sourceTree = "<group>"; };
-		477A10640FD08DE800BAD4AD /* NSData.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSData.java; sourceTree = "<group>"; };
-		477A10650FD08DE800BAD4AD /* NSDate.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSDate.java; sourceTree = "<group>"; };
-		477A10660FD08DE800BAD4AD /* NSDictionary.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSDictionary.java; sourceTree = "<group>"; };
-		477A10670FD08DE800BAD4AD /* NSError.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSError.java; sourceTree = "<group>"; };
-		477A10680FD08DE800BAD4AD /* NSImage.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSImage.java; sourceTree = "<group>"; };
-		477A10690FD08DE800BAD4AD /* NSInteger.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSInteger.java; sourceTree = "<group>"; };
-		477A106A0FD08DE800BAD4AD /* NSInvocation.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSInvocation.java; sourceTree = "<group>"; };
-		477A106B0FD08DE800BAD4AD /* NSMethodSignature.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSMethodSignature.java; sourceTree = "<group>"; };
-		477A106C0FD08DE800BAD4AD /* NSMutableArray.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSMutableArray.java; sourceTree = "<group>"; };
-		477A106D0FD08DE800BAD4AD /* NSMutableDictionary.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSMutableDictionary.java; sourceTree = "<group>"; };
-		477A106E0FD08DE800BAD4AD /* NSNotification.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSNotification.java; sourceTree = "<group>"; };
-		477A106F0FD08DE800BAD4AD /* NSNotificationCenter.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSNotificationCenter.java; sourceTree = "<group>"; };
-		477A10700FD08DE800BAD4AD /* NSNumber.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSNumber.java; sourceTree = "<group>"; };
-		477A10710FD08DE800BAD4AD /* NSOpenPanel.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSOpenPanel.java; sourceTree = "<group>"; };
-		477A10720FD08DE800BAD4AD /* NSPoint.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSPoint.java; sourceTree = "<group>"; };
-		477A10730FD08DE800BAD4AD /* NSRange.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSRange.java; sourceTree = "<group>"; };
-		477A10740FD08DE800BAD4AD /* NSRect.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSRect.java; sourceTree = "<group>"; };
-		477A10750FD08DE800BAD4AD /* NSSize.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSSize.java; sourceTree = "<group>"; };
-		477A10760FD08DE800BAD4AD /* NSString.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSString.java; sourceTree = "<group>"; };
-		477A10770FD08DE800BAD4AD /* NSUInteger.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSUInteger.java; sourceTree = "<group>"; };
-		477A10780FD08DE800BAD4AD /* NSURL.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSURL.java; sourceTree = "<group>"; };
-		477A10790FD08DE800BAD4AD /* NSValue.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSValue.java; sourceTree = "<group>"; };
-		477A107A0FD08DE800BAD4AD /* Foundation.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Foundation.java; sourceTree = "<group>"; };
-		477A107B0FD08DE800BAD4AD /* ID.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ID.java; sourceTree = "<group>"; };
-		477A107C0FD08DE800BAD4AD /* IDByReference.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = IDByReference.java; sourceTree = "<group>"; };
-		477A107E0FD08DE800BAD4AD /* FoundationLibrary.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FoundationLibrary.java; sourceTree = "<group>"; };
-		477A107F0FD08DE800BAD4AD /* MsgSendHandler.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MsgSendHandler.java; sourceTree = "<group>"; };
-		477A10800FD08DE800BAD4AD /* MsgSendInvocationMapper.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MsgSendInvocationMapper.java; sourceTree = "<group>"; };
-		477A10810FD08DE800BAD4AD /* MsgSendLibrary.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MsgSendLibrary.java; sourceTree = "<group>"; };
-		477A10820FD08DE800BAD4AD /* NSInvocationMapper.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSInvocationMapper.java; sourceTree = "<group>"; };
-		477A10830FD08DE800BAD4AD /* NSObjectInvocationHandler.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSObjectInvocationHandler.java; sourceTree = "<group>"; };
-		477A10840FD08DE800BAD4AD /* OCInvocationCallbacks.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = OCInvocationCallbacks.java; sourceTree = "<group>"; };
-		477A10850FD08DE800BAD4AD /* Pair.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Pair.java; sourceTree = "<group>"; };
-		477A10860FD08DE800BAD4AD /* RococoaLibrary.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RococoaLibrary.java; sourceTree = "<group>"; };
-		477A10870FD08DE800BAD4AD /* RococoaTypeMapper.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RococoaTypeMapper.java; sourceTree = "<group>"; };
-		477A10880FD08DE800BAD4AD /* VarArgsUnpacker.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = VarArgsUnpacker.java; sourceTree = "<group>"; };
 		477A108A0FD08DE800BAD4AD /* ProxyForJava.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyForJava.h; sourceTree = "<group>"; };
 		477A108B0FD08DE800BAD4AD /* ProxyForJava.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProxyForJava.m; sourceTree = "<group>"; };
 		477A108C0FD08DE800BAD4AD /* Rococoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rococoa.h; sourceTree = "<group>"; };
 		477A108D0FD08DE800BAD4AD /* Rococoa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rococoa.m; sourceTree = "<group>"; };
-		477A108E0FD08DE800BAD4AD /* scratch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = scratch.m; sourceTree = "<group>"; };
-		477A108F0FD08DE800BAD4AD /* test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
-		477A10900FD08DE800BAD4AD /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = test.m; sourceTree = "<group>"; };
-		477A10910FD08DE800BAD4AD /* NSClass.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSClass.java; sourceTree = "<group>"; };
-		477A10920FD08DE800BAD4AD /* NSObject.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSObject.java; sourceTree = "<group>"; };
-		477A10930FD08DE800BAD4AD /* NSObjectByReference.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NSObjectByReference.java; sourceTree = "<group>"; };
-		477A10950FD08DE800BAD4AD /* MovieComponent.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = MovieComponent.java; sourceTree = "<group>"; };
-		477A10960FD08DE800BAD4AD /* QTKit.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTKit.java; sourceTree = "<group>"; };
-		477A10970FD08DE800BAD4AD /* QTMedia.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTMedia.java; sourceTree = "<group>"; };
-		477A10980FD08DE800BAD4AD /* QTMovie.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTMovie.java; sourceTree = "<group>"; };
-		477A10990FD08DE800BAD4AD /* QTMovieView.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTMovieView.java; sourceTree = "<group>"; };
-		477A109A0FD08DE800BAD4AD /* QTTime.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTTime.java; sourceTree = "<group>"; };
-		477A109B0FD08DE800BAD4AD /* QTTimeByReference.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTTimeByReference.java; sourceTree = "<group>"; };
-		477A109C0FD08DE800BAD4AD /* QTTimeRange.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTTimeRange.java; sourceTree = "<group>"; };
-		477A109D0FD08DE800BAD4AD /* QTTrack.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = QTTrack.java; sourceTree = "<group>"; };
-		477A109E0FD08DE800BAD4AD /* ReturnType.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = ReturnType.java; sourceTree = "<group>"; };
-		477A109F0FD08DE800BAD4AD /* Rococoa.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Rococoa.java; sourceTree = "<group>"; };
-		477A10A00FD08DE800BAD4AD /* RunOnMainThread.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RunOnMainThread.java; sourceTree = "<group>"; };
-		477A10A10FD08DE800BAD4AD /* Selector.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Selector.java; sourceTree = "<group>"; };
-		477A10A20FD08DE800BAD4AD /* StringEncoding.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = StringEncoding.java; sourceTree = "<group>"; };
 		477A10A60FD08DE800BAD4AD /* InvalidPatternException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidPatternException.java; sourceTree = "<group>"; };
 		477A10A70FD08DE800BAD4AD /* NoClosingBracketException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NoClosingBracketException.java; sourceTree = "<group>"; };
 		477A10A90FD08DE800BAD4AD /* AbstractHead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AbstractHead.java; sourceTree = "<group>"; };
@@ -2083,75 +2022,9 @@
 		477A105D0FD08DE800BAD4AD /* rococoa */ = {
 			isa = PBXGroup;
 			children = (
-				477A105E0FD08DE800BAD4AD /* cocoa */,
-				477A107A0FD08DE800BAD4AD /* Foundation.java */,
-				477A107B0FD08DE800BAD4AD /* ID.java */,
-				477A107C0FD08DE800BAD4AD /* IDByReference.java */,
-				477A107D0FD08DE800BAD4AD /* internal */,
 				477A10890FD08DE800BAD4AD /* native */,
-				477A10910FD08DE800BAD4AD /* NSClass.java */,
-				477A10920FD08DE800BAD4AD /* NSObject.java */,
-				477A10930FD08DE800BAD4AD /* NSObjectByReference.java */,
-				477A10940FD08DE800BAD4AD /* quicktime */,
-				477A109E0FD08DE800BAD4AD /* ReturnType.java */,
-				477A109F0FD08DE800BAD4AD /* Rococoa.java */,
-				477A10A00FD08DE800BAD4AD /* RunOnMainThread.java */,
-				477A10A10FD08DE800BAD4AD /* Selector.java */,
-				477A10A20FD08DE800BAD4AD /* StringEncoding.java */,
 			);
 			path = rococoa;
-			sourceTree = "<group>";
-		};
-		477A105E0FD08DE800BAD4AD /* cocoa */ = {
-			isa = PBXGroup;
-			children = (
-				477A105F0FD08DE800BAD4AD /* CFIndex.java */,
-				477A10600FD08DE800BAD4AD /* CFRange.java */,
-				477A10610FD08DE800BAD4AD /* CGFloat.java */,
-				477A10620FD08DE800BAD4AD /* NSArray.java */,
-				477A10630FD08DE800BAD4AD /* NSAutoreleasePool.java */,
-				477A10640FD08DE800BAD4AD /* NSData.java */,
-				477A10650FD08DE800BAD4AD /* NSDate.java */,
-				477A10660FD08DE800BAD4AD /* NSDictionary.java */,
-				477A10670FD08DE800BAD4AD /* NSError.java */,
-				477A10680FD08DE800BAD4AD /* NSImage.java */,
-				477A10690FD08DE800BAD4AD /* NSInteger.java */,
-				477A106A0FD08DE800BAD4AD /* NSInvocation.java */,
-				477A106B0FD08DE800BAD4AD /* NSMethodSignature.java */,
-				477A106C0FD08DE800BAD4AD /* NSMutableArray.java */,
-				477A106D0FD08DE800BAD4AD /* NSMutableDictionary.java */,
-				477A106E0FD08DE800BAD4AD /* NSNotification.java */,
-				477A106F0FD08DE800BAD4AD /* NSNotificationCenter.java */,
-				477A10700FD08DE800BAD4AD /* NSNumber.java */,
-				477A10710FD08DE800BAD4AD /* NSOpenPanel.java */,
-				477A10720FD08DE800BAD4AD /* NSPoint.java */,
-				477A10730FD08DE800BAD4AD /* NSRange.java */,
-				477A10740FD08DE800BAD4AD /* NSRect.java */,
-				477A10750FD08DE800BAD4AD /* NSSize.java */,
-				477A10760FD08DE800BAD4AD /* NSString.java */,
-				477A10770FD08DE800BAD4AD /* NSUInteger.java */,
-				477A10780FD08DE800BAD4AD /* NSURL.java */,
-				477A10790FD08DE800BAD4AD /* NSValue.java */,
-			);
-			path = cocoa;
-			sourceTree = "<group>";
-		};
-		477A107D0FD08DE800BAD4AD /* internal */ = {
-			isa = PBXGroup;
-			children = (
-				477A107E0FD08DE800BAD4AD /* FoundationLibrary.java */,
-				477A107F0FD08DE800BAD4AD /* MsgSendHandler.java */,
-				477A10800FD08DE800BAD4AD /* MsgSendInvocationMapper.java */,
-				477A10810FD08DE800BAD4AD /* MsgSendLibrary.java */,
-				477A10820FD08DE800BAD4AD /* NSInvocationMapper.java */,
-				477A10830FD08DE800BAD4AD /* NSObjectInvocationHandler.java */,
-				477A10840FD08DE800BAD4AD /* OCInvocationCallbacks.java */,
-				477A10850FD08DE800BAD4AD /* Pair.java */,
-				477A10860FD08DE800BAD4AD /* RococoaLibrary.java */,
-				477A10870FD08DE800BAD4AD /* RococoaTypeMapper.java */,
-				477A10880FD08DE800BAD4AD /* VarArgsUnpacker.java */,
-			);
-			path = internal;
 			sourceTree = "<group>";
 		};
 		477A10890FD08DE800BAD4AD /* native */ = {
@@ -2161,27 +2034,8 @@
 				477A108B0FD08DE800BAD4AD /* ProxyForJava.m */,
 				477A108C0FD08DE800BAD4AD /* Rococoa.h */,
 				477A108D0FD08DE800BAD4AD /* Rococoa.m */,
-				477A108E0FD08DE800BAD4AD /* scratch.m */,
-				477A108F0FD08DE800BAD4AD /* test.h */,
-				477A10900FD08DE800BAD4AD /* test.m */,
 			);
 			path = native;
-			sourceTree = "<group>";
-		};
-		477A10940FD08DE800BAD4AD /* quicktime */ = {
-			isa = PBXGroup;
-			children = (
-				477A10950FD08DE800BAD4AD /* MovieComponent.java */,
-				477A10960FD08DE800BAD4AD /* QTKit.java */,
-				477A10970FD08DE800BAD4AD /* QTMedia.java */,
-				477A10980FD08DE800BAD4AD /* QTMovie.java */,
-				477A10990FD08DE800BAD4AD /* QTMovieView.java */,
-				477A109A0FD08DE800BAD4AD /* QTTime.java */,
-				477A109B0FD08DE800BAD4AD /* QTTimeByReference.java */,
-				477A109C0FD08DE800BAD4AD /* QTTimeRange.java */,
-				477A109D0FD08DE800BAD4AD /* QTTrack.java */,
-			);
-			path = quicktime;
 			sourceTree = "<group>";
 		};
 		477A10A30FD08DE800BAD4AD /* spearce */ = {
