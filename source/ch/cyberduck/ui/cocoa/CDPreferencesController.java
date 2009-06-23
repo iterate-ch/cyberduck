@@ -112,8 +112,9 @@ public class CDPreferencesController extends CDWindowController {
         this.panelGeneral = panelGeneral;
     }
 
-    public void windowWillClose(NSNotification notification) {
-        super.windowWillClose(notification);
+    protected void invalidate() {
+        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
+        super.invalidate();
         instance = null;
     }
 
@@ -321,6 +322,28 @@ public class CDPreferencesController extends CDWindowController {
 
     private NSPopUpButton defaultBookmarkCombobox; //IBOutlet
 
+    private final CollectionListener<Host> bookmarkCollectionListener = new CollectionListener<Host>() {
+        public void collectionItemAdded(Host bookmark) {
+            CDPreferencesController.this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
+            CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
+            CDPreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
+        }
+
+        public void collectionItemRemoved(Host bookmark) {
+            if (CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
+                Preferences.instance().deleteProperty("browser.defaultBookmark");
+            }
+            int i = CDPreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark);
+            if (i > -1) {
+                CDPreferencesController.this.defaultBookmarkCombobox.removeItemAtIndex(i);
+            }
+        }
+
+        public void collectionItemChanged(Host bookmark) {
+            ;
+        }
+    };
+
     public void setDefaultBookmarkCombobox(NSPopUpButton defaultBookmarkCombobox) {
         this.defaultBookmarkCombobox = defaultBookmarkCombobox;
         this.defaultBookmarkCombobox.setToolTip(NSBundle.localizedString("Bookmarks", ""));
@@ -332,27 +355,7 @@ public class CDPreferencesController extends CDWindowController {
             this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
             this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
         }
-        HostCollection.defaultCollection().addListener(new CollectionListener<Host>() {
-            public void collectionItemAdded(Host bookmark) {
-                CDPreferencesController.this.defaultBookmarkCombobox.addItem(bookmark.getNickname());
-                CDPreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(CDIconCache.instance().iconForName("cyberduck-document", 16));
-                CDPreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark);
-            }
-
-            public void collectionItemRemoved(Host bookmark) {
-                if(CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
-                    Preferences.instance().deleteProperty("browser.defaultBookmark");
-                }
-                int i = CDPreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark);
-                if(i > -1) {
-                    CDPreferencesController.this.defaultBookmarkCombobox.removeItemAtIndex(i);
-                }
-            }
-
-            public void collectionItemChanged(Host bookmark) {
-                ;
-            }
-        });
+        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
         this.defaultBookmarkCombobox.setTarget(this);
         final NSSelector action = new NSSelector("defaultBookmarkComboboxClicked", new Class[]{NSPopUpButton.class});
         this.defaultBookmarkCombobox.setAction(action);

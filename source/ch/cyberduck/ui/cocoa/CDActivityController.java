@@ -61,31 +61,33 @@ public class CDActivityController extends CDWindowController {
         this.init();
     }
 
-    private void init() {
-        BackgroundActionRegistry.instance().addListener(new AbstractCollectionListener<BackgroundAction>() {
-            public void collectionItemAdded(final BackgroundAction action) {
-                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
-                    public void run() {
-                        log.debug("collectionItemAdded" + action);
-                        tasks.put(action, new CDTaskController(action));
-                        reload();
-                    }
-                });
-            }
+    private final AbstractCollectionListener<BackgroundAction> backgroundActionListener = new AbstractCollectionListener<BackgroundAction>() {
+        public void collectionItemAdded(final BackgroundAction action) {
+            CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                public void run() {
+                    log.debug("collectionItemAdded" + action);
+                    tasks.put(action, new CDTaskController(action));
+                    reload();
+                }
+            });
+        }
 
-            public void collectionItemRemoved(final BackgroundAction action) {
-                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
-                    public void run() {
-                        log.debug("collectionItemRemoved" + action);
-                        final CDTaskController controller = tasks.remove(action);
-                        if(controller != null) {
-                            controller.invalidate();
-                        }
-                        reload();
+        public void collectionItemRemoved(final BackgroundAction action) {
+            CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                public void run() {
+                    log.debug("collectionItemRemoved" + action);
+                    final CDTaskController controller = tasks.remove(action);
+                    if (controller != null) {
+                        controller.invalidate();
                     }
-                });
-            }
-        });
+                    reload();
+                }
+            });
+        }
+    };
+
+    private void init() {
+        BackgroundActionRegistry.instance().addListener(backgroundActionListener);
         // Add already running background actions
         final BackgroundAction[] actions = BackgroundActionRegistry.instance().toArray(
                 new BackgroundAction[BackgroundActionRegistry.instance().size()]);
@@ -109,11 +111,10 @@ public class CDActivityController extends CDWindowController {
         this.window.setTitle(NSBundle.localizedString("Activity", ""));
     }
 
-    /**
-     * @param notification
-     */
-    public void windowWillClose(NSNotification notification) {
-        // Do not call super as we are a singleton. super#windowWillClose would invalidate me
+    protected void invalidate() {
+        BackgroundActionRegistry.instance().removeListener(backgroundActionListener);
+        super.invalidate();
+        instance = null;
     }
 
     private NSTableView table;

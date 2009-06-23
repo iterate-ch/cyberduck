@@ -1782,65 +1782,69 @@ public class CDBrowserController extends CDWindowController
         this.bookmarkTable.setAllowsColumnReordering(false);
         this.bookmarkTable.sizeToFit();
 
-        HistoryCollection.defaultCollection().addListener(new CollectionListener<Host>() {
-            public void collectionItemAdded(Host item) {
-                this.reloadBookmarks();
-            }
-
-            public void collectionItemRemoved(Host item) {
-                this.reloadBookmarks();
-            }
-
-            public void collectionItemChanged(Host item) {
-                this.reloadBookmarks();
-            }
-
-            private void reloadBookmarks() {
-                if(bookmarkModel.getSource().equals(HistoryCollection.defaultCollection())) {
-                    bookmarkTable.deselectAll(null);
-                    bookmarkTable.reloadData();
-                }
-            }
-        });
-
-        HostCollection.defaultCollection().addListener(new CollectionListener<Host>() {
-            public void collectionItemAdded(Host item) {
-                this.reloadBookmarks();
-            }
-
-            public void collectionItemRemoved(Host item) {
-                this.reloadBookmarks();
-            }
-
-            public void collectionItemChanged(Host item) {
-                this.reloadBookmarks();
-            }
-
-            private void reloadBookmarks() {
-                if(bookmarkModel.getSource().equals(HostCollection.defaultCollection())) {
-                    bookmarkTable.deselectAll(null);
-                    bookmarkTable.reloadData();
-                }
-            }
-        });
-
-        Rendezvous.instance().addListener(new RendezvousListener() {
-            public void serviceResolved(String servicename, String hostname) {
-                this.reloadBookmarks();
-            }
-
-            public void serviceLost(String servicename) {
-                this.reloadBookmarks();
-            }
-
-            private void reloadBookmarks() {
-                if(bookmarkModel.getSource().equals(RendezvousCollection.defaultCollection())) {
-                    bookmarkTable.deselectAll(null);
-                    bookmarkTable.reloadData();
-                }
-            }
-        });
+        HistoryCollection.defaultCollection().addListener(historyCollectionListener);
+        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
+        Rendezvous.instance().addListener(rendezvousCollectionListener);
     }
+
+    private final CollectionListener<Host> historyCollectionListener = new CollectionListener<Host>() {
+        public void collectionItemAdded(Host item) {
+            this.reloadBookmarks();
+        }
+
+        public void collectionItemRemoved(Host item) {
+            this.reloadBookmarks();
+        }
+
+        public void collectionItemChanged(Host item) {
+            this.reloadBookmarks();
+        }
+
+        private void reloadBookmarks() {
+            if(bookmarkModel.getSource().equals(HistoryCollection.defaultCollection())) {
+                bookmarkTable.deselectAll(null);
+                bookmarkTable.reloadData();
+            }
+        }
+    };
+
+    private final CollectionListener<Host> bookmarkCollectionListener = new CollectionListener<Host>() {
+        public void collectionItemAdded(Host item) {
+            this.reloadBookmarks();
+        }
+
+        public void collectionItemRemoved(Host item) {
+            this.reloadBookmarks();
+        }
+
+        public void collectionItemChanged(Host item) {
+            this.reloadBookmarks();
+        }
+
+        private void reloadBookmarks() {
+            if(bookmarkModel.getSource().equals(HostCollection.defaultCollection())) {
+                bookmarkTable.deselectAll(null);
+                bookmarkTable.reloadData();
+            }
+        }
+    };
+
+    private final RendezvousListener rendezvousCollectionListener = new RendezvousListener() {
+        public void serviceResolved(String servicename, String hostname) {
+            this.reloadBookmarks();
+        }
+
+        public void serviceLost(String servicename) {
+            this.reloadBookmarks();
+        }
+
+        private void reloadBookmarks() {
+            if(bookmarkModel.getSource().equals(RendezvousCollection.defaultCollection())) {
+                bookmarkTable.deselectAll(null);
+                bookmarkTable.reloadData();
+            }
+        }
+    };
 
     private NSPopUpButton actionPopupButton;
 
@@ -4745,6 +4749,9 @@ public class CDBrowserController extends CDWindowController
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
         }
+        Rendezvous.instance().removeListener(rendezvousCollectionListener);
+        HistoryCollection.defaultCollection().removeListener(historyCollectionListener);
+        HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
     }
 }

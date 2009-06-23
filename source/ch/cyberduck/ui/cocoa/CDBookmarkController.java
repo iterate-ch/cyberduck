@@ -509,23 +509,25 @@ public class CDBookmarkController extends CDWindowController {
     private CDBookmarkController(final Host host) {
         this.host = host;
         // Register for bookmark delete event. Will close this window.
-        HostCollection.defaultCollection().addListener(new AbstractCollectionListener<Host>() {
-            public void collectionItemRemoved(Host item) {
-                if(item.equals(host)) {
-                    HostCollection.defaultCollection().removeListener(this);
-                    final NSWindow window = window();
-                    if(null != window) {
-                        window.close();
-                    }
-                }
-            }
-        });
+        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
         this.loadBundle();
     }
 
-    public void windowWillClose(NSNotification notification) {
+    private final AbstractCollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
+        public void collectionItemRemoved(Host item) {
+            if (item.equals(host)) {
+                final NSWindow window = window();
+                if (null != window) {
+                    window.close();
+                }
+            }
+        }
+    };
+
+    protected void invalidate() {
         Preferences.instance().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
-        super.windowWillClose(notification);
+        HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
+        super.invalidate();
     }
 
     protected String getBundleName() {
