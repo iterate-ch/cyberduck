@@ -72,6 +72,7 @@ public class CDProgressController extends CDBundleController {
     protected void invalidate() {
         this.transfer.getSession().removeProgressListener(pl);
         this.transfer.removeListener(tl);
+        super.invalidate();
     }
 
     protected String getBundleName() {
