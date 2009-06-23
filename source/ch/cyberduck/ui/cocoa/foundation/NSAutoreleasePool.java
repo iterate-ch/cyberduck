@@ -1,6 +1,6 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-import org.rococoa.Rococoa;
+import org.apache.log4j.Logger;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -25,17 +25,10 @@ import org.rococoa.Rococoa;
  * @version $Id$
  */
 public abstract class NSAutoreleasePool extends NSObject {
-    public static NSAutoreleasePool push() {
-        return Rococoa.create("NSAutoreleasePool", NSAutoreleasePool.class);
-    }
+    private static Logger log = Logger.getLogger(NSAutoreleasePool.class);
 
-    public interface _Class extends org.rococoa.NSClass {
-        /**
-         * <i>native declaration : :16</i><br>
-         * Conversion Error : /// Original signature : <code>void addObject(null)</code><br>
-         * + (void)addObject:(null)anObject; (Argument anObject cannot be converted)
-         */
-        NSAutoreleasePool alloc();
+    public static NSAutoreleasePool push() {
+        return org.rococoa.Rococoa.create("NSAutoreleasePool", NSAutoreleasePool.class);
     }
 
     /**
