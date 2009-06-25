@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import org.rococoa.cocoa.foundation.NSPoint;
 
 /// <i>native declaration : :32</i>
-public abstract class NSDraggingInfo extends NSObject {
+public abstract class NSDraggingInfo implements NSObject {
 
     /// <i>native declaration : line 15</i>
     public static final int NSDragOperationNone = 0;

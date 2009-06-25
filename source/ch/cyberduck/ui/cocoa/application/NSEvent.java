@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.foundation.NSPoint;
 
-public abstract class NSEvent extends NSObject implements NSCopying {
+public abstract class NSEvent implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSEvent", _Class.class);
 
     /// <i>native declaration : :12</i>

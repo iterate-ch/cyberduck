@@ -27,7 +27,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 /// <i>native declaration : :119</i>
-public abstract class NSWindow extends NSObject {
+public abstract class NSWindow implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWindow", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {

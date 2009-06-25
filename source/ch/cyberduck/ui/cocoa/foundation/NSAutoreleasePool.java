@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class NSAutoreleasePool extends NSObject {
+public abstract class NSAutoreleasePool implements NSObject {
     private static Logger log = Logger.getLogger(NSAutoreleasePool.class);
 
     public static NSAutoreleasePool push() {

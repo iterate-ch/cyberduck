@@ -28,7 +28,7 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSSize;
 
 /// <i>native declaration : :10</i>
-public abstract class NSToolbarItem extends NSObject implements NSCopying, NSValidatedUserInterfaceItem {
+public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedUserInterfaceItem {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSToolbarItem", _Class.class);
 
     public static final String NSToolbarFlexibleItemIdentifier = "NSToolbarFlexibleSpaceItem";

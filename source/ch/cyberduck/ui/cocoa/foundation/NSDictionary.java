@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :10</i>
-public abstract class NSDictionary extends NSObject {
+public abstract class NSDictionary implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDictionary", _Class.class);
 
     public static NSDictionary dictionaryWithObjectsForKeys(NSArray objects, NSArray keys) {

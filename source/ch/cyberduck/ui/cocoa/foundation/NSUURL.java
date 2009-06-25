@@ -25,7 +25,7 @@ import org.rococoa.Rococoa;
 /**
  * @version $Id$
  */
-public abstract class NSUURL extends NSObject {
+public abstract class NSUURL implements NSObject {
     public static final _Class CLASS = Rococoa.createClass("NSUURL", _Class.class); //$NON-NLS-1$
 
     public interface _Class extends NSClass {

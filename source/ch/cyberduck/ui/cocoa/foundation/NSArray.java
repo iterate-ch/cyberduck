@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.Rococoa;
 
 /// <i>native declaration : :14</i>
-public abstract class NSArray extends NSObject {
+public abstract class NSArray implements NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSArray", _Class.class);
 
     public static NSArray array() {

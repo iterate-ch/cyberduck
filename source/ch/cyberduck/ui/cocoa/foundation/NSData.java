@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :27</i>
-public abstract class NSData extends NSObject {
+public abstract class NSData implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSData", _Class.class);
 
     public static NSData dataWithContentsOfURL(NSURL url) {

@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.Rococoa;
 
 /// <i>native declaration : :17</i>
-public abstract class NSToolbar extends NSObject {
+public abstract class NSToolbar implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSToolbar", _Class.class);
 
     /// <i>native declaration : :12</i>

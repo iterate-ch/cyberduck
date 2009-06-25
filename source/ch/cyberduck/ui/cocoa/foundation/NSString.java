@@ -24,7 +24,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 
 /// <i>native declaration : :85</i>
-public abstract class NSString extends NSObject implements NSCopying {
+public abstract class NSString implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
 
     public static NSString stringWithString(String string) {

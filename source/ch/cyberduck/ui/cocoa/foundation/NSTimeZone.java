@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-public abstract class NSTimeZone extends NSObject {
+public abstract class NSTimeZone implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTimeZone", _Class.class);
 
     public static NSTimeZone defaultTimeZone() {

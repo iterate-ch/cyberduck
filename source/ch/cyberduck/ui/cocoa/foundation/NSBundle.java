@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :12</i>
-public abstract class NSBundle extends NSObject {
+public abstract class NSBundle implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSBundle", _Class.class);
 
     /**

@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.cocoa.foundation.NSNumber;
 
 /// <i>native declaration : :15</i>
-public abstract class NSURL extends NSObject {
+public abstract class NSURL implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSURL", _Class.class);
 
     public static NSURL URLWithString(String URLString) {

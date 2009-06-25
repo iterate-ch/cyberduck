@@ -22,7 +22,7 @@ import org.rococoa.cocoa.foundation.NSSize;
  */
 
 /// <i>native declaration : /Users/dkocher/null:10</i>
-public abstract class NSValue extends NSObject {
+public abstract class NSValue implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSValue", _Class.class);
 
     public static NSValue valueWithSize(NSSize size) {

@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:13</i>
-public abstract class NSSet extends NSObject {
+public abstract class NSSet implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSet", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {

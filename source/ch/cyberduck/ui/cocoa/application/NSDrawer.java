@@ -25,7 +25,7 @@ import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSSize;
 
 /// <i>native declaration : :31</i>
-public abstract class NSDrawer extends NSObject {
+public abstract class NSDrawer implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDrawer", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {

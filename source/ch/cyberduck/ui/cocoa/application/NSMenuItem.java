@@ -27,7 +27,7 @@ import org.rococoa.Selector;
 
 
 /// <i>native declaration : :14</i>
-public abstract class NSMenuItem extends NSObject implements NSCopying, NSValidatedUserInterfaceItem {
+public abstract class NSMenuItem implements NSObject, NSCopying, NSValidatedUserInterfaceItem {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenuItem", _Class.class);
 
     public static NSMenuItem separatorItem() {

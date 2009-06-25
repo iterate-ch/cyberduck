@@ -25,7 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :17</i>
-public abstract class NSTableColumn extends NSObject {
+public abstract class NSTableColumn implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTableColumn", _Class.class);
 
     public static final int NSTableColumnNoResizing = 0; // Disallow any kind of resizing.

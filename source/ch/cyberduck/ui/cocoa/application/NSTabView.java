@@ -23,7 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :23</i>
-public abstract class NSTabView extends NSObject {
+public abstract class NSTabView implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTabView", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {

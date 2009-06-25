@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.Rococoa;
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:9</i>
-public abstract class NSAttributedString extends NSObject {
+public abstract class NSAttributedString implements NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
 
     public static NSAttributedString attributedString(String str) {

@@ -20,14 +20,14 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :28</i>
-public abstract class NSIndexSet extends NSObject {
+public abstract class NSIndexSet implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSIndexSet", _Class.class);
 
     public static NSIndexSet indexSetWithIndex(int value) {
         return CLASS.indexSetWithIndex(value);
     }
 
-    public static final long NSNotFound = 2147483647L;
+    public static final long NSNotFound = -1;
 
     public interface _Class extends org.rococoa.NSClass {
         /**

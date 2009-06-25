@@ -24,7 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :35</i>
-public abstract class NSColor extends NSObject {
+public abstract class NSColor implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSColor", _Class.class);
 
     public static NSColor whiteColor() {

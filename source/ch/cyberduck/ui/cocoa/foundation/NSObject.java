@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Selector;
 
 /*
@@ -23,9 +22,7 @@ import org.rococoa.Selector;
  */
 
 /// <i>native declaration : :14</i>
-public abstract class NSObject implements org.rococoa.NSObject {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSObject", _Class.class);
-
+public interface NSObject extends org.rococoa.NSObject {
     public interface _Class extends org.rococoa.NSClass {
         NSObject alloc();
     }
@@ -131,6 +128,4 @@ public abstract class NSObject implements org.rococoa.NSObject {
      * <i>native declaration : :38</i>
      */
     public abstract NSObject autorelease();
-
-    private static Logger log = Logger.getLogger(NSObject.class);
 }

@@ -27,7 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import com.sun.jna.NativeLong;
 
 /// <i>native declaration : :43</i>
-public abstract class NSWorkspace extends NSObject {
+public abstract class NSWorkspace implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWorkspace", _Class.class);
 
     public static final String WorkspaceDidLaunchApplicationNotification = "NSWorkspaceDidLaunchApplicationNotification";

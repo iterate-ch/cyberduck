@@ -25,7 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.foundation.NSError;
 
 /// <i>native declaration : :20</i>
-public abstract class NSAlert extends NSObject {
+public abstract class NSAlert implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSAlert", _Class.class);
 
     public static final int NSAlertDefaultReturn = 1;

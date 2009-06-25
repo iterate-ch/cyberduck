@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :12</i>
-public abstract class NSFileManager extends NSObject {
+public abstract class NSFileManager implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFileManager", _Class.class);
 
     public static NSFileManager defaultManager() {
@@ -364,7 +364,7 @@ public abstract class NSFileManager extends NSObject {
      */
     public abstract com.sun.jna.Pointer stringWithFileSystemRepresentation_length(java.lang.String str, int len);
 
-    public abstract class NSDirectoryEnumerator extends NSObject {
+    public abstract class NSDirectoryEnumerator implements NSObject {
         /**
          * Original signature : <code>NSDictionary* fileAttributes()</code><br>
          * <i>native declaration : :211</i>

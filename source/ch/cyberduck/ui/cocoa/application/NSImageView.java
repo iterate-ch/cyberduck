@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-public abstract class NSImageView extends NSObject {
+public abstract class NSImageView implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImageView", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
