@@ -208,11 +208,6 @@ public class DownloadTransfer extends Transfer {
         }
 
         public void prepare(final Path p) {
-            if(DownloadTransfer.this.exists(p.getLocal())) {
-                if(p.getLocal().attributes.getSize() > 0) {
-                    p.getLocal().delete();
-                }
-            }
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
             }
