@@ -194,7 +194,7 @@ public class CFPath extends CloudPath {
 
             if(this.isContainer()) {
                 attributes.setSize(
-                        Long.valueOf(session.CF.getContainerInfo(this.getContainerName()).getTotalSize())
+                        session.CF.getContainerInfo(this.getContainerName()).getTotalSize()
                 );
             }
             else if(this.attributes.isFile()) {
@@ -257,8 +257,8 @@ public class CFPath extends CloudPath {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
-            session.message(NSBundle.localizedString("Listing directory", "Status", "") + " "
-                    + this.getAbsolute());
+            session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                    this.getName()));
 
             if(this.isRoot()) {
                 // List all containers

@@ -688,8 +688,8 @@ public class S3Path extends CloudPath {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
             session.check();
-            session.message(NSBundle.localizedString("Listing directory", "Status", "") + " "
-                    + this.getAbsolute());
+            session.message(MessageFormat.format(NSBundle.localizedString("Listing directory {0}", "Status", ""),
+                    this.getName()));
 
             if(this.isRoot()) {
                 // List all buckets
