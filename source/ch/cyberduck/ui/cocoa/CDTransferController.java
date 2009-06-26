@@ -89,10 +89,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
         // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
 
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-
     @Outlet
     private NSTextField urlField;
 
@@ -167,45 +163,43 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     private NSDrawer logDrawer;
 
-    private CDController logDrawerNotifications = new CDController() {
-        public void drawerWillOpen(NSNotification notification) {
-            logDrawer.setContentSize(new NSSize(
-                    logDrawer.contentSize().width.doubleValue(),
-                    Preferences.instance().getDouble("queue.logDrawer.size.height")
-            ));
-        }
+    public void drawerWillOpen(NSNotification notification) {
+        logDrawer.setContentSize(new NSSize(
+                logDrawer.contentSize().width.doubleValue(),
+                Preferences.instance().getDouble("queue.logDrawer.size.height")
+        ));
+    }
 
-        public void drawerDidOpen(NSNotification notification) {
-            Preferences.instance().setProperty("queue.logDrawer.isOpen", true);
-        }
+    public void drawerDidOpen(NSNotification notification) {
+        Preferences.instance().setProperty("queue.logDrawer.isOpen", true);
+    }
 
-        public void drawerWillClose(NSNotification notification) {
-            Preferences.instance().setProperty("queue.logDrawer.size.height",
-                    logDrawer.contentSize().height.intValue());
-        }
+    public void drawerWillClose(NSNotification notification) {
+        Preferences.instance().setProperty("queue.logDrawer.size.height",
+                logDrawer.contentSize().height.intValue());
+    }
 
-        public void drawerDidClose(NSNotification notification) {
-            Preferences.instance().setProperty("queue.logDrawer.isOpen", false);
-        }
-    };
+    public void drawerDidClose(NSNotification notification) {
+        Preferences.instance().setProperty("queue.logDrawer.isOpen", false);
+    }
 
     public void setLogDrawer(NSDrawer logDrawer) {
         this.logDrawer = logDrawer;
         this.transcript = new CDTranscriptController();
         this.logDrawer.setContentView(this.transcript.getLogView());
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerWillOpen:"),
                 NSDrawer.DrawerWillOpenNotification,
                 this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerDidOpen:"),
                 NSDrawer.DrawerDidOpenNotification,
                 this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerWillClose:"),
                 NSDrawer.DrawerWillCloseNotification,
                 this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerDidClose:"),
                 NSDrawer.DrawerDidCloseNotification,
                 this.logDrawer);
