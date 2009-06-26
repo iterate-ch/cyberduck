@@ -218,20 +218,14 @@ public abstract class Path extends AbstractPath implements Serializable {
                 if(this.isRoot()) {
                     return this;
                 }
-                int index = this.getAbsolute().length() - 1;
-                if(this.getAbsolute().charAt(index) == '/') {
-                    if(index > 0) {
-                        index--;
-                    }
-                }
-                int cut = this.getAbsolute().lastIndexOf('/', index);
-                if(cut > 0) {
-                    parent = PathFactory.createPath(this.getSession(), this.getAbsolute().substring(0, cut),
-                            Path.DIRECTORY_TYPE);
-                }
-                else {//if (index == 0) //parent is root
-                    parent = PathFactory.createPath(this.getSession(), DELIMITER,
+                String parent = getParent(this.getAbsolute());
+                if(DELIMITER.equals(parent)) {
+                    this.parent = PathFactory.createPath(this.getSession(), DELIMITER,
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                }
+                else {
+                    this.parent = PathFactory.createPath(this.getSession(), parent,
+                            Path.DIRECTORY_TYPE);
                 }
             }
         }
@@ -681,11 +675,6 @@ public abstract class Path extends AbstractPath implements Serializable {
             absolute = Path.DELIMITER + absolute;
         }
         return host + absolute;
-    }
-
-    protected void finalize() throws java.lang.Throwable {
-        log.debug("finalize:" + super.toString());
-        super.finalize();
     }
 
     /**

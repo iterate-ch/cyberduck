@@ -70,8 +70,10 @@ public abstract class AbstractPath extends NSObject {
      * @throws NullPointerException if session is not initialized
      */
     public void invalidate() {
-        if(this.isCached()) {
-            this.cache().get(this).attributes().setDirty(true);
+        if(attributes.isDirectory()) {
+            if(this.isCached()) {
+                this.cache().get(this).attributes().setDirty(true);
+            }
         }
     }
 
@@ -113,6 +115,21 @@ public abstract class AbstractPath extends NSObject {
      */
     public boolean isRoot() {
         return this.getAbsolute().equals(DELIMITER);
+    }
+
+    public static String getParent(String absolute) {
+        int index = absolute.length() - 1;
+        if(absolute.charAt(index) == '/') {
+            if(index > 0) {
+                index--;
+            }
+        }
+        int cut = absolute.lastIndexOf('/', index);
+        if(cut > 0) {
+            return absolute.substring(0, cut);
+        }
+        //if (index == 0) //parent is root
+        return DELIMITER;
     }
 
     public abstract String getAbsolute();
@@ -192,11 +209,11 @@ public abstract class AbstractPath extends NSObject {
             }
             // Remove duplicated delimiters
             String[] segments = normalized.split(Path.DELIMITER);
-            for(int i = 0; i < segments.length; i++) {
-                if(segments[i].equals("")) {
+            for(String segment : segments) {
+                if(segment.equals("")) {
                     continue;
                 }
-                n.append(segments[i]);
+                n.append(segment);
                 n.append(DELIMITER);
             }
             normalized = n.toString();

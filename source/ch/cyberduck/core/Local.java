@@ -411,7 +411,7 @@ public class Local extends AbstractPath {
         CDMainApplication.invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSPathUtilities.setFileAttributes(_impl.getAbsolutePath(),
-                        new NSDictionary(new Integer(perm.getOctalNumber()),
+                        new NSDictionary(perm.getOctalNumber(),
                                 NSPathUtilities.FilePosixPermissions));
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
@@ -444,6 +444,9 @@ public class Local extends AbstractPath {
     }
 
     public void copy(AbstractPath copy) {
+        if(copy.equals(this)) {
+            return;
+        }
         FileInputStream in = null;
         FileOutputStream out = null;
         try {
