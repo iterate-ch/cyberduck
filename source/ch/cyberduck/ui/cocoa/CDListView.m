@@ -202,19 +202,20 @@ static NSTableColumn *localSelectionColumn;
 		if([select_string length] == 1) {
 			[self selectRow];
 			// Fix for http://trac.cyberduck.ch/ticket/896
-			select_timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+			select_timer = [[NSTimer scheduledTimerWithTimeInterval:0.5
 															target:self 
 														  selector:@selector(clearSelectString:) 
 														  userInfo:nil 
-														   repeats:NO];
+														   repeats:NO] retain];
 		}
 		else {
 			[select_timer invalidate];
-			select_timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+			[select_timer release];
+			select_timer = [[NSTimer scheduledTimerWithTimeInterval:0.5
 															target:self 
 														  selector:@selector(selectRowWithTimer:) 
 														  userInfo:nil 
-														   repeats:NO];
+														   repeats:NO] retain];
 		}
 		return;
 	} 
@@ -292,19 +293,19 @@ static NSTableColumn *localSelectionColumn;
 	return localSelectionColumn;
 }
 
-- (NSImage *)dragImageForRows:(NSArray *)dragRows 
-						event:(NSEvent *)dragEvent 
-			  dragImageOffset:(NSPointPointer)dragImageOffset 
+- (NSImage *)dragImageForRows:(NSArray *)dragRows
+						event:(NSEvent *)dragEvent
+			  dragImageOffset:(NSPointPointer)dragImageOffset
 {
 	NSImage *img = [NSImage imageNamed: @"transparent.tiff"];
 	[img setCacheMode:NSImageCacheNever];
 	return img;
 }
 
-- (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows 
-							tableColumns:(NSArray *)tableColumns 
-								   event:(NSEvent*)dragEvent 
-								  offset:(NSPointPointer)dragImageOffset 
+- (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows
+							tableColumns:(NSArray *)tableColumns
+								   event:(NSEvent*)dragEvent
+								  offset:(NSPointPointer)dragImageOffset
 {
 	NSImage *img = [NSImage imageNamed: @"transparent.tiff"];
 	[img setCacheMode:NSImageCacheNever];
