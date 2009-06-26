@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
@@ -33,44 +34,49 @@ import org.rococoa.Foundation;
 public class CDMainApplication {
     private static Logger log = Logger.getLogger(CDMainApplication.class);
 
-    static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "librococoa.dylib";
-            log.info("Locating librococoa.dylib at '" + lib + "'");
-            System.load(lib);
-            log.info("librococoa.dylib loaded");
-        }
-        catch(UnsatisfiedLinkError e) {
-            log.error("Could not load the librococoa.dylib library:" + e.getMessage());
-            throw e;
-        }
-    }
-
     /**
      * @param arguments
      */
     public static void main(String[] arguments) throws InterruptedException {
-        final Logger root = Logger.getRootLogger();
-        root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+        final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
-        // This method also makes a connection to the window server and completes other initialization.
-        // Your program should invoke this method as one of the first statements in main();
-        // The NSApplication class sets up autorelease pools (instances of the NSAutoreleasePool class)
-        // during initialization and inside the event loop—specifically, within its initialization
-        // (or sharedApplication) and run methods.
-        final NSApplication app = NSApplication.sharedApplication();
+        try {
+            try {
+                NSBundle bundle = NSBundle.mainBundle();
+                String lib = bundle.resourcePath() + "/Java/" + "librococoa.dylib";
+                log.info("Locating librococoa.dylib at '" + lib + "'");
+                System.load(lib);
+                log.info("librococoa.dylib loaded");
+            }
+            catch(UnsatisfiedLinkError e) {
+                log.error("Could not load the librococoa.dylib library:" + e.getMessage());
+                throw e;
+            }
 
-        final CDMainController c = new CDMainController();
+            final Logger root = Logger.getRootLogger();
+            root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
-        // Must implement NSApplicationDelegate protocol
-        app.setDelegate(c.id());
+            // This method also makes a connection to the window server and completes other initialization.
+            // Your program should invoke this method as one of the first statements in main();
+            // The NSApplication class sets up autorelease pools (instances of the NSAutoreleasePool class)
+            // during initialization and inside the event loop—specifically, within its initialization
+            // (or sharedApplication) and run methods.
+            final NSApplication app = NSApplication.sharedApplication();
 
-        // Starts the main event loop. The loop continues until a stop: or terminate: message is
-        // received. Upon each iteration through the loop, the next available event
-        // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.
-        // The global application object uses autorelease pools in its run method.
-        app.run();
+            final CDMainController c = new CDMainController();
+
+            // Must implement NSApplicationDelegate protocol
+            app.setDelegate(c.id());
+
+            // Starts the main event loop. The loop continues until a stop: or terminate: message is
+            // received. Upon each iteration through the loop, the next available event
+            // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.
+            // The global application object uses autorelease pools in its run method.
+            app.run();
+        }
+        finally {
+            pool.drain();
+        }
     }
 
     /**
