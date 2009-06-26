@@ -21,7 +21,6 @@ package ch.cyberduck.core.io;
 import com.apple.cocoa.application.NSWorkspace;
 import com.apple.cocoa.foundation.NSBundle;
 import com.apple.cocoa.foundation.NSNotification;
-import com.apple.cocoa.foundation.NSObject;
 import com.apple.cocoa.foundation.NSSelector;
 
 import ch.cyberduck.core.Local;
@@ -30,7 +29,7 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-public class FileWatcher extends NSObject {
+public class FileWatcher {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
     private static final String UKKQueueFileRenamedNotification = "UKKQueueFileRenamedNotification";

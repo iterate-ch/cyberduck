@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.cocoa.foundation.NSObject;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.utils.Mimetypes;
@@ -31,7 +29,7 @@ import com.ibm.icu.text.Normalizer;
 /**
  * @version $Id$
  */
-public abstract class AbstractPath extends NSObject {
+public abstract class AbstractPath {
 
     /**
      * The path delimiter

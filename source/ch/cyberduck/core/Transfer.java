@@ -37,7 +37,7 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 /**
  * @version $Id$
  */
-public abstract class Transfer extends NSObject implements Serializable {
+public abstract class Transfer implements Serializable {
     protected static Logger log = Logger.getLogger(Transfer.class);
 
     /**

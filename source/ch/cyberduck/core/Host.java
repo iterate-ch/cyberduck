@@ -37,7 +37,7 @@ import com.ibm.icu.text.StringPrepParseException;
 /**
  * @version $Id$
  */
-public class Host extends NSObject implements Serializable {
+public class Host implements Serializable {
     private static Logger log = Logger.getLogger(Host.class);
     /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>

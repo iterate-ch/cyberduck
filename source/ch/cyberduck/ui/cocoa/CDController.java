@@ -20,14 +20,13 @@ package ch.cyberduck.ui.cocoa;
 
 import com.apple.cocoa.foundation.NSMutableArray;
 import com.apple.cocoa.foundation.NSNotificationCenter;
-import com.apple.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
-public abstract class CDController extends NSObject {
+public abstract class CDController {
     private static Logger log = Logger.getLogger(CDController.class);
 
     public CDController() {

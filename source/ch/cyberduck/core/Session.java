@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import com.apple.cocoa.foundation.NSBundle;
-import com.apple.cocoa.foundation.NSObject;
 
 import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
@@ -31,12 +30,15 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
  */
-public abstract class Session extends NSObject {
+public abstract class Session {
     private static Logger log = Logger.getLogger(Session.class);
 
     /**
