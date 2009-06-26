@@ -46,6 +46,12 @@ public abstract class CDWindowController extends CDBundleController {
         super();
     }
 
+    @Override
+    protected void invalidate() {
+        listeners.clear();
+        super.invalidate();
+    }
+
     /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.

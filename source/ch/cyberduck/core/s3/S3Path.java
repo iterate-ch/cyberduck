@@ -576,10 +576,13 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                         this.getName()));
 
-                DownloadPackage download;
                 final S3Bucket bucket = this.getBucket();
+
+                in = session.S3.getObject(bucket, this.getKey(), null, null, null, null,
+                        this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
+
                 try {
-                    download = ObjectUtils.createPackageForDownload(
+                    DownloadPackage download = ObjectUtils.createPackageForDownload(
                             new S3Object(bucket, this.getKey()),
                             new File(this.getLocal().getAbsolute()), true, false, null);
                     if(null == download) {
@@ -588,18 +591,9 @@ public class S3Path extends CloudPath {
                     }
                     download.setAppendToFile(true);
                     out = download.getOutputStream();
-                    if(null == out) {
-                        throw new IOException("Unable to buffer data");
-                    }
                 }
                 catch(Exception e) {
                     throw new S3ServiceException(e.getMessage(), e);
-                }
-
-                in = session.S3.getObject(bucket, this.getKey(), null, null, null, null,
-                        this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
-                if(null == in) {
-                    throw new IOException("Unable opening data stream");
                 }
 
                 this.download(in, out, throttle, listener);

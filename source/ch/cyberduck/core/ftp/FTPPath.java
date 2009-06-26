@@ -709,14 +709,8 @@ public class FTPPath extends Path {
                     this.getStatus().setResume(false);
                 }
             }
-            out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
-            if(null == out) {
-                throw new IOException("Unable to buffer data");
-            }
             in = session.FTP.get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes.getSize() : 0);
-            if(null == in) {
-                throw new IOException("Unable opening data stream");
-            }
+            out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
             this.download(in, out, throttle, listener);
             if(this.getStatus().isComplete()) {
                 if(in != null) {
@@ -771,16 +765,10 @@ public class FTPPath extends Path {
                 lineSeparator = DOS_LINE_SEPARATOR;
             }
             session.FTP.setTransferType(FTPTransferType.ASCII);
-            out = new FromNetASCIIOutputStream(new Local.OutputStream(this.getLocal(), false),
-                    lineSeparator);
-            if(null == out) {
-                throw new IOException("Unable to buffer data");
-            }
             in = new FromNetASCIIInputStream(session.FTP.get(this.getName(), 0),
                     lineSeparator);
-            if(null == in) {
-                throw new IOException("Unable opening data stream");
-            }
+            out = new FromNetASCIIOutputStream(new Local.OutputStream(this.getLocal(), false),
+                    lineSeparator);
             this.download(in, out, throttle, listener);
             if(this.getStatus().isComplete()) {
                 if(in != null) {

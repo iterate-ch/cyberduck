@@ -127,7 +127,7 @@ public class CDPreferencesController extends CDWindowController {
 
     @Override
     protected void invalidate() {
-        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
+        HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
         instance = null;
     }

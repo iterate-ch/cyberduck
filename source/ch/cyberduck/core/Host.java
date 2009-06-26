@@ -662,9 +662,9 @@ public class Host implements Serializable {
         if(null == webURL) {
             return this.getDefaultWebURL();
         }
-        final String protocol = "http://";
-        if(!webURL.startsWith(protocol)) {
-            webURL = protocol + webURL;
+        final String protocol = "^http(s)?://.*$";
+        if(!webURL.matches(protocol)) {
+            webURL = "http://" + webURL;
         }
         return webURL;
     }

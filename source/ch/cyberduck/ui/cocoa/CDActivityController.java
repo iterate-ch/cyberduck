@@ -61,31 +61,38 @@ public class CDActivityController extends CDWindowController {
         this.init();
     }
 
-    private void init() {
-        BackgroundActionRegistry.instance().addListener(new AbstractCollectionListener<BackgroundAction>() {
-            public void collectionItemAdded(final BackgroundAction action) {
-                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
-                    public void run() {
-                        log.debug("collectionItemAdded:" + action);
-                        tasks.put(action, new CDTaskController(action));
-                        reload();
-                    }
-                });
-            }
+    protected void invalidate() {
+        BackgroundActionRegistry.instance().removeListener(backgroundActionListener);
+        super.invalidate();
+    }
 
-            public void collectionItemRemoved(final BackgroundAction action) {
-                CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
-                    public void run() {
-                        log.debug("collectionItemRemoved:" + action);
-                        final CDTaskController controller = tasks.remove(action);
-                        if(controller != null) {
-                            controller.invalidate();
-                        }
-                        reload();
+    private final AbstractCollectionListener<BackgroundAction> backgroundActionListener = new AbstractCollectionListener<BackgroundAction>() {
+        public void collectionItemAdded(final BackgroundAction action) {
+            CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                public void run() {
+                    log.debug("collectionItemAdded" + action);
+                    tasks.put(action, new CDTaskController(action));
+                    reload();
+                }
+            });
+        }
+
+        public void collectionItemRemoved(final BackgroundAction action) {
+            CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+                public void run() {
+                    log.debug("collectionItemRemoved" + action);
+                    final CDTaskController controller = tasks.remove(action);
+                    if (controller != null) {
+                        controller.invalidate();
                     }
-                });
-            }
-        });
+                    reload();
+                }
+            });
+        }
+    };
+
+    private void init() {
+        BackgroundActionRegistry.instance().addListener(backgroundActionListener);
         // Add already running background actions
         final BackgroundAction[] actions = BackgroundActionRegistry.instance().toArray(
                 new BackgroundAction[BackgroundActionRegistry.instance().size()]);

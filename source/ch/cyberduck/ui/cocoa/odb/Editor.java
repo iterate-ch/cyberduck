@@ -132,7 +132,7 @@ public abstract class Editor extends CDController {
      */
     protected void delete() {
         log.debug("delete");
-        edited.getLocal().delete();
+        edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
         this.invalidate();
     }
 

@@ -52,15 +52,18 @@ public abstract class CDFileController extends CDSheetController {
         super(parent);
     }
 
+    /**
+     * @return The current working directory or selected folder
+     */
     protected Path getWorkdir() {
-        Path workdir;
         if(((CDBrowserController) parent).getSelectionCount() == 1) {
-            workdir = (Path) ((CDBrowserController) parent).getSelectedPath().getParent();
+            final Path selected = ((CDBrowserController) parent).getSelectedPath();
+            if(selected.attributes.isDirectory()) {
+                return selected;
+            }
+            return (Path) selected.getParent();
         }
-        else {
-            workdir = ((CDBrowserController) parent).workdir();
-        }
-        return workdir;
+        return ((CDBrowserController) parent).workdir();
     }
 
     protected boolean validateInput() {
