@@ -996,6 +996,7 @@ public class CDInfoController extends CDWindowController {
         distributionStatusButton.setEnabled(statusEnabled);
         distributionEnableButton.setEnabled(applyEnabled);
         distributionApplyButton.setEnabled(applyEnabled);
+        distributionLoggingButton.setEnabled(statusEnabled);
         if(statusEnabled) {
             distributionProgress.stopAnimation(null);
         }
