@@ -325,7 +325,7 @@ public class SFTPSession extends Session {
             this.connect();
         }
         if(sftp) {
-            if(!this.sftp().isConnected()) {
+            if(null == SFTP || !this.sftp().isConnected()) {
                 this.interrupt();
                 this.connect();
             }
@@ -333,7 +333,7 @@ public class SFTPSession extends Session {
     }
 
     public Path workdir() throws IOException {
-        if(!SFTP.isConnected()) {
+        if(null == SFTP || !this.sftp().isConnected()) {
             throw new ConnectionCanceledException();
         }
         if(null == workdir) {
@@ -395,20 +395,6 @@ public class SFTPSession extends Session {
     }
 
     public boolean isConnected() {
-        if(null == SSH) {
-            return false;
-        }
-//        try {
-//            SSH.getConnectionInfo();
-//        }
-//        catch(IllegalStateException e) {
-//            log.debug("isConnected:" + e.getMessage());
-//            return false;
-//        }
-//        catch(IOException e) {
-//            log.debug("isConnected:" + e.getMessage());
-//            return false;
-//        }
-        return true;
+        return null != SSH;
     }
 }
