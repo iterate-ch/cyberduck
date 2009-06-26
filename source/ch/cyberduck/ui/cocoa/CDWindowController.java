@@ -158,6 +158,7 @@ public abstract class CDWindowController extends CDBundleController {
 
     protected void invalidate() {
         this.window = null;
+        this.listeners.clear();
         super.invalidate();
     }
 
