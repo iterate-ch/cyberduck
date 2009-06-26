@@ -14,6 +14,7 @@ Changelog. Last modified: $Date$
 - [Feature] Access third party buckets using anonymous login (S3)
 - [Feature[ Option to specify object expiration using Cache-Control header [#3185] (S3)
 - [Bugfix] MobileMe iDisk upload failures (WebDAV) [#3149]
+- [Bugfix] Overwrite action causes empty downloaded file [#3252]
 
 3.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.2]
 - [Feature] Choose Time Zone for bookmark (FTP) [#434]
