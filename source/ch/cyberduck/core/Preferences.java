@@ -181,6 +181,11 @@ public abstract class Preferences {
         defaults.put("growl.enable", String.valueOf(true));
 
         /**
+         * Maximum number of directory listings to cache using a most recently used implementation
+         */
+        defaults.put("browser.cache.size", String.valueOf(1000));
+
+        /**
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
         defaults.put("browser.view", "1");

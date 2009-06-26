@@ -18,16 +18,30 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.collections.map.LRUMap;
+import org.apache.log4j.Logger;
+
 import java.util.*;
 
 /**
  * A cache for remote directory listings
+ *
  * @version $Id$
  */
 public class Cache<E extends AbstractPath> {
+    protected static Logger log = Logger.getLogger(Cache.class);
 
-    private Map<String, AttributedList<E>> _impl
-            = new HashMap<String, AttributedList<E>>();
+    /**
+     *
+     */
+    private Map<String, AttributedList<E>> _impl = new LRUMap(
+            Preferences.instance().getInteger("browser.cache.size")
+    ) {
+        protected boolean removeLRU(LinkEntry entry) {
+            log.debug("Removing from cache:" + entry);
+            return true;
+        }
+    };
 
     /**
      *
@@ -38,10 +52,40 @@ public class Cache<E extends AbstractPath> {
 
     /**
      * @param path
+     * @return
+     */
+    public E lookup(String path) {
+        if(null == path) {
+            return null;
+        }
+        final String parent = Path.getParent(path);
+        if(this.containsKey(parent)) {
+            final AttributedList<E> childs = this.get(parent);
+            for(E child : childs) {
+                if(child.getAbsolute().equals(path)) {
+                    return child;
+                }
+            }
+        }
+        log.warn("Lookup failed for " + path + " in cache");
+        return null;
+    }
+
+
+    /**
+     * @param path
      * @return True if the directory listing for this path is cached
      */
     public boolean containsKey(E path) {
-        return _impl.containsKey(path.getAbsolute());
+        return this.containsKey(path.getAbsolute());
+    }
+
+    /**
+     * @param path
+     * @return
+     */
+    public boolean containsKey(String path) {
+        return _impl.containsKey(path);
     }
 
     /**
@@ -50,7 +94,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return
      */
-    public AttributedList remove(E path) {
+    public AttributedList<E> remove(E path) {
         return _impl.remove(path.getAbsolute());
     }
 
@@ -61,7 +105,15 @@ public class Cache<E extends AbstractPath> {
      * @return null if no cached file listing is available
      */
     public AttributedList<E> get(E path) {
-        return _impl.get(path.getAbsolute());
+        return this.get(path.getAbsolute());
+    }
+
+    /**
+     * @param path
+     * @return
+     */
+    public AttributedList<E> get(String path) {
+        return _impl.get(path);
     }
 
     /**
@@ -71,7 +123,17 @@ public class Cache<E extends AbstractPath> {
      * @return null if no cached file listing is available
      */
     public AttributedList<E> get(final E path, final Comparator<E> comparator, final PathFilter<E> filter) {
-        AttributedList<E> childs = _impl.get(path.getAbsolute());
+        return this.get(path.getAbsolute(), comparator, filter);
+    }
+
+    /**
+     * @param path
+     * @param comparator
+     * @param filter
+     * @return
+     */
+    public AttributedList<E> get(final String path, final Comparator<E> comparator, final PathFilter<E> filter) {
+        AttributedList<E> childs = _impl.get(path);
         if(null == childs) {
             return null;
         }
@@ -107,7 +169,7 @@ public class Cache<E extends AbstractPath> {
         return childs;
     }
 
-    public AttributedList put(E path, AttributedList<E> childs) {
+    public AttributedList<E> put(E path, AttributedList<E> childs) {
         return _impl.put(path.getAbsolute(), childs);
     }
 
