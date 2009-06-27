@@ -524,17 +524,7 @@
 		4719A6030BD964780068CCFD /* connection.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = connection.tiff; sourceTree = "<group>"; };
 		471D2C5405A2505600675163 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		471DFF1E0BCEDB0000AE81F9 /* CDPreferencesImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDPreferencesImpl.h; sourceTree = "<group>"; };
-		471DFF200BCEDB0000AE81F9 /* CDPreferencesImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDPreferencesImpl.m; sourceTree = "<group>"; wrapsLines = 1; };
 		47215AA607FC9A3E00451725 /* login.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = login.tiff; sourceTree = "<group>"; };
-		472404400AFF4B5C008FAFBB /* FileWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWatcher.h; sourceTree = "<group>"; };
-		472404410AFF4B5C008FAFBB /* FileWatcher.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileWatcher.java; sourceTree = "<group>"; };
-		472404420AFF4B5C008FAFBB /* FileWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileWatcher.m; sourceTree = "<group>"; };
-		472404430AFF4B5D008FAFBB /* FileWatcherListener.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileWatcherListener.java; sourceTree = "<group>"; };
-		472404440AFF4B5D008FAFBB /* UKKQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKKQueue.h; sourceTree = "<group>"; };
-		472404450AFF4B5D008FAFBB /* UKKQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKKQueue.m; sourceTree = "<group>"; };
-		472404460AFF4B5D008FAFBB /* UKMainThreadProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKMainThreadProxy.h; sourceTree = "<group>"; };
-		472404470AFF4B5D008FAFBB /* UKMainThreadProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKMainThreadProxy.m; sourceTree = "<group>"; };
 		4725BE0A05D2E27000C7CCBD /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
 		4726277E0FD5743C001D5BA5 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = lib/Growl.framework; sourceTree = "<group>"; };
 		47271D8E09F4050B00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -600,10 +590,8 @@
 		473DFCB90FD0B36D00E27A39 /* CDOutlineCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDOutlineCell.h; sourceTree = "<group>"; };
 		473DFCBA0FD0B36D00E27A39 /* CDOutlineCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDOutlineCell.m; sourceTree = "<group>"; };
 		474152F106C4F08A00AC0BD2 /* Proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Proxy.h; sourceTree = "<group>"; };
-		474152F206C4F08A00AC0BD2 /* Proxy.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Proxy.java; sourceTree = "<group>"; };
 		474152F306C4F08A00AC0BD2 /* Proxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Proxy.m; sourceTree = "<group>"; };
 		4741532006C4F08A00AC0BD2 /* Editor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Editor.h; sourceTree = "<group>"; };
-		4741532106C4F08A00AC0BD2 /* Editor.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Editor.java; sourceTree = "<group>"; };
 		4741532206C4F08A00AC0BD2 /* Editor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Editor.m; sourceTree = "<group>"; };
 		4741532306C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAppleEventDescriptor-Extensions.h"; sourceTree = "<group>"; };
 		4741532406C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAppleEventDescriptor-Extensions.m"; sourceTree = "<group>"; };
@@ -983,8 +971,6 @@
 		4765652E098134B200633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4765652F098134D300633FD8 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Status.strings; sourceTree = "<group>"; };
 		476774DD0B74CE750025093E /* trash.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = trash.tiff; sourceTree = "<group>"; };
-		476B03340D05CFA100CE8ADE /* UKFileWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKFileWatcher.m; sourceTree = "<group>"; };
-		476B03350D05CFA100CE8ADE /* UKFileWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKFileWatcher.h; sourceTree = "<group>"; };
 		476C7C1807F5A2A700CF6032 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/File.nib; sourceTree = "<group>"; };
 		476C7C1C07F5A2D000CF6032 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/File.nib; sourceTree = "<group>"; };
 		476C7C1D07F5A2D300CF6032 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/File.nib; sourceTree = "<group>"; };
@@ -1043,19 +1029,6 @@
 		477A108B0FD08DE800BAD4AD /* ProxyForJava.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProxyForJava.m; sourceTree = "<group>"; };
 		477A108C0FD08DE800BAD4AD /* Rococoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rococoa.h; sourceTree = "<group>"; };
 		477A108D0FD08DE800BAD4AD /* Rococoa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Rococoa.m; sourceTree = "<group>"; };
-		477A10A60FD08DE800BAD4AD /* InvalidPatternException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidPatternException.java; sourceTree = "<group>"; };
-		477A10A70FD08DE800BAD4AD /* NoClosingBracketException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = NoClosingBracketException.java; sourceTree = "<group>"; };
-		477A10A90FD08DE800BAD4AD /* AbstractHead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = AbstractHead.java; sourceTree = "<group>"; };
-		477A10AA0FD08DE800BAD4AD /* CharacterHead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = CharacterHead.java; sourceTree = "<group>"; };
-		477A10AB0FD08DE800BAD4AD /* FileNameMatcher.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = FileNameMatcher.java; sourceTree = "<group>"; };
-		477A10AC0FD08DE800BAD4AD /* GroupHead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = GroupHead.java; sourceTree = "<group>"; };
-		477A10AD0FD08DE800BAD4AD /* Head.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = Head.java; sourceTree = "<group>"; };
-		477A10AE0FD08DE800BAD4AD /* LastHead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = LastHead.java; sourceTree = "<group>"; };
-		477A10AF0FD08DE800BAD4AD /* RestrictedWildCardHead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = RestrictedWildCardHead.java; sourceTree = "<group>"; };
-		477A10B00FD08DE800BAD4AD /* WildCardHead.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = WildCardHead.java; sourceTree = "<group>"; };
-		477A10B20FD08DE800BAD4AD /* OpenSshConfig.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = OpenSshConfig.java; sourceTree = "<group>"; };
-		477A10B50FD08DE800BAD4AD /* DateParser.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = DateParser.java; sourceTree = "<group>"; };
-		477A10B60FD08DE800BAD4AD /* InvalidDateException.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = InvalidDateException.java; sourceTree = "<group>"; };
 		477B1B7C0AF384350023BA7F /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNDisclosableView.h; sourceTree = "<group>"; };
 		477B1B7D0AF384350023BA7F /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SNDisclosableView.m; sourceTree = "<group>"; };
 		477BE2330FD9B38C00F5CB50 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1325,7 +1298,6 @@
 		47B607490DA420880068282C /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libURLSchemeHandlerConfiguration.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDB0D0B92967600141EB4 /* URLSchemeHandlerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLSchemeHandlerConfiguration.h; sourceTree = "<group>"; };
-		47BEDB0E0B92967600141EB4 /* URLSchemeHandlerConfiguration.java */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.java; path = URLSchemeHandlerConfiguration.java; sourceTree = "<group>"; };
 		47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLSchemeHandlerConfiguration.m; sourceTree = "<group>"; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1693,32 +1665,6 @@
 			path = macfoh;
 			sourceTree = "<group>";
 		};
-		471DFF0C0BCEDACB00AE81F9 /* preferences */ = {
-			isa = PBXGroup;
-			children = (
-				471DFF1E0BCEDB0000AE81F9 /* CDPreferencesImpl.h */,
-				471DFF200BCEDB0000AE81F9 /* CDPreferencesImpl.m */,
-			);
-			name = preferences;
-			sourceTree = "<group>";
-		};
-		4724043F0AFF4B5C008FAFBB /* io */ = {
-			isa = PBXGroup;
-			children = (
-				476B03340D05CFA100CE8ADE /* UKFileWatcher.m */,
-				476B03350D05CFA100CE8ADE /* UKFileWatcher.h */,
-				472404400AFF4B5C008FAFBB /* FileWatcher.h */,
-				472404410AFF4B5C008FAFBB /* FileWatcher.java */,
-				472404420AFF4B5C008FAFBB /* FileWatcher.m */,
-				472404430AFF4B5D008FAFBB /* FileWatcherListener.java */,
-				472404440AFF4B5D008FAFBB /* UKKQueue.h */,
-				472404450AFF4B5D008FAFBB /* UKKQueue.m */,
-				472404460AFF4B5D008FAFBB /* UKMainThreadProxy.h */,
-				472404470AFF4B5D008FAFBB /* UKMainThreadProxy.m */,
-			);
-			path = io;
-			sourceTree = "<group>";
-		};
 		4729389B0F9DBC420086605D /* aquaticprime */ = {
 			isa = PBXGroup;
 			children = (
@@ -1763,7 +1709,6 @@
 			children = (
 				4729389B0F9DBC420086605D /* aquaticprime */,
 				47BEDB0C0B92967500141EB4 /* util */,
-				4724043F0AFF4B5C008FAFBB /* io */,
 				470E56CF08BE3E1E00BDF3CD /* forker */,
 				47CD997C0738DEC700E9379E /* proxy */,
 				4762DB8409FC47380034C662 /* Host.h */,
@@ -1793,7 +1738,6 @@
 				473DFCBA0FD0B36D00E27A39 /* CDOutlineCell.m */,
 				47D5E5260FD132D30060AD43 /* CDBookmarkCell.h */,
 				47D5E5250FD132D30060AD43 /* CDBookmarkCell.m */,
-				471DFF0C0BCEDACB00AE81F9 /* preferences */,
 				47DC7F4F08694B6A00B9DD7D /* dotmac */,
 				4798434E072B0DAA00FA3CDB /* view */,
 				479815EA0728DCA000FA3CDB /* growl */,
@@ -1806,7 +1750,6 @@
 			isa = PBXGroup;
 			children = (
 				4741532006C4F08A00AC0BD2 /* Editor.h */,
-				4741532106C4F08A00AC0BD2 /* Editor.java */,
 				4741532206C4F08A00AC0BD2 /* Editor.m */,
 				4741532306C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.h */,
 				4741532406C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.m */,
@@ -2013,8 +1956,6 @@
 			isa = PBXGroup;
 			children = (
 				477A105D0FD08DE800BAD4AD /* rococoa */,
-				477A10A30FD08DE800BAD4AD /* spearce */,
-				477A10B30FD08DE800BAD4AD /* w3c */,
 			);
 			path = org;
 			sourceTree = "<group>";
@@ -2036,73 +1977,6 @@
 				477A108D0FD08DE800BAD4AD /* Rococoa.m */,
 			);
 			path = native;
-			sourceTree = "<group>";
-		};
-		477A10A30FD08DE800BAD4AD /* spearce */ = {
-			isa = PBXGroup;
-			children = (
-				477A10A40FD08DE800BAD4AD /* jgit */,
-			);
-			path = spearce;
-			sourceTree = "<group>";
-		};
-		477A10A40FD08DE800BAD4AD /* jgit */ = {
-			isa = PBXGroup;
-			children = (
-				477A10A50FD08DE800BAD4AD /* errors */,
-				477A10A80FD08DE800BAD4AD /* fnmatch */,
-				477A10B10FD08DE800BAD4AD /* transport */,
-			);
-			path = jgit;
-			sourceTree = "<group>";
-		};
-		477A10A50FD08DE800BAD4AD /* errors */ = {
-			isa = PBXGroup;
-			children = (
-				477A10A60FD08DE800BAD4AD /* InvalidPatternException.java */,
-				477A10A70FD08DE800BAD4AD /* NoClosingBracketException.java */,
-			);
-			path = errors;
-			sourceTree = "<group>";
-		};
-		477A10A80FD08DE800BAD4AD /* fnmatch */ = {
-			isa = PBXGroup;
-			children = (
-				477A10A90FD08DE800BAD4AD /* AbstractHead.java */,
-				477A10AA0FD08DE800BAD4AD /* CharacterHead.java */,
-				477A10AB0FD08DE800BAD4AD /* FileNameMatcher.java */,
-				477A10AC0FD08DE800BAD4AD /* GroupHead.java */,
-				477A10AD0FD08DE800BAD4AD /* Head.java */,
-				477A10AE0FD08DE800BAD4AD /* LastHead.java */,
-				477A10AF0FD08DE800BAD4AD /* RestrictedWildCardHead.java */,
-				477A10B00FD08DE800BAD4AD /* WildCardHead.java */,
-			);
-			path = fnmatch;
-			sourceTree = "<group>";
-		};
-		477A10B10FD08DE800BAD4AD /* transport */ = {
-			isa = PBXGroup;
-			children = (
-				477A10B20FD08DE800BAD4AD /* OpenSshConfig.java */,
-			);
-			path = transport;
-			sourceTree = "<group>";
-		};
-		477A10B30FD08DE800BAD4AD /* w3c */ = {
-			isa = PBXGroup;
-			children = (
-				477A10B40FD08DE800BAD4AD /* util */,
-			);
-			path = w3c;
-			sourceTree = "<group>";
-		};
-		477A10B40FD08DE800BAD4AD /* util */ = {
-			isa = PBXGroup;
-			children = (
-				477A10B50FD08DE800BAD4AD /* DateParser.java */,
-				477A10B60FD08DE800BAD4AD /* InvalidDateException.java */,
-			);
-			path = util;
 			sourceTree = "<group>";
 		};
 		477B1B7B0AF384350023BA7F /* snoize */ = {
@@ -2158,7 +2032,6 @@
 			isa = PBXGroup;
 			children = (
 				47BEDB0D0B92967600141EB4 /* URLSchemeHandlerConfiguration.h */,
-				47BEDB0E0B92967600141EB4 /* URLSchemeHandlerConfiguration.java */,
 				47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */,
 			);
 			path = util;
@@ -2167,7 +2040,6 @@
 		47CD997C0738DEC700E9379E /* proxy */ = {
 			isa = PBXGroup;
 			children = (
-				474152F206C4F08A00AC0BD2 /* Proxy.java */,
 				474152F306C4F08A00AC0BD2 /* Proxy.m */,
 				474152F106C4F08A00AC0BD2 /* Proxy.h */,
 			);
