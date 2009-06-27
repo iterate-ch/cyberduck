@@ -136,9 +136,7 @@ public class CDActivityController extends CDWindowController {
              * @param view
              */
             public int numberOfRowsInTableView(NSTableView view) {
-                synchronized(tasks) {
-                    return tasks.size();
-                }
+                return tasks.size();
             }
 
             /**

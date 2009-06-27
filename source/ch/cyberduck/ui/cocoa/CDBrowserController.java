@@ -732,8 +732,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     for(Path path : selected) {
-                        this.selectRow(
-                                browserOutlineView.rowForItem(NSString.stringWithString(path.getAbsolute())), true);
+                        final int row = browserOutlineView.rowForItem(NSString.stringWithString(path.getAbsolute()));
+                        this.selectRow(row, true);
                     }
                     break;
                 }
@@ -821,45 +821,43 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     @Outlet
     private NSDrawer logDrawer;
 
-    private CDController logDrawerNotifications = new CDController() {
-        public void drawerWillOpen(NSNotification notification) {
-            logDrawer.setContentSize(new NSSize(
-                    logDrawer.contentSize().width.doubleValue(),
-                    Preferences.instance().getFloat("browser.logDrawer.size.height")
-            ));
-        }
+    public void drawerWillOpen(NSNotification notification) {
+        logDrawer.setContentSize(new NSSize(
+                logDrawer.contentSize().width.doubleValue(),
+                Preferences.instance().getFloat("browser.logDrawer.size.height")
+        ));
+    }
 
-        public void drawerDidOpen(NSNotification notification) {
-            Preferences.instance().setProperty("browser.logDrawer.isOpen", true);
-        }
+    public void drawerDidOpen(NSNotification notification) {
+        Preferences.instance().setProperty("browser.logDrawer.isOpen", true);
+    }
 
-        public void drawerWillClose(NSNotification notification) {
-            Preferences.instance().setProperty("browser.logDrawer.size.height",
-                    logDrawer.contentSize().height);
-        }
+    public void drawerWillClose(NSNotification notification) {
+        Preferences.instance().setProperty("browser.logDrawer.size.height",
+                logDrawer.contentSize().height);
+    }
 
-        public void drawerDidClose(NSNotification notification) {
-            Preferences.instance().setProperty("browser.logDrawer.isOpen", false);
-        }
-    };
+    public void drawerDidClose(NSNotification notification) {
+        Preferences.instance().setProperty("browser.logDrawer.isOpen", false);
+    }
 
     public void setLogDrawer(NSDrawer logDrawer) {
         this.logDrawer = logDrawer;
         this.transcript = new CDTranscriptController();
         this.logDrawer.setContentView(this.transcript.getLogView());
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerWillOpen:"),
                 NSDrawer.DrawerWillOpenNotification,
                 this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerDidOpen:"),
                 NSDrawer.DrawerDidOpenNotification,
                 this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerWillClose:"),
                 NSDrawer.DrawerWillCloseNotification,
                 this.logDrawer);
-        NSNotificationCenter.defaultCenter().addObserver(logDrawerNotifications.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("drawerDidClose:"),
                 NSDrawer.DrawerDidCloseNotification,
                 this.logDrawer);
@@ -1434,7 +1432,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserListView.setAllowsColumnSelection(false);
         browserListView.setAllowsColumnReordering(true);
 
-        browserListView.setDataSource((this.browserListModel = new CDBrowserListViewModel(this)).id());
+        browserListView.setDataSource((browserListModel = new CDBrowserListViewModel(this)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserTableDelegate<Path>() {
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
@@ -2822,37 +2820,37 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         uploadPanel.setTitle(Locale.localizedString("Upload", ""));
         uploadPanel.beginSheetForDirectory(lastSelectedUploadDirectory, //trying to be smart
                 null, this.window,
-                new CDController() {
-                    public void uploadPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-                        sheet.close();
-                        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-                            Path destination = getSelectedPath();
-                            if(null == destination) {
-                                destination = workdir();
-                            }
-                            else if(!destination.attributes.isDirectory()) {
-                                destination = (Path) destination.getParent();
-                            }
-                            // selected files on the local filesystem
-                            NSArray selected = sheet.filenames();
-                            NSEnumerator iterator = selected.objectEnumerator();
-                            final Session session = getTransferSession();
-                            final List<Path> roots = new Collection<Path>();
-                            NSObject next;
-                            while((next = iterator.nextObject()) != null) {
-                                roots.add(PathFactory.createPath(session,
-                                        destination.getAbsolute(),
-                                        new Local(next.toString())));
-                            }
-                            final Transfer q = new UploadTransfer(roots);
-                            transfer(q, destination);
-                        }
-                        lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
-                        uploadPanel = null;
-                    }
-                }.id(),
+                this.id(),
                 Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
                 null);
+    }
+
+    public void uploadPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
+        sheet.close();
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            Path destination = getSelectedPath();
+            if(null == destination) {
+                destination = workdir();
+            }
+            else if(!destination.attributes.isDirectory()) {
+                destination = (Path) destination.getParent();
+            }
+            // selected files on the local filesystem
+            NSArray selected = sheet.filenames();
+            NSEnumerator iterator = selected.objectEnumerator();
+            final Session session = getTransferSession();
+            final List<Path> roots = new Collection<Path>();
+            NSObject next;
+            while((next = iterator.nextObject()) != null) {
+                roots.add(PathFactory.createPath(session,
+                        destination.getAbsolute(),
+                        new Local(next.toString())));
+            }
+            final Transfer q = new UploadTransfer(roots);
+            transfer(q, destination);
+        }
+        lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
+        uploadPanel = null;
     }
 
     /**
