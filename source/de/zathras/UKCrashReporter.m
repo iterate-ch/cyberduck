@@ -137,7 +137,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 		NSLog(@"Error during check for crash: %@",localException);
 	NS_ENDHANDLER
 	
-	[pool release];
+	[pool drain];
 }
 
 NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString* crashLogsFolder )
