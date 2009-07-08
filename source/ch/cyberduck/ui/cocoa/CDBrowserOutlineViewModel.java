@@ -116,6 +116,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         else {
             path = controller.lookup(item.toString());
         }
+        if(null == path) {
+            return null;
+        }
         final AttributedList<Path> childs = this.childs(path);
         if(index >= childs.size()) {
             log.warn("Index " + index + " out of bound for " + item);

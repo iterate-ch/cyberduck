@@ -1338,6 +1338,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                                                                         NSTableColumn tableColumn, NSObject item) {
                 if(tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
                     final Path path = lookup(item.toString());
+                    if(null == path) {
+                        return;
+                    }
                     cell.setEditable(path.isRenameSupported());
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
