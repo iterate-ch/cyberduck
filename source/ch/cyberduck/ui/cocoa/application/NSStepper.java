@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa.application;
 
 /// <i>native declaration : :10</i>
 public abstract class NSStepper extends NSControl {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSStepper", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
         NSStepper alloc();

@@ -29,8 +29,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
-public abstract class NSView extends NSResponder {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSView", _Class.class);
+public abstract class NSView implements NSResponder {
 
     public static final int NSViewNotSizable = 0;
     public static final int NSViewMinXMargin = 1;

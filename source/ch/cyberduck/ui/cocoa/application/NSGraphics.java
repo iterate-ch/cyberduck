@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 /**
  * @version $Id$
  */
-public class NSGraphics {
+public interface NSGraphics {
     /// <i>native declaration : :17</i>
     public static final int NSCompositeClear = 0;
     /// <i>native declaration : :18</i>

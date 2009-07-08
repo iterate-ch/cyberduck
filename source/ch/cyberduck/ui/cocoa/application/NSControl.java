@@ -27,22 +27,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :10</i>
 public abstract class NSControl extends NSView {
-    static final _Class CLASS = org.rococoa.Rococoa.createClass("NSControl", _Class.class);
-
-    public interface _Class extends org.rococoa.NSClass {
-        /**
-         * <i>native declaration : :26</i><br>
-         * Conversion Error : /// Original signature : <code>void setCellClass(null)</code><br>
-         * + (void)setCellClass:(null)factoryId; (Argument factoryId cannot be converted)
-         */
-        /**
-         * Original signature : <code>cellClass()</code><br>
-         * <i>native declaration : :27</i>
-         */
-        NSObject cellClass();
-
-        NSControl alloc();
-    }
 
     /**
      * <i>native declaration : :29</i><br>

@@ -24,8 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.foundation.NSPoint;
 
-public abstract class NSEvent implements NSObject, NSCopying {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSEvent", _Class.class);
+public interface NSEvent extends NSObject, NSCopying {
 
     /// <i>native declaration : :12</i>
     public static final int NSLeftMouseDown = 1;

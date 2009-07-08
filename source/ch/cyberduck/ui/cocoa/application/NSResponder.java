@@ -24,8 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.foundation.NSError;
 
 /// <i>native declaration : :11</i>
-public abstract class NSResponder implements NSObject {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSResponder", _Class.class);
+public interface NSResponder extends NSObject {
 
     public interface _Class extends org.rococoa.NSClass {
         NSResponder alloc();

@@ -23,11 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 
 /// <i>native declaration : :10</i>
 public abstract class NSPopUpButton extends NSButton {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSPopUpButton", _Class.class);
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSPopUpButton alloc();
-    }
     /**
      * <i>native declaration : :22</i><br>
      * Conversion Error : /// Original signature : <code>initWithFrame(null, BOOL)</code><br>

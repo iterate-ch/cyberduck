@@ -25,7 +25,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
 // BridgeSupport v 0.017
 public abstract class NSText extends NSView {
-    _Class CLASS = org.rococoa.Rococoa.createClass("NSText", _Class.class);
 
     /// <i>native declaration : /Users/dkocher/null:15</i>
     public static final int NSEnterCharacter = 3;

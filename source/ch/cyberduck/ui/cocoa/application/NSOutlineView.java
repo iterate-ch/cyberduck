@@ -19,16 +19,13 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :73</i>
 public abstract class NSOutlineView extends NSTableView {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSOutlineView", _Class.class);
 
     public static final int NSOutlineViewDropOnItemIndex = -1;
 

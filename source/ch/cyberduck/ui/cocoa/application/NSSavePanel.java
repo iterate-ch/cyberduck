@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import org.rococoa.ID;
 
 /// <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:30</i>
-public abstract class NSSavePanel extends NSPanel {
+public abstract class NSSavePanel implements NSPanel {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSavePanel", _Class.class);
 
     public static NSSavePanel savePanel() {

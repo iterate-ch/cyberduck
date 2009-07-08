@@ -24,11 +24,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 public abstract class NSTextStorage extends NSMutableAttributedString {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextStorage", _Class.class);
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSTextStorage alloc();
-    }
 
     /**
      * These methods manage the list of layout managers.<br>

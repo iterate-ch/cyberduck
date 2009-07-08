@@ -22,20 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.Rococoa;
-
 /// <i>native declaration : :8</i>
 public abstract class NSTextField extends NSControl {
-    static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextField", _Class.class);
-
-    public static NSTextField textField() {
-        return Rococoa.cast(CLASS.alloc().initWithFrame(new NSRect(0, 0)), NSTextField.class);
-    }
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSTextField alloc();
-    }
 
     /**
      * Original signature : <code>void setBackgroundColor(NSColor*)</code><br>

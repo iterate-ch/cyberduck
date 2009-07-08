@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.Selector;
 
-public abstract class NSCell implements NSObject, NSCopying {
+public interface NSCell extends NSObject, NSCopying {
 
     /// <i>native declaration : :11</i>
     public static final int NSAnyType = 0;

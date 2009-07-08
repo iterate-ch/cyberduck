@@ -26,17 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :72</i>
 public abstract class NSTextView extends NSText {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextView", _Class.class);
 
-    public interface _Class extends org.rococoa.NSClass {
-        /**
-         * Original signature : <code>void registerForServices()</code><br>
-         * <i>from NSPasteboard native declaration : :270</i>
-         */
-        void registerForServices();
-
-        NSTextView alloc();
-    }
     /**
      * <i>native declaration : :80</i><br>
      * Conversion Error : /// Original signature : <code>initWithFrame(null, NSTextContainer*)</code><br>

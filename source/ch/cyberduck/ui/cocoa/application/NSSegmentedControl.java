@@ -19,20 +19,8 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.cocoa.CGFloat;
-
 /// <i>native declaration : :26</i>
 public abstract class NSSegmentedControl extends NSControl {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSegmentedControl", _Class.class);
-
-    @Override
-    public CGFloat frameRotation() {
-        throw new UnsupportedOperationException();
-    }
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSSegmentedControl alloc();
-    }
 
     /**
      * Original signature : <code>void setSegmentCount(NSInteger)</code><br>

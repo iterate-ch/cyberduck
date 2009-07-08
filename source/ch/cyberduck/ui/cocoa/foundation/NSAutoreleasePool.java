@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class NSAutoreleasePool implements NSObject {
-    private static Logger log = Logger.getLogger(NSAutoreleasePool.class);
 
     public static NSAutoreleasePool push() {
         return org.rococoa.Rococoa.create("NSAutoreleasePool", NSAutoreleasePool.class);

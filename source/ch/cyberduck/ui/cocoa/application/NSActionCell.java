@@ -20,8 +20,7 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 /// <i>native declaration : :10</i>
-public abstract class NSActionCell extends NSCell {
-    static final _Class CLASS = org.rococoa.Rococoa.createClass("NSActionCell", _Class.class);
+public interface NSActionCell extends NSCell {
 
     public interface _Class extends org.rococoa.NSClass {
         NSActionCell alloc();

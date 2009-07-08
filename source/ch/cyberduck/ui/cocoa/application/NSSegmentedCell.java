@@ -22,8 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :20</i>
-public abstract class NSSegmentedCell extends NSActionCell {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSegmentedCell", _Class.class);
+public interface NSSegmentedCell extends NSActionCell {
 
     public interface _Class extends org.rococoa.NSClass {
         NSSegmentedCell alloc();

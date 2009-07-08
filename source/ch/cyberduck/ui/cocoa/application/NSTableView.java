@@ -26,7 +26,6 @@ import org.rococoa.cocoa.foundation.NSPoint;
 
 /// <i>native declaration : :69</i>
 public abstract class NSTableView extends NSControl {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTableView", _Class.class);
 
     /// <i>native declaration : :60</i>
     public static final int NSTableViewDropOn = 0;

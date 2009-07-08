@@ -23,7 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :42</i>
 public abstract class NSProgressIndicator extends NSView {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSProgressIndicator", _Class.class);
 
     /// <i>native declaration : :22</i>
     public static final int NSProgressIndicatorPreferredThickness = 14;
