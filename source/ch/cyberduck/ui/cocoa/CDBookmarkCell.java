@@ -23,7 +23,7 @@ import ch.cyberduck.ui.cocoa.application.NSCell;
 /**
  * @version $Id$
  */
-public abstract class CDBookmarkCell extends NSCell {
+public abstract class CDBookmarkCell implements NSCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
 
     /// <i>native declaration : :22</i>
