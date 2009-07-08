@@ -78,7 +78,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
 	SCNetworkConnectionFlags flags;
 	NSURL * url = [NSURL URLWithString:urlString];
 	
-	if (!SCNetworkCheckReachabilityByName([[url host] cString], &flags))
+	if (!SCNetworkCheckReachabilityByName([[url host] cStringUsingEncoding:NSASCIIStringEncoding], &flags))
 		return NO;
 	return (flags & kSCNetworkFlagsReachable) && !(flags & kSCNetworkFlagsConnectionRequired);
 }
