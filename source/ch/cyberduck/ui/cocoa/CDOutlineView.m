@@ -43,7 +43,7 @@ static NSTableColumn *localSelectionColumn;
 	select_timer = nil;
 	autoexpand_timer = nil;
 
-	// First, load the private Quick Look framework if available (10.5+)
+	// First, load the private Quick Look framework if available (10.5)
 	quickLookAvailable = [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load];
 }
 
@@ -54,6 +54,8 @@ static NSTableColumn *localSelectionColumn;
 
 - (void)dealloc
 {
+    [typeAheadSelectionColumn release];
+    [localSelectionColumn release];
 	[select_string release];
 	[select_timer release];
 	[autoexpand_timer release];
@@ -245,14 +247,16 @@ static NSTableColumn *localSelectionColumn;
 			[[QLPreviewPanel sharedPreviewPanel] selectPreviousItem];
 			return;
 		}
-		NSEnumerator *enumerator = [self selectedRowEnumerator];
-		id row;
-		while (row = [enumerator nextObject]) {
-			id object = [self itemAtRow:[row intValue]];
+		NSIndexSet *enumerator = [self selectedRowIndexes];
+		NSUInteger index = [enumerator firstIndex]; 
+        while(index != NSNotFound) {
+			id object = [self itemAtRow:index];
 			if (object && [self isExpandable:object] && [self isItemExpanded:object]) {
 				[self collapseItem:object];
-				enumerator = [self selectedRowEnumerator];
+				enumerator = [self selectedRowIndexes];
+				continue;
 			}
+			index = [enumerator indexGreaterThanIndex:index];
 		}
 		return;
 	}
@@ -261,14 +265,16 @@ static NSTableColumn *localSelectionColumn;
 			[[QLPreviewPanel sharedPreviewPanel] selectNextItem];
 			return;
 		}
-		NSEnumerator *enumerator = [self selectedRowEnumerator];
-		id row;
-		while (row = [enumerator nextObject]) {
-			id object = [self itemAtRow:[row intValue]];
+		NSIndexSet *enumerator = [self selectedRowIndexes];
+		NSUInteger index = [enumerator firstIndex]; 
+        while(index != NSNotFound) {
+			id object = [self itemAtRow:index];
 			if (object && [self isExpandable:object] && ![self isItemExpanded:object]) {
 				[self expandItem:object];
-				enumerator = [self selectedRowEnumerator];
+				enumerator = [self selectedRowIndexes];
+				continue;
 			}
+			index = [enumerator indexGreaterThanIndex:index];
 		}
 		return;
 	}
