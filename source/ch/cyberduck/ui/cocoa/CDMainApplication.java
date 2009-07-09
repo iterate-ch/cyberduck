@@ -41,18 +41,6 @@ public class CDMainApplication {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
         try {
-            try {
-                NSBundle bundle = NSBundle.mainBundle();
-                String lib = bundle.resourcePath() + "/Java/" + "librococoa.dylib";
-                log.info("Locating librococoa.dylib at '" + lib + "'");
-                System.load(lib);
-                log.info("librococoa.dylib loaded");
-            }
-            catch(UnsatisfiedLinkError e) {
-                log.error("Could not load the librococoa.dylib library:" + e.getMessage());
-                throw e;
-            }
-
             final Logger root = Logger.getRootLogger();
             root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
