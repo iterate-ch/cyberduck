@@ -443,7 +443,8 @@ public abstract class Preferences {
         defaults.put("s3.logging.prefix", "logs/");
         defaults.put("cloudfront.logging.prefix", "logs/");
 
-        defaults.put("s3.cache.seconds", "86400"); //24h
+        final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds
+        defaults.put("s3.cache.seconds", String.valueOf(MONTH));
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
