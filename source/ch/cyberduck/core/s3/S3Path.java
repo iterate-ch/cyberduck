@@ -802,12 +802,12 @@ public class S3Path extends CloudPath {
             session.message(MessageFormat.format(NSBundle.localizedString("Making directory {0}", "Status", ""),
                     this.getName()));
 
-            final S3Bucket bucket = this.getBucket();
             if(this.isContainer()) {
                 // Create bucket
                 session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
             }
             else {
+                final S3Bucket bucket = this.getBucket();
                 S3Object object = new S3Object(bucket, this.getKey());
                 // Set object explicitly to private access by default.
                 object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
