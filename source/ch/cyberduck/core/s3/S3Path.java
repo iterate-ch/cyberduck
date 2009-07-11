@@ -804,6 +804,10 @@ public class S3Path extends CloudPath {
 
             if(this.isContainer()) {
                 // Create bucket
+                if(!RestS3Service.isBucketNameValidDNSName(this.getName())) {
+                    this.error("Bucket name is not DNS compatible");
+                    return;
+                }
                 session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
             }
             else {
