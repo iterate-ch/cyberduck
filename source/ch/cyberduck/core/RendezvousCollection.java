@@ -36,18 +36,22 @@ public class RendezvousCollection extends BookmarkCollection {
         return RENDEZVOUS_COLLECTION;
     }
 
+    @Override
     public Host get(int row) {
         return Rendezvous.instance().getService(row);
     }
 
+    @Override
     public int size() {
         return Rendezvous.instance().numberOfServices();
     }
 
+    @Override
     public Host remove(int row) {
         return null;
     }
 
+    @Override
     public Object[] toArray() {
         Host[] content = new Host[this.size()];
         int i = 0;
@@ -57,14 +61,17 @@ public class RendezvousCollection extends BookmarkCollection {
         return content;
     }
 
+    @Override
     public boolean allowsAdd() {
         return false;
     }
 
+    @Override
     public boolean allowsDelete() {
         return false;
     }
 
+    @Override
     public boolean allowsEdit() {
         return false;
     }

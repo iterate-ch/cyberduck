@@ -570,6 +570,7 @@ public abstract class Session {
      * @param other
      * @return true if the other session denotes the same hostname and protocol
      */
+    @Override
     public boolean equals(Object other) {
         if(null == other) {
             return false;

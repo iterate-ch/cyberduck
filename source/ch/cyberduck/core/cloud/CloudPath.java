@@ -47,6 +47,7 @@ public abstract class CloudPath extends Path {
         super(parent, local);
     }
 
+    @Override
     public AbstractPath getParent() {
         final CloudPath parent = (CloudPath)super.getParent();
         if(parent.isRoot()) {

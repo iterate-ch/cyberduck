@@ -55,6 +55,7 @@ public class ECSession extends S3Session {
         super(h);
     }
 
+    @Override
     protected void configure() {
         super.configure();
         configuration.setProperty("s3service.s3-endpoint", host.getHostname());
@@ -62,6 +63,7 @@ public class ECSession extends S3Session {
         configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize("/services/Walrus"));
     }
 
+    @Override
     protected void login(final Credentials credentials) throws IOException {
         final HostConfiguration hostconfig = new StickyHostConfiguration();
         hostconfig.setHost(host.getHostname(), host.getPort(),
@@ -76,6 +78,7 @@ public class ECSession extends S3Session {
      *
      * @return All distributions for the given AWS Credentials
      */
+    @Override
     public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
         return new Distribution[]{};
     }

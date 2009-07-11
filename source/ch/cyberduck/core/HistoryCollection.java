@@ -51,6 +51,7 @@ public class HistoryCollection extends HostCollection {
         folder.mkdir(true);
     }
 
+    @Override
     public synchronized void add(int row, Host bookmark) {
         bookmark.setFile(new Local(file, bookmark.getNickname() + ".duck"));
         try {
@@ -72,12 +73,14 @@ public class HistoryCollection extends HostCollection {
      * @param row
      * @return the element that was removed from the list.
      */
+    @Override
     public synchronized Host remove(int row) {
         final Host bookmark = this.get(row);
         bookmark.getFile().delete(false);
         return super.remove(row);
     }
 
+    @Override
     protected void load() {
         log.info("Reloading " + file);
         final AttributedList<Local> bookmarks = file.childs(new NullComparator<Local>(),
@@ -97,6 +100,7 @@ public class HistoryCollection extends HostCollection {
         }
     }
 
+    @Override
     protected void sort() {
         Collections.sort(this, new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
@@ -113,6 +117,7 @@ public class HistoryCollection extends HostCollection {
         });
     }
 
+    @Override
     public synchronized void clear() {
         log.debug("Removing all bookmarks from " + file);
         for(Host next : this) {
@@ -121,18 +126,22 @@ public class HistoryCollection extends HostCollection {
         super.clear();
     }
 
+    @Override
     public void save() {
         // Do not save collection
     }
 
+    @Override
     protected Host unique(Host bookmark) {
         return bookmark;
     }
 
+    @Override
     public boolean allowsAdd() {
         return false;
     }
 
+    @Override
     public boolean allowsEdit() {
         return false;
     }

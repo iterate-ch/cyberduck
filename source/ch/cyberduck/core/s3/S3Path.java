@@ -109,6 +109,7 @@ public class S3Path extends CloudPath {
 
     private Status status;
 
+    @Override
     public Status getStatus() {
         if(null == status) {
             status = new Status() {
@@ -125,6 +126,7 @@ public class S3Path extends CloudPath {
         return status;
     }
 
+    @Override
     public boolean exists() {
         if(attributes.isDirectory()) {
             if(this.isContainer()) {
@@ -801,12 +803,12 @@ public class S3Path extends CloudPath {
             session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
-            final S3Bucket bucket = this.getBucket();
             if(this.isContainer()) {
                 // Create bucket
                 session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
             }
             else {
+                final S3Bucket bucket = this.getBucket();
                 S3Object object = new S3Object(bucket, this.getKey());
                 // Set object explicitly to private access by default.
                 object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
@@ -956,6 +958,7 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public void copy(AbstractPath copy) {
         try {
             if(attributes.isFile()) {
@@ -984,6 +987,7 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public String toHttpURL() {
         return this.toURL();
     }
@@ -993,6 +997,7 @@ public class S3Path extends CloudPath {
      *
      * @return
      */
+    @Override
     public String toURL() {
         if(Preferences.instance().getBoolean("s3.url.public")) {
             return this.createSignedUrl();

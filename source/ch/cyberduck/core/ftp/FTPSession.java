@@ -62,6 +62,7 @@ public class FTPSession extends Session {
         super(h);
     }
 
+    @Override
     protected Path mount(String directory) throws IOException {
         final Path workdir = super.mount(directory);
         if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
@@ -222,6 +223,7 @@ public class FTPSession extends Session {
         return parsers.get(delegate);
     }
 
+    @Override
     public String getIdentification() {
         StringBuffer info = new StringBuffer(super.getIdentification() + "\n");
         try {
@@ -258,6 +260,7 @@ public class FTPSession extends Session {
         }
     }
 
+    @Override
     public void interrupt() {
         try {
             super.interrupt();
@@ -276,6 +279,7 @@ public class FTPSession extends Session {
         }
     }
 
+    @Override
     public void check() throws IOException {
         try {
             super.check();
@@ -400,6 +404,7 @@ public class FTPSession extends Session {
         }
     }
 
+    @Override
     public boolean isSendCommandSupported() {
         return true;
     }

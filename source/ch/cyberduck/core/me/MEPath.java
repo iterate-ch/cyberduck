@@ -72,6 +72,7 @@ public class MEPath extends DAVSPath {
      * Custom Web URL handling
      * @return A URL to either <code>homepage.mac.com</code> or <code>web.me.com</code>
      */
+    @Override
     public String toHttpURL() {
         final String member = this.getHost().getCredentials().getUsername();
 

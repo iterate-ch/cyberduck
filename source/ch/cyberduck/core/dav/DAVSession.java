@@ -57,6 +57,7 @@ public class DAVSession extends HTTPSession {
         super(h);
     }
 
+    @Override
     public void check() throws IOException {
         super.check();
         if(this.isConnected()) {
@@ -226,6 +227,7 @@ public class DAVSession extends HTTPSession {
         }
     }
 
+    @Override
     public void interrupt() {
         try {
             super.interrupt();
@@ -273,6 +275,7 @@ public class DAVSession extends HTTPSession {
         return DAV != null;
     }
 
+    @Override
     public void error(Path path, String message, Throwable e) {
         if(e instanceof HttpException) {
             super.error(path, message, new HttpException(

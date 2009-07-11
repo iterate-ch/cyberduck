@@ -77,6 +77,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
         this.trustManager = trustManager;
     }
 
+    @Override
     protected FTPClient getClient() {
         // AUTH command required before login
         auth = true;
@@ -85,6 +86,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
 
     private boolean auth;
 
+    @Override
     public void login(final Credentials credentials) throws IOException {
         if(auth) {
             // Only send AUTH before the first login attempt

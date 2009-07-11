@@ -55,6 +55,7 @@ public class SFTPSession extends Session {
         super(h);
     }
 
+    @Override
     public boolean isSecure() {
         if(super.isSecure()) {
             return SSH.isAuthenticationComplete();
@@ -62,6 +63,7 @@ public class SFTPSession extends Session {
         return false;
     }
 
+    @Override
     public String getIdentification() {
         StringBuffer info = new StringBuffer(super.getIdentification() + "\n");
         if(SFTP != null) {
@@ -291,6 +293,7 @@ public class SFTPSession extends Session {
         }
     }
 
+    @Override
     public void interrupt() {
         try {
             super.interrupt();
@@ -307,6 +310,7 @@ public class SFTPSession extends Session {
         }
     }
 
+    @Override
     public void check() throws IOException {
         this.check(true);
     }
@@ -350,14 +354,17 @@ public class SFTPSession extends Session {
 
     }
 
+    @Override
     public boolean isSendCommandSupported() {
         return true;
     }
 
+    @Override
     public boolean isArchiveSupported() {
         return true;
     }
 
+    @Override
     public boolean isUnarchiveSupported() {
         return true;
     }

@@ -69,6 +69,7 @@ public class ECPath extends S3Path {
         super(s, dict);
     }
 
+    @Override
     protected S3Object getDetails() throws S3ServiceException {
         return null;
     }
@@ -76,6 +77,7 @@ public class ECPath extends S3Path {
     /**
      * @return
      */
+    @Override
     public Distribution readDistribution() {
         throw new UnsupportedOperationException();
     }
@@ -87,6 +89,7 @@ public class ECPath extends S3Path {
      * @param cnames
      * @param logging
      */
+    @Override
     public void writeDistribution(final boolean enabled, final String[] cnames, boolean logging) {
         throw new UnsupportedOperationException();
     }

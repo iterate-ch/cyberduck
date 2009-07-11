@@ -136,6 +136,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         }
     }
 
+    @Override
     public void interrupt() {
         try {
             super.interrupt();

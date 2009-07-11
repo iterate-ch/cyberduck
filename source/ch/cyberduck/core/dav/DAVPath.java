@@ -247,6 +247,7 @@ public class DAVPath extends Path {
         }
     }
 
+    @Override
     public void copy(AbstractPath copy) {
         try {
             session.check();
@@ -341,6 +342,7 @@ public class DAVPath extends Path {
                             new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - stat.getCurrent(), this.getLocal().getMimeType()) {
                                 boolean requested = false;
 
+                                @Override
                                 public void writeRequest(OutputStream out) throws IOException {
                                     if(requested) {
                                         in.reset();
@@ -355,6 +357,7 @@ public class DAVPath extends Path {
                                     }
                                 }
 
+                                @Override
                                 public boolean isRepeatable() {
                                     return true;
                                 }
@@ -383,6 +386,7 @@ public class DAVPath extends Path {
         }
     }
 
+    @Override
     public String toHttpURL() {
         return this.toURL();
     }

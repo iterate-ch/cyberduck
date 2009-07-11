@@ -30,7 +30,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import java.net.UnknownHostException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class HTTPSession extends Session {
 
@@ -63,11 +63,13 @@ public abstract class HTTPSession extends Session {
         super(h);
     }
 
+    @Override
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         Logger.getLogger("httpclient.wire.header").addAppender(appender);
         super.fireConnectionWillOpenEvent();
     }
 
+    @Override
     protected void fireConnectionWillCloseEvent() {
         Logger.getLogger("httpclient.wire.header").removeAppender(appender);
     }

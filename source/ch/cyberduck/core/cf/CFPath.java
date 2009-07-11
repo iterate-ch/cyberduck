@@ -170,6 +170,7 @@ public class CFPath extends CloudPath {
         return new Distribution(false, null, null);
     }
 
+    @Override
     public boolean exists() {
         if(this.isRoot()) {
             return true;
@@ -375,6 +376,7 @@ public class CFPath extends CloudPath {
 
                             boolean requested = false;
 
+                            @Override
                             public void writeRequest(OutputStream out) throws IOException {
                                 if(requested) {
                                     in.reset();
@@ -389,6 +391,7 @@ public class CFPath extends CloudPath {
                                 }
                             }
 
+                            @Override
                             public boolean isRepeatable() {
                                 return true;
                             }
@@ -464,6 +467,7 @@ public class CFPath extends CloudPath {
         }
     }
 
+    @Override
     public boolean isRenameSupported() {
         return false;
     }
@@ -475,6 +479,7 @@ public class CFPath extends CloudPath {
     /**
      * @return Publicy accessible URL of given object
      */
+    @Override
     public String toHttpURL() {
         final Distribution distribution = this.readDistribution();
         if(null == distribution.getUrl()) {

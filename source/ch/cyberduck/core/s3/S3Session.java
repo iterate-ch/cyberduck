@@ -289,6 +289,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         }
     }
 
+    @Override
     public void interrupt() {
         try {
             super.interrupt();

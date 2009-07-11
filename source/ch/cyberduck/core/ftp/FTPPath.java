@@ -561,6 +561,7 @@ public class FTPPath extends Path {
         }
     }
 
+    @Override
     public void writeOwner(String owner, boolean recursive) {
         String command = "chown";
         try {
@@ -589,6 +590,7 @@ public class FTPPath extends Path {
         }
     }
 
+    @Override
     public void writeGroup(String group, boolean recursive) {
         String command = "chgrp";
         try {
