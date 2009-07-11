@@ -999,9 +999,7 @@ public class CDBrowserController extends CDWindowController
         else if(bookmarkButton.state() == NSCell.OnState) {
             bookmarkModel.setSource(HostCollection.defaultCollection());
         }
-        addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsAdd());
-        editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit());
-        deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete());
+        bookmarkTableDelegate.selectionDidChange(null);
         this.setBookmarkFilter(null);
         bookmarkTable.deselectAll(null);
         bookmarkTable.reloadData();
@@ -1674,7 +1672,7 @@ public class CDBrowserController extends CDWindowController
     private CDBookmarkTableDataSource bookmarkModel;
 
     private NSTableView bookmarkTable; // IBOutlet
-    private CDTableDelegate<Host> bookmarkTableDelegate;
+    private CDAbstractTableDelegate<Host> bookmarkTableDelegate;
 
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
