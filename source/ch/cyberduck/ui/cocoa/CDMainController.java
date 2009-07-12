@@ -429,7 +429,7 @@ public class CDMainController extends CDBundleController {
      * @param notification
      */
     public void applicationDidFinishLaunching(NSNotification notification) {
-        log.info("Running Java " + System.getProperty("java.version"));
+        log.info("Running Java " + System.getProperty("java.version") + " on " + System.getProperty("os.arch"));
         if(log.isInfoEnabled()) {
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         }
