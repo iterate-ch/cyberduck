@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
 import org.apache.log4j.Level;
@@ -73,8 +72,18 @@ public class CDMainApplication {
      * @param runnable The <code>Runnable</code> to run
      */
     public static void invoke(final MainAction runnable) {
+        invoke(runnable, false);
+    }
+
+    /**
+     * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
+     *
+     * @param runnable The <code>Runnable</code> to run
+     * @param wait     Block until execution on main thread exits
+     */
+    public static void invoke(final MainAction runnable, final boolean wait) {
         synchronized(NSApplication.sharedApplication()) {
-            Foundation.runOnMainThread(runnable, false);
+            Foundation.runOnMainThread(runnable, wait);
         }
     }
 

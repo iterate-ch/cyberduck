@@ -76,7 +76,7 @@ public class CDActivityController extends CDWindowController {
                     tasks.put(action, new CDTaskController(action));
                     reload();
                 }
-            });
+            }, true);
         }
 
         @Override
@@ -88,7 +88,7 @@ public class CDActivityController extends CDWindowController {
                     controller.invalidate();
                     reload();
                 }
-            });
+            }, true);
         }
     };
 

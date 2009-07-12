@@ -137,33 +137,18 @@ public abstract class CDSheetController extends CDWindowController implements CD
                     public void run() {
                         //Invoke again on main thread
                         beginSheetImpl();
-                        synchronized(parent.window()) {
-                            parent.window().notify();
-                        }
                     }
-                });
-                synchronized(parent.window()) {
-                    while(!parent.hasSheet()) {
-                        try {
-                            log.debug("Sleeping:waitSheetDisplayLock...");
-                            parent.window().wait();
-                            log.debug("Awakened:waitSheetDisplayLock");
-                        }
-                        catch(InterruptedException e) {
-                            log.error(e.getMessage());
-                        }
+                }, true);
+            }
+            synchronized(parent.window()) {
+                while(parent.hasSheet()) {
+                    try {
+                        log.debug("Sleeping:waitForSheetDismiss...");
+                        parent.window().wait();
+                        log.debug("Awakened:waitForSheetDismiss");
                     }
-                }
-                synchronized(parent.window()) {
-                    while(parent.hasSheet()) {
-                        try {
-                            log.debug("Sleeping:waitForSheetDismiss...");
-                            parent.window().wait();
-                            log.debug("Awakened:waitForSheetDismiss");
-                        }
-                        catch(InterruptedException e) {
-                            log.error(e.getMessage());
-                        }
+                    catch(InterruptedException e) {
+                        log.error(e.getMessage());
                     }
                 }
             }
