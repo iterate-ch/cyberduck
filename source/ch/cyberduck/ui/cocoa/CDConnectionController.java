@@ -418,37 +418,34 @@ public class CDConnectionController extends CDSheetController {
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
             publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"),
-                    null,
-                    this.window(),
-                    new CDController() {
-                        public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel window, int returncode, ID context) {
-                            if(NSPanel.NSOKButton == returncode) {
-                                NSArray selected = window.filenames();
-                                final NSEnumerator enumerator = selected.objectEnumerator();
-                                NSObject next;
-                                while(null != (next = enumerator.nextObject())) {
-                                    String pk = NSString.stringByAbbreviatingWithTildeInPath(
-                                            Rococoa.cast(next, NSString.class).toString());
-                                    pkLabel.setStringValue(pk);
-                                }
-                                passField.setEnabled(false);
-                            }
-                            if(NSPanel.NSCancelButton == returncode) {
-                                passField.setEnabled(true);
-                                pkCheckbox.setState(NSCell.NSOffState);
-                                pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
-                            }
-                            publicKeyPanel = null;
-                        }
-                    }.id(),
-                    Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"),
-                    null);
+                    null, this.window(), this.id(),
+                    Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             this.passField.setEnabled(true);
             this.pkCheckbox.setState(NSCell.NSOffState);
             this.pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
         }
+    }
+
+    public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel window, int returncode, ID context) {
+        if(NSPanel.NSOKButton == returncode) {
+            NSArray selected = window.filenames();
+            final NSEnumerator enumerator = selected.objectEnumerator();
+            NSObject next;
+            while(null != (next = enumerator.nextObject())) {
+                String pk = NSString.stringByAbbreviatingWithTildeInPath(
+                        Rococoa.cast(next, NSString.class).toString());
+                pkLabel.setStringValue(pk);
+            }
+            passField.setEnabled(false);
+        }
+        if(NSPanel.NSCancelButton == returncode) {
+            passField.setEnabled(true);
+            pkCheckbox.setState(NSCell.NSOffState);
+            pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+        }
+        publicKeyPanel = null;
     }
 
     @Outlet

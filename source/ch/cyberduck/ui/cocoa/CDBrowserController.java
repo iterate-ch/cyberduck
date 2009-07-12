@@ -2741,57 +2741,52 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         downloadToPanel.setTitle(Locale.localizedString("Download To", ""));
         downloadToPanel.beginSheetForDirectory(
                 lastSelectedDownloadDirectory, //trying to be smart
-                null, this.window,
-                new CDController() {
-                    public void downloadToPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
-                        sheet.close();
-                        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-                            final Session session = getTransferSession();
-                            final List<Path> roots = new Collection<Path>();
-                            for(Path selected : getSelectedPaths()) {
-                                Path path = PathFactory.createPath(session, selected.getAsDictionary());
-                                path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
-                                roots.add(path);
-                            }
-                            final Transfer q = new DownloadTransfer(roots);
-                            transfer(q);
-                        }
-                        lastSelectedDownloadDirectory = sheet.filename();
-                        downloadToPanel = null;
-                    }
-                }.id(),
+                null, this.window, this.id(),
                 Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"),
                 null);
+    }
+
+    public void downloadToPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
+        sheet.close();
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            final Session session = getTransferSession();
+            final List<Path> roots = new Collection<Path>();
+            for(Path selected : getSelectedPaths()) {
+                Path path = PathFactory.createPath(session, selected.getAsDictionary());
+                path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
+                roots.add(path);
+            }
+            final Transfer q = new DownloadTransfer(roots);
+            transfer(q);
+        }
+        lastSelectedDownloadDirectory = sheet.filename();
+        downloadToPanel = null;
     }
 
     private NSSavePanel downloadAsPanel;
 
     public void downloadAsButtonClicked(final NSObject sender) {
-        final Session session = this.getTransferSession();
-        for(Path selected : this.getSelectedPaths()) {
-            final Path path = PathFactory.createPath(session, selected.getAsDictionary());
-            downloadAsPanel = NSSavePanel.savePanel();
-            downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to...", ""));
-            downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:", ""));
-            downloadAsPanel.setPrompt(Locale.localizedString("Download", ""));
-            downloadAsPanel.setTitle(Locale.localizedString("Download", ""));
-            downloadAsPanel.setCanCreateDirectories(true);
-            downloadAsPanel.beginSheetForDirectory(null, path.getLocal().getName(), this.window,
-                    new CDController() {
-                        public void downloadAsPanelDidEnd_returnCode_contextInfo(NSSavePanel sheet, int returncode, final ID contextInfo) {
-                            sheet.close();
-                            if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-                                String filename;
-                                if((filename = sheet.filename()) != null) {
-                                    path.setLocal(new Local(filename));
-                                    final Transfer q = new DownloadTransfer(path);
-                                    transfer(q);
-                                }
-                            }
-                        }
-                    }.id(),
-                    Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
-                    null);
+        downloadAsPanel = NSSavePanel.savePanel();
+        downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to...", ""));
+        downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:", ""));
+        downloadAsPanel.setPrompt(Locale.localizedString("Download", ""));
+        downloadAsPanel.setTitle(Locale.localizedString("Download", ""));
+        downloadAsPanel.setCanCreateDirectories(true);
+        downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getLocal().getName(), this.window, this.id(),
+                Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
+                null);
+    }
+
+    public void downloadAsPanelDidEnd_returnCode_contextInfo(NSSavePanel sheet, int returncode, final ID contextInfo) {
+        sheet.close();
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            String filename;
+            if((filename = sheet.filename()) != null) {
+                final Path selection = PathFactory.createPath(getTransferSession(), this.getSelectedPath().getAsDictionary());
+                selection.setLocal(new Local(filename));
+                final Transfer q = new DownloadTransfer(selection);
+                transfer(q);
+            }
         }
     }
 
@@ -2816,24 +2811,28 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 + Locale.localizedString("with", "Synchronize <file> with <file>"));
         syncPanel.setPrompt(Locale.localizedString("Choose", ""));
         syncPanel.setTitle(Locale.localizedString("Synchronize", ""));
-        syncPanel.beginSheetForDirectory(null, null,
-                this.window, //parent window
-                new CDController() {
-                    public void syncPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
-                        sheet.close();
-                        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-                            if(sheet.filenames().count() > 0) {
-                                Path root = PathFactory.createPath(getTransferSession(), selection.getAsDictionary());
-                                root.setLocal(new Local(sheet.filenames().lastObject().toString()));
-                                final Transfer q = new SyncTransfer(root);
-                                transfer(q, selection);
-                            }
-                        }
-                    }
-                }.id(),
-                Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"),
-                null //context info
+        syncPanel.beginSheetForDirectory(null, null, this.window, this.id(),
+                Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
+    }
+
+    public void syncPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
+        sheet.close();
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            if(sheet.filenames().count() > 0) {
+                final Path selection;
+                if(this.getSelectionCount() == 1 &&
+                        this.getSelectedPath().attributes.isDirectory()) {
+                    selection = PathFactory.createPath(getTransferSession(), this.getSelectedPath().getAsDictionary());
+                }
+                else {
+                    selection = PathFactory.createPath(getTransferSession(), this.workdir().getAsDictionary());
+                }
+                selection.setLocal(new Local(sheet.filenames().lastObject().toString()));
+                final Transfer q = new SyncTransfer(selection);
+                transfer(q, selection);
+            }
+        }
     }
 
     public void downloadButtonClicked(final NSObject sender) {

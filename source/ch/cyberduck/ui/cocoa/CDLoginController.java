@@ -180,31 +180,30 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     publicKeyPanel.setCanChooseFiles(true);
                     publicKeyPanel.setAllowsMultipleSelection(false);
                     publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"),
-                            null, this.window(),
-                            new CDController() {
-                                public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, Object context) {
-                                    log.debug("pkSelectionPanelDidEnd");
-                                    if(returncode == NSPanel.NSOKButton) {
-                                        NSArray selected = sheet.filenames();
-                                        final NSEnumerator enumerator = selected.objectEnumerator();
-                                        NSObject next;
-                                        while((next = enumerator.nextObject()) != null) {
-                                            credentials.setIdentity(new Credentials.Identity(next.toString()));
-                                        }
-                                    }
-                                    if(returncode == NSPanel.NSCancelButton) {
-                                        credentials.setIdentity(null);
-                                    }
-                                    publicKeyPanel = null;
-                                    update();
-                                }
-                            }.id(),
+                            null, this.window(), this.id(),
                             Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
                 }
                 else {
                     credentials.setIdentity(null);
                     this.update();
                 }
+            }
+
+            public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, Object context) {
+                log.debug("pkSelectionPanelDidEnd");
+                if(returncode == NSPanel.NSOKButton) {
+                    NSArray selected = sheet.filenames();
+                    final NSEnumerator enumerator = selected.objectEnumerator();
+                    NSObject next;
+                    while((next = enumerator.nextObject()) != null) {
+                        credentials.setIdentity(new Credentials.Identity(next.toString()));
+                    }
+                }
+                if(returncode == NSPanel.NSCancelButton) {
+                    credentials.setIdentity(null);
+                }
+                publicKeyPanel = null;
+                update();
             }
 
             private void update() {

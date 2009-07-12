@@ -456,35 +456,34 @@ public class CDBookmarkController extends CDWindowController {
             downloadPathPanel.setCanChooseDirectories(true);
             downloadPathPanel.setAllowsMultipleSelection(false);
             downloadPathPanel.setCanCreateDirectories(true);
-            downloadPathPanel.beginSheetForDirectory(null, null, this.window,
-                    new CDController() {
-                        public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-                            if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-                                NSArray selected = sheet.filenames();
-                                if((selected.lastObject()) != null) {
-                                    host.setDownloadFolder(selected.lastObject().toString());
-                                }
-                            }
-                            else {
-                                host.setDownloadFolder(null);
-                            }
-                            downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(
-                                    host.getDownloadFolder().getAbsolute()));
-                            downloadPathPopup.itemAtIndex(0).setRepresentedObject(
-                                    host.getDownloadFolder().getAbsolute());
-                            downloadPathPopup.itemAtIndex(0).setImage(
-                                    CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
-                            downloadPathPopup.selectItemAtIndex(0);
-                            downloadPathPanel = null;
-                            itemChanged();
-                        }
-                    }.id(),
+            downloadPathPanel.beginSheetForDirectory(null, null, this.window, this.id(),
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             host.setDownloadFolder(sender.representedObject());
             this.itemChanged();
         }
+    }
+
+    public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            NSArray selected = sheet.filenames();
+            if((selected.lastObject()) != null) {
+                host.setDownloadFolder(selected.lastObject().toString());
+            }
+        }
+        else {
+            host.setDownloadFolder(null);
+        }
+        downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(
+                host.getDownloadFolder().getAbsolute()));
+        downloadPathPopup.itemAtIndex(0).setRepresentedObject(
+                host.getDownloadFolder().getAbsolute());
+        downloadPathPopup.itemAtIndex(0).setImage(
+                CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
+        downloadPathPopup.selectItemAtIndex(0);
+        downloadPathPanel = null;
+        itemChanged();
     }
 
     @Outlet
@@ -591,32 +590,31 @@ public class CDBookmarkController extends CDWindowController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"), null, this.window(),
-                    new CDController() {
-                        public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, Object context) {
-                            log.debug("pkSelectionPanelDidEnd");
-                            if(returncode == NSPanel.NSOKButton) {
-                                NSArray selected = sheet.filenames();
-                                NSEnumerator enumerator = selected.objectEnumerator();
-                                NSObject next;
-                                while(((next = enumerator.nextObject()) != null)) {
-                                    host.getCredentials().setIdentity(
-                                            new Credentials.Identity(next.toString()));
-                                }
-                            }
-                            if(returncode == NSPanel.NSCancelButton) {
-                                host.getCredentials().setIdentity(null);
-                            }
-                            publicKeyPanel = null;
-                            itemChanged();
-                        }
-                    }.id(),
+            publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"), null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             this.host.getCredentials().setIdentity(null);
             this.itemChanged();
         }
+    }
+
+    public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, Object context) {
+        log.debug("pkSelectionPanelDidEnd");
+        if(returncode == NSPanel.NSOKButton) {
+            NSArray selected = sheet.filenames();
+            NSEnumerator enumerator = selected.objectEnumerator();
+            NSObject next;
+            while(((next = enumerator.nextObject()) != null)) {
+                host.getCredentials().setIdentity(
+                        new Credentials.Identity(next.toString()));
+            }
+        }
+        if(returncode == NSPanel.NSCancelButton) {
+            host.getCredentials().setIdentity(null);
+        }
+        publicKeyPanel = null;
+        itemChanged();
     }
 
     public void hostFieldDidChange(final NSNotification sender) {

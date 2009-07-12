@@ -954,31 +954,30 @@ public class CDPreferencesController extends CDWindowController {
             downloadPathPanel.setCanChooseDirectories(true);
             downloadPathPanel.setAllowsMultipleSelection(false);
             downloadPathPanel.setCanCreateDirectories(true);
-            downloadPathPanel.beginSheetForDirectory(null, null, this.window,
-                    new CDController() {
-                        public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-                            if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-                                NSArray selected = sheet.filenames();
-                                String filename;
-                                if((filename = selected.lastObject().toString()) != null) {
-                                    Preferences.instance().setProperty("queue.download.folder",
-                                            NSString.stringByAbbreviatingWithTildeInPath(filename));
-                                }
-                            }
-                            Local custom = new Local(Preferences.instance().getProperty("queue.download.folder"));
-                            downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(custom.getAbsolute()));
-                            downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom.getAbsolute());
-                            downloadPathPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForPath(custom, 16));
-                            downloadPathPopup.selectItemAtIndex(0);
-                            downloadPathPanel = null;
-                        }
-                    }.id(),
+            downloadPathPanel.beginSheetForDirectory(null, null, this.window, this.id(),
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             Preferences.instance().setProperty("queue.download.folder", NSString.stringByAbbreviatingWithTildeInPath(
                     sender.representedObject()));
         }
+    }
+
+    public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
+        if(returncode == CDSheetCallback.DEFAULT_OPTION) {
+            NSArray selected = sheet.filenames();
+            String filename;
+            if((filename = selected.lastObject().toString()) != null) {
+                Preferences.instance().setProperty("queue.download.folder",
+                        NSString.stringByAbbreviatingWithTildeInPath(filename));
+            }
+        }
+        Local custom = new Local(Preferences.instance().getProperty("queue.download.folder"));
+        downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(custom.getAbsolute()));
+        downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom.getAbsolute());
+        downloadPathPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForPath(custom, 16));
+        downloadPathPopup.selectItemAtIndex(0);
+        downloadPathPanel = null;
     }
 
     @Outlet
