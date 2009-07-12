@@ -39,7 +39,7 @@ public abstract class CDBundleController extends CDController {
     );
 
     protected static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObject(NSFont.userFixedPitchFontOfSize(NSFont.smallSystemFontSize())),
+            NSArray.arrayWithObject(NSFont.userFixedPitchFontOfSize(9.0f)),
             NSArray.arrayWithObject(NSAttributedString.FontAttributeName)
     );
 
