@@ -173,9 +173,9 @@
 
     <target name="alpha">
         <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/nightly/alpha/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/alpha/changelog.rss"/>
+            <param name="url.archive" value="http://update.cyberduck.ch/alpha/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/alpha/changelog.html"/>
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/alpha/changelog.rss"/>
         </antcall>
     </target>
 
