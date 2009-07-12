@@ -4,6 +4,9 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.3
+- [Bugfix] Incompatibility with Mac OS X 10.6 (Snow Leopard) [#3039]
+
 3.2.1
 - [Feature] Create placeholder objects for virtual directory (S3)
 - [Feature] Info window displays signed temporary public URL with a default validity of 24 hours (S3)
@@ -12,8 +15,10 @@ Changelog. Last modified: $Date$
 - [Feature] Option to enable CloudFront Access Logging in the Info window (S3)
 - [Feature] Updated to Cloudfront API Version 2009-04-02 (S3)
 - [Feature] Access third party buckets using anonymous login (S3)
+- [Feature] Editable hostname to connect to third party services implementing S3 [#3125] (S3)
 - [Feature[ Option to specify object expiration using Cache-Control header [#3185] (S3)
 - [Bugfix] MobileMe iDisk upload failures (WebDAV) [#3149]
+- [Bugfix] Status bar is draggable [#2159]
 
 3.2 [http://trac.cyberduck.ch/query?status=closed&milestone=3.2]
 - [Feature] Choose Time Zone for bookmark (FTP) [#434]
