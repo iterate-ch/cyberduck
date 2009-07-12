@@ -75,8 +75,8 @@ public class CDGotoController extends CDSheetController {
             /**
              * @see NSComboBox.DataSource
              */
-            public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
-                return NSString.stringWithString(c.workdir().childs(comparator, filter).get(row).getAbsolute());
+            public String comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
+                return c.workdir().childs(comparator, filter).get(row).getAbsolute();
             }
         }).id());
         this.folderCombobox.setStringValue(((CDBrowserController) this.parent).workdir().getAbsolute());

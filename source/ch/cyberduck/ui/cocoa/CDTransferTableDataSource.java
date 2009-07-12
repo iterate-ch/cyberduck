@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,10 +52,12 @@ public class CDTransferTableDataSource extends CDListDataSource {
 
     public CDTransferTableDataSource() {
         TransferCollection.instance().addListener(new AbstractCollectionListener<Transfer>() {
+            @Override
             public void collectionItemAdded(Transfer item) {
                 controllers.put(item, new CDProgressController(item));
             }
 
+            @Override
             public void collectionItemRemoved(Transfer item) {
                 final CDProgressController controller = controllers.remove(item);
                 if(controller != null) {
@@ -135,16 +138,15 @@ public class CDTransferTableDataSource extends CDListDataSource {
     // ----------------------------------------------------------
 
     @Override
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int row, int operation) {
-        final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
+    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
-            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+            view.setDropRow(new NSInteger(row), NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+            view.setDropRow(new NSInteger(row), NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
         log.debug("tableViewValidateDrop:DragOperationNone");
@@ -160,8 +162,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
      *              incorporate the data from the dragging pasteboard at this time.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation) {
-        final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String droppedText = draggingInfo.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {

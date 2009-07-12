@@ -33,10 +33,6 @@ public abstract class NSTableColumn implements NSObject {
     public static final int NSTableColumnUserResizingMask = (1 << 1);     // The user can resize this column manually.
 
     public static NSTableColumn tableColumnWithIdentifier(String identifier) {
-        return NSTableColumn.tableColumnWithIdentifier(NSString.stringWithString(identifier));
-    }
-
-    public static NSTableColumn tableColumnWithIdentifier(NSObject identifier) {
         return CLASS.alloc().initWithIdentifier(identifier);
     }
 
@@ -48,7 +44,7 @@ public abstract class NSTableColumn implements NSObject {
      * Original signature : <code>id initWithIdentifier(id)</code><br>
      * <i>native declaration : :40</i>
      */
-    public abstract NSTableColumn initWithIdentifier(NSObject identifier);
+    public abstract NSTableColumn initWithIdentifier(String identifier);
 
     /**
      * Original signature : <code>void setIdentifier(id)</code><br>

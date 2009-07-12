@@ -29,6 +29,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -317,7 +318,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
                         // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
                         // entire table view to be highlighted rather than a specific row.
-                        view.setDropRow(-1, NSTableView.NSTableViewDropOn);
+                        view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
@@ -375,11 +376,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
             log.debug("setDropRowAndDropOperation:-1");
             // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
             // entire table view to be highlighted rather than a specific row.
-            view.setDropRow(-1, NSTableView.NSTableViewDropOn);
+            view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
         }
         else if(destination.attributes.isDirectory()) {
             log.debug("setDropRowAndDropOperation:" + row);
-            view.setDropRow(row, NSTableView.NSTableViewDropOn);
+            view.setDropRow(new NSInteger(row), NSTableView.NSTableViewDropOn);
         }
     }
 

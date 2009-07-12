@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.List;
 
@@ -69,8 +70,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     // Drop methods
     // ----------------------------------------------------------
 
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int row, int operation) {
-        final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
+    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation());
@@ -87,8 +87,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         return super.validateDrop(view, null, row, draggingInfo);
     }
 
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation) {
-        final NSDraggingInfo draggingInfo = Rococoa.cast(info, NSDraggingInfo.class);
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             if(row != -1 && row < view.numberOfRows()) {
@@ -113,10 +112,10 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
      */
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
         if(controller.isMounted()) {
-            NSMutableArray items = NSMutableArray.arrayWithCapacity(rowIndexes.count());
+            NSMutableArray items = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
             final AttributedList<Path> childs = this.childs(this.controller.workdir());
-            for(int index = rowIndexes.firstIndex(); index != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
-                items.addObject(NSString.stringWithString(childs.get(index).getAbsolute()));
+            for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
+                items.addObject(NSString.stringWithString(childs.get(index.intValue()).getAbsolute()));
             }
             return super.writeItemsToPasteBoard(view, items, pboard);
         }

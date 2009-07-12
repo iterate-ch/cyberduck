@@ -19,9 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.Foundation;
-import org.rococoa.ID;
-import org.rococoa.Rococoa;
 
 /// <i>native declaration : :85</i>
 public abstract class NSString implements NSObject, NSCopying {
@@ -43,15 +42,7 @@ public abstract class NSString implements NSObject, NSCopying {
     public String toString() {
         return Foundation.toString(id());
     }
-
-    public static NSString getGlobalString(String libraryName, String globalVarName) {
-        return Rococoa.wrap(ID.getGlobal(libraryName, globalVarName), NSString.class);
-    }
-
-    public static NSString getGlobalString(String globalVarName) {
-        return getGlobalString("AppKit", globalVarName);
-    }
-
+    
     public interface _Class extends org.rococoa.NSClass {
         NSString alloc();
 
@@ -79,7 +70,7 @@ public abstract class NSString implements NSObject, NSCopying {
          * Original signature : <code>string()</code><br>
          * <i>from NSStringExtensionMethods native declaration : :266</i>
          */
-        NSString string();
+        String string();
 
         /**
          * Original signature : <code>stringWithString(NSString*)</code><br>
@@ -411,7 +402,7 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>NSInteger integerValue()</code><br>
      * <i>from NSStringExtensionMethods native declaration : :145</i>
      */
-    public abstract int integerValue();
+    public abstract NSInteger integerValue();
 
     /**
      * Original signature : <code>long long longLongValue()</code><br>
@@ -500,8 +491,22 @@ public abstract class NSString implements NSObject, NSCopying {
     public abstract String description();
 
     /**
+     * If two objects are equal (as determined by the isEqual: method), they must have the same hash value. This
+     * last point is particularly important if you define hash in a subclass and intend to put
+     * instances of that subclass into a collection.
+     *
+     * If a mutable object is added to a collection that uses hash values to determine the object’s
+     * position in the collection, the value returned by the hash method of the object must not change
+     * while the object is in the collection. Therefore, either the hash method must not rely on any of
+     * the object’s internal state information or you must make sure the object’s internal state information
+     * does not change while the object is in the collection. Thus, for example, a mutable dictionary can be
+     * put in a hash table but you must not change it while it is in there. (Note that it can be difficult to
+     * know whether or not a given object is in a collection.)
+     * 
      * Original signature : <code>NSUInteger hash()</code><br>
      * <i>from NSStringExtensionMethods native declaration : :176</i>
+     *
+     * @return An integer that can be used as a table address in a hash table structure.
      */
     public abstract int hash();
 
@@ -524,14 +529,14 @@ public abstract class NSString implements NSObject, NSCopying {
      * External representation<br>
      * <i>from NSStringExtensionMethods native declaration : :183</i>
      */
-    public abstract com.sun.jna.Pointer dataUsingEncoding_allowLossyConversion(int encoding, boolean lossy);
+    public abstract NSData dataUsingEncoding_allowLossyConversion(int encoding, boolean lossy);
 
     /**
      * Original signature : <code>NSData* dataUsingEncoding(NSStringEncoding)</code><br>
      * External representation<br>
      * <i>from NSStringExtensionMethods native declaration : :184</i>
      */
-    public abstract com.sun.jna.Pointer dataUsingEncoding(int encoding);
+    public abstract NSData dataUsingEncoding(int encoding);
 
     /**
      * Original signature : <code>BOOL canBeConvertedToEncoding(NSStringEncoding)</code><br>

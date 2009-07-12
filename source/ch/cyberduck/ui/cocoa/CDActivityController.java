@@ -61,12 +61,14 @@ public class CDActivityController extends CDWindowController {
         this.init();
     }
 
+    @Override
     protected void invalidate() {
         BackgroundActionRegistry.instance().removeListener(backgroundActionListener);
         super.invalidate();
     }
 
     private final AbstractCollectionListener<BackgroundAction> backgroundActionListener = new AbstractCollectionListener<BackgroundAction>() {
+        @Override
         public void collectionItemAdded(final BackgroundAction action) {
             CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                 public void run() {
@@ -77,6 +79,7 @@ public class CDActivityController extends CDWindowController {
             });
         }
 
+        @Override
         public void collectionItemRemoved(final BackgroundAction action) {
             CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                 public void run() {
@@ -160,6 +163,7 @@ public class CDActivityController extends CDWindowController {
                 return null;
             }
 
+            @Override
             public boolean tableView_shouldSelectRow(NSTableView view, int row) {
                 return false;
             }

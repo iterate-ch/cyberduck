@@ -96,7 +96,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
 
     @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                                 final NSTableColumn tableColumn, NSObject item) {
+                                                                 final NSTableColumn tableColumn, String item) {
         String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
             final Path path = this.lookup(item.toString());
@@ -196,32 +196,32 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }
 
-    public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
+    public boolean outlineView_isItemExpandable(final NSOutlineView view, final String item) {
         if(null == item) {
             return false;
         }
-        return this.lookup(item.toString()).attributes.isDirectory();
+        return this.lookup(item).attributes.isDirectory();
     }
 
-    public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
+    public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, String item) {
         if(null == item) {
             return _roots.size();
         }
-        return this.childs(this.lookup(item.toString())).size();
+        return this.childs(this.lookup(item)).size();
     }
 
-    public NSObject outlineView_child_ofItem(final NSOutlineView view, int index, NSObject item) {
+    public String outlineView_child_ofItem(final NSOutlineView view, int index, String item) {
         if(null == item) {
-            return NSString.stringWithString(_roots.get(index).getAbsolute());
+            return _roots.get(index).getAbsolute();
         }
-        final AttributedList<Path> childs = this.childs(this.lookup(item.toString()));
+        final AttributedList<Path> childs = this.childs(this.lookup(item));
         if(childs.isEmpty()) {
             return null;
         }
-        return NSString.stringWithString(childs.get(index).getAbsolute());
+        return childs.get(index).getAbsolute();
     }
 
-    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
-        return this.objectValueForItem(this.lookup(item.toString()), tableColumn.identifier());
+    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, String item) {
+        return this.objectValueForItem(this.lookup(item), tableColumn.identifier());
     }
 }

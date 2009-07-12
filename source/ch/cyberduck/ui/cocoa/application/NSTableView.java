@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :69</i>
 public abstract class NSTableView extends NSControl {
@@ -61,9 +62,9 @@ public abstract class NSTableView extends NSControl {
 
         boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard);
 
-        int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int row, int operation);
+        int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
 
-        boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation);
+        boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation);
 
         //NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes);
     }
@@ -438,13 +439,13 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void setDropRow(NSInteger, NSTableViewDropOperation)</code><br>
      * <i>native declaration : :220</i>
      */
-    public abstract void setDropRow_dropOperation(int row, int op);
+    public abstract void setDropRow_dropOperation(NSInteger row, int op);
 
     /**
      * @param row
      * @param op  operation
      */
-    public void setDropRow(int row, int op) {
+    public void setDropRow(NSInteger row, int op) {
         this.setDropRow_dropOperation(row, op);
     }
 

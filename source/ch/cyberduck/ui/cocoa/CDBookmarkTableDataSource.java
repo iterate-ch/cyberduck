@@ -20,14 +20,17 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -87,14 +90,17 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
         }
         if(null == filtered) {
             filtered = new BookmarkCollection() {
+                @Override
                 public boolean allowsAdd() {
                     return source.allowsAdd();
                 }
 
+                @Override
                 public boolean allowsDelete() {
                     return source.allowsDelete();
                 }
 
+                @Override
                 public boolean allowsEdit() {
                     return source.allowsEdit();
                 }
@@ -105,10 +111,12 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
                 }
             }
             filtered.addListener(new AbstractCollectionListener<Host>() {
+                @Override
                 public void collectionItemAdded(Host item) {
                     source.add(item);
                 }
 
+                @Override
                 public void collectionItemRemoved(Host item) {
                     source.remove(item);
                 }
@@ -155,8 +163,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
     }
 
     @Override
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSObject info, int index, int operation) {
-        NSPasteboard draggingPasteboard = Rococoa.cast(info, NSDraggingInfo.class).draggingPasteboard();
+    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int index, int operation) {
+        NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         if(!this.getSource().allowsEdit()) {
             // Do not allow drags for non writable collections
             return NSDraggingInfo.NSDragOperationNone;
@@ -165,7 +173,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
                 if(Protocol.isURL(o)) {
-                    view.setDropRow(index, NSTableView.NSTableViewDropAbove);
+                    view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
@@ -184,7 +192,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
                 }
                 if(index > -1 && index < view.numberOfRows()) {
                     //only allow other files if there is at least one bookmark
-                    view.setDropRow(index, NSTableView.NSTableViewDropOn);
+                    view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropOn);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
@@ -195,7 +203,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
-                        view.setDropRow(index, NSTableView.NSTableViewDropAbove);
+                        view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
@@ -204,7 +212,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
         }
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null) {
             if(index > -1 && index < view.numberOfRows()) {
-                view.setDropRow(index, NSTableView.NSTableViewDropAbove);
+                view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
                 // We accept any file promise within the bounds
                 return NSDraggingInfo.NSDragOperationMove;
             }
@@ -220,8 +228,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
      *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSObject info, int row, int operation) {
-        NSPasteboard draggingPasteboard = Rococoa.cast(info, NSDraggingInfo.class).draggingPasteboard();
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+        NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         log.debug("tableViewAcceptDrop:" + row);
         final BookmarkCollection source = this.getSource();
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -351,8 +359,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
     @Override
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
         promisedDragBookmarks.clear();
-        for(int index = rowIndexes.firstIndex(); index != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
-            promisedDragBookmarks.add(new Host(this.getSource().get(index).getAsDictionary()));
+        for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
+            promisedDragBookmarks.add(new Host(this.getSource().get(index.intValue()).getAsDictionary()));
         }
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {

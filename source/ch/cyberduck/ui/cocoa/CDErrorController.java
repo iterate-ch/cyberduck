@@ -137,41 +137,43 @@ public class CDErrorController extends CDBundleController {
     private String getDetailedCauseMessage(BackgroundException e) {
         final Throwable cause = e.getCause();
         StringBuilder buffer = new StringBuilder();
-        if(StringUtils.isNotBlank(cause.getMessage())) {
-            buffer.append(cause.getMessage()).append(".");
-        }
-        if(cause instanceof SFTPException) {
-            final SFTPException sftp = (SFTPException) cause;
-            if(StringUtils.isNotBlank(sftp.getServerErrorCodeVerbose())) {
-                buffer.append(" ").append(sftp.getServerErrorCodeVerbose()).append(".");
+        if(null != cause) {
+            if(StringUtils.isNotBlank(cause.getMessage())) {
+                buffer.append(cause.getMessage()).append(".");
             }
-        }
-        if(cause instanceof S3ServiceException) {
-            final S3ServiceException s3 = (S3ServiceException) cause;
-            if(StringUtils.isNotBlank(s3.getResponseStatus())) {
-                // HTTP method status
-                buffer.append(" ").append(s3.getResponseStatus()).append(".");
+            if(cause instanceof SFTPException) {
+                final SFTPException sftp = (SFTPException) cause;
+                if(StringUtils.isNotBlank(sftp.getServerErrorCodeVerbose())) {
+                    buffer.append(" ").append(sftp.getServerErrorCodeVerbose()).append(".");
+                }
             }
-            if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
-                // S3 protocol message
-                buffer.append(" ").append(s3.getS3ErrorMessage()).append(".");
+            if(cause instanceof S3ServiceException) {
+                final S3ServiceException s3 = (S3ServiceException) cause;
+                if(StringUtils.isNotBlank(s3.getResponseStatus())) {
+                    // HTTP method status
+                    buffer.append(" ").append(s3.getResponseStatus()).append(".");
+                }
+                if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
+                    // S3 protocol message
+                    buffer.append(" ").append(s3.getS3ErrorMessage()).append(".");
+                }
             }
-        }
-        if(cause instanceof CloudFrontServiceException) {
-            final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
-            if(StringUtils.isNotBlank(cf.getErrorMessage())) {
-                buffer.append(cf.getErrorMessage()).append(". ");
+            if(cause instanceof CloudFrontServiceException) {
+                final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
+                if(StringUtils.isNotBlank(cf.getErrorMessage())) {
+                    buffer.append(cf.getErrorMessage()).append(". ");
+                }
+                if(StringUtils.isNotBlank(cf.getErrorDetail())) {
+                    buffer.append(" ").append(cf.getErrorDetail()).append(".");
+                }
             }
-            if(StringUtils.isNotBlank(cf.getErrorDetail())) {
-                buffer.append(" ").append(cf.getErrorDetail()).append(".");
-            }
-        }
-        if(cause instanceof FilesException) {
-            final FilesException cf = (FilesException) cause;
-            final StatusLine status = cf.getHttpStatusLine();
-            if(null != status) {
-                if(StringUtils.isNotBlank(status.getReasonPhrase())) {
-                    buffer.append(" ").append(status.getReasonPhrase()).append(".");
+            if(cause instanceof FilesException) {
+                final FilesException cf = (FilesException) cause;
+                final StatusLine status = cf.getHttpStatusLine();
+                if(null != status) {
+                    if(StringUtils.isNotBlank(status.getReasonPhrase())) {
+                        buffer.append(" ").append(status.getReasonPhrase()).append(".");
+                    }
                 }
             }
         }

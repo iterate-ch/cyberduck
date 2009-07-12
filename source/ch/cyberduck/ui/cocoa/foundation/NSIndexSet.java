@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -27,7 +29,7 @@ public abstract class NSIndexSet implements NSObject {
         return CLASS.indexSetWithIndex(value);
     }
 
-    public static final long NSNotFound = -1;
+    public static final long NSNotFound = 2147483647L;
 
     public interface _Class extends org.rococoa.NSClass {
         /**
@@ -40,7 +42,7 @@ public abstract class NSIndexSet implements NSObject {
          * Original signature : <code>indexSetWithIndex(NSUInteger)</code><br>
          * <i>native declaration : :31</i>
          */
-        NSIndexSet indexSetWithIndex(int value);
+        NSIndexSet indexSetWithIndex(long value);
         /**
          * <i>native declaration : :32</i><br>
          * Conversion Error : /// Original signature : <code>indexSetWithIndexesInRange(null)</code><br>
@@ -58,7 +60,7 @@ public abstract class NSIndexSet implements NSObject {
      * Original signature : <code>initWithIndex(NSUInteger)</code><br>
      * <i>native declaration : :35</i>
      */
-    public abstract NSIndexSet initWithIndex(int value);
+    public abstract NSIndexSet initWithIndex(long value);
     /**
      * <i>native declaration : :36</i><br>
      * Conversion Error : /// Original signature : <code>initWithIndexesInRange(null)</code><br>
@@ -82,44 +84,44 @@ public abstract class NSIndexSet implements NSObject {
      * Original signature : <code>NSUInteger count()</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract int count();
+    public abstract NSUInteger count();
 
     /**
      * The following six methods will return NSNotFound if there is no index in the set satisfying the query.<br>
      * Original signature : <code>NSUInteger firstIndex()</code><br>
      * <i>native declaration : :45</i>
      */
-    public abstract int firstIndex();
+    public abstract NSUInteger firstIndex();
 
     /**
      * Original signature : <code>NSUInteger lastIndex()</code><br>
      * <i>native declaration : :46</i>
      */
-    public abstract int lastIndex();
+    public abstract NSUInteger lastIndex();
 
     /**
      * Original signature : <code>NSUInteger indexGreaterThanIndex(NSUInteger)</code><br>
      * <i>native declaration : :47</i>
      */
-    public abstract int indexGreaterThanIndex(int value);
+    public abstract NSUInteger indexGreaterThanIndex(NSUInteger value);
 
     /**
      * Original signature : <code>NSUInteger indexLessThanIndex(NSUInteger)</code><br>
      * <i>native declaration : :48</i>
      */
-    public abstract int indexLessThanIndex(int value);
+    public abstract NSUInteger indexLessThanIndex(NSUInteger value);
 
     /**
      * Original signature : <code>NSUInteger indexGreaterThanOrEqualToIndex(NSUInteger)</code><br>
      * <i>native declaration : :49</i>
      */
-    public abstract int indexGreaterThanOrEqualToIndex(int value);
+    public abstract NSUInteger indexGreaterThanOrEqualToIndex(NSUInteger value);
 
     /**
      * Original signature : <code>NSUInteger indexLessThanOrEqualToIndex(NSUInteger)</code><br>
      * <i>native declaration : :50</i>
      */
-    public abstract int indexLessThanOrEqualToIndex(int value);
+    public abstract NSUInteger indexLessThanOrEqualToIndex(NSUInteger value);
     /**
      * <i>native declaration : :54</i><br>
      * Conversion Error : /**<br>
@@ -137,7 +139,7 @@ public abstract class NSIndexSet implements NSObject {
      * Original signature : <code>BOOL containsIndex(NSUInteger)</code><br>
      * <i>native declaration : :60</i>
      */
-    public abstract boolean containsIndex(int value);
+    public abstract boolean containsIndex(NSUInteger value);
     /**
      * <i>native declaration : :61</i><br>
      * Conversion Error : /// Original signature : <code>BOOL containsIndexesInRange(null)</code><br>

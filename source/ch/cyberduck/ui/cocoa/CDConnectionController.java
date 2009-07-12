@@ -186,9 +186,9 @@ public class CDConnectionController extends CDSheetController {
                 return HostCollection.defaultCollection().size();
             }
 
-            public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
+            public String comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
                 if(row < this.numberOfItemsInComboBox(sender)) {
-                    return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname());
+                    return HostCollection.defaultCollection().get(row).getNickname();
                 }
                 return null;
             }

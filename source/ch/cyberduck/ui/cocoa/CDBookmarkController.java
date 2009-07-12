@@ -533,6 +533,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     private final AbstractCollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
+        @Override
         public void collectionItemRemoved(Host item) {
             if (item.equals(host)) {
                 final NSWindow window = window();
