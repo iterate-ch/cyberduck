@@ -677,6 +677,10 @@ public abstract class Path extends AbstractPath implements Serializable {
         return host + absolute;
     }
 
+    protected void error(String message) {
+        this.error(message, null);
+    }
+
     /**
      * @see Session#error(Path,String,Throwable)
      */
