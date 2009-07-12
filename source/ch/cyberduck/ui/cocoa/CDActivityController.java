@@ -72,7 +72,7 @@ public class CDActivityController extends CDWindowController {
         public void collectionItemAdded(final BackgroundAction action) {
             CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                 public void run() {
-                    log.debug("collectionItemAdded" + action);
+                    log.debug("collectionItemAdded:" + action);
                     tasks.put(action, new CDTaskController(action));
                     reload();
                 }
@@ -83,11 +83,9 @@ public class CDActivityController extends CDWindowController {
         public void collectionItemRemoved(final BackgroundAction action) {
             CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
                 public void run() {
-                    log.debug("collectionItemRemoved" + action);
+                    log.debug("collectionItemRemoved:" + action);
                     final CDTaskController controller = tasks.remove(action);
-                    if (controller != null) {
-                        controller.invalidate();
-                    }
+                    controller.invalidate();
                     reload();
                 }
             });

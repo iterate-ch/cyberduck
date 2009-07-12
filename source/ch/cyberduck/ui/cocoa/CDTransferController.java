@@ -230,12 +230,15 @@ public class CDTransferController extends CDWindowController implements NSToolba
             return menu.numberOfItems();
         }
 
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int i, boolean shouldCancel) {
             final int selected = transferTable.numberOfSelectedRows();
             final int tag = item.tag();
             NSIndexSet iterator = transferTable.selectedRowIndexes();
-            for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
-                Transfer transfer = TransferCollection.instance().get(i.intValue());
+            for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+                if(index.intValue() == -1) {
+                    break;
+                }
+                Transfer transfer = TransferCollection.instance().get(index.intValue());
                 if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth()) {
                     if(BandwidthThrottle.UNLIMITED == tag) {
                         item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
@@ -266,8 +269,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(sender.selectedItem().tag() > 0) {
             bandwidth = sender.selectedItem().tag() * 1024; // from Kilobytes to Bytes
         }
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
-            Transfer transfer = TransferCollection.instance().get(i.intValue());
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
+            Transfer transfer = TransferCollection.instance().get(index.intValue());
             transfer.setBandwidth(bandwidth);
         }
         this.updateBandwidthPopup();
@@ -471,8 +477,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
         final int selected = transferTable.numberOfSelectedRows();
         bandwidthPopup.setEnabled(selected > 0);
         NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
-            final Transfer transfer = transferModel.getSource().get(i.intValue());
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
+            final Transfer transfer = transferModel.getSource().get(index.intValue());
             if(transfer instanceof SyncTransfer) {
                 // Currently we do not support bandwidth throtling for sync transfers due to
                 // the problem of mapping both download and upload rate in the GUI
@@ -786,8 +795,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void stopButtonClicked(final NSObject sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
-            final Transfer transfer = transferModel.getSource().get(i.intValue());
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
+            final Transfer transfer = transferModel.getSource().get(index.intValue());
             if(transfer.isRunning() || transfer.isQueued()) {
                 this.background(new AbstractBackgroundAction() {
                     public void run() {
@@ -822,9 +834,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void resumeButtonClicked(final NSObject sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
             final Collection<Transfer> transfers = transferModel.getSource();
-            final Transfer transfer = transfers.get(i.intValue());
+            final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning() && !transfer.isQueued()) {
                 this.startTransfer(transfer, true, false);
             }
@@ -833,9 +848,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void reloadButtonClicked(final NSObject sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
             final Collection<Transfer> transfers = transferModel.getSource();
-            final Transfer transfer = transfers.get(i.intValue());
+            final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning() && !transfer.isQueued()) {
                 this.startTransfer(transfer, false, true);
             }
@@ -912,8 +930,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public void deleteButtonClicked(final NSObject sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferModel.getSource();
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
-            final Transfer transfer = transfers.get(i.intValue());
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
+            final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning() && !transfer.isQueued()) {
                 TransferCollection.instance().remove(transfer);
             }
@@ -936,8 +957,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public void trashButtonClicked(final NSObject sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferModel.getSource();
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
-            final Transfer transfer = transfers.get(i.intValue());
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
+            final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning() && !transfer.isQueued()) {
                 for(Path path : transfer.getRoots()) {
                     path.getLocal().delete();
@@ -1115,8 +1139,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private boolean validate(TransferToolbarValidator v) {
         final NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferModel.getSource();
-        for(NSUInteger i = iterator.firstIndex(); i.longValue() != NSIndexSet.NSNotFound; i = iterator.indexGreaterThanIndex(i)) {
-            final Transfer transfer = transfers.get(i.intValue());
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
+            final Transfer transfer = transfers.get(index.intValue());
             if(v.validate(transfer)) {
                 return true;
             }

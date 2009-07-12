@@ -29,7 +29,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.List;
@@ -115,6 +114,9 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
             NSMutableArray items = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
             final AttributedList<Path> childs = this.childs(this.controller.workdir());
             for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
+                if(index.intValue() == -1) {
+                    break;
+                }
                 items.addObject(NSString.stringWithString(childs.get(index.intValue()).getAbsolute()));
             }
             return super.writeItemsToPasteBoard(view, items, pboard);

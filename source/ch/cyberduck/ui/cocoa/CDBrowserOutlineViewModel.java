@@ -26,7 +26,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
@@ -134,9 +133,6 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     }
 
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, String item) {
-        if(null == item) {
-            return super.objectValueForItem(null, tableColumn.identifier());
-        }
         final Path path = controller.lookup(item);
         if(null == path) {
             return null;

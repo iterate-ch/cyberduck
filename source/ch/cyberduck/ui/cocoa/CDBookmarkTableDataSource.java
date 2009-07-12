@@ -360,6 +360,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
         promisedDragBookmarks.clear();
         for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
             promisedDragBookmarks.add(new Host(this.getSource().get(index.intValue()).getAsDictionary()));
         }
         NSEvent event = NSApplication.sharedApplication().currentEvent();

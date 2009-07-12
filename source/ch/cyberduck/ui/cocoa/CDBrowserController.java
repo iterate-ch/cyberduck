@@ -26,8 +26,8 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.odb.Editor;
@@ -35,8 +35,8 @@ import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -701,6 +701,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     private void selectRow(int row, boolean expand) {
         log.debug("selectRow:" + row);
+        if(-1 == row) {
+            return;
+        }
         final NSTableView browser = this.getSelectedBrowserView();
         browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), expand);
         browser.scrollRowToVisible(row);
@@ -760,6 +763,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(this.isMounted()) {
             NSIndexSet iterator = this.getSelectedBrowserView().selectedRowIndexes();
             for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+                if(index.intValue() == -1) {
+                    break;
+                }
                 Path selected = this.pathAtRow(index.intValue());
                 if(null == selected) {
                     break;
@@ -784,24 +790,28 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     private Path pathAtRow(int row) {
-        Path item = null;
         switch(this.browserSwitchView.selectedSegment()) {
             case SWITCH_LIST_VIEW: {
                 final AttributedList<Path> childs = this.browserListModel.childs(this.workdir());
                 if(row < childs.size()) {
-                    item = childs.get(row);
+                    return childs.get(row);
                 }
                 break;
             }
             case SWITCH_OUTLINE_VIEW: {
                 if(row < this.browserOutlineView.numberOfRows()) {
                     final String proxy = this.browserOutlineView.itemAtRow(row);
-                    return this.lookup(proxy.toString());
+                    if(null == proxy) {
+                        log.warn("No item at row:" + row);
+                        return null;
+                    }
+                    return this.lookup(proxy);
                 }
                 break;
             }
         }
-        return item;
+        log.warn("No item at row:" + row);
+        return null;
     }
 
     @Override
@@ -1331,9 +1341,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
              * @see NSOutlineView.Delegate
              */
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
-                                                                        NSTableColumn tableColumn, NSObject item) {
+                                                                        NSTableColumn tableColumn, String item) {
                 if(tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                    final Path path = lookup(item.toString());
+                    final Path path = lookup(item);
                     if(null == path) {
                         return;
                     }
@@ -1953,6 +1963,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         NSUInteger[] indexes = new NSUInteger[iterator.count().intValue()];
         int i = 0;
         for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+            if(index.intValue() == -1) {
+                break;
+            }
             indexes[i] = index;
             i++;
         }
@@ -2252,7 +2265,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         if(null == path) {
                             break;
                         }
-                        this.lookup(path.toString()).invalidate();
+                        this.lookup(path).invalidate();
                     }
                     break;
                 }
