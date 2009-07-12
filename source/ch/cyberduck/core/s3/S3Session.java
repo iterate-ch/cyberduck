@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpHost;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
@@ -229,7 +230,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         final HostConfiguration hostconfig = new StickyHostConfiguration();
         hostconfig.setHost(host.getHostname(), host.getPort(),
                 new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+                        (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
         );
         this.login(credentials, hostconfig);
     }
@@ -404,10 +405,10 @@ public class S3Session extends HTTPSession implements SSLSession {
             HostConfiguration hostconfig = null;
             try {
                 hostconfig = new StickyHostConfiguration();
-                final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT));
+                final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
                 hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
                         new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                new CustomTrustSSLProtocolSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
+                                (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
                 );
             }
             catch(URIException e) {

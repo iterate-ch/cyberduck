@@ -25,6 +25,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -96,7 +97,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         final HostConfiguration hostConfiguration = new StickyHostConfiguration();
         hostConfiguration.setHost(host.getHostname(), host.getPort(),
                 new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+                        (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
         );
         this.CF.setHostConfiguration(hostConfiguration);
         this.CF.setUserAgent(this.getUserAgent());

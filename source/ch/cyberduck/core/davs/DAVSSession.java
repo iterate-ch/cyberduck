@@ -23,6 +23,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
 import java.io.IOException;
 
@@ -50,7 +51,7 @@ public class DAVSSession extends DAVSession implements SSLSession {
         final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
         client.getHostConfiguration().setHost(host.getHostname(), host.getPort(),
                 new org.apache.commons.httpclient.protocol.Protocol("https",
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort()));
+                        (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort()));
         if(Proxy.isHTTPSProxyEnabled()) {
             this.DAV.setProxy(Proxy.getHTTPSProxyHost(), Proxy.getHTTPSProxyPort());
         }
