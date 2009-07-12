@@ -319,6 +319,13 @@
 			remoteGlobalIDString = 471D2C0B05A2505500675163;
 			remoteInfo = "app (International)";
 		};
+		479B79CA100A42C7006656FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 471D2C0B05A2505500675163;
+			remoteInfo = "app (International)";
+		};
 		47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -2215,6 +2222,20 @@
 			passBuildSettingsInEnvironment = 1;
 			productName = "all-modules";
 		};
+		479B79C8100A42C7006656FA /* alpha */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "-emacs alpha";
+			buildConfigurationList = 479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "alpha" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/ant;
+			dependencies = (
+				479B79C9100A42C7006656FA /* PBXTargetDependency */,
+			);
+			name = alpha;
+			passBuildSettingsInEnvironment = 1;
+			productName = "all-modules";
+		};
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
@@ -2515,6 +2536,7 @@
 				4734485D04575C6D00A801C6 /* build */,
 				474432380736A1DB00BA512B /* release */,
 				478D627A0B74849300096EC7 /* nightly */,
+				479B79C8100A42C7006656FA /* alpha */,
 				4739EF670856981300405FD3 /* libKeychain */,
 				4739EF83085698F600405FD3 /* libODBEdit */,
 				4739EF950856990000405FD3 /* libGrowl */,
@@ -2930,6 +2952,11 @@
 			isa = PBXTargetDependency;
 			target = 471D2C0B05A2505500675163 /* app (International) */;
 			targetProxy = 478D627C0B74849300096EC7 /* PBXContainerItemProxy */;
+		};
+		479B79C9100A42C7006656FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 471D2C0B05A2505500675163 /* app (International) */;
+			targetProxy = 479B79CA100A42C7006656FA /* PBXContainerItemProxy */;
 		};
 		47BEDCEF0B92A23B00141EB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4229,6 +4256,25 @@
 			};
 			name = Deployment;
 		};
+		479B79CC100A42C7006656FA /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Cyberduck;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
 		47BEDB020B92960400141EB4 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4410,6 +4456,14 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				478ECD170DAD5743008A5B1F /* Deployment */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Deployment;
+		};
+		479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "alpha" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				479B79CC100A42C7006656FA /* Deployment */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
