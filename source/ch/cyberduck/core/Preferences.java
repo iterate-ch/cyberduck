@@ -438,8 +438,10 @@ public abstract class Preferences {
          * A prefix to apply to log file names
          */
         defaults.put("s3.logging.prefix", "logs/");
+        defaults.put("cloudfront.logging.prefix", "logs/");
 
-        defaults.put("s3.cache.seconds", "86400");
+        final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds
+        defaults.put("s3.cache.seconds", String.valueOf(MONTH));
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
