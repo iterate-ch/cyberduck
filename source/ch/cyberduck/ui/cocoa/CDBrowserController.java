@@ -45,9 +45,9 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
@@ -732,7 +732,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     for(Path path : selected) {
-                        final int row = browserOutlineView.rowForItem(NSString.stringWithString(path.getAbsolute()));
+                        final int row = browserOutlineView.rowForItem(path.getAbsolute());
                         this.selectRow(row, true);
                     }
                     break;
@@ -759,11 +759,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         Collection<Path> selectedFiles = new Collection<Path>();
         if(this.isMounted()) {
             NSIndexSet iterator = this.getSelectedBrowserView().selectedRowIndexes();
-            for(int index = iterator.firstIndex(); index != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
-                if(-1 == index) {
-                    break;
-                }
-                Path selected = this.pathAtRow(index);
+            for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+                Path selected = this.pathAtRow(index.intValue());
                 if(null == selected) {
                     break;
                 }
@@ -798,7 +795,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             case SWITCH_OUTLINE_VIEW: {
                 if(row < this.browserOutlineView.numberOfRows()) {
-                    final NSObject proxy = this.browserOutlineView.itemAtRow(row);
+                    final String proxy = this.browserOutlineView.itemAtRow(row);
                     return this.lookup(proxy.toString());
                 }
                 break;
@@ -1013,9 +1010,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         else if(bookmarkButton.state() == NSCell.NSOnState) {
             bookmarkModel.setSource(HostCollection.defaultCollection());
         }
-        addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsAdd());
-        editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit());
-        deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete());
+        bookmarkTableDelegate.selectionDidChange(null);
         this.setBookmarkFilter(null);
         bookmarkTable.deselectAll(null);
         bookmarkTable.reloadData();
@@ -1132,6 +1127,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             });
         }
 
+        @Override
         public boolean isColumnEditable(NSTableColumn column) {
             if(Preferences.instance().getBoolean("browser.editable")) {
                 if(column.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
@@ -1792,9 +1788,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 return HostCollection.defaultCollection().size();
             }
 
-            public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
+            public String comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
                 if(row < numberOfItemsInComboBox(sender)) {
-                    return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname());
+                    return HostCollection.defaultCollection().get(row).getNickname();
                 }
                 return null;
             }
@@ -1954,16 +1950,16 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void deleteBookmarkButtonClicked(final NSObject sender) {
         final NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
-        int[] indexes = new int[iterator.count()];
+        NSUInteger[] indexes = new NSUInteger[iterator.count().intValue()];
         int i = 0;
-        for(int index = iterator.firstIndex(); index != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
+        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
             indexes[i] = index;
             i++;
         }
         bookmarkTable.deselectAll(null);
         int j = 0;
         for(i = 0; i < indexes.length; i++) {
-            int row = indexes[i] - j;
+            int row = indexes[i].intValue() - j;
             bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             bookmarkTable.scrollRowToVisible(row);
             Host host = (Host) bookmarkModel.getSource().get(row);
@@ -2252,7 +2248,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
                     for(int i = 0; i < browserOutlineView.numberOfRows(); i++) {
-                        final NSObject path = browserOutlineView.itemAtRow(i);
+                        final String path = browserOutlineView.itemAtRow(i);
                         if(null == path) {
                             break;
                         }
@@ -2599,24 +2595,49 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return false;
     }
 
+    /**
+     * Keep a reference to the sheet to protect it from being deallocated
+     */
+    private CDSheetController sheet;
+
     public void gotoButtonClicked(final NSObject sender) {
-        CDSheetController controller = new CDGotoController(this);
-        controller.beginSheet();
+        sheet = new CDGotoController(this) {
+            public void callback(final int returncode) {
+                super.callback(returncode);
+                sheet = null;
+            }
+        };
+        sheet.beginSheet();
     }
 
     public void createFileButtonClicked(final NSObject sender) {
-        CDSheetController controller = new CDCreateFileController(this);
-        controller.beginSheet();
+        sheet = new CDCreateFileController(this) {
+            public void callback(final int returncode) {
+                super.callback(returncode);
+                sheet = null;
+            }
+        };
+        sheet.beginSheet();
     }
 
     public void duplicateFileButtonClicked(final NSObject sender) {
-        CDSheetController controller = new CDDuplicateFileController(this);
-        controller.beginSheet();
+        sheet = new CDDuplicateFileController(this) {
+            public void callback(final int returncode) {
+                super.callback(returncode);
+                sheet = null;
+            }
+        };
+        sheet.beginSheet();
     }
 
     public void createFolderButtonClicked(final NSObject sender) {
-        CDSheetController controller = new CDFolderController(this);
-        controller.beginSheet();
+        sheet = new CDFolderController(this) {
+            public void callback(final int returncode) {
+                super.callback(returncode);
+                sheet = null;
+            }
+        };
+        sheet.beginSheet();
     }
 
     public void renameFileButtonClicked(final NSObject sender) {
@@ -2627,8 +2648,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     public void sendCustomCommandClicked(final NSObject sender) {
-        CDSheetController controller = new CDCommandController(this, this.session);
-        controller.beginSheet();
+        sheet = new CDCommandController(this, this.session) {
+            public void callback(final int returncode) {
+                super.callback(returncode);
+                sheet = null;
+            }
+        };
+        sheet.beginSheet();
     }
 
     public void editMenuClicked(final NSMenuItem sender) {
