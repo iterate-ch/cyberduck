@@ -54,7 +54,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return
      */
-    public E lookup(String path) {
+    public synchronized  E lookup(String path) {
         if(null == path) {
             log.warn("Path to lookup is null");
             return null;
