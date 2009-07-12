@@ -217,6 +217,13 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 return "Alert";
             }
 
+            @Override
+            public void awakeFromNib() {
+                this.setState(this.transcriptButton,
+                        transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
+                super.awakeFromNib();
+            }
+
             @Outlet
             private NSButton diagnosticsButton;
 
@@ -244,8 +251,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
             public void setTranscriptButton(NSButton transcriptButton) {
                 this.transcriptButton = transcriptButton;
-                this.setState(this.transcriptButton,
-                        transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
             }
 
             private NSTableView errorView;
