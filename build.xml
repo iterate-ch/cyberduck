@@ -129,11 +129,9 @@
     </target>
 
     <target name="stub">
-        <!-- copy application stub -->
-        <copy file="${apple.appstub}" toFile="${app.macos}/${ant.project.name}"/>
-        <!-- fix stub permissions -->
-        <exec executable="/bin/chmod">
-            <arg line="755 '${app.macos}/${ant.project.name}'"/>
+        <echo message="Using stub: ${apple.appstub}"/>
+        <exec executable="/usr/bin/lipo">
+            <arg line="-create '${apple.appstub}' -output '${app.macos}/${ant.project.name}'"/>
         </exec>
     </target>
 
