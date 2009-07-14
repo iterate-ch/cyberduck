@@ -29,13 +29,13 @@
     <property name="home" value="."/>
     <property name="unittests" value="${home}/test"/>
     <property name="build" value="${home}/build"/>
-    <property name="build.deploy" value="${build}/Deployment"/>
+    <property name="build.deploy" value="${build}/Release"/>
     <property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/unittests"/>
     <property name="build.unittests.reports" value="${build}/unittests/junit_reports"/>
-    <property name="build.spotlight" value="${home}/Spotlight Importer/build/Deployment"/>
-    <property name="build.automator.upload" value="${home}/Upload Automator Action/build/Deployment"/>
-    <property name="build.automator.download" value="${home}/Download Automator Action/build/Deployment"/>
+    <property name="build.spotlight" value="${home}/Spotlight Importer/build/Release"/>
+    <property name="build.automator.upload" value="${home}/Upload Automator Action/build/Release"/>
+    <property name="build.automator.download" value="${home}/Download Automator Action/build/Release"/>
     <property name="config" value="${home}/config"/>
     <property name="widget" value="${home}/Dashboard Widget"/>
     <property name="img" value="${home}/img"/>

@@ -4122,7 +4122,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		4716D8B70877533B00938886 /* Deployment */ = {
+		4716D8B70877533B00938886 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4131,9 +4131,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDotMac;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		4739EF720856981300405FD3 /* Deployment */ = {
+		4739EF720856981300405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4142,9 +4142,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		4739EF93085698F600405FD3 /* Deployment */ = {
+		4739EF93085698F600405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4153,9 +4153,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		4739EFA10856990000405FD3 /* Deployment */ = {
+		4739EFA10856990000405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4164,9 +4164,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libGrowl;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		4739EFAF0856990900405FD3 /* Deployment */ = {
+		4739EFAF0856990900405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4175,9 +4175,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libProxy;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		4739EFC00856991200405FD3 /* Deployment */ = {
+		4739EFC00856991200405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4186,9 +4186,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLocal;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		4762DAC409FC42EC0034C662 /* Deployment */ = {
+		4762DAC409FC42EC0034C662 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4198,9 +4198,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		477A104C0FD08DBA00BAD4AD /* Deployment */ = {
+		477A104C0FD08DBA00BAD4AD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -4210,9 +4210,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = librococoa;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		478CFE810F9932B3000560EF /* Deployment */ = {
+		478CFE810F9932B3000560EF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4223,9 +4223,9 @@
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		478D627E0B74849300096EC7 /* Deployment */ = {
+		478D627E0B74849300096EC7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -4242,9 +4242,9 @@
 				);
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		478ECD170DAD5743008A5B1F /* Deployment */ = {
+		478ECD170DAD5743008A5B1F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4254,9 +4254,9 @@
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		479B79CC100A42C7006656FA /* Deployment */ = {
+		479B79CC100A42C7006656FA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -4273,21 +4273,40 @@
 				);
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		47BEDB020B92960400141EB4 /* Deployment */ = {
+		47A8AD5E100A6A9E00DC800C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
-				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
+				ARCHS = (
+					ppc7400,
+					ppc64,
+					i386,
+					x86_64,
+				);
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_POSTPROCESSING = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SRCROOT)/lib",
+					"$(SRCROOT)/build",
+				);
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_VERSION = 4.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PREBINDING = NO;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SEPARATE_STRIP = NO;
+				STRIP_INSTALLED_PRODUCT = NO;
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
 			};
-			name = Deployment;
+			name = Debug;
 		};
-		47D286C70855740C008142CF /* Deployment */ = {
+		47A8AD5F100A6A9E00DC800C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -4303,9 +4322,9 @@
 				SECTORDER_FLAGS = "";
 				WRAPPER_EXTENSION = app;
 			};
-			name = Deployment;
+			name = Debug;
 		};
-		47D286DF0855740C008142CF /* Deployment */ = {
+		47A8AD60100A6A9E00DC800C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -4322,9 +4341,9 @@
 				);
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Debug;
 		};
-		47D286E70855740C008142CF /* Deployment */ = {
+		47A8AD61100A6A9E00DC800C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -4341,9 +4360,242 @@
 				);
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Debug;
 		};
-		47D286EF0855740D008142CF /* Deployment */ = {
+		47A8AD62100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Cyberduck;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		47A8AD63100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Cyberduck;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Debug;
+		};
+		47A8AD64100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libKeychain;
+			};
+			name = Debug;
+		};
+		47A8AD65100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libODBEdit;
+			};
+			name = Debug;
+		};
+		47A8AD66100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libGrowl;
+			};
+			name = Debug;
+		};
+		47A8AD67100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libProxy;
+			};
+			name = Debug;
+		};
+		47A8AD68100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libLocal;
+			};
+			name = Debug;
+		};
+		47A8AD69100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libDotMac;
+			};
+			name = Debug;
+		};
+		47A8AD6A100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libDiagnostics;
+			};
+			name = Debug;
+		};
+		47A8AD6B100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
+			};
+			name = Debug;
+		};
+		47A8AD6C100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libQuickLook;
+			};
+			name = Debug;
+		};
+		47A8AD6D100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
+				MACH_O_TYPE = mh_dylib;
+				OTHER_LDFLAGS = "-lcrypto";
+				PRODUCT_NAME = libPrime;
+			};
+			name = Debug;
+		};
+		47A8AD6E100A6A9E00DC800C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = librococoa;
+			};
+			name = Debug;
+		};
+		47BEDB020B92960400141EB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
+			};
+			name = Release;
+		};
+		47D286C70855740C008142CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				INFOPLIST_FILE = Info.plist;
+				OTHER_LDFLAGS = (
+					"-lz",
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					Info.plist,
+				);
+				PRODUCT_NAME = Cyberduck;
+				SECTORDER_FLAGS = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		47D286DF0855740C008142CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Cyberduck;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		47D286E70855740C008142CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = Cyberduck;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		47D286EF0855740D008142CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
@@ -4352,6 +4604,9 @@
 					i386,
 					x86_64,
 				);
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/lib",
 					"$(SRCROOT)/build",
@@ -4361,13 +4616,14 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SEPARATE_STRIP = YES;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
 			};
-			name = Deployment;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -4375,138 +4631,155 @@
 		4716D8B60877533B00938886 /* Build configuration list for PBXNativeTarget "libDotMac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4716D8B70877533B00938886 /* Deployment */,
+				4716D8B70877533B00938886 /* Release */,
+				47A8AD69100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		4739EF710856981300405FD3 /* Build configuration list for PBXNativeTarget "libKeychain" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4739EF720856981300405FD3 /* Deployment */,
+				4739EF720856981300405FD3 /* Release */,
+				47A8AD64100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		4739EF92085698F600405FD3 /* Build configuration list for PBXNativeTarget "libODBEdit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4739EF93085698F600405FD3 /* Deployment */,
+				4739EF93085698F600405FD3 /* Release */,
+				47A8AD65100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		4739EFA00856990000405FD3 /* Build configuration list for PBXNativeTarget "libGrowl" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4739EFA10856990000405FD3 /* Deployment */,
+				4739EFA10856990000405FD3 /* Release */,
+				47A8AD66100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		4739EFAE0856990900405FD3 /* Build configuration list for PBXNativeTarget "libProxy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4739EFAF0856990900405FD3 /* Deployment */,
+				4739EFAF0856990900405FD3 /* Release */,
+				47A8AD67100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		4739EFBF0856991200405FD3 /* Build configuration list for PBXNativeTarget "libLocal" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4739EFC00856991200405FD3 /* Deployment */,
+				4739EFC00856991200405FD3 /* Release */,
+				47A8AD68100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		4762DAC309FC42EC0034C662 /* Build configuration list for PBXNativeTarget "libDiagnostics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4762DAC409FC42EC0034C662 /* Deployment */,
+				4762DAC409FC42EC0034C662 /* Release */,
+				47A8AD6A100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		477A104B0FD08DBA00BAD4AD /* Build configuration list for PBXNativeTarget "libRococoa" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				477A104C0FD08DBA00BAD4AD /* Deployment */,
+				477A104C0FD08DBA00BAD4AD /* Release */,
+				47A8AD6E100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		478CFE800F9932B3000560EF /* Build configuration list for PBXNativeTarget "libPrime" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				478CFE810F9932B3000560EF /* Deployment */,
+				478CFE810F9932B3000560EF /* Release */,
+				47A8AD6D100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		478D627D0B74849300096EC7 /* Build configuration list for PBXLegacyTarget "nightly" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				478D627E0B74849300096EC7 /* Deployment */,
+				478D627E0B74849300096EC7 /* Release */,
+				47A8AD62100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		478ECD160DAD5743008A5B1F /* Build configuration list for PBXNativeTarget "libQuickLook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				478ECD170DAD5743008A5B1F /* Deployment */,
+				478ECD170DAD5743008A5B1F /* Release */,
+				47A8AD6C100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "alpha" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				479B79CC100A42C7006656FA /* Deployment */,
+				479B79CC100A42C7006656FA /* Release */,
+				47A8AD63100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "libURLSchemeHandlerConfiguration" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47BEDB020B92960400141EB4 /* Deployment */,
+				47BEDB020B92960400141EB4 /* Release */,
+				47A8AD6B100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app (International)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47D286C70855740C008142CF /* Deployment */,
+				47D286C70855740C008142CF /* Release */,
+				47A8AD5F100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		47D286DD0855740C008142CF /* Build configuration list for PBXLegacyTarget "build" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47D286DF0855740C008142CF /* Deployment */,
+				47D286DF0855740C008142CF /* Release */,
+				47A8AD60100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		47D286E50855740C008142CF /* Build configuration list for PBXLegacyTarget "release" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47D286E70855740C008142CF /* Deployment */,
+				47D286E70855740C008142CF /* Release */,
+				47A8AD61100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47D286EF0855740D008142CF /* Deployment */,
+				47D286EF0855740D008142CF /* Release */,
+				47A8AD5E100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
