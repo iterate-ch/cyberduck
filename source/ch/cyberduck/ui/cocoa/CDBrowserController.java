@@ -655,25 +655,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     protected void reloadData(final List<Path> selected) {
         log.debug("reloadData");
-        if(this.isMounted()) {
-            if(!this.workdir().isCached()) {
-                this.background(new BrowserBackgroundAction(this) {
-                    public void run() {
-                        workdir().childs();
-                    }
-
-                    public void cleanup() {
-                        reloadData(selected);
-                    }
-
-                    public String getActivity() {
-                        return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                                workdir.getName());
-                    }
-                });
-                return;
-            }
-        }
         this.deselectAll();
         // Tell the browser view to reload the data. This will request all paths from the browser model
         // which will refetch paths from the server marked as invalid.

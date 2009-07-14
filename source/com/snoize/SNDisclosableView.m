@@ -34,18 +34,6 @@ static BOOL showSubviewsWhileResizing = NO;
     // Under Mac OS X 10.2, we can show our subviews while we animate the resizing of the window, so this can be set to YES.
     // Earlier versions of the AppKit would pin a view's y origin to 0, which caused that to fail.
 
-+ (void)initialize;
-{
-    static BOOL initialized = NO;
-
-    if (!initialized) {
-        // Check if we are on 10.2 or later
-        showSubviewsWhileResizing = (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_1); 
-
-        initialized = YES;
-    }
-}
-
 - (id)initWithFrame:(NSRect)frameRect;
 {
     if (!(self = [super initWithFrame:frameRect]))

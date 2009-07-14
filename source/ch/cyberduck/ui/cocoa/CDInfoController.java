@@ -853,6 +853,7 @@ public class CDInfoController extends CDWindowController {
         bucketLocationField.setStringValue(Locale.localizedString("Unknown", ""));
         bucketLocationField.setEnabled(amazon);
         s3CachePopup.setEnabled(amazon && file.attributes.isFile());
+        bucketLoggingButton.setEnabled(amazon);
         bucketLoggingButton.setToolTip("");
         s3PublicUrlField.setStringValue(Locale.localizedString("Unknown", ""));
         s3torrentUrlField.setStringValue(Locale.localizedString("Unknown", ""));
