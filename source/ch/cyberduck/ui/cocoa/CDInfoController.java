@@ -778,6 +778,7 @@ public class CDInfoController extends CDWindowController {
         bucketLocationField.setStringValue(NSBundle.localizedString("Unknown", ""));
         bucketLocationField.setEnabled(amazon);
         s3CachePopup.setEnabled(amazon && file.attributes.isFile());
+        bucketLoggingButton.setEnabled(amazon);
         bucketLoggingButton.setToolTip("");
         s3PublicUrlField.setStringValue(NSBundle.localizedString("Unknown", ""));
         s3torrentUrlField.setStringValue(NSBundle.localizedString("Unknown", ""));
