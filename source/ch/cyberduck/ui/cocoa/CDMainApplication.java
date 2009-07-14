@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
+import ch.cyberduck.ui.cocoa.foundation.NSThread;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
 import org.apache.log4j.Level;
@@ -88,15 +89,9 @@ public class CDMainApplication {
     }
 
     /**
-     * We ensure the application runs on the AppKit thread using the <code>StartOnMainThread</code>
-     * key in the Java section of the Info.plist
-     */
-    private static final String MAIN_THREAD_NAME = "main";
-
-    /**
      * @return True if the current thread is not a background worker thread
      */
     public static boolean isMainThread() {
-        return Thread.currentThread().getName().equals(MAIN_THREAD_NAME);
+        return NSThread.isMainThread();
     }
 }
