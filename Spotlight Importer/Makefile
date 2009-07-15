@@ -1,5 +1,5 @@
 BUILD_DIR=build
-BUILDSTYLE=Deployment
+BUILDSTYLE=Release
 PROJECT=Spotlight\ Importer.xcodeproj
 
 default:

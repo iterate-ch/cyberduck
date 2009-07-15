@@ -198,7 +198,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		47C421D2085658DB00FDBB79 /* Deployment */ = {
+		47C421D2085658DB00FDBB79 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
@@ -229,9 +229,9 @@
 				WRAPPER_EXTENSION = mdimporter;
 				ZERO_LINK = NO;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		47C421D6085658DB00FDBB79 /* Deployment */ = {
+		47C421D6085658DB00FDBB79 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
@@ -244,7 +244,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
-			name = Deployment;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -252,18 +252,18 @@
 		47C421D0085658DB00FDBB79 /* Build configuration list for PBXNativeTarget "Spotlight Importer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47C421D2085658DB00FDBB79 /* Deployment */,
+				47C421D2085658DB00FDBB79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 		47C421D4085658DB00FDBB79 /* Build configuration list for PBXProject "Spotlight Importer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				47C421D6085658DB00FDBB79 /* Deployment */,
+				47C421D6085658DB00FDBB79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Deployment;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
