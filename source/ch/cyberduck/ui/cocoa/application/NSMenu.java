@@ -24,15 +24,17 @@ import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSZone;
 
+import org.rococoa.Rococoa;
+
 public abstract class NSMenu implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenu", _Class.class);
 
     public static NSMenu menu() {
-        return CLASS.alloc().init();
+        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSMenu.class);
     }
 
     public static NSMenu menuWithTitle(String title) {
-        return CLASS.alloc().initWithTitle(title);
+        return Rococoa.cast(CLASS.alloc().initWithTitle(title).autorelease(), NSMenu.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {

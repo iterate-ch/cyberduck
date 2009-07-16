@@ -21,21 +21,22 @@ package ch.cyberduck.ui.cocoa.foundation;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
 
 /// <i>native declaration : :85</i>
 public abstract class NSString implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
 
     public static NSString stringWithString(String string) {
-        return CLASS.alloc().initWithString(string);
+        return Rococoa.cast(CLASS.alloc().initWithString(string).autorelease(), NSString.class);
     }
 
-    public static String stringByAbbreviatingWithTildeInPath(String string) {
-        return CLASS.alloc().initWithString(string).stringByAbbreviatingWithTildeInPath().toString();
+    public static NSString stringByAbbreviatingWithTildeInPath(String string) {
+        return Rococoa.cast(CLASS.alloc().initWithString(string).autorelease(), NSString.class).stringByAbbreviatingWithTildeInPath();
     }
 
-    public static String stringByExpandingTildeInPath(String string) {
-        return CLASS.alloc().initWithString(string).stringByExpandingTildeInPath().toString();
+    public static NSString stringByExpandingTildeInPath(String string) {
+        return Rococoa.cast(CLASS.alloc().initWithString(string).autorelease(), NSString.class).stringByExpandingTildeInPath();
     }
 
     @Override

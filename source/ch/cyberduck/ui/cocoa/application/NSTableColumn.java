@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.Rococoa;
 
 /// <i>native declaration : :17</i>
 public abstract class NSTableColumn implements NSObject {
@@ -33,7 +34,7 @@ public abstract class NSTableColumn implements NSObject {
     public static final int NSTableColumnUserResizingMask = (1 << 1);     // The user can resize this column manually.
 
     public static NSTableColumn tableColumnWithIdentifier(String identifier) {
-        return CLASS.alloc().initWithIdentifier(identifier);
+        return Rococoa.cast(CLASS.alloc().initWithIdentifier(identifier).autorelease(), NSTableColumn.class);
     }
 
     public interface _Class extends org.rococoa.NSClass {
