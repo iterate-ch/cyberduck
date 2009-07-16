@@ -179,7 +179,7 @@ public class Credentials {
         }
 
         public String toURL() {
-            return NSString.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
+            return Local.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
         }
     }
 

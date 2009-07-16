@@ -132,11 +132,11 @@ public abstract class Preferences {
         File APP_SUPPORT_DIR;
         if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
             APP_SUPPORT_DIR = new File(
-                    NSString.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
+                    Local.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
         }
         else {
             APP_SUPPORT_DIR = new File(
-                    NSString.stringByExpandingTildeInPath(NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path").toString()));
+                    Local.stringByExpandingTildeInPath(NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path").toString()));
         }
         APP_SUPPORT_DIR.mkdirs();
 
@@ -310,7 +310,7 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnStart", String.valueOf(true));
         defaults.put("queue.orderBackOnStop", String.valueOf(false));
 
-        if(new File(NSString.stringByExpandingTildeInPath("~/Downloads")).exists()) {
+        if(new File(Local.stringByExpandingTildeInPath("~/Downloads")).exists()) {
             // For 10.5 this usually exists and should be preferrred
             defaults.put("queue.download.folder", "~/Downloads");
         }

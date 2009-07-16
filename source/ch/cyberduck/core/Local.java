@@ -397,7 +397,7 @@ public class Local extends AbstractPath {
     }
 
     public void setPath(String name) {
-        _impl = new File(Path.normalize(NSString.stringByExpandingTildeInPath(name)));
+        _impl = new File(Path.normalize(Local.stringByExpandingTildeInPath(name)));
         this.init();
     }
 
@@ -629,5 +629,13 @@ public class Local extends AbstractPath {
         public InputStream(Local local) throws FileNotFoundException {
             super(local._impl);
         }
+    }
+
+    public static String stringByAbbreviatingWithTildeInPath(String string) {
+        return NSString.stringByAbbreviatingWithTildeInPath(string).toString();
+    }
+
+    public static String stringByExpandingTildeInPath(String string) {
+        return NSString.stringByExpandingTildeInPath(string).toString();
     }
 }

@@ -608,7 +608,7 @@ public class Host implements Serializable {
      */
     public void setDownloadFolder(String folder) {
         log.debug("setDownloadFolder:" + folder);
-        this.downloadFolder = NSString.stringByAbbreviatingWithTildeInPath(folder);
+        this.downloadFolder = Local.stringByAbbreviatingWithTildeInPath(folder);
     }
 
     /**
