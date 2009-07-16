@@ -179,7 +179,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     publicKeyPanel.setCanChooseDirectories(false);
                     publicKeyPanel.setCanChooseFiles(true);
                     publicKeyPanel.setAllowsMultipleSelection(false);
-                    publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"),
+                    publicKeyPanel.beginSheetForDirectory(Local.stringByExpandingTildeInPath("~/.ssh"),
                             null, this.window(), this.id(),
                             Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
                 }

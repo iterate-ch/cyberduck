@@ -958,7 +958,7 @@ public class CDPreferencesController extends CDWindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            Preferences.instance().setProperty("queue.download.folder", NSString.stringByAbbreviatingWithTildeInPath(
+            Preferences.instance().setProperty("queue.download.folder", Local.stringByAbbreviatingWithTildeInPath(
                     sender.representedObject()));
         }
     }
@@ -969,7 +969,7 @@ public class CDPreferencesController extends CDWindowController {
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
                 Preferences.instance().setProperty("queue.download.folder",
-                        NSString.stringByAbbreviatingWithTildeInPath(filename));
+                        Local.stringByAbbreviatingWithTildeInPath(filename));
             }
         }
         Local custom = new Local(Preferences.instance().getProperty("queue.download.folder"));

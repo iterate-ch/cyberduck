@@ -1292,7 +1292,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         ));
 
         // setting appearance attributes
-        browserOutlineView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
+        final NSLayoutManager l = NSLayoutManager.layoutManager();
+        browserOutlineView.setRowHeight(new CGFloat(l.defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         this._updateBrowserAttributes(browserOutlineView);
         // selection properties
@@ -1412,7 +1413,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         ));
 
         // setting appearance attributes
-        browserListView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
+        final NSLayoutManager l = NSLayoutManager.layoutManager();
+        browserListView.setRowHeight(new CGFloat(l.defaultLineHeightForFont(
                 NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         this._updateBrowserAttributes(browserListView);
         // selection properties

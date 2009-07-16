@@ -153,7 +153,7 @@ public class CDConnectionController extends CDSheetController {
                 if(null != entry.getIdentityFile()) {
                     if(pkCheckbox.state() == NSCell.NSOffState) {
                         // No previously manually selected key
-                        pkLabel.setStringValue(NSString.stringByAbbreviatingWithTildeInPath(
+                        pkLabel.setStringValue(Local.stringByAbbreviatingWithTildeInPath(
                                 entry.getIdentityFile().getAbsolutePath()));
                         pkCheckbox.setState(NSCell.NSOnState);
                     }
@@ -417,7 +417,7 @@ public class CDConnectionController extends CDSheetController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"),
+            publicKeyPanel.beginSheetForDirectory(Local.stringByExpandingTildeInPath("~/.ssh"),
                     null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
@@ -434,7 +434,7 @@ public class CDConnectionController extends CDSheetController {
             final NSEnumerator enumerator = selected.objectEnumerator();
             NSObject next;
             while(null != (next = enumerator.nextObject())) {
-                String pk = NSString.stringByAbbreviatingWithTildeInPath(
+                String pk = Local.stringByAbbreviatingWithTildeInPath(
                         Rococoa.cast(next, NSString.class).toString());
                 pkLabel.setStringValue(pk);
             }

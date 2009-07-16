@@ -590,7 +590,7 @@ public class CDBookmarkController extends CDWindowController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.beginSheetForDirectory(NSString.stringByExpandingTildeInPath("~/.ssh"), null, this.window(), this.id(),
+            publicKeyPanel.beginSheetForDirectory(Local.stringByExpandingTildeInPath("~/.ssh"), null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
