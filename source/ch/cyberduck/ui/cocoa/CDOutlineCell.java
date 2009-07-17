@@ -30,7 +30,7 @@ public abstract class CDOutlineCell extends NSTextFieldCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDOutlineCell", _Class.class);
 
     public static CDOutlineCell outlineCell() {
-        return Rococoa.cast(CLASS.alloc().init().autorelease(), CDOutlineCell.class);
+        return CLASS.alloc().init();
     }
 
     public interface _Class extends org.rococoa.NSClass {

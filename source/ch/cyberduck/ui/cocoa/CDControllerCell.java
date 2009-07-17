@@ -20,8 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.ui.cocoa.application.NSCell;
 
-import org.rococoa.Rococoa;
-
 /**
  * @version $Id$
  */
@@ -29,7 +27,7 @@ public abstract class CDControllerCell implements NSCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDControllerCell", _Class.class);
 
     public static CDControllerCell controllerCell() {
-        return Rococoa.cast(CLASS.alloc().init().autorelease(), CDControllerCell.class);
+        return CLASS.alloc().init();
     }
 
     public interface _Class extends org.rococoa.NSClass {
