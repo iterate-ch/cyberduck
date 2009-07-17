@@ -65,6 +65,7 @@ public class CDDownloadController extends CDSheetController {
         }
     }
 
+    @Override
     protected boolean validateInput() {
         Host host = Host.parse(urlField.stringValue());
         return StringUtils.isNotBlank(host.getDefaultPath());

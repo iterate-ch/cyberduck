@@ -71,10 +71,12 @@ public abstract class Editor extends CDController {
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer download = new DownloadTransfer(edited) {
+                    @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                         return TransferAction.ACTION_RENAME;
                     }
 
+                    @Override
                     protected boolean shouldOpenWhenComplete() {
                         return false;
                     }
@@ -86,6 +88,7 @@ public abstract class Editor extends CDController {
                 }, options);
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                         edited.getName());

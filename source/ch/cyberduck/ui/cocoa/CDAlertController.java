@@ -58,11 +58,13 @@ public abstract class CDAlertController extends CDSheetController {
         alert.setAccessoryView(view);
     }
 
+    @Override
     protected void beginSheetImpl() {
         alert.layout();
         alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
     }
 
+    @Override
     protected void callback(int returnCode, ID context) {
         // If you want to dismiss the sheet from within the alertDidEndSelector method before the modal
         // delegate carries out an action in response to the return value, send orderOut: (NSWindow)

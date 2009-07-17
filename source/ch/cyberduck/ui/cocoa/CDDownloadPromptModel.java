@@ -43,6 +43,7 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
     protected PathFilter<Path> filter() {
         if(null == filter) {
             filter = new PromptFilter() {
+                @Override
                 public boolean accept(Path child) {
                     log.debug("accept:" + child);
                     if(transfer.exists(child.getLocal())) {
@@ -61,6 +62,7 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
         return filter;
     }
 
+    @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),

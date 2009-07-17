@@ -40,6 +40,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
     protected PathFilter<Path> filter() {
         if(null == filter) {
             filter = new PromptFilter() {
+                @Override
                 public boolean accept(Path child) {
                     log.debug("accept:" + child);
                     return super.accept(child);
@@ -58,6 +59,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
      */
     protected static final String CREATE_COLUMN = "CREATE";
 
+    @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(SIZE_COLUMN)) {
             SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);

@@ -111,6 +111,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return controller;
     }
 
+    @Override
     public boolean prepare() {
         final Session session = this.getSession();
         if(session != null) {

@@ -24,9 +24,6 @@ import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-
-import org.rococoa.cocoa.foundation.NSSize;
 
 /**
  * @version $Id$
@@ -46,6 +43,7 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
     protected PathFilter<Path> filter() {
         if(null == filter) {
             filter = new PromptFilter() {
+                @Override
                 public boolean accept(Path child) {
                     log.debug("accept:" + child);
                     if(transfer.exists(child)) {
@@ -58,6 +56,7 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
         return filter;
     }
 
+    @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
             if(item.attributes.isFile()) {

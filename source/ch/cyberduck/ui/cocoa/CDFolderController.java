@@ -75,6 +75,7 @@ public class CDFolderController extends CDFileController {
                 folder.getParent().invalidate();
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         folder.getName());

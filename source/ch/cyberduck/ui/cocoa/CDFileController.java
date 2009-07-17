@@ -66,6 +66,7 @@ public abstract class CDFileController extends CDSheetController {
         return ((CDBrowserController) parent).workdir();
     }
 
+    @Override
     protected boolean validateInput() {
         if(filenameField.stringValue().indexOf('/') != -1) {
             return false;

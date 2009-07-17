@@ -222,6 +222,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 }
             }
 
+            @Override
             protected boolean validateInput() {
                 return StringUtils.isNotEmpty(credentials.getUsername());
             }

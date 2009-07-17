@@ -129,6 +129,7 @@ public class CDCommandController extends CDSheetController implements Transcript
                     }
                 }
 
+                @Override
                 public String getActivity() {
                     return command;
                 }
@@ -145,6 +146,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         });
     }
 
+    @Override
     protected boolean validateInput() {
         return true;
     }

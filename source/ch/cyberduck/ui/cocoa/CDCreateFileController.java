@@ -90,6 +90,7 @@ public class CDCreateFileController extends CDFileController {
                 }
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         file.getName());

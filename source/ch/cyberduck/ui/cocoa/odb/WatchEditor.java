@@ -60,6 +60,7 @@ public class WatchEditor extends Editor {
     public void edit() {
         try {
             edited.getLocal().watch(new AbstractFileWatcherListener() {
+                @Override
                 public void fileWritten(Local file) {
                     log.debug("fileWritten:" + file);
                     save();
@@ -84,6 +85,7 @@ public class WatchEditor extends Editor {
         }
     }
 
+    @Override
     public boolean isOpen() {
         if(null == bundleIdentifier) {
             final String fullpath = edited.getLocal().getDefaultEditor();

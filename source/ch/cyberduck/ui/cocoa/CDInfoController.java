@@ -1028,6 +1028,7 @@ public class CDInfoController extends CDWindowController {
                 permissionProgress.stopAnimation(null);
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                         files.get(0).getName(), permission);
@@ -1217,6 +1218,7 @@ public class CDInfoController extends CDWindowController {
                 return p.attributes.getSize();
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         files.get(0).getName());
