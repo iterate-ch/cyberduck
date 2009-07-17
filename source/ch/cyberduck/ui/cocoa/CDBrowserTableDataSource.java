@@ -95,6 +95,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         path.childs();
                     }
 
+                    @Override
                     public String getActivity() {
                         return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                                 path.getName());
@@ -103,17 +104,15 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     public void cleanup() {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
-                            if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
-                                if(controller.isConnected()) {
-                                    controller.reloadData(true);
-                                }
+                            if(controller.isConnected()) {
+                                controller.reloadData(true);
                             }
                         }
                     }
                 });
             }
             log.warn("No cached listing for " + path.getName());
-            return new AttributedList<Path>();
+            return path.cache().get(path, controller.getComparator(), controller.getFileFilter());
         }
     }
 

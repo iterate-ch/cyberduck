@@ -54,7 +54,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return
      */
-    public synchronized  E lookup(String path) {
+    public synchronized E lookup(String path) {
         if(null == path) {
             log.warn("Path to lookup is null");
             return null;
@@ -136,7 +136,8 @@ public class Cache<E extends AbstractPath> {
     public AttributedList<E> get(final String path, final Comparator<E> comparator, final PathFilter<E> filter) {
         AttributedList<E> childs = _impl.get(path);
         if(null == childs) {
-            return null;
+            log.warn("No cache for " + path);
+            return new AttributedList<E>();
         }
         boolean needsSorting = !childs.attributes().get(AttributedList.COMPARATOR).equals(comparator);
         boolean needsFiltering = !childs.attributes().get(AttributedList.FILTER).equals(filter);
