@@ -23,13 +23,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.Rococoa;
 
 public abstract class NSButtonCell implements NSActionCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButtonCell", _Class.class);
 
     public static NSButtonCell buttonCell() {
-        return Rococoa.cast(CLASS.alloc().init().autorelease(), NSButtonCell.class);
+        return CLASS.alloc().init();
     }
 
     public interface _Class extends org.rococoa.NSClass {

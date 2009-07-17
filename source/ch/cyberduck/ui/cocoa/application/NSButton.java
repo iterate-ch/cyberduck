@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :15</i>
@@ -29,7 +28,7 @@ public abstract class NSButton extends NSControl {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButton", _Class.class);
 
     public static NSButton buttonWithFrame(NSRect frameRect) {
-        return Rococoa.cast(CLASS.alloc().initWithFrame(frameRect).autorelease(), NSButton.class);
+        return CLASS.alloc().initWithFrame(frameRect);
     }
 
     public static final int NSMomentaryLightButton = 0;    // was NSMomentaryPushButton

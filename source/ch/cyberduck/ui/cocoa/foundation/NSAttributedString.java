@@ -19,18 +19,16 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.Rococoa;
-
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:9</i>
 public abstract class  NSAttributedString implements NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
 
     public static NSAttributedString attributedString(String str) {
-        return Rococoa.cast(CLASS.alloc().initWithString(str).autorelease(), NSAttributedString.class);
+        return CLASS.alloc().initWithString(str);
     }
 
     public static NSAttributedString attributedStringWithAttributes(String str, NSDictionary attrs) {
-        return Rococoa.cast(CLASS.alloc().initWithString_attributes(str, attrs).autorelease(), NSAttributedString.class);
+        return CLASS.alloc().initWithString_attributes(str, attrs);
     }
 
     public interface _Class extends org.rococoa.NSClass {

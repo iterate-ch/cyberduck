@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -31,20 +32,20 @@ public abstract class NSOutlineView extends NSTableView {
     public static final int NSOutlineViewDropOnItemIndex = -1;
 
     public static interface DataSource {
-        int outlineView_numberOfChildrenOfItem(final NSOutlineView view, String item);
+        int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSString item);
 
-        String outlineView_child_ofItem(final NSOutlineView outlineView, int index, String item);
+        NSString outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSString item);
 
         void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                              final NSTableColumn tableColumn, String item);
+                                                              final NSTableColumn tableColumn, NSString item);
 
-        NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, String item);
+        NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSString item);
 
-        boolean outlineView_isItemExpandable(final NSOutlineView view, final String item);
+        boolean outlineView_isItemExpandable(final NSOutlineView view, final NSString item);
 
-        int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, String item, int row);
+        int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSString item, int row);
 
-        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, String item, int row);
+        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSString item, int row);
 
         boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard);
 
@@ -73,76 +74,76 @@ public abstract class NSOutlineView extends NSTableView {
      * Original signature : <code>BOOL isExpandable(id)</code><br>
      * <i>native declaration : :108</i>
      */
-    public abstract boolean isExpandable(String item);
+    public abstract boolean isExpandable(NSObject item);
 
     /**
      * Expands 'item', if not already expanded, and all children if 'expandChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will expand  each item under the root.<br>
      * Original signature : <code>void expandItem(id, BOOL)</code><br>
      * <i>native declaration : :112</i>
      */
-    public abstract void expandItem_expandChildren(String item, boolean expandChildren);
+    public abstract void expandItem_expandChildren(NSObject item, boolean expandChildren);
 
     /**
      * Calls expandItem:expandChildren with 'expandChildren == NO'<br>
      * Original signature : <code>void expandItem(id)</code><br>
      * <i>native declaration : :116</i>
      */
-    public abstract void expandItem(String item);
+    public abstract void expandItem(NSObject item);
 
     /**
      * Collapses 'item' and all children if 'collapseChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will collapse each item under the root.<br>
      * Original signature : <code>void collapseItem(id, BOOL)</code><br>
      * <i>native declaration : :120</i>
      */
-    public abstract void collapseItem_collapseChildren(String item, boolean collapseChildren);
+    public abstract void collapseItem_collapseChildren(NSObject item, boolean collapseChildren);
 
     /**
      * Calls collapseItem:collapseChildren with 'collapseChildren == NO'<br>
      * Original signature : <code>void collapseItem(id)</code><br>
      * <i>native declaration : :124</i>
      */
-    public abstract void collapseItem(String item);
+    public abstract void collapseItem(NSObject item);
 
     /**
      * Reloads 'item' and all children if 'reloadChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will reload everything under the root item.<br>
      * Original signature : <code>void reloadItem(id, BOOL)</code><br>
      * <i>native declaration : :128</i>
      */
-    public abstract void reloadItem_reloadChildren(String item, boolean reloadChildren);
+    public abstract void reloadItem_reloadChildren(NSObject item, boolean reloadChildren);
 
     /**
      * Calls reloadItem:reloadChildren with 'reloadChildren == NO'<br>
      * Original signature : <code>void reloadItem(id)</code><br>
      * <i>native declaration : :132</i>
      */
-    public abstract void reloadItem(String item);
+    public abstract void reloadItem(NSObject item);
 
     /**
      * Returns the parent for 'item', or nil, if the parent is the root.<br>
      * Original signature : <code>id parentForItem(id)</code><br>
      * <i>native declaration : :138</i>
      */
-    public abstract NSObject parentForItem(String item);
+    public abstract NSObject parentForItem(NSObject item);
 
     /**
      * Item/Row translation<br>
      * Original signature : <code>id itemAtRow(NSInteger)</code><br>
      * <i>native declaration : :144</i>
      */
-    public abstract String itemAtRow(int row);
+    public abstract NSString itemAtRow(int row);
 
     /**
      * Original signature : <code>NSInteger rowForItem(id)</code><br>
      * <i>native declaration : :145</i>
      */
-    public abstract int rowForItem(String item);
+    public abstract int rowForItem(NSObject item);
 
     /**
      * Indentation<br>
      * Original signature : <code>NSInteger levelForItem(id)</code><br>
      * <i>native declaration : :149</i>
      */
-    public abstract int levelForItem(String item);
+    public abstract int levelForItem(NSObject item);
 
     /**
      * Original signature : <code>NSInteger levelForRow(NSInteger)</code><br>
@@ -154,7 +155,7 @@ public abstract class NSOutlineView extends NSTableView {
      * Original signature : <code>BOOL isItemExpanded(id)</code><br>
      * <i>native declaration : :151</i>
      */
-    public abstract boolean isItemExpanded(String item);
+    public abstract boolean isItemExpanded(NSObject item);
 
     /**
      * The indentation amount per level defaults to 16.0.<br>
@@ -202,9 +203,9 @@ public abstract class NSOutlineView extends NSTableView {
      * Original signature : <code>void setDropItem(id, NSInteger)</code><br>
      * <i>native declaration : :179</i>
      */
-    public abstract void setDropItem_dropChildIndex(String item, NSInteger index);
+    public abstract void setDropItem_dropChildIndex(NSObject item, NSInteger index);
 
-    public void setDropItem(String item, NSInteger index) {
+    public void setDropItem(NSObject item, NSInteger index) {
         this.setDropItem_dropChildIndex(item, index);
     }
 

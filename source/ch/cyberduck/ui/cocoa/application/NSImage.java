@@ -24,7 +24,6 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.Rococoa;
 
 /// <i>native declaration : :41</i>
 public abstract class NSImage implements NSObject, NSCopying {
@@ -62,16 +61,11 @@ public abstract class NSImage implements NSObject, NSCopying {
     public static final int NSImageCacheNever = 3;
 
     public static NSImage imageNamed(String name) {
-        final NSImage image = CLASS.imageNamed(name);
-        if(null == image) {
-            return null;
-        }
-        image.retain();
-        return image;
+        return CLASS.imageNamed(name);
     }
 
     public static NSImage imageWithSize(NSSize size) {
-        return Rococoa.cast(CLASS.alloc().initWithSize(size).autorelease(), NSImage.class);
+        return CLASS.alloc().initWithSize(size);
     }
 
     public interface _Class extends org.rococoa.NSClass {

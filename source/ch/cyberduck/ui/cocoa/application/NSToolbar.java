@@ -23,8 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.Rococoa;
-
 /// <i>native declaration : :17</i>
 public abstract class NSToolbar implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSToolbar", _Class.class);
@@ -45,7 +43,7 @@ public abstract class NSToolbar implements NSObject {
     public static final int NSToolbarSizeModeSmall = 2;
 
     public static NSToolbar toolbarWithIdentifier(String identifier) {
-        return Rococoa.cast(CLASS.alloc().initWithIdentifier(identifier).autorelease(), NSToolbar.class);
+        return CLASS.alloc().initWithIdentifier(identifier);
     }
 
     public interface _Class extends org.rococoa.NSClass {

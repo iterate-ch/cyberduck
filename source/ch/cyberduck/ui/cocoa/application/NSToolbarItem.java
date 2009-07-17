@@ -23,7 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
-import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSSize;
 
@@ -46,7 +45,7 @@ public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedU
     public static final int VisibilityPriorityUser = 2000;
 
     public static NSToolbarItem itemWithIdentifier(String itemIdentifier) {
-        return Rococoa.cast(CLASS.alloc().initWithItemIdentifier(itemIdentifier).autorelease(), NSToolbarItem.class);
+        return CLASS.alloc().initWithItemIdentifier(itemIdentifier);
     }
 
     public interface _Class extends org.rococoa.NSClass {
