@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 /**
  * @version $Id$
@@ -33,15 +34,15 @@ public abstract class CDOutlineDataSource extends CDController implements NSOutl
     public static CDOutlineCell OUTLINE_CELL_PROTOTYPE = CDOutlineCell.outlineCell();
 
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                                 final NSTableColumn tableColumn, String item) {
+                                                                 final NSTableColumn tableColumn, NSString item) {
         throw new RuntimeException("Not editable");
     }
 
-    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, String destination, int row) {
+    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSString destination, int row) {
         return NSDraggingInfo.NSDragOperationNone;
     }
 
-    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, String item, int row) {
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSString item, int row) {
         return false;
     }
 

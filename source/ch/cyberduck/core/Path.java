@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,10 +48,6 @@ import java.util.regex.PatternSyntaxException;
 public abstract class Path extends AbstractPath implements Serializable {
     private static Logger log = Logger.getLogger(Path.class);
 
-    /**
-     * The absolute remote path
-     */
-    private String path;
     /**
      * The local path to be used if file is copied
      */
@@ -191,7 +188,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param name Must be an absolute pathname
      */
     public void setPath(String name) {
-        this.path = Path.normalize(name);
+        this.reference = NSString.stringWithString(Path.normalize(name));
         this.parent = null;
     }
 
@@ -301,7 +298,16 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return the absolute path name, e.g. /home/user/filename
      */
     public String getAbsolute() {
-        return this.path;
+        return this.reference.toString();
+    }
+
+    /**
+     *
+     */
+    private NSString reference;
+
+    public NSString getReference() {
+        return reference;
     }
 
     /**

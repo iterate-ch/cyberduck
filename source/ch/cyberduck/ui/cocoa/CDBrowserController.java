@@ -655,13 +655,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     protected void reloadData(final List<Path> selected) {
         log.debug("reloadData");
-        this.deselectAll();
         // Tell the browser view to reload the data. This will request all paths from the browser model
         // which will refetch paths from the server marked as invalid.
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         this.setSelectedPaths(selected);
-        this.updateStatusLabel(null);
     }
 
     /**
@@ -716,7 +714,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     for(Path path : selected) {
-                        final int row = browserOutlineView.rowForItem(path.getAbsolute());
+                        final int row = browserOutlineView.rowForItem(path.getReference());
                         this.selectRow(row, true);
                     }
                     break;
@@ -781,12 +779,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             case SWITCH_OUTLINE_VIEW: {
                 if(row < this.browserOutlineView.numberOfRows()) {
-                    final String proxy = this.browserOutlineView.itemAtRow(row);
+                    final NSString proxy = this.browserOutlineView.itemAtRow(row);
                     if(null == proxy) {
                         log.warn("No item at row:" + row);
                         return null;
                     }
-                    return this.lookup(proxy);
+                    return this.lookup(proxy.toString());
                 }
                 break;
             }
@@ -1195,6 +1193,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             CDBrowserController.this.window().makeKeyWindow();
                         }
 
+                        @Override
                         public String getActivity() {
                             return Locale.localizedString("Quick Look", "Status");
                         }
@@ -1305,6 +1304,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         browserOutlineView.setDataSource((this.browserOutlineModel = new CDBrowserOutlineViewModel(this)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserTableDelegate<Path>() {
+            @Override
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows() == 1) {
@@ -1323,9 +1323,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
              * @see NSOutlineView.Delegate
              */
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
-                                                                        NSTableColumn tableColumn, String item) {
+                                                                        NSTableColumn tableColumn, NSString item) {
                 if(tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                    final Path path = lookup(item);
+                    final Path path = lookup(item.toString());
                     if(null == path) {
                         return;
                     }
@@ -2136,6 +2136,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     reloadButtonClicked(null);
                 }
 
+                @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                             session.getHost().getHostname());
@@ -2236,6 +2237,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     public void reloadButtonClicked(final NSObject sender) {
         if(this.isMounted()) {
+            final Collection<Path> selected = this.getSelectedPaths();
             switch(this.browserSwitchView.selectedSegment()) {
                 case SWITCH_LIST_VIEW: {
                     this.workdir().invalidate();
@@ -2244,16 +2246,16 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
                     for(int i = 0; i < browserOutlineView.numberOfRows(); i++) {
-                        final String path = browserOutlineView.itemAtRow(i);
-                        if(null == path) {
+                        final NSString proxy = browserOutlineView.itemAtRow(i);
+                        if(null == proxy) {
                             break;
                         }
-                        this.lookup(path).invalidate();
+                        this.lookup(proxy.toString()).invalidate();
                     }
                     break;
                 }
             }
-            this.reloadData(true);
+            this.reloadData(selected);
         }
     }
 
@@ -2570,6 +2572,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), "");
             }
@@ -2999,6 +3002,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     updateStatusLabel(null);
                 }
 
+                @Override
                 public String getActivity() {
                     return transfer.getName();
                 }
@@ -3278,6 +3282,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 reloadData(Collections.singletonList(archive.getArchive(selected)));
             }
 
+            @Override
             public String getActivity() {
                 return archive.getCompressCommand(selected);
             }
@@ -3305,6 +3310,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     reloadData(expanded);
                 }
 
+                @Override
                 public String getActivity() {
                     return archive.getDecompressCommand(selected);
                 }
@@ -3371,6 +3377,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return;
         }
         this.background(new BrowserBackgroundAction(this) {
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                         directory.getName());
@@ -3630,6 +3637,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         }
                     }
 
+                    @Override
                     public String getActivity() {
                         return MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
                                 host.getHostname());
@@ -3714,6 +3722,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 disconnected.run();
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                         session.getHost().getHostname());
@@ -3760,6 +3769,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     ;
                 }
 
+                @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                             session.getHost().getHostname());
@@ -3795,6 +3805,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                         session.getHost().getHostname());
