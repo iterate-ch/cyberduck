@@ -81,6 +81,7 @@ public class CDTaskController extends CDBundleController {
         this.view = view;
     }
 
+    @Override
     public NSView view() {
         return view;
     }

@@ -47,6 +47,7 @@ public class BackgroundActionRegistry extends Collection<BackgroundAction> {
         return current;
     }
 
+    @Override
     public boolean add(final BackgroundAction action) {
         action.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
