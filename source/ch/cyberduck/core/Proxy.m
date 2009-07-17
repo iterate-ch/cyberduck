@@ -105,19 +105,28 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv 
 + (BOOL)usePassiveFTP
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesFTPPassive] boolValue];
+	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesFTPPassive] boolValue];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+    return enabled;
 }
 
 + (BOOL)isHostExcluded:(NSString *)hostname {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
     NSEnumerator *exceptions = [[proxies objectForKey:(NSString *)kSCPropNetProxiesExceptionsList] objectEnumerator];
     NSString *domain;
+    BOOL excluded = NO;
     while(domain = [exceptions nextObject]) {
         if([domain rangeOfString: hostname].location != NSNotFound) {
-            return YES;
+            excluded = YES;
+            break;
         }
     }
-    return NO;
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+    return excluded;
 }
 
 + (BOOL)isSOCKSProxyEnabled
