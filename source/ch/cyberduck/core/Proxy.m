@@ -104,16 +104,12 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv 
 
 + (BOOL)usePassiveFTP
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
 	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesFTPPassive] boolValue];
 }
 
 + (BOOL)isHostExcluded:(NSString *)hostname {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
     NSEnumerator *exceptions = [[proxies objectForKey:(NSString *)kSCPropNetProxiesExceptionsList] objectEnumerator];
     NSString *domain;
     while(domain = [exceptions nextObject]) {
@@ -126,74 +122,92 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv 
 
 + (BOOL)isSOCKSProxyEnabled
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSEnable] boolValue];
+	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSEnable] boolValue];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return enabled;
 }
 
 + (NSString *)getSOCKSProxyHost
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSProxy];
+	NSString *hostname = [proxies objectForKey:(NSString *)kSCPropNetProxiesSOCKSProxy];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return hostname;
 }
 
 + (NSNumber *)getSOCKSProxyPort
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [proxies objectForKey:(NSNumber *)kSCPropNetProxiesSOCKSPort];
+	NSNumber *port = [proxies objectForKey:(NSNumber *)kSCPropNetProxiesSOCKSPort];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return port;
 }
 
 + (BOOL)isHTTPProxyEnabled
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPEnable] boolValue];
+	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPEnable] boolValue];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return enabled;
 }
 
 + (NSString *)getHTTPProxyHost
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPProxy];
+	NSString *hostname = [proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPProxy];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return hostname;
 }
 
 + (NSNumber *)getHTTPProxyPort
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [proxies objectForKey:(NSNumber *)kSCPropNetProxiesHTTPPort];
+	NSNumber *port = [proxies objectForKey:(NSNumber *)kSCPropNetProxiesHTTPPort];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return port;
 }
 
 + (BOOL)isHTTPSProxyEnabled
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPSEnable] boolValue];
+	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPSEnable] boolValue];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return enabled;
 }
 
 + (NSString *)getHTTPSProxyHost
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPSProxy];
+	NSString *hostname = [proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPSProxy];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return hostname;
 }
 
 + (NSNumber *)getHTTPSProxyPort
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-	[pool release];
-	return [proxies objectForKey:(NSNumber *)kSCPropNetProxiesHTTPSPort];
+	NSNumber *port = [proxies objectForKey:(NSNumber *)kSCPropNetProxiesHTTPSPort];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return port;
 }
 
 @end
