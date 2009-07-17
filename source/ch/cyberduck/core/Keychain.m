@@ -117,6 +117,8 @@ NSArray* Java_ch_cyberduck_core_Keychain_createCertificatesFromData(JNIEnv *env,
         }
     	SecCertificateRef certificateRef = NULL;
         err = SecCertificateCreateFromData(cssmData, CSSM_CERT_X_509v3, CSSM_CERT_ENCODING_DER, &certificateRef);
+        free(cssmData->Data);
+		free(cssmData);
 		if(err != noErr) {
 			NSLog(@"Error creating certificate from data");
 			continue;
