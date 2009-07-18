@@ -4218,7 +4218,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
@@ -4606,10 +4606,10 @@
 				);
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEPLOYMENT_POSTPROCESSING = YES;
+				DEPLOYMENT_POSTPROCESSING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/lib",
-					"$(SRCROOT)/build",
+					"\"$(SRCROOT)/lib\"",
+					"\"$(SRCROOT)/build\"",
 				);
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_VERSION = 4.2;
@@ -4617,8 +4617,9 @@
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = (
-					"-Wmost",
+					"-Wall",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
 				);
