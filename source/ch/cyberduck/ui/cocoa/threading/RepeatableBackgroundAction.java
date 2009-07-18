@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.application.NSTextView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.growl.Growl;
@@ -353,18 +354,24 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             private int delay = (int) Preferences.instance().getDouble("connection.retry.delay");
 
             public void run() {
-                if(0 == delay || RepeatableBackgroundAction.this.isCanceled()) {
-                    // Cancel the timer repetition
-                    this.cancel();
-                    return;
+                final NSAutoreleasePool pool = NSAutoreleasePool.push();
+                try {
+                    if(0 == delay || RepeatableBackgroundAction.this.isCanceled()) {
+                        // Cancel the timer repetition
+                        this.cancel();
+                        return;
+                    }
+                    final Session session = getSession();
+                    if(session != null) {
+                        session.message(MessageFormat.format(
+                                Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
+                                String.valueOf(delay), String.valueOf(retry())));
+                    }
+                    delay--;
                 }
-                final Session session = getSession();
-                if(session != null) {
-                    session.message(MessageFormat.format(
-                            Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
-                            String.valueOf(delay), String.valueOf(retry())));
+                finally {
+                    pool.release();
                 }
-                delay--;
             }
 
             public boolean cancel() {
