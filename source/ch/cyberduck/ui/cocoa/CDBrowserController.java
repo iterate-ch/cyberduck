@@ -1736,7 +1736,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private final RendezvousListener rendezvousCollectionListener = new RendezvousListener() {
         public void serviceResolved(String servicename, String hostname) {
-            this.reloadBookmarks();
+            CDMainApplication.invoke(new DefaultMainAction() {
+                public void run() {
+                    reloadBookmarks();
+                }
+            });
         }
 
         public void serviceLost(String servicename) {

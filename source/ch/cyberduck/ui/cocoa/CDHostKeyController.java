@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
@@ -71,62 +72,68 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
         if(KnownHosts.HOSTKEY_IS_OK == result) {
             return true; // We are happy
         }
-        if(KnownHosts.HOSTKEY_IS_NEW == result) {
-            NSAlert alert = NSAlert.alert(Locale.localizedString("Unknown host key for", "") + " "
-                    + hostname, //title
-                    Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")
-                            + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
-                    Locale.localizedString("Allow", ""), // default button
-                    Locale.localizedString("Deny", ""), // alternate button
-                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
-                            Locale.localizedString("Always", "") : null //other button
-            );
-            CDSheetController c = new CDAlertController(parent, alert) {
-                public void callback(final int returncode) {
-                    if(returncode == DEFAULT_OPTION) {// allow host (once)
-                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+        final NSAutoreleasePool pool = NSAutoreleasePool.push();
+        try {
+            if(KnownHosts.HOSTKEY_IS_NEW == result) {
+                NSAlert alert = NSAlert.alert(Locale.localizedString("Unknown host key for", "") + " "
+                        + hostname, //title
+                        Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")
+                                + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
+                        Locale.localizedString("Allow", ""), // default button
+                        Locale.localizedString("Deny", ""), // alternate button
+                        new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
+                                Locale.localizedString("Always", "") : null //other button
+                );
+                CDSheetController c = new CDAlertController(parent, alert) {
+                    public void callback(final int returncode) {
+                        if(returncode == DEFAULT_OPTION) {// allow host (once)
+                            allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                        }
+                        if(returncode == OTHER_OPTION) {// allow host (always)
+                            allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
+                        }
+                        if(returncode == ALTERNATE_OPTION) {
+                            log.warn("Cannot continue without a valid host key");
+                        }
                     }
-                    if(returncode == OTHER_OPTION) {// allow host (always)
-                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
-                    }
-                    if(returncode == ALTERNATE_OPTION) {
-                        log.warn("Cannot continue without a valid host key");
-                    }
-                }
-            };
-            c.beginSheet();
-            return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
-                    || c.returnCode() == CDSheetCallback.OTHER_OPTION;
-        }
-        if(KnownHosts.HOSTKEY_HAS_CHANGED == result) {
-            NSAlert alert = NSAlert.alert(Locale.localizedString("Host key mismatch:", "") + " " + hostname, //title
-                    Locale.localizedString("The host key supplied is", "") + ": "
-                            + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
+                };
+                c.beginSheet();
+                return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
+                        || c.returnCode() == CDSheetCallback.OTHER_OPTION;
+            }
+            if(KnownHosts.HOSTKEY_HAS_CHANGED == result) {
+                NSAlert alert = NSAlert.alert(Locale.localizedString("Host key mismatch:", "") + " " + hostname, //title
+                        Locale.localizedString("The host key supplied is", "") + ": "
+                                + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
 //                            + "\n" + Locale.localizedString("The current allowed key for this host is", "") + " : "
 //                            + allowedHostKey.getFingerprint() + "\n"
-                            + Locale.localizedString("Do you want to allow the host access?", ""),
-                    Locale.localizedString("Allow", ""), // defaultbutton
-                    Locale.localizedString("Deny", ""), //alternative button
-                    new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always", "") : null //other button
-            );
-            CDSheetController c = new CDAlertController(parent, alert) {
-                public void callback(final int returncode) {
-                    if(returncode == DEFAULT_OPTION) {
-                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                                + Locale.localizedString("Do you want to allow the host access?", ""),
+                        Locale.localizedString("Allow", ""), // defaultbutton
+                        Locale.localizedString("Deny", ""), //alternative button
+                        new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always", "") : null //other button
+                );
+                CDSheetController c = new CDAlertController(parent, alert) {
+                    public void callback(final int returncode) {
+                        if(returncode == DEFAULT_OPTION) {
+                            allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                        }
+                        if(returncode == OTHER_OPTION) {
+                            allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
+                        }
+                        if(returncode == ALTERNATE_OPTION) {
+                            log.warn("Cannot continue without a valid host key");
+                        }
                     }
-                    if(returncode == OTHER_OPTION) {
-                        allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
-                    }
-                    if(returncode == ALTERNATE_OPTION) {
-                        log.warn("Cannot continue without a valid host key");
-                    }
-                }
-            };
-            c.beginSheet();
-            return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
-                    || c.returnCode() == CDSheetCallback.OTHER_OPTION;
+                };
+                c.beginSheet();
+                return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
+                        || c.returnCode() == CDSheetCallback.OTHER_OPTION;
+            }
+            return false;
         }
-        return false;
+        finally {
+            pool.drain();
+        }
     }
 
     private void allow(final String hostname, final String serverHostKeyAlgorithm,
