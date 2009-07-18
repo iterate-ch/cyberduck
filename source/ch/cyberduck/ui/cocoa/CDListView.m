@@ -133,10 +133,10 @@ static NSTableColumn *localSelectionColumn;
 		}
 		if([[self delegate] respondsToSelector:@selector(tableView:shouldSelectRow:)]) {
 			if([[self delegate] tableView:self shouldSelectRow:row])
-				[self selectRow:row byExtendingSelection:[self isRowSelected:row]];
+				[self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:[self isRowSelected:row]];
 		} 
 		else {
-			[self selectRow:row byExtendingSelection:[self isRowSelected:row]];
+			[self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:[self isRowSelected:row]];
 		}
 		return [self menu];
 	}
@@ -261,7 +261,7 @@ static NSTableColumn *localSelectionColumn;
 		}
 	}
 	if (row != -1) {
-		[self selectRow:row byExtendingSelection:NO];
+		[self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 		[self scrollRowToVisible:row];
 	}	
 }
