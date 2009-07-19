@@ -85,8 +85,8 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         }
     }
 
-    protected Path lookup(String path) {
-        return transfer.getSession().cache().lookup(path);
+    protected Path lookup(NSObject reference) {
+        return transfer.getSession().cache().lookup(new PathReference(reference));
     }
 
     protected static final String INCLUDE_COLUMN = "INCLUDE";
@@ -98,10 +98,10 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
 
     @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                                 final NSTableColumn tableColumn, NSString item) {
+                                                                 final NSTableColumn tableColumn, NSObject item) {
         String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            final Path path = this.lookup(item.toString());
+            final Path path = this.lookup(item);
             transfer.setSkipped(path, Rococoa.cast(value, NSNumber.class).intValue() == NSCell.NSOffState);
             if(path.attributes.isDirectory()) {
                 outlineView.setNeedsDisplay(true);
@@ -127,25 +127,28 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     private final List<Path> isLoadingListingInBackground = new Collection<Path>();
 
     /**
-     * Must be efficient; called very frequently by the table view
+     * If no cached listing is available the loading is delayed until the listing is
+     * fetched from a background thread
      *
-     * @param path The directory to fetch the childs from
-     * @return The cached or newly fetched file listing of the directory
-     * @pre Call from the main thread
+     * @param path
+     * @return The list of child items for the parent folder. The listing is filtered
+     *         using the standard regex exclusion and the additional passed filter
      */
     protected AttributedList<Path> childs(final Path path) {
         synchronized(isLoadingListingInBackground) {
             // Check first if it hasn't been already requested so we don't spawn
             // a multitude of unecessary threads
             if(!isLoadingListingInBackground.contains(path)) {
-                if(!path.isCached()) {
+                if(!transfer.isCached(path)) {
                     log.warn("No cached listing for " + path.getName());
                     isLoadingListingInBackground.add(path);
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
                     controller.background(new AbstractBackgroundAction() {
                         public void run() {
-                            path.childs();
+                            cache.put(path, transfer.childs(path));
+                            //Hack to filter the list first in the background thread
+                            cache.get(path, new NullComparator<Path>(), CDTransferPromptModel.this.filter());
                         }
 
                         @Override
@@ -194,32 +197,32 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }
 
-    public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSString item) {
+    public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(null == item) {
             return false;
         }
-        return this.lookup(item.toString()).attributes.isDirectory();
+        return this.lookup(item).attributes.isDirectory();
     }
 
-    public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSString item) {
+    public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(null == item) {
             return _roots.size();
         }
-        return this.childs(this.lookup(item.toString())).size();
+        return this.childs(this.lookup(item)).size();
     }
 
-    public NSString outlineView_child_ofItem(final NSOutlineView view, int index, NSString item) {
+    public NSObject outlineView_child_ofItem(final NSOutlineView view, int index, NSObject item) {
         if(null == item) {
-            return _roots.get(index).getReference();
+            return _roots.get(index).getReference().getReference();
         }
-        final AttributedList<Path> childs = this.childs(this.lookup(item.toString()));
+        final AttributedList<Path> childs = this.childs(this.lookup(item));
         if(childs.isEmpty()) {
             return null;
         }
-        return childs.get(index).getReference();
+        return childs.get(index).getReference().getReference();
     }
 
-    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSString item) {
-        return this.objectValueForItem(this.lookup(item.toString()), tableColumn.identifier());
+    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
+        return this.objectValueForItem(this.lookup(item), tableColumn.identifier());
     }
 }

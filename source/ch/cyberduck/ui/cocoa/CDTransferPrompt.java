@@ -21,10 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
@@ -191,7 +188,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                     hideRemoteDetails(true);
                 }
                 else {
-                    final Path p = browserModel.lookup(browserView.itemAtRow(browserView.selectedRow()).toString());
+                    final Path p = browserModel.lookup(browserView.itemAtRow(browserView.selectedRow()));
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -269,25 +266,22 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             /**
              * @see NSOutlineView.Delegate
              */
-            public void outlineView_willDisplayCell(NSOutlineView outlineView, NSCell cell,
-                                                    NSTableColumn tableColumn, NSObject item) {
-                String identifier = tableColumn.identifier();
-                if(item != null) {
-                    final Path path = browserModel.lookup(item.toString());
-                    if(identifier.equals(CDTransferPromptModel.INCLUDE_COLUMN)) {
-                        cell.setEnabled(transfer.isSelectable(path));
+            public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
+                                                                        NSTableColumn tableColumn, NSObject item) {
+                final String identifier = tableColumn.identifier();
+                final Path path = browserModel.lookup(item);
+                if(identifier.equals(CDTransferPromptModel.INCLUDE_COLUMN)) {
+                    cell.setEnabled(transfer.isSelectable(path));
+                }
+                else if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
+                    (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(CDIconCache.instance().iconForPath(path, 16));
+                }
+                if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
+                    if(!transfer.isIncluded(path)) {
+                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
-                    if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
-                        cell.setObjectValue(CDIconCache.instance().iconForPath(path, 16));
-                        ((CDOutlineCell) cell).setIcon(CDIconCache.instance().iconForPath(path, 16));
-                    }
-                    if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                        if(!transfer.isIncluded(path)) {
-                            Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
-                        }
-                        else {
-                            Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
-                        }
+                    else {
+                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
                     }
                 }
             }
@@ -321,7 +315,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(800f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(CDOutlineDataSource.OUTLINE_CELL_PROTOTYPE);
+            c.setDataCell(CDOutlineCell.outlineCell());
             this.browserView.addTableColumn(c);
             this.browserView.setOutlineTableColumn(c);
         }
