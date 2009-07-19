@@ -85,7 +85,7 @@ public class CDMainController extends CDBundleController {
             final String identifier = (String) identifiers.next();
             item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(identifier);
-            this.columnMenu.insertItem_atIndex(item, i);
+            this.columnMenu.insertItem(item, i);
         }
     }
 
