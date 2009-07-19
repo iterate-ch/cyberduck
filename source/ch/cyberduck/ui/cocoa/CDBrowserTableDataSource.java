@@ -400,7 +400,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 final List<Path> roots = new Collection<Path>();
                 final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
-                    final Path path = PathFactory.createPath(session, controller.lookup(items.objectAtIndex(i).toString()).getAsDictionary());
+                    final Path path = PathFactory.createPath(session,
+                            controller.lookup(new PathReference(items.objectAtIndex(i))).getAsDictionary());
                     if(path.attributes.isFile()) {
                         if(StringUtils.isNotEmpty(path.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(path.getExtension()));
