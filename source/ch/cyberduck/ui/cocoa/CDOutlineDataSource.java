@@ -31,18 +31,17 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
  * @version $Id$
  */
 public abstract class CDOutlineDataSource extends CDController implements NSOutlineView.DataSource {
-    public static CDOutlineCell OUTLINE_CELL_PROTOTYPE = CDOutlineCell.outlineCell();
 
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                                 final NSTableColumn tableColumn, NSString item) {
+                                                                 final NSTableColumn tableColumn, NSObject item) {
         throw new RuntimeException("Not editable");
     }
 
-    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSString destination, int row) {
+    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject destination, int row) {
         return NSDraggingInfo.NSDragOperationNone;
     }
 
-    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSString item, int row) {
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row) {
         return false;
     }
 
