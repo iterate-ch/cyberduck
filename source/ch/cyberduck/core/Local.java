@@ -374,6 +374,10 @@ public class Local extends AbstractPath {
         return _impl.getAbsolutePath();
     }
 
+    public PathReference getReference() {
+        return null;
+    }
+
     public String getSymbolicLinkPath() {
         try {
             return _impl.getCanonicalPath();

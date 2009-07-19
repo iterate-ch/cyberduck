@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import java.util.*;
+import java.util.Collection;
 
 /**
  * Facade for com.apple.cocoa.foundation.NSMutableArray
@@ -117,5 +118,32 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
 
     public Attributes<E> attributes() {
         return attributes;
+    }
+
+    private Map<PathReference,E> references = new HashMap<PathReference,E>();
+
+    @Override
+    public boolean add(E path) {
+        references.put(path.getReference(), path);
+        return super.add(path);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        for(E item: c) {
+            references.put(item.getReference(), item);
+        }
+        return super.addAll(c);
+    }
+
+    public E get(PathReference reference) {
+        return references.get(reference);
+    }
+
+    @Override
+    public void clear() {
+        attributes.clear();
+        references.clear();
+        super.clear();
     }
 }

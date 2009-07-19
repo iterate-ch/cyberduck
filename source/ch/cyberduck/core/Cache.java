@@ -54,24 +54,14 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return
      */
-    public synchronized E lookup(String path) {
-        if(null == path) {
-            log.warn("Path to lookup is null");
+    public synchronized E lookup(PathReference path) {
+        final AttributedList<E> childs = this.get(Path.getParent(path.toString()));
+        if(null == childs) {
+            log.warn("Lookup failed for " + path + " in cache");
             return null;
         }
-        final String parent = Path.getParent(path);
-        if(this.containsKey(parent)) {
-            final AttributedList<E> childs = this.get(parent);
-            for(E child : childs) {
-                if(child.getAbsolute().equals(path)) {
-                    return child;
-                }
-            }
-        }
-        log.warn("Lookup failed for " + path + " in cache");
-        return null;
+        return childs.get(path);
     }
-
 
     /**
      * @param path
