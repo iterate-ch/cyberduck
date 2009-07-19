@@ -38,6 +38,20 @@ public abstract class NSString implements NSObject, NSCopying {
         return CLASS.alloc().initWithString(string).stringByExpandingTildeInPath().toString();
     }
 
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
+    public boolean equals(Object other) {
+        if(null == other) {
+            return false;
+        }
+        if(other instanceof NSString) {
+            return this.toString().equals(other.toString());
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return Foundation.toString(id());
