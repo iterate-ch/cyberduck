@@ -70,7 +70,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
             bookmark.setTarget(this.id());
             bookmark.setEnabled(true);
             bookmark.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
-            menu.insertItem_atIndex(bookmark, index);
+            menu.insertItem(bookmark, index);
             return !shouldCancel;
         }
         if(index == HistoryCollection.defaultCollection().size()) {
@@ -78,7 +78,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
             // There is no way in this wonderful API to add a separator item
             // without creating a new NSMenuItem first
             NSMenuItem separator = NSMenuItem.separatorItem();
-            menu.insertItem_atIndex(separator, index);
+            menu.insertItem(separator, index);
             return !shouldCancel;
         }
         if(index == HistoryCollection.defaultCollection().size() + 1) {
@@ -86,7 +86,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
             NSMenuItem clear = NSMenuItem.itemWithTitle(Locale.localizedString("Clear Menu"), Foundation.selector("clearMenuItemClicked:"), "");
             clear.setTarget(this.id());
             clear.setEnabled(true);
-            menu.insertItem_atIndex(clear, index);
+            menu.insertItem(clear, index);
             return !shouldCancel;
         }
         return true;

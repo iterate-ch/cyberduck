@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDIconCache;
@@ -73,7 +74,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
             path.setTarget(this.id());
             path.setEnabled(true);
             path.setImage(CDIconCache.instance().iconForPath(item, 16));
-            menu.insertItem_atIndex(path, index);
+            menu.insertItem(path, index);
             return !shouldCancel;
         }
         if(index == length) {
@@ -81,7 +82,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
             // There is no way in this wonderful API to add a separator item
             // without creating a new NSMenuItem first
             NSMenuItem separator = NSMenuItem.separatorItem();
-            menu.insertItem_atIndex(separator, index);
+            menu.insertItem(separator, index);
             return !shouldCancel;
         }
         if(index == length + 1) {
@@ -90,14 +91,14 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
                     Locale.localizedString("Clear Menu"), Foundation.selector("clearMenuItemClicked:"), "");
             clear.setTarget(this.id());
             clear.setEnabled(true);
-            menu.insertItem_atIndex(clear, index);
+            menu.insertItem(clear, index);
             return !shouldCancel;
         }
         return true;
     }
 
     public void pathMenuItemClicked(NSMenuItem sender) {
-        controller.setWorkdir(sender.representedObject());
+        controller.setWorkdir(controller.lookup(new PathReference(sender.representedObject())));
     }
 
     public abstract void clearMenuItemClicked(NSMenuItem sender);

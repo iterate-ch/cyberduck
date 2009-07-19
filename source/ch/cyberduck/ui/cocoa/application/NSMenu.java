@@ -113,6 +113,10 @@ public abstract class NSMenu implements NSObject, NSCopying {
      */
     public abstract void insertItem_atIndex(NSMenuItem newItem, int index);
 
+    public void insertItem(NSMenuItem item, int index) {
+        this.insertItem_atIndex(item, index);
+    }
+
     /**
      * Original signature : <code>void addItem(NSMenuItem*)</code><br>
      * <i>native declaration : :64</i>
