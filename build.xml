@@ -68,12 +68,6 @@
         </fileset>
     </path>
 
-    <path id="build.bootclasspath">
-        <pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/classes.jar"/>
-        <pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jce.jar"/>
-        <pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jsse.jar"/>
-    </path>
-
     <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
         <classpath refid="build.classpath"/>
     </taskdef>
@@ -405,7 +399,6 @@
                 source="1.5"
                 target="1.5"
                 destdir="${build.classes}">
-            <bootclasspath refid="build.bootclasspath"/>
             <classpath refid="build.classpath"/>
         </javac>
     </target>
