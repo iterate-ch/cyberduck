@@ -55,6 +55,7 @@ public abstract class Protocol {
         return new String[]{this.getScheme()};
     }
 
+    @Override
     public boolean equals(Object other) {
         if(other instanceof Protocol) {
             return ((Protocol) other).getIdentifier().equals(this.getIdentifier());
@@ -62,6 +63,7 @@ public abstract class Protocol {
         return false;
     }
 
+    @Override
     public String toString() {
         return this.getIdentifier();
     }
@@ -117,6 +119,7 @@ public abstract class Protocol {
             return "sftp";
         }
 
+        @Override
         public boolean isSecure() {
             return true;
         }
@@ -135,6 +138,7 @@ public abstract class Protocol {
             return "scp";
         }
 
+        @Override
         public boolean isSecure() {
             return true;
         }
@@ -155,6 +159,7 @@ public abstract class Protocol {
     };
 
     public static final Protocol FTP_TLS = new Protocol() {
+        @Override
         public String getName() {
             return "FTP-SSL";
         }
@@ -171,20 +176,24 @@ public abstract class Protocol {
             return "ftps";
         }
 
+        @Override
         public boolean isSecure() {
             return true;
         }
 
+        @Override
         public String disk() {
             return SFTP.disk();
         }
 
+        @Override
         public String icon() {
             return SFTP.icon();
         }
     };
 
     public static final Protocol S3 = new Protocol() {
+        @Override
         public String getName() {
             return "S3";
         }
@@ -193,6 +202,7 @@ public abstract class Protocol {
             return Locale.localizedString("S3 (Amazon Simple Storage Service)", "S3");
         }
 
+        @Override
         public String getIdentifier() {
             return "s3";
         }
@@ -205,32 +215,38 @@ public abstract class Protocol {
             return "https";
         }
 
+        @Override
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "s3"};
         }
 
+        @Override
         public boolean isSecure() {
             return true;
         }
 
+        @Override
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
 
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
     };
 
     public static final Protocol EUCALYPTUS = new Protocol() {
+        @Override
         public String getName() {
             return "Walrus";
         }
 
         public String getDescription() {
-            return Locale.localizedString("Eucalyptus Walrus (Elastic Utility Computing Architecture for Linking Your Programs To Useful Systems)", "S3");
+            return Locale.localizedString("Eucalyptus Walrus", "S3");
         }
 
+        @Override
         public String getIdentifier() {
             return "ec";
         }
@@ -243,36 +259,44 @@ public abstract class Protocol {
             return "http";
         }
 
+        @Override
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "walrus"};
         }
 
+        @Override
         public boolean isSecure() {
             return false;
         }
 
+        @Override
         public boolean isHostnameConfigurable() {
             return true;
         }
 
+        @Override
         public String getDefaultHostname() {
             return "mayhem9.cs.ucsb.edu";
         }
 
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
 
+        @Override
         public String disk() {
             return S3.disk();
         }
 
+        @Override
         public String icon() {
-            return S3.icon();
+            return "eucalyptus-icon.png";
         }
     };
 
     public static final Protocol WEBDAV = new Protocol() {
+        @Override
         public String getName() {
             return "WebDAV (HTTP)";
         }
@@ -281,6 +305,7 @@ public abstract class Protocol {
             return Locale.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)", "");
         }
 
+        @Override
         public String getIdentifier() {
             return "dav";
         }
@@ -293,12 +318,14 @@ public abstract class Protocol {
             return "http";
         }
 
+        @Override
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "dav"};
         }
     };
 
     public static final Protocol WEBDAV_SSL = new Protocol() {
+        @Override
         public String getName() {
             return "WebDAV (HTTPS)";
         }
@@ -307,6 +334,7 @@ public abstract class Protocol {
             return Locale.localizedString("WebDAV (HTTP/SSL)", "");
         }
 
+        @Override
         public String getIdentifier() {
             return "davs";
         }
@@ -319,24 +347,29 @@ public abstract class Protocol {
             return "https";
         }
 
+        @Override
         public boolean isSecure() {
             return true;
         }
 
+        @Override
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "davs"};
         }
 
+        @Override
         public String disk() {
             return WEBDAV.disk();
         }
 
+        @Override
         public String icon() {
             return WEBDAV.icon();
         }
     };
 
     public static final Protocol IDISK = new Protocol() {
+        @Override
         public String getName() {
             return "MobileMe";
         }
@@ -345,6 +378,7 @@ public abstract class Protocol {
             return Locale.localizedString("MobileMe iDisk (WebDAV)", "");
         }
 
+        @Override
         public String getIdentifier() {
             return "me";
         }
@@ -357,28 +391,34 @@ public abstract class Protocol {
             return "https";
         }
 
+        @Override
         public boolean isSecure() {
             return true;
         }
 
+        @Override
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "idisk"};
         }
 
+        @Override
         public boolean isHostnameConfigurable() {
             return false;
         }
 
+        @Override
         public String getDefaultHostname() {
             return "idisk.me.com";
         }
 
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
     };
 
     public static final Protocol MOSSO = new Protocol() {
+        @Override
         public String getName() {
             return "Cloud Files";
         }
@@ -387,6 +427,7 @@ public abstract class Protocol {
             return "Mosso Cloud Files";
         }
 
+        @Override
         public String getIdentifier() {
             return "cf";
         }
@@ -399,22 +440,27 @@ public abstract class Protocol {
             return "https";
         }
 
+        @Override
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "mosso", "cloudfiles", "cf"};
         }
 
+        @Override
         public boolean isSecure() {
             return true;
         }
 
+        @Override
         public boolean isHostnameConfigurable() {
             return false;
         }
 
+        @Override
         public String getDefaultHostname() {
             return "storage.clouddrive.com";
         }
 
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
@@ -480,7 +526,7 @@ public abstract class Protocol {
 
     public static Protocol[] getKnownProtocols() {
         return new Protocol[]{
-                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, IDISK, S3, MOSSO};
+                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, IDISK, S3, MOSSO, EUCALYPTUS};
     }
 
     /**

@@ -863,6 +863,7 @@ img/download9.icns -text
 img/edit.tiff -text svneol=unset#image/tiff
 img/editPressed.tiff -text svneol=unset#image/tiff
 img/eject.tiff -text svneol=unset#image/tiff
+img/eucalyptus-icon.png -text svneol=unset#image/png
 img/executable.tiff -text
 img/ftp-icon.png -text svneol=unset#image/png
 img/ftp.icns -text
