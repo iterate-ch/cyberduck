@@ -104,8 +104,10 @@ public abstract class CDBrowserTableDataSource extends CDController {
                     public void cleanup() {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
-                            if(controller.isConnected()) {
-                                controller.reloadData(true);
+                            if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
+                                if(controller.isConnected()) {
+                                    controller.reloadData(true);
+                                }
                             }
                         }
                     }
