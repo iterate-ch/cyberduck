@@ -132,9 +132,7 @@ public class SFTPSession extends Session {
         if(!SSH.isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
-//        this.message(Locale.localizedString("Starting SCP subsystem", "Status"));
         final SCPClient client = new SCPClient(SSH);
-//        this.message(Locale.localizedString("SCP subsystem ready", "Status"));
         client.setCharset(this.getEncoding());
         return client;
     }
@@ -329,7 +327,7 @@ public class SFTPSession extends Session {
             this.connect();
         }
         if(sftp) {
-            if(null == SFTP || !this.sftp().isConnected()) {
+            if(!this.sftp().isConnected()) {
                 this.interrupt();
                 this.connect();
             }
@@ -337,7 +335,7 @@ public class SFTPSession extends Session {
     }
 
     public Path workdir() throws IOException {
-        if(null == SFTP || !this.sftp().isConnected()) {
+        if(!SFTP.isConnected()) {
             throw new ConnectionCanceledException();
         }
         if(null == workdir) {
