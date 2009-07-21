@@ -84,7 +84,22 @@
 																		forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 											 ];
 	}
-	
+	static NSDictionary *COMMENT_FONT_ATTRIBUTES = nil;
+	if(nil == COMMENT_FONT_ATTRIBUTES) {
+		COMMENT_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
+								 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+															forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSParagraphStyleAttributeName, nil] //keys
+								 ];
+	}
+
+	static NSDictionary *HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES = nil;
+	if(nil == HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES) {
+		HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
+											 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor whiteColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+																		forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
+											 ];
+	}
+
     BOOL highlighted = [self isHighlighted] && ![[self highlightColorWithFrame:cellFrame inView:controlView] isEqualTo:[NSColor secondarySelectedControlColor]];
     int size = [[NSUserDefaults standardUserDefaults] integerForKey:@"bookmark.icon.size"];
 	
@@ -96,7 +111,8 @@
         nicknameFont = highlighted ? HIGHLIGHTED_SMALL_BOLD_FONT_ATTRIBUTES : SMALL_BOLD_FONT_ATTRIBUTES;
     }
     NSDictionary *detailsFont = highlighted ? HIGHLIGHTED_SMALL_FONT_ATTRIBUTES : SMALL_FONT_ATTRIBUTES;
-	
+    NSDictionary *commentFont = highlighted ? HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES : COMMENT_FONT_ATTRIBUTES;
+
     NSLayoutManager *l = [[NSLayoutManager alloc] init];
     float nicknameFontHeight = [l defaultLineHeightForFont:[nicknameFont objectForKey:NSFontAttributeName]] + 2;
     float detailsFontHeight = [l defaultLineHeightForFont:[detailsFont objectForKey:NSFontAttributeName]] + 2;
@@ -104,24 +120,27 @@
 	
 	NSString *nickname = [bookmark objectForKey:@"Nickname"];
 	if(nickname) {
-		[nickname drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + 1, cellFrame.size.width - 5, cellFrame.size.height) withAttributes:nicknameFont];
+		[nickname drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + 1, cellFrame.size.width - 5,
+		                                cellFrame.size.height) withAttributes:nicknameFont];
     }
     if(SMALL_BOOKMARK_SIZE == size) {
         return;
     }
 	NSString *username = [bookmark objectForKey:@"Username"];
 	if(username) {
-		[username drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight, cellFrame.size.width - 5, cellFrame.size.height) withAttributes:detailsFont];
+		[username drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight, cellFrame.size.width - 5,
+		                                cellFrame.size.height) withAttributes:detailsFont];
     }
-	NSString *protocol = [bookmark objectForKey:@"Protocol"];
-	NSString *hostname = [bookmark objectForKey:@"Hostname"];
-	NSString *path = [bookmark objectForKey:@"Path"];
-	if(!path) {
-		path = @"";
+	NSString *url = [bookmark objectForKey:@"URL"];
+	if(url) {
+        [url drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight + detailsFontHeight,
+                                   cellFrame.size.width - 5, cellFrame.size.height) withAttributes:detailsFont];
 	}
-	NSString *url = [NSString stringWithFormat:@"%@://%@%@", protocol, hostname, path];
-	[url drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight + detailsFontHeight, 
-							   cellFrame.size.width - 5, cellFrame.size.height) withAttributes:detailsFont];
+	NSString *comment = [bookmark objectForKey:@"Comment"];
+	if(comment) {
+        [comment drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight + detailsFontHeight + 5 + detailsFontHeight,
+                                   cellFrame.size.width - 5, cellFrame.size.height) withAttributes:commentFont];
+    }
 }
 
 @end

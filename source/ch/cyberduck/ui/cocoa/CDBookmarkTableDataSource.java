@@ -26,8 +26,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.CharUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.*;
@@ -140,7 +142,12 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
                     Preferences.instance().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(BOOKMARK_COLUMN)) {
-            return host.getAsDictionary();
+            NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.getAsDictionary());
+            dict.setObjectForKey(host.toURL() + Path.normalize(host.getDefaultPath()), "URL");
+            if(StringUtils.isNotBlank(host.getComment())) {
+                dict.setObjectForKey(StringUtils.remove(StringUtils.remove(host.getComment(), CharUtils.LF), CharUtils.CR), "Comment");
+            }
+            return dict;
         }
         if(identifier.equals(STATUS_COLUMN)) {
             if(controller.hasSession()) {
