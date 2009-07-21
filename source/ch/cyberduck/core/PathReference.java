@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
  * Mapper between path references returned from the outline view model and its internal
  * string representation.
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class PathReference {
 
@@ -48,20 +48,25 @@ public class PathReference {
         return reference;
     }
 
+    @Override
     public int hashCode() {
         return hashcode;
     }
 
+    @Override
     public boolean equals(Object other) {
         if(null == other) {
             return false;
         }
         if(other instanceof PathReference) {
-            return reference.toString().equals(other.toString());
+            if(this.hashCode() == other.hashCode()) {
+                return true;
+            }
         }
         return false;
     }
 
+    @Override
     public String toString() {
         return reference.toString();
     }
