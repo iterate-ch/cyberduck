@@ -4616,8 +4616,8 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SRCROOT)/lib\"",
-					"\"$(SRCROOT)/build\"",
+					"$(SRCROOT)/lib",
+					"$(SRCROOT)/build",
 				);
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_VERSION = 4.2;
