@@ -3,12 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		470168310EED9EA8005E2CCF /* Archive.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168130EED9EA7005E2CCF /* Archive.strings */; };
 		470168500EED9EB7005E2CCF /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
+		47022C231018663600488C19 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
 		470671160FD8896D00EE3291 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 470671150FD8896D00EE3291 /* Sparkle.framework */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
@@ -418,6 +419,7 @@
 		4701684D0EED9EB7005E2CCF /* da */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Mosso.strings; sourceTree = "<group>"; };
 		4701684E0EED9EB7005E2CCF /* cy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/Mosso.strings; sourceTree = "<group>"; };
 		4701684F0EED9EB7005E2CCF /* ca */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Mosso.strings; sourceTree = "<group>"; };
+		47022C221018663600488C19 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		47026427087DC91C008837FD /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4702642B087DC92C008837FD /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/IDisk.strings; sourceTree = "<group>"; };
 		4702642C087DC937008837FD /* nl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/IDisk.strings; sourceTree = "<group>"; };
@@ -1495,6 +1497,7 @@
 				4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */,
 				475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */,
 				47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */,
+				47022C231018663600488C19 /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1626,6 +1629,7 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				471D2C5405A2505600675163 /* Info.plist */,
+				47022C221018663600488C19 /* CoreServices.framework */,
 			);
 			name = "cyberduck-cocoa";
 			sourceTree = "<group>";
@@ -2489,7 +2493,7 @@
 				ORGANIZATIONNAME = Cyberduck;
 			};
 			buildConfigurationList = 47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
