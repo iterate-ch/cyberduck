@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSString;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -174,10 +172,12 @@ public class Credentials {
             super(path);
         }
 
+        @Override
         public String toString() {
             return this.toURL();
         }
 
+        @Override
         public String toURL() {
             return Local.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
         }

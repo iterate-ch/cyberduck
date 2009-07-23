@@ -697,6 +697,7 @@ public class Host implements Serializable {
      * @return
      * @see #toURL()
      */
+    @Override
     public String toString() {
         return this.toURL();
     }
@@ -713,6 +714,7 @@ public class Host implements Serializable {
         return this.getProtocol().getScheme() + "://" + this.getHostname(true) + ":" + this.getPort();
     }
 
+    @Override
     public boolean equals(Object other) {
         if(null == other) {
             return false;

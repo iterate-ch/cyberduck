@@ -31,24 +31,9 @@ import java.security.cert.X509Certificate;
 public class Keychain {
     private static Logger log = Logger.getLogger(Keychain.class);
 
-    private static Keychain instance;
+    private static Keychain instance = null;
 
     private Keychain() {
-        //
-    }
-
-    private static final Object lock = new Object();
-
-    public static Keychain instance() {
-        synchronized(lock) {
-            if(null == instance) {
-                instance = new Keychain();
-            }
-            return instance;
-        }
-    }
-
-    static {
         // Ensure native keychain library is loaded
         try {
             NSBundle bundle = NSBundle.mainBundle();
@@ -60,6 +45,17 @@ public class Keychain {
         catch(UnsatisfiedLinkError e) {
             log.error("Could not load the libKeychain.dylib library:" + e.getMessage());
             throw e;
+        }
+    }
+
+    private static final Object lock = new Object();
+
+    public static Keychain instance() {
+        synchronized(lock) {
+            if(null == instance) {
+                instance = new Keychain();
+            }
+            return instance;
         }
     }
 
