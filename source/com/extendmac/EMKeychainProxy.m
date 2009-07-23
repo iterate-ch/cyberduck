@@ -70,7 +70,7 @@ static EMKeychainProxy* sharedProxy;
 	{
 		if (_logErrors)
 		{
-//			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
 		}
 		return nil;
 	}
@@ -103,7 +103,7 @@ static EMKeychainProxy* sharedProxy;
 	{
 		if (_logErrors)
 		{
-//			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
 		}
 		return nil;
 	}
@@ -129,7 +129,7 @@ static EMKeychainProxy* sharedProxy;
 	
 	if (returnStatus != noErr || !item)
 	{
-//		NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+		NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
 		return nil;
 	}
 	return [EMGenericKeychainItem genericKeychainItem:item forServiceName:serviceNameString username:usernameString password:passwordString];
@@ -165,6 +165,7 @@ static EMKeychainProxy* sharedProxy;
             }
             return existing;
         }
+		NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
         return nil;
 	}
 	return [EMInternetKeychainItem internetKeychainItem:item forServer:serverString username:usernameString password:passwordString path:pathString port:port protocol:protocol];
