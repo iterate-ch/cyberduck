@@ -1825,7 +1825,6 @@ source/ch/cyberduck/ui/cocoa/CDAbstractPathTableDelegate.java -text
 source/ch/cyberduck/ui/cocoa/CDBundleController.java -text
 source/ch/cyberduck/ui/cocoa/CDErrorController.java -text
 source/ch/cyberduck/ui/cocoa/CDTranscriptController.java -text
-source/ch/cyberduck/ui/cocoa/growl/GrowlNative.java -text
 source/ch/cyberduck/ui/cocoa/odb/EditorFactory.java -text
 source/ch/cyberduck/ui/cocoa/odb/ODBEditor.java -text
 source/ch/cyberduck/ui/cocoa/odb/WatchEditor.java -text
