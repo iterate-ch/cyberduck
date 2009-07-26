@@ -732,36 +732,36 @@ public class S3Path extends CloudPath {
                             BUCKET_LIST_CHUNKING_SIZE, priorLastKey);
 
                     final S3Object[] objects = chunk.getObjects();
-                    final S3Path[] paths = new S3Path[objects.length];
-                    for(int i = 0; i < objects.length; i++) {
-                        paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(), Path.FILE_TYPE);
-                        paths[i].setParent(this);
-                        paths[i]._bucket = bucket;
-
-                        paths[i].attributes.setSize(objects[i].getContentLength());
-                        paths[i].attributes.setModificationDate(objects[i].getLastModifiedDate().getTime());
-                        if(null != bucket.getOwner()) {
-                            paths[i].attributes.setOwner(bucket.getOwner().getDisplayName());
-                        }
-                        if(0 == objects[i].getContentLength()) {
-                            final S3Object details = paths[i].getDetails();
-                            if(null != details) {
-                                if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
-                                    paths[i] = new S3Path(session, bucket.getName(), objects[i].getKey(), Path.DIRECTORY_TYPE);
-                                }
-                            }
-                        }
-                    }
-                    childs.addAll(Arrays.asList(paths));
-
-                    final String[] prefixes = chunk.getCommonPrefixes();
-                    for(int i = 0; i < prefixes.length; i++) {
-                        if(prefixes[i].equals(Path.DELIMITER)) {
-                            log.warn("Skipping prefix " + prefixes[i]);
+                    for(S3Object object : objects) {
+                        final S3Path path = new S3Path(session, bucket.getName(), object.getKey(), Path.FILE_TYPE);
+                        path.setParent(this);
+                        if(path.getAbsolute().equals(this.getAbsolute())) {
+                            // #Workaround for key that end with /. Refer to #3347.
                             continue;
                         }
-                        S3Path p = new S3Path(session, bucket.getName(), prefixes[i],
-                                Path.DIRECTORY_TYPE);
+                        path._bucket = bucket;
+
+                        path.attributes.setSize(object.getContentLength());
+                        path.attributes.setModificationDate(object.getLastModifiedDate().getTime());
+                        if(null != bucket.getOwner()) {
+                            path.attributes.setOwner(bucket.getOwner().getDisplayName());
+                        }
+                        if(0 == object.getContentLength()) {
+                            final S3Object details = path.getDetails();
+                            if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
+                                path.attributes.setType(Path.DIRECTORY_TYPE);
+                            }
+                        }
+                        childs.add(path);
+                    }
+
+                    final String[] prefixes = chunk.getCommonPrefixes();
+                    for(String common : prefixes) {
+                        if(common.equals(Path.DELIMITER)) {
+                            log.warn("Skipping prefix " + common);
+                            continue;
+                        }
+                        final S3Path p = new S3Path(session, bucket.getName(), common, Path.DIRECTORY_TYPE);
                         p.setParent(this);
                         p._bucket = bucket;
 
