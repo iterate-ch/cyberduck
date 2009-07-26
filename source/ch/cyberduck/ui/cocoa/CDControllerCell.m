@@ -20,32 +20,19 @@
 
 @implementation CDControllerCell
 
-- (id)objectValue
+- (void)setObjectValue:(id <NSObject, NSCopying>)obj
 {
-	return [[controllerView retain] autorelease];
+	[super setObjectValue:[NSValue valueWithNonretainedObject:obj]];
 }
 
-- (void)setObjectValue:(NSView *)aView
+- (NSView*) objectValue 
 {
-	[controllerView autorelease];
-	controllerView = [aView retain];
-}
-
-- (void) dealloc
-{
-    [controllerView release];
-    [super dealloc];
-}
-
-- (id)copyWithZone:(NSZone *)zone {
-    CDControllerCell *cell = (CDControllerCell *)[super copyWithZone:zone];
-    // The icon ivar will be directly copied; we need to retain or copy it.
-    cell->controllerView = [controllerView retain];
-    return cell;
+    return [[super objectValue] nonretainedObjectValue];
 }
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
+	NSView *controllerView = [self objectValue];
 	[controllerView setFrame:cellFrame];
 	if([controllerView superview] != controlView) {
 		[controlView addSubview:controllerView];

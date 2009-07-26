@@ -24,6 +24,6 @@
 	NSImage *icon;
 }
 
-- (void)setIcon:(NSImage *)aImage;
+- (void)setIcon:(NSImage *)aIcon;
 
 @end

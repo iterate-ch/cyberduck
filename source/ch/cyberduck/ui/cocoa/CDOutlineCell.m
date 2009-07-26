@@ -20,23 +20,43 @@
 
 @implementation CDOutlineCell
 
-- (void)setIcon:(NSImage *)aImage
+- (void)setIcon:(NSImage *)aIcon
 {
-	[icon autorelease];
-	icon = [aImage retain];
+    if(icon == aIcon) {
+        return;
+    }
+	[icon release];
+	icon = [aIcon retain];
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
     CDOutlineCell *cell = (CDOutlineCell *)[super copyWithZone:zone];
     // The icon ivar will be directly copied; we need to retain or copy it.
     cell->icon = [icon retain];
     return cell;
 }
 
-- (void) dealloc
+ - (void)dealloc
 {
     [icon release];
     [super dealloc];
+}
+
+NSString *CDOutlineCellFilename = @"FILENAME";
+NSString *CDOutlineCellIcon = @"ICON";
+
+- (void)setObjectValue:(id <NSObject, NSCopying>)obj
+{
+    if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSAttributedString class]]) {
+        [super setObjectValue:obj];
+        return;
+    }
+	else if ([obj isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dictionary = (NSDictionary *)obj;
+        [super setObjectValue:[dictionary objectForKey:CDOutlineCellFilename]];
+		self.icon = [dictionary objectForKey:CDOutlineCellIcon];
+    }
 }
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView

@@ -20,8 +20,6 @@
 
 @interface CDControllerCell : NSCell {
 
-@private
-	NSView *controllerView;
 }
 
 @end
