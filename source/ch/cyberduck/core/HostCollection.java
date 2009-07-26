@@ -18,10 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @version $Id$
@@ -160,9 +165,23 @@ public class HostCollection extends BookmarkCollection {
         }
     }
 
+    private Timer delayed = null;
+
     @Override
-    public void collectionItemChanged(Host item) {
-        this.save();
+    public synchronized void collectionItemChanged(Host item) {
+        if(null != delayed) {
+            delayed.cancel();
+        }
+        delayed = new Timer();
+        delayed.schedule(new TimerTask() {
+            public void run() {
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        save();
+                    }
+                });
+            }
+        }, 5000); // Delay to 5 seconds. When typing changes we don't have to save every iteration.
         super.collectionItemChanged(item);
     }
 }
