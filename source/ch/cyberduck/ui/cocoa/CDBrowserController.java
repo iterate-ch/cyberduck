@@ -2598,6 +2598,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void gotoButtonClicked(final NSObject sender) {
         sheet = new CDGotoController(this) {
+            @Override
             public void callback(final int returncode) {
                 super.callback(returncode);
                 sheet = null;
@@ -2608,6 +2609,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void createFileButtonClicked(final NSObject sender) {
         sheet = new CDCreateFileController(this) {
+            @Override
             public void callback(final int returncode) {
                 super.callback(returncode);
                 sheet = null;
@@ -2618,6 +2620,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void duplicateFileButtonClicked(final NSObject sender) {
         sheet = new CDDuplicateFileController(this) {
+            @Override
             public void callback(final int returncode) {
                 super.callback(returncode);
                 sheet = null;
@@ -2628,6 +2631,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void createFolderButtonClicked(final NSObject sender) {
         sheet = new CDFolderController(this) {
+            @Override
             public void callback(final int returncode) {
                 super.callback(returncode);
                 sheet = null;
@@ -2645,6 +2649,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void sendCustomCommandClicked(final NSObject sender) {
         sheet = new CDCommandController(this, this.session) {
+            @Override
             public void callback(final int returncode) {
                 super.callback(returncode);
                 sheet = null;
@@ -3112,7 +3117,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         // Writing data for private use when the item gets dragged to the transfer queue.
         final NSPasteboard transferPasteboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard.toString());
         transferPasteboard.declareTypes(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType), null);
-        if(transferPasteboard.setPropertyList_forType(NSArray.arrayWithObject(q.getAsDictionary()), CDPasteboards.TransferPasteboardType.toString())) {
+        if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObject(q.getAsDictionary()), CDPasteboards.TransferPasteboardType.toString())) {
             log.debug("TransferPasteboardType data sucessfully written to pasteboard");
         }
         final NSPasteboard generalPasteboard = NSPasteboard.generalPasteboard();
