@@ -26,10 +26,10 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class CDBrowserTableDataSource extends CDController {
+public abstract class CDBrowserTableDataSource extends CDController implements NSDraggingSource {
     protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";
@@ -214,11 +214,11 @@ public abstract class CDBrowserTableDataSource extends CDController {
         return NSDraggingInfo.NSDragOperationCopy | NSDraggingInfo.NSDragOperationDelete;
     }
 
-    public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
+    public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo draggingInfo) {
         log.debug("acceptDrop:" + destination);
         if(controller.isMounted()) {
-            if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+            if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+                NSObject o = draggingInfo.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
@@ -239,8 +239,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 return false;
             }
         }
-        if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+        if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
+            NSObject o = draggingInfo.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
@@ -259,7 +259,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                 if(o != null) {
                     // A file dragged within the browser has been received
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    if((info.draggingSourceOperationMask() & NSDraggingInfo.NSDragOperationMove)
+                    if((draggingInfo.draggingSourceOperationMask() & NSDraggingInfo.NSDragOperationMove)
                             == NSDraggingInfo.NSDragOperationMove) {
                         // The file should be renamed
                         final Map<Path, Path> files = new HashMap<Path, Path>();
@@ -277,7 +277,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         controller.renamePaths(files);
                         return true;
                     }
-                    if(info.draggingSourceOperationMask() == NSDraggingInfo.NSDragOperationCopy) {
+                    if(draggingInfo.draggingSourceOperationMask() == NSDraggingInfo.NSDragOperationCopy) {
                         // The file should be duplicated
                         final Map<Path, Path> files = new HashMap<Path, Path>();
                         for(int i = 0; i < elements.count(); i++) {
@@ -292,7 +292,7 @@ public abstract class CDBrowserTableDataSource extends CDController {
                         controller.duplicatePaths(files, false);
                         return true;
                     }
-                    pboard.setPropertyList_forType(null, CDPasteboards.TransferPasteboardType);
+                    pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                     return false;
                 }
                 return false;
@@ -426,8 +426,8 @@ public abstract class CDBrowserTableDataSource extends CDController {
 
                 // Writing data for private use when the item gets dragged to the transfer queue.
                 NSPasteboard transferPasteboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-                transferPasteboard.declareTypes_owner(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType), null);
-                if(transferPasteboard.setPropertyList_forType(NSArray.arrayWithObject(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
+                transferPasteboard.declareTypes(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType), null);
+                if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObject(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
                     log.debug("TransferPasteboardType data sucessfully written to pasteboard");
                 }
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
@@ -443,15 +443,23 @@ public abstract class CDBrowserTableDataSource extends CDController {
         return false;
     }
 
-    //see http://www.cocoabuilder.com/archive/message/2005/10/5/118857
-    public void finishedDraggingImage(NSImage image, NSPoint point, int operation) {
-        log.debug("finishedDraggingImage:" + operation);
+    public void draggedImage_beganAt(NSImage image, NSPoint point) {
+        ;
+    }
+
+    /**
+     * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
+     */
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+        log.debug("draggedImage_endedAt_operation:" + operation);
         if(NSDraggingInfo.NSDragOperationDelete == operation) {
-            for(Path promisedDragPath : promisedDragPaths) {
-                controller.deletePaths(promisedDragPaths);
-            }
+            controller.deletePaths(promisedDragPaths);
         }
         promisedDragPaths.clear();
+    }
+
+    public void draggedImage_movedTo(NSImage image, NSPoint point) {
+        ;
     }
 
     /**

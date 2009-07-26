@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -181,6 +182,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             }
         }
         return super.acceptDrop(outlineView, destination, info);
+    }
+
+    public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items) {
+        return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
 
     public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {

@@ -18,16 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -124,32 +120,32 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         return false;
     }
 
-
-    /*
-    @Override
     public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
-        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count());
-        final List<Path> roots = new Collection<Path>();
-        final AttributedList<Path> childs = this.childs(this.controller.workdir());
-        for(int index = rowIndexes.firstIndex(); index != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
-            Path promisedDragPath = childs.get(index);
-            promisedDragPath.setLocal(new Local(dropDestination.path(), promisedDragPath.getName()));
-            if(rowIndexes.count() == 1) {
-                if(promisedDragPath.attributes.isFile()) {
-                    promisedDragPath.getLocal().touch();
-                }
-                if(promisedDragPath.attributes.isDirectory()) {
-                    promisedDragPath.getLocal().mkdir();
-                }
-            }
-            promisedDragNames.addObject(NSString.stringWithString(promisedDragPath.getLocal().getName()));
-            roots.add(promisedDragPath);
-        }
-        final Transfer q = new DownloadTransfer(roots);
-        if(q.numberOfRoots() > 0) {
-            controller.transfer(q);
-        }
-        return promisedDragNames;
+        return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
-    */
+
+//    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
+//        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
+//        final List<Path> roots = new Collection<Path>();
+//        final AttributedList<Path> childs = this.childs(this.controller.workdir());
+//        for(NSUInteger index = rowIndexes.firstIndex(); index.intValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
+//            Path promisedDragPath = childs.get(index.intValue());
+//            promisedDragPath.setLocal(new Local(dropDestination.path(), promisedDragPath.getName()));
+//            if(rowIndexes.count().intValue() == 1) {
+//                if(promisedDragPath.attributes.isFile()) {
+//                    promisedDragPath.getLocal().touch();
+//                }
+//                if(promisedDragPath.attributes.isDirectory()) {
+//                    promisedDragPath.getLocal().mkdir();
+//                }
+//            }
+//            promisedDragNames.addObject(NSString.stringWithString(promisedDragPath.getLocal().getName()));
+//            roots.add(promisedDragPath);
+//        }
+//        final Transfer q = new DownloadTransfer(roots);
+//        if(q.numberOfRoots() > 0) {
+//            controller.transfer(q);
+//        }
+//        return promisedDragNames;
+//    }
 }

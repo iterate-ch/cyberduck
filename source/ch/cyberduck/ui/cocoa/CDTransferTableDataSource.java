@@ -189,7 +189,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
                     view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                     view.scrollRowToVisible(row);
                 }
-                pboard.setPropertyList_forType(null, CDPasteboards.TransferPasteboardType);
+                pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                 return true;
             }
         }

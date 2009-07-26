@@ -73,4 +73,8 @@ public abstract class CDListDataSource extends CDController implements NSTableVi
     public boolean ignoreModifierKeysWhileDragging() {
         return false;
     }
+
+    public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
+        return NSArray.array();
+    }
 }
