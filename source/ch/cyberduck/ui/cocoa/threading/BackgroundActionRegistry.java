@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 public class BackgroundActionRegistry extends Collection<BackgroundAction> {
     private static Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
-    private static BackgroundActionRegistry instance;
+    private static BackgroundActionRegistry instance = null;
 
     private static final Object lock = new Object();
 

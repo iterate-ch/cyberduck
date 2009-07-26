@@ -47,7 +47,7 @@ import java.util.TimerTask;
 import com.enterprisedt.net.ftp.FTPNullReplyException;
 
 /**
- * @version $Id: BackgroundActionImpl.java 2524 2006-10-26 13:14:03Z dkocher $
+ * @version $Id$
  */
 public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction
         implements ErrorListener, TranscriptListener {

@@ -1835,13 +1835,6 @@ source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
-source/ch/cyberduck/ui/cocoa/threading/AbstractBackgroundAction.java -text
-source/ch/cyberduck/ui/cocoa/threading/BackgroundActionListener.java -text
-source/ch/cyberduck/ui/cocoa/threading/BackgroundActionRegistry.java -text
-source/ch/cyberduck/ui/cocoa/threading/DefaultMainAction.java -text
-source/ch/cyberduck/ui/cocoa/threading/MainAction.java -text
-source/ch/cyberduck/ui/cocoa/threading/RepeatableBackgroundAction.java -text
-source/ch/cyberduck/ui/cocoa/threading/WindowMainAction.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text
