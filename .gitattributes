@@ -1827,7 +1827,6 @@ source/ch/cyberduck/ui/cocoa/CDErrorController.java -text
 source/ch/cyberduck/ui/cocoa/CDTranscriptController.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
-source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
 source/com/snoize/SNDisclosableView.m -text
 source/de/zathras/UKCrashReporter.m -text
