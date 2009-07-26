@@ -1,7 +1,5 @@
 package ch.cyberduck.ui.cocoa.application;
 
-import org.rococoa.cocoa.foundation.NSPoint;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -21,6 +19,8 @@ import org.rococoa.cocoa.foundation.NSPoint;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSPoint;
+
 /**
  * @version $Id$
  */
@@ -35,6 +35,7 @@ public interface NSDraggingSource {
      * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null)</code><br>
      * - (void)draggedImage:(NSImage*)image beganAt:(null)screenPoint; (Argument screenPoint cannot be converted)
      */
+    public void draggedImage_beganAt(NSImage image, NSPoint point);
     /**
      * <i>native declaration : line 77</i><br>
      * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null, NSDragOperation)</code><br>
@@ -46,18 +47,10 @@ public interface NSDraggingSource {
      * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null)</code><br>
      * - (void)draggedImage:(NSImage*)image movedTo:(null)screenPoint; (Argument screenPoint cannot be converted)
      */
+    public void draggedImage_movedTo(NSImage image, NSPoint point);
     /**
      * Original signature : <code>BOOL ignoreModifierKeysWhileDragging()</code><br>
      * <i>native declaration : line 79</i>
      */
-//    boolean ignoreModifierKeysWhileDragging();
-    /**
-     * <i>native declaration : line 82</i><br>
-     * Conversion Error : /**<br>
-     *  * -draggedImage:endedAt:deposited: is deprecated.  Sources should instead implement -draggedImage:endedAt:operation:<br>
-     *  * Original signature : <code>void draggedImage(NSImage*, null, BOOL)</code><br>
-     *  * /<br>
-     * - (void)draggedImage:(NSImage*)image endedAt:(null)screenPoint deposited:(BOOL)flag; (Argument screenPoint cannot be converted)
-     */
-
+    boolean ignoreModifierKeysWhileDragging();
 }

@@ -18,19 +18,20 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
-import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
-public abstract class CDListDataSource extends CDController implements NSTableView.DataSource {
+public abstract class CDListDataSource extends CDController implements NSTableView.DataSource, NSDraggingSource {
+    private static Logger log = Logger.getLogger(CDListDataSource.class);
 
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row) {
         throw new RuntimeException("Not editable");
@@ -52,4 +53,24 @@ public abstract class CDListDataSource extends CDController implements NSTableVi
         return false;
     }
 
+    public int draggingSourceOperationMaskForLocal(boolean flag) {
+        return NSDraggingInfo.NSDragOperationMove | NSDraggingInfo.NSDragOperationCopy;
+    }
+
+    public void draggedImage_beganAt(NSImage image, NSPoint point) {
+        log.trace("draggedImage_beganAt");
+    }
+
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+        log.trace("draggedImage_endedAt_operation");
+    }
+
+    public void draggedImage_movedTo(NSImage image, NSPoint point) {
+        log.trace("draggedImage_movedTo");
+
+    }
+
+    public boolean ignoreModifierKeysWhileDragging() {
+        return false;
+    }
 }
