@@ -22,8 +22,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
@@ -151,26 +151,17 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    /**
-     * A compiled representation of a regular expression.
-     */
-    private Pattern DOWNLOAD_SKIP_PATTERN = null;
-
-    {
-        try {
-            DOWNLOAD_SKIP_PATTERN = Pattern.compile(
-                    Preferences.instance().getProperty("queue.download.skip.regex"));
-        }
-        catch(PatternSyntaxException e) {
-            log.warn(e.getMessage());
-        }
-    }
-
     private final PathFilter<Path> childFilter = new PathFilter<Path>() {
         public boolean accept(Path child) {
-            if(Preferences.instance().getBoolean("queue.download.skip.enable")
-                    && DOWNLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                return false;
+            if(Preferences.instance().getBoolean("queue.download.skip.enable")) {
+                try {
+                    if(Pattern.compile(Preferences.instance().getProperty("queue.download.skip.regex")).matcher(child.getName()).matches()) {
+                        return false;
+                    }
+                }
+                catch(PatternSyntaxException e) {
+                    log.warn(e.getMessage());
+                }
             }
             return true;
         }
@@ -375,7 +366,7 @@ public class DownloadTransfer extends Transfer {
                         NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
                     }
                     NSDistributedNotificationCenter.defaultCenter().postNotification(
-                            NSNotification.notificationWithName("com.apple.DownloadFileFinished", 
+                            NSNotification.notificationWithName("com.apple.DownloadFileFinished",
                                     getRoot().getLocal().getAbsolute())
                     );
                 }

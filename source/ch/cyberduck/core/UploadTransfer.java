@@ -67,7 +67,7 @@ public class UploadTransfer extends Transfer {
         final List<Path> normalized = new Collection<Path>();
         for(Path upload : uploads) {
             boolean duplicate = false;
-            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
+            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext();) {
                 Path n = iter.next();
                 if(upload.getLocal().isChild(n.getLocal())) {
                     // The selected file is a child of a directory already included
@@ -133,26 +133,17 @@ public class UploadTransfer extends Transfer {
         }
     }
 
-    /**
-     * A compiled representation of a regular expression.
-     */
-    private Pattern UPLOAD_SKIP_PATTERN = null;
-
-    {
-        try {
-            UPLOAD_SKIP_PATTERN = Pattern.compile(
-                    Preferences.instance().getProperty("queue.upload.skip.regex"));
-        }
-        catch(PatternSyntaxException e) {
-            log.warn(e.getMessage());
-        }
-    }
-
     private final PathFilter<Local> childFilter = new PathFilter<Local>() {
         public boolean accept(Local child) {
-            if(Preferences.instance().getBoolean("queue.upload.skip.enable")
-                    && UPLOAD_SKIP_PATTERN.matcher(child.getName()).matches()) {
-                return false;
+            try {
+                if(Preferences.instance().getBoolean("queue.upload.skip.enable")) {
+                    if(Pattern.compile(Preferences.instance().getProperty("queue.upload.skip.regex")).matcher(child.getName()).matches()) {
+                        return false;
+                    }
+                }
+            }
+            catch(PatternSyntaxException e) {
+                log.warn(e.getMessage());
             }
             return true;
         }
@@ -270,7 +261,7 @@ public class UploadTransfer extends Transfer {
                 int no = 0;
                 while(p.exists()) { // Do not use cached value of exists!
                     no++;
-                    String proposal = FilenameUtils.getBaseName(filename)+ "-" + no;
+                    String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }
