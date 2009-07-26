@@ -23,6 +23,9 @@ import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.threading.RepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
+/**
+ * @version $Id:$
+ */
 public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction {
     private CDBrowserController controller;
 

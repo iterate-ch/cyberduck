@@ -1820,7 +1820,6 @@ source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/util/URLSchemeHandlerConfiguration.m -text
-source/ch/cyberduck/ui/cocoa/BrowserBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/CDAbstractPathTableDelegate.java -text
 source/ch/cyberduck/ui/cocoa/CDBundleController.java -text
 source/ch/cyberduck/ui/cocoa/CDErrorController.java -text

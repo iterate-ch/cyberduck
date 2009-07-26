@@ -362,6 +362,7 @@ public class CDProgressController extends CDBundleController {
         this.progressView = v;
     }
 
+    @Override
     public NSView view() {
         return this.progressView;
     }

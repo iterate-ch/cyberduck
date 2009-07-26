@@ -87,6 +87,7 @@ public class CDErrorController extends CDBundleController {
         this.view = view;
     }
 
+    @Override
     public NSView view() {
         return view;
     }

@@ -19,6 +19,9 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
+
 import org.rococoa.cocoa.foundation.NSPoint;
 
 /**
@@ -53,4 +56,6 @@ public interface NSDraggingSource {
      * <i>native declaration : line 79</i>
      */
     boolean ignoreModifierKeysWhileDragging();
+
+    NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination); 
 }

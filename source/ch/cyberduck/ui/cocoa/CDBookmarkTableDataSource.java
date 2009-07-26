@@ -35,13 +35,13 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @version $Id$
  */
-public class CDBookmarkTableDataSource extends CDListDataSource implements NSDraggingSource {
+public class CDBookmarkTableDataSource extends CDListDataSource {
     private static Logger log = Logger.getLogger(CDBookmarkTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";
@@ -392,6 +392,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
      *         finishedDraggingImage method to avoid blocking the destination application.
      * @see NSTableView.DataSource
      */
+    @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragBookmarks.size());
@@ -409,4 +410,28 @@ public class CDBookmarkTableDataSource extends CDListDataSource implements NSDra
         }
         return promisedDragNames;
     }
+
+//    @Override
+//    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view,
+//                                                                                                final NSURL dropDestination,
+//                                                                                                NSIndexSet rowIndexes) {
+//        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
+//        for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
+//            if(index.intValue() == -1) {
+//                break;
+//            }
+//            final Host host = new Host(this.getSource().get(index.intValue()).getAsDictionary());
+//            Local file = new Local(dropDestination.path(), host.getNickname() + ".duck");
+//            host.setFile(file);
+//            try {
+//                host.write();
+//                // Adding the filename that is promised to be created at the dropDestination
+//                promisedDragNames.addObject(NSString.stringWithString(file.getName()));
+//            }
+//            catch(IOException e) {
+//                log.error(e.getMessage());
+//            }
+//        }
+//        return promisedDragNames;
+//    }
 }

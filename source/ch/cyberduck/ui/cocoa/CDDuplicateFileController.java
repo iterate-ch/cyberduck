@@ -50,6 +50,7 @@ public class CDDuplicateFileController extends CDFileController {
         return "Duplicate";
     }
 
+    @Override
     public void setFilenameField(NSTextField field) {
         super.setFilenameField(field);
         final Path selected = ((CDBrowserController) parent).getSelectedPath();
@@ -72,6 +73,7 @@ public class CDDuplicateFileController extends CDFileController {
         }
     }
 
+    @Override
     protected Path getWorkdir() {
         return (Path) ((CDBrowserController) parent).getSelectedPath().getParent();
     }

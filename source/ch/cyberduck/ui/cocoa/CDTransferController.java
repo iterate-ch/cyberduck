@@ -787,7 +787,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     TransferCollection.instance().add(TransferFactory.create(dict));
                 }
-                pboard.setPropertyList_forType(null, CDPasteboards.TransferPasteboardType);
+                pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                 this.reloadData();
             }
         }
