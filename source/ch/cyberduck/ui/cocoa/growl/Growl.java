@@ -22,6 +22,9 @@ import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @version $Id$
+ */
 public abstract class Growl {
     private static Logger log = Logger.getLogger(Growl.class);
 

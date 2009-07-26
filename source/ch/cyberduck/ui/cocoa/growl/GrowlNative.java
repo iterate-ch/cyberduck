@@ -22,6 +22,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @version $Id: GrowlNative.java 4749 2009-06-06 19:55:59Z dkocher $
+ */
 public class GrowlNative extends Growl {
     private static Logger log = Logger.getLogger(Growl.class);
 
