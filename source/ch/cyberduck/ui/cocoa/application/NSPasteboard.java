@@ -59,7 +59,7 @@ public abstract class NSPasteboard implements NSObject {
          * Original signature : <code>NSArray* typesFilterableTo(NSString*)</code><br>
          * <i>native declaration : :69</i>
          */
-        NSArray typesFilterableTo(com.sun.jna.Pointer type);
+        NSArray typesFilterableTo(String type);
 
         /**
          * Original signature : <code>NSPasteboard* pasteboardByFilteringFile(NSString*)</code><br>
@@ -71,7 +71,7 @@ public abstract class NSPasteboard implements NSObject {
          * Original signature : <code>NSPasteboard* pasteboardByFilteringData(NSData*, NSString*)</code><br>
          * <i>native declaration : :72</i>
          */
-        NSPasteboard pasteboardByFilteringData_ofType(com.sun.jna.Pointer data, com.sun.jna.Pointer type);
+        NSPasteboard pasteboardByFilteringData_ofType(NSData data, String type);
 
         /**
          * Original signature : <code>NSPasteboard* pasteboardByFilteringTypesInPasteboard(NSPasteboard*)</code><br>
@@ -84,7 +84,7 @@ public abstract class NSPasteboard implements NSObject {
      * Original signature : <code>NSString* name()</code><br>
      * <i>native declaration : :75</i>
      */
-    public abstract com.sun.jna.Pointer name();
+    public abstract String name();
 
     /**
      * Original signature : <code>void releaseGlobally()</code><br>
@@ -92,7 +92,7 @@ public abstract class NSPasteboard implements NSObject {
      */
     public abstract void releaseGlobally();
 
-    public int declareTypes(NSArray newTypes, NSObject newOwner) {
+    public int declareTypes(NSArray newTypes, org.rococoa.ID newOwner) {
         return this.declareTypes_owner(newTypes, newOwner);
     }
 
@@ -100,9 +100,9 @@ public abstract class NSPasteboard implements NSObject {
      * Original signature : <code>NSInteger declareTypes(NSArray*, id)</code><br>
      * <i>native declaration : :79</i>
      */
-    public abstract int declareTypes_owner(NSArray newTypes, NSObject newOwner);
+    public abstract int declareTypes_owner(NSArray newTypes, org.rococoa.ID newOwner);
 
-    public int addTypes(NSArray newTypes, NSObject newOwner) {
+    public int addTypes(NSArray newTypes, org.rococoa.ID newOwner) {
         return this.addTypes_owner(newTypes, newOwner);
     }
 
@@ -110,7 +110,7 @@ public abstract class NSPasteboard implements NSObject {
      * Original signature : <code>NSInteger addTypes(NSArray*, id)</code><br>
      * <i>native declaration : :80</i>
      */
-    public abstract int addTypes_owner(NSArray newTypes, NSObject newOwner);
+    public abstract int addTypes_owner(NSArray newTypes, org.rococoa.ID newOwner);
 
     /**
      * Original signature : <code>NSInteger changeCount()</code><br>
@@ -147,6 +147,10 @@ public abstract class NSPasteboard implements NSObject {
      * <i>native declaration : :89</i>
      */
     public abstract boolean setPropertyList_forType(NSObject plist, String dataType);
+
+    public boolean setPropertyListForType(NSObject plist, String dataType) {
+        return this.setPropertyList_forType(plist, dataType);
+    }
 
     /**
      * Original signature : <code>id propertyListForType(NSString*)</code><br>
