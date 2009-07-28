@@ -72,5 +72,6 @@ public abstract class HTTPSession extends Session {
     @Override
     protected void fireConnectionWillCloseEvent() {
         Logger.getLogger("httpclient.wire.header").removeAppender(appender);
+        super.fireConnectionWillCloseEvent();
     }
 }
