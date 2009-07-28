@@ -20,13 +20,13 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSThread;
 import ch.cyberduck.ui.cocoa.threading.MainAction;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSAutoreleasePool;
 
 /**
  * @version $Id$

@@ -495,8 +495,8 @@ public class Local extends AbstractPath {
      * UKXattrMetadataStore
      *
      * @param path
-     * @param key
-     * @param value
+     * @param originUrl
+     * @param dataUrl
      */
     private native void setQuarantine(String path, String originUrl, String dataUrl);
 

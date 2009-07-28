@@ -21,9 +21,9 @@ package ch.cyberduck.core;
 import com.apple.dnssd.*;
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSAutoreleasePool;
 
 import java.util.*;
 

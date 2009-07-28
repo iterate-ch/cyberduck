@@ -22,9 +22,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSAutoreleasePool;
 
 import java.io.File;
 import java.io.IOException;
