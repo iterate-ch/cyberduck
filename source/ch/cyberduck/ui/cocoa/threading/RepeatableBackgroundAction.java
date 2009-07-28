@@ -370,7 +370,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     delay--;
                 }
                 finally {
-                    pool.release();
+                    pool.drain();
                 }
             }
 
