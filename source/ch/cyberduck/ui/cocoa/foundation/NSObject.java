@@ -114,18 +114,4 @@ public interface NSObject extends org.rococoa.NSObject {
      */
     public abstract boolean respondsToSelector(Selector aSelector);
 
-    /**
-     * Original signature : <code>retain()</code><br>
-     * <i>native declaration : :36</i>
-     */
-    public abstract NSObject retain();
-    /**
-     * <i>native declaration : :37</i><br>
-     * Conversion Error : oneway
-     */
-    /**
-     * Original signature : <code>autorelease()</code><br>
-     * <i>native declaration : :38</i>
-     */
-    public abstract NSObject autorelease();
 }
