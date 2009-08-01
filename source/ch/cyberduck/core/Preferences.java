@@ -24,9 +24,7 @@ import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -148,6 +146,8 @@ public abstract class Preferences {
          */
         defaults.put("logging", "ERROR");
 
+        defaults.put("application",
+                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
         defaults.put("version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
 
@@ -397,7 +397,10 @@ public abstract class Preferences {
          */
         defaults.put("ftp.connectmode.fallback", String.valueOf(true));
         /**
-         * Protect the data channel by default
+         * Protect the data channel by default. For TLS, the data connection
+         * can have one of two security levels.
+            1) Clear (requested by 'PROT C')
+            2) Private (requested by 'PROT P')
          */
         defaults.put("ftp.tls.datachannel", "P"); //C
         /**

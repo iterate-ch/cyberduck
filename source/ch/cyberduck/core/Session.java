@@ -19,8 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
+import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -67,7 +66,7 @@ public abstract class Session {
         }
     }
 
-    private final String ua = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "/"
+    private final String ua = Preferences.instance().getProperty("application") + "/"
             + Preferences.instance().getProperty("version");
 
     public String getUserAgent() {
