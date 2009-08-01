@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-
 import org.apache.log4j.Logger;
 
 import java.security.cert.CertificateEncodingException;
@@ -33,19 +31,8 @@ public class Keychain {
 
     private static Keychain instance = null;
 
-    private Keychain() {
-        // Ensure native keychain library is loaded
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libKeychain.dylib";
-            log.info("Locating libKeychain.dylib at '" + lib + "'");
-            System.load(lib);
-            log.info("libKeychain.dylib loaded");
-        }
-        catch(UnsatisfiedLinkError e) {
-            log.error("Could not load the libKeychain.dylib library:" + e.getMessage());
-            throw e;
-        }
+    static {
+        Native.load("Keychain");
     }
 
     private static final Object lock = new Object();

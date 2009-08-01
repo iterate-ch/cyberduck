@@ -22,10 +22,10 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -192,28 +192,13 @@ public class Local extends AbstractPath {
         };
     }
 
-    private static final Object lock = new Object();
-
     private static boolean JNI_LOADED = false;
 
-    private static boolean jni_load() {
-        synchronized(lock) {
-            if(!JNI_LOADED) {
-                try {
-                    NSBundle bundle = NSBundle.mainBundle();
-                    String lib = bundle.resourcePath() + "/Java/" + "libLocal.dylib";
-                    log.info("Locating libLocal.dylib at '" + lib + "'");
-                    System.load(lib);
-                    JNI_LOADED = true;
-                    log.info("libLocal.dylib loaded");
-                }
-                catch(UnsatisfiedLinkError e) {
-                    log.error("Could not load the libLocal.dylib library:" + e.getMessage());
-                    throw e;
-                }
-            }
-            return JNI_LOADED;
+    private static boolean loadNative() {
+        if(!JNI_LOADED) {
+            JNI_LOADED = Native.load("Local");
         }
+        return JNI_LOADED;
     }
 
     protected File _impl;
@@ -239,7 +224,7 @@ public class Local extends AbstractPath {
     }
 
     private void init() {
-        if(!Local.jni_load()) {
+        if(!Local.loadNative()) {
             return;
         }
 //        FileForker forker = new MacOSXForker();
@@ -358,7 +343,7 @@ public class Local extends AbstractPath {
         if(StringUtils.isEmpty(extension)) {
             return Locale.localizedString("Unknown");
         }
-        if(!Local.jni_load()) {
+        if(!Local.loadNative()) {
             return Locale.localizedString("Unknown");
         }
         return this.kind(this.getExtension());
@@ -372,6 +357,14 @@ public class Local extends AbstractPath {
 
     public String getAbsolute() {
         return _impl.getAbsolutePath();
+    }
+
+    /**
+     *
+     * @return Path relative to the home directory denoted with a tilde.
+     */
+    public String getAbbreviatedPath() {
+        return Local.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
     }
 
     public PathReference getReference() {
@@ -529,7 +522,7 @@ public class Local extends AbstractPath {
             return;
         }
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
-            if(!Local.jni_load()) {
+            if(!Local.loadNative()) {
                 return;
             }
             final String path = this.getAbsolute();
@@ -569,7 +562,7 @@ public class Local extends AbstractPath {
     private native void setIconFromFile(String path, String icon);
 
     private void removeCustomIcon() {
-        if(!Local.jni_load()) {
+        if(!Local.loadNative()) {
             return;
         }
         this.removeCustomIcon(this.getAbsolute());
@@ -611,7 +604,7 @@ public class Local extends AbstractPath {
      * @return Full path to the application bundle. Null if unknown
      */
     public String getDefaultEditor() {
-        if(!Local.jni_load()) {
+        if(!Local.loadNative()) {
             return null;
         }
         final String extension = this.getExtension();

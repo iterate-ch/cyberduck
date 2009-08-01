@@ -19,8 +19,8 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
@@ -38,26 +38,11 @@ public class License {
 
     private static boolean JNI_LOADED = false;
 
-    private static final Object lock = new Object();
-
-    private static boolean jni_load() {
-        synchronized(lock) {
-            if(!JNI_LOADED) {
-                try {
-                    NSBundle bundle = NSBundle.mainBundle();
-                    String lib = bundle.resourcePath() + "/Java/" + "libPrime.dylib";
-                    log.info("Locating libPrime.dylib at '" + lib + "'");
-                    System.load(lib);
-                    JNI_LOADED = true;
-                    log.info("libPrime.dylib loaded");
-                }
-                catch(UnsatisfiedLinkError e) {
-                    log.error("Could not load the libPrime.dylib library:" + e.getMessage());
-                    throw e;
-                }
-            }
-            return JNI_LOADED;
+    private static boolean loadNative() {
+        if(!JNI_LOADED) {
+            JNI_LOADED = Native.load("Prime");
         }
+        return JNI_LOADED;
     }
 
     /**
@@ -101,7 +86,7 @@ public class License {
      * @return True if valid license key
      */
     public boolean verify() {
-        if(!License.jni_load()) {
+        if(!License.loadNative()) {
             return false;
         }
         final boolean valid = this.verify(file.getAbsolute());
@@ -120,7 +105,7 @@ public class License {
      * @return
      */
     public String getValue(String property) {
-        if(!License.jni_load()) {
+        if(!License.loadNative()) {
             return null;
         }
         return this.getValue(file.getAbsolute(), property);

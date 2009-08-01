@@ -1,11 +1,31 @@
 package ch.cyberduck.core.util;
 
+/*
+ *  Copyright (c) 2008 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  Bug fixes, suggestions and comments should be sent to:
+ *  dkocher@cyberduck.ch
+ */
+
+import ch.cyberduck.core.Native;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
 /**
  * A wrapper for the handler functions in ApplicationServices.h
+ *
  * @version $Id$
  */
 public class URLSchemeHandlerConfiguration {
@@ -20,45 +40,34 @@ public class URLSchemeHandlerConfiguration {
         return instance;
     }
 
-    private URLSchemeHandlerConfiguration() {
-        ;
-    }
-
     static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libURLSchemeHandlerConfiguration.dylib";
-            log.info("Locating libURLSchemeHandlerConfiguration.dylib at '" + lib + "'");
-            System.load(lib);
-            log.info("libURLSchemeHandlerConfiguration.dylib loaded");
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the libURLSchemeHandlerConfiguration.dylib library:" + e.getMessage());
-            throw e;
-        }
+        Native.load("URLSchemeHandlerConfiguration");
     }
 
     /**
      * See ApplicationServices/ApplicationServices.h#LSSetDefaultHandlerForURLScheme
      * Register this bundle identifier as the default application for all schemes
-     * @param scheme The protocol identifier
+     *
+     * @param scheme           The protocol identifier
      * @param bundleIdentifier The bundle identifier of the application
      */
     public native void setDefaultHandlerForURLScheme(String scheme, String bundleIdentifier);
 
     /**
      * Register this bundle identifier as the default application for all schemes
-     * @param scheme The protocol identifier
+     *
+     * @param scheme           The protocol identifier
      * @param bundleIdentifier The bundle identifier of the application
      */
     public void setDefaultHandlerForURLScheme(String[] scheme, String bundleIdentifier) {
-        for(int i = 0; i < scheme.length; i++) {
-            this.setDefaultHandlerForURLScheme(scheme[i], bundleIdentifier);
+        for(String aScheme : scheme) {
+            this.setDefaultHandlerForURLScheme(aScheme, bundleIdentifier);
         }
     }
 
     /**
      * See ApplicationServices/ApplicationServices.h#LSCopyDefaultHandlerForURLScheme
+     *
      * @param scheme The protocol identifier
      * @return The bundle identifier for the application registered as the default handler for this scheme
      */
@@ -66,6 +75,7 @@ public class URLSchemeHandlerConfiguration {
 
     /**
      * See ApplicationServices/ApplicationServices.h#LSCopyAllHandlersForURLScheme
+     *
      * @param scheme The protocol identifier
      * @return The bundle identifiers for all applications that promise to be capable of handling this scheme
      */
@@ -87,8 +97,8 @@ public class URLSchemeHandlerConfiguration {
      */
     public boolean isDefaultHandlerForURLScheme(String[] scheme) {
         boolean isDefault = true;
-        for(int i = 0; i < scheme.length; i++) {
-            if(!this.isDefaultHandlerForURLScheme(scheme[i])) {
+        for(String aScheme : scheme) {
+            if(!this.isDefaultHandlerForURLScheme(aScheme)) {
                 isDefault = false;
                 break;
             }

@@ -19,42 +19,27 @@ package ch.cyberduck.ui.cocoa.quicklook;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.core.Native;
 
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class QuickLook {
     private static Logger log = Logger.getLogger(QuickLook.class);
 
-    private static final Object lock = new Object();
-
     private static boolean JNI_LOADED = false;
 
-    private static boolean jni_load() {
-        synchronized(lock) {
-            if(!JNI_LOADED) {
-                try {
-                    NSBundle bundle = NSBundle.mainBundle();
-                    String lib = bundle.resourcePath() + "/Java/" + "libQuickLook.dylib";
-                    log.info("Locating libQuickLook.dylib at '" + lib + "'");
-                    System.load(lib);
-                    JNI_LOADED = true;
-                    log.info("libQuickLook.dylib loaded");
-                }
-                catch(UnsatisfiedLinkError e) {
-                    log.error("Could not load the libQuickLook.dylib library:" + e.getMessage());
-                    throw e;
-                }
-            }
-            return JNI_LOADED;
+    private static boolean loadNative() {
+        if(!JNI_LOADED) {
+            JNI_LOADED = Native.load("QuickLook");
         }
+        return JNI_LOADED;
     }
 
     static {
-        QuickLook.jni_load();
+        QuickLook.loadNative();
     }
 
     /**
@@ -68,14 +53,14 @@ public class QuickLook {
      * @param files
      */
     public static void select(Local[] files) {
-        if(!QuickLook.jni_load()) {
+        if(!QuickLook.loadNative()) {
             return;
         }
         final String[] paths = new String[files.length];
         for(int i = 0; i < files.length; i++) {
             paths[i] = files[i].getAbsolute();
         }
-        select(paths);
+        QuickLook.select(paths);
     }
 
     public static native boolean isAvailable();

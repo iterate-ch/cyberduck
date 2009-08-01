@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-
 import org.apache.log4j.Logger;
 
 import java.util.Properties;
@@ -31,17 +29,7 @@ public class Proxy {
     private static Logger log = Logger.getLogger(Proxy.class);
 
     static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libProxy.dylib";
-            log.info("Locating libProxy.dylib at '" + lib + "'");
-            System.load(lib);
-            log.info("libProxy.dylib loaded");
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the libProxy.dylib library:" + e.getMessage());
-            throw e;
-        }
+        Native.load("Proxy");
     }
 
     public static void configure(final String hostname) {
@@ -124,12 +112,14 @@ public class Proxy {
 
     /**
      * Use passive connect mode
+     *
      * @return True if enabled in the system preferences
      */
     public static native boolean usePassiveFTP();
 
     /**
      * Check to see if the hostname is excluded from proxy settings
+     *
      * @param hostname
      * @return True if excluded
      */
@@ -137,54 +127,63 @@ public class Proxy {
 
     /**
      * SOCKS proxy setting enabled
+     *
      * @return
      */
     public static native boolean isSOCKSProxyEnabled();
 
     /**
      * SOCKS proxy setting hostname
+     *
      * @return
      */
     public static native String getSOCKSProxyHost();
 
     /**
      * HTTP proxy setting port
+     *
      * @return
      */
     public static native int getSOCKSProxyPort();
 
     /**
      * HTTP proxy setting enabled
+     *
      * @return
      */
     public static native boolean isHTTPProxyEnabled();
 
     /**
      * HTTP proxy setting hostname
+     *
      * @return
      */
     public static native String getHTTPProxyHost();
 
     /**
      * HTTP proxy setting port
+     *
      * @return
      */
     public static native int getHTTPProxyPort();
 
     /**
      * HTTPS proxy setting enabled
+     *
      * @return
      */
     public static native boolean isHTTPSProxyEnabled();
 
     /**
      * HTTPS proxy setting hostname
+     *
      * @return
      */
     public static native String getHTTPSProxyHost();
 
     /**
      * HTTPS proxy setting port
+     *
      * @return
      */
     public static native int getHTTPSProxyPort();

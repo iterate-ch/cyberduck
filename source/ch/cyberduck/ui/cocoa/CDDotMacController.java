@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostCollection;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.dictionary.DictionaryMapper;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
 /**
@@ -34,21 +34,17 @@ import org.rococoa.Rococoa;
  */
 public class CDDotMacController extends CDController {
 
-    private static Logger log = Logger.getLogger(CDDotMacController.class);
+    private static boolean JNI_LOADED = false;
+
+    private static boolean loadNative() {
+        if(!JNI_LOADED) {
+            JNI_LOADED = Native.load("DotMac");
+        }
+        return JNI_LOADED;
+    }
 
     static {
-        // Ensure native odb library is loaded
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libDotMac.dylib";
-            log.info("Locating libDotMac.dylib at '" + lib + "'");
-            System.load(lib);
-            log.info("libDotMac.dylib loaded");
-        }
-        catch(UnsatisfiedLinkError e) {
-            log.error("Could not load the libDotMac.dylib library:" + e.getMessage());
-            throw e;
-        }
+        CDDotMacController.loadNative();
     }
 
     /**
@@ -65,7 +61,10 @@ public class CDDotMacController extends CDController {
      *
      */
     public void downloadBookmarks() {
-        Local f = new Local(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
+        if(!CDDotMacController.loadNative()) {
+            return;
+        }
+        final Local f = new Local(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolute());
         if(f.exists()) {
             NSArray entries = NSArray.arrayWithContentsOfFile(f.getAbsolute());

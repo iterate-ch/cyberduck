@@ -18,28 +18,15 @@ package ch.cyberduck.ui.cocoa.growl;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-
-import org.apache.log4j.Logger;
+import ch.cyberduck.core.Native;
 
 /**
  * @version $Id$
  */
 public class GrowlNative extends Growl {
-    private static Logger log = Logger.getLogger(Growl.class);
 
     static {
-        try {
-            NSBundle bundle = NSBundle.mainBundle();
-            String lib = bundle.resourcePath() + "/Java/" + "libGrowl.dylib";
-            log.info("Locating libGrowl.dylib at '" + lib + "'");
-            System.load(lib);
-            log.info("libGrowl.dylib loaded");
-        }
-        catch (UnsatisfiedLinkError e) {
-            log.error("Could not load the libGrowl.dylib library:" + e.getMessage());
-            throw e;
-        }
+        Native.load("Growl");
     }
 
     public native void register();
