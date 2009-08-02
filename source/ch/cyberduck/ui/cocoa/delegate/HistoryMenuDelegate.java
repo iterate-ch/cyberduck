@@ -36,9 +36,6 @@ import org.rococoa.Foundation;
 public class HistoryMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public int numberOfItemsInMenu(NSMenu menu) {
         if(HistoryCollection.defaultCollection().size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
@@ -47,9 +44,6 @@ public class HistoryMenuDelegate extends MenuDelegate {
         return 1;
     }
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
         if(HistoryCollection.defaultCollection().size() == 0) {
             sender.setTitle(Locale.localizedString("No recently connected servers available"));

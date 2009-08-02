@@ -36,9 +36,6 @@ import org.rococoa.Foundation;
 public class RendezvousMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public int numberOfItemsInMenu(NSMenu menu) {
         int n = Rendezvous.instance().numberOfServices();
         if(n > 0) {
@@ -47,16 +44,6 @@ public class RendezvousMenuDelegate extends MenuDelegate {
         return 1;
     }
 
-    /**
-     * Called to let you update a menu item before it is displayed. If your
-     * numberOfItemsInMenu delegate method returns a positive value,
-     * then your menuUpdateItemAtIndex method is called for each item in the menu.
-     * You can then update the menu title, image, and so forth for the menu item.
-     * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
-     * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
-     *
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
         if(Rendezvous.instance().numberOfServices() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));

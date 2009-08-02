@@ -34,9 +34,6 @@ import org.rococoa.Foundation;
 public class EditMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public int numberOfItemsInMenu(NSMenu menu) {
         int n = EditorFactory.getInstalledOdbEditors().size();
         if(0 == n) {
@@ -45,9 +42,6 @@ public class EditMenuDelegate extends MenuDelegate {
         return n;
     }
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
         if(EditorFactory.getInstalledOdbEditors().size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));

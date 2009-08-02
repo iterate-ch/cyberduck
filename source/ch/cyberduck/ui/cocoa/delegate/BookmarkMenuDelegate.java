@@ -35,25 +35,12 @@ import org.rococoa.Foundation;
 public class BookmarkMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public int numberOfItemsInMenu(NSMenu menu) {
         return HostCollection.defaultCollection().size() + 10;
         //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
         // 6 is Bonjour with submenu, 7 is sepearator
     }
 
-    /**
-     * Called to let you update a menu item before it is displayed. If your
-     * numberOfItemsInMenu delegate method returns a positive value,
-     * then your menuUpdateItemAtIndex method is called for each item in the menu.
-     * You can then update the menu title, image, and so forth for the menu item.
-     * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
-     * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
-     *
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
         if(index >= this.numberOfItemsInMenu(menu)) {
             log.warn("Invalid index in menuUpdateItemAtIndex:" + index);

@@ -75,6 +75,12 @@ public abstract class NSMenu implements NSObject, NSCopying {
         NSMenu alloc();
     }
 
+    public static interface Delegate {
+        public int numberOfItemsInMenu(NSMenu menu);
+
+        public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel);
+    }
+
     public abstract NSMenu init();
 
     /**

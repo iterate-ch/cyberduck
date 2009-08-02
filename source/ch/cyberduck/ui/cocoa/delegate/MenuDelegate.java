@@ -25,10 +25,18 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 /**
  * @version $Id$
  */
-public abstract class MenuDelegate extends CDController {
+public abstract class MenuDelegate extends CDController implements NSMenu.Delegate {
 
     public abstract int numberOfItemsInMenu(NSMenu menu);
 
+    /**
+     * Called to let you update a menu item before it is displayed. If your
+     * numberOfItemsInMenu delegate method returns a positive value,
+     * then your menuUpdateItemAtIndex method is called for each item in the menu.
+     * You can then update the menu title, image, and so forth for the menu item.
+     * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
+     * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
+     */
     public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
         return this.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
     }

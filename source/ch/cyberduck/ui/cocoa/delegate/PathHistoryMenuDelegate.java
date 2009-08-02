@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
+import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDIconCache;
@@ -43,9 +43,6 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
         this.controller = controller;
     }
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public int numberOfItemsInMenu(NSMenu menu) {
         final List<Path> history = this.getHistory();
         if(history.size() > 0) {
@@ -57,9 +54,6 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
 
     public abstract List<Path> getHistory();
 
-    /**
-     * @see com.apple.cocoa.application.NSMenu.Delegate
-     */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
         final List<Path> history = this.getHistory();
         final int length = history.size();
@@ -98,7 +92,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
     }
 
     public void pathMenuItemClicked(NSMenuItem sender) {
-        controller.setWorkdir(controller.lookup(new PathReference(sender.representedObject())));
+        controller.setWorkdir(controller.lookup(new CDPathReference(sender.representedObject())));
     }
 
     public abstract void clearMenuItemClicked(NSMenuItem sender);
