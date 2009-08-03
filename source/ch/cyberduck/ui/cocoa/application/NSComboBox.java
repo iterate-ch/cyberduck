@@ -28,6 +28,12 @@ import org.rococoa.Rococoa;
 /// <i>native declaration : :16</i>
 public abstract class NSComboBox extends NSTextField {
 
+    public static interface DataSource {
+        int numberOfItemsInComboBox(NSComboBox combo);
+
+        String comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row);
+    }
+
     /**
      * Original signature : <code>BOOL hasVerticalScroller()</code><br>
      * <i>native declaration : :21</i>

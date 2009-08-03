@@ -70,6 +70,11 @@ public interface NSWindow extends NSObject {
 
         NSWindow alloc();
     }
+
+    public static interface Delegate {
+        public boolean windowShouldClose(NSWindow sender);
+    }
+
     /**
      * <i>native declaration : :223</i><br>
      * Conversion Error : NSRect

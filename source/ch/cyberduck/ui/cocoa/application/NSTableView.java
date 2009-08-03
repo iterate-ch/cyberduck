@@ -69,6 +69,10 @@ public abstract class NSTableView extends NSControl {
         NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes);
     }
 
+    public static interface Delegate {
+        void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, int row);
+    }
+
     /**
      * Original signature : <code>void addTableColumn(NSTableColumn*)</code><br>
      * <i>native declaration : :98</i>

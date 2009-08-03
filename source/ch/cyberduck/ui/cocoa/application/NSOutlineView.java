@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -50,6 +51,16 @@ public abstract class NSOutlineView extends NSTableView {
         boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard);
 
         NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items);
+    }
+
+    public static interface Delegate {
+        void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSObject item);
+
+        boolean outlineView_shouldExpandItem(final NSOutlineView view, final NSObject item);
+
+        void outlineViewItemDidExpand(NSNotification notification);
+
+        void outlineViewItemDidCollapse(NSNotification notification);
     }
 
     public interface _Class extends org.rococoa.NSClass {

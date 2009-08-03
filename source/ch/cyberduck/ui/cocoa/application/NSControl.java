@@ -51,13 +51,13 @@ public abstract class NSControl extends NSView {
      * Original signature : <code>id cell()</code><br>
      * <i>native declaration : :32</i>
      */
-    public abstract NSCell cell();
+    public abstract NSTextFieldCell cell();
 
     /**
      * Original signature : <code>void setCell(NSCell*)</code><br>
      * <i>native declaration : :33</i>
      */
-    public abstract void setCell(NSCell aCell);
+    public abstract void setCell(NSTextFieldCell aCell);
 
     /**
      * Original signature : <code>id selectedCell()</code><br>
