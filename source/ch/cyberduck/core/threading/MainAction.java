@@ -1,6 +1,7 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.core.threading;
+
 /*
- *  Copyright (c) 2008 David Kocher. All rights reserved.
+ *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,12 +19,20 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 /**
- * @version $Id:$
+ * Action to be run on the main thread
+ *
+ * @version $Id$
  */
-public interface BackgroundActionListener {
-    abstract void start(BackgroundAction action);
+public abstract class MainAction implements Runnable {
 
-    abstract void cancel(BackgroundAction action);
+    /**
+     * To be run on the main thread
+     */
+    public abstract void run();
 
-    abstract void stop(BackgroundAction action);
+    /**
+     * @return False if the action should not be run anymore because the parent container has
+     * been invalidated in the mean time.
+     */
+    public abstract boolean isValid();
 }

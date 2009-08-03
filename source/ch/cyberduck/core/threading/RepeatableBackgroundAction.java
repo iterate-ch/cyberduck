@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.core.threading;
 
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
@@ -20,26 +20,16 @@ package ch.cyberduck.ui.cocoa.threading;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.*;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
-import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
-import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSAutoreleasePool;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,9 +39,7 @@ import com.enterprisedt.net.ftp.FTPNullReplyException;
 /**
  * @version $Id$
  */
-public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction
-        implements ErrorListener, TranscriptListener {
-
+public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction implements ErrorListener, TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
 
     /**
@@ -78,7 +66,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     /**
      * Contains the transcript of the session while this action was running
      */
-    private StringBuffer transcript;
+    protected StringBuffer transcript;
 
     /**
      * Maximum transcript buffer
@@ -97,19 +85,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         transcript.append(message).append("\n");
     }
 
-    /**
-     *
-     */
-    private CDWindowController controller;
-
-    public RepeatableBackgroundAction(CDWindowController controller) {
-        this.controller = controller;
+    public RepeatableBackgroundAction() {
         this.exceptions = new Collection<BackgroundException>();
-    }
-
-    @Override
-    public Object lock() {
-        return controller;
     }
 
     @Override
@@ -160,7 +137,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     protected List<BackgroundException> exceptions;
 
-    private boolean hasFailed() {
+    protected boolean hasFailed() {
         return this.exceptions.size() > 0;
     }
 
@@ -193,154 +170,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
 
         super.finish();
-
-        // If there was any failure, display the summary now
-        if(this.hasFailed() && !this.isCanceled()) {
-            // Display alert if the action was not canceled intentionally
-            this.alert();
-        }
     }
 
     public abstract void cleanup();
-
-    /**
-     *
-     */
-    private CDSheetController alert;
-
-    /**
-     * Display an alert dialog with a summary of all failed tasks
-     */
-    public void alert() {
-        alert = new CDSheetController(controller) {
-
-            @Override
-            protected String getBundleName() {
-                return "Alert";
-            }
-
-            @Override
-            public void awakeFromNib() {
-                this.setState(this.transcriptButton,
-                        transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
-                super.awakeFromNib();
-            }
-
-            @Outlet
-            private NSButton diagnosticsButton;
-
-            public void setDiagnosticsButton(NSButton diagnosticsButton) {
-                this.diagnosticsButton = diagnosticsButton;
-                this.diagnosticsButton.setTarget(this.id());
-                this.diagnosticsButton.setAction(Foundation.selector("diagnosticsButtonClicked:"));
-                boolean hidden = true;
-                for(BackgroundException e : exceptions) {
-                    final Throwable cause = e.getCause();
-                    if(cause instanceof SocketException || cause instanceof UnknownHostException) {
-                        hidden = false;
-                        break;
-                    }
-                }
-                this.diagnosticsButton.setHidden(hidden);
-            }
-
-            public void diagnosticsButtonClicked(final NSButton sender) {
-                exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
-            }
-
-            @Outlet
-            private NSButton transcriptButton;
-
-            public void setTranscriptButton(NSButton transcriptButton) {
-                this.transcriptButton = transcriptButton;
-            }
-
-            private NSTableView errorView;
-            private CDListDataSource model;
-            private CDAbstractTableDelegate<CDErrorController> delegate;
-
-            private List<CDErrorController> errors;
-
-            public void setErrorView(NSTableView errorView) {
-                this.errorView = errorView;
-                this.errors = new ArrayList<CDErrorController>();
-                for(BackgroundException e : exceptions) {
-                    errors.add(new CDErrorController(e));
-                }
-                this.errorView.setDataSource((model = new CDListDataSource() {
-                    public int numberOfRowsInTableView(NSTableView view) {
-                        return errors.size();
-                    }
-
-                    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
-                        return errors.get(row).view();
-                    }
-                }).id());
-                this.errorView.setDelegate((delegate = new CDAbstractTableDelegate<CDErrorController>() {
-                    @Override
-                    public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-                    }
-
-                    @Override
-                    public void tableRowDoubleClicked(NSObject sender) {
-                    }
-
-                    @Override
-                    public boolean selectionShouldChange() {
-                        return false;
-                    }
-
-                    @Override
-                    public void selectionDidChange(NSNotification notification) {
-                    }
-
-                    public void enterKeyPressed(NSObject sender) {
-                    }
-
-                    public void deleteKeyPressed(NSObject sender) {
-                    }
-
-                    public String tooltip(CDErrorController e) {
-                        return e.getTooltip();
-                    }
-                }).id());
-                {
-                    NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Error");
-                    c.setMinWidth(50f);
-                    c.setWidth(400f);
-                    c.setMaxWidth(1000f);
-                    c.setDataCell(CDControllerCell.controllerCell());
-                    this.errorView.addTableColumn(c);
-                }
-                this.errorView.setRowHeight(new CGFloat(77f));
-            }
-
-            public NSTextView transcriptView;
-
-            public void setTranscriptView(NSTextView transcriptView) {
-                this.transcriptView = transcriptView;
-                this.transcriptView.textStorage().setAttributedString(
-                        NSAttributedString.attributedStringWithAttributes(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
-            }
-
-            public void callback(final int returncode) {
-                if(returncode == DEFAULT_OPTION) { //Try Again
-                    for(BackgroundException e : exceptions) {
-                        Path workdir = e.getPath();
-                        if(null == workdir) {
-                            continue;
-                        }
-                        workdir.invalidate();
-                    }
-                    exceptions.clear();
-                    // Re-run the action with the previous lock used
-                    controller.background(RepeatableBackgroundAction.this);
-                }
-                Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
-            }
-        };
-        alert.beginSheet();
-    }
 
     /**
      * Idle this action for some time. Blocks the caller.

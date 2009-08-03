@@ -18,21 +18,24 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.CDWindowController;
+
 /**
- * Action to be run on the main thread
- *
  * @version $Id:$
  */
-public abstract class MainAction implements Runnable {
+public abstract class WindowMainAction extends MainAction {
+
+    private CDWindowController controller;
+
+    public WindowMainAction(CDWindowController c) {
+        this.controller = c;
+    }
 
     /**
-     * To be run on the main thread
+     *
+     * @return True if hte window is still on screen
      */
-    public abstract void run();
-
-    /**
-     * @return False if the action should not be run anymore because the parent container has
-     * been invalidated in the mean time.
-     */
-    public abstract boolean isValid();
+    public boolean isValid() {
+        return controller.isVisible();
+    }
 }

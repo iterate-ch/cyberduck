@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.core.threading;
 
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
@@ -77,7 +77,7 @@ public interface BackgroundAction extends Runnable {
 
     /**
      * @param listener A listener to be notified
-     * @see ch.cyberduck.ui.cocoa.threading.BackgroundActionListener
+     * @see ch.cyberduck.core.threading.BackgroundActionListener
      */
     abstract void addListener(BackgroundActionListener listener);
 

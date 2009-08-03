@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.core.threading;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -23,7 +23,7 @@ import ch.cyberduck.core.Collection;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BackgroundActionRegistry extends Collection<BackgroundAction> {
     private static Logger log = Logger.getLogger(BackgroundActionRegistry.class);

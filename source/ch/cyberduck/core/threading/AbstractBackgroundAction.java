@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.core.threading;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractBackgroundAction implements BackgroundAction {
 
