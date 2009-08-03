@@ -39,7 +39,7 @@ Boolean GetMetadataForFile(void* thisInterface,
 												  forKey:@"ch_sudo_cyberduck_nickname"];
 		}
 	}
-	[pool release];
+	[pool drain];
 	
     return TRUE;
 }

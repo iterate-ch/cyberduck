@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
 		editorClass = class;
 		editorObject = obj;
 	}
-	[pool release];
+	[pool drain];
     return self;
 }
 
