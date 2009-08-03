@@ -18,10 +18,11 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.CDWindowController;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class WindowMainAction extends MainAction {
 
@@ -32,7 +33,6 @@ public abstract class WindowMainAction extends MainAction {
     }
 
     /**
-     *
      * @return True if hte window is still on screen
      */
     public boolean isValid() {

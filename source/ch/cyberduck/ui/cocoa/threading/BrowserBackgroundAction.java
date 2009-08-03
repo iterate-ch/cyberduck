@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.threading;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -19,14 +19,14 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Session;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.threading.RepeatableBackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.CDMainApplication;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction {
+public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundAction {
     private CDBrowserController controller;
 
     public BrowserBackgroundAction(CDBrowserController controller) {
@@ -52,7 +52,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
     public boolean prepare() {
         CDMainApplication.invoke(new WindowMainAction(controller) {
             public void run() {
-                controller.spinner.startAnimation(null);
+                controller.getSpinner().startAnimation(null);
             }
         });
         return super.prepare();
@@ -71,7 +71,7 @@ public abstract class BrowserBackgroundAction extends RepeatableBackgroundAction
         super.finish();
         CDMainApplication.invoke(new WindowMainAction(controller) {
             public void run() {
-                controller.spinner.stopAnimation(null);
+                controller.getSpinner().stopAnimation(null);
                 controller.updateStatusLabel(null);
             }
         });
