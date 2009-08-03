@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSThread;
-import ch.cyberduck.ui.cocoa.threading.MainAction;
+import ch.cyberduck.core.threading.MainAction;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -83,9 +83,7 @@ public class CDMainApplication {
      * @param wait     Block until execution on main thread exits
      */
     public static void invoke(final MainAction runnable, final boolean wait) {
-        synchronized(NSApplication.sharedApplication()) {
-            Foundation.runOnMainThread(runnable, wait);
-        }
+        Foundation.runOnMainThread(runnable, wait);
     }
 
     /**
