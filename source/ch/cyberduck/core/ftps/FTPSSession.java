@@ -94,5 +94,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
             auth = false;
         }
         super.login(credentials);
+
+        ((FTPSClient) this.FTP).prot();
     }
 }

@@ -21,13 +21,11 @@ package ch.cyberduck.core.ftps;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.Socket;
 
 import com.enterprisedt.net.ftp.*;
 
@@ -54,14 +52,6 @@ public class FTPSControlSocket extends FTPControlSocket {
                 this.controlSock.getInetAddress().getHostName(),
                 this.controlSock.getPort(),
                 true); //close the underlying socket when this socket is closed
-        final HandshakeCompletedListener listener = new HandshakeCompletedListener() {
-            public void handshakeCompleted(HandshakeCompletedEvent event) {
-                log.info("SSL Handshake completed");
-                ((SSLSocket) controlSock).removeHandshakeCompletedListener(this);
-            }
-        };
-        ((SSLSocket) this.controlSock).addHandshakeCompletedListener(listener);
-
         this.initStreams();
     }
 
@@ -69,6 +59,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         this.useDataConnectionSecurity = b;
     }
 
+    @Override
     protected FTPDataSocket createDataSocketActive()
             throws IOException, FTPException {
 
@@ -88,6 +79,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         return super.createDataSocketActive();
     }
 
+    @Override
     protected FTPDataSocket createDataSocketPASV() throws IOException, FTPException {
         if(useDataConnectionSecurity) {
             // PASSIVE command - tells the server to listen for
@@ -124,9 +116,9 @@ public class FTPSControlSocket extends FTPControlSocket {
             try {
                 if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
                     // Do not trust a local address; may be a misconfigured router
-                    return new FTPPassiveDataSocket(
-                            new CustomTrustSSLProtocolSocketFactory(trustManager).createSocket(
-                                    controlSock.getInetAddress().getHostAddress(), port));
+                    final Socket socket = new CustomTrustSSLProtocolSocketFactory(trustManager).createSocket(
+                            controlSock.getInetAddress().getHostAddress(), port);
+                    return new FTPPassiveDataSocket(socket);
                 }
 
                 // create the socket
@@ -141,6 +133,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         return super.createDataSocketPASV();
     }
 
+    @Override
     protected FTPDataSocket createDataSocketEPSV() throws IOException {
         FTPReply replyObj = sendCommand("EPSV");
         validateReply(replyObj, "229");
