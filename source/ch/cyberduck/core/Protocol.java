@@ -165,7 +165,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return Locale.localizedString("FTPS (FTP/SSL)", "");
+            return Locale.localizedString("FTP-SSL (Explicit AUTH TLS)", "");
         }
 
         public int getDefaultPort() {
