@@ -1,8 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2009 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2009 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,38 +18,25 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
-
 /**
- * Mapper between path references returned from the outline view model and its internal
- * string representation.
- *
- * @version $Id$
+ * @version $Id:$
  */
-public class PathReference {
+public abstract class PathReference<T> {
 
-    private NSObject reference;
-
-    private int hashcode;
-
-    public PathReference(String absolute) {
-        this.reference = NSString.stringWithString(absolute);
-        this.hashcode = absolute.hashCode();
-    }
-
-    public PathReference(NSObject absolute) {
-        this.reference = absolute;
-        this.hashcode = absolute.toString().hashCode();
-    }
-
-    public NSObject getReference() {
-        return reference;
-    }
+    /**
+     * 
+     * @return
+     */
+    public abstract T unique();
 
     @Override
     public int hashCode() {
-        return hashcode;
+        return this.unique().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return this.unique().toString();
     }
 
     @Override
@@ -58,16 +44,6 @@ public class PathReference {
         if(null == other) {
             return false;
         }
-        if(other instanceof PathReference) {
-            if(this.hashCode() == other.hashCode()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return reference.toString();
+        return this.hashCode() == other.hashCode();
     }
 }
