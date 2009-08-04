@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.model.CDPathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -42,7 +42,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
 
     @Override
     public int indexOf(NSView tableView, Path p) {
-        return ((NSOutlineView) tableView).rowForItem(p.getReference().getReference());
+        return ((NSOutlineView) tableView).rowForItem(p.<NSObject>getReference().unique());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return this.indexOf(tableView, p) != -1;
     }
 
-    protected AttributedList<Path> childs(final PathReference path) {
+    protected AttributedList<Path> childs(final CDPathReference path) {
         final Path lookup = controller.lookup(path);
         if(null == lookup) {
             return new AttributedList<Path>();
@@ -68,7 +68,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         if(null == item) {
             return false;
         }
-        final Path path = controller.lookup(new PathReference(item));
+        final Path path = controller.lookup(new CDPathReference(item));
         return path.attributes.isDirectory();
     }
 
@@ -97,7 +97,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                     }
                 }
             }
-            return this.childs(new PathReference(item)).size();
+            return this.childs(new CDPathReference(item)).size();
         }
         return 0;
     }
@@ -114,7 +114,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             path = controller.workdir();
         }
         else {
-            path = controller.lookup(new PathReference(item));
+            path = controller.lookup(new CDPathReference(item));
         }
         if(null == path) {
             return null;
@@ -124,23 +124,23 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             log.warn("Index " + index + " out of bound for " + item);
             return null;
         }
-        return childs.get(index).getReference().getReference();
+        return childs.get(index).<NSObject>getReference().unique();
     }
 
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
-        super.setObjectValueForItem(controller.lookup(new PathReference(item)), value, tableColumn.identifier());
+        super.setObjectValueForItem(controller.lookup(new CDPathReference(item)), value, tableColumn.identifier());
     }
 
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
-        return super.objectValueForItem(controller.lookup(new PathReference(item)), tableColumn.identifier());
+        return super.objectValueForItem(controller.lookup(new CDPathReference(item)), tableColumn.identifier());
     }
 
     public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo draggingInfo, NSObject item, int row) {
         Path destination = null;
         if(controller.isMounted()) {
             if(null != item) {
-                destination = controller.lookup(new PathReference(item));
+                destination = controller.lookup(new CDPathReference(item));
             }
             final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
             if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null
@@ -150,7 +150,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                     final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation());
                     if(0 == draggingColumn && destination.attributes.isDirectory()) {
                         // Drop target is directory
-                        outlineView.setDropItem(destination.getReference().getReference(), new NSInteger(NSOutlineView.NSOutlineViewDropOnItemIndex));
+                        outlineView.setDropItem(destination.<NSObject>getReference().unique(), new NSInteger(NSOutlineView.NSOutlineViewDropOnItemIndex));
                         return super.validateDrop(outlineView, destination, row, draggingInfo);
                     }
                     else {
@@ -178,7 +178,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                 destination = controller.workdir();
             }
             else {
-                destination = controller.lookup(new PathReference(item));
+                destination = controller.lookup(new CDPathReference(item));
             }
         }
         return super.acceptDrop(outlineView, destination, info);
