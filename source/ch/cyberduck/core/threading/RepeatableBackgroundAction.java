@@ -21,10 +21,10 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.growl.Growl;
 
 import org.apache.log4j.Logger;
-import org.rococoa.cocoa.foundation.NSAutoreleasePool;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;

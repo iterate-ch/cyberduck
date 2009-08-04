@@ -26,11 +26,6 @@ package ch.cyberduck.core.threading;
 public abstract class MainAction implements Runnable {
 
     /**
-     * To be run on the main thread
-     */
-    public abstract void run();
-
-    /**
      * @return False if the action should not be run anymore because the parent container has
      * been invalidated in the mean time.
      */
