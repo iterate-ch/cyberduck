@@ -20,13 +20,13 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -164,6 +164,7 @@ public abstract class Editor extends CDController {
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer upload = new UploadTransfer(edited) {
+                    @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                         return TransferAction.ACTION_OVERWRITE;
                     }
@@ -175,6 +176,7 @@ public abstract class Editor extends CDController {
                 }, options);
             }
 
+            @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         edited.getName());

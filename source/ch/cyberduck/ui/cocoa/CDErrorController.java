@@ -19,10 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.threading.BackgroundException;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.StatusLine;

@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

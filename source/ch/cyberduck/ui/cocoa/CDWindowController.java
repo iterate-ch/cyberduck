@@ -19,19 +19,15 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSAutoreleasePool;
 import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.util.Collections;
@@ -41,7 +37,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public abstract class CDWindowController extends CDBundleController {
+public abstract class CDWindowController extends CDBundleController implements NSWindow.Delegate {
     private static Logger log = Logger.getLogger(CDWindowController.class);
 
     protected static final String DEFAULT = "Default";
@@ -59,11 +55,11 @@ public abstract class CDWindowController extends CDBundleController {
     /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.
+     * Will return immediatly but not run the runnable before the lock of the runnable is acquired.
      *
      * @param runnable The runnable to execute in a secondary Thread
-     * @return Will return immediatly but not run the runnable before the lock of the runnable is acquired.
      * @see java.lang.Thread
-     * @see ch.cyberduck.ui.cocoa.threading.BackgroundAction#lock()
+     * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
     public void background(final BackgroundAction runnable) {
         runnable.init();
@@ -258,7 +254,7 @@ public abstract class CDWindowController extends CDBundleController {
      * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet()
      */
     protected void alert(final NSWindow sheet, final CDSheetCallback callback) {
-         this.sheet = new CDSheetController(this, sheet) {
+        this.sheet = new CDSheetController(this, sheet) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
                 CDWindowController.this.sheet = null;

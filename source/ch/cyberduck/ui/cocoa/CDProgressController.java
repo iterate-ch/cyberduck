@@ -21,13 +21,13 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -102,6 +102,7 @@ public class CDProgressController extends CDBundleController {
             final long delay = 0;
             final long period = 500; //in milliseconds
 
+            @Override
             public void transferWillStart() {
                 progressBar.setIndeterminate(true);
                 progressBar.startAnimation(null);
@@ -114,6 +115,7 @@ public class CDProgressController extends CDBundleController {
                 });
             }
 
+            @Override
             public void transferDidEnd() {
                 progressBar.stopAnimation(null);
                 CDMainApplication.invoke(new DefaultMainAction() {
@@ -133,6 +135,7 @@ public class CDProgressController extends CDBundleController {
                 });
             }
 
+            @Override
             public void willTransferPath(final Path path) {
                 meter.reset();
                 progressTimer = new Timer();
@@ -153,11 +156,13 @@ public class CDProgressController extends CDBundleController {
                 }, delay, period);
             }
 
+            @Override
             public void didTransferPath(final Path path) {
                 progressTimer.cancel();
                 meter.reset();
             }
 
+            @Override
             public void bandwidthChanged(BandwidthThrottle bandwidth) {
                 meter.reset();
             }
