@@ -74,6 +74,13 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     @Override
+    public boolean add(E object) {
+        super.add(object);
+        this.collectionItemAdded(object);
+        return true;
+    }
+
+    @Override
     public void add(int row, E object) {
         super.add(row, object);
         this.collectionItemAdded(object);
