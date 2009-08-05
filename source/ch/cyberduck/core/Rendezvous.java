@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import com.apple.dnssd.*;
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
@@ -264,6 +265,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
                                 final String fullname, final String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + hostname);
+        final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             final Host host = new Host(this.getProtocol(fullname, port), hostname, port);
             host.getCredentials().setUsername(null);
@@ -276,6 +278,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
             // Note: When the desired results have been returned, the client MUST terminate
             // the resolve by calling DNSSDService.stop().
             resolver.stop();
+            pool.drain();
         }
     }
 
