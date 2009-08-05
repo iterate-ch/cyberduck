@@ -18,13 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -103,161 +105,6 @@ public class Host implements Serializable {
 
     private String webURL;
 
-    private static final String HOSTNAME = "Hostname";
-    public static final String NICKNAME = "Nickname";
-    private static final String PORT = "Port";
-    private static final String PROTOCOL = "Protocol";
-    private static final String USERNAME = "Username";
-    private static final String PATH = "Path";
-    private static final String ENCODING = "Encoding";
-    private static final String KEYFILE = "Private Key File";
-    private static final String FTPCONNECTMODE = "FTP Connect Mode";
-    private static final String MAXCONNECTIONS = "Maximum Connections";
-    private static final String DOWNLOADFOLDER = "Download Folder";
-    private static final String TIMEZONE = "Timezone";
-    private static final String COMMENT = "Comment";
-    private static final String WEBURL = "Web URL";
-
-    private Local file;
-
-    /**
-     * Read the bookmark from the given file
-     *
-     * @param file A valid bookmark dictionary
-     */
-    public Host(final Local file) throws IOException {
-        this.file = file;
-        this.read();
-    }
-
-    /**
-     * @param dict A valid bookmark dictionary
-     */
-    public Host(NSDictionary dict) {
-        this.init(dict);
-    }
-
-    /**
-     * @param dict A valid bookmark dictionary
-     */
-    public void init(NSDictionary dict) {
-        if(log.isDebugEnabled()) {
-            log.debug("init:" + dict);
-        }
-        NSObject protocolObj = dict.objectForKey(Host.PROTOCOL);
-        if(protocolObj != null) {
-            this.setProtocol(Protocol.forName(protocolObj.toString()));
-        }
-        NSObject hostnameObj = dict.objectForKey(Host.HOSTNAME);
-        if(hostnameObj != null) {
-            this.setHostname(hostnameObj.toString());
-        }
-        NSObject usernameObj = dict.objectForKey(Host.USERNAME);
-        if(usernameObj != null) {
-            this.setCredentials(usernameObj.toString(), null);
-        }
-        NSObject keyObj = dict.objectForKey(Host.KEYFILE);
-        if(keyObj != null) {
-            this.getCredentials().setIdentity(new Credentials.Identity(keyObj.toString()));
-        }
-        NSObject portObj = dict.objectForKey(Host.PORT);
-        if(portObj != null) {
-            this.setPort(Integer.parseInt(portObj.toString()));
-        }
-        NSObject pathObj = dict.objectForKey(Host.PATH);
-        if(pathObj != null) {
-            this.setDefaultPath(pathObj.toString());
-        }
-        NSObject nicknameObj = dict.objectForKey(Host.NICKNAME);
-        if(nicknameObj != null) {
-            this.setNickname(nicknameObj.toString());
-        }
-        NSObject encodingObj = dict.objectForKey(Host.ENCODING);
-        if(encodingObj != null) {
-            this.setEncoding(encodingObj.toString());
-        }
-        NSObject connectModeObj = dict.objectForKey(Host.FTPCONNECTMODE);
-        if(connectModeObj != null) {
-            if(connectModeObj.toString().equals(FTPConnectMode.ACTIVE.toString())) {
-                this.setFTPConnectMode(FTPConnectMode.ACTIVE);
-            }
-            if(connectModeObj.toString().equals(FTPConnectMode.PASV.toString())) {
-                this.setFTPConnectMode(FTPConnectMode.PASV);
-            }
-        }
-        NSObject connObj = dict.objectForKey(Host.MAXCONNECTIONS);
-        if(connObj != null) {
-            this.setMaxConnections(Integer.valueOf(connObj.toString()));
-        }
-        NSObject downloadObj = dict.objectForKey(Host.DOWNLOADFOLDER);
-        if(downloadObj != null) {
-            this.setDownloadFolder(downloadObj.toString());
-        }
-        NSObject timezoneObj = dict.objectForKey(Host.TIMEZONE);
-        if(timezoneObj != null) {
-            this.setTimezone(TimeZone.getTimeZone(timezoneObj.toString()));
-        }
-        NSObject commentObj = dict.objectForKey(Host.COMMENT);
-        if(commentObj != null) {
-            this.setComment(commentObj.toString());
-        }
-        NSObject urlObj = dict.objectForKey(Host.WEBURL);
-        if(urlObj != null) {
-            this.setWebURL(urlObj.toString());
-        }
-    }
-
-    /**
-     * @return
-     */
-    public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
-        dict.setObjectForKey(this.getProtocol().getIdentifier(), Host.PROTOCOL);
-        dict.setObjectForKey(this.getNickname(), Host.NICKNAME);
-        if(StringUtils.isNotBlank(this.hostname)) {
-            dict.setObjectForKey(this.hostname, Host.HOSTNAME);
-        }
-        dict.setObjectForKey(String.valueOf(this.getPort()), Host.PORT);
-        if(StringUtils.isNotBlank(this.getCredentials().getUsername())) {
-            dict.setObjectForKey(this.getCredentials().getUsername(), Host.USERNAME);
-        }
-        if(StringUtils.isNotBlank(this.defaultpath)) {
-            dict.setObjectForKey(this.defaultpath, Host.PATH);
-        }
-        if(StringUtils.isNotBlank(this.encoding)) {
-            dict.setObjectForKey(this.encoding, Host.ENCODING);
-        }
-        if(null != this.getCredentials().getIdentity()) {
-            dict.setObjectForKey(this.getCredentials().getIdentity().toURL(), Host.KEYFILE);
-        }
-        if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
-            if(null != this.connectMode) {
-                if(connectMode.equals(FTPConnectMode.ACTIVE)) {
-                    dict.setObjectForKey(FTPConnectMode.ACTIVE.toString(), Host.FTPCONNECTMODE);
-                }
-                else if(connectMode.equals(FTPConnectMode.PASV)) {
-                    dict.setObjectForKey(FTPConnectMode.PASV.toString(), Host.FTPCONNECTMODE);
-                }
-            }
-        }
-        if(null != this.maxConnections) {
-            dict.setObjectForKey(String.valueOf(this.maxConnections), Host.MAXCONNECTIONS);
-        }
-        if(StringUtils.isNotBlank(this.downloadFolder)) {
-            dict.setObjectForKey(this.downloadFolder, Host.DOWNLOADFOLDER);
-        }
-        if(null != this.timezone) {
-            dict.setObjectForKey(this.timezone.getID(), Host.TIMEZONE);
-        }
-        if(StringUtils.isNotBlank(this.comment)) {
-            dict.setObjectForKey(this.comment, Host.COMMENT);
-        }
-        if(StringUtils.isNotBlank(this.webURL)) {
-            dict.setObjectForKey(this.webURL, Host.WEBURL);
-        }
-        return dict;
-    }
-
     /**
      * New host with the default protocol
      *
@@ -306,6 +153,129 @@ public class Host implements Serializable {
         this.setPort(port);
         this.setHostname(hostname);
         this.setDefaultPath(defaultpath);
+    }
+
+    /**
+     * @param dict A valid bookmark dictionary
+     */
+    public <T> Host(T dict) {
+        this.init(dict);
+    }
+
+    /**
+     * @param serialized A valid bookmark dictionary
+     */
+    public <T> void init(T serialized) {
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        Object protocolObj = dict.stringForKey("Protocol");
+        if(protocolObj != null) {
+            this.setProtocol(Protocol.forName(protocolObj.toString()));
+        }
+        Object hostnameObj = dict.stringForKey("Hostname");
+        if(hostnameObj != null) {
+            this.setHostname(hostnameObj.toString());
+        }
+        Object usernameObj = dict.stringForKey("Username");
+        if(usernameObj != null) {
+            this.setCredentials(usernameObj.toString(), null);
+        }
+        Object keyObj = dict.stringForKey("Private Key File");
+        if(keyObj != null) {
+            this.getCredentials().setIdentity(new Credentials.Identity(keyObj.toString()));
+        }
+        Object portObj = dict.stringForKey("Port");
+        if(portObj != null) {
+            this.setPort(Integer.parseInt(portObj.toString()));
+        }
+        Object pathObj = dict.stringForKey("Path");
+        if(pathObj != null) {
+            this.setDefaultPath(pathObj.toString());
+        }
+        Object nicknameObj = dict.stringForKey("Nickname");
+        if(nicknameObj != null) {
+            this.setNickname(nicknameObj.toString());
+        }
+        Object encodingObj = dict.stringForKey("Encoding");
+        if(encodingObj != null) {
+            this.setEncoding(encodingObj.toString());
+        }
+        Object connectModeObj = dict.stringForKey("FTP Connect Mode");
+        if(connectModeObj != null) {
+            if(connectModeObj.toString().equals(FTPConnectMode.ACTIVE.toString())) {
+                this.setFTPConnectMode(FTPConnectMode.ACTIVE);
+            }
+            if(connectModeObj.toString().equals(FTPConnectMode.PASV.toString())) {
+                this.setFTPConnectMode(FTPConnectMode.PASV);
+            }
+        }
+        Object connObj = dict.stringForKey("Maximum Connections");
+        if(connObj != null) {
+            this.setMaxConnections(Integer.valueOf(connObj.toString()));
+        }
+        Object downloadObj = dict.stringForKey("Download Folder");
+        if(downloadObj != null) {
+            this.setDownloadFolder(downloadObj.toString());
+        }
+        Object timezoneObj = dict.stringForKey("Timezone");
+        if(timezoneObj != null) {
+            this.setTimezone(TimeZone.getTimeZone(timezoneObj.toString()));
+        }
+        Object commentObj = dict.stringForKey("Comment");
+        if(commentObj != null) {
+            this.setComment(commentObj.toString());
+        }
+        Object urlObj = dict.stringForKey("Web URL");
+        if(urlObj != null) {
+            this.setWebURL(urlObj.toString());
+        }
+    }
+
+    public <T> T getAsDictionary() {
+        final Serializer dict = SerializerFactory.createSerializer();
+        dict.setStringForKey(this.getProtocol().getIdentifier(), "Protocol");
+        dict.setStringForKey(this.getNickname(), "Nickname");
+        if(StringUtils.isNotBlank(this.getHostname())) {
+            dict.setStringForKey(this.getHostname(), "Hostname");
+        }
+        dict.setStringForKey(String.valueOf(this.getPort()), "Port");
+        if(StringUtils.isNotBlank(this.getCredentials().getUsername())) {
+            dict.setStringForKey(this.getCredentials().getUsername(), "Username");
+        }
+        if(StringUtils.isNotBlank(this.getDefaultPath())) {
+            dict.setStringForKey(this.getDefaultPath(), "Path");
+        }
+        if(StringUtils.isNotBlank(this.getEncoding())) {
+            dict.setStringForKey(this.getEncoding(), "Encoding");
+        }
+        if(null != this.getCredentials().getIdentity()) {
+            dict.setStringForKey(this.getCredentials().getIdentity().toURL(), "Private Key File");
+        }
+        if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
+            if(null != this.getFTPConnectMode()) {
+                if(this.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
+                    dict.setStringForKey(FTPConnectMode.ACTIVE.toString(), "FTP Connect Mode");
+                }
+                else if(this.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
+                    dict.setStringForKey(FTPConnectMode.PASV.toString(), "FTP Connect Mode");
+                }
+            }
+        }
+        if(null != this.getMaxConnections()) {
+            dict.setStringForKey(String.valueOf(this.getMaxConnections()), "Maximum Connections");
+        }
+        if(!this.isDefaultDownloadFolder()) {
+            dict.setStringForKey(this.getDownloadFolder().getAbbreviatedPath(), "Download Folder");
+        }
+        if(null != this.getTimezone()) {
+            dict.setStringForKey(this.getTimezone().getID(), "Timezone");
+        }
+        if(StringUtils.isNotBlank(this.getComment())) {
+            dict.setStringForKey(this.getComment(), "Comment");
+        }
+        if(!this.isDefaultWebURL()) {
+            dict.setStringForKey(this.getWebURL(), "Web URL");
+        }
+        return dict.<T>getSerialized();
     }
 
     /**
@@ -624,6 +594,13 @@ public class Host implements Serializable {
     }
 
     /**
+     * @return True if no custom download location is set
+     */
+    public boolean isDefaultDownloadFolder() {
+        return null == this.downloadFolder;
+    }
+
+    /**
      * Set a timezone for the remote server different from the local default timezone
      * May be useful to display modification dates of remote files correctly using the local timezone
      *
@@ -667,6 +644,13 @@ public class Host implements Serializable {
             webURL = "http://" + webURL;
         }
         return webURL;
+    }
+
+    /**
+     * @return True if no custom web URL has been set
+     */
+    public boolean isDefaultWebURL() {
+        return this.getWebURL().equals(this.getDefaultWebURL());
     }
 
     /**
@@ -732,26 +716,16 @@ public class Host implements Serializable {
 
     private static boolean JNI_LOADED = false;
 
-    private static final Object lock = new Object();
-
-    private static boolean jni_load() {
-        synchronized(lock) {
-            if(!JNI_LOADED) {
-                try {
-                    NSBundle bundle = NSBundle.mainBundle();
-                    String lib = bundle.resourcePath() + "/Java/" + "libDiagnostics.dylib";
-                    log.info("Locating libDiagnostics.dylib at '" + lib + "'");
-                    System.load(lib);
-                    JNI_LOADED = true;
-                    log.info("libDiagnostics.dylib loaded");
-                }
-                catch(UnsatisfiedLinkError e) {
-                    log.error("Could not load the libDiagnostics.dylib library:" + e.getMessage());
-                    throw e;
-                }
-            }
-            return JNI_LOADED;
+    /**
+     * Load native library extensions
+     *
+     * @return
+     */
+    private static boolean loadNative() {
+        if(!JNI_LOADED) {
+            JNI_LOADED = Native.load("Diagnostics");
         }
+        return JNI_LOADED;
     }
 
     /**
@@ -761,7 +735,7 @@ public class Host implements Serializable {
      * @see #toURL
      */
     public boolean isReachable() {
-        if(!Host.jni_load()) {
+        if(!Host.loadNative()) {
             return false;
         }
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
@@ -778,7 +752,7 @@ public class Host implements Serializable {
      * @see #toURL
      */
     public void diagnose() {
-        if(!Host.jni_load()) {
+        if(!Host.loadNative()) {
             return;
         }
         this.diagnose(this.toURL());
@@ -787,44 +761,16 @@ public class Host implements Serializable {
     private native void diagnose(String url);
 
     /**
-     * @return The imported bookmark deserialized as a #Host
-     * @pre Host#setFile()
-     */
-    private void read() throws IOException {
-        log.info("Reading bookmark from:" + file.getAbsolute());
-        NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
-        this.init(dict);
-    }
-
-    /**
-     * Serializes the bookmark to the given folder
-     *
-     * @pre Host#setFile()
-     */
-    public void write() throws IOException {
-        log.info("Exporting bookmark " + this.toURL() + " to " + file);
-        NSDictionary dict = this.getAsDictionary();
-        dict.writeToFile(file.getAbsolute());
-    }
-
-    /**
-     * @param file
-     */
-    public void setFile(Local file) {
-        this.file = file;
-    }
-
-    /**
-     * @return Null if bookmark is not persisted
-     */
-    public Local getFile() {
-        return this.file;
-    }
-
-    /**
      *
      */
-    private static OpenSshConfig config = OpenSshConfig.create();
+    private static OpenSshConfig config;
+
+    private static OpenSshConfig getOpenSshConfig() {
+        if(null == config) {
+            config = OpenSshConfig.create();
+        }
+        return config;
+    }
 
     /**
      *
@@ -834,13 +780,14 @@ public class Host implements Serializable {
         /**
          * @return
          */
+        @Override
         public String getUsername() {
             final String user = super.getUsername();
             if(StringUtils.isBlank(user)) {
                 if(!Protocol.SFTP.equals(Host.this.getProtocol())) {
                     return null;
                 }
-                final OpenSshConfig.Host entry = config.lookup(Host.this.getHostname());
+                final OpenSshConfig.Host entry = getOpenSshConfig().lookup(Host.this.getHostname());
                 if(StringUtils.isNotBlank(entry.getUser())) {
                     return entry.getUser();
                 }
@@ -851,12 +798,13 @@ public class Host implements Serializable {
         /**
          * @return
          */
+        @Override
         public Identity getIdentity() {
             if(!Protocol.SFTP.equals(Host.this.getProtocol())) {
                 return null;
             }
             if(null == super.getIdentity()) {
-                final OpenSshConfig.Host entry = config.lookup(Host.this.getHostname());
+                final OpenSshConfig.Host entry = getOpenSshConfig().lookup(Host.this.getHostname());
                 if(null != entry.getIdentityFile()) {
                     return new Identity(entry.getIdentityFile().getAbsolutePath());
                 }

@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,8 +48,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
     /**
      *
      */
-    private final Map<Transfer, CDProgressController> controllers
-            = new HashMap<Transfer, CDProgressController>();
+    private final Map<Transfer, CDProgressController> controllers = new HashMap<Transfer, CDProgressController>();
 
     public CDTransferTableDataSource() {
         TransferCollection.instance().addListener(new AbstractCollectionListener<Transfer>() {
@@ -125,7 +125,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
         final String identifier = tableColumn.identifier();
         if(identifier.equals(PROGRESS_COLUMN)) {
-            return controllers.get(this.getSource().get(row)).view();
+            return this.getController(this.getSource().get(row)).view();
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
             return NSString.stringWithString(this.getSource().get(row).getName());
@@ -156,10 +156,9 @@ public class CDTransferTableDataSource extends CDListDataSource {
     /**
      * Invoked by tableView when the mouse button is released over a table view that previously decided to allow a drop.
      *
-     * @param info  contains details on this dragging operation.
-     * @param index The proposed location is row and action is operation.
-     *              The data source should
-     *              incorporate the data from the dragging pasteboard at this time.
+     * @param draggingInfo contains details on this dragging operation.
+     * @param row          The proposed location is row and action is operation.
+     *                     The data source should incorporate the data from the dragging pasteboard at this time.
      */
     @Override
     public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
@@ -184,7 +183,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                    TransferCollection.instance().add(row, TransferFactory.create(dict));
+                    TransferCollection.instance().add(row, new TransferPlistReader().deserialize((dict)));
                     view.reloadData();
                     view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                     view.scrollRowToVisible(row);
@@ -196,7 +195,30 @@ public class CDTransferTableDataSource extends CDListDataSource {
         return false;
     }
 
-    public void setHighlighted(Transfer transfer, boolean highlighted) {
-        controllers.get(transfer).setHighlighted(highlighted);
+    /**
+     *
+     * @param row
+     * @return
+     */
+    public CDProgressController getController(int row) {
+        return controllers.get(this.getSource().get(row));
+    }
+
+    /**
+     *
+     * @param t
+     * @return
+     */
+    public CDProgressController getController(Transfer t) {
+        return controllers.get(t);
+    }
+
+    /**
+     *
+     * @param row
+     * @param highlighted
+     */
+    public void setHighlighted(int row, boolean highlighted) {
+        this.getController(row).setHighlighted(highlighted);
     }
 }

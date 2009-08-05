@@ -22,12 +22,13 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -259,14 +260,9 @@ public class CDMainController extends CDBundleController {
         Local f = new Local(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
-                try {
-                    final Host host = new Host(f);
-                    CDMainController.newDocument().mount(host);
-                    return true;
-                }
-                catch(IOException e) {
-                    return false;
-                }
+                final Host host = HostReaderFactory.instance().read(f);
+                CDMainController.newDocument().mount(host);
+                return true;
             }
             if("cyberducklicense".equals(f.getExtension())) {
                 final License l = new License(f);
@@ -449,13 +445,11 @@ public class CDMainController extends CDBundleController {
                         ; //Ignore
                     }
                 }
-                synchronized(Rendezvous.instance()) {
-                    CDMainApplication.invoke(new DefaultMainAction() {
-                        public void run() {
-                            Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
-                        }
-                    });
-                }
+                CDMainApplication.invoke(new DefaultMainAction() {
+                    public void run() {
+                        Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
+                    }
+                });
             }
 
             public void serviceLost(String servicename) {

@@ -23,7 +23,6 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -76,7 +75,7 @@ public class S3Path extends CloudPath {
             return new S3Path((S3Session) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new S3Path((S3Session) session, dict);
         }
     }
@@ -98,7 +97,7 @@ public class S3Path extends CloudPath {
         this.session = s;
     }
 
-    protected S3Path(S3Session s, NSDictionary dict) {
+    protected <T> S3Path(S3Session s, T dict) {
         super(dict);
         this.session = s;
     }
@@ -113,6 +112,7 @@ public class S3Path extends CloudPath {
     public Status getStatus() {
         if(null == status) {
             status = new Status() {
+                @Override
                 public void setCanceled() {
                     super.setCanceled();
                     if(null == cancelTrigger) {
@@ -293,7 +293,6 @@ public class S3Path extends CloudPath {
 
     /**
      * @param enabled
-     * @throws S3Exception
      */
     public void setLogging(final boolean enabled) {
         // Logging target bucket

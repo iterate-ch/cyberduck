@@ -21,11 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.RepeatableBackgroundAction;
+import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
+import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
@@ -404,8 +405,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateHighlight() {
         boolean isKeyWindow = window().isKeyWindow();
         for(int i = 0; i < transferModel.getSource().size(); i++) {
-            transferModel.setHighlighted(transferModel.getSource().get(i),
-                    transferTable.isRowSelected(i) && isKeyWindow);
+            transferModel.setHighlighted(i, transferTable.isRowSelected(i) && isKeyWindow);
         }
     }
 
@@ -549,7 +549,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
             this.window.makeKeyAndOrderFront(null);
         }
-        this.background(new RepeatableBackgroundAction(this) {
+        this.background(new AlertRepeatableBackgroundAction(this) {
             private boolean resume = resumeRequested;
             private boolean reload = reloadRequested;
 
@@ -646,7 +646,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 if(logDrawer.state() == NSDrawer.OpenState) {
                     CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
                         public void run() {
-                            transcript.log(request, message);
+                            CDTransferController.this.transcript.log(request, message);
                         }
                     });
                 }
@@ -785,7 +785,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                    TransferCollection.instance().add(TransferFactory.create(dict));
+                    TransferCollection.instance().add(new TransferPlistReader().deserialize((dict)));
                 }
                 pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                 this.reloadData();
@@ -1030,7 +1030,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                        final Transfer transfer = TransferFactory.create(dict);
+                        final Transfer transfer = new TransferPlistReader().deserialize((dict));
                         if(transfer.numberOfRoots() == 1) {
                             item.setTitle(Locale.localizedString("Paste", "Menu item") + " \""
                                     + transfer.getRoot().getName() + "\"");

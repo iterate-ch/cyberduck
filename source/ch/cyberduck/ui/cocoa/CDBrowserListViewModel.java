@@ -18,7 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
@@ -102,7 +103,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
      * The drag image and other drag-related information will be set up and provided by the table view once this call
      * returns with true.
      *
-     * @param rows is the list of row numbers that will be participating in the drag.
+     * @param rowIndexes is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data, owner, and so on).
      */
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {

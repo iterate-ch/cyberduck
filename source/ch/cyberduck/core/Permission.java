@@ -18,8 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.log4j.Logger;
 
@@ -38,18 +40,22 @@ public class Permission implements Serializable {
     public static final Permission EMPTY
             = new Permission(EMPTY_MASK);
 
-    public Permission(NSDictionary dict) {
+    public <T> Permission(T dict) {
         this.init(dict);
     }
 
-    public void init(NSDictionary dict) {
-        this.init(dict.objectForKey("Mask").toString());
+    public <T> void init(T serialized) {
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final String maskObj = dict.stringForKey("Mask");
+        if(maskObj != null) {
+            this.init(maskObj);
+        }
     }
 
-    public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
-        dict.setObjectForKey(this.getMask(), "Mask");
-        return dict;
+    public <T> T getAsDictionary() {
+        final Serializer dict = SerializerFactory.createSerializer();
+        dict.setStringForKey(this.getMask(), "Mask");
+        return dict.<T>getSerialized();
     }
 
     /**

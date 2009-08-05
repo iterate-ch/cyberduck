@@ -21,14 +21,16 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 
 import java.io.IOException;
 import java.util.*;
@@ -61,6 +63,11 @@ public abstract class Transfer implements Serializable {
      * not continue any forther processing
      */
     private boolean canceled;
+
+    // Backward compatibilty for serializaton
+    public static final int KIND_DOWNLOAD = 0;
+    public static final int KIND_UPLOAD = 1;
+    public static final int KIND_SYNC = 2;
 
     protected Transfer() {
         ;
@@ -103,6 +110,9 @@ public abstract class Transfer implements Serializable {
      */
     private Date timestamp;
 
+    /**
+     * @return
+     */
     public boolean isResumable() {
         if(!this.isComplete()) {
             if(this.getSession() instanceof SFTPSession) {
@@ -141,69 +151,52 @@ public abstract class Transfer implements Serializable {
      */
     protected abstract void init();
 
-    public Transfer(NSDictionary dict, Session s) {
+    public <T> Transfer(T dict, Session s) {
         this.session = s;
         this.init(dict);
     }
 
-    public void init(NSDictionary dict) {
-        NSObject rootsObj = dict.objectForKey("Roots");
+    public <T> void init(T serialized) {
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final List rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
-            NSArray r = Rococoa.cast(rootsObj, NSArray.class);
             roots = new Collection<Path>();
-            for(int i = 0; i < r.count(); i++) {
-                final NSDictionary rootDict = Rococoa.cast(r.objectAtIndex(i), NSDictionary.class);
-                final Path root = PathFactory.createPath(this.session, rootDict);
-                if(rootDict.objectForKey("Complete") != null) {
-                    root.getStatus().setComplete(true);
-                }
-                if(rootDict.objectForKey("Skipped") != null) {
-                    root.getStatus().setSkipped(true);
-                }
-                roots.add(root);
+            for(Object rootDict : rootsObj) {
+                roots.add(PathFactory.createPath(this.session, rootDict));
             }
         }
-        NSObject sizeObj = dict.objectForKey("Size");
+        Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             this.size = Double.parseDouble(sizeObj.toString());
         }
-        NSObject timestampObj = dict.objectForKey("Timestamp");
+        Object timestampObj = dict.stringForKey("Timestamp");
         if(timestampObj != null) {
             this.timestamp = new Date(Long.parseLong(timestampObj.toString()));
         }
-        NSObject currentObj = dict.objectForKey("Current");
+        Object currentObj = dict.stringForKey("Current");
         if(currentObj != null) {
             this.transferred = Double.parseDouble(currentObj.toString());
         }
         this.init();
-        NSObject bandwidthObj = dict.objectForKey("Bandwidth");
+        Object bandwidthObj = dict.stringForKey("Bandwidth");
         if(bandwidthObj != null) {
             this.bandwidth.setRate(Float.parseFloat(bandwidthObj.toString()));
         }
     }
 
-    public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
-        dict.setObjectForKey(this.getSession().getHost().getAsDictionary(), "Host");
-        NSMutableArray r = NSMutableArray.arrayWithCapacity(this.numberOfRoots());
-        for(Path root : this.roots) {
-            final NSMutableDictionary rootDict = (NSMutableDictionary) root.getAsDictionary();
-            if(root.getStatus().isComplete()) {
-                rootDict.setObjectForKey(String.valueOf(true), "Complete");
-            }
-            if(root.getStatus().isSkipped()) {
-                rootDict.setObjectForKey(String.valueOf(true), "Skipped");
-            }
-            r.addObject(rootDict);
-        }
-        dict.setObjectForKey(r, "Roots");
-        dict.setObjectForKey(String.valueOf(this.getSize()), "Size");
-        dict.setObjectForKey(String.valueOf(this.getTransferred()), "Current");
+    public abstract <T> T getAsDictionary();
+
+    public Serializer getSerializer() {
+        final Serializer dict = SerializerFactory.createSerializer();
+        dict.setObjectForKey(this.getSession().getHost(), "Host");
+        dict.setListForKey(this.roots, "Roots");
+        dict.setStringForKey(String.valueOf(this.getSize()), "Size");
+        dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(timestamp != null) {
-            dict.setObjectForKey(String.valueOf(timestamp.getTime()), "Timestamp");
+            dict.setStringForKey(String.valueOf(timestamp.getTime()), "Timestamp");
         }
         if(bandwidth != null) {
-            dict.setObjectForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
+            dict.setStringForKey(String.valueOf(bandwidth.getRate()), "Bandwidth");
         }
         return dict;
     }
@@ -775,6 +768,10 @@ public abstract class Transfer implements Serializable {
         return size;
     }
 
+    public void setSize(double size) {
+        this.size = size;
+    }
+
     /**
      * Should not be called too frequently as it iterates over all items
      *
@@ -782,6 +779,10 @@ public abstract class Transfer implements Serializable {
      */
     public double getTransferred() {
         return transferred;
+    }
+
+    public void setTransferred(double transferred) {
+        this.transferred = transferred;
     }
 
     public String toString() {

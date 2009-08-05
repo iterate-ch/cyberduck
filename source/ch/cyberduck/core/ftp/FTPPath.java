@@ -21,7 +21,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.*;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -69,7 +68,7 @@ public class FTPPath extends Path {
             return new FTPPath((FTPSession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new FTPPath((FTPSession) session, dict);
         }
     }
@@ -91,7 +90,7 @@ public class FTPPath extends Path {
         this.session = s;
     }
 
-    protected FTPPath(FTPSession s, NSDictionary dict) {
+    protected <T> FTPPath(FTPSession s, T dict) {
         super(dict);
         this.session = s;
     }
@@ -196,7 +195,7 @@ public class FTPPath extends Path {
      * media-type -- MIME media-type of file contents per IANA registry.
      * charset    -- Character set per IANA registry (if not UTF-8)
      *
-     * @param line
+     * @param response
      * @return
      */
     protected Map<String, Map<String, String>> parseFacts(String[] response) {
@@ -208,8 +207,6 @@ public class FTPPath extends Path {
     }
 
     /**
-     * @param p
-     * @param files
      * @param line
      */
     protected Map<String, Map<String, String>> parseFacts(String line) {

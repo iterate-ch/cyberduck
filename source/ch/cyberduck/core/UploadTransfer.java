@@ -20,11 +20,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -47,14 +46,15 @@ public class UploadTransfer extends Transfer {
         super(roots);
     }
 
-    public UploadTransfer(NSDictionary dict, Session s) {
+    public <T> UploadTransfer(T dict, Session s) {
         super(dict, s);
     }
 
-    public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(String.valueOf(TransferFactory.KIND_UPLOAD), "Kind");
-        return dict;
+    @Override
+    public <T> T getAsDictionary() {
+        final Serializer dict = super.getSerializer();
+        dict.setStringForKey(String.valueOf(KIND_UPLOAD), "Kind");
+        return dict.<T>getSerialized();
     }
 
     protected void init() {
@@ -63,6 +63,7 @@ public class UploadTransfer extends Transfer {
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes"));
     }
 
+    @Override
     protected void setRoots(List<Path> uploads) {
         final List<Path> normalized = new Collection<Path>();
         for(Path upload : uploads) {
@@ -175,6 +176,7 @@ public class UploadTransfer extends Transfer {
         return _cache.containsKey(file);
     }
 
+    @Override
     public boolean isResumable() {
         if(this.getSession() instanceof S3Session) {
             return false;
@@ -183,6 +185,7 @@ public class UploadTransfer extends Transfer {
     }
 
     private final TransferFilter ACTION_OVERWRITE = new UploadTransferFilter() {
+        @Override
         public boolean accept(final Path p) {
             if(super.accept(p)) {
                 if(p.attributes.isDirectory()) {
@@ -194,6 +197,7 @@ public class UploadTransfer extends Transfer {
             return false;
         }
 
+        @Override
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
@@ -204,6 +208,7 @@ public class UploadTransfer extends Transfer {
     };
 
     private final TransferFilter ACTION_RESUME = new UploadTransferFilter() {
+        @Override
         public boolean accept(final Path p) {
             if(super.accept(p)) {
                 if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
@@ -219,6 +224,7 @@ public class UploadTransfer extends Transfer {
             return false;
         }
 
+        @Override
         public void prepare(final Path p) {
             if(UploadTransfer.this.exists(p)) {
                 if(p.attributes.getSize() == -1) {
@@ -249,11 +255,13 @@ public class UploadTransfer extends Transfer {
     };
 
     private final TransferFilter ACTION_RENAME = new UploadTransferFilter() {
+        @Override
         public boolean accept(final Path p) {
             // Rename every file
             return super.accept(p);
         }
 
+        @Override
         public void prepare(final Path p) {
             if(UploadTransfer.this.exists(p)) {
                 final String parent = p.getParent().getAbsolute();
@@ -277,6 +285,7 @@ public class UploadTransfer extends Transfer {
     };
 
     private final TransferFilter ACTION_SKIP = new UploadTransferFilter() {
+        @Override
         public boolean accept(final Path p) {
             if(super.accept(p)) {
                 if(!UploadTransfer.this.exists(p)) {
@@ -287,6 +296,7 @@ public class UploadTransfer extends Transfer {
         }
     };
 
+    @Override
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
@@ -321,6 +331,7 @@ public class UploadTransfer extends Transfer {
         return super.filter(action);
     }
 
+    @Override
     protected void clear(final TransferOptions options) {
         _cache.clear();
         super.clear(options);
@@ -364,12 +375,14 @@ public class UploadTransfer extends Transfer {
             }
         }
         p.upload(bandwidth, new AbstractStreamListener() {
+            @Override
             public void bytesSent(long bytes) {
                 transferred += bytes;
             }
         }, permission);
     }
 
+    @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
             CDMainApplication.invoke(new DefaultMainAction() {

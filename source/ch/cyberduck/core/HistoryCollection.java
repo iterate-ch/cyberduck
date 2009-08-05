@@ -18,9 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.serializer.HostWriterFactory;
+import ch.cyberduck.core.serializer.Reader;
+
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -51,16 +54,18 @@ public class HistoryCollection extends HostCollection {
         folder.mkdir(true);
     }
 
+    /**
+     * 
+     * @param bookmark
+     * @return
+     */
+    public Local getFile(Host bookmark) {
+        return new Local(file, bookmark.getNickname() + ".duck");
+    }
+
     @Override
     public synchronized void add(int row, Host bookmark) {
-        bookmark.setFile(new Local(file, bookmark.getNickname() + ".duck"));
-        try {
-            bookmark.write();
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
-            return;
-        }
+        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
         if(!this.contains(bookmark)) {
             super.add(row, bookmark);
         }
@@ -75,8 +80,7 @@ public class HistoryCollection extends HostCollection {
      */
     @Override
     public synchronized Host remove(int row) {
-        final Host bookmark = this.get(row);
-        bookmark.getFile().delete(false);
+        this.getFile(this.get(row)).delete(false);
         return super.remove(row);
     }
 
@@ -90,13 +94,9 @@ public class HistoryCollection extends HostCollection {
                     }
                 }
         );
+        final Reader<Host> reader = HostReaderFactory.instance();
         for(Local next : bookmarks) {
-            try {
-                super.add(this.size(), new Host(next));
-            }
-            catch(IOException e) {
-                log.error(e.getMessage());
-            }
+            super.add(this.size(), reader.read(next));
         }
     }
 
@@ -104,8 +104,8 @@ public class HistoryCollection extends HostCollection {
     protected void sort() {
         Collections.sort(this, new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
-                Local f1 = o1.getFile();
-                Local f2 = o2.getFile();
+                Local f1 = getFile(o1);
+                Local f2 = getFile(o2);
                 if(f1.attributes.getModificationDate() < f2.attributes.getModificationDate()) {
                     return 1;
                 }
@@ -121,7 +121,7 @@ public class HistoryCollection extends HostCollection {
     public synchronized void clear() {
         log.debug("Removing all bookmarks from " + file);
         for(Host next : this) {
-            next.getFile().delete(false);
+            this.getFile(next).delete(false);
         }
         super.clear();
     }

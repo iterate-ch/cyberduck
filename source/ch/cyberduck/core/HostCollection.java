@@ -18,12 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.serializer.HostWriterFactory;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -141,11 +141,7 @@ public class HostCollection extends BookmarkCollection {
      */
     protected void save() {
         if(Preferences.instance().getBoolean("favorites.save")) {
-            NSMutableArray list = NSMutableArray.arrayWithCapacity(1);
-            for(Host bookmark : this) {
-                list.addObject(bookmark.getAsDictionary());
-            }
-            list.writeToFile(file.getAbsolute());
+            HostWriterFactory.instance().write(this, file);
         }
     }
 
@@ -155,12 +151,7 @@ public class HostCollection extends BookmarkCollection {
     protected void load() {
         if(file.exists()) {
             log.info("Found Bookmarks file: " + file.getAbsolute());
-            NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
-            final NSEnumerator i = list.objectEnumerator();
-            NSObject next;
-            while(((next = i.nextObject()) != null)) {
-                super.add(new Host(Rococoa.cast(next, NSDictionary.class)));
-            }
+            this.addAll(HostReaderFactory.instance().readCollection(file));
             this.sort();
         }
     }

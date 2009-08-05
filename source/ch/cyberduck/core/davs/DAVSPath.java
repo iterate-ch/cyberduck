@@ -20,7 +20,6 @@ package ch.cyberduck.core.davs;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.dav.DAVPath;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
  * @version $Id$
@@ -44,7 +43,7 @@ public class DAVSPath extends DAVPath {
             return new DAVSPath((DAVSSession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new DAVSPath((DAVSSession) session, dict);
         }
     }
@@ -61,7 +60,7 @@ public class DAVSPath extends DAVPath {
         super(s, parent, file);
     }
 
-    protected DAVSPath(DAVSSession s, NSDictionary dict) {
+    protected <T> DAVSPath(DAVSSession s, T dict) {
         super(s, dict);
     }
 }

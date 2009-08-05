@@ -21,7 +21,6 @@ package ch.cyberduck.core.ec;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Path;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.S3Object;
@@ -48,7 +47,7 @@ public class ECPath extends S3Path {
             return new ECPath((ECSession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new ECPath((ECSession) session, dict);
         }
     }
@@ -65,7 +64,7 @@ public class ECPath extends S3Path {
         super(s, parent, file);
     }
 
-    protected ECPath(ECSession s, NSDictionary dict) {
+    protected <T> ECPath(ECSession s, T dict) {
         super(s, dict);
     }
 

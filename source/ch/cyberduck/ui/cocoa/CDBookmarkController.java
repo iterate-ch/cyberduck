@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 
 import java.io.IOException;
@@ -205,7 +204,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setWebURLField(NSTextField webURLField) {
         this.webURLField = webURLField;
-        final NSTextFieldCell cell = Rococoa.cast(this.webURLField.cell(), NSTextFieldCell.class);
+        final NSTextFieldCell cell = this.webURLField.cell();
         cell.setPlaceholderString(
                 host.getDefaultWebURL()
         );
@@ -620,7 +619,7 @@ public class CDBookmarkController extends CDWindowController {
     public void hostFieldDidChange(final NSNotification sender) {
         String input = hostField.stringValue();
         if(Protocol.isURL(input)) {
-            this.host.init(Host.parse(input).getAsDictionary());
+            this.host.init(Host.parse(input).<NSDictionary>getAsDictionary());
         }
         else {
             this.host.setHostname(input);
@@ -712,7 +711,7 @@ public class CDBookmarkController extends CDWindowController {
         portField.setEnabled(host.getProtocol().isHostnameConfigurable());
         this.updateField(pathField, host.getDefaultPath());
         this.updateField(usernameField, host.getCredentials().getUsername());
-        final NSTextFieldCell usernameCell = Rococoa.cast(usernameField.cell(), NSTextFieldCell.class);
+        final NSTextFieldCell usernameCell = usernameField.cell();
         if(host.getProtocol().equals(Protocol.S3)) {
             usernameCell.setPlaceholderString(
                     Locale.localizedString("Access Key ID", "S3")

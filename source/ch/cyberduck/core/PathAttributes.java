@@ -19,12 +19,12 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 
 /**
  * Attributes of a remote directory or file.
@@ -57,47 +57,43 @@ public class PathAttributes extends Attributes implements Serializable {
         super();
     }
 
-    private static final String TYPE = "Type";
-    private static final String SIZE = "Size";
-    private static final String MODIFIED = "Modified";
-    private static final String PERMISSION = "Permission";
-
-    public PathAttributes(NSDictionary dict) {
+    public <T> PathAttributes(T dict) {
         this.init(dict);
     }
 
-    public void init(NSDictionary dict) {
-        NSObject typeObj = dict.objectForKey(TYPE);
+    public <T> void init(T serialized) {
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
-            this.type = Integer.parseInt(typeObj.toString());
+            this.type = Integer.parseInt(typeObj);
         }
-        NSObject sizeObj = dict.objectForKey(SIZE);
+        String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
-            this.size = Long.parseLong(sizeObj.toString());
+            this.size = Long.parseLong(sizeObj);
         }
-        NSObject modifiedObj = dict.objectForKey(MODIFIED);
+        String modifiedObj = dict.stringForKey("Modified");
         if(modifiedObj != null) {
-            this.modified = Long.parseLong(modifiedObj.toString());
+            this.modified = Long.parseLong(modifiedObj);
         }
-        NSObject permissionObj = dict.objectForKey(PERMISSION);
+        Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
-            this.permission = new Permission(Rococoa.cast(permissionObj, NSDictionary.class));
+            this.permission = new Permission(permissionObj);
         }
     }
 
-    public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
-        dict.setObjectForKey(String.valueOf(this.type), TYPE);
+    public <T> T getAsDictionary() {
+        final Serializer dict = SerializerFactory.createSerializer();
+        dict.setStringForKey(String.valueOf(this.type), "Type");
         if(this.size != -1) {
-            dict.setObjectForKey(String.valueOf(this.size), SIZE);
+            dict.setStringForKey(String.valueOf(this.size), "Size");
         }
         if(this.modified != -1) {
-            dict.setObjectForKey(String.valueOf(this.modified), MODIFIED);
+            dict.setStringForKey(String.valueOf(this.modified), "Modified");
         }
         if(null != permission) {
-            dict.setObjectForKey(permission.getAsDictionary(), PERMISSION);
+            dict.setObjectForKey(permission, "Permission");
         }
-        return dict;
+        return dict.<T>getSerialized();
     }
 
     /**

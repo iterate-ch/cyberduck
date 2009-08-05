@@ -18,11 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.core.serializer.TransferReaderFactory;
+import ch.cyberduck.core.serializer.TransferWriterFactory;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
-
 
 /**
  * @version $Id$
@@ -54,6 +53,7 @@ public class TransferCollection extends Collection<Transfer> {
         QUEUE_FILE.getParent().mkdir();
     }
 
+    @Override
     public synchronized boolean add(Transfer o) {
         boolean r = super.add(o);
         this.save();
@@ -67,6 +67,7 @@ public class TransferCollection extends Collection<Transfer> {
      * @param o
      * @see #save()
      */
+    @Override
     public synchronized void add(int row, Transfer o) {
         super.add(row, o);
         this.save();
@@ -79,6 +80,7 @@ public class TransferCollection extends Collection<Transfer> {
      * @return the element that was removed from the list.
      * @see #save()
      */
+    @Override
     public synchronized Transfer remove(int row) {
         return super.remove(row);
     }
@@ -90,11 +92,7 @@ public class TransferCollection extends Collection<Transfer> {
     private synchronized void save(Local f) {
         log.debug("save");
         if(Preferences.instance().getBoolean("queue.save")) {
-            NSMutableArray list = NSMutableArray.arrayWithCapacity(this.size());
-            for(Transfer transfer : this) {
-                list.addObject(transfer.getAsDictionary());
-            }
-            list.writeToFile(f.getAbsolute());
+            TransferWriterFactory.instance().write(this, f);
         }
     }
 
@@ -106,12 +104,7 @@ public class TransferCollection extends Collection<Transfer> {
         log.debug("load");
         if(f.exists()) {
             log.info("Found Queue file: " + f.toString());
-            NSArray list = NSArray.arrayWithContentsOfFile(f.getAbsolute());
-            final NSEnumerator i = list.objectEnumerator();
-            NSObject next;
-            while(((next = i.nextObject()) != null)) {
-                super.add(TransferFactory.create(Rococoa.cast(next, NSDictionary.class)));
-            }
+            super.addAll(TransferReaderFactory.instance().readCollection(f));
         }
     }
 

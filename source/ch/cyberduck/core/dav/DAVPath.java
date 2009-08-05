@@ -22,7 +22,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.log4j.Logger;
@@ -57,7 +56,7 @@ public class DAVPath extends Path {
             return new DAVPath((DAVSession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new DAVPath((DAVSession) session, dict);
         }
     }
@@ -79,7 +78,7 @@ public class DAVPath extends Path {
         this.session = s;
     }
 
-    protected DAVPath(DAVSession s, NSDictionary dict) {
+    protected <T> DAVPath(DAVSession s, T dict) {
         super(dict);
         this.session = s;
     }

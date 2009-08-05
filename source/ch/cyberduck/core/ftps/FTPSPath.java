@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftps;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
  * @version $Id$
@@ -44,7 +43,7 @@ public class FTPSPath extends FTPPath {
             return new FTPSPath((FTPSSession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new FTPSPath((FTPSSession) session, dict);
         }
     }
@@ -61,7 +60,7 @@ public class FTPSPath extends FTPPath {
         super(s, parent, file);
     }
 
-    protected FTPSPath(FTPSSession s, NSDictionary dict) {
+    protected <T> FTPSPath(FTPSSession s, T dict) {
         super(s, dict);
     }
 }

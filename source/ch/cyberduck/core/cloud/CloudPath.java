@@ -21,7 +21,6 @@ package ch.cyberduck.core.cloud;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +30,7 @@ import org.apache.log4j.Logger;
 public abstract class CloudPath extends Path {
     private static Logger log = Logger.getLogger(CloudPath.class);
 
-    public CloudPath(NSDictionary dict) {
+    public <T> CloudPath(T dict) {
         super(dict);
     }
 
@@ -49,7 +48,7 @@ public abstract class CloudPath extends Path {
 
     @Override
     public AbstractPath getParent() {
-        final CloudPath parent = (CloudPath)super.getParent();
+        final CloudPath parent = (CloudPath) super.getParent();
         if(parent.isRoot()) {
             parent.attributes.setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         }
@@ -57,7 +56,6 @@ public abstract class CloudPath extends Path {
     }
 
     /**
-     *
      * @return
      */
     public boolean isContainer() {
@@ -73,7 +71,7 @@ public abstract class CloudPath extends Path {
         }
         CloudPath bucketname = this;
         while(!bucketname.isContainer()) {
-            bucketname = (CloudPath)bucketname.getParent();
+            bucketname = (CloudPath) bucketname.getParent();
         }
         return bucketname.getName();
     }

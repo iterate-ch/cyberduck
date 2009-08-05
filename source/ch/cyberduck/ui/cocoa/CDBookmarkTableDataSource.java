@@ -19,24 +19,26 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.*;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -142,7 +144,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     Preferences.instance().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(BOOKMARK_COLUMN)) {
-            NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.getAsDictionary());
+            NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());
             dict.setObjectForKey(host.toURL() + Path.normalize(host.getDefaultPath()), "URL");
             if(StringUtils.isNotBlank(host.getComment())) {
                 dict.setObjectForKey(StringUtils.remove(StringUtils.remove(host.getComment(), CharUtils.LF), CharUtils.CR), "Comment");
@@ -228,9 +230,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     }
 
     /**
-     * @param info contains details on this dragging operation.
-     * @param row  The proposed location is row and action is operation.
-     *             The data source should incorporate the data from the dragging pasteboard at this time.
+     * @param draggingInfo contains details on this dragging operation.
+     * @param row          The proposed location is row and action is operation.
+     *                     The data source should incorporate the data from the dragging pasteboard at this time.
      * @see NSTableView.DataSource
      *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
@@ -255,15 +257,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     if(row > view.numberOfRows()) {
                         row = view.numberOfRows();
                     }
-                    try {
-                        source.add(row, new Host(new Local(filename)));
-                        view.selectRow(row, false);
-                        view.scrollRowToVisible(row);
-                    }
-                    catch(IOException e) {
-                        log.error(e.getMessage());
-                        return false;
-                    }
+                    source.add(row, HostReaderFactory.instance().read(new Local(filename)));
+                    view.selectRow(row, false);
+                    view.scrollRowToVisible(row);
                 }
                 else {
                     // The bookmark this file has been dropped onto
@@ -355,7 +351,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     private List<Host> promisedDragBookmarks = new ArrayList<Host>();
 
     /**
-     * @param rows is the list of row numbers that will be participating in the drag.
+     * @param rowIndexes is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place
      *         the drag data onto pboard (data, owner, and so on).
      * @see NSTableView.DataSource
@@ -370,7 +366,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(index.intValue() == -1) {
                 break;
             }
-            promisedDragBookmarks.add(new Host(this.getSource().get(index.intValue()).getAsDictionary()));
+            promisedDragBookmarks.add(this.getSource().get(index.intValue()));
         }
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {
@@ -397,16 +393,10 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragBookmarks.size());
         for(Host promisedDragBookmark : promisedDragBookmarks) {
-            Local file = new Local(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
-            promisedDragBookmark.setFile(file);
-            try {
-                promisedDragBookmark.write();
-                // Adding the filename that is promised to be created at the dropDestination
-                promisedDragNames.addObject(NSString.stringWithString(file.getName()));
-            }
-            catch(IOException e) {
-                log.error(e.getMessage());
-            }
+            final Local file = new Local(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
+            HostWriterFactory.instance().write(promisedDragBookmark, file);
+            // Adding the filename that is promised to be created at the dropDestination
+            promisedDragNames.addObject(NSString.stringWithString(file.getName()));
         }
         return promisedDragNames;
     }

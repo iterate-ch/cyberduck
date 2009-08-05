@@ -24,17 +24,20 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
-import ch.cyberduck.ui.cocoa.threading.BackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
+import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
+import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -650,7 +653,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * Make the broser reload its content. Will make use of the cache.
      *
      * @param selected The items to be selected
-     * @see #setSelectedPaths(java.util.Collection)
+     * @see #setSelectedPaths(java.util.List)
      */
     protected void reloadData(final List<Path> selected) {
         log.debug("reloadData");
@@ -713,7 +716,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     for(Path path : selected) {
-                        final int row = browserOutlineView.rowForItem(path.getReference().getReference());
+                        final int row = browserOutlineView.rowForItem(path.<NSObject>getReference().unique());
                         this.selectRow(row, true);
                     }
                     break;
@@ -778,7 +781,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             case SWITCH_OUTLINE_VIEW: {
                 if(row < this.browserOutlineView.numberOfRows()) {
-                    return this.lookup(new PathReference(this.browserOutlineView.itemAtRow(row)));
+                    return this.lookup(new CDPathReference(this.browserOutlineView.itemAtRow(row)));
                 }
                 break;
             }
@@ -1089,6 +1092,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
+    private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
+            implements NSOutlineView.Delegate {
+    }
+
+    private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate<E>
+            implements NSTableView.Delegate {
+    }
+
     private abstract class AbstractBrowserTableDelegate<E> extends CDAbstractPathTableDelegate {
 
         private Collection<Local> temporaryQuickLookFiles = new Collection<Local>() {
@@ -1293,7 +1304,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserOutlineView.setAllowsColumnReordering(true);
 
         browserOutlineView.setDataSource((this.browserOutlineModel = new CDBrowserOutlineViewModel(this)).id());
-        browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserTableDelegate<Path>() {
+        browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows() == 1) {
@@ -1311,20 +1322,18 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             /**
              * @see NSOutlineView.Delegate
              */
-            public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
+            public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell,
                                                                         NSTableColumn tableColumn, NSObject item) {
                 if(tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                    final Path path = lookup(new PathReference(item));
+                    final Path path = lookup(new CDPathReference(item));
                     cell.setEditable(path.isRenameSupported());
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
-                if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!CDBrowserController.this.isConnected()) {
-                        (Rococoa.cast(cell, NSTextFieldCell.class)).setTextColor(NSColor.disabledControlTextColor());
-                    }
-                    else {
-                        (Rococoa.cast(cell, NSTextFieldCell.class)).setTextColor(NSColor.controlTextColor());
-                    }
+                if(!CDBrowserController.this.isConnected()) {
+                    cell.setTextColor(NSColor.disabledControlTextColor());
+                }
+                else {
+                    cell.setTextColor(NSColor.controlTextColor());
                 }
             }
 
@@ -1352,14 +1361,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
 
             /**
-             * @see NSOutlineView.Notifications
+             * @see NSOutlineView.Delegate
              */
             public void outlineViewItemDidExpand(NSNotification notification) {
                 updateStatusLabel(null);
             }
 
             /**
-             * @see NSOutlineView.Notifications
+             * @see NSOutlineView.Delegate
              */
             public void outlineViewItemDidCollapse(NSNotification notification) {
                 updateStatusLabel(null);
@@ -1411,7 +1420,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserListView.setAllowsColumnReordering(true);
 
         browserListView.setDataSource((browserListModel = new CDBrowserListViewModel(this)).id());
-        browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserTableDelegate<Path>() {
+        browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>() {
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserListView.numberOfSelectedRows() == 1) {
@@ -1426,7 +1435,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, int row) {
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, int row) {
                 final String identifier = tableColumn.identifier();
                 if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
                     final Path item = browserListModel.childs(CDBrowserController.this.workdir()).get(row);
@@ -1434,10 +1443,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!CDBrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
-                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
+                        cell.setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
-                        Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.controlTextColor());
+                        cell.setTextColor(NSColor.controlTextColor());
                     }
                 }
             }
@@ -2174,6 +2183,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.spinner.setIndeterminate(true);
     }
 
+    public NSProgressIndicator getSpinner() {
+        return spinner;
+    }
+
     @Outlet
     private NSTextField statusLabel;
 
@@ -2247,7 +2260,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
                     for(int i = 0; i < browserOutlineView.numberOfRows(); i++) {
-                        this.lookup(new PathReference(browserOutlineView.itemAtRow(i))).invalidate();
+                        this.lookup(new CDPathReference(browserOutlineView.itemAtRow(i))).invalidate();
                     }
                     break;
                 }
@@ -2269,7 +2282,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         CDBrowserController c = new CDBrowserController();
         c.cascade();
         c.window().makeKeyAndOrderFront(null);
-        final Host host = new Host(this.getSession().getHost().getAsDictionary());
+        final Host host = new Host(this.getSession().getHost().<NSDictionary>getAsDictionary());
         host.setDefaultPath(selected.getAbsolute());
         c.mount(host);
     }
@@ -2889,7 +2902,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(this.session.getMaxConnections() == 1) {
             return this.session;
         }
-        final Host h = new Host(this.session.getHost().getAsDictionary());
+        final Host h = new Host(this.session.getHost().<NSDictionary>getAsDictionary());
         // Copy credentials of the browser
         h.getCredentials().setPassword(this.session.getHost().getCredentials().getPassword());
         return SessionFactory.createSession(h);
@@ -2904,6 +2917,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     protected void transfer(final Transfer transfer, final Path workdir) {
         final TransferListener l;
         transfer.addListener(l = new TransferAdapter() {
+            @Override
             public void transferDidEnd() {
                 if(isMounted()) {
                     workdir.invalidate();
@@ -2913,6 +2927,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                                 reloadData(true);
                             }
 
+                            @Override
                             public boolean isValid() {
                                 return super.isValid() && CDBrowserController.this.isConnected();
                             }
@@ -2960,6 +2975,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                  */
                 private Timer progressTimer;
 
+                @Override
                 public void willTransferPath(Path path) {
                     meter.reset();
                     progressTimer = new Timer();
@@ -2974,11 +2990,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     }, delay, period);
                 }
 
+                @Override
                 public void didTransferPath(Path path) {
                     progressTimer.cancel();
                     meter.reset();
                 }
 
+                @Override
                 public void bandwidthChanged(BandwidthThrottle bandwidth) {
                     meter.reset();
                 }
@@ -2995,6 +3013,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     transfer.start(prompt, options);
                 }
 
+                @Override
                 public void cancel() {
                     transfer.cancel();
                     super.cancel();
@@ -3117,7 +3136,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         // Writing data for private use when the item gets dragged to the transfer queue.
         final NSPasteboard transferPasteboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard.toString());
         transferPasteboard.declareTypes(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType), null);
-        if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObject(q.getAsDictionary()), CDPasteboards.TransferPasteboardType.toString())) {
+        if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObject(q.<NSDictionary>getAsDictionary()), CDPasteboards.TransferPasteboardType.toString())) {
             log.debug("TransferPasteboardType data sucessfully written to pasteboard");
         }
         final NSPasteboard generalPasteboard = NSPasteboard.generalPasteboard();
@@ -3146,9 +3165,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                    Transfer q = TransferFactory.create(dict);
-                    for(Iterator<Path> iter = q.getRoots().iterator(); iter.hasNext();) {
-                        final Path next = iter.next();
+                    Transfer q = new TransferPlistReader().deserialize((dict));
+                    for(final Path next : q.getRoots()) {
                         Path current = PathFactory.createPath(getSession(),
                                 next.getAbsolute(), next.attributes.getType());
                         Path renamed = PathFactory.createPath(getSession(),
@@ -3339,7 +3357,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param path
      * @return
      */
-    public Path lookup(PathReference path) {
+    public Path lookup(CDPathReference path) {
         if(this.isMounted()) {
             final Session session = this.getSession();
             final Cache<Path> cache = session.cache();
@@ -3551,10 +3569,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
                         Growl.instance().notify("Connection opened", host.getHostname());
 
-                        HistoryCollection.defaultCollection().add(host);
+                        final HistoryCollection history = HistoryCollection.defaultCollection();
+                        history.add(host);
 
                         // Set the window title
-                        window.setRepresentedFilename(host.getFile().getAbsolute());
+                        window.setRepresentedFilename(history.getFile(host).getAbsolute());
 
                         if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                             window.setDocumentEdited(true);
@@ -3609,7 +3628,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private Session session;
 
     /**
-     * @param h
+     * @param host
      * @return The session to be used for any further operations
      */
     public void mount(final Host host) {
@@ -3731,8 +3750,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     /**
      * Will close the session but still display the current working directory without any confirmation
      * from the user
-     *
-     * @param forever The session won't be remounted in any case; will clear the cache
      */
     private void unmountImpl() {
         // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
@@ -3906,7 +3923,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
                         for(int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                            Transfer q = TransferFactory.create(dict);
+                            Transfer q = new TransferPlistReader().deserialize((dict));
                             if(q.numberOfRoots() == 1) {
                                 item.setTitle(Locale.localizedString("Paste", "Menu item") + " \""
                                         + q.getRoot().getName() + "\"");

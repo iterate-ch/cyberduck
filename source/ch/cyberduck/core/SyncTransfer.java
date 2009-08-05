@@ -21,11 +21,10 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import java.util.*;
 
@@ -38,14 +37,15 @@ public class SyncTransfer extends Transfer {
         super(root);
     }
 
-    public SyncTransfer(NSDictionary dict, Session s) {
+    public <T> SyncTransfer(T dict, Session s) {
         super(dict, s);
     }
 
-    public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(String.valueOf(TransferFactory.KIND_SYNC), "Kind");
-        return dict;
+    @Override
+    public <T> T getAsDictionary() {
+        final Serializer dict = super.getSerializer();
+        dict.setStringForKey(String.valueOf(KIND_SYNC), "Kind");
+        return dict.<T>getSerialized();
     }
 
     /**
@@ -64,18 +64,22 @@ public class SyncTransfer extends Transfer {
         _delegateDownload = new DownloadTransfer(this.getRoots());
     }
 
+    @Override
     public void setBandwidth(float bytesPerSecond) {
         ;
     }
 
+    @Override
     public float getBandwidth() {
         return BandwidthThrottle.UNLIMITED;
     }
 
+    @Override
     public String getName() {
         return this.getRoot().getName() + " \u2194 " /*left-right arrow*/ + this.getRoot().getLocal().getName();
     }
 
+    @Override
     public double getSize() {
         final double size = _delegateDownload.getSize() + _delegateUpload.getSize();
         if(0 == size) {
@@ -84,6 +88,7 @@ public class SyncTransfer extends Transfer {
         return size;
     }
 
+    @Override
     public double getTransferred() {
         final double transferred = _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
         if(0 == transferred) {
@@ -178,6 +183,7 @@ public class SyncTransfer extends Transfer {
         }
     };
 
+    @Override
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
@@ -207,6 +213,7 @@ public class SyncTransfer extends Transfer {
         return _cache.containsKey(file);
     }
 
+    @Override
     public boolean isSelectable(Path item) {
         return item.attributes.isDirectory() || !this.compare(item).equals(COMPARISON_EQUAL);
     }
@@ -227,6 +234,7 @@ public class SyncTransfer extends Transfer {
         }
     }
 
+    @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled()) {
             CDMainApplication.invoke(new DefaultMainAction() {
@@ -238,6 +246,7 @@ public class SyncTransfer extends Transfer {
         super.fireTransferDidEnd();
     }
 
+    @Override
     public boolean exists(Path file) {
         if(roots.contains(file)) {
             return true;
@@ -248,6 +257,7 @@ public class SyncTransfer extends Transfer {
         return super.exists(file);
     }
 
+    @Override
     protected void clear(final TransferOptions options) {
         _comparisons.clear();
 
@@ -259,6 +269,7 @@ public class SyncTransfer extends Transfer {
         super.clear(options);
     }
 
+    @Override
     protected void reset() {
         _delegateDownload.reset();
         _delegateUpload.reset();
@@ -273,6 +284,7 @@ public class SyncTransfer extends Transfer {
      *
      */
     public static class Comparison {
+        @Override
         public boolean equals(Object other) {
             if(null == other) {
                 return false;
@@ -285,6 +297,7 @@ public class SyncTransfer extends Transfer {
      * Remote file is newer or local file does not exist
      */
     public static final Comparison COMPARISON_REMOTE_NEWER = new Comparison() {
+        @Override
         public String toString() {
             return "COMPARISON_REMOTE_NEWER";
         }
@@ -293,6 +306,7 @@ public class SyncTransfer extends Transfer {
      * Local file is newer or remote file does not exist
      */
     public static final Comparison COMPARISON_LOCAL_NEWER = new Comparison() {
+        @Override
         public String toString() {
             return "COMPARISON_LOCAL_NEWER";
         }
@@ -301,6 +315,7 @@ public class SyncTransfer extends Transfer {
      * Files are identical or directories
      */
     public static final Comparison COMPARISON_EQUAL = new Comparison() {
+        @Override
         public String toString() {
             return "COMPARISON_EQUAL";
         }
@@ -309,6 +324,7 @@ public class SyncTransfer extends Transfer {
      * Files differ in size
      */
     private static final Comparison COMPARISON_UNEQUAL = new Comparison() {
+        @Override
         public String toString() {
             return "COMPARISON_UNEQUAL";
         }
@@ -416,7 +432,6 @@ public class SyncTransfer extends Transfer {
 
     /**
      * @param timestamp
-     * @param timezone
      * @param precision
      * @return
      */

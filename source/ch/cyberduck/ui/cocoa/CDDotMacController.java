@@ -20,14 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.dictionary.DictionaryMapper;
-
-import org.rococoa.Rococoa;
 
 /**
  * @version $Id$
@@ -67,11 +61,8 @@ public class CDDotMacController extends CDController {
         final Local f = new Local(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolute());
         if(f.exists()) {
-            NSArray entries = NSArray.arrayWithContentsOfFile(f.getAbsolute());
-            final NSEnumerator i = entries.objectEnumerator();
-            NSObject next;
-            while(((next = i.nextObject()) != null)) {
-                final Host bookmark = new Host(Rococoa.cast(next, NSDictionary.class));
+            final Collection<Host> collection = HostReaderFactory.instance().readCollection(f);
+            for(Host bookmark : collection) {
                 if(!HostCollection.defaultCollection().contains(bookmark)) {
                     final NSAlert alert = NSAlert.alert((bookmark).getNickname(),
                             Locale.localizedString("Add this bookmark to your existing bookmarks?", "IDisk"),

@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +31,7 @@ public abstract class PathFactory {
 
     protected abstract Path create(Session session, String path, Local file);
 
-    protected abstract Path create(Session session, NSDictionary dict);
+    protected abstract <T> Path create(Session session, T dict);
 
     public static void addFactory(Protocol protocol, PathFactory f) {
         factories.put(protocol, f);
@@ -67,9 +65,8 @@ public abstract class PathFactory {
 
     /**
      * @param dict Creates a path reading its properties from the dictionary
-     * @see ch.cyberduck.core.Path#getAsDictionary()
      */
-    public static Path createPath(Session session, NSDictionary dict) {
+    public static <T> Path createPath(Session session, T dict) {
         loadClass(session.getHost().getProtocol());
         return (factories.get(session.getHost().getProtocol())).create(session, dict);
     }

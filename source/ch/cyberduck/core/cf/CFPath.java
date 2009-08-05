@@ -24,7 +24,6 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.log4j.Logger;
@@ -71,7 +70,7 @@ public class CFPath extends CloudPath {
             return new CFPath((CFSession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new CFPath((CFSession) session, dict);
         }
     }
@@ -93,7 +92,7 @@ public class CFPath extends CloudPath {
         this.session = s;
     }
 
-    protected CFPath(CFSession s, NSDictionary dict) {
+    protected <T> CFPath(CFSession s, T dict) {
         super(dict);
         this.session = s;
     }
@@ -249,10 +248,6 @@ public class CFPath extends CloudPath {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @param metadata Read additional metadata
-     * @return
-     */
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {

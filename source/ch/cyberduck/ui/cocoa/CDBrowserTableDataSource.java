@@ -22,6 +22,9 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.model.CDPathReference;
+import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
+import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -265,7 +268,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                         final Map<Path, Path> files = new HashMap<Path, Path>();
                         for(int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                            Transfer q = TransferFactory.create(dict);
+                            Transfer q = new TransferPlistReader().deserialize((dict));
                             for(Path next : q.getRoots()) {
                                 Path original = PathFactory.createPath(controller.workdir().getSession(),
                                         next.getAbsolute(), next.attributes.getType());
@@ -282,7 +285,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                         final Map<Path, Path> files = new HashMap<Path, Path>();
                         for(int i = 0; i < elements.count(); i++) {
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                            Transfer q = TransferFactory.create(dict, controller.getSession());
+                            Transfer q = new TransferPlistReader().deserialize(dict, controller.getSession());
                             for(final Path source : q.getRoots()) {
                                 final Path copy = PathFactory.createPath(controller.getSession(), source.getAsDictionary());
                                 copy.setPath(destination.getAbsolute(), source.getName());
@@ -334,7 +337,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count(); i++) {
                         NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                        Transfer q = TransferFactory.create(dict);
+                        Transfer q = new TransferPlistReader().deserialize((dict));
                         for(Path next : q.getRoots()) {
                             if(!next.getSession().equals(this.controller.getSession())) {
                                 // Don't allow dragging between two browser windows if not connected
@@ -403,7 +406,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 final Session session = controller.getTransferSession();
                 for(int i = 0; i < items.count(); i++) {
                     final Path path = PathFactory.createPath(session,
-                            controller.lookup(new PathReference(items.objectAtIndex(i))).getAsDictionary());
+                            controller.lookup(new CDPathReference(items.objectAtIndex(i))).getAsDictionary());
                     if(path.attributes.isFile()) {
                         if(StringUtils.isNotEmpty(path.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(path.getExtension()));
@@ -427,7 +430,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 // Writing data for private use when the item gets dragged to the transfer queue.
                 NSPasteboard transferPasteboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
                 transferPasteboard.declareTypes(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType), null);
-                if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObject(q.getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
+                if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObject(q.<NSDictionary>getAsDictionary()), CDPasteboards.TransferPasteboardType)) {
                     log.debug("TransferPasteboardType data sucessfully written to pasteboard");
                 }
                 NSEvent event = NSApplication.sharedApplication().currentEvent();

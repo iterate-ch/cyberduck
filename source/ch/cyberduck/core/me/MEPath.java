@@ -20,7 +20,6 @@ package ch.cyberduck.core.me;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.davs.DAVSPath;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
  * @version $Id$
@@ -44,7 +43,7 @@ public class MEPath extends DAVSPath {
             return new MEPath((MESession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new MEPath((MESession) session, dict);
         }
     }
@@ -61,15 +60,16 @@ public class MEPath extends DAVSPath {
         super(s, parent, file);
     }
 
-    protected MEPath(MESession s, NSDictionary dict) {
+    protected <T> MEPath(MESession s, T dict) {
         super(s, dict);
     }
 
     /**
      * The "Sites" folder of a MobileMe iDisk contains the files created by HomePage, the MobileMe online web authoring tool.
      * The "Web" folder of a MobileMe iDisk contains the files created by iWeb, part of the iLife suite.
-     * 
+     * <p/>
      * Custom Web URL handling
+     *
      * @return A URL to either <code>homepage.mac.com</code> or <code>web.me.com</code>
      */
     @Override

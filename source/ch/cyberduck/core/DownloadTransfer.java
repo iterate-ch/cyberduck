@@ -19,14 +19,13 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.growl.Growl;
-import ch.cyberduck.ui.cocoa.threading.DefaultMainAction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +48,11 @@ public class DownloadTransfer extends Transfer {
         super(roots);
     }
 
+    public <T> DownloadTransfer(T dict, Session s) {
+        super(dict, s);
+    }
+
+    @Override
     protected void setRoots(List<Path> downloads) {
         final List<Path> normalized = new Collection<Path>();
         for(Path download : downloads) {
@@ -91,16 +95,16 @@ public class DownloadTransfer extends Transfer {
         super.setRoots(normalized);
     }
 
-    public DownloadTransfer(NSDictionary dict, Session s) {
-        super(dict, s);
+    @Override
+    public <T> T getAsDictionary() {
+        final Serializer dict = super.getSerializer();
+        dict.setStringForKey(String.valueOf(KIND_DOWNLOAD), "Kind");
+        return dict.<T>getSerialized();
     }
 
-    public NSMutableDictionary getAsDictionary() {
-        NSMutableDictionary dict = super.getAsDictionary();
-        dict.setObjectForKey(String.valueOf(TransferFactory.KIND_DOWNLOAD), "Kind");
-        return dict;
-    }
-
+    /**
+     * Set download bandwidth
+     */
     protected void init() {
         log.debug("init");
         this.bandwidth = new BandwidthThrottle(
@@ -111,6 +115,7 @@ public class DownloadTransfer extends Transfer {
      *
      */
     private abstract class DownloadTransferFilter extends TransferFilter {
+        @Override
         public void prepare(Path p) {
             if(p.attributes.getSize() == -1) {
                 p.readSize();
@@ -196,6 +201,7 @@ public class DownloadTransfer extends Transfer {
             return true;
         }
 
+        @Override
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
@@ -217,6 +223,7 @@ public class DownloadTransfer extends Transfer {
             return true;
         }
 
+        @Override
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
                 final boolean resume = DownloadTransfer.this.exists(p.getLocal())
@@ -234,6 +241,7 @@ public class DownloadTransfer extends Transfer {
             return true;
         }
 
+        @Override
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
@@ -262,6 +270,7 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
+    @Override
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
@@ -321,6 +330,7 @@ public class DownloadTransfer extends Transfer {
 
     protected void _transferImpl(final Path p) {
         p.download(bandwidth, new AbstractStreamListener() {
+            @Override
             public void bytesReceived(long bytes) {
                 transferred += bytes;
             }
@@ -357,6 +367,7 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
+    @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
             CDMainApplication.invoke(new DefaultMainAction() {

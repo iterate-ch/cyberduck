@@ -23,13 +23,14 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
+import ch.cyberduck.ui.cocoa.model.CDPathReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,45 +102,53 @@ public abstract class Path extends AbstractPath implements Serializable {
         return BINARY_FILETYPE_PATTERN;
     }
 
-    private static final String REMOTE = "Remote";
-    private static final String LOCAL = "Local";
-    private static final String SYMLINK = "Symlink";
-    private static final String ATTRIBUTES = "Attributes";
-
-    public Path(NSDictionary dict) {
+    protected <T> Path(T dict) {
         this.init(dict);
     }
 
-    public void init(NSDictionary dict) {
-        NSObject pathObj = dict.objectForKey(REMOTE);
+    public <T> void init(T serialized) {
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
-            this.setPath(pathObj.toString());
+            this.setPath(pathObj);
         }
-        NSObject localObj = dict.objectForKey(LOCAL);
+        String localObj = dict.stringForKey("Local");
         if(localObj != null) {
-            this.setLocal(new Local(localObj.toString()));
+            this.setLocal(new Local(localObj));
         }
-        NSObject symlinkObj = dict.objectForKey(SYMLINK);
+        String symlinkObj = dict.stringForKey("Symlink");
         if(symlinkObj != null) {
-            this.setSymbolicLinkPath(symlinkObj.toString());
+            this.setSymbolicLinkPath(symlinkObj);
         }
-        NSObject attributesObj = dict.objectForKey(ATTRIBUTES);
+        final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
-            this.attributes = new PathAttributes(Rococoa.cast(attributesObj, NSDictionary.class));
+            this.attributes = new PathAttributes(attributesObj);
+        }
+        if(dict.stringForKey("Complete") != null) {
+            this.getStatus().setComplete(true);
+        }
+        if(dict.stringForKey("Skipped") != null) {
+            this.getStatus().setSkipped(true);
         }
     }
 
-    public NSDictionary getAsDictionary() {
-        NSMutableDictionary dict = NSMutableDictionary.dictionary();
-        dict.setObjectForKey(this.getAbsolute(), REMOTE);
+    public <S> S getAsDictionary() {
+        final Serializer dict = SerializerFactory.createSerializer();
+        dict.setStringForKey(this.getAbsolute(), "Remote");
         if(local != null) {
-            dict.setObjectForKey(local.toString(), LOCAL);
+            dict.setStringForKey(local.toString(), "Local");
         }
         if(StringUtils.isNotBlank(this.getSymbolicLinkPath())) {
-            dict.setObjectForKey(this.getSymbolicLinkPath(), SYMLINK);
+            dict.setStringForKey(this.getSymbolicLinkPath(), "Symlink");
         }
-        dict.setObjectForKey(((Serializable) this.attributes).getAsDictionary(), ATTRIBUTES);
-        return dict;
+        dict.setObjectForKey((PathAttributes)attributes, "Attributes");
+        if(this.getStatus().isComplete()) {
+            dict.setStringForKey(String.valueOf(true), "Complete");
+        }
+        if(this.getStatus().isSkipped()) {
+            dict.setStringForKey(String.valueOf(true), "Skipped");
+        }
+        return dict.<S>getSerialized();
     }
 
     {
@@ -197,7 +206,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public void setPath(String name) {
         this.path = Path.normalize(name);
-        this.reference = new PathReference(path);
         this.parent = null;
     }
 
@@ -310,7 +318,23 @@ public abstract class Path extends AbstractPath implements Serializable {
         return this.path;
     }
 
-    public PathReference getReference() {
+    /**
+     * Default implementation returning a reference to self. You can override this
+     * if you need a different strategy to compare hashcode and equality for caching
+     * in a model.
+     *
+     * @return
+     */
+    public <T> PathReference<T> getReference() {
+        if(null == reference) {
+            reference = new CDPathReference(this.getAbsolute());
+//            reference = new PathReference() {
+//                @Override
+//                public Object getReference() {
+//                    return this;
+//                }
+//            };
+        }
         return reference;
     }
 
@@ -607,6 +631,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The hashcode of #getAbsolute()
      * @see #getAbsolute()
      */
+    @Override
     public int hashCode() {
         return this.getAbsolute().hashCode();
     }
@@ -615,6 +640,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param other
      * @return true if the other path has the same absolute path name
      */
+    @Override
     public boolean equals(Object other) {
         if(null == other) {
             return false;

@@ -22,7 +22,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 
@@ -62,7 +61,7 @@ public class SFTPPath extends Path {
             return new SFTPPath((SFTPSession) session, path, file);
         }
 
-        protected Path create(Session session, NSDictionary dict) {
+        protected <T> Path create(Session session, T dict) {
             return new SFTPPath((SFTPSession) session, dict);
         }
     }
@@ -84,7 +83,7 @@ public class SFTPPath extends Path {
         this.session = s;
     }
 
-    private SFTPPath(SFTPSession s, NSDictionary dict) {
+    private <T> SFTPPath(SFTPSession s, T dict) {
         super(dict);
         this.session = s;
     }
