@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.serializer;
 
 /*
  * Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,20 +18,18 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
+
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface Serializable {
+public class DeserializerFactory {
 
-    /**
-     * @param <T> The serialized object type
-     * @return
-     */
-    <T> T getAsDictionary();
-
-    /**
-     * @param serialized
-     * @param <T>        The serialized object type
-     */
-    public <T> void init(T serialized);
+    public static <T> Deserializer createDeserializer(T dict) {
+        if(dict instanceof NSDictionary) {
+            return new PlistDeserializer((NSDictionary) dict);
+        }
+        throw new IllegalArgumentException("No deserializer for " + dict);
+    }
 }

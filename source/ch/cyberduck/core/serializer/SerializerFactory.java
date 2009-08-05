@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.serializer;
 
 /*
  * Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,20 +18,19 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.serializer.PlistSerializer;
+
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface Serializable {
+public class SerializerFactory {
 
     /**
-     * @param <T> The serialized object type
+     *
      * @return
      */
-    <T> T getAsDictionary();
-
-    /**
-     * @param serialized
-     * @param <T>        The serialized object type
-     */
-    public <T> void init(T serialized);
+    public static Serializer createSerializer() {
+        // We currently have this single implementation only
+        return new PlistSerializer();
+    }
 }
