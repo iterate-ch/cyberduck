@@ -72,9 +72,7 @@ public class CDDateFormatter {
     /**
      * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
      *
-     * @param seconds Seconds since the first instant of 1 January 2001, GMT
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
-     * @see com.apple.cocoa.foundation.NSFormatter.FormattingException
      */
     public static String getShortFormat(final NSDate date, final NSTimeZone timezone) {
         //shortDateFormatter.setTimeZone(timezone);
@@ -94,10 +92,7 @@ public class CDDateFormatter {
     /**
      * Date represented as NSUserDefaults.TimeDateFormatString
      *
-     * @param seconds  Seconds since the first instant of 1 January 2001, GMT
-     * @param timezone
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
-     * @see com.apple.cocoa.foundation.NSFormatter.FormattingException
      */
     public static String getLongFormat(final NSDate date, final NSTimeZone timezone) {
         //longDateFormatter.setTimeZone(timezone);

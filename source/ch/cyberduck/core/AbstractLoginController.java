@@ -103,9 +103,7 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     /**
-     * @param protocol
-     * @param hostname
-     * @param port     Use 0 if the port does not matter
+     * @param host
      * @return the password fetched from the keychain or null if it was not found
      */
     public String find(final Host host) {

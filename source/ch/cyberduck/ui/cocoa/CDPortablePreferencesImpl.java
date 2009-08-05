@@ -21,8 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +34,7 @@ public class CDPortablePreferencesImpl extends Preferences {
 
     private NSMutableDictionary dict;
 
+    @Override
     public Object getObject(String property) {
         Object value = dict.objectForKey(property);
         if(null == value) {

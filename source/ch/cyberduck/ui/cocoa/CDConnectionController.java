@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.lang.StringUtils;
@@ -69,8 +69,6 @@ public class CDConnectionController extends CDSheetController {
         log.debug("protocolSelectionDidChange:" + sender);
         final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
         portField.setIntValue(protocol.getDefaultPort());
-        final NSTextFieldCell usernameCell = Rococoa.cast(usernameField.cell(), NSTextFieldCell.class);
-        final NSTextFieldCell passwordCell = Rococoa.cast(this.passField.cell(), NSTextFieldCell.class);
         if(!protocol.isHostnameConfigurable()) {
             hostField.setStringValue(protocol.getDefaultHostname());
             hostField.setEnabled(false);
@@ -90,8 +88,8 @@ public class CDConnectionController extends CDSheetController {
             hostField.setEnabled(true);
             portField.setEnabled(true);
             pathField.setEnabled(true);
-            usernameCell.setPlaceholderString("");
-            passwordCell.setPlaceholderString("");
+            usernameField.cell().setPlaceholderString("");
+            passField.cell().setPlaceholderString("");
         }
         if(protocol.equals(Protocol.S3)) {
             hostField.setStringValue(protocol.getDefaultHostname());
@@ -141,8 +139,6 @@ public class CDConnectionController extends CDSheetController {
 
     /**
      * Update Private Key selection
-     *
-     * @param protocol
      */
     private void updateIdentity() {
         final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());

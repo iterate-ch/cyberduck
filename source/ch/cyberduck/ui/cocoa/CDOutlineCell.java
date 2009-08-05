@@ -21,8 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
 
-import org.rococoa.Rococoa;
-
 /**
  * @version $Id$
  */
@@ -37,6 +35,7 @@ public abstract class CDOutlineCell extends NSTextFieldCell {
         CDOutlineCell alloc();
     }
 
+    @Override
     public abstract CDOutlineCell init();
 
     public abstract void setIcon(NSImage aImage);

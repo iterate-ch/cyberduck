@@ -26,7 +26,6 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.Rococoa;
 
 /**
  * @version $Id$
@@ -72,7 +71,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.userField = userField;
                 this.updateField(this.userField, credentials.getUsername());
                 if(host.getProtocol().equals(Protocol.S3)) {
-                    (Rococoa.cast(this.userField.cell(), NSTextFieldCell.class)).setPlaceholderString(
+                    this.userField.cell().setPlaceholderString(
                             Locale.localizedString("Access Key ID", "S3")
                     );
                 }
@@ -102,7 +101,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.passField = passField;
                 this.updateField(this.passField, credentials.getPassword());
                 if(host.getProtocol().equals(Protocol.S3)) {
-                    (Rococoa.cast(this.passField.cell(), NSTextFieldCell.class)).setPlaceholderString(
+                    this.passField.cell().setPlaceholderString(
                             Locale.localizedString("Secret Access Key", "S3")
                     );
                 }

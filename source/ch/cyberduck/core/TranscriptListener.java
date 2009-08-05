@@ -24,9 +24,8 @@ package ch.cyberduck.core;
 public interface TranscriptListener {
 
     /**
-     *
-     * @param request
-     * @param message
+     * @param request Outgoing transcript
+     * @param message Data
      */
     abstract void log(boolean request, String message);
 }

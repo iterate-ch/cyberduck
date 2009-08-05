@@ -37,6 +37,7 @@ public class CDPreferencesImpl extends Preferences {
 
     private NSUserDefaults props;
 
+    @Override
     public Object getObject(final String property) {
         NSObject value = props.objectForKey(property);
         if(null == value) {
@@ -67,6 +68,7 @@ public class CDPreferencesImpl extends Preferences {
         this.props = NSUserDefaults.standardUserDefaults();
     }
 
+    @Override
     protected void legacy() {
         _init("browser.view.autoexpand.useDelay");
         _init("browser.view.autoexpand.delay");

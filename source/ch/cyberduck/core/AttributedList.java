@@ -22,8 +22,6 @@ import java.util.*;
 import java.util.Collection;
 
 /**
- * Facade for com.apple.cocoa.foundation.NSMutableArray
- *
  * @version $Id$
  */
 public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
@@ -120,7 +118,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         return attributes;
     }
 
-    private Map<PathReference,E> references = new HashMap<PathReference,E>();
+    private Map<PathReference, E> references = new HashMap<PathReference, E>();
 
     @Override
     public boolean add(E path) {
@@ -130,7 +128,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        for(E item: c) {
+        for(E item : c) {
             references.put(item.getReference(), item);
         }
         return super.addAll(c);

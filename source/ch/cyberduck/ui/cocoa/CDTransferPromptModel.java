@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
@@ -28,7 +29,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.threading.AbstractBackgroundAction;
+import ch.cyberduck.ui.cocoa.model.CDPathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -86,7 +87,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     }
 
     protected Path lookup(NSObject reference) {
-        return transfer.getSession().cache().lookup(new PathReference(reference));
+        return transfer.getSession().cache().lookup(new CDPathReference(reference));
     }
 
     protected static final String INCLUDE_COLUMN = "INCLUDE";
@@ -215,13 +216,13 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
 
     public NSObject outlineView_child_ofItem(final NSOutlineView view, int index, NSObject item) {
         if(null == item) {
-            return _roots.get(index).getReference().getReference();
+            return _roots.get(index).<NSObject>getReference().unique();
         }
         final AttributedList<Path> childs = this.childs(this.lookup(item));
         if(childs.isEmpty()) {
             return null;
         }
-        return childs.get(index).getReference().getReference();
+        return childs.get(index).<NSObject>getReference().unique();
     }
 
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {

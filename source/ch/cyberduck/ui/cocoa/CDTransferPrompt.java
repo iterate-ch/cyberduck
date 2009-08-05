@@ -21,7 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
@@ -273,7 +276,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 if(identifier.equals(CDTransferPromptModel.INCLUDE_COLUMN)) {
                     cell.setEnabled(transfer.isSelectable(path));
                 }
-                else if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
+                if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(CDIconCache.instance().iconForPath(path, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
