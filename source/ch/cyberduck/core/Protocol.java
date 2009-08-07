@@ -492,18 +492,18 @@ public abstract class Protocol {
     }
 
     /**
-     * @param protocol
+     * @param identifier
      * @return
      */
-    public static Protocol forName(final String protocol) {
+    public static Protocol forName(final String identifier) {
         final Protocol[] protocols = getKnownProtocols();
-        for(int i = 0; i < protocols.length; i++) {
-            if(protocols[i].getIdentifier().equals(protocol)) {
-                return protocols[i];
+        for(Protocol protocol : protocols) {
+            if(protocol.getIdentifier().equals(identifier)) {
+                return protocol;
             }
         }
-        log.fatal("Unknown protocol:" + protocol);
-        return Protocol.forScheme(protocol);
+        log.fatal("Unknown protocol:" + identifier);
+        return Protocol.forScheme(identifier);
     }
 
     /**
@@ -512,10 +512,10 @@ public abstract class Protocol {
      */
     public static Protocol forScheme(final String scheme) {
         final Protocol[] protocols = getKnownProtocols();
-        for(int i = 0; i < protocols.length; i++) {
-            for(int k = 0; k < protocols[i].getSchemes().length; k++) {
-                if(protocols[i].getSchemes()[k].equals(scheme)) {
-                    return protocols[i];
+        for(Protocol protocol : protocols) {
+            for(int k = 0; k < protocol.getSchemes().length; k++) {
+                if(protocol.getSchemes()[k].equals(scheme)) {
+                    return protocol;
                 }
             }
         }
@@ -536,10 +536,10 @@ public abstract class Protocol {
     public static boolean isURL(String str) {
         if(StringUtils.isNotBlank(str)) {
             Protocol[] protocols = getKnownProtocols();
-            for(int i = 0; i < protocols.length; i++) {
-                String[] schemes = protocols[i].getSchemes();
-                for(int k = 0; k < schemes.length; k++) {
-                    if(str.startsWith(schemes[k] + "://")) {
+            for(Protocol protocol : protocols) {
+                String[] schemes = protocol.getSchemes();
+                for(String scheme : schemes) {
+                    if(str.startsWith(scheme + "://")) {
                         return true;
                     }
                 }
