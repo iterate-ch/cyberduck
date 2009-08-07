@@ -43,9 +43,9 @@ public class CDPortablePreferencesImpl extends Preferences {
         return value;
     }
 
-    public void setProperty(String property, Object value) {
+    public void setProperty(String property, String value) {
         log.info("setProperty:" + property + "," + value);
-        this.dict.setObjectForKey(value.toString(), property);
+        this.dict.setObjectForKey(value, property);
     }
 
     public void deleteProperty(String property) {

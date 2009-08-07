@@ -46,12 +46,12 @@ public class CDPreferencesImpl extends Preferences {
         return value;
     }
 
-    public void setProperty(final String property, final Object value) {
+    public void setProperty(final String property, final String value) {
         log.info("setProperty:" + property + "," + value);
         // Sets the value of the default identified by defaultName in the standard application domain.
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
-        this.props.setObjectForKey(NSString.stringWithString(value.toString()), property);
+        this.props.setObjectForKey(NSString.stringWithString(value), property);
         this.save();
     }
 

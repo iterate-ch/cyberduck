@@ -89,7 +89,7 @@ public abstract class Preferences {
      * @param property The name of the property to overwrite
      * @param value    The new vlaue
      */
-    public abstract void setProperty(String property, Object value);
+    public abstract void setProperty(String property, String value);
 
     public abstract void deleteProperty(String property);
 
