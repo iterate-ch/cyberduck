@@ -46,19 +46,6 @@
 NSString *CDOutlineCellFilename = @"FILENAME";
 NSString *CDOutlineCellIcon = @"ICON";
 
-- (void)setObjectValue:(id <NSObject, NSCopying>)obj
-{
-    if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSAttributedString class]]) {
-        [super setObjectValue:obj];
-        return;
-    }
-	else if ([obj isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *dictionary = (NSDictionary *)obj;
-        [super setObjectValue:[dictionary objectForKey:CDOutlineCellFilename]];
-		self.icon = [dictionary objectForKey:CDOutlineCellIcon];
-    }
-}
-
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
     if ([controlView isFlipped]) {
