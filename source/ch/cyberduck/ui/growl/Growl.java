@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.growl;
+package ch.cyberduck.ui.growl;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
