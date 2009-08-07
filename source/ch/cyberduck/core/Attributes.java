@@ -18,13 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
-public abstract class Attributes {
-    private static Logger log = Logger.getLogger(Attributes.class);
+public interface Attributes {
 
     public abstract int getType();
 
@@ -86,7 +83,7 @@ public abstract class Attributes {
 
     /**
      * @return True if this path denotes a symbolic link.
-     * @warn Returns false for Mac OS Classic Alias
+     *         Warning! Returns false for Mac OS Classic Alias
      */
     public abstract boolean isSymbolicLink();
 
@@ -99,46 +96,4 @@ public abstract class Attributes {
     public abstract String getOwner();
 
     public abstract String getGroup();
-
-    /**
-     * @return true if executable for user, group and world
-     */
-    public boolean isExecutable() {
-        Permission perm = this.getPermission();
-        if(null == perm) {
-            log.warn("Unknown permissions");
-            return true;
-        }
-        return perm.getOwnerPermissions()[Permission.EXECUTE]
-                || perm.getGroupPermissions()[Permission.EXECUTE]
-                || perm.getOtherPermissions()[Permission.EXECUTE];
-    }
-
-    /**
-     * @return true if readable for user, group and world
-     */
-    public boolean isReadable() {
-        Permission perm = this.getPermission();
-        if(null == perm) {
-            log.warn("Unknown permissions");
-            return true;
-        }
-        return perm.getOwnerPermissions()[Permission.READ]
-                || perm.getGroupPermissions()[Permission.READ]
-                || perm.getOtherPermissions()[Permission.READ];
-    }
-
-    /**
-     * @return true if writable for user, group and world
-     */
-    public boolean isWritable() {
-        Permission perm = this.getPermission();
-        if(null == perm) {
-            log.warn("Unknown permissions");
-            return true;
-        }
-        return perm.getOwnerPermissions()[Permission.WRITE]
-                || perm.getGroupPermissions()[Permission.WRITE]
-                || perm.getOtherPermissions()[Permission.WRITE];
-    }
 }

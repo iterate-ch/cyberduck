@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jets3t.service.utils.Mimetypes;
 
 import java.util.Comparator;
@@ -30,6 +31,7 @@ import com.ibm.icu.text.Normalizer;
  * @version $Id$
  */
 public abstract class AbstractPath {
+    private static Logger log = Logger.getLogger(AbstractPath.class);
 
     /**
      * The path delimiter
@@ -373,4 +375,46 @@ public abstract class AbstractPath {
      * @param copy
      */
     public abstract void copy(AbstractPath copy);
+
+    /**
+     * @return true if executable for user, group and world
+     */
+    public boolean isExecutable() {
+        final Permission perm = attributes.getPermission();
+        if(null == perm) {
+            log.warn("Unknown permissions");
+            return true;
+        }
+        return perm.getOwnerPermissions()[Permission.EXECUTE]
+                || perm.getGroupPermissions()[Permission.EXECUTE]
+                || perm.getOtherPermissions()[Permission.EXECUTE];
+    }
+
+    /**
+     * @return true if readable for user, group and world
+     */
+    public boolean isReadable() {
+        final Permission perm = attributes.getPermission();
+        if(null == perm) {
+            log.warn("Unknown permissions");
+            return true;
+        }
+        return perm.getOwnerPermissions()[Permission.READ]
+                || perm.getGroupPermissions()[Permission.READ]
+                || perm.getOtherPermissions()[Permission.READ];
+    }
+
+    /**
+     * @return true if writable for user, group and world
+     */
+    public boolean isWritable() {
+        final Permission perm = attributes.getPermission();
+        if(null == perm) {
+            log.warn("Unknown permissions");
+            return true;
+        }
+        return perm.getOwnerPermissions()[Permission.WRITE]
+                || perm.getGroupPermissions()[Permission.WRITE]
+                || perm.getOtherPermissions()[Permission.WRITE];
+    }
 }
