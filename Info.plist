@@ -122,10 +122,10 @@
         <string>_VERSION_ (_REVISION_)</string>
 		<key>LSArchitecturePriority</key>
 		<array>
-            <string>x86_64</string>
             <string>i386</string>
-            <string>ppc64</string>
+            <string>x86_64</string>
             <string>ppc</string>
+            <string>ppc64</string>
 		</array>
         <key>Java</key>
         <dict>
