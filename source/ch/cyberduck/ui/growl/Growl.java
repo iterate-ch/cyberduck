@@ -64,6 +64,9 @@ public abstract class Growl {
         return instance;
     }
 
+    /**
+     * Register application
+     */
     public abstract void register();
 
     public abstract void notify(String title, String description);

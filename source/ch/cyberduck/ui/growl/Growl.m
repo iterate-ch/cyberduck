@@ -36,14 +36,14 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_register(
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_register(
                                                                      JNIEnv *env, 
                                                                      jobject this)
 {
     [[Growl defaultInstance] registerGrowl];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notify(
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notify(
                                                                      JNIEnv *env, 
                                                                      jobject this,
                                                                      jstring title,
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notify(
                          withDescription:convertToNSString(env, description)];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_growl_GrowlNative_notifyWithImage(
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notifyWithImage(
                                                                               JNIEnv *env, 
                                                                               jobject this,
                                                                               jstring title,
