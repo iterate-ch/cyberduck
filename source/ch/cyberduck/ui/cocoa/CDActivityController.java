@@ -76,7 +76,7 @@ public class CDActivityController extends CDWindowController {
                     tasks.put(action, new CDTaskController(action));
                     reload();
                 }
-            }, true);
+            });
         }
 
         @Override
@@ -88,7 +88,7 @@ public class CDActivityController extends CDWindowController {
                     controller.invalidate();
                     reload();
                 }
-            }, true);
+            });
         }
     };
 
@@ -103,6 +103,9 @@ public class CDActivityController extends CDWindowController {
         this.reload();
     }
 
+    /**
+     *
+     */
     private void reload() {
         while(table.subviews().count() > 0) {
             (Rococoa.cast(table.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
@@ -126,6 +129,7 @@ public class CDActivityController extends CDWindowController {
         // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
 
+    @Outlet
     private NSTableView table;
     private CDListDataSource model;
     private CDAbstractTableDelegate<CDTaskController> delegate;
