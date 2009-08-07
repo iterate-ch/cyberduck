@@ -1360,19 +1360,19 @@ public class CDPreferencesController extends CDWindowController {
 
     private void duplicateComboboxClicked(String selected, String property) {
         if(selected.equals(TransferAction.ACTION_CALLBACK.getLocalizableString())) {
-            Preferences.instance().setProperty(property, TransferAction.ACTION_CALLBACK);
+            Preferences.instance().setProperty(property, TransferAction.ACTION_CALLBACK.toString());
         }
         else if(selected.equals(TransferAction.ACTION_OVERWRITE.getLocalizableString())) {
-            Preferences.instance().setProperty(property, TransferAction.ACTION_OVERWRITE);
+            Preferences.instance().setProperty(property, TransferAction.ACTION_OVERWRITE.toString());
         }
         else if(selected.equals(TransferAction.ACTION_RESUME.getLocalizableString())) {
-            Preferences.instance().setProperty(property, TransferAction.ACTION_RESUME);
+            Preferences.instance().setProperty(property, TransferAction.ACTION_RESUME.toString());
         }
         else if(selected.equals(TransferAction.ACTION_RENAME.getLocalizableString())) {
-            Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME);
+            Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME.toString());
         }
         else if(selected.equals(TransferAction.ACTION_SKIP.getLocalizableString())) {
-            Preferences.instance().setProperty(property, TransferAction.ACTION_SKIP);
+            Preferences.instance().setProperty(property, TransferAction.ACTION_SKIP.toString());
         }
     }
 
@@ -1665,8 +1665,7 @@ public class CDPreferencesController extends CDWindowController {
         this.sshTransfersCombobox.setTarget(this.id());
         this.sshTransfersCombobox.setAction(Foundation.selector("sshTransfersComboboxClicked:"));
         this.sshTransfersCombobox.removeAllItems();
-        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(
-                Protocol.SFTP.getDescription(), Protocol.SCP.getDescription()));
+        this.sshTransfersCombobox.addItemsWithTitles(NSArray.arrayWithObjects(Protocol.SFTP.getDescription(), Protocol.SCP.getDescription()));
         this.sshTransfersCombobox.itemWithTitle(Protocol.SFTP.getDescription()).setRepresentedObject(Protocol.SFTP.getIdentifier());
         this.sshTransfersCombobox.itemWithTitle(Protocol.SCP.getDescription()).setRepresentedObject(Protocol.SCP.getIdentifier());
         if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.toString())) {
@@ -1678,8 +1677,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     public void sshTransfersComboboxClicked(NSPopUpButton sender) {
-        final Protocol protocol = Protocol.forName(sender.selectedItem().representedObject());
-        Preferences.instance().setProperty("ssh.transfer", protocol.getIdentifier());
+        Preferences.instance().setProperty("ssh.transfer", sender.selectedItem().representedObject());
     }
 
     private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Protocol protocol) {
