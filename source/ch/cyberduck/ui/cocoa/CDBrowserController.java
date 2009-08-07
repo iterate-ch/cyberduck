@@ -817,7 +817,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void drawerWillClose(NSNotification notification) {
         Preferences.instance().setProperty("browser.logDrawer.size.height",
-                logDrawer.contentSize().height);
+                logDrawer.contentSize().height.intValue());
     }
 
     public void drawerDidClose(NSNotification notification) {
