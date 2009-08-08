@@ -34,7 +34,7 @@ public class HistoryCollection extends HostCollection {
     private static Logger log = Logger.getLogger(HistoryCollection.class);
 
     private static HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
-            new Local(Preferences.instance().getProperty("application.support.path"), "History")
+            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "History")
     );
 
     /**
@@ -60,7 +60,7 @@ public class HistoryCollection extends HostCollection {
      * @return
      */
     public Local getFile(Host bookmark) {
-        return new Local(file, bookmark.getNickname() + ".duck");
+        return LocalFactory.createLocal(file, bookmark.getNickname() + ".duck");
     }
 
     @Override
@@ -85,7 +85,7 @@ public class HistoryCollection extends HostCollection {
     }
 
     @Override
-    protected void load() {
+    public void load() {
         log.info("Reloading " + file);
         final AttributedList<Local> bookmarks = file.childs(new NullComparator<Local>(),
                 new PathFilter<Local>() {

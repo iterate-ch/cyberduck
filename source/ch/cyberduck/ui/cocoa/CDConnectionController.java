@@ -149,8 +149,8 @@ public class CDConnectionController extends CDSheetController {
                 if(null != entry.getIdentityFile()) {
                     if(pkCheckbox.state() == NSCell.NSOffState) {
                         // No previously manually selected key
-                        pkLabel.setStringValue(Local.stringByAbbreviatingWithTildeInPath(
-                                entry.getIdentityFile().getAbsolutePath()));
+                        pkLabel.setStringValue(LocalFactory.createLocal(
+                                entry.getIdentityFile().getAbsolutePath()).getAbbreviatedPath());
                         pkCheckbox.setState(NSCell.NSOnState);
                     }
                 }
@@ -413,7 +413,7 @@ public class CDConnectionController extends CDSheetController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.beginSheetForDirectory(Local.stringByExpandingTildeInPath("~/.ssh"),
+            publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                     null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
@@ -430,9 +430,8 @@ public class CDConnectionController extends CDSheetController {
             final NSEnumerator enumerator = selected.objectEnumerator();
             NSObject next;
             while(null != (next = enumerator.nextObject())) {
-                String pk = Local.stringByAbbreviatingWithTildeInPath(
-                        Rococoa.cast(next, NSString.class).toString());
-                pkLabel.setStringValue(pk);
+                pkLabel.setStringValue(LocalFactory.createLocal(
+                        Rococoa.cast(next, NSString.class).toString()).getAbbreviatedPath());
             }
             passField.setEnabled(false);
         }
@@ -607,7 +606,7 @@ public class CDConnectionController extends CDSheetController {
             credentials.setUseKeychain(keychainCheckbox.state() == NSCell.NSOnState);
             if(protocol.equals(Protocol.SFTP)) {
                 if(pkCheckbox.state() == NSCell.NSOnState) {
-                    credentials.setIdentity(new Credentials.Identity(pkLabel.stringValue()));
+                    credentials.setIdentity(LocalFactory.createLocal(pkLabel.stringValue()));
                 }
             }
             if(encodingPopup.titleOfSelectedItem().equals(DEFAULT)) {

@@ -257,7 +257,7 @@ public class CDPreferencesController extends CDWindowController {
                 final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
                 if(StringUtils.isNotEmpty(path)) {
                     this.editorCombobox.itemWithTitle(editor).setImage(CDIconCache.instance().iconForPath(
-                        new Local(path), 16));
+                        LocalFactory.createLocal(path), 16));
                 }
             }
         }
@@ -906,7 +906,7 @@ public class CDPreferencesController extends CDWindowController {
     private static final String CHOOSE = Locale.localizedString("Choose") + "...";
 
     // The currently set download folder
-    private final Local DEFAULT_DOWNLOAD_FOLDER = new Local(Preferences.instance().getProperty("queue.download.folder"));
+    private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
 
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
@@ -918,11 +918,11 @@ public class CDPreferencesController extends CDWindowController {
         this.addDownloadPath(action, DEFAULT_DOWNLOAD_FOLDER);
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         // Shortcut to the Desktop
-        this.addDownloadPath(action, new Local("~/Desktop"));
+        this.addDownloadPath(action, LocalFactory.createLocal("~/Desktop"));
         // Shortcut to user home
-        this.addDownloadPath(action, new Local("~"));
+        this.addDownloadPath(action, LocalFactory.createLocal("~"));
         // Shortcut to user downloads for 10.5
-        this.addDownloadPath(action, new Local("~/Downloads"));
+        this.addDownloadPath(action, LocalFactory.createLocal("~/Downloads"));
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         this.downloadPathPopup.menu().addItem(NSMenuItem.itemWithTitle(CHOOSE, action, ""));
@@ -958,8 +958,8 @@ public class CDPreferencesController extends CDWindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            Preferences.instance().setProperty("queue.download.folder", Local.stringByAbbreviatingWithTildeInPath(
-                    sender.representedObject()));
+            Preferences.instance().setProperty("queue.download.folder", LocalFactory.createLocal(
+                    sender.representedObject()).getAbbreviatedPath());
         }
     }
 
@@ -969,10 +969,10 @@ public class CDPreferencesController extends CDWindowController {
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
                 Preferences.instance().setProperty("queue.download.folder",
-                        Local.stringByAbbreviatingWithTildeInPath(filename));
+                        LocalFactory.createLocal(filename).getAbbreviatedPath());
             }
         }
-        Local custom = new Local(Preferences.instance().getProperty("queue.download.folder"));
+        Local custom = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
         downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(custom.getAbsolute()));
         downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom.getAbsolute());
         downloadPathPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForPath(custom, 16));
@@ -1703,7 +1703,7 @@ public class CDPreferencesController extends CDWindowController {
             }
             defaultProtocolHandlerCombobox.addItemWithTitle(app.infoDictionary().objectForKey("CFBundleName").toString());
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-            item.setImage(CDIconCache.instance().iconForPath(new Local(path), 16));
+            item.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(path), 16));
             item.setRepresentedObject(bundleIdentifier);
             if(bundleIdentifier.equals(defaultHandler)) {
                 defaultProtocolHandlerCombobox.selectItem(item);

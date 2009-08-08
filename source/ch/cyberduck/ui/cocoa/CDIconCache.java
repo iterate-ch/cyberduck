@@ -21,10 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -51,6 +51,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
         return instance;
     }
 
+    @Override
     public NSImage put(String extension, NSImage image) {
         return super.put(extension, image);
     }
@@ -68,11 +69,11 @@ public class CDIconCache extends HashMap<String, NSImage> {
         return this.convert(img, size);
     }
 
-    private static String FOLDER_PATH
-            = Preferences.instance().getProperty("application.support.path");
+    private static Local FOLDER_PATH
+            = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
 
-    public static final NSImage FOLDER_ICON = NSWorkspace.sharedWorkspace().iconForFile(
-            Local.stringByExpandingTildeInPath(FOLDER_PATH));
+    public static final NSImage FOLDER_ICON
+            = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
 
     static {
         FOLDER_ICON.setSize(new NSSize(128, 128));
@@ -83,8 +84,10 @@ public class CDIconCache extends HashMap<String, NSImage> {
     }
 
     /**
+     *
      * @param name
-     * @param size
+     * @param width
+     * @param height
      * @return
      */
     public NSImage iconForName(final String name, int width, int height) {
@@ -99,7 +102,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
         }
 //        if(null == image) {
 //            // Look for icon in system System Core Types Bundle
-//            Local l = new Local(NSBundle.bundleWithPath(
+//            Local l = LocalFactory.createLocalLocal(NSBundle.bundleWithPath(
 //                    "/System/Library/CoreServices/CoreTypes.bundle").resourcePath(),
 //                    name);
 //            if(!l.exists()) {
@@ -138,8 +141,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
             if(item.attributes.isDirectory()) {
                 final NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                 folder.lockFocus();
-                NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
-                        Local.stringByExpandingTildeInPath(FOLDER_PATH));
+                NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
                 f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                         NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                 NSImage o = NSImage.imageNamed("AliasBadgeIcon.icns");
@@ -161,7 +163,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
         }
         if(item.attributes.isFile()) {
             if(StringUtils.isEmpty(item.getExtension()) && null != item.attributes.getPermission()) {
-                if(item.attributes.isExecutable()) {
+                if(item.isExecutable()) {
                     return this.convert(NSImage.imageNamed("executable.tiff"), size);
                 }
             }
@@ -173,12 +175,11 @@ public class CDIconCache extends HashMap<String, NSImage> {
         if(item.attributes.isDirectory()) {
             if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")
                     && null != item.attributes.getPermission()) {
-                if(!item.attributes.isExecutable()
+                if(!item.isExecutable()
                         || (item.isCached() && !item.cache().get(item).attributes().isReadable())) {
                     NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                     folder.lockFocus();
-                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
-                            Local.stringByExpandingTildeInPath(FOLDER_PATH));
+                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
                     f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                             NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                     NSImage o = NSImage.imageNamed("PrivateFolderBadgeIcon.icns");
@@ -187,12 +188,11 @@ public class CDIconCache extends HashMap<String, NSImage> {
                     folder.unlockFocus();
                     return this.convert(folder, size);
                 }
-                if(!item.attributes.isReadable()) {
-                    if(item.attributes.isWritable()) {
+                if(!item.isReadable()) {
+                    if(item.isWritable()) {
                         NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                         folder.lockFocus();
-                        NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
-                                Local.stringByExpandingTildeInPath(FOLDER_PATH));
+                        NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
                         f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                                 NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                         NSImage o = NSImage.imageNamed("DropFolderBadgeIcon.icns");
@@ -202,11 +202,10 @@ public class CDIconCache extends HashMap<String, NSImage> {
                         return this.convert(folder, size);
                     }
                 }
-                if(!item.attributes.isWritable()) {
+                if(!item.isWritable()) {
                     NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                     folder.lockFocus();
-                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(
-                            Local.stringByExpandingTildeInPath(FOLDER_PATH));
+                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
                     f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                             NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                     NSImage o = NSImage.imageNamed("ReadOnlyFolderBadgeIcon.icns");
@@ -216,8 +215,7 @@ public class CDIconCache extends HashMap<String, NSImage> {
                     return this.convert(folder, size);
                 }
             }
-            return this.convert(NSWorkspace.sharedWorkspace().iconForFile(
-                    Local.stringByExpandingTildeInPath(FOLDER_PATH)), size);
+            return this.convert(NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute()), size);
         }
         return this.convert(NSImage.imageNamed("notfound.tiff"), size);
     }

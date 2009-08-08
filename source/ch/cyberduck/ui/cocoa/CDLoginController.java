@@ -178,7 +178,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     publicKeyPanel.setCanChooseDirectories(false);
                     publicKeyPanel.setCanChooseFiles(true);
                     publicKeyPanel.setAllowsMultipleSelection(false);
-                    publicKeyPanel.beginSheetForDirectory(Local.stringByExpandingTildeInPath("~/.ssh"),
+                    publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                             null, this.window(), this.id(),
                             Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
                 }
@@ -195,7 +195,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                     final NSEnumerator enumerator = selected.objectEnumerator();
                     NSObject next;
                     while((next = enumerator.nextObject()) != null) {
-                        credentials.setIdentity(new Credentials.Identity(next.toString()));
+                        credentials.setIdentity(LocalFactory.createLocal(next.toString()));
                     }
                 }
                 if(returncode == NSPanel.NSCancelButton) {

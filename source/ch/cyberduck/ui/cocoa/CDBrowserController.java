@@ -31,7 +31,7 @@ import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -61,416 +61,6 @@ import java.util.*;
  */
 public class CDBrowserController extends CDWindowController implements NSToolbar.Delegate {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
-
-//    /**
-//     * Applescriptability
-//     *
-//     * @return The NSIndexSpecifier for all browsers or null if there is none
-//     */
-//    public NSScriptObjectSpecifier objectSpecifier() {
-//        log.debug("objectSpecifier");
-//        NSArray orderedDocs = (NSArray) NSKeyValue.valueForKey(NSApplication.sharedApplication(), "orderedBrowsers");
-//        int index = orderedDocs.indexOfObject(this);
-//        if(index >= 0 && index < orderedDocs.count()) {
-//            NSScriptClassDescription desc
-//                    = (NSScriptClassDescription) NSScriptClassDescription.classDescriptionForClass(NSApplication.class);
-//            return new NSIndexSpecifier(desc, null, "orderedBrowsers", index);
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @return
-//     */
-//    public String getWorkingDirectory() {
-//        if(this.isMounted()) {
-//            return this.workdir().getAbsolute();
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleMountScriptCommand(NSScriptCommand command) {
-//        log.debug("handleMountScriptCommand:" + command);
-//        NSDictionary args = command.evaluatedArguments();
-//        Object portObj = args.objectForKey("Port");
-//        Host host;
-//        Object bookmarkObj = args.objectForKey("Bookmark");
-//        if(bookmarkObj != null) {
-//            int index = HostCollection.defaultCollection().indexOf(bookmarkObj);
-//            if(index < 0) {
-//                return null;
-//            }
-//            host = (Host) HostCollection.defaultCollection().get(index);
-//        }
-//        else {
-//            if(portObj != null) {
-//                Object protocolObj = args.objectForKey("Protocol");
-//                if(protocolObj != null) {
-//                    host = new Host(
-//                            Protocol.forScheme((String) args.objectForKey("Protocol")),
-//                            (String) args.objectForKey("Host"),
-//                            Integer.parseInt((String) args.objectForKey("Port")));
-//                }
-//                else {
-//                    host = new Host((String) args.objectForKey("Host"),
-//                            Integer.parseInt((String) args.objectForKey("Port")));
-//                }
-//            }
-//            else {
-//                Object protocolObj = args.objectForKey("Protocol");
-//                if(protocolObj != null) {
-//                    host = new Host(
-//                            Protocol.forName((String) args.objectForKey("Protocol")),
-//                            (String) args.objectForKey("Host"));
-//                }
-//                else {
-//                    host = new Host((String) args.objectForKey("Host"));
-//                }
-//            }
-//            Object pathObj = args.objectForKey("InitialPath");
-//            if(pathObj != null) {
-//                host.setDefaultPath((String) args.objectForKey("InitialPath"));
-//            }
-//            Object userObj = args.objectForKey("Username");
-//            if(userObj != null) {
-//                host.setCredentials(
-//                        (String) args.objectForKey("Username"), (String) args.objectForKey("Password"));
-//            }
-//            Object modeObj = args.objectForKey("Mode");
-//            if(modeObj != null) {
-//                if(modeObj.equals(FTPConnectMode.ACTIVE.toString())) {
-//                    host.setFTPConnectMode(FTPConnectMode.ACTIVE);
-//                }
-//                if(modeObj.equals(FTPConnectMode.PASV.toString())) {
-//                    host.setFTPConnectMode(FTPConnectMode.PASV);
-//                }
-//            }
-//        }
-//        final Session session = this.init(host);
-//        final Path workdir = session.mount();
-//        if(session instanceof FTPSession) {
-//            ((FTPSession) session).setStatListSupportedEnabled(false);
-//        }
-//        this.setWorkdir(workdir);
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleCloseScriptCommand(NSScriptCommand command) {
-//        log.debug("handleCloseScriptCommand:" + command);
-//        this.unmountImpl();
-//        BackgroundActionRegistry.instance().block();
-//        this.window().close();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleDisconnectScriptCommand(NSScriptCommand command) {
-//        log.debug("handleDisconnectScriptCommand:" + command);
-//        this.unmount();
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public NSArray handleListScriptCommand(NSScriptCommand command) {
-//        log.debug("handleListScriptCommand:" + command);
-//        NSMutableArray result = new NSMutableArray();
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            Object pathObj = args.objectForKey("Path");
-//            Path path = this.workdir();
-//            if(pathObj != null) {
-//                String folder = (String) args.objectForKey("Path");
-//                if(folder.charAt(0) == '/') {
-//                    path = PathFactory.createPath(this.session,
-//                            folder, Path.DIRECTORY_TYPE);
-//                }
-//                else {
-//                    path = PathFactory.createPath(this.session,
-//                            this.workdir().getAbsolute(),
-//                            folder, Path.DIRECTORY_TYPE);
-//                }
-//            }
-//            for(AbstractPath i : path.childs()) {
-//                result.addObject(i.getName());
-//            }
-//        }
-//        return result;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleGotoScriptCommand(NSScriptCommand command) {
-//        log.debug("handleGotoScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            CDGotoController c = new CDGotoController(this);
-//            c.gotoFolder(this.workdir(), (String) args.objectForKey("Path"));
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleRenameScriptCommand(NSScriptCommand command) {
-//        log.debug("handleRenameScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            String from = (String) args.objectForKey("Path");
-//            if(!from.startsWith(Path.DELIMITER)) {
-//                from = this.workdir().getAbsolute() + Path.DELIMITER + from;
-//            }
-//            String to = (String) args.objectForKey("Name");
-//            if(!to.startsWith(Path.DELIMITER)) {
-//                to = this.workdir().getAbsolute() + Path.DELIMITER + to;
-//            }
-//            this.renamePath(PathFactory.createPath(session, from, Path.FILE_TYPE),
-//                    PathFactory.createPath(session, to, Path.FILE_TYPE));
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleCreateFolderScriptCommand(NSScriptCommand command) {
-//        log.debug("handleCreateFolderScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            CDFolderController c = new CDFolderController(this);
-//            c.createFolder(this.workdir(), (String) args.objectForKey("Path"));
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Integer handleExistsScriptCommand(NSScriptCommand command) {
-//        log.debug("handleExistsScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            Path path = PathFactory.createPath(this.session,
-//                    this.workdir().getAbsolute(),
-//                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
-//            return new Integer(path.exists() ? 1 : 0);
-//        }
-//        return new Integer(0);
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleCreateFileScriptCommand(NSScriptCommand command) {
-//        log.debug("handleCreateFileScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            CDCreateFileController c = new CDCreateFileController(this);
-//            c.createFile(this.workdir(), (String) args.objectForKey("Path"), false);
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleEditScriptCommand(NSScriptCommand command) {
-//        log.debug("handleEditScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            Path path = PathFactory.createPath(this.session,
-//                    this.workdir().getAbsolute(),
-//                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
-//            Editor editor = EditorFactory.createEditor(this, path.getLocal(), path);
-//            editor.open();
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleDeleteScriptCommand(NSScriptCommand command) {
-//        log.debug("handleDeleteScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            Path path = PathFactory.createPath(this.session,
-//                    this.workdir().getAbsolute(),
-//                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
-//            if(path.list().attributes().isReadable()) {
-//                path.attributes.setType(Path.DIRECTORY_TYPE);
-//            }
-//            path.delete();
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public Object handleRefreshScriptCommand(NSScriptCommand command) {
-//        log.debug("handleRefreshScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            this.reloadButtonClicked(null);
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public TransferAction handleSyncScriptCommand(NSScriptCommand command) {
-//        log.debug("handleSyncScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            final Path path = PathFactory.createPath(this.session,
-//                    (String) args.objectForKey("Path"), Path.DIRECTORY_TYPE);
-//            Object localObj = args.objectForKey("Local");
-//            if(localObj != null) {
-//                path.setLocal(new Local((String) localObj));
-//            }
-//            final Transfer q = new SyncTransfer(path);
-//            this.transfer(q, true, new TransferPrompt() {
-//                public TransferAction prompt() {
-//                    return TransferAction.ACTION_OVERWRITE;
-//                }
-//            });
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public TransferAction handleDownloadScriptCommand(NSScriptCommand command) {
-//        log.debug("handleDownloadScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            final Path path = PathFactory.createPath(this.session,
-//                    this.workdir().getAbsolute(),
-//                    (String) args.objectForKey("Path"), Path.FILE_TYPE);
-//            if(path.list().attributes().isReadable()) {
-//                path.attributes.setType(Path.DIRECTORY_TYPE);
-//            }
-//            Object localObj = args.objectForKey("Local");
-//            if(localObj != null) {
-//                path.setLocal(new Local((String) localObj, path.getName()));
-//            }
-//            Object nameObj = args.objectForKey("Name");
-//            if(nameObj != null) {
-//                path.setLocal(new Local(path.getLocal().getParent().getAbsolute(), (String) nameObj));
-//            }
-//            final Transfer q = new DownloadTransfer(path);
-//            this.transfer(q, true, new TransferPrompt() {
-//                public TransferAction prompt() {
-//                    return TransferAction.ACTION_OVERWRITE;
-//                }
-//            });
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-//
-//    /**
-//     * Applescriptability
-//     *
-//     * @param command
-//     * @return
-//     */
-//    public TransferAction handleUploadScriptCommand(NSScriptCommand command) {
-//        log.debug("handleUploadScriptCommand:" + command);
-//        if(this.isMounted()) {
-//            NSDictionary args = command.evaluatedArguments();
-//            final Path path = PathFactory.createPath(this.session,
-//                    this.workdir().getAbsolute(),
-//                    new Local((String) args.objectForKey("Path")));
-//            Object remoteObj = args.objectForKey("Remote");
-//            if(remoteObj != null) {
-//                path.setPath((String) remoteObj, path.getName());
-//            }
-//            Object nameObj = args.objectForKey("Name");
-//            if(nameObj != null) {
-//                path.setPath(this.workdir().getAbsolute(), (String) nameObj);
-//            }
-//            final Transfer q = new UploadTransfer(path);
-//            this.transfer(q, true, new TransferPrompt() {
-//                public TransferAction prompt() {
-//                    return TransferAction.ACTION_OVERWRITE;
-//                }
-//            });
-//        }
-//        BackgroundActionRegistry.instance().block();
-//        return null;
-//    }
-
-    // ----------------------------------------------------------
-    // Constructor
-    // ----------------------------------------------------------
 
     public CDBrowserController() {
         this.loadBundle();
@@ -1159,10 +749,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     if(!path.attributes.isFile()) {
                         continue;
                     }
-                    final Local folder = new Local(new File(Preferences.instance().getProperty("tmp.dir"),
+                    final Local folder = LocalFactory.createLocal(new File(Preferences.instance().getProperty("tmp.dir"),
                             path.getParent().getAbsolute()));
                     folder.mkdir(true);
-                    path.setLocal(new Local(folder, path.getName()));
+                    path.setLocal(LocalFactory.createLocal(folder, path.getName()));
                     downloads.add(path);
                 }
                 if(downloads.size() > 0) {
@@ -1731,7 +1321,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private final RendezvousListener rendezvousCollectionListener = new RendezvousListener() {
         public void serviceResolved(String servicename, String hostname) {
-            CDMainApplication.invoke(new DefaultMainAction() {
+            invoke(new DefaultMainAction() {
                 public void run() {
                     reloadBookmarks();
                 }
@@ -1739,7 +1329,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
 
         public void serviceLost(String servicename) {
-            CDMainApplication.invoke(new DefaultMainAction() {
+            invoke(new DefaultMainAction() {
                 public void run() {
                     reloadBookmarks();
                 }
@@ -2754,7 +2344,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             final List<Path> roots = new Collection<Path>();
             for(Path selected : getSelectedPaths()) {
                 Path path = PathFactory.createPath(session, selected.getAsDictionary());
-                path.setLocal(new Local(sheet.filename(), path.getLocal().getName()));
+                path.setLocal(LocalFactory.createLocal(sheet.filename(), path.getLocal().getName()));
                 roots.add(path);
             }
             final Transfer q = new DownloadTransfer(roots);
@@ -2784,7 +2374,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             String filename;
             if((filename = sheet.filename()) != null) {
                 final Path selection = PathFactory.createPath(getTransferSession(), this.getSelectedPath().getAsDictionary());
-                selection.setLocal(new Local(filename));
+                selection.setLocal(LocalFactory.createLocal(filename));
                 final Transfer q = new DownloadTransfer(selection);
                 transfer(q);
             }
@@ -2829,7 +2419,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 else {
                     selection = PathFactory.createPath(getTransferSession(), this.workdir().getAsDictionary());
                 }
-                selection.setLocal(new Local(sheet.filenames().lastObject().toString()));
+                selection.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
                 final Transfer q = new SyncTransfer(selection);
                 transfer(q, selection);
             }
@@ -2886,7 +2476,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             while((next = iterator.nextObject()) != null) {
                 roots.add(PathFactory.createPath(session,
                         destination.getAbsolute(),
-                        new Local(next.toString())));
+                        LocalFactory.createLocal(next.toString())));
             }
             final Transfer q = new UploadTransfer(roots);
             transfer(q, destination);
@@ -2922,7 +2512,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 if(isMounted()) {
                     workdir.invalidate();
                     if(!transfer.isCanceled()) {
-                        CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                        invoke(new WindowMainAction(CDBrowserController.this) {
                             public void run() {
                                 reloadData(true);
                             }
@@ -2981,7 +2571,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     progressTimer = new Timer();
                     progressTimer.scheduleAtFixedRate(new TimerTask() {
                         public void run() {
-                            CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                            invoke(new WindowMainAction(CDBrowserController.this) {
                                 public void run() {
                                     CDBrowserController.this.updateStatusLabel(meter.getProgress());
                                 }
@@ -3192,7 +2782,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 for(int i = 0; i < elements.count(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir.getAbsolute(),
-                            new Local(elements.objectAtIndex(i).toString()));
+                            LocalFactory.createLocal(elements.objectAtIndex(i).toString()));
                     roots.add(p);
                 }
                 final Transfer q = new UploadTransfer(roots);
@@ -3543,7 +3133,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.setEncoding(this.session.getEncoding());
         this.session.addProgressListener(new ProgressListener() {
             public void message(final String message) {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         updateStatusLabel(message);
                     }
@@ -3552,7 +3142,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         });
         session.addConnectionListener(listener = new ConnectionAdapter() {
             public void connectionWillOpen() {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         bookmarkTable.setNeedsDisplay();
                         window.setTitle(host.getNickname());
@@ -3562,7 +3152,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
 
             public void connectionDidOpen() {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         getSelectedBrowserView().setNeedsDisplay();
                         bookmarkTable.setNeedsDisplay();
@@ -3586,7 +3176,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
 
             public void connectionDidClose() {
-                CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                invoke(new WindowMainAction(CDBrowserController.this) {
                     public void run() {
                         getSelectedBrowserView().setNeedsDisplay();
                         bookmarkTable.setNeedsDisplay();
@@ -3611,7 +3201,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         session.addTranscriptListener(new TranscriptListener() {
             public void log(final boolean request, final String message) {
                 if(logDrawer.state() == NSDrawer.OpenState) {
-                    CDMainApplication.invoke(new WindowMainAction(CDBrowserController.this) {
+                    invoke(new WindowMainAction(CDBrowserController.this) {
                         public void run() {
                             transcript.log(request, message);
                         }
@@ -4512,7 +4102,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
             item.setLabel(NSFileManager.defaultManager().displayNameAtPath(t));
             item.setPaletteLabel(NSFileManager.defaultManager().displayNameAtPath(t));
-            item.setImage(CDIconCache.instance().iconForPath(new Local(t), 128));
+            item.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openTerminalButtonClicked:"));
             return item;
@@ -4521,7 +4111,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.archiveutility");
             item.setLabel(Locale.localizedString("Archive", "Archive"));
             item.setPaletteLabel(Locale.localizedString("Archive", "Archive"));
-            item.setImage(CDIconCache.instance().iconForPath(new Local(t), 128));
+            item.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("archiveButtonClicked:"));
             return item;

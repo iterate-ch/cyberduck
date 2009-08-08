@@ -54,14 +54,14 @@ public class FileWatcher extends CDController {
 //            @Override
 //            public void fileChanged(FileMonitor.FileEvent e) {
 //                if(e.getType() == FileMonitor.FILE_MODIFIED) {
-//                    listener.fileWritten(new Local(e.getFile()));
+//                    listener.fileWritten(LocalFactory.createLocalLocal(e.getFile()));
 //                }
 //                if(e.getType() == FileMonitor.FILE_DELETED) {
-//                    listener.fileDeleted(new Local(e.getFile()));
+//                    listener.fileDeleted(LocalFactory.createLocalLocal(e.getFile()));
 //                    monitor.unwatch(e.getFile());
 //                }
 //                if(e.getType() == FileMonitor.FILE_RENAMED) {
-//                    listener.fileRenamed(new Local(e.getFile()));
+//                    listener.fileRenamed(LocalFactory.createLocalLocal(e.getFile()));
 //                }
 //            }
 //        });

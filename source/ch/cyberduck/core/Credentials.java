@@ -42,7 +42,7 @@ public class Credentials {
     /**
      * If not null, use public key authentication if SSH is the protocol
      */
-    private Identity identity;
+    private Local identity;
 
     /**
      * If the credentials should be stored in the Keychain upon successful login
@@ -152,35 +152,15 @@ public class Credentials {
      *
      * @param file
      */
-    public void setIdentity(Identity file) {
+    public void setIdentity(Local file) {
         this.identity = file;
     }
 
     /**
      * @return The path to the private key file to use for public key authentication
      */
-    public Identity getIdentity() {
+    public Local getIdentity() {
         return identity;
-    }
-
-    /**
-     *
-     */
-    public static class Identity extends Local {
-
-        public Identity(String path) {
-            super(path);
-        }
-
-        @Override
-        public String toString() {
-            return this.toURL();
-        }
-
-        @Override
-        public String toURL() {
-            return Local.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
-        }
     }
 
     /**

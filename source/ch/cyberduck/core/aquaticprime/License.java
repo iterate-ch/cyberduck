@@ -19,6 +19,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Preferences;
 
@@ -50,10 +51,10 @@ public class License {
      */
     public static License find() {
         final Collection<File> licenses = FileUtils.listFiles(
-                new File(new Local(Preferences.instance().getProperty("application.support.path")).getAbsolute()),
+                new File(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path")).getAbsolute()),
                 new SuffixFileFilter(".cyberducklicense"), FalseFileFilter.FALSE);
         for(File license : licenses) {
-            return new License(new Local(license));
+            return new License(LocalFactory.createLocal(license));
         }
         log.info("No license found");
         return License.EMPTY;

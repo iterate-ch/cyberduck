@@ -181,7 +181,7 @@ public class Host implements Serializable {
         }
         Object keyObj = dict.stringForKey("Private Key File");
         if(keyObj != null) {
-            this.getCredentials().setIdentity(new Credentials.Identity(keyObj.toString()));
+            this.getCredentials().setIdentity(LocalFactory.createLocal(keyObj.toString()));
         }
         Object portObj = dict.stringForKey("Port");
         if(portObj != null) {
@@ -578,7 +578,7 @@ public class Host implements Serializable {
      */
     public void setDownloadFolder(String folder) {
         log.debug("setDownloadFolder:" + folder);
-        this.downloadFolder = Local.stringByAbbreviatingWithTildeInPath(folder);
+        this.downloadFolder = LocalFactory.createLocal(folder).toURL();
     }
 
     /**
@@ -588,9 +588,9 @@ public class Host implements Serializable {
      */
     public Local getDownloadFolder() {
         if(null == this.downloadFolder) {
-            return new Local(Preferences.instance().getProperty("queue.download.folder"));
+            return LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
         }
-        return new Local(this.downloadFolder);
+        return LocalFactory.createLocal(this.downloadFolder);
     }
 
     /**
@@ -799,14 +799,14 @@ public class Host implements Serializable {
          * @return
          */
         @Override
-        public Identity getIdentity() {
+        public Local getIdentity() {
             if(!Protocol.SFTP.equals(Host.this.getProtocol())) {
                 return null;
             }
             if(null == super.getIdentity()) {
                 final OpenSshConfig.Host entry = getOpenSshConfig().lookup(Host.this.getHostname());
                 if(null != entry.getIdentityFile()) {
-                    return new Identity(entry.getIdentityFile().getAbsolutePath());
+                    return LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath());
                 }
             }
             return super.getIdentity();

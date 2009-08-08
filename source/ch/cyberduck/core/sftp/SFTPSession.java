@@ -183,7 +183,7 @@ public class SFTPSession extends Session {
     private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
-            final Credentials.Identity identity = host.getCredentials().getIdentity();
+            final Local identity = host.getCredentials().getIdentity();
             if(identity.exists()) {
                 // If the private key is passphrase protected then ask for the passphrase
                 char[] buff = new char[256];

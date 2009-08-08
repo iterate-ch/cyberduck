@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -71,7 +71,7 @@ public class CDCommandController extends CDSheetController implements Transcript
     public void setImage(NSImageView image) {
         this.image = image;
         final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
-        this.image.setImage(CDIconCache.instance().iconForPath(new Local(t), 128));
+        this.image.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
     }
 
     public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
@@ -139,7 +139,7 @@ public class CDCommandController extends CDSheetController implements Transcript
     }
 
     public void log(boolean request, final String message) {
-        CDMainApplication.invoke(new WindowMainAction(this) {
+        invoke(new WindowMainAction(this) {
             public void run() {
                 responseField.textStorage().replaceCharactersInRange_withAttributedString(NSRange.NSMakeRange(responseField.textStorage().length(), 0),
                         NSAttributedString.attributedStringWithAttributes(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));

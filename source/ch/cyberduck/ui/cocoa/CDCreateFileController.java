@@ -57,7 +57,7 @@ public class CDCreateFileController extends CDFileController {
         final CDBrowserController c = (CDBrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
             final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
-                    new Local(Preferences.instance().getProperty("tmp.dir"), filename));
+                    LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), filename));
 
             public void run() {
                 int no = 0;
@@ -67,7 +67,7 @@ public class CDCreateFileController extends CDFileController {
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }
-                    file.setLocal(new Local(Preferences.instance().getProperty("tmp.dir"), proposal));
+                    file.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), proposal));
                 }
                 file.getLocal().touch();
                 TransferOptions options = new TransferOptions();

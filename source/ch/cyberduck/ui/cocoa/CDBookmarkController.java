@@ -417,11 +417,11 @@ public class CDBookmarkController extends CDWindowController {
         this.addDownloadPath(action, host.getDownloadFolder());
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         // Shortcut to the Desktop
-        this.addDownloadPath(action, new Local("~/Desktop"));
+        this.addDownloadPath(action, LocalFactory.createLocal("~/Desktop"));
         // Shortcut to user home
-        this.addDownloadPath(action, new Local("~"));
+        this.addDownloadPath(action, LocalFactory.createLocal("~"));
         // Shortcut to user downloads for 10.5
-        this.addDownloadPath(action, new Local("~/Downloads"));
+        this.addDownloadPath(action, LocalFactory.createLocal("~/Downloads"));
         // Choose another folder
 
         // Choose another folder
@@ -589,7 +589,7 @@ public class CDBookmarkController extends CDWindowController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.beginSheetForDirectory(Local.stringByExpandingTildeInPath("~/.ssh"), null, this.window(), this.id(),
+            publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
@@ -605,8 +605,7 @@ public class CDBookmarkController extends CDWindowController {
             NSEnumerator enumerator = selected.objectEnumerator();
             NSObject next;
             while(((next = enumerator.nextObject()) != null)) {
-                host.getCredentials().setIdentity(
-                        new Credentials.Identity(next.toString()));
+                host.getCredentials().setIdentity(LocalFactory.createLocal(next.toString()));
             }
         }
         if(returncode == NSPanel.NSCancelButton) {

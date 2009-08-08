@@ -58,7 +58,7 @@ public class CDDotMacController extends CDController {
         if(!CDDotMacController.loadNative()) {
             return;
         }
-        final Local f = new Local(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
+        final Local f = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolute());
         if(f.exists()) {
             final Collection<Host> collection = HostReaderFactory.instance().readCollection(f);

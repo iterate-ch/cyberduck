@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
@@ -48,7 +49,7 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
 
     public CDHostKeyController(final CDWindowController windowController) {
         this.parent = windowController;
-        Local f = new Local(Preferences.instance().getProperty("ssh.knownhosts"));
+        Local f = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
         if(!f.exists()) {
             f.getParent().mkdir(true);
             f.touch();
@@ -81,7 +82,7 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
                                 + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
                         Locale.localizedString("Allow", ""), // default button
                         Locale.localizedString("Deny", ""), // alternate button
-                        new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
+                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
                                 Locale.localizedString("Always", "") : null //other button
                 );
                 CDSheetController c = new CDAlertController(parent, alert) {
@@ -110,7 +111,7 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
                                 + Locale.localizedString("Do you want to allow the host access?", ""),
                         Locale.localizedString("Allow", ""), // defaultbutton
                         Locale.localizedString("Deny", ""), //alternative button
-                        new Local(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always", "") : null //other button
+                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always", "") : null //other button
                 );
                 CDSheetController c = new CDAlertController(parent, alert) {
                     public void callback(final int returncode) {
@@ -151,7 +152,7 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
         if(always) {
             // Also try to add the key to a known_host file
             try {
-                KnownHosts.addHostkeyToFile(new File(new Local(Preferences.instance().getProperty("ssh.knownhosts")).getAbsolute()),
+                KnownHosts.addHostkeyToFile(new File(LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).getAbsolute()),
                         new String[]{KnownHosts.createHashedHostname(hostname)},
                         serverHostKeyAlgorithm, serverHostKey);
             }

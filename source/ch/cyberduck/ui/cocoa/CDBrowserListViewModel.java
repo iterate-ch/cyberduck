@@ -131,7 +131,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
 //        final AttributedList<Path> childs = this.childs(this.controller.workdir());
 //        for(NSUInteger index = rowIndexes.firstIndex(); index.intValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
 //            Path promisedDragPath = childs.get(index.intValue());
-//            promisedDragPath.setLocal(new Local(dropDestination.path(), promisedDragPath.getName()));
+//            promisedDragPath.setLocal(LocalFactory.createLocalLocal(dropDestination.path(), promisedDragPath.getName()));
 //            if(rowIndexes.count().intValue() == 1) {
 //                if(promisedDragPath.attributes.isFile()) {
 //                    promisedDragPath.getLocal().touch();

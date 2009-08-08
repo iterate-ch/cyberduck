@@ -28,7 +28,7 @@ import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -257,7 +257,7 @@ public class CDMainController extends CDBundleController {
      */
     public boolean application_openFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
-        Local f = new Local(filename);
+        Local f = LocalFactory.createLocal(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
                 final Host host = HostReaderFactory.instance().read(f);
@@ -281,7 +281,7 @@ public class CDMainController extends CDBundleController {
                             null);
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                     if(alert.runModal() == CDSheetCallback.DEFAULT_OPTION) {
-                        f.copy(new Local(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                        f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
                     }
                 }
                 else {
@@ -445,7 +445,7 @@ public class CDMainController extends CDBundleController {
                         ; //Ignore
                     }
                 }
-                CDMainApplication.invoke(new DefaultMainAction() {
+                invoke(new DefaultMainAction() {
                     public void run() {
                         Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
                     }
@@ -514,7 +514,7 @@ public class CDMainController extends CDBundleController {
      * Saved browsers
      */
     private Collection<Host> sessions = new HistoryCollection(
-            new Local(Preferences.instance().getProperty("application.support.path"), "Sessions"));
+            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Sessions"));
 
     /**
      * Display donation reminder dialog

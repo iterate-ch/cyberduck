@@ -18,14 +18,14 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
 /**
@@ -62,7 +62,7 @@ public class EditMenuDelegate extends MenuDelegate {
         }
         final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
         if(StringUtils.isNotEmpty(path)) {
-            item.setImage(CDIconCache.instance().iconForPath(new Local(path), 16));
+            item.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(path), 16));
         }
         else {
             // Used to provide a custom icon for the edit menu and disable the menu

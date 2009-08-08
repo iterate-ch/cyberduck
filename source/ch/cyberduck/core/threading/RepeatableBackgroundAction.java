@@ -20,9 +20,8 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
 
@@ -54,12 +53,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             // Do not report as failed if instanceof ConnectionCanceledException
             return;
         }
-        CDMainApplication.invoke(new DefaultMainAction() {
-            public void run() {
-                final String description = null == exception.getPath() ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
-                Growl.instance().notify(exception.getMessage(), description);
-            }
-        });
+        final String description = null == exception.getPath() ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
+        Growl.instance().notify(exception.getMessage(), description);
         exceptions.add(exception);
     }
 
@@ -178,7 +173,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * Idle this action for some time. Blocks the caller.
      */
     public void pause() {
-        Timer wakeup = new Timer();
+        final Timer wakeup = new Timer();
         wakeup.scheduleAtFixedRate(new TimerTask() {
             /**
              * The delay to wait before execution of the action in seconds
@@ -186,6 +181,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             private int delay = (int) Preferences.instance().getDouble("connection.retry.delay");
 
             public void run() {
+
                 final NSAutoreleasePool pool = NSAutoreleasePool.push();
                 try {
                     if(0 == delay || RepeatableBackgroundAction.this.isCanceled()) {
@@ -206,6 +202,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 }
             }
 
+            @Override
             public boolean cancel() {
                 final Object lock = lock();
                 if(lock != null) {
@@ -231,6 +228,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
     }
 
+    @Override
     public String toString() {
         final Session session = this.getSession();
         if(session != null) {

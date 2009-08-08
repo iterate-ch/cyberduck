@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
@@ -31,13 +30,12 @@ import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
-import java.io.File;
 import java.text.MessageFormat;
 
 /**
  * @version $Id$
  */
-public abstract class Editor extends CDController {
+public abstract class Editor {
     private static Logger log = Logger.getLogger(Editor.class);
 
     private CDBrowserController controller;
@@ -60,9 +58,9 @@ public abstract class Editor extends CDController {
         this.controller = controller;
         this.bundleIdentifier = bundleIdentifier;
         this.edited = path;
-        final Local folder = new Local(new File(new Local(Preferences.instance().getProperty("editor.tmp.directory")).getAbsolute(),
-                edited.getParent().getAbsolute()));
-        this.edited.setLocal(new Local(folder, edited.getName()));
+        final Local folder = LocalFactory.createLocal(
+                Preferences.instance().getProperty("editor.tmp.directory"), edited.getParent().getAbsolute());
+        this.edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
     }
 
     public void open() {
@@ -136,7 +134,6 @@ public abstract class Editor extends CDController {
     protected void delete() {
         log.debug("delete");
         edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
-        this.invalidate();
     }
 
     /**

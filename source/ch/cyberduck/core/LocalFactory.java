@@ -18,26 +18,48 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.model.Local;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class LocalFactory {
+public abstract class LocalFactory extends Factory<Local> {
 
-    public static ch.cyberduck.core.Local createLocal(ch.cyberduck.core.Local parent, String name) {
-        return new ch.cyberduck.ui.cocoa.model.Local(parent, name);
+    /**
+     * Registered factories
+     */
+    protected static final Map<Factory.Platform, LocalFactory> factories = new HashMap<Factory.Platform, LocalFactory>();
+
+    /**
+     * @param platform
+     * @param f
+     */
+    public static void addFactory(Factory.Platform platform, LocalFactory f) {
+        factories.put(platform, f);
     }
 
-    public static ch.cyberduck.core.Local createLocal(String parent, String name) {
-        return new Local(parent, name);
+    public abstract Local create(Local parent, String name);
+
+    public static Local createLocal(Local parent, String name) {
+        return factories.get(NATIVE_PLATFORM).create(parent, name);
     }
 
-    public static ch.cyberduck.core.Local createLocal(String path) {
-        return new Local(path);
+    public abstract Local create(String parent, String name);
+
+    public static Local createLocal(String parent, String name) {
+        return factories.get(NATIVE_PLATFORM).create(parent, name);
     }
 
-    public static ch.cyberduck.core.Local createLocal(java.io.File path) {
-        return new Local(path);
+    public abstract Local create(String path);
+
+    public static Local createLocal(String path) {
+        return factories.get(NATIVE_PLATFORM).create(path);
+    }
+
+    public abstract Local create(java.io.File path);
+
+    public static Local createLocal(java.io.File path) {
+        return factories.get(NATIVE_PLATFORM).create(path);
     }
 }

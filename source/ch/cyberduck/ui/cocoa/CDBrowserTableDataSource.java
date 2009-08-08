@@ -230,7 +230,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     for(int i = 0; i < elements.count(); i++) {
                         Path p = PathFactory.createPath(session,
                                 destination.getAbsolute(),
-                                new Local(elements.objectAtIndex(i).toString()));
+                                LocalFactory.createLocal(elements.objectAtIndex(i).toString()));
                         roots.add(p);
                     }
                     final Transfer q = new UploadTransfer(roots);
@@ -477,7 +477,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragPaths.size());
         if(null != dropDestination) {
             for(Path promisedDragPath : promisedDragPaths) {
-                promisedDragPath.setLocal(new Local(dropDestination.path(), promisedDragPath.getName()));
+                promisedDragPath.setLocal(LocalFactory.createLocal(dropDestination.path(), promisedDragPath.getName()));
                 promisedDragNames.addObject(NSString.stringWithString(promisedDragPath.getName()));
             }
         }

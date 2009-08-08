@@ -37,7 +37,7 @@
 
 package org.spearce.jgit.transport;
 
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.log4j.Logger;
 import org.spearce.jgit.errors.InvalidPatternException;
@@ -67,7 +67,7 @@ public class OpenSshConfig {
      * @return a caching reader of the user's configuration file.
      */
     public static OpenSshConfig create() {
-        final File home = new File(new Local("~").getAbsolute());
+        final File home = new File(LocalFactory.createLocal("~").getAbsolute());
         final File config = new File(new File(home, ".ssh"), "config");
         final OpenSshConfig osc = new OpenSshConfig(home, config);
         osc.refresh();

@@ -114,7 +114,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         String localObj = dict.stringForKey("Local");
         if(localObj != null) {
-            this.setLocal(new Local(localObj));
+            this.setLocal(LocalFactory.createLocal(localObj));
         }
         String symlinkObj = dict.stringForKey("Symlink");
         if(symlinkObj != null) {
@@ -356,7 +356,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                      * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
                      * symbolic links
                      */
-                    this.local = new Local(file.getSymbolicLinkPath());
+                    this.local = LocalFactory.createLocal(file.getSymbolicLinkPath());
                     return;
                 }
             }
@@ -375,7 +375,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     private Local getDefaultLocal() {
-        return new Local(this.getHost().getDownloadFolder(), this.getName());
+        return LocalFactory.createLocal(this.getHost().getDownloadFolder(), this.getName());
     }
 
     /**
@@ -592,7 +592,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     public void copy(final AbstractPath copy) {
-        final Local local = new Local(Preferences.instance().getProperty("tmp.dir"),
+        final Local local = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 copy.getName());
         TransferOptions options = new TransferOptions();
         options.closeSession = false;
