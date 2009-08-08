@@ -34,7 +34,7 @@ public class BundleLocale extends Locale {
     }
 
     private static class Factory extends LocaleFactory {
-        protected Locale create() {
+        public Locale create() {
             return new BundleLocale();
         }
     }

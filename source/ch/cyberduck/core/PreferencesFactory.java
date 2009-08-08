@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class PreferencesFactory extends Factory<Preferences> {
 
@@ -46,8 +46,13 @@ public abstract class PreferencesFactory extends Factory<Preferences> {
      */
     public static Preferences createPreferences() {
         if(null == l) {
+            if(!factories.containsKey(NATIVE_PLATFORM)) {
+                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            }
             l = factories.get(NATIVE_PLATFORM).create();
         }
         return l;
     }
+
+    protected abstract Preferences create();
 }

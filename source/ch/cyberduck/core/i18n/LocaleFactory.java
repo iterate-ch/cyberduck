@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class LocaleFactory extends Factory<Locale> {
 
@@ -48,8 +48,13 @@ public abstract class LocaleFactory extends Factory<Locale> {
      */
     public static Locale createLocale() {
         if(null == l) {
+            if(!factories.containsKey(NATIVE_PLATFORM)) {
+                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            }
             l = factories.get(NATIVE_PLATFORM).create();
         }
         return l;
     }
+
+    public abstract Locale create();
 }

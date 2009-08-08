@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
 import ch.cyberduck.ui.cocoa.model.CDLocal;
+import ch.cyberduck.ui.cocoa.serializer.*;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -78,5 +79,13 @@ public class CDMainApplication {
         CDLocal.register();
         CDPreferencesImpl.register();
         BundleLocale.register();
+
+        PlistDeserializer.register();
+        PlistSerializer.register();
+
+        HostPlistReader.register();
+        TransferPlistReader.register();
+
+        PlistWriter.register();
     }
 }

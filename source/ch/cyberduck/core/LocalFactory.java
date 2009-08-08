@@ -39,27 +39,34 @@ public abstract class LocalFactory extends Factory<Local> {
         factories.put(platform, f);
     }
 
-    public abstract Local create(Local parent, String name);
+    protected static LocalFactory getFactory() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+        }
+        return factories.get(NATIVE_PLATFORM);
+    }
+
+    protected abstract Local create(Local parent, String name);
 
     public static Local createLocal(Local parent, String name) {
-        return factories.get(NATIVE_PLATFORM).create(parent, name);
+        return getFactory().create(parent, name);
     }
 
-    public abstract Local create(String parent, String name);
+    protected abstract Local create(String parent, String name);
 
     public static Local createLocal(String parent, String name) {
-        return factories.get(NATIVE_PLATFORM).create(parent, name);
+        return getFactory().create(parent, name);
     }
 
-    public abstract Local create(String path);
+    protected abstract Local create(String path);
 
     public static Local createLocal(String path) {
-        return factories.get(NATIVE_PLATFORM).create(path);
+        return getFactory().create(path);
     }
 
-    public abstract Local create(java.io.File path);
+    protected abstract Local create(java.io.File path);
 
     public static Local createLocal(java.io.File path) {
-        return factories.get(NATIVE_PLATFORM).create(path);
+        return getFactory().create(path);
     }
 }
