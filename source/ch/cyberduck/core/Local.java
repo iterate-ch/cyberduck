@@ -174,6 +174,7 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     /**
      * @param listener
+     * @throws java.io.IOException
      */
     public void watch(FileWatcherListener listener) throws IOException {
         FileWatcher.instance().watch(this, listener);
@@ -220,7 +221,9 @@ public abstract class Local extends AbstractPath implements Attributes {
             this.trash();
         }
         else {
-            _impl.delete();
+            if(_impl.delete()) {
+                log.warn("Delete failed:" + this.getAbsolute());
+            }
         }
     }
 
@@ -279,8 +282,8 @@ public abstract class Local extends AbstractPath implements Attributes {
     }
 
     /**
-     * @param extension
-     * @return
+     * @param extension Filename extension
+     * @return Human readable description of file type
      */
     protected String kind(String extension) {
         return null;
@@ -328,18 +331,23 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public void mkdir(boolean recursive) {
         if(recursive) {
-            _impl.mkdirs();
+            if(!_impl.mkdirs()) {
+                log.warn("Make directories failed:" + this.getAbsolute());
+            }
         }
         else {
-            _impl.mkdir();
+            if(!_impl.mkdir()) {
+                log.warn("Make directory failed:" + this.getAbsolute());
+            }
         }
     }
 
     public abstract void writePermissions(Permission perm, boolean recursive);
 
     public void rename(AbstractPath renamed) {
-        _impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()));
-        this.setPath(this.getParent().getAbsolute(), renamed.getAbsolute());
+        if(_impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()))) {
+            this.setPath(this.getParent().getAbsolute(), renamed.getAbsolute());
+        }
     }
 
     public void copy(AbstractPath copy) {
@@ -417,17 +425,13 @@ public abstract class Local extends AbstractPath implements Attributes {
     protected abstract String applicationForExtension(String extension);
 
     /**
-     * Not implemented
-     *
-     * @param originUrl
-     * @param dataUrl
+     * @param originUrl Page that linked to the downloaded file
+     * @param dataUrl   Href where the file was downloaded from
      */
     public abstract void setQuarantine(final String originUrl, final String dataUrl);
 
     /**
-     * Not implemented
-     *
-     * @param dataUrl
+     * @param dataUrl Href where the file was downloaded from
      */
     public abstract void setWhereFrom(final String dataUrl);
 

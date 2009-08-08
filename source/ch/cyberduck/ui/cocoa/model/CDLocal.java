@@ -241,16 +241,16 @@ public class CDLocal extends Local {
     /**
      * UKXattrMetadataStore
      *
-     * @param path
-     * @param originUrl
-     * @param dataUrl
+     * @param path Absolute path reference
+     * @param originUrl Page that linked to the downloaded file
+     * @param dataUrl Href where the file was downloaded from
      */
     private native void setQuarantine(String path, String originUrl, String dataUrl);
 
     /**
      * Set the kMDItemWhereFroms on the file.
      *
-     * @param dataUrl
+     * @param dataUrl Href where the file was downloaded from
      */
     @Override
     public void setWhereFrom(final String dataUrl) {
@@ -263,8 +263,8 @@ public class CDLocal extends Local {
     /**
      * Set the kMDItemWhereFroms on the file.
      *
-     * @param path
-     * @param dataUrl
+     * @param path Absolute path reference
+     * @param dataUrl Href where the file was downloaded from
      */
     private native void setWhereFrom(String path, String dataUrl);
 
@@ -316,6 +316,7 @@ public class CDLocal extends Local {
     }
 
     /**
+     * @param path Absolute path reference
      * @param icon the absolute path to the image file to use as an icon
      */
     private native void setIconFromFile(String path, String icon);
