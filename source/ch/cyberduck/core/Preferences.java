@@ -20,14 +20,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
-import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
-import ch.cyberduck.ui.cocoa.CDPreferencesImpl;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +40,8 @@ public abstract class Preferences {
 
     private static Preferences current = null;
 
-    private Map<String, String> defaults;
+    protected Map<String, String> defaults
+            = new HashMap<String, String>();
 
     /**
      * TTL for DNS queries
@@ -63,12 +59,7 @@ public abstract class Preferences {
     public static Preferences instance() {
         synchronized(lock) {
             if(null == current) {
-                if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
-                    current = new CDPreferencesImpl();
-                }
-                else {
-                    current = new CDPortablePreferencesImpl();
-                }
+                current = PreferencesFactory.createPreferences();
                 current.load();
                 current.setDefaults();
                 current.legacy();
@@ -125,31 +116,12 @@ public abstract class Preferences {
      * setting the default prefs values
      */
     protected void setDefaults() {
-        this.defaults = new HashMap<String, String>();
-
-        File APP_SUPPORT_DIR;
-        if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
-            APP_SUPPORT_DIR = new File(
-                    Local.stringByExpandingTildeInPath("~/Library/Application Support/Cyberduck"));
-        }
-        else {
-            APP_SUPPORT_DIR = new File(
-                    Local.stringByExpandingTildeInPath(NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path").toString()));
-        }
-        APP_SUPPORT_DIR.mkdirs();
-
-        defaults.put("application.support.path", APP_SUPPORT_DIR.getAbsolutePath());
         defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
 
         /**
          * The logging level (DEBUG, INFO, WARN, ERROR)
          */
         defaults.put("logging", "ERROR");
-
-        defaults.put("application",
-                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
-        defaults.put("version",
-                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
 
         /**
          * How many times the application was launched
@@ -176,6 +148,12 @@ public abstract class Preferences {
         defaults.put("rendezvous.loopback.supress", String.valueOf(true));
 
         defaults.put("growl.enable", String.valueOf(true));
+
+        /**
+         * Normalize path names
+         */
+        defaults.put("path.normalize", String.valueOf(true));
+        defaults.put("path.normalize.unicode", String.valueOf(false));
 
         /**
          * Maximum number of directory listings to cache using a most recently used implementation
@@ -310,7 +288,7 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnStart", String.valueOf(true));
         defaults.put("queue.orderBackOnStop", String.valueOf(false));
 
-        if(new File(Local.stringByExpandingTildeInPath("~/Downloads")).exists()) {
+        if(LocalFactory.createLocal("~/Downloads").exists()) {
             // For 10.5 this usually exists and should be preferrred
             defaults.put("queue.download.folder", "~/Downloads");
         }
@@ -399,8 +377,8 @@ public abstract class Preferences {
         /**
          * Protect the data channel by default. For TLS, the data connection
          * can have one of two security levels.
-            1) Clear (requested by 'PROT C')
-            2) Private (requested by 'PROT P')
+         1) Clear (requested by 'PROT C')
+         2) Private (requested by 'PROT P')
          */
         defaults.put("ftp.tls.datachannel", "P"); //C
         /**
@@ -507,11 +485,6 @@ public abstract class Preferences {
 
         defaults.put("bookmark.icon.size", String.valueOf(32));
 
-        /**
-         * Normalize path names
-         */
-        defaults.put("path.normalize", String.valueOf(true));
-        defaults.put("path.normalize.unicode", String.valueOf(false));
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
@@ -626,16 +599,7 @@ public abstract class Preferences {
      * @return The preferred locale of all available in this application bundle
      *         for the currently logged in user
      */
-    private String locale() {
-        String locale = "en";
-        NSArray preferredLocalizations = NSBundle.mainBundle().preferredLocalizations();
-        if(null == preferredLocalizations) {
-            log.warn("No localizations found in main bundle");
-            return locale;
-        }
-        if(preferredLocalizations.count() > 0) {
-            locale = preferredLocalizations.objectAtIndex(0).toString();
-        }
-        return locale;
+    protected String locale() {
+        return "en";
     }
 }

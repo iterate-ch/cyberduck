@@ -18,10 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.foundation.NSUserDefaults;
+import ch.cyberduck.core.PreferencesFactory;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 
@@ -34,6 +35,19 @@ import org.apache.log4j.Logger;
  */
 public class CDPreferencesImpl extends Preferences {
     private static Logger log = Logger.getLogger(Preferences.class);
+
+    static {
+        PreferencesFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends PreferencesFactory {
+        protected Preferences create() {
+            if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
+                return new CDPreferencesImpl();
+            }
+            return new CDPortablePreferencesImpl();
+        }
+    }
 
     private NSUserDefaults props;
 
@@ -86,6 +100,26 @@ public class CDPreferencesImpl extends Preferences {
         }
     }
 
+    @Override
+    protected void setDefaults() {
+        super.setDefaults();
+
+        Local APP_SUPPORT_DIR;
+        if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
+            APP_SUPPORT_DIR = LocalFactory.createLocal("~/Library/Application Support/Cyberduck");
+        }
+        else {
+            APP_SUPPORT_DIR = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path").toString());
+        }
+        APP_SUPPORT_DIR.mkdir(true);
+
+        defaults.put("application.support.path", APP_SUPPORT_DIR.getAbbreviatedPath());
+        defaults.put("application",
+                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
+        defaults.put("version",
+                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+    }
+
     /**
      * Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
      *
@@ -107,5 +141,19 @@ public class CDPreferencesImpl extends Preferences {
         // your application is about to exit) or if you want to update user props
         // to what is on disk even though you have not made any changes.
         this.props.synchronize();
+    }
+
+    @Override
+    protected String locale() {
+        String locale = "en";
+        NSArray preferredLocalizations = NSBundle.mainBundle().preferredLocalizations();
+        if(null == preferredLocalizations) {
+            log.warn("No localizations found in main bundle");
+            return locale;
+        }
+        if(preferredLocalizations.count() > 0) {
+            locale = preferredLocalizations.objectAtIndex(0).toString();
+        }
+        return locale;
     }
 }

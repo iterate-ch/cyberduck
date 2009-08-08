@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
@@ -54,7 +55,7 @@ public class CDPortablePreferencesImpl extends Preferences {
     }
 
     protected void load() {
-        Local f = new Local(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
+        Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
         if(f.exists()) {
             log.info("Found preferences file: " + f.toString());
             this.dict = NSMutableDictionary.dictionary();
@@ -66,7 +67,7 @@ public class CDPortablePreferencesImpl extends Preferences {
     }
 
     public void save() {
-        Local f = new Local(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
+        Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
         f.getParent().mkdir();
         this.dict.writeToFile(f.getAbsolute());
     }
