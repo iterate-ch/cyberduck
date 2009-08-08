@@ -54,25 +54,20 @@ public class CDLocal extends Local {
     }
 
     private static class Factory extends LocalFactory {
-        public ch.cyberduck.core.Local create(ch.cyberduck.core.Local parent, String name) {
+        protected Local create(Local parent, String name) {
             return new CDLocal(parent, name);
         }
 
-        public ch.cyberduck.core.Local create(String parent, String name) {
+        protected Local create(String parent, String name) {
             return new CDLocal(parent, name);
         }
 
-        public ch.cyberduck.core.Local create(String path) {
+        protected Local create(String path) {
             return new CDLocal(path);
         }
 
-        public ch.cyberduck.core.Local create(java.io.File path) {
+        protected Local create(java.io.File path) {
             return new CDLocal(path);
-        }
-
-        @Override
-        protected ch.cyberduck.core.Local create() {
-            throw new UnsupportedOperationException();
         }
     }
 
@@ -207,7 +202,7 @@ public class CDLocal extends Local {
     @Override
     public void trash() {
         if(this.exists()) {
-            final ch.cyberduck.core.Local file = this;
+            final Local file = this;
             c.invoke(new DefaultMainAction() {
                 public void run() {
                     log.debug("Move " + file + " to Trash");
@@ -341,6 +336,22 @@ public class CDLocal extends Local {
 
     @Override
     protected native String applicationForExtension(String extension);
+
+    @Override
+    public void open() {
+        NSWorkspace.sharedWorkspace().openFile(this.getAbsolute());
+    }
+
+    /**
+     * Post a download finished notification to the distributed notification center. Will cause the
+     * download folder to bounce just once.
+     */
+    @Override
+    public void bounce(){
+        NSDistributedNotificationCenter.defaultCenter().postNotification(
+                NSNotification.notificationWithName("com.apple.DownloadFileFinished", this.getAbsolute())
+        );
+    }
 
     @Override
     public String toString() {

@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
@@ -369,13 +366,10 @@ public class DownloadTransfer extends Transfer {
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
             Growl.instance().notify("Download complete", getName());
-            if(DownloadTransfer.this.shouldOpenWhenComplete()) {
-                NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
+            if(this.shouldOpenWhenComplete()) {
+                this.getRoot().getLocal().open();
             }
-            NSDistributedNotificationCenter.defaultCenter().postNotification(
-                    NSNotification.notificationWithName("com.apple.DownloadFileFinished",
-                            getRoot().getLocal().getAbsolute())
-            );
+            this.getRoot().getLocal().bounce();
         }
         super.fireTransferDidEnd();
     }

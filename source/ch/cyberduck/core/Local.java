@@ -33,7 +33,7 @@ import java.net.MalformedURLException;
 /**
  * @version $Id$
  */
-public class Local extends AbstractPath implements Attributes {
+public abstract class Local extends AbstractPath implements Attributes {
     private static Logger log = Logger.getLogger(Local.class);
 
     public Permission getPermission() {
@@ -209,9 +209,7 @@ public class Local extends AbstractPath implements Attributes {
     /**
      * @param progress An integer from -1 and 9. If -1 is passed, the icon should be removed.
      */
-    public void setIcon(int progress) {
-        log.warn("No implementation available");
-    }
+    public abstract void setIcon(int progress);
 
     public void delete() {
         this.delete(true);
@@ -229,9 +227,7 @@ public class Local extends AbstractPath implements Attributes {
     /**
      * Move file to trash.
      */
-    public void trash() {
-        log.warn("No implementation available");
-    }
+    public abstract void trash();
 
     /**
      * @return Always return false
@@ -339,10 +335,7 @@ public class Local extends AbstractPath implements Attributes {
         }
     }
 
-    @Override
-    public void writePermissions(Permission perm, boolean recursive) {
-        log.warn("No implementation available");
-    }
+    public abstract void writePermissions(Permission perm, boolean recursive);
 
     public void rename(AbstractPath renamed) {
         _impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()));
@@ -401,6 +394,14 @@ public class Local extends AbstractPath implements Attributes {
     }
 
     /**
+     *
+     */
+    public abstract void open();
+
+
+    public abstract void bounce();
+
+    /**
      * The default application for this file as set by the launch services
      *
      * @return Full path to the application bundle. Null if unknown
@@ -413,10 +414,7 @@ public class Local extends AbstractPath implements Attributes {
         return this.applicationForExtension(extension);
     }
 
-    protected String applicationForExtension(String extension) {
-        log.warn("No implementation available");
-        return null;
-    }
+    protected abstract String applicationForExtension(String extension);
 
     /**
      * Not implemented
@@ -424,18 +422,14 @@ public class Local extends AbstractPath implements Attributes {
      * @param originUrl
      * @param dataUrl
      */
-    public void setQuarantine(final String originUrl, final String dataUrl) {
-        log.warn("No implementation available");
-    }
+    public abstract void setQuarantine(final String originUrl, final String dataUrl);
 
     /**
      * Not implemented
      *
      * @param dataUrl
      */
-    public void setWhereFrom(final String dataUrl) {
-        log.warn("No implementation available");
-    }
+    public abstract void setWhereFrom(final String dataUrl);
 
     public static class OutputStream extends FileOutputStream {
         public OutputStream(Local local, boolean resume) throws FileNotFoundException {
