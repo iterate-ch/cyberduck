@@ -31,7 +31,6 @@ import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.growl.Growl;
 import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -39,6 +38,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
 import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -1608,9 +1608,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         final Path selected = this.getPreviousPath();
         if(selected != null) {
             final Path previous = this.workdir();
-            this.setWorkdir(selected);
             if(previous.getParent().equals(selected)) {
-                this.setSelectedPath(previous);
+                this.setWorkdir(selected, previous);
+            }
+            else {
+                this.setWorkdir(selected);
             }
         }
     }
@@ -1633,8 +1635,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void upButtonClicked(final NSObject sender) {
         final Path previous = this.workdir();
-        this.setWorkdir((Path) previous.getParent());
-        this.setSelectedPath(previous);
+        this.setWorkdir((Path) previous.getParent(), previous);
     }
 
     private Path workdir;
@@ -1692,7 +1693,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             final Path path = PathFactory.createPath(session, selected, Path.DIRECTORY_TYPE);
             this.setWorkdir(path);
             if(previous.getParent().equals(path)) {
-                this.setSelectedPath(previous);
+                this.setWorkdir(path, previous);
+            }
+            else {
+                this.setWorkdir(path);
             }
         }
     }
@@ -2965,6 +2969,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return this.workdir;
     }
 
+    public void setWorkdir(final Path directory) {
+        this.setWorkdir(directory, Collections.<Path>emptyList());
+    }
+
+    public void setWorkdir(final Path directory, Path selected) {
+        this.setWorkdir(directory, Collections.singletonList(selected));
+    }
+
     /**
      * Sets the current working directory. This will udpate the path selection dropdown button
      * and also add this path to the browsing history. If the path cannot be a working directory (e.g. permission
@@ -2973,7 +2985,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      *
      * @param directory The new working directory to display or null to detach any working directory from the browser
      */
-    public void setWorkdir(final Path directory) {
+    public void setWorkdir(final Path directory, final List<Path> selected) {
         log.debug("setWorkdir:" + directory);
         if(null == directory) {
             // Clear the browser view if no working directory is given
@@ -3014,7 +3026,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 validateNavigationButtons();
 
                 // Mark the browser data source as dirty
-                reloadData(false);
+                reloadData(selected);
             }
         });
     }
@@ -3585,6 +3597,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @return true if the item by that identifier should be enabled
      */
     private boolean validateItem(final Selector action) {
+        log.debug("validateItem:" + action);
         if(action.equals(Foundation.selector("cut:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
@@ -3829,7 +3842,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private static final String TOOLBAR_QUICKLOOK = "Quick Look";
 
     public boolean validateToolbarItem(NSToolbarItem item) {
-        if(item.itemIdentifier().equals(TOOLBAR_EDIT)) {
+        final String identifier = item.itemIdentifier();
+        log.debug("validateToolbarItem:" + identifier);
+        if(identifier.equals(TOOLBAR_EDIT)) {
             final String selectedEditor = EditorFactory.getSelectedEditor();
             if(null == selectedEditor) {
                 item.setImage(NSImage.imageNamed("pencil.tiff"));
@@ -3840,7 +3855,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 );
             }
         }
-        if(item.itemIdentifier().equals(TOOLBAR_DISCONNECT)) {
+        if(identifier.equals(TOOLBAR_DISCONNECT)) {
             if(isActivityRunning()) {
                 item.setLabel(Locale.localizedString("Stop"));
                 item.setPaletteLabel(Locale.localizedString("Stop"));
@@ -3854,7 +3869,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 item.setImage(NSImage.imageNamed("eject.tiff"));
             }
         }
-        if(item.itemIdentifier().equals(TOOLBAR_ARCHIVE)) {
+        if(identifier.equals(TOOLBAR_ARCHIVE)) {
             final Path selected = getSelectedPath();
             if(null != selected) {
                 if(Archive.isArchive(selected.getName())) {
@@ -3869,7 +3884,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
         }
-        if(item.itemIdentifier().equals(TOOLBAR_QUICKLOOK)) {
+        if(identifier.equals(TOOLBAR_QUICKLOOK)) {
             // Not called because custom view is set
         }
         return validateItem(item.action());

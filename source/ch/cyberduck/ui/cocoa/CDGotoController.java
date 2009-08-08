@@ -109,9 +109,11 @@ public class CDGotoController extends CDSheetController {
         else {
             dir.setPath(filename);
         }
-        c.setWorkdir(dir);
         if(workdir.getParent().equals(dir)) {
-            c.setSelectedPath(workdir);
+            c.setWorkdir(dir, workdir);
+        }
+        else {
+            c.setWorkdir(dir);
         }
     }
 }
