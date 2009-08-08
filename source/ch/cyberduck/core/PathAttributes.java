@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class PathAttributes extends Attributes implements Serializable {
+public class PathAttributes implements Attributes, Serializable {
     private static Logger log = Logger.getLogger(PathAttributes.class);
 
     /**

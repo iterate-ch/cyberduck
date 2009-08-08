@@ -23,6 +23,9 @@ import java.util.Map;
 
 public abstract class PathFactory {
 
+    /**
+     * Registered factories
+     */
     private static Map<Protocol, PathFactory> factories = new HashMap<Protocol, PathFactory>();
 
     protected abstract Path create(Session session, String path, int type);
@@ -33,6 +36,11 @@ public abstract class PathFactory {
 
     protected abstract <T> Path create(Session session, T dict);
 
+    /**
+     * Register new factory
+     * @param protocol
+     * @param f
+     */
     public static void addFactory(Protocol protocol, PathFactory f) {
         factories.put(protocol, f);
     }
