@@ -21,6 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
+import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
+import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
+import ch.cyberduck.ui.cocoa.model.CDLocal;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -38,6 +41,10 @@ public class CDMainApplication {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
         try {
+            log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
+
+            registerFactories();
+
             final Logger root = Logger.getRootLogger();
             root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
@@ -62,5 +69,14 @@ public class CDMainApplication {
         finally {
             pool.drain();
         }
+    }
+
+    /**
+     * Register factory implementations.
+     */
+    private static void registerFactories() {
+        CDLocal.register();
+        CDPreferencesImpl.register();
+        BundleLocale.register();
     }
 }
