@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSThread;
@@ -101,6 +100,8 @@ public abstract class CDController extends AbstractController {
         return AutoreleaseBatcher.forThread(1);
     }
 
+    private static final Object lock = new Object();
+
     /**
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
@@ -113,7 +114,9 @@ public abstract class CDController extends AbstractController {
             runnable.run();
             return;
         }
-        Foundation.runOnMainThread(runnable, wait);
+        synchronized(lock) {
+            Foundation.runOnMainThread(runnable, wait);
+        }
     }
 
     /**
