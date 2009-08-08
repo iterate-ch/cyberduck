@@ -28,25 +28,52 @@ import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class Local extends ch.cyberduck.core.Local {
-    private static Logger log = Logger.getLogger(Local.class);
+public class CDLocal extends ch.cyberduck.core.Local {
+    private static Logger log = Logger.getLogger(CDLocal.class);
 
-    public Local(ch.cyberduck.core.Local parent, String name) {
+    public CDLocal(ch.cyberduck.core.Local parent, String name) {
         super(parent, name);
     }
 
-    public Local(String parent, String name) {
+    public CDLocal(String parent, String name) {
         super(parent, name);
     }
 
-    public Local(String path) {
+    public CDLocal(String path) {
         super(path);
     }
 
-    public Local(java.io.File path) {
+    public CDLocal(java.io.File path) {
         super(path);
+    }
+
+    static {
+        LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends LocalFactory {
+        public ch.cyberduck.core.Local create(ch.cyberduck.core.Local parent, String name) {
+            return new CDLocal(parent, name);
+        }
+
+        public ch.cyberduck.core.Local create(String parent, String name) {
+            return new CDLocal(parent, name);
+        }
+
+        public ch.cyberduck.core.Local create(String path) {
+            return new CDLocal(path);
+        }
+
+        public ch.cyberduck.core.Local create(java.io.File path) {
+            return new CDLocal(path);
+        }
+
+        @Override
+        protected ch.cyberduck.core.Local create() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
@@ -322,6 +349,6 @@ public class Local extends ch.cyberduck.core.Local {
 
     @Override
     public String toURL() {
-        return Local.stringByAbbreviatingWithTildeInPath(this.getAbsolute());
+        return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
     }
 }
