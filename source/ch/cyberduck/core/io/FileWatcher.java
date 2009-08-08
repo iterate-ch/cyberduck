@@ -19,13 +19,12 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.CDController;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class FileWatcher extends CDController {
+public class FileWatcher {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
 //    private FileMonitor monitor = FileMonitor.getInstance();
