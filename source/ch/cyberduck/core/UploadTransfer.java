@@ -21,9 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -163,7 +161,7 @@ public class UploadTransfer extends Transfer {
                     childFilter)) {
                 final Path child = PathFactory.createPath(parent.getSession(),
                         parent.getAbsolute(),
-                        new Local(local.getAbsolute()));
+                        LocalFactory.createLocal(local.getAbsolute()));
                 child.getStatus().setSkipped(parent.getStatus().isSkipped());
                 childs.add(child);
             }
@@ -385,11 +383,7 @@ public class UploadTransfer extends Transfer {
     @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            CDMainApplication.invoke(new DefaultMainAction() {
-                public void run() {
-                    Growl.instance().notify("Upload complete", getName());
-                }
-            });
+            Growl.instance().notify("Upload complete", getName());
         }
         super.fireTransferDidEnd();
     }

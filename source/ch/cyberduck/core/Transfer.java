@@ -26,9 +26,7 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
 
@@ -229,11 +227,7 @@ public abstract class Transfer implements Serializable {
 
     public void fireTransferQueued() {
         final Session session = this.getSession();
-        CDMainApplication.invoke(new DefaultMainAction() {
-            public void run() {
-                Growl.instance().notify("Transfer queued", session.getHost().getHostname());
-            }
-        });
+        Growl.instance().notify("Transfer queued", session.getHost().getHostname());
         session.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
         queued = true;
         for(TransferListener listener : listeners) {

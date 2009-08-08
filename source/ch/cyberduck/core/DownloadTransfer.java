@@ -20,12 +20,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -80,7 +78,7 @@ public class DownloadTransfer extends Transfer {
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                             proposal += "." + FilenameUtils.getExtension(filename);
                         }
-                        download.setLocal(new Local(parent, proposal));
+                        download.setLocal(LocalFactory.createLocal(parent, proposal));
                     }
                     while(download.getLocal().exists());
                     log.info("Changed local name to:" + download.getName());
@@ -181,7 +179,7 @@ public class DownloadTransfer extends Transfer {
         final AttributedList<Path> list = parent.childs(new NullComparator<Path>(), childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
-            download.setLocal(new Local(parent.getLocal(), download.getName()));
+            download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
             download.getStatus().setSkipped(parent.getStatus().isSkipped());
             downloads.add(download);
         }
@@ -256,7 +254,7 @@ public class DownloadTransfer extends Transfer {
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }
-                    p.setLocal(new Local(parent, proposal));
+                    p.setLocal(LocalFactory.createLocal(parent, proposal));
                 }
                 log.info("Changed local name to:" + p.getName());
             }
@@ -370,18 +368,14 @@ public class DownloadTransfer extends Transfer {
     @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            CDMainApplication.invoke(new DefaultMainAction() {
-                public void run() {
-                    Growl.instance().notify("Download complete", getName());
-                    if(DownloadTransfer.this.shouldOpenWhenComplete()) {
-                        NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
-                    }
-                    NSDistributedNotificationCenter.defaultCenter().postNotification(
-                            NSNotification.notificationWithName("com.apple.DownloadFileFinished",
-                                    getRoot().getLocal().getAbsolute())
-                    );
-                }
-            });
+            Growl.instance().notify("Download complete", getName());
+            if(DownloadTransfer.this.shouldOpenWhenComplete()) {
+                NSWorkspace.sharedWorkspace().openFile(getRoot().getLocal().toString());
+            }
+            NSDistributedNotificationCenter.defaultCenter().postNotification(
+                    NSNotification.notificationWithName("com.apple.DownloadFileFinished",
+                            getRoot().getLocal().getAbsolute())
+            );
         }
         super.fireTransferDidEnd();
     }

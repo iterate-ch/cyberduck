@@ -22,9 +22,7 @@ import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
-import ch.cyberduck.ui.cocoa.growl.Growl;
+import ch.cyberduck.ui.growl.Growl;
 
 import java.util.*;
 
@@ -237,11 +235,7 @@ public class SyncTransfer extends Transfer {
     @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled()) {
-            CDMainApplication.invoke(new DefaultMainAction() {
-                public void run() {
-                    Growl.instance().notify("Synchronization complete", getName());
-                }
-            });
+            Growl.instance().notify("Synchronization complete", getName());
         }
         super.fireTransferDidEnd();
     }
