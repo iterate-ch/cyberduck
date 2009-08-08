@@ -78,133 +78,135 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
      * Display an alert dialog with a summary of all failed tasks
      */
     public void alert() {
-        alert = new CDSheetController(controller) {
+        if(controller.isVisible()) {
+            alert = new CDSheetController(controller) {
 
-            @Override
-            protected String getBundleName() {
-                return "Alert";
-            }
-
-            @Override
-            public void awakeFromNib() {
-                this.setState(this.transcriptButton,
-                        transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
-                super.awakeFromNib();
-            }
-
-            @Outlet
-            private NSButton diagnosticsButton;
-
-            public void setDiagnosticsButton(NSButton diagnosticsButton) {
-                this.diagnosticsButton = diagnosticsButton;
-                this.diagnosticsButton.setTarget(this.id());
-                this.diagnosticsButton.setAction(Foundation.selector("diagnosticsButtonClicked:"));
-                boolean hidden = true;
-                for(BackgroundException e : exceptions) {
-                    final Throwable cause = e.getCause();
-                    if(cause instanceof SocketException || cause instanceof UnknownHostException) {
-                        hidden = false;
-                        break;
-                    }
+                @Override
+                protected String getBundleName() {
+                    return "Alert";
                 }
-                this.diagnosticsButton.setHidden(hidden);
-            }
 
-            public void diagnosticsButtonClicked(final NSButton sender) {
-                exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
-            }
-
-            @Outlet
-            private NSButton transcriptButton;
-
-            public void setTranscriptButton(NSButton transcriptButton) {
-                this.transcriptButton = transcriptButton;
-            }
-
-            private NSTableView errorView;
-            private CDListDataSource model;
-            private CDAbstractTableDelegate<CDErrorController> delegate;
-
-            private List<CDErrorController> errors;
-
-            public void setErrorView(NSTableView errorView) {
-                this.errorView = errorView;
-                this.errors = new ArrayList<CDErrorController>();
-                for(BackgroundException e : exceptions) {
-                    errors.add(new CDErrorController(e));
+                @Override
+                public void awakeFromNib() {
+                    this.setState(this.transcriptButton,
+                            transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
+                    super.awakeFromNib();
                 }
-                this.errorView.setDataSource((model = new CDListDataSource() {
-                    public int numberOfRowsInTableView(NSTableView view) {
-                        return errors.size();
-                    }
 
-                    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
-                        return errors.get(row).view();
-                    }
-                }).id());
-                this.errorView.setDelegate((delegate = new CDAbstractTableDelegate<CDErrorController>() {
-                    @Override
-                    public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-                    }
+                @Outlet
+                private NSButton diagnosticsButton;
 
-                    @Override
-                    public void tableRowDoubleClicked(NSObject sender) {
-                    }
-
-                    @Override
-                    public boolean selectionShouldChange() {
-                        return false;
-                    }
-
-                    @Override
-                    public void selectionDidChange(NSNotification notification) {
-                    }
-
-                    public void enterKeyPressed(NSObject sender) {
-                    }
-
-                    public void deleteKeyPressed(NSObject sender) {
-                    }
-
-                    public String tooltip(CDErrorController e) {
-                        return e.getTooltip();
-                    }
-                }).id());
-                {
-                    NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Error");
-                    c.setMinWidth(50f);
-                    c.setWidth(400f);
-                    c.setMaxWidth(1000f);
-                    c.setDataCell(CDControllerCell.controllerCell());
-                    this.errorView.addTableColumn(c);
-                }
-                this.errorView.setRowHeight(new CGFloat(77f));
-            }
-
-            public NSTextView transcriptView;
-
-            public void setTranscriptView(NSTextView transcriptView) {
-                this.transcriptView = transcriptView;
-                this.transcriptView.textStorage().setAttributedString(
-                        NSAttributedString.attributedStringWithAttributes(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
-            }
-
-            public void callback(final int returncode) {
-                if(returncode == DEFAULT_OPTION) { //Try Again
+                public void setDiagnosticsButton(NSButton diagnosticsButton) {
+                    this.diagnosticsButton = diagnosticsButton;
+                    this.diagnosticsButton.setTarget(this.id());
+                    this.diagnosticsButton.setAction(Foundation.selector("diagnosticsButtonClicked:"));
+                    boolean hidden = true;
                     for(BackgroundException e : exceptions) {
-                        Path workdir = e.getPath();
-                        if(null == workdir) {
-                            continue;
+                        final Throwable cause = e.getCause();
+                        if(cause instanceof SocketException || cause instanceof UnknownHostException) {
+                            hidden = false;
+                            break;
                         }
-                        workdir.invalidate();
                     }
-                    exceptions.clear();
-                    // Re-run the action with the previous lock used
-                    controller.background(AlertRepeatableBackgroundAction.this);
+                    this.diagnosticsButton.setHidden(hidden);
                 }
-                Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
-            }
-        };
-        alert.beginSheet();
+
+                public void diagnosticsButtonClicked(final NSButton sender) {
+                    exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
+                }
+
+                @Outlet
+                private NSButton transcriptButton;
+
+                public void setTranscriptButton(NSButton transcriptButton) {
+                    this.transcriptButton = transcriptButton;
+                }
+
+                private NSTableView errorView;
+                private CDListDataSource model;
+                private CDAbstractTableDelegate<CDErrorController> delegate;
+
+                private List<CDErrorController> errors;
+
+                public void setErrorView(NSTableView errorView) {
+                    this.errorView = errorView;
+                    this.errors = new ArrayList<CDErrorController>();
+                    for(BackgroundException e : exceptions) {
+                        errors.add(new CDErrorController(e));
+                    }
+                    this.errorView.setDataSource((model = new CDListDataSource() {
+                        public int numberOfRowsInTableView(NSTableView view) {
+                            return errors.size();
+                        }
+
+                        public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+                            return errors.get(row).view();
+                        }
+                    }).id());
+                    this.errorView.setDelegate((delegate = new CDAbstractTableDelegate<CDErrorController>() {
+                        @Override
+                        public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+                        }
+
+                        @Override
+                        public void tableRowDoubleClicked(NSObject sender) {
+                        }
+
+                        @Override
+                        public boolean selectionShouldChange() {
+                            return false;
+                        }
+
+                        @Override
+                        public void selectionDidChange(NSNotification notification) {
+                        }
+
+                        public void enterKeyPressed(NSObject sender) {
+                        }
+
+                        public void deleteKeyPressed(NSObject sender) {
+                        }
+
+                        public String tooltip(CDErrorController e) {
+                            return e.getTooltip();
+                        }
+                    }).id());
+                    {
+                        NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Error");
+                        c.setMinWidth(50f);
+                        c.setWidth(400f);
+                        c.setMaxWidth(1000f);
+                        c.setDataCell(CDControllerCell.controllerCell());
+                        this.errorView.addTableColumn(c);
+                    }
+                    this.errorView.setRowHeight(new CGFloat(77f));
+                }
+
+                public NSTextView transcriptView;
+
+                public void setTranscriptView(NSTextView transcriptView) {
+                    this.transcriptView = transcriptView;
+                    this.transcriptView.textStorage().setAttributedString(
+                            NSAttributedString.attributedStringWithAttributes(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
+                }
+
+                public void callback(final int returncode) {
+                    if(returncode == DEFAULT_OPTION) { //Try Again
+                        for(BackgroundException e : exceptions) {
+                            Path workdir = e.getPath();
+                            if(null == workdir) {
+                                continue;
+                            }
+                            workdir.invalidate();
+                        }
+                        exceptions.clear();
+                        // Re-run the action with the previous lock used
+                        controller.background(AlertRepeatableBackgroundAction.this);
+                    }
+                    Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
+                }
+            };
+            alert.beginSheet();
+        }
     }
 }
