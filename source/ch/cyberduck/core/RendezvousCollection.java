@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import java.util.Iterator;
-
 /**
  * @version $Id$
  */
@@ -29,7 +27,6 @@ public class RendezvousCollection extends BookmarkCollection {
             = new RendezvousCollection();
 
     /**
-     *
      * @return
      */
     public static RendezvousCollection defaultCollection() {
@@ -55,8 +52,8 @@ public class RendezvousCollection extends BookmarkCollection {
     public Object[] toArray() {
         Host[] content = new Host[this.size()];
         int i = 0;
-        for(Iterator<Host> iter = this.iterator(); iter.hasNext(); ) {
-            content[i] = iter.next();
+        for(Host host : this) {
+            content[i] = host;
         }
         return content;
     }
@@ -74,5 +71,15 @@ public class RendezvousCollection extends BookmarkCollection {
     @Override
     public boolean allowsEdit() {
         return false;
+    }
+
+    @Override
+    public void save() {
+        ;
+    }
+
+    @Override
+    public void load() {
+        ;
     }
 }

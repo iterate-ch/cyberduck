@@ -47,7 +47,7 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     private static final Local QUEUE_FILE
-            = new Local(Preferences.instance().getProperty("application.support.path"), "Queue.plist");
+            = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Queue.plist");
 
     static {
         QUEUE_FILE.getParent().mkdir();

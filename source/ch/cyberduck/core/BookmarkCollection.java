@@ -57,4 +57,8 @@ public abstract class BookmarkCollection extends Collection<Host> {
     public boolean allowsEdit() {
         return true;
     }
+
+    public abstract void save();
+
+    public abstract void load();
 }

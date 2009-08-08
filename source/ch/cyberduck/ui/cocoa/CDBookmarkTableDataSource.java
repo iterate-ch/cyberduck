@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -39,6 +40,8 @@ import org.rococoa.cocoa.foundation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @version $Id$
@@ -108,6 +111,16 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                 public boolean allowsEdit() {
                     return source.allowsEdit();
                 }
+
+                @Override
+                public void save() {
+                    source.save();
+                }
+
+                @Override
+                public void load() {
+                    source.load();
+                }
             };
             for(final Host bookmark : source) {
                 if(filter.accept(bookmark)) {
@@ -123,6 +136,26 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                 @Override
                 public void collectionItemRemoved(Host item) {
                     source.remove(item);
+                }
+
+                private Timer delayed = null;
+
+                @Override
+                public void collectionItemChanged(Host item) {
+                    if(null != delayed) {
+                        delayed.cancel();
+                    }
+                    delayed = new Timer();
+                    delayed.schedule(new TimerTask() {
+                        public void run() {
+                            controller.invoke(new DefaultMainAction() {
+                                public void run() {
+                                    source.save();
+                                }
+                            });
+                        }
+                    }, 5000); // Delay to 5 seconds. When typing changes we don't have to save every iteration.
+                    super.collectionItemChanged(item);
                 }
             });
         }
@@ -257,7 +290,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     if(row > view.numberOfRows()) {
                         row = view.numberOfRows();
                     }
-                    source.add(row, HostReaderFactory.instance().read(new Local(filename)));
+                    source.add(row, HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
                     view.selectRow(row, false);
                     view.scrollRowToVisible(row);
                 }
@@ -268,7 +301,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                         session = SessionFactory.createSession(h);
                     }
                     // Upload to the remote host this bookmark points to
-                    roots.add(PathFactory.createPath(session, h.getDefaultPath(), new Local(filename)));
+                    roots.add(PathFactory.createPath(session, h.getDefaultPath(), LocalFactory.createLocal(filename)));
                 }
             }
             if(!roots.isEmpty()) {
@@ -393,7 +426,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragBookmarks.size());
         for(Host promisedDragBookmark : promisedDragBookmarks) {
-            final Local file = new Local(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
+            final Local file = LocalFactory.createLocal(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
             HostWriterFactory.instance().write(promisedDragBookmark, file);
             // Adding the filename that is promised to be created at the dropDestination
             promisedDragNames.addObject(NSString.stringWithString(file.getName()));
@@ -411,7 +444,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
 //                break;
 //            }
 //            final Host host = new Host(this.getSource().get(index.intValue()).getAsDictionary());
-//            Local file = new Local(dropDestination.path(), host.getNickname() + ".duck");
+//            Local file = LocalFactory.createLocalLocal(dropDestination.path(), host.getNickname() + ".duck");
 //            host.setFile(file);
 //            try {
 //                host.write();

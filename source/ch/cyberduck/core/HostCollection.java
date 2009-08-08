@@ -20,13 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
 
 import org.apache.log4j.Logger;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @version $Id$
@@ -38,7 +33,7 @@ public class HostCollection extends BookmarkCollection {
      * Default bookmark file
      */
     private static HostCollection DEFAULT_COLLECTION = new HostCollection(
-            new Local(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
+            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
     );
 
     /**
@@ -126,7 +121,7 @@ public class HostCollection extends BookmarkCollection {
      */
     @Override
     public synchronized Host remove(int row) {
-        Host previous = super.remove(row);
+        final Host previous = super.remove(row);
         this.save();
         return previous;
     }
@@ -139,7 +134,8 @@ public class HostCollection extends BookmarkCollection {
      * Saves this collection of bookmarks in to a file to the users's application support directory
      * in a plist xml format
      */
-    protected void save() {
+    @Override
+    public void save() {
         if(Preferences.instance().getBoolean("favorites.save")) {
             HostWriterFactory.instance().write(this, file);
         }
@@ -148,31 +144,12 @@ public class HostCollection extends BookmarkCollection {
     /**
      * Deserialize all the bookmarks saved previously in the users's application support directory
      */
-    protected void load() {
+    @Override
+    public void load() {
         if(file.exists()) {
             log.info("Found Bookmarks file: " + file.getAbsolute());
             this.addAll(HostReaderFactory.instance().readCollection(file));
             this.sort();
         }
-    }
-
-    private Timer delayed = null;
-
-    @Override
-    public synchronized void collectionItemChanged(Host item) {
-        if(null != delayed) {
-            delayed.cancel();
-        }
-        delayed = new Timer();
-        delayed.schedule(new TimerTask() {
-            public void run() {
-                CDMainApplication.invoke(new DefaultMainAction() {
-                    public void run() {
-                        save();
-                    }
-                });
-            }
-        }, 5000); // Delay to 5 seconds. When typing changes we don't have to save every iteration.
-        super.collectionItemChanged(item);
     }
 }
