@@ -52,9 +52,6 @@ public class BackgroundActionRegistry extends Collection<BackgroundAction> {
         action.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
                 current = action;
-                if(!contains(action)) {
-                    add(action);
-                }
             }
 
             public void cancel(BackgroundAction action) {
