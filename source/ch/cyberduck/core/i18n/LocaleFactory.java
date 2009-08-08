@@ -1,7 +1,7 @@
 package ch.cyberduck.core.i18n;
 
 /*
- *  Copyright (c) 2008 David Kocher. All rights reserved.
+ *  Copyright (c) 2009 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,27 +18,38 @@ package ch.cyberduck.core.i18n;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Factory;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public abstract class Locale {
+public abstract class LocaleFactory extends Factory<Locale> {
 
     /**
-     * @param key
-     * @return
+     * Registered factories
      */
-    public static String localizedString(final String key) {
-        return localizedString(key, null);
-    }
+    protected static final Map<Platform, LocaleFactory> factories = new HashMap<Platform, LocaleFactory>();
 
     /**
-     * @param key
-     * @param table The identifier of the table to lookup the string in. Could be a file.
-     * @return
+     * @param platform
+     * @param f
      */
-    public static String localizedString(final String key, final String table) {
-        return LocaleFactory.createLocale().get(key, table);
+    public static void addFactory(Platform platform, LocaleFactory f) {
+        factories.put(platform, f);
     }
 
-    public abstract String get(final String key, final String table);
+    private static Locale l;
+
+    /**
+     * @return
+     */
+    public static Locale createLocale() {
+        if(null == l) {
+            l = factories.get(NATIVE_PLATFORM).create();
+        }
+        return l;
+    }
 }
