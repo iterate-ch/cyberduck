@@ -408,8 +408,7 @@
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
-                <include name="ch/cyberduck/ui/*.class"/>
-                <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
+                <include name="ch/cyberduck/ui/**/*.class"/>
                 <include name="org/rococoa/**/*.class"/>
             </fileset>
         </jar>
