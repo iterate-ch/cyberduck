@@ -18,18 +18,24 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-
+import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.ui.AbstractController;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSThread;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.internal.AutoreleaseBatcher;
+import org.rococoa.internal.OperationBatcher;
 
 /**
  * @version $Id$
  */
-public abstract class CDController {
+public abstract class CDController extends AbstractController {
     private static Logger log = Logger.getLogger(CDController.class);
 
     /**
@@ -81,5 +87,39 @@ public abstract class CDController {
             log.trace("finalize:" + this.toString());
         }
         super.finalize();
+    }
+
+    /**
+     * An autorelease pool is used to manage Foundation's autorelease
+     * mechanism for Objective-C objects. If you start off a thread
+     * that calls Cocoa, there won't be a top-level pool.
+     *
+     * @return
+     */
+    @Override
+    protected OperationBatcher getBatcher() {
+        return AutoreleaseBatcher.forThread(1);
+    }
+
+    /**
+     * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
+     *
+     * @param runnable The <code>Runnable</code> to run
+     * @param wait     Block until execution on main thread exits
+     */
+    public void invoke(final MainAction runnable, final boolean wait) {
+        if(isMainThread()) {
+            log.debug("Already on main thread. Invoke " + runnable + " directly.");
+            runnable.run();
+            return;
+        }
+        Foundation.runOnMainThread(runnable, wait);
+    }
+
+    /**
+     * @return True if the current thread is not a background worker thread
+     */
+    public static boolean isMainThread() {
+        return NSThread.isMainThread();
     }
 }

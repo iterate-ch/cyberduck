@@ -86,7 +86,7 @@ public class CDProgressController extends CDBundleController {
         this.transfer.getSession().addProgressListener(this.pl = new ProgressListener() {
             public void message(final String message) {
                 messageText = message;
-                CDMainApplication.invoke(new DefaultMainAction() {
+                invoke(new DefaultMainAction() {
                     public void run() {
                         setMessageText();
                     }
@@ -106,7 +106,7 @@ public class CDProgressController extends CDBundleController {
             public void transferWillStart() {
                 progressBar.setIndeterminate(true);
                 progressBar.startAnimation(null);
-                CDMainApplication.invoke(new DefaultMainAction() {
+                invoke(new DefaultMainAction() {
                     public void run() {
                         statusIconView.setImage(YELLOW_ICON);
                         setProgressText();
@@ -118,7 +118,7 @@ public class CDProgressController extends CDBundleController {
             @Override
             public void transferDidEnd() {
                 progressBar.stopAnimation(null);
-                CDMainApplication.invoke(new DefaultMainAction() {
+                invoke(new DefaultMainAction() {
                     public void run() {
                         messageText = null;
                         // Do not display any progress text when transfer is stopped
@@ -141,7 +141,7 @@ public class CDProgressController extends CDBundleController {
                 progressTimer = new Timer();
                 progressTimer.scheduleAtFixedRate(new TimerTask() {
                     public void run() {
-                        CDMainApplication.invoke(new DefaultMainAction() {
+                        invoke(new DefaultMainAction() {
                             public void run() {
                                 setProgressText();
                                 final double transferred = transfer.getTransferred();

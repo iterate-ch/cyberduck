@@ -70,25 +70,25 @@ public class CDActivityController extends CDWindowController {
     private final AbstractCollectionListener<BackgroundAction> backgroundActionListener = new AbstractCollectionListener<BackgroundAction>() {
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
-            CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+            invoke(new WindowMainAction(CDActivityController.this) {
                 public void run() {
                     log.debug("collectionItemAdded:" + action);
                     tasks.put(action, new CDTaskController(action));
                     reload();
                 }
-            });
+            }, true);
         }
 
         @Override
         public void collectionItemRemoved(final BackgroundAction action) {
-            CDMainApplication.invoke(new WindowMainAction(CDActivityController.this) {
+            invoke(new WindowMainAction(CDActivityController.this) {
                 public void run() {
                     log.debug("collectionItemRemoved:" + action);
                     final CDTaskController controller = tasks.remove(action);
                     controller.invalidate();
                     reload();
                 }
-            });
+            }, true);
         }
     };
 

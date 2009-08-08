@@ -91,7 +91,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
      */
     private ProgressListener l = new ProgressListener() {
         public void message(final String msg) {
-            CDMainApplication.invoke(new WindowMainAction(CDTransferPrompt.this) {
+            invoke(new WindowMainAction(CDTransferPrompt.this) {
                 public void run() {
                     // Update the status label at the bottom of the browser window
                     statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(msg,

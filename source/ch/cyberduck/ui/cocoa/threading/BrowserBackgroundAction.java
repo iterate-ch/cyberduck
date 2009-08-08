@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDMainApplication;
 
 /**
  * @version $Id$
@@ -50,7 +49,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
 
     @Override
     public boolean prepare() {
-        CDMainApplication.invoke(new WindowMainAction(controller) {
+        controller.invoke(new WindowMainAction(controller) {
             public void run() {
                 controller.getSpinner().startAnimation(null);
             }
@@ -69,7 +68,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     @Override
     public void finish() {
         super.finish();
-        CDMainApplication.invoke(new WindowMainAction(controller) {
+        controller.invoke(new WindowMainAction(controller) {
             public void run() {
                 controller.getSpinner().stopAnimation(null);
                 controller.updateStatusLabel(null);

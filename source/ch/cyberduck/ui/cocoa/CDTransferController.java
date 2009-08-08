@@ -644,7 +644,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             @Override
             public void log(final boolean request, final String message) {
                 if(logDrawer.state() == NSDrawer.OpenState) {
-                    CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
+                    invoke(new WindowMainAction(CDTransferController.this) {
                         public void run() {
                             CDTransferController.this.transcript.log(request, message);
                         }
@@ -664,7 +664,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     private void validateToolbar() {
-        CDMainApplication.invoke(new WindowMainAction(CDTransferController.this) {
+        invoke(new WindowMainAction(CDTransferController.this) {
             public void run() {
                 window.toolbar().validateVisibleItems();
                 updateIcon();

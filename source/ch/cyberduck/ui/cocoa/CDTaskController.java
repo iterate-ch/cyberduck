@@ -96,7 +96,7 @@ public class CDTaskController extends CDBundleController {
         }
         this.task.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
-                CDMainApplication.invoke(new DefaultMainAction() {
+                invoke(new DefaultMainAction() {
                     public void run() {
                         progress.startAnimation(null);
                     }
@@ -104,7 +104,7 @@ public class CDTaskController extends CDBundleController {
             }
 
             public void cancel(BackgroundAction action) {
-                CDMainApplication.invoke(new DefaultMainAction() {
+                invoke(new DefaultMainAction() {
                     public void run() {
                         progress.stopAnimation(null);
                     }
@@ -112,7 +112,7 @@ public class CDTaskController extends CDBundleController {
             }
 
             public void stop(BackgroundAction action) {
-                CDMainApplication.invoke(new DefaultMainAction() {
+                invoke(new DefaultMainAction() {
                     public void run() {
                         progress.stopAnimation(null);
                     }

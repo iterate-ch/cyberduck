@@ -19,14 +19,11 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-import ch.cyberduck.ui.cocoa.foundation.NSThread;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
 
 /**
  * @version $Id$
@@ -65,50 +62,5 @@ public class CDMainApplication {
         finally {
             pool.drain();
         }
-    }
-
-    /**
-     * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
-     *
-     * @param runnable The <code>Runnable</code> to run
-     */
-    public static void invoke(final MainAction runnable) {
-        invoke(runnable, false);
-    }
-
-    /**
-     *
-     */
-    private static final Object synchronisation = new Object();
-
-    /**
-     * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
-     *
-     * @param runnable The <code>Runnable</code> to run
-     * @param wait     Block until execution on main thread exits
-     */
-    public static void invoke(final MainAction runnable, final boolean wait) {
-        if(isMainThread()) {
-            log.debug("Already on main thread. Invoke " + runnable + " directly.");
-            runnable.run();
-        }
-        else {
-            synchronized(synchronisation) {
-                final NSAutoreleasePool pool = NSAutoreleasePool.push();
-                try {
-                    Foundation.runOnMainThread(runnable, wait);
-                }
-                finally {
-                    pool.drain();
-                }
-            }
-        }
-    }
-
-    /**
-     * @return True if the current thread is not a background worker thread
-     */
-    public static boolean isMainThread() {
-        return NSThread.isMainThread();
     }
 }

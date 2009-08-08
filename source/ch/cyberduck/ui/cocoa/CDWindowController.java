@@ -19,9 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -50,58 +53,6 @@ public abstract class CDWindowController extends CDBundleController implements N
     protected void invalidate() {
         listeners.clear();
         super.invalidate();
-    }
-
-    /**
-     * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
-     * as soon as no other previous <code>BackgroundAction</code> is pending.
-     * Will return immediatly but not run the runnable before the lock of the runnable is acquired.
-     *
-     * @param runnable The runnable to execute in a secondary Thread
-     * @see java.lang.Thread
-     * @see ch.cyberduck.core.threading.BackgroundAction#lock()
-     */
-    public void background(final BackgroundAction runnable) {
-        runnable.init();
-        // Start background task
-        new Thread("Background") {
-            public void run() {
-                // Synchronize all background threads to this lock so actions run
-                // sequentially as they were initiated from the main interface thread
-                synchronized(runnable.lock()) {
-                    final NSAutoreleasePool pool = NSAutoreleasePool.push();
-
-                    log.info("Acquired lock for background runnable:" + runnable);
-                    // An autorelease pool is used to manage Foundation's autorelease
-                    // mechanism for Objective-C objects. If you start off a thread
-                    // that calls Cocoa, there won't be a top-level pool.
-
-                    try {
-                        if(runnable.prepare()) {
-                            // Execute the action of the runnable
-                            runnable.run();
-                        }
-                    }
-                    finally {
-                        // Increase the run counter
-                        runnable.finish();
-                        // Invoke the cleanup on the main thread to let the action
-                        // synchronize the user interface
-                        CDMainApplication.invoke(new WindowMainAction(CDWindowController.this) {
-                            public void run() {
-                                runnable.cleanup();
-                            }
-                        });
-
-                        log.info("Releasing lock for background runnable:" + runnable);
-
-                        // Indicates that you are finished using the NSAutoreleasePool identified by pool.
-                        pool.drain();
-                    }
-                }
-            }
-        }.start();
-        log.info("Started background runnable:" + runnable);
     }
 
     /**

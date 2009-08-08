@@ -132,12 +132,12 @@ public abstract class CDSheetController extends CDWindowController implements CD
     public void beginSheet() {
         // Synchronize on parent controller. Only display one sheet at once.
         synchronized(parent) {
-            if(CDMainApplication.isMainThread()) {
+            if(isMainThread()) {
                 // No need to call invoke on main thread
                 this.beginSheetImpl();
                 return;
             }
-            CDMainApplication.invoke(new WindowMainAction(parent) {
+            invoke(new WindowMainAction(parent) {
                 public void run() {
                     //Invoke again on main thread
                     beginSheetImpl();
