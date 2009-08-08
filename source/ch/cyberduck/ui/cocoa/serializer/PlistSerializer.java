@@ -20,6 +20,9 @@ package ch.cyberduck.ui.cocoa.serializer;
 
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
@@ -27,9 +30,20 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import java.util.List;
 
 /**
-* @version $Id:$
+* @version $Id$
 */
 public class PlistSerializer implements Serializer {
+
+    public static void register() {
+        SerializerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends SerializerFactory {
+        protected Serializer create() {
+            return new PlistSerializer();
+        }
+    }
+
     final NSMutableDictionary dict;
 
     public PlistSerializer() {

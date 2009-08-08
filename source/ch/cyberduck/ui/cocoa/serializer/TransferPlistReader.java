@@ -19,6 +19,9 @@ package ch.cyberduck.ui.cocoa.serializer;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.serializer.Reader;
+import ch.cyberduck.core.serializer.TransferReaderFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
@@ -26,10 +29,20 @@ import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferPlistReader extends PlistReader<Transfer> {
     private static Logger log = Logger.getLogger(TransferPlistReader.class);
+
+    public static void register() {
+        TransferReaderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends TransferReaderFactory {
+        public Reader<Transfer> create() {
+            return new TransferPlistReader();
+        }
+    }
 
     public Transfer deserialize(NSDictionary dict, Session s) {
         NSObject kindObj = dict.objectForKey("Kind");

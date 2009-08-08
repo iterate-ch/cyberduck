@@ -18,20 +18,41 @@ package ch.cyberduck.core.serializer;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Transfer;
-import ch.cyberduck.ui.cocoa.serializer.PlistWriter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class TransferWriterFactory {
+public abstract class TransferWriterFactory extends Factory {
+
+    /**
+     * Registered factories
+     */
+    protected static final Map<Platform, TransferWriterFactory> factories = new HashMap<Platform, TransferWriterFactory>();
+
+    /**
+     * @param platform
+     * @param f
+     */
+    public static void addFactory(Factory.Platform platform, TransferWriterFactory f) {
+        factories.put(platform, f);
+    }
 
     private static Writer<Transfer> instance;
 
     public static Writer<Transfer> instance() {
         if(null == instance) {
-            instance = new PlistWriter<Transfer>();
+            if(!factories.containsKey(NATIVE_PLATFORM)) {
+                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            }
+            instance = factories.get(NATIVE_PLATFORM).create();
         }
         return instance;
     }
+
+    protected abstract Writer<Transfer> create();
 }

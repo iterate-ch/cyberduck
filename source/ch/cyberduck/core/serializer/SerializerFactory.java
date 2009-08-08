@@ -18,19 +18,38 @@ package ch.cyberduck.core.serializer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.serializer.PlistSerializer;
+import ch.cyberduck.core.Factory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class SerializerFactory {
+public abstract class SerializerFactory extends Factory {
 
     /**
-     *
+     * Registered factories
+     */
+    protected static final Map<Factory.Platform, SerializerFactory> factories = new HashMap<Factory.Platform, SerializerFactory>();
+
+    /**
+     * @param platform
+     * @param f
+     */
+    public static void addFactory(Factory.Platform platform, SerializerFactory f) {
+        factories.put(platform, f);
+    }
+
+    /**
      * @return
      */
     public static Serializer createSerializer() {
-        // We currently have this single implementation only
-        return new PlistSerializer();
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+        }
+        return factories.get(NATIVE_PLATFORM).create();
     }
+
+    protected abstract Serializer create();
 }

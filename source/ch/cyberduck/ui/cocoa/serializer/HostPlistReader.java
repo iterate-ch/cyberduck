@@ -19,12 +19,24 @@ package ch.cyberduck.ui.cocoa.serializer;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HostPlistReader extends PlistReader<Host> {
+
+    public static void register() {
+        HostReaderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends HostReaderFactory {
+        public Reader<Host> create() {
+            return new HostPlistReader();
+        }
+    }
 
     public Host deserialize(NSDictionary dict) {
         return new Host(dict);

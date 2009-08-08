@@ -18,18 +18,35 @@ package ch.cyberduck.core.serializer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
+import ch.cyberduck.core.Factory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DeserializerFactory {
+public abstract class DeserializerFactory<T> extends Factory {
+
+    /**
+     * Registered factories
+     */
+    protected static final Map<Factory.Platform, DeserializerFactory> factories = new HashMap<Factory.Platform, DeserializerFactory>();
+
+    /**
+     * @param platform
+     * @param f
+     */
+    public static void addFactory(Factory.Platform platform, DeserializerFactory f) {
+        factories.put(platform, f);
+    }
 
     public static <T> Deserializer createDeserializer(T dict) {
-        if(dict instanceof NSDictionary) {
-            return new PlistDeserializer((NSDictionary) dict);
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
         }
-        throw new IllegalArgumentException("No deserializer for " + dict);
+        return factories.get(NATIVE_PLATFORM).create(dict);
     }
+
+    protected abstract Deserializer create(T dict);
 }

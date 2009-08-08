@@ -18,20 +18,44 @@ package ch.cyberduck.core.serializer;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Transfer;
-import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class TransferReaderFactory {
+public abstract class TransferReaderFactory extends Factory {
+
+    /**
+     * Registered factories
+     */
+    protected static final Map<Platform, TransferReaderFactory> factories = new HashMap<Platform, TransferReaderFactory>();
+
+    /**
+     * @param platform
+     * @param f
+     */
+    public static void addFactory(Factory.Platform platform, TransferReaderFactory f) {
+        factories.put(platform, f);
+    }
 
     private static Reader<Transfer> instance;
 
+    /**
+     * @return
+     */
     public static Reader<Transfer> instance() {
         if(null == instance) {
-            instance = new TransferPlistReader();
+            if(!factories.containsKey(NATIVE_PLATFORM)) {
+                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            }
+            instance = factories.get(NATIVE_PLATFORM).create();
         }
         return instance;
     }
+
+    protected abstract Reader<Transfer> create();
 }

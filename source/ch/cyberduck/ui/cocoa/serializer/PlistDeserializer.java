@@ -19,10 +19,11 @@ package ch.cyberduck.ui.cocoa.serializer;
  */
 
 import ch.cyberduck.core.serializer.Deserializer;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.PreferencesFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 
 import org.rococoa.Rococoa;
 
@@ -33,6 +34,17 @@ import java.util.List;
  *
  */
 public class PlistDeserializer implements Deserializer<NSDictionary> {
+
+    public static void register() {
+        DeserializerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends DeserializerFactory<NSDictionary> {
+        protected Deserializer create(NSDictionary dict) {
+            return new PlistDeserializer(dict);
+        }
+    }
+
     final NSDictionary dict;
 
     public PlistDeserializer(NSDictionary dict) {

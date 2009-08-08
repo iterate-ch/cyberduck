@@ -18,13 +18,29 @@ package ch.cyberduck.core.serializer;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.ui.cocoa.serializer.HostPlistReader;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class HostReaderFactory {
+public abstract class HostReaderFactory extends Factory {
+
+    /**
+     * Registered factories
+     */
+    protected static final Map<Platform, HostReaderFactory> factories = new HashMap<Platform, HostReaderFactory>();
+
+    /**
+     * @param platform
+     * @param f
+     */
+    public static void addFactory(Factory.Platform platform, HostReaderFactory f) {
+        factories.put(platform, f);
+    }
 
     private static Reader<Host> instance;
 
@@ -33,8 +49,13 @@ public class HostReaderFactory {
      */
     public static Reader<Host> instance() {
         if(null == instance) {
-            instance = new HostPlistReader();
+            if(!factories.containsKey(NATIVE_PLATFORM)) {
+                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            }
+            instance = factories.get(NATIVE_PLATFORM).create();
         }
         return instance;
     }
+
+    protected abstract Reader<Host> create();
 }

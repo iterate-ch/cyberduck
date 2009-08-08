@@ -30,7 +30,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.Rococoa;
 
 /**
- * @version $Id:$
+ * @version $Id$
  * @param <S>
  */
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {

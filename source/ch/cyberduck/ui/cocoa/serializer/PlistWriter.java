@@ -18,8 +18,9 @@ package ch.cyberduck.ui.cocoa.serializer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.serializer.HostWriterFactory;
+import ch.cyberduck.core.serializer.TransferWriterFactory;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
@@ -27,9 +28,26 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import java.util.Collection;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PlistWriter<S extends Serializable> implements Writer<S> {
+
+    public static void register() {
+        HostWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new HostFactory());
+        TransferWriterFactory.addFactory(Factory.NATIVE_PLATFORM, new TransferFactory());
+    }
+
+    private static class HostFactory extends HostWriterFactory {
+        public Writer<Host> create() {
+            return new PlistWriter<Host>();
+        }
+    }
+
+    private static class TransferFactory extends TransferWriterFactory {
+        public Writer<Transfer> create() {
+            return new PlistWriter<Transfer>();
+        }
+    }
 
     public void write(Collection<S> collection, Local file) {
         NSMutableArray list = NSMutableArray.arrayWithCapacity(1);
