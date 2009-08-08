@@ -29,11 +29,16 @@
 	icon = [aIcon retain];
 }
 
+- (NSImage*)icon
+{
+    return icon;
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
     CDOutlineCell *cell = (CDOutlineCell *)[super copyWithZone:zone];
-    // The icon ivar will be directly copied; we need to retain or copy it.
-    cell->icon = [icon retain];
+    cell->icon = nil;
+    [cell setIcon:[self icon]];
     return cell;
 }
 
