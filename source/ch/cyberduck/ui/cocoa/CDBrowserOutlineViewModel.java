@@ -133,6 +133,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     }
 
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
+        if(null == item) {
+            return null;
+        }
         return super.objectValueForItem(controller.lookup(new CDPathReference(item)), tableColumn.identifier());
     }
 
