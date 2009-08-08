@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 public class CDPreferencesImpl extends Preferences {
     private static Logger log = Logger.getLogger(Preferences.class);
 
-    static {
+    public static void register() {
         PreferencesFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 

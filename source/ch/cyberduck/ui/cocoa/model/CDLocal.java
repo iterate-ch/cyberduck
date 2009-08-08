@@ -30,7 +30,7 @@ import org.rococoa.Rococoa;
 /**
  * @version $Id$
  */
-public class CDLocal extends ch.cyberduck.core.Local {
+public class CDLocal extends Local {
     private static Logger log = Logger.getLogger(CDLocal.class);
 
     public CDLocal(ch.cyberduck.core.Local parent, String name) {
@@ -49,7 +49,7 @@ public class CDLocal extends ch.cyberduck.core.Local {
         super(path);
     }
 
-    static {
+    public static void register() {
         LocalFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 

@@ -25,11 +25,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BundleLocale extends Locale {
 
-    static {
+    public static void register() {
         LocaleFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 
