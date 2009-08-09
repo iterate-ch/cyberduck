@@ -335,6 +335,9 @@ public class SFTPSession extends Session {
     }
 
     public Path workdir() throws IOException {
+        if(null == SFTP) {
+            throw new ConnectionCanceledException();
+        }
         if(!SFTP.isConnected()) {
             throw new ConnectionCanceledException();
         }
@@ -349,7 +352,6 @@ public class SFTPSession extends Session {
         if(this.isConnected()) {
             SSH.sendIgnorePacket();
         }
-
     }
 
     @Override
