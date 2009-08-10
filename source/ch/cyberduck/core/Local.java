@@ -221,7 +221,7 @@ public abstract class Local extends AbstractPath implements Attributes {
             this.trash();
         }
         else {
-            if(_impl.delete()) {
+            if(!_impl.delete()) {
                 log.warn("Delete failed:" + this.getAbsolute());
             }
         }
