@@ -25,9 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.Selector;
 
 /// <i>native declaration : :14</i>
-public
-
-abstract class NSOpenPanel extends NSSavePanel {
+public abstract class NSOpenPanel extends NSSavePanel {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSOpenPanel", _Class.class);
 
     public static NSOpenPanel openPanel() {
