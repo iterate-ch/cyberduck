@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.internal.OperationBatcher;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
@@ -45,6 +45,7 @@ public abstract class AbstractController implements Controller {
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
     public void background(final BackgroundAction runnable) {
+        log.debug("background:" + runnable);
         runnable.init();
         // Start background task
         new Thread("Background") {
@@ -70,7 +71,7 @@ public abstract class AbstractController implements Controller {
                             public void run() {
                                 runnable.cleanup();
                             }
-                        });
+                        }, true);
                         autorelease.operate();
                         log.info("Releasing lock for background runnable:" + runnable);
                     }
