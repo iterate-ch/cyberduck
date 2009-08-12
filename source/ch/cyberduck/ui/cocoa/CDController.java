@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.MainActionRegistry;
 import ch.cyberduck.ui.AbstractController;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -100,23 +101,48 @@ public abstract class CDController extends AbstractController {
         return AutoreleaseBatcher.forThread(1);
     }
 
-    private static final Object lock = new Object();
-
     /**
+     * You can use this method to deliver messages to the main thread of your application. The main thread
+     * encompasses the application’s main run loop, and is where the NSApplication object receives
+     * events. The message in this case is a method of the current object that you want to execute
+     * on the thread.
+     * <p/>
      * Execute the passed <code>Runnable</code> on the main thread also known as NSRunLoop.DefaultRunLoopMode
      *
      * @param runnable The <code>Runnable</code> to run
-     * @param wait     Block until execution on main thread exits
+     * @param wait     Block until execution on main thread exits. A Boolean that specifies whether the current
+     *                 thread blocks until after the specified selector is performed on the receiver on the main thread.
+     *                 Specify YES to block this thread; otherwise, specify NO to have this method return immediately.
+     *                 If the current thread is also the main thread, and you specify YES for this parameter,
+     *                 the message is delivered and processed immediately.
      */
     public void invoke(final MainAction runnable, final boolean wait) {
+        log.debug("invoke:" + runnable);
         if(isMainThread()) {
             log.debug("Already on main thread. Invoke " + runnable + " directly.");
             runnable.run();
             return;
         }
-        synchronized(lock) {
-            Foundation.runOnMainThread(runnable, wait);
-        }
+        final MainAction main = new MainAction() {
+            @Override
+            public boolean isValid() {
+                return runnable.isValid();
+            }
+
+            public void run() {
+                try {
+                    runnable.run();
+                }
+                finally {
+                    //Remove strong reference
+                    MainActionRegistry.instance().remove(this);
+                }
+            }
+        };
+        //Make sure to keep a strong reference
+        MainActionRegistry.instance().add(main);
+        //Defer to main thread
+        Foundation.runOnMainThread(main, wait);
     }
 
     /**
