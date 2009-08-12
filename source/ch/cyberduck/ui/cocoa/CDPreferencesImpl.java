@@ -25,6 +25,7 @@ import ch.cyberduck.core.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes.
@@ -95,7 +96,7 @@ public class CDPreferencesImpl extends Preferences {
 
         if(this.getBoolean("update.check")) {
             // Will override SUCheckAtStartup
-            this.props.setInteger_forKey(Integer.parseInt(super.getProperty("update.check.interval")),
+            this.props.setInteger_forKey(new NSInteger(Long.parseLong(super.getProperty("update.check.interval"))),
                     "SUScheduledCheckInterval");
         }
     }

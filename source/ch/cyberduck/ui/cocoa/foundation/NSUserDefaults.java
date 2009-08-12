@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.cocoa.foundation.NSData;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :14</i>
 public abstract class NSUserDefaults implements NSObject {
@@ -115,7 +116,7 @@ public abstract class NSUserDefaults implements NSObject {
      * Original signature : <code>NSInteger integerForKey(NSString*)</code><br>
      * <i>native declaration : :35</i>
      */
-    public abstract int integerForKey(String defaultName);
+    public abstract NSInteger integerForKey(String defaultName);
 
     /**
      * Original signature : <code>float floatForKey(NSString*)</code><br>
@@ -139,7 +140,7 @@ public abstract class NSUserDefaults implements NSObject {
      * Original signature : <code>void setInteger(NSInteger, NSString*)</code><br>
      * <i>native declaration : :40</i>
      */
-    public abstract void setInteger_forKey(int value, String defaultName);
+    public abstract void setInteger_forKey(NSInteger value, String defaultName);
 
     /**
      * Original signature : <code>void setFloat(float, NSString*)</code><br>
