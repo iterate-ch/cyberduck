@@ -196,7 +196,10 @@ public abstract class Session {
     protected abstract void login(Credentials credentials) throws IOException;
 
     /**
-     * @return
+     * Mount the default path of the configured host or the home directory as returned by the server
+     * when not given.
+     *
+     * @return Null if mount fails. Check the error listener for details.
      */
     public Path mount() {
         try {
@@ -560,7 +563,7 @@ public abstract class Session {
      */
     public Cache<Path> cache() {
         if(null == cache) {
-            cache =  new Cache<Path>();
+            cache = new Cache<Path>();
         }
         return this.cache;
     }

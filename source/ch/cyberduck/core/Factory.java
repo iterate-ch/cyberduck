@@ -27,12 +27,38 @@ public abstract class Factory<T> {
 
     public static abstract class Platform {
         public abstract String toString();
+
+        /**
+         *
+         * @param regex
+         * @return
+         */
+        public boolean matches(String regex) {
+            return this.toString().matches(regex);
+        }
+    }
+
+    public boolean equals(Object other) {
+        if(null == other) {
+            return false;
+        }
+        if(other instanceof Platform) {
+            return other.toString().equals(this.toString());
+        }
+        return false;
     }
 
     public static Platform NATIVE_PLATFORM = new Platform() {
         @Override
         public String toString() {
             return System.getProperty("os.name");
+        }
+    };
+
+    public static Platform VERSION_PLATFORM = new Platform() {
+        @Override
+        public String toString() {
+            return System.getProperty("os.version");
         }
     };
 }

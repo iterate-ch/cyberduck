@@ -63,7 +63,7 @@ public class Native {
      */
     protected static String getPath(String name) {
         final String lib = NSBundle.mainBundle().resourcePath() + "/Java/lib" + name + ".dylib";
-        log.info("Locating " + name + " at '" + lib + "'");
+        log.info("Locating library " + name + " at '" + lib + "'");
         return lib;
     }
 }

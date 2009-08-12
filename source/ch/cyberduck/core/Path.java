@@ -330,8 +330,8 @@ public abstract class Path extends AbstractPath implements Serializable {
             reference = new CDPathReference(this.getAbsolute());
 //            reference = new PathReference() {
 //                @Override
-//                public Object getReference() {
-//                    return this;
+//                public Object unique() {
+//                    return Path.this;
 //                }
 //            };
         }
