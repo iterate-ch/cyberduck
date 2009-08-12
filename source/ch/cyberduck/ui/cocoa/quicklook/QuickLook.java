@@ -18,15 +18,19 @@ package ch.cyberduck.ui.cocoa.quicklook;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Native;
 
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @version $Id$
  */
-public class QuickLook {
+public class QuickLook implements IQuickLook {
     private static Logger log = Logger.getLogger(QuickLook.class);
 
     private static boolean JNI_LOADED = false;
@@ -38,36 +42,39 @@ public class QuickLook {
         return JNI_LOADED;
     }
 
-    static {
-        QuickLook.loadNative();
+    public QuickLook() {
+        loadNative();
     }
 
     /**
      * @param files
      */
-    private static native void select(String[] files);
+    private native void select(String[] files);
 
     /**
      * Add this files to the Quick Look Preview shared window
      *
      * @param files
      */
-    public static void select(Local[] files) {
+    public void select(Collection<Local> files) {
+        if(!loadNative()) {
+            return;
+        }
         if(!QuickLook.loadNative()) {
             return;
         }
-        final String[] paths = new String[files.length];
-        for(int i = 0; i < files.length; i++) {
-            paths[i] = files[i].getAbsolute();
+        final List<String> paths = new ArrayList<String>();
+        for(Local file : files) {
+            paths.add(file.getAbsolute());
         }
-        QuickLook.select(paths);
+        this.select(paths.toArray(new String[]{}));
     }
 
-    public static native boolean isAvailable();
+    public native boolean isAvailable();
 
-    public static native boolean isOpen();
+    public native boolean isOpen();
 
-    public static native void open();
+    public native void open();
 
-    public static native void close();
+    public native void close();
 }
