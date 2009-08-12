@@ -31,10 +31,13 @@ import ch.cyberduck.ui.cocoa.foundation.NSRange;
 public class HyperlinkAttributedStringFactory {
 
     /**
+     *
+     * @param value
      * @param hyperlink
+     * @return
      */
     public static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
-        final NSRange range = NSRange.NSMakeRange(0, value.length());
+        final NSRange range = NSRange.NSMakeRange(0, value.length().intValue());
         value.beginEditing();
         value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,
                 hyperlink, range);

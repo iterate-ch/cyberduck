@@ -29,7 +29,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CDTranscriptController extends CDBundleController implements TranscriptListener {
 
@@ -87,7 +87,7 @@ public class CDTranscriptController extends CDBundleController implements Transc
         logTextView.textStorage().appendAttributedString(
                 NSAttributedString.attributedStringWithAttributes(transcript + "\n", font)
         );
-        logTextView.scrollRangeToVisible(NSRange.NSMakeRange(logTextView.textStorage().length(), 0));
+        logTextView.scrollRangeToVisible(NSRange.NSMakeRange(logTextView.textStorage().length().intValue(), 0));
     }
 
     public void clear() {

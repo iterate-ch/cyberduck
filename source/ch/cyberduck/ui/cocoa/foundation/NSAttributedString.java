@@ -90,7 +90,7 @@ public abstract class  NSAttributedString implements NSObject {
      * Original signature : <code>NSUInteger length()</code><br>
      * <i>from NSExtendedAttributedString native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:18</i>
      */
-    public abstract long length();
+    public abstract NSUInteger length();
     /**
      * <i>from NSExtendedAttributedString native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:19</i><br>
      * Conversion Error : /// Original signature : <code>attribute(NSString*, NSUInteger, null)</code><br>

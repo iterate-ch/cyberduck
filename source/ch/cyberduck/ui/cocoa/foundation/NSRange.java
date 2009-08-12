@@ -24,7 +24,7 @@ import org.rococoa.cocoa.CFRange;
 
 public class NSRange extends CFRange {
 
-    public static NSRange NSMakeRange(long loc, long len) {
+    public static NSRange NSMakeRange(int loc, int len) {
         CFIndex cfLocation = new CFIndex();
         cfLocation.setValue(loc);
         CFIndex cfLength = new CFIndex();
