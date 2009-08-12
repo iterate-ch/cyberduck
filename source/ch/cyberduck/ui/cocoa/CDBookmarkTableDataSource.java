@@ -291,8 +291,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                         row = view.numberOfRows();
                     }
                     source.add(row, HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
-                    view.selectRow(row, false);
-                    view.scrollRowToVisible(row);
+                    view.selectRow(new NSInteger(row), false);
+                    view.scrollRowToVisible(new NSInteger(row));
                 }
                 else {
                     // The bookmark this file has been dropped onto
@@ -322,8 +322,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     if(StringUtils.isNotBlank(url)) {
                         final Host h = Host.parse(url);
                         source.add(row, h);
-                        view.selectRow(row, false);
-                        view.scrollRowToVisible(row);
+                        view.selectRow(new NSInteger(row), false);
+                        view.scrollRowToVisible(new NSInteger(row));
                     }
                 }
                 return true;
@@ -335,8 +335,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(o != null) {
                 final Host h = Host.parse(o);
                 source.add(row, h);
-                view.selectRow(row, false);
-                view.scrollRowToVisible(row);
+                view.selectRow(new NSInteger(row), false);
+                view.scrollRowToVisible(new NSInteger(row));
                 return true;
             }
             return false;
@@ -345,8 +345,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             for(Host promisedDragBookmark : promisedDragBookmarks) {
                 source.remove(source.indexOf(promisedDragBookmark));
                 source.add(row, promisedDragBookmark);
-                view.selectRow(row, false);
-                view.scrollRowToVisible(row);
+                view.selectRow(new NSInteger(row), false);
+                view.scrollRowToVisible(new NSInteger(row));
             }
             return true;
         }

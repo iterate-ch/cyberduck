@@ -42,7 +42,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
 
     @Override
     public int indexOf(NSView tableView, Path p) {
-        return ((NSOutlineView) tableView).rowForItem(p.<NSObject>getReference().unique());
+        return ((NSOutlineView) tableView).rowForItem(p.<NSObject>getReference().unique()).intValue();
     }
 
     @Override

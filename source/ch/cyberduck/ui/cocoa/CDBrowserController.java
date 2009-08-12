@@ -34,7 +34,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
-import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
+import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
@@ -50,6 +50,7 @@ import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
@@ -208,7 +209,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 int row = this.bookmarkModel.getSource().indexOf(this.getSession().getHost());
                 if(row != -1) {
                     this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                    this.bookmarkTable.scrollRowToVisible(row);
+                    this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
                 }
             }
             this.updateStatusLabel(this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks", ""));
@@ -277,7 +278,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         final NSTableView browser = this.getSelectedBrowserView();
         browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), expand);
-        browser.scrollRowToVisible(row);
+        browser.scrollRowToVisible(new NSInteger(row));
     }
 
     /**
@@ -306,7 +307,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     for(Path path : selected) {
-                        final int row = browserOutlineView.rowForItem(path.<NSObject>getReference().unique());
+                        final int row = browserOutlineView.rowForItem(path.<NSObject>getReference().unique()).intValue();
                         this.selectRow(row, true);
                     }
                     break;
@@ -371,7 +372,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             case SWITCH_OUTLINE_VIEW: {
                 if(row < this.browserOutlineView.numberOfRows()) {
-                    return this.lookup(new CDPathReference(this.browserOutlineView.itemAtRow(row)));
+                    return this.lookup(new CDPathReference(this.browserOutlineView.itemAtRow(new NSInteger(row))));
                 }
                 break;
             }
@@ -701,9 +702,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         public AbstractBrowserTableDelegate() {
             CDBrowserController.this.addListener(new CDWindowListener() {
                 public void windowWillClose() {
-                    if(QuickLook.isAvailable()) {
-                        if(QuickLook.isOpen()) {
-                            QuickLook.close();
+                    if(QuickLookFactory.instance().isAvailable()) {
+                        if(QuickLookFactory.instance().isOpen()) {
+                            QuickLookFactory.instance().close();
                         }
                     }
                     temporaryQuickLookFiles.clear();
@@ -730,9 +731,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
 
         public void spaceKeyPressed(final NSObject sender) {
-            if(QuickLook.isAvailable()) {
-                if(QuickLook.isOpen()) {
-                    QuickLook.close();
+            if(QuickLookFactory.instance().isAvailable()) {
+                if(QuickLookFactory.instance().isOpen()) {
+                    QuickLookFactory.instance().close();
                 }
                 else {
                     this.updateQuickLookSelection(
@@ -743,7 +744,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
 
         private void updateQuickLookSelection(final Collection<Path> selected) {
-            if(QuickLook.isAvailable()) {
+            if(QuickLookFactory.instance().isAvailable()) {
                 final Collection<Path> downloads = new Collection<Path>();
                 for(Path path : selected) {
                     if(!path.attributes.isFile()) {
@@ -778,9 +779,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             // Keep references to delete later
                             temporaryQuickLookFiles.addAll(previews);
                             // Change files in Quick Look
-                            QuickLook.select((Local[]) previews.toArray(new Local[previews.size()]));
+                            QuickLookFactory.instance().select(previews);
                             // Open Quick Look Preview Panel
-                            QuickLook.open();
+                            QuickLookFactory.instance().open();
                             // Revert status label
                             CDBrowserController.this.updateStatusLabel(null);
                             // Restore the focus to our window to demo the selection changing, scrolling
@@ -851,7 +852,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     }
                 }
             }
-            if(QuickLook.isOpen()) {
+            if(QuickLookFactory.instance().isOpen()) {
                 this.updateQuickLookSelection(selected);
             }
         }
@@ -898,10 +899,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows() == 1) {
-                        browserOutlineView.editColumn_row_withEvent_select(
+                        browserOutlineView.editRow(
                                 browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                browserOutlineView.selectedRow(),
-                                null, true);
+                                browserOutlineView.selectedRow(), true);
                     }
                 }
                 else {
@@ -1014,10 +1014,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserListView.numberOfSelectedRows() == 1) {
-                        browserListView.editColumn_row_withEvent_select(
+                        browserListView.editRow(
                                 browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                                browserListView.selectedRow(),
-                                null, true);
+                                browserListView.selectedRow(), true);
                     }
                 }
                 else {
@@ -1399,8 +1398,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         input = input.trim();
         // First look for equivalent bookmarks
-        for(Iterator<Host> iter = HostCollection.defaultCollection().iterator(); iter.hasNext();) {
-            Host h = iter.next();
+        for(Host h : (Iterable<Host>) HostCollection.defaultCollection()) {
             if(h.getNickname().equals(input)) {
                 this.mount(h);
                 return;
@@ -1462,7 +1460,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void connectBookmarkButtonClicked(final NSObject sender) {
         if(bookmarkTable.numberOfSelectedRows() == 1) {
-            final Host selected = (Host) bookmarkModel.getSource().get(bookmarkTable.selectedRow());
+            final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
             this.mount(selected);
         }
     }
@@ -1479,7 +1477,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void editBookmarkButtonClicked(final NSObject sender) {
         CDBookmarkController c = CDBookmarkController.Factory.create(
-                (Host) bookmarkModel.getSource().get(bookmarkTable.selectedRow())
+                bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         c.window().makeKeyAndOrderFront(null);
     }
@@ -1513,9 +1511,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         bookmarkModel.setFilter(null);
         bookmarkModel.getSource().add(item);
-        final int index = bookmarkModel.getSource().lastIndexOf(item);
-        bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
-        bookmarkTable.scrollRowToVisible(index);
+        final int row = bookmarkModel.getSource().lastIndexOf(item);
+        bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+        bookmarkTable.scrollRowToVisible(new NSInteger(row));
         CDBookmarkController c = CDBookmarkController.Factory.create(item);
         c.window().makeKeyAndOrderFront(null);
     }
@@ -1546,8 +1544,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         for(i = 0; i < indexes.length; i++) {
             int row = indexes[i].intValue() - j;
             bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-            bookmarkTable.scrollRowToVisible(row);
-            Host host = (Host) bookmarkModel.getSource().get(row);
+            bookmarkTable.scrollRowToVisible(new NSInteger(row));
+            Host host = bookmarkModel.getSource().get(row);
             final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark", ""),
                     Locale.localizedString("Do you want to delete the selected bookmark?", "")
                             + " (" + host.getNickname() + ")",
@@ -1828,8 +1826,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     // ----------------------------------------------------------
 
     public void quicklookButtonClicked(final NSObject sender) {
-        if(QuickLook.isOpen()) {
-            QuickLook.close();
+        if(QuickLookFactory.instance().isOpen()) {
+            QuickLookFactory.instance().close();
         }
         else {
             final AbstractBrowserTableDelegate delegate = this.getSelectedBrowserDelegate();
@@ -1854,7 +1852,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
                     for(int i = 0; i < browserOutlineView.numberOfRows(); i++) {
-                        this.lookup(new CDPathReference(browserOutlineView.itemAtRow(i))).invalidate();
+                        this.lookup(new CDPathReference(browserOutlineView.itemAtRow(new NSInteger(i)))).invalidate();
                     }
                     break;
                 }
@@ -1917,8 +1915,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
 
             public void cleanup() {
-                for(Iterator<Path> iter = normalized.values().iterator(); iter.hasNext();) {
-                    Path duplicate = iter.next();
+                for(Path duplicate : normalized.values()) {
                     if(edit) {
                         Editor editor = EditorFactory.createEditor(CDBrowserController.this, duplicate);
                         editor.open();
@@ -2249,9 +2246,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void renameFileButtonClicked(final NSObject sender) {
         final NSTableView browser = this.getSelectedBrowserView();
-        browser.editColumn_row_withEvent_select(
+        browser.editRow(
                 browser.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
-                browser.selectedRow(), null, true);
+                browser.selectedRow(), true);
     }
 
     public void sendCustomCommandClicked(final NSObject sender) {
@@ -2269,7 +2266,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         for(Path selected : this.getSelectedPaths()) {
             String identifier = EditorFactory.getSupportedOdbEditors().get(sender.title());
             if(identifier != null) {
-                Editor editor = EditorFactory.createEditor(this, identifier.toString(), selected);
+                Editor editor = EditorFactory.createEditor(this, identifier, selected);
                 editor.open();
             }
         }
@@ -3252,6 +3249,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         setWorkdir(workdir);
                         if(!session.isConnected()) {
                             // Connection attempt failed
+                            log.warn("Mount failed:" + host);
                             unmountImpl();
                         }
                     }
@@ -3597,7 +3595,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @return true if the item by that identifier should be enabled
      */
     private boolean validateItem(final Selector action) {
-        log.debug("validateItem:" + action);
         if(action.equals(Foundation.selector("cut:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
@@ -3635,7 +3632,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return bookmarkModel.getSource().allowsAdd();
         }
         if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
-            return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow() != -1;
+            return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow().intValue() != -1;
         }
         if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows() == 1;
@@ -3670,7 +3667,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
         }
         if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
-            return QuickLook.isAvailable() && this.isMounted() && this.getSelectionCount() > 0;
+            return QuickLookFactory.instance().isAvailable() && this.isMounted() && this.getSelectionCount() > 0;
         }
         if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
             return this.isMounted();
@@ -3843,7 +3840,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public boolean validateToolbarItem(NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
-        log.debug("validateToolbarItem:" + identifier);
         if(identifier.equals(TOOLBAR_EDIT)) {
             final String selectedEditor = EditorFactory.getSelectedEditor();
             if(null == selectedEditor) {
@@ -3971,8 +3967,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     "");
             String[] charsets = CDMainController.availableCharsets();
             NSMenu charsetMenu = NSMenu.menu();
-            for(int i = 0; i < charsets.length; i++) {
-                charsetMenu.addItem(NSMenuItem.itemWithTitle(charsets[i],
+            for(String charset : charsets) {
+                charsetMenu.addItem(NSMenuItem.itemWithTitle(charset,
                         Foundation.selector("encodingMenuClicked:"),
                         ""));
             }
@@ -4134,7 +4130,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(itemIdentifier.equals(TOOLBAR_QUICKLOOK)) {
             item.setLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
-            if(QuickLook.isAvailable()) {
+            if(QuickLookFactory.instance().isAvailable()) {
                 quicklookButton = NSButton.buttonWithFrame(new NSRect(29, 23));
                 quicklookButton.setBezelStyle(NSButtonCell.NSTexturedRoundedBezelStyle);
                 quicklookButton.setImage(NSImage.imageNamed("NSQuickLookTemplate"));

@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -186,7 +187,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             }
 
             public void selectionDidChange(NSNotification notification) {
-                if(browserView.selectedRow() == -1) {
+                if(browserView.selectedRow().intValue() == -1) {
                     hideLocalDetails(true);
                     hideRemoteDetails(true);
                 }

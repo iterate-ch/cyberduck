@@ -186,7 +186,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
                     TransferCollection.instance().add(row, new TransferPlistReader().deserialize((dict)));
                     view.reloadData();
                     view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                    view.scrollRowToVisible(row);
+                    view.scrollRowToVisible(new NSInteger(row));
                 }
                 pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                 return true;

@@ -38,6 +38,7 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -405,7 +406,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private void updateHighlight() {
         boolean isKeyWindow = window().isKeyWindow();
         for(int i = 0; i < transferModel.getSource().size(); i++) {
-            transferModel.setHighlighted(i, transferTable.isRowSelected(i) && isKeyWindow);
+            transferModel.setHighlighted(i, transferTable.isRowSelected(new NSInteger(i)) && isKeyWindow);
         }
     }
 
@@ -427,7 +428,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         log.debug("updateLabels");
         final int selected = transferTable.numberOfSelectedRows();
         if(1 == selected) {
-            final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow());
+            final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
             final String url = transfer.getRoot().toURL();
             urlField.setAttributedStringValue(
@@ -459,7 +460,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             iconView.setImage(null);
             return;
         }
-        final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow());
+        final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
         // Draw file type icon
         if(transfer.numberOfRoots() == 1) {
             iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
@@ -527,7 +528,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         final int row = TransferCollection.instance().size() - 1;
         this.reloadData();
         transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-        transferTable.scrollRowToVisible(row);
+        transferTable.scrollRowToVisible(new NSInteger(row));
     }
 
     /**
@@ -862,7 +863,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void openButtonClicked(final NSObject sender) {
         if(transferTable.numberOfSelectedRows() == 1) {
-            final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow());
+            final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
                 if(!NSWorkspace.sharedWorkspace().openFile(l.getAbsolute())) {
@@ -893,7 +894,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void revealButtonClicked(final NSObject sender) {
         if(transferTable.numberOfSelectedRows() == 1) {
-            final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow());
+            final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
                 // If a second path argument is specified, a new file viewer is opened. If you specify an
