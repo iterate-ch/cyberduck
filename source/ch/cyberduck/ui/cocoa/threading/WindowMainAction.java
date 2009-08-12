@@ -19,12 +19,13 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDWindowController;
 
 /**
  * @version $Id$
  */
-public abstract class WindowMainAction extends MainAction {
+public abstract class WindowMainAction extends DefaultMainAction {
 
     private CDWindowController controller;
 
