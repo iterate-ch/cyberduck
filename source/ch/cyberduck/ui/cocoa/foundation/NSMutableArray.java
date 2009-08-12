@@ -19,12 +19,14 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :80</i>
 public abstract class NSMutableArray extends NSArray {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableArray", _Class.class);
 
     public static NSMutableArray arrayWithCapacity(int numItems) {
-        return CLASS.arrayWithCapacity(numItems);
+        return CLASS.arrayWithCapacity(new NSUInteger(numItems));
     }
 
     public interface _Class extends org.rococoa.NSClass {
@@ -32,7 +34,7 @@ public abstract class NSMutableArray extends NSArray {
          * Original signature : <code>id arrayWithCapacity(NSUInteger)</code><br>
          * <i>from NSMutableArrayCreation native declaration : :118</i>
          */
-        NSMutableArray arrayWithCapacity(int numItems);
+        NSMutableArray arrayWithCapacity(NSUInteger numItems);
 
         NSMutableArray alloc();
     }
@@ -47,7 +49,7 @@ public abstract class NSMutableArray extends NSArray {
      * Original signature : <code>void insertObject(id, NSUInteger)</code><br>
      * <i>native declaration : :83</i>
      */
-    public abstract void insertObject_atIndex(NSObject anObject, int index);
+    public abstract void insertObject_atIndex(NSObject anObject, NSUInteger index);
 
     /**
      * Original signature : <code>void removeLastObject()</code><br>
@@ -59,13 +61,13 @@ public abstract class NSMutableArray extends NSArray {
      * Original signature : <code>void removeObjectAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :85</i>
      */
-    public abstract void removeObjectAtIndex(int index);
+    public abstract void removeObjectAtIndex(NSUInteger index);
 
     /**
      * Original signature : <code>void replaceObjectAtIndex(NSUInteger, id)</code><br>
      * <i>native declaration : :86</i>
      */
-    public abstract void replaceObjectAtIndex_withObject(int index, NSObject anObject);
+    public abstract void replaceObjectAtIndex_withObject(NSUInteger index, NSObject anObject);
 
     /**
      * Original signature : <code>void addObjectsFromArray(NSArray*)</code><br>
@@ -77,7 +79,7 @@ public abstract class NSMutableArray extends NSArray {
      * Original signature : <code>void exchangeObjectAtIndex(NSUInteger, NSUInteger)</code><br>
      * <i>from NSExtendedMutableArray native declaration : :93</i>
      */
-    public abstract void exchangeObjectAtIndex_withObjectAtIndex(int idx1, int idx2);
+    public abstract void exchangeObjectAtIndex_withObjectAtIndex(NSUInteger idx1, NSUInteger idx2);
 
     /**
      * Original signature : <code>void removeAllObjects()</code><br>
@@ -109,16 +111,16 @@ public abstract class NSMutableArray extends NSArray {
      * Original signature : <code>void removeObjectsFromIndices(NSUInteger*, NSUInteger)</code><br>
      * <i>from NSExtendedMutableArray native declaration : :99</i><br>
      *
-     * @deprecated use the safer method {@link #removeObjectsFromIndices_numIndices(java.nio.IntBuffer, int)} instead
+     * @deprecated use the safer method {@link #removeObjectsFromIndices_numIndices(java.nio.IntBuffer, NSUInteger)} instead
      */
     @java.lang.Deprecated
-    public abstract void removeObjectsFromIndices_numIndices(com.sun.jna.ptr.IntByReference indices, int cnt);
+    public abstract void removeObjectsFromIndices_numIndices(com.sun.jna.ptr.IntByReference indices, NSUInteger cnt);
 
     /**
      * Original signature : <code>void removeObjectsFromIndices(NSUInteger*, NSUInteger)</code><br>
      * <i>from NSExtendedMutableArray native declaration : :99</i>
      */
-    public abstract void removeObjectsFromIndices_numIndices(java.nio.IntBuffer indices, int cnt);
+    public abstract void removeObjectsFromIndices_numIndices(java.nio.IntBuffer indices, NSUInteger cnt);
 
     /**
      * Original signature : <code>void removeObjectsInArray(NSArray*)</code><br>
@@ -172,5 +174,5 @@ public abstract class NSMutableArray extends NSArray {
      * Original signature : <code>id initWithCapacity(NSUInteger)</code><br>
      * <i>from NSMutableArrayCreation native declaration : :119</i>
      */
-    public abstract NSMutableArray initWithCapacity(int numItems);
+    public abstract NSMutableArray initWithCapacity(NSUInteger numItems);
 }

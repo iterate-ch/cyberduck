@@ -22,6 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
 import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :15</i>
 public abstract class NSButton extends NSControl {
@@ -202,13 +204,13 @@ public abstract class NSButton extends NSControl {
      * Original signature : <code>NSUInteger keyEquivalentModifierMask()</code><br>
      * <i>native declaration : :38</i>
      */
-    public abstract int keyEquivalentModifierMask();
+    public abstract NSUInteger keyEquivalentModifierMask();
 
     /**
      * Original signature : <code>void setKeyEquivalentModifierMask(NSUInteger)</code><br>
      * <i>native declaration : :39</i>
      */
-    public abstract void setKeyEquivalentModifierMask(int mask);
+    public abstract void setKeyEquivalentModifierMask(NSUInteger mask);
 
     /**
      * Original signature : <code>void highlight(BOOL)</code><br>

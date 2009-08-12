@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 /// <i>native declaration : :10</i>
 public interface NSActionCell extends NSCell {
 
@@ -145,5 +147,5 @@ public interface NSActionCell extends NSCell {
      * Original signature : <code>NSInteger integerValue()</code><br>
      * <i>native declaration : :43</i>
      */
-    public abstract int integerValue();
+    public abstract NSInteger integerValue();
 }

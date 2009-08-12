@@ -200,19 +200,19 @@ public abstract class NSData implements NSObject {
      * Original signature : <code>initWithContentsOfFile(NSString*)</code><br>
      * <i>from NSDataCreation native declaration : :75</i>
      */
-    public abstract NSData initWithContentsOfFile(com.sun.jna.Pointer path);
+    public abstract NSData initWithContentsOfFile(String path);
 
     /**
      * Original signature : <code>initWithContentsOfURL(NSURL*)</code><br>
      * <i>from NSDataCreation native declaration : :76</i>
      */
-    public abstract NSData initWithContentsOfURL(com.sun.jna.Pointer url);
+    public abstract NSData initWithContentsOfURL(NSURL url);
 
     /**
      * Original signature : <code>initWithContentsOfMappedFile(NSString*)</code><br>
      * <i>from NSDataCreation native declaration : :77</i>
      */
-    public abstract NSData initWithContentsOfMappedFile(com.sun.jna.Pointer path);
+    public abstract NSData initWithContentsOfMappedFile(String path);
 
     /**
      * Original signature : <code>initWithData(NSData*)</code><br>

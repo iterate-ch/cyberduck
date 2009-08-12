@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 public abstract class NSTimeZone implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTimeZone", _Class.class);
 
@@ -114,13 +116,13 @@ public abstract class NSTimeZone implements NSObject {
      * Original signature : <code>NSDate* nextDaylightSavingTimeTransitionAfterDate(NSDate*)</code><br>
      * <i>native declaration : :16</i>
      */
-    public abstract com.sun.jna.Pointer nextDaylightSavingTimeTransitionAfterDate(com.sun.jna.Pointer aDate);
+    public abstract NSDate nextDaylightSavingTimeTransitionAfterDate(NSDate aDate);
 
     /**
      * Original signature : <code>NSInteger secondsFromGMT()</code><br>
      * <i>from NSExtendedTimeZone native declaration : :34</i>
      */
-    public abstract int secondsFromGMT();
+    public abstract NSInteger secondsFromGMT();
 
     /**
      * Original signature : <code>NSString* abbreviation()</code><br>
@@ -146,7 +148,7 @@ public abstract class NSTimeZone implements NSObject {
      * after current instant<br>
      * <i>from NSExtendedTimeZone native declaration : :38</i>
      */
-    public abstract com.sun.jna.Pointer nextDaylightSavingTimeTransition();
+    public abstract NSDate nextDaylightSavingTimeTransition();
 
     /**
      * Original signature : <code>NSString* description()</code><br>

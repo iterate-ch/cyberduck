@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :10</i>
 public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedUserInterfaceItem {

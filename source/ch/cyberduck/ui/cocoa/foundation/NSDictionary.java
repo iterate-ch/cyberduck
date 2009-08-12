@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :10</i>
 public abstract class NSDictionary implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDictionary", _Class.class);
@@ -52,7 +54,7 @@ public abstract class NSDictionary implements NSObject {
          * Original signature : <code>id dictionaryWithObjects(id*, id*, NSUInteger)</code><br>
          * <i>from NSDictionaryCreation native declaration : :42</i>
          */
-        NSDictionary dictionaryWithObjects_forKeys_count(NSObject objects, NSObject keys, int cnt);
+        NSDictionary dictionaryWithObjects_forKeys_count(NSObject objects, NSObject keys, NSUInteger cnt);
 
         /**
          * Original signature : <code>id dictionaryWithObjectsAndKeys(id, null)</code><br>
@@ -89,7 +91,7 @@ public abstract class NSDictionary implements NSObject {
      * Original signature : <code>NSUInteger count()</code><br>
      * <i>native declaration : :12</i>
      */
-    public abstract int count();
+    public abstract NSUInteger count();
 
     /**
      * <i>native declaration : :13</i><br>
@@ -194,7 +196,7 @@ public abstract class NSDictionary implements NSObject {
      * Original signature : <code>id initWithObjects(id*, id*, NSUInteger)</code><br>
      * <i>from NSDictionaryCreation native declaration : :47</i>
      */
-    public abstract NSDictionary initWithObjects_forKeys_count(NSObject objects, NSObject keys, int cnt);
+    public abstract NSDictionary initWithObjects_forKeys_count(NSObject objects, NSObject keys, NSUInteger cnt);
 
     /**
      * Original signature : <code>id initWithObjectsAndKeys(id, null)</code><br>

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :14</i>
 public abstract class NSArray implements NSObject {
@@ -74,7 +75,7 @@ public abstract class NSArray implements NSObject {
          * Original signature : <code>id arrayWithObjects(const id*, NSUInteger)</code><br>
          * <i>from NSArrayCreation native declaration : :62</i>
          */
-        NSArray arrayWithObjects_count(NSObject objects, int cnt);
+        NSArray arrayWithObjects_count(NSObject objects, NSUInteger cnt);
 
         /**
          * Original signature : <code>id arrayWithObjects(id, null)</code><br>
@@ -115,7 +116,8 @@ public abstract class NSArray implements NSObject {
      * Original signature : <code>objectAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :17</i>
      */
-    public abstract NSObject objectAtIndex(int index);
+    public abstract NSObject objectAtIndex(long index);
+
     /**
      * <i>from NSExtendedArray native declaration : :23</i><br>
      * Conversion Error : /// Original signature : <code>NSArray* arrayByAddingObject(null)</code><br>
@@ -172,7 +174,7 @@ public abstract class NSArray implements NSObject {
      * Original signature : <code>NSUInteger indexOfObject(id)</code><br>
      * <i>from NSExtendedArray native declaration : :33</i>
      */
-    public abstract int indexOfObject(NSObject anObject);
+    public abstract NSUInteger indexOfObject(NSObject anObject);
     /**
      * <i>from NSExtendedArray native declaration : :34</i><br>
      * Conversion Error : /// Original signature : <code>NSUInteger indexOfObject(id, null)</code><br>
@@ -182,7 +184,7 @@ public abstract class NSArray implements NSObject {
      * Original signature : <code>NSUInteger indexOfObjectIdenticalTo(id)</code><br>
      * <i>from NSExtendedArray native declaration : :35</i>
      */
-    public abstract int indexOfObjectIdenticalTo(NSObject anObject);
+    public abstract NSUInteger indexOfObjectIdenticalTo(NSObject anObject);
     /**
      * <i>from NSExtendedArray native declaration : :36</i><br>
      * Conversion Error : /// Original signature : <code>NSUInteger indexOfObjectIdenticalTo(id, null)</code><br>
@@ -268,7 +270,7 @@ public abstract class NSArray implements NSObject {
      * Original signature : <code>id initWithObjects(const id*, NSUInteger)</code><br>
      * <i>from NSArrayCreation native declaration : :66</i>
      */
-    public abstract NSArray initWithObjects_count(com.sun.jna.ptr.PointerByReference objects, int cnt);
+    public abstract NSArray initWithObjects_count(com.sun.jna.ptr.PointerByReference objects, NSUInteger cnt);
 
     /**
      * Original signature : <code>id initWithObjects(id, null)</code><br>

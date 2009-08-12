@@ -1,7 +1,5 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-import org.rococoa.cocoa.foundation.NSUInteger;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -21,12 +19,14 @@ import org.rococoa.cocoa.foundation.NSUInteger;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :28</i>
 public abstract class NSIndexSet implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSIndexSet", _Class.class);
 
-    public static NSIndexSet indexSetWithIndex(int value) {
-        return CLASS.indexSetWithIndex(value);
+    public static NSIndexSet indexSetWithIndex(long value) {
+        return CLASS.indexSetWithIndex(new NSUInteger(value));
     }
 
     public static final long NSNotFound = 2147483647L;
@@ -42,7 +42,7 @@ public abstract class NSIndexSet implements NSObject {
          * Original signature : <code>indexSetWithIndex(NSUInteger)</code><br>
          * <i>native declaration : :31</i>
          */
-        NSIndexSet indexSetWithIndex(long value);
+        NSIndexSet indexSetWithIndex(NSUInteger value);
         /**
          * <i>native declaration : :32</i><br>
          * Conversion Error : /// Original signature : <code>indexSetWithIndexesInRange(null)</code><br>
@@ -60,7 +60,7 @@ public abstract class NSIndexSet implements NSObject {
      * Original signature : <code>initWithIndex(NSUInteger)</code><br>
      * <i>native declaration : :35</i>
      */
-    public abstract NSIndexSet initWithIndex(long value);
+    public abstract NSIndexSet initWithIndex(NSUInteger value);
     /**
      * <i>native declaration : :36</i><br>
      * Conversion Error : /// Original signature : <code>initWithIndexesInRange(null)</code><br>

@@ -19,6 +19,9 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:37</i>
 public abstract class NSNumber extends NSValue {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSNumber", _Class.class);
@@ -114,13 +117,13 @@ public abstract class NSNumber extends NSValue {
          * Original signature : <code>NSNumber* numberWithInteger(NSInteger)</code><br>
          * <i>from NSNumberCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:101</i>
          */
-        NSNumber numberWithInteger(int value);
+        NSNumber numberWithInteger(NSInteger value);
 
         /**
          * Original signature : <code>NSNumber* numberWithUnsignedInteger(NSUInteger)</code><br>
          * <i>from NSNumberCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:102</i>
          */
-        NSNumber numberWithUnsignedInteger(int value);
+        NSNumber numberWithUnsignedInteger(NSUInteger value);
     }
 
     /**
@@ -205,7 +208,7 @@ public abstract class NSNumber extends NSValue {
      * Original signature : <code>NSInteger integerValue()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:53</i>
      */
-    public abstract int integerValue();
+    public abstract NSInteger integerValue();
 
     /**
      * Original signature : <code>NSUInteger unsignedIntegerValue()</code><br>
@@ -317,7 +320,7 @@ public abstract class NSNumber extends NSValue {
      * Original signature : <code>initWithInteger(NSInteger)</code><br>
      * <i>from NSNumberCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:83</i>
      */
-    public abstract NSNumber initWithInteger(int value);
+    public abstract NSNumber initWithInteger(NSInteger value);
 
     /**
      * Original signature : <code>initWithUnsignedInteger(NSUInteger)</code><br>

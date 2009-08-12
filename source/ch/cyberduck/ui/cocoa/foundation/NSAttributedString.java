@@ -19,6 +19,9 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:9</i>
 public abstract class  NSAttributedString implements NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
@@ -87,7 +90,7 @@ public abstract class  NSAttributedString implements NSObject {
      * Original signature : <code>NSUInteger length()</code><br>
      * <i>from NSExtendedAttributedString native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:18</i>
      */
-    public abstract int length();
+    public abstract long length();
     /**
      * <i>from NSExtendedAttributedString native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:19</i><br>
      * Conversion Error : /// Original signature : <code>attribute(NSString*, NSUInteger, null)</code><br>
@@ -169,13 +172,13 @@ public abstract class  NSAttributedString implements NSObject {
      * Original signature : <code>doubleClickAtIndex(NSUInteger)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :171</i>
      */
-    public abstract NSObject doubleClickAtIndex(int location);
+    public abstract NSObject doubleClickAtIndex(NSUInteger location);
 
     /**
      * Original signature : <code>NSUInteger nextWordFromIndex(NSUInteger, BOOL)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :172</i>
      */
-    public abstract int nextWordFromIndex_forward(int location, byte isForward);
+    public abstract NSUInteger nextWordFromIndex_forward(NSUInteger location, byte isForward);
     /**
      * <i>from NSAttributedStringKitAdditions native declaration : :177</i><br>
      * Conversion Error : /**<br>
@@ -189,25 +192,25 @@ public abstract class  NSAttributedString implements NSObject {
      * Original signature : <code>rangeOfTextBlock(NSTextBlock*, NSUInteger)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :190</i>
      */
-    public abstract NSObject rangeOfTextBlock_atIndex(com.sun.jna.Pointer block, int location);
+    public abstract NSObject rangeOfTextBlock_atIndex(com.sun.jna.Pointer block, NSUInteger location);
 
     /**
      * Original signature : <code>rangeOfTextTable(NSTextTable*, NSUInteger)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :191</i>
      */
-    public abstract NSObject rangeOfTextTable_atIndex(com.sun.jna.Pointer table, int location);
+    public abstract NSObject rangeOfTextTable_atIndex(com.sun.jna.Pointer table, NSUInteger location);
 
     /**
      * Original signature : <code>rangeOfTextList(NSTextList*, NSUInteger)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :192</i>
      */
-    public abstract NSObject rangeOfTextList_atIndex(com.sun.jna.Pointer list, int location);
+    public abstract NSObject rangeOfTextList_atIndex(com.sun.jna.Pointer list, NSUInteger location);
 
     /**
      * Original signature : <code>NSInteger itemNumberInTextList(NSTextList*, NSUInteger)</code><br>
      * <i>from NSAttributedStringKitAdditions native declaration : :193</i>
      */
-    public abstract int itemNumberInTextList_atIndex(com.sun.jna.Pointer list, int location);
+    public abstract NSInteger itemNumberInTextList_atIndex(com.sun.jna.Pointer list, NSUInteger location);
 
     /**
      * These first two general methods supersede the previous versions shown below.  They take a dictionary of options to specify how the document should be loaded.  The various possible options are specified above, as NS...DocumentOption.  If NSDocumentTypeDocumentOption is specified, the document will be treated as being in the specified format.  If NSDocumentTypeDocumentOption is not specified, these methods will examine the document and do their best to load it using whatever format it seems to contain.<br>

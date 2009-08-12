@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 /// <i>native declaration : :17</i>
 public abstract class NSToolbar implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSToolbar", _Class.class);
@@ -86,13 +88,13 @@ public abstract class NSToolbar implements NSObject {
      * Original signature : <code>void insertItemWithItemIdentifier(NSString*, NSInteger)</code><br>
      * <i>native declaration : :71</i>
      */
-    public abstract void insertItemWithItemIdentifier_atIndex(String itemIdentifier, int index);
+    public abstract void insertItemWithItemIdentifier_atIndex(String itemIdentifier, NSInteger index);
 
     /**
      * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :72</i>
      */
-    public abstract void removeItemAtIndex(int index);
+    public abstract void removeItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>

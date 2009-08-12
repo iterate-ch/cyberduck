@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 public interface NSCell extends NSObject, NSCopying {
 
@@ -842,13 +843,13 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>NSInteger integerValue()</code><br>
      * <i>native declaration : :297</i>
      */
-    public abstract int integerValue();
+    public abstract NSInteger integerValue();
 
     /**
      * Original signature : <code>void setIntegerValue(NSInteger)</code><br>
      * <i>native declaration : :298</i>
      */
-    public abstract void setIntegerValue(int anInteger);
+    public abstract void setIntegerValue(NSInteger anInteger);
 
     /**
      * Original signature : <code>void takeIntegerValueFrom(id)</code><br>
@@ -1003,7 +1004,7 @@ public interface NSCell extends NSObject, NSCopying {
      * get next state state in cycle<br>
      * <i>from NSCellMixedState native declaration : :343</i>
      */
-    public abstract int nextState();
+    public abstract NSInteger nextState();
 
     /**
      * Original signature : <code>void setNextState()</code><br>

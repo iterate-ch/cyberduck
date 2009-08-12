@@ -19,16 +19,18 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :81</i>
 public abstract class NSMutableData extends NSData {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableData", _Class.class);
 
     public static NSMutableData dataWithCapacity(int aNumItems) {
-        return CLASS.dataWithCapacity(aNumItems);
+        return CLASS.dataWithCapacity(new NSUInteger(aNumItems));
     }
 
     public static NSMutableData dataWithLength(int length) {
-        return CLASS.dataWithLength(length);
+        return CLASS.dataWithLength(new NSUInteger(length));
     }
 
     public interface _Class extends org.rococoa.NSClass {
@@ -36,13 +38,13 @@ public abstract class NSMutableData extends NSData {
          * Original signature : <code>dataWithCapacity(NSUInteger)</code><br>
          * <i>from NSMutableDataCreation native declaration : :104</i>
          */
-        NSMutableData dataWithCapacity(int aNumItems);
+        NSMutableData dataWithCapacity(NSUInteger aNumItems);
 
         /**
          * Original signature : <code>dataWithLength(NSUInteger)</code><br>
          * <i>from NSMutableDataCreation native declaration : :105</i>
          */
-        NSMutableData dataWithLength(int length);
+        NSMutableData dataWithLength(NSUInteger length);
     }
 
     /**
@@ -55,13 +57,13 @@ public abstract class NSMutableData extends NSData {
      * Original signature : <code>void setLength(NSUInteger)</code><br>
      * <i>native declaration : :84</i>
      */
-    public abstract void setLength(int length);
+    public abstract void setLength(NSUInteger length);
 
     /**
      * Original signature : <code>void appendBytes(const void*, NSUInteger)</code><br>
      * <i>from NSExtendedMutableData native declaration : :90</i>
      */
-    public abstract void appendBytes_length(com.sun.jna.Pointer bytes, int length);
+    public abstract void appendBytes_length(com.sun.jna.Pointer bytes, NSUInteger length);
 
     /**
      * Original signature : <code>void appendData(NSData*)</code><br>
@@ -73,7 +75,7 @@ public abstract class NSMutableData extends NSData {
      * Original signature : <code>void increaseLengthBy(NSUInteger)</code><br>
      * <i>from NSExtendedMutableData native declaration : :92</i>
      */
-    public abstract void increaseLengthBy(int extraLength);
+    public abstract void increaseLengthBy(NSUInteger extraLength);
     /**
      * <i>from NSExtendedMutableData native declaration : :93</i><br>
      * Conversion Error : /// Original signature : <code>void replaceBytesInRange(null, const void*)</code><br>
@@ -98,11 +100,11 @@ public abstract class NSMutableData extends NSData {
      * Original signature : <code>initWithCapacity(NSUInteger)</code><br>
      * <i>from NSMutableDataCreation native declaration : :106</i>
      */
-    public abstract NSMutableData initWithCapacity(int capacity);
+    public abstract NSMutableData initWithCapacity(NSUInteger capacity);
 
     /**
      * Original signature : <code>initWithLength(NSUInteger)</code><br>
      * <i>from NSMutableDataCreation native declaration : :107</i>
      */
-    public abstract NSMutableData initWithLength(int length);
+    public abstract NSMutableData initWithLength(NSUInteger length);
 }

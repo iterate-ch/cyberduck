@@ -24,6 +24,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 import com.sun.jna.NativeLong;
 
 /// <i>native declaration : :43</i>
@@ -275,7 +277,7 @@ public abstract class NSWorkspace implements NSObject {
      * Original signature : <code>NSInteger extendPowerOffBy(NSInteger)</code><br>
      * <i>native declaration : :97</i>
      */
-    public abstract int extendPowerOffBy(int requested1);
+    public abstract NSInteger extendPowerOffBy(NSInteger requested1);
     /**
      * <i>native declaration : :99</i><br>
      * Conversion Error : NSPoint

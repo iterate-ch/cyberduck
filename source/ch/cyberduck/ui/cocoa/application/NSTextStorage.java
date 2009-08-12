@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 public abstract class NSTextStorage extends NSMutableAttributedString {
 
     /**
@@ -82,7 +84,7 @@ public abstract class NSTextStorage extends NSMutableAttributedString {
      * Original signature : <code>NSInteger changeInLength()</code><br>
      * <i>native declaration : :71</i>
      */
-    public abstract int changeInLength();
+    public abstract NSInteger changeInLength();
 
     /**
      * Set/get the delegate<br>

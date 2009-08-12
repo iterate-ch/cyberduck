@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :17</i>
 public abstract class NSTableColumn implements NSObject {
@@ -147,7 +148,7 @@ public abstract class NSTableColumn implements NSObject {
      * Original signature : <code>id dataCellForRow(NSInteger)</code><br>
      * <i>native declaration : :60</i>
      */
-    public abstract NSCell dataCellForRow(int row);
+    public abstract NSCell dataCellForRow(NSInteger row);
 
     /**
      * Original signature : <code>void setEditable(BOOL)</code><br>

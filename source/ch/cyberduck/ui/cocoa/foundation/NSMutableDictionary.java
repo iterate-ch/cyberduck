@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :62</i>
 public abstract class NSMutableDictionary extends NSDictionary {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableDictionary", _Class.class);
@@ -28,7 +30,7 @@ public abstract class NSMutableDictionary extends NSDictionary {
          * Original signature : <code>id dictionaryWithCapacity(NSUInteger)</code><br>
          * <i>from NSMutableDictionaryCreation native declaration : :80</i>
          */
-        NSMutableDictionary dictionaryWithCapacity(int numItems);
+        NSMutableDictionary dictionaryWithCapacity(NSUInteger numItems);
 
         NSMutableDictionary dictionaryWithDictionary(NSDictionary dict);
 
@@ -36,10 +38,10 @@ public abstract class NSMutableDictionary extends NSDictionary {
     }
 
     public static NSMutableDictionary dictionary() {
-        return CLASS.dictionaryWithCapacity(0);
+        return CLASS.dictionaryWithCapacity(new NSUInteger(0));
     }
 
-    public static NSMutableDictionary dictionaryWithCapacity(int numItems) {
+    public static NSMutableDictionary dictionaryWithCapacity(NSUInteger numItems) {
         return CLASS.dictionaryWithCapacity(numItems);
     }
 
@@ -103,5 +105,5 @@ public abstract class NSMutableDictionary extends NSDictionary {
      * Original signature : <code>id initWithCapacity(NSUInteger)</code><br>
      * <i>from NSMutableDictionaryCreation native declaration : :81</i>
      */
-    public abstract NSMutableDictionary initWithCapacity(int numItems);
+    public abstract NSMutableDictionary initWithCapacity(NSUInteger numItems);
 }

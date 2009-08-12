@@ -269,7 +269,7 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>NSInteger columnWithIdentifier(id)</code><br>
      * <i>native declaration : :157</i>
      */
-    public abstract int columnWithIdentifier(String identifier);
+    public abstract NSInteger columnWithIdentifier(String identifier);
 
     /**
      * Original signature : <code>NSTableColumn* tableColumnWithIdentifier(id)</code><br>
@@ -299,19 +299,19 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void scrollRowToVisible(NSInteger)</code><br>
      * <i>native declaration : :163</i>
      */
-    public abstract void scrollRowToVisible(int row);
+    public abstract void scrollRowToVisible(NSInteger row);
 
     /**
      * Original signature : <code>void scrollColumnToVisible(NSInteger)</code><br>
      * <i>native declaration : :164</i>
      */
-    public abstract void scrollColumnToVisible(int column);
+    public abstract void scrollColumnToVisible(NSInteger column);
 
     /**
      * Original signature : <code>void moveColumn(NSInteger, NSInteger)</code><br>
      * <i>native declaration : :165</i>
      */
-    public abstract void moveColumn_toColumn(int column, int newIndex);
+    public abstract void moveColumn_toColumn(NSInteger column, NSInteger newIndex);
 
     /**
      * Original signature : <code>void reloadData()</code><br>
@@ -329,25 +329,25 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>NSInteger editedColumn()</code><br>
      * <i>native declaration : :170</i>
      */
-    public abstract int editedColumn();
+    public abstract NSInteger editedColumn();
 
     /**
      * Original signature : <code>NSInteger editedRow()</code><br>
      * <i>native declaration : :171</i>
      */
-    public abstract int editedRow();
+    public abstract NSInteger editedRow();
 
     /**
      * Original signature : <code>NSInteger clickedColumn()</code><br>
      * <i>native declaration : :172</i>
      */
-    public abstract int clickedColumn();
+    public abstract NSInteger clickedColumn();
 
     /**
      * Original signature : <code>NSInteger clickedRow()</code><br>
      * <i>native declaration : :173</i>
      */
-    public abstract int clickedRow();
+    public abstract NSInteger clickedRow();
 
     /**
      * Original signature : <code>void setDoubleAction(SEL)</code><br>
@@ -540,37 +540,37 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void deselectColumn(NSInteger)</code><br>
      * <i>native declaration : :254</i>
      */
-    public abstract void deselectColumn(int column);
+    public abstract void deselectColumn(NSInteger column);
 
     /**
      * Original signature : <code>void deselectRow(NSInteger)</code><br>
      * <i>native declaration : :255</i>
      */
-    public abstract void deselectRow(int row);
+    public abstract void deselectRow(NSInteger row);
 
     /**
      * Original signature : <code>NSInteger selectedColumn()</code><br>
      * <i>native declaration : :256</i>
      */
-    public abstract int selectedColumn();
+    public abstract NSInteger selectedColumn();
 
     /**
      * Original signature : <code>NSInteger selectedRow()</code><br>
      * <i>native declaration : :257</i>
      */
-    public abstract int selectedRow();
+    public abstract NSInteger selectedRow();
 
     /**
      * Original signature : <code>BOOL isColumnSelected(NSInteger)</code><br>
      * <i>native declaration : :258</i>
      */
-    public abstract boolean isColumnSelected(int column);
+    public abstract boolean isColumnSelected(NSInteger column);
 
     /**
      * Original signature : <code>BOOL isRowSelected(NSInteger)</code><br>
      * <i>native declaration : :259</i>
      */
-    public abstract boolean isRowSelected(int row);
+    public abstract boolean isRowSelected(NSInteger row);
 
     /**
      * Original signature : <code>NSInteger numberOfSelectedColumns()</code><br>
@@ -647,7 +647,7 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>NSCell* preparedCellAtColumn(NSInteger, NSInteger)</code><br>
      * <i>native declaration : :319</i>
      */
-    public abstract NSCell preparedCellAtColumn_row(int column, int row);
+    public abstract NSCell preparedCellAtColumn_row(NSInteger column, NSInteger row);
 
     /**
      * Text delegate methods<br>
@@ -711,7 +711,12 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void editColumn(NSInteger, NSInteger, NSEvent*, BOOL)</code><br>
      * <i>native declaration : :346</i>
      */
-    public abstract void editColumn_row_withEvent_select(int column, int row, NSEvent theEvent, boolean select);
+    public abstract void editColumn_row_withEvent_select(NSInteger column, NSInteger row, NSEvent theEvent, boolean select);
+
+    public void editRow(NSInteger column, NSInteger row, boolean select) {
+        this.editColumn_row_withEvent_select(column, row, NSApplication.sharedApplication().currentEvent(), select);
+    }
+
     /**
      * <i>native declaration : :347</i><br>
      * Conversion Error : NSRect
@@ -754,9 +759,9 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void selectRow(NSInteger, BOOL)</code><br>
      * <i>from NSDeprecated native declaration : :513</i>
      */
-    public abstract void selectRow_byExtendingSelection(int row, boolean extend);
+    public abstract void selectRow_byExtendingSelection(NSInteger row, boolean extend);
 
-    public void selectRow(int row, boolean extend) {
+    public void selectRow(NSInteger row, boolean extend) {
         this.selectRow_byExtendingSelection(row, extend);
     }
 

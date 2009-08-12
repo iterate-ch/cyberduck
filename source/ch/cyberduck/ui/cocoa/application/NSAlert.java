@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.foundation.NSError;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :20</i>
 public abstract class NSAlert implements NSObject {

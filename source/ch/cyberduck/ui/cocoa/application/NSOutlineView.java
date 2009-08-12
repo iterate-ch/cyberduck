@@ -141,26 +141,26 @@ public abstract class NSOutlineView extends NSTableView {
      * Original signature : <code>id itemAtRow(NSInteger)</code><br>
      * <i>native declaration : :144</i>
      */
-    public abstract NSObject itemAtRow(int row);
+    public abstract NSObject itemAtRow(NSInteger row);
 
     /**
      * Original signature : <code>NSInteger rowForItem(id)</code><br>
      * <i>native declaration : :145</i>
      */
-    public abstract int rowForItem(NSObject item);
+    public abstract NSInteger rowForItem(NSObject item);
 
     /**
      * Indentation<br>
      * Original signature : <code>NSInteger levelForItem(id)</code><br>
      * <i>native declaration : :149</i>
      */
-    public abstract int levelForItem(NSObject item);
+    public abstract NSInteger levelForItem(NSObject item);
 
     /**
      * Original signature : <code>NSInteger levelForRow(NSInteger)</code><br>
      * <i>native declaration : :150</i>
      */
-    public abstract int levelForRow(int row);
+    public abstract NSInteger levelForRow(NSInteger row);
 
     /**
      * Original signature : <code>BOOL isItemExpanded(id)</code><br>
