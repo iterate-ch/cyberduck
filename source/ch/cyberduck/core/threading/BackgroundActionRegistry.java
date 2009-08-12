@@ -18,14 +18,12 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-
 import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
-public class BackgroundActionRegistry extends Collection<BackgroundAction> {
+public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> {
     private static Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
     private static BackgroundActionRegistry instance = null;
@@ -43,6 +41,9 @@ public class BackgroundActionRegistry extends Collection<BackgroundAction> {
 
     private BackgroundAction current;
 
+    /**
+     * @return The currently running background action. Null if none is currently running.
+     */
     public BackgroundAction getCurrent() {
         return current;
     }
@@ -73,7 +74,7 @@ public class BackgroundActionRegistry extends Collection<BackgroundAction> {
     private BackgroundActionRegistry() {
         ;
     }
-    
+
     private final Object block = new Object();
 
     /**
