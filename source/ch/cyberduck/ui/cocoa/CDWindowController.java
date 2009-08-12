@@ -144,6 +144,15 @@ public abstract class CDWindowController extends CDBundleController implements N
         toggle.setState(open ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
+    @Override
+    public void invoke(final MainAction runnable, final boolean wait) {
+        super.invoke(new WindowMainAction(this) {
+            public void run() {
+                runnable.run();
+            }
+        }, wait);
+    }
+
     /**
      * @return True if this window has a sheet attached
      */
