@@ -1280,7 +1280,7 @@ lib/jakarta-slide-webdavlib-2.2-dev.jar -text
 lib/java-xmlbuilder-1.jar -text
 lib/jdom-1.1.jar -text
 lib/jets3t-0.7.2.jar -text
-lib/jna-3.2.1.jar -text
+lib/jna-3.2.2.jar -text
 lib/libAquaticPrime.a -text
 lib/libjdns_sd.jnilib -text
 lib/log4j-1.2.15.jar -text
