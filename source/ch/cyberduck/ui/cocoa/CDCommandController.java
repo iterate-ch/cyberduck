@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.IOException;
 
@@ -78,7 +79,7 @@ public class CDCommandController extends CDSheetController implements Transcript
                                                                NSObject textContainer,
                                                                boolean finished) {
         if(finished && this.responseField.window().isVisible()) {
-            this.responseField.scrollRangeToVisible(NSRange.NSMakeRange(this.responseField.textStorage().length(), 0));
+            this.responseField.scrollRangeToVisible(NSRange.NSMakeRange(this.responseField.textStorage().length(), new NSUInteger(0)));
         }
     }
 
@@ -141,7 +142,8 @@ public class CDCommandController extends CDSheetController implements Transcript
     public void log(boolean request, final String message) {
         invoke(new WindowMainAction(this) {
             public void run() {
-                responseField.textStorage().replaceCharactersInRange_withAttributedString(NSRange.NSMakeRange(responseField.textStorage().length(), 0),
+                responseField.textStorage().replaceCharactersInRange_withAttributedString(
+                        NSRange.NSMakeRange(responseField.textStorage().length(), new NSUInteger(0)),
                         NSAttributedString.attributedStringWithAttributes(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
             }
         });

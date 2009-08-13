@@ -31,6 +31,7 @@ import org.jets3t.service.model.S3Bucket;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -1202,17 +1203,17 @@ public class CDPreferencesController extends CDWindowController {
         if(null == e) {
             text.removeAttributeInRange(
                     NSAttributedString.ForegroundColorAttributeName,
-                    NSRange.NSMakeRange(0, text.length()));
+                    NSRange.NSMakeRange(new NSUInteger(0), text.length()));
             return;
         }
         int index = e.getIndex(); //The approximate index in the pattern of the error
         NSRange range = null;
         if(-1 == index) {
-            range = NSRange.NSMakeRange(0, text.length());
+            range = NSRange.NSMakeRange(new NSUInteger(0), text.length());
         }
-        if(index < text.length()) {
+        if(index < text.length().intValue()) {
             //Initializes the NSRange with the range elements of location and length;
-            range = NSRange.NSMakeRange(index, 1);
+            range = NSRange.NSMakeRange(new NSUInteger(index), new NSUInteger(1));
         }
         text.addAttributesInRange(RED_FONT, range);
     }

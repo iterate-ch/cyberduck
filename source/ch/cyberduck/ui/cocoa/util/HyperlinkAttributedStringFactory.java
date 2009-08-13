@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /**
  * From http://developer.apple.com/qa/qa2006/qa1487.html
  *
@@ -37,7 +39,7 @@ public class HyperlinkAttributedStringFactory {
      * @return
      */
     public static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
-        final NSRange range = NSRange.NSMakeRange(0, value.length().intValue());
+        final NSRange range = NSRange.NSMakeRange(new NSUInteger(0), value.length());
         value.beginEditing();
         value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,
                 hyperlink, range);

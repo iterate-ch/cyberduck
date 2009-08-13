@@ -28,6 +28,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /**
  * @version $Id$
  */
@@ -87,7 +89,7 @@ public class CDTranscriptController extends CDBundleController implements Transc
         logTextView.textStorage().appendAttributedString(
                 NSAttributedString.attributedStringWithAttributes(transcript + "\n", font)
         );
-        logTextView.scrollRangeToVisible(NSRange.NSMakeRange(logTextView.textStorage().length().intValue(), 0));
+        logTextView.scrollRangeToVisible(NSRange.NSMakeRange(logTextView.textStorage().length(), new NSUInteger(0)));
     }
 
     public void clear() {

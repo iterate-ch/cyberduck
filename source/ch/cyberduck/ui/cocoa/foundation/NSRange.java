@@ -21,14 +21,15 @@ package ch.cyberduck.ui.cocoa.foundation;
 
 import org.rococoa.cocoa.CFIndex;
 import org.rococoa.cocoa.CFRange;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 public class NSRange extends CFRange {
 
-    public static NSRange NSMakeRange(int loc, int len) {
+    public static NSRange NSMakeRange(NSUInteger loc, NSUInteger len) {
         CFIndex cfLocation = new CFIndex();
-        cfLocation.setValue(loc);
+        cfLocation.setValue(loc.longValue());
         CFIndex cfLength = new CFIndex();
-        cfLength.setValue(len);
+        cfLength.setValue(len.longValue());
         return new NSRange(cfLocation, cfLength);
     }
 

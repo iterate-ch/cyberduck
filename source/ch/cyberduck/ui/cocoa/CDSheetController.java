@@ -185,7 +185,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * @return True if the class is a singleton and the object should
      *         not be invlidated upon the sheet is closed
-     * @see #sheetDidClose(ch.cyberduck.ui.cocoa.application.NSPanel, int, Object)
+     * @see #sheetDidClose_returnCode_contextInfo(ch.cyberduck.ui.cocoa.application.NSPanel, int, org.rococoa.ID)
      */
     public boolean isSingleton() {
         return false;
