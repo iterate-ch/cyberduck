@@ -501,7 +501,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     private void reloadData() {
-        while(transferTable.subviews().count() > 0) {
+        while(transferTable.subviews().count().intValue() > 0) {
             (Rococoa.cast(transferTable.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
         }
         transferTable.reloadData();
@@ -784,7 +784,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     TransferCollection.instance().add(new TransferPlistReader().deserialize((dict)));
                 }
@@ -1029,7 +1029,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                 if(o != null) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    for(int i = 0; i < elements.count(); i++) {
+                    for(int i = 0; i < elements.count().intValue(); i++) {
                         NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                         final Transfer transfer = new TransferPlistReader().deserialize((dict));
                         if(transfer.numberOfRoots() == 1) {

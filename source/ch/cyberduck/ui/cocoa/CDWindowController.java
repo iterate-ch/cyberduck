@@ -124,7 +124,7 @@ public abstract class CDWindowController extends CDBundleController implements N
      */
     public void cascade() {
         NSArray windows = NSApplication.sharedApplication().windows();
-        int count = windows.count();
+        int count = windows.count().intValue();
         if(count != 0) {
             NSWindow window = Rococoa.cast(windows.objectAtIndex(count - 1), NSWindow.class);
             NSPoint origin = window.frame().origin;

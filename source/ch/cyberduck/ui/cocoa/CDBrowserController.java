@@ -846,7 +846,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             }
 
                             public void cleanup() {
-                                inspector.setFiles(selected);
+                                if(inspector != null) {
+                                    inspector.setFiles(selected);
+                                }
                             }
                         });
                     }
@@ -2294,7 +2296,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return selected.toHttpURL();
     }
 
-    private CDInfoController inspector = null;
+    private CDInfoController inspector;
 
     public void infoButtonClicked(final NSObject sender) {
         if(this.getSelectionCount() > 0) {
@@ -2411,7 +2413,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void syncPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
         sheet.close();
         if(returncode == CDSheetCallback.DEFAULT_OPTION) {
-            if(sheet.filenames().count() > 0) {
+            if(sheet.filenames().count().intValue() > 0) {
                 final Path selection;
                 if(this.getSelectionCount() == 1 &&
                         this.getSelectedPath().attributes.isDirectory()) {
@@ -2754,7 +2756,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     }
                 }
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     Transfer q = new TransferPlistReader().deserialize((dict));
                     for(final Path next : q.getRoots()) {
@@ -2780,7 +2782,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 final Path workdir = this.workdir();
                 final Session session = this.getTransferSession();
                 final List<Path> roots = new Collection<Path>();
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir.getAbsolute(),
                             LocalFactory.createLocal(elements.objectAtIndex(i).toString()));
@@ -3496,13 +3498,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                     if(o != null) {
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
-                        if(elements.count() == 1) {
+                        if(elements.count().intValue() == 1) {
                             item.setTitle(Locale.localizedString("Paste", "Menu item") + " \""
                                     + elements.objectAtIndex(0) + "\"");
                         }
                         else {
                             item.setTitle(Locale.localizedString("Paste from Finder", "Menu item") + " (" +
-                                    elements.count() + " " +
+                                    elements.count().intValue() + " " +
                                     Locale.localizedString("files", "") + ")");
                         }
                         valid = true;
@@ -3521,7 +3523,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                     if(o != null) {
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
-                        for(int i = 0; i < elements.count(); i++) {
+                        for(int i = 0; i < elements.count().intValue(); i++) {
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                             Transfer q = new TransferPlistReader().deserialize((dict));
                             if(q.numberOfRoots() == 1) {

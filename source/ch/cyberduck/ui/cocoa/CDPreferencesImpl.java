@@ -152,7 +152,7 @@ public class CDPreferencesImpl extends Preferences {
             log.warn("No localizations found in main bundle");
             return locale;
         }
-        if(preferredLocalizations.count() > 0) {
+        if(preferredLocalizations.count().intValue() > 0) {
             locale = preferredLocalizations.objectAtIndex(0).toString();
         }
         return locale;

@@ -77,7 +77,7 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
                     return ALERT_ICON;
                 }
             }
-            return NO_ICON;
+            return null;
         }
         return super.objectValueForItem(item, identifier);
     }

@@ -76,7 +76,7 @@ public class CDActivityController extends CDWindowController {
                     tasks.put(action, new CDTaskController(action));
                     reload();
                 }
-            }, true);
+            });
         }
 
         @Override
@@ -85,10 +85,13 @@ public class CDActivityController extends CDWindowController {
                 public void run() {
                     log.debug("collectionItemRemoved:" + action);
                     final CDTaskController controller = tasks.remove(action);
+                    if(null == controller) {
+                        return;
+                    }
                     controller.invalidate();
                     reload();
                 }
-            }, true);
+            });
         }
     };
 
@@ -107,7 +110,7 @@ public class CDActivityController extends CDWindowController {
      *
      */
     private void reload() {
-        while(table.subviews().count() > 0) {
+        while(table.subviews().count().intValue() > 0) {
             (Rococoa.cast(table.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
         }
         table.reloadData();

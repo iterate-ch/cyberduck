@@ -33,6 +33,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -145,6 +146,10 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
     }
 
     protected NSObject objectValueForItem(Path item, String identifier) {
+        if(null == item) {
+            log.warn("objectValueForItem:Path is null");
+            return null;
+        }
         if(identifier.equals(ICON_COLUMN)) {
             return this.iconForPath(item);
         }
@@ -227,7 +232,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     final Session session = controller.getTransferSession();
                     final List<Path> roots = new Collection<Path>();
-                    for(int i = 0; i < elements.count(); i++) {
+                    for(int i = 0; i < elements.count().intValue(); i++) {
                         Path p = PathFactory.createPath(session,
                                 destination.getAbsolute(),
                                 LocalFactory.createLocal(elements.objectAtIndex(i).toString()));
@@ -246,7 +251,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
             NSObject o = draggingInfo.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
                         controller.mount(Host.parse(elements.objectAtIndex(i).toString()));
                         return true;
@@ -266,7 +271,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                             == NSDraggingInfo.NSDragOperationMove) {
                         // The file should be renamed
                         final Map<Path, Path> files = new HashMap<Path, Path>();
-                        for(int i = 0; i < elements.count(); i++) {
+                        for(int i = 0; i < elements.count().intValue(); i++) {
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                             Transfer q = new TransferPlistReader().deserialize((dict));
                             for(Path next : q.getRoots()) {
@@ -283,7 +288,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     if(draggingInfo.draggingSourceOperationMask() == NSDraggingInfo.NSDragOperationCopy) {
                         // The file should be duplicated
                         final Map<Path, Path> files = new HashMap<Path, Path>();
-                        for(int i = 0; i < elements.count(); i++) {
+                        for(int i = 0; i < elements.count().intValue(); i++) {
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                             Transfer q = new TransferPlistReader().deserialize(dict, controller.getSession());
                             for(final Path source : q.getRoots()) {
@@ -318,7 +323,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
             NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
                         // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
                         // entire table view to be highlighted rather than a specific row.
@@ -335,7 +340,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
                 if(o != null) {
                     NSArray elements = Rococoa.cast(o, NSArray.class);
-                    for(int i = 0; i < elements.count(); i++) {
+                    for(int i = 0; i < elements.count().intValue(); i++) {
                         NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                         Transfer q = new TransferPlistReader().deserialize((dict));
                         for(Path next : q.getRoots()) {
@@ -396,15 +401,15 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
     public boolean writeItemsToPasteBoard(NSTableView view, NSArray items, NSPasteboard pboard) {
         log.debug("writeItemsToPasteBoard");
         if(controller.isMounted()) {
-            if(items.count() > 0) {
+            if(items.count().intValue() > 0) {
                 // The fileTypes argument is the list of fileTypes being promised.
                 // The array elements can consist of file extensions and HFS types encoded
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
-                NSMutableArray fileTypes = NSMutableArray.arrayWithCapacity(items.count());
+                NSMutableArray fileTypes = NSMutableArray.array();
                 final List<Path> roots = new Collection<Path>();
                 final Session session = controller.getTransferSession();
-                for(int i = 0; i < items.count(); i++) {
+                for(int i = 0; i < items.count().intValue(); i++) {
                     final Path path = PathFactory.createPath(session,
                             controller.lookup(new CDPathReference(items.objectAtIndex(i))).getAsDictionary());
                     if(path.attributes.isFile()) {
@@ -474,7 +479,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
      */
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
-        NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragPaths.size());
+        NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
             for(Path promisedDragPath : promisedDragPaths) {
                 promisedDragPath.setLocal(LocalFactory.createLocal(dropDestination.path(), promisedDragPath.getName()));

@@ -196,7 +196,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     }
                 }
             }
-            return NSImage.imageWithSize(new NSSize(0, 0));
+            return null;
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
             return NSString.stringWithString(host.getNickname());
@@ -225,7 +225,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     String file = elements.objectAtIndex(i).toString();
                     if(file.contains(".duck")) {
                         //allow file drags if bookmark file even if list is empty
@@ -243,7 +243,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
                         view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
                         return NSDraggingInfo.NSDragOperationCopy;
@@ -280,7 +280,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             // If regular files are dropped, these will be uploaded to the dropped bookmark location
             final List<Path> roots = new Collection<Path>();
             Session session = null;
-            for(int i = 0; i < filesList.count(); i++) {
+            for(int i = 0; i < filesList.count().intValue(); i++) {
                 String filename = filesList.objectAtIndex(i).toString();
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
@@ -317,7 +317,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     final String url = elements.objectAtIndex(i).toString();
                     if(StringUtils.isNotBlank(url)) {
                         final Host h = Host.parse(url);
@@ -424,7 +424,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
-        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(promisedDragBookmarks.size());
+        final NSMutableArray promisedDragNames = NSMutableArray.array();
         for(Host promisedDragBookmark : promisedDragBookmarks) {
             final Local file = LocalFactory.createLocal(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
             HostWriterFactory.instance().write(promisedDragBookmark, file);
@@ -438,7 +438,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
 //    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view,
 //                                                                                                final NSURL dropDestination,
 //                                                                                                NSIndexSet rowIndexes) {
-//        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
+//        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue().intValue());
 //        for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
 //            if(index.intValue() == -1) {
 //                break;

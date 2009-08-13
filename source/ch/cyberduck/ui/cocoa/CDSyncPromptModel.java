@@ -75,7 +75,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
                 return CDIconCache.instance().iconForName("arrowUp", 16);
             }
-            return NO_ICON;
+            return null;
         }
         if(identifier.equals(WARNING_COLUMN)) {
             if(item.attributes.isFile()) {
@@ -90,13 +90,13 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
                     }
                 }
             }
-            return NO_ICON;
+            return null;
         }
         if(identifier.equals(CREATE_COLUMN)) {
             if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
                 return CDIconCache.instance().iconForName("plus", 16);
             }
-            return NO_ICON;
+            return null;
         }
         return super.objectValueForItem(item, identifier);
     }

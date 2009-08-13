@@ -754,7 +754,7 @@ public class CDMainController extends CDBundleController {
 
     @Applescript
     public NSArray orderedBrowsers() {
-        NSMutableArray orderedDocs = NSMutableArray.arrayWithCapacity(browsers.size());
+        NSMutableArray orderedDocs = NSMutableArray.array();
         for(CDBrowserController browser : browsers) {
             orderedDocs.addObject(browser.proxy());
         }

@@ -50,7 +50,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     }
 
     public void write(Collection<S> collection, Local file) {
-        NSMutableArray list = NSMutableArray.arrayWithCapacity(1);
+        NSMutableArray list = NSMutableArray.array();
         for(S bookmark : collection) {
             list.addObject(bookmark.<NSDictionary>getAsDictionary());
         }

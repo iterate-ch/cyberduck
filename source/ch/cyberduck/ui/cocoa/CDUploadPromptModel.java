@@ -67,7 +67,7 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
                     return ALERT_ICON;
                 }
             }
-            return NO_ICON;
+            return null;
         }
         if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),

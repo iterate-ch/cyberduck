@@ -108,7 +108,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
      */
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
         if(controller.isMounted()) {
-            NSMutableArray items = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
+            NSMutableArray items = NSMutableArray.array();
             final AttributedList<Path> childs = this.childs(this.controller.workdir());
             for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
                 if(index.intValue() == -1) {

@@ -22,6 +22,7 @@ import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -49,7 +50,7 @@ public class HyperlinkAttributedStringFactory {
 
         // next make the text appear with an underline
         value.addAttributeInRange(NSMutableAttributedString.UnderlineStyleAttributeName,
-                NSMutableAttributedString.SingleUnderlineStyle, range);
+                NSNumber.numberWithInt(NSMutableAttributedString.SingleUnderlineStyle), range);
 
         value.endEditing();
         return value;

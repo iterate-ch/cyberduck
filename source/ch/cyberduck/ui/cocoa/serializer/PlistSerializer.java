@@ -63,7 +63,7 @@ public class PlistSerializer implements Serializer {
     }
 
     public <T extends Serializable> void setListForKey(List<T> value, String key) {
-        final NSMutableArray list = NSMutableArray.arrayWithCapacity(1);
+        final NSMutableArray list = NSMutableArray.array();
         for(Serializable serializable : value) {
             list.addObject(serializable.<NSDictionary>getAsDictionary());
         }

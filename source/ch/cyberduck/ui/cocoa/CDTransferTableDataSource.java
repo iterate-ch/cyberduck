@@ -181,7 +181,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
             log.debug("tableViewAcceptDrop:" + o);
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count(); i++) {
+                for(int i = 0; i < elements.count().intValue(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                     TransferCollection.instance().add(row, new TransferPlistReader().deserialize((dict)));
                     view.reloadData();
