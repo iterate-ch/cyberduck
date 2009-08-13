@@ -71,7 +71,7 @@ public abstract class AbstractController implements Controller {
                             public void run() {
                                 runnable.cleanup();
                             }
-                        });
+                        }, true);
                         autorelease.operate();
                         log.info("Releasing lock for background runnable:" + runnable);
                     }
