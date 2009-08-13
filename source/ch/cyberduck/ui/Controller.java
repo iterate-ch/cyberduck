@@ -22,7 +22,7 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Controller {
 
@@ -38,9 +38,10 @@ public interface Controller {
     public void background(final BackgroundAction runnable);
 
     /**
-     * Run on main thread. Caller thread is not blocked.
+     * Run on main thread. Caller thread is blocked until the selector on the main thread is called.
      *
      * @param runnable The action to execute
+     * @see #invoke(ch.cyberduck.core.threading.MainAction, boolean)
      */
     public void invoke(final MainAction runnable);
 

@@ -31,8 +31,12 @@ import org.rococoa.internal.OperationBatcher;
 public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
 
+    /**
+     *
+     * @param runnable The action to execute
+     */
     public void invoke(MainAction runnable) {
-        this.invoke(runnable, false);
+        this.invoke(runnable, true);
     }
 
     /**
@@ -71,7 +75,7 @@ public abstract class AbstractController implements Controller {
                             public void run() {
                                 runnable.cleanup();
                             }
-                        }, true);
+                        });
                         autorelease.operate();
                         log.info("Releasing lock for background runnable:" + runnable);
                     }
