@@ -33,7 +33,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -421,7 +420,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                         }
                     }
                     else if(path.attributes.isDirectory()) {
-                        fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeDirectory));
+                        fileTypes.addObject(NSString.stringWithString("'fldr'")); //NSFileTypeForHFSTypeCode('fldr')
                     }
                     else {
                         fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeUnknown));
