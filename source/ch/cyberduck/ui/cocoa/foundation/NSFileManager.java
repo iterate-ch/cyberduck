@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :12</i>
 public abstract class NSFileManager implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFileManager", _Class.class);
@@ -355,14 +357,14 @@ public abstract class NSFileManager implements NSObject {
      * @deprecated use the safer method {@link #stringWithFileSystemRepresentation_length(java.lang.String, int)} instead
      */
     @java.lang.Deprecated
-    public abstract com.sun.jna.Pointer stringWithFileSystemRepresentation_length(com.sun.jna.ptr.ByteByReference str, int len);
+    public abstract String stringWithFileSystemRepresentation_length(com.sun.jna.ptr.ByteByReference str, NSUInteger len);
 
     /**
      * stringWithFileSystemRepresentation:length: returns an NSString created from an array of bytes that are in the filesystem representation.<br>
      * Original signature : <code>NSString* stringWithFileSystemRepresentation(const char*, NSUInteger)</code><br>
      * <i>native declaration : :143</i>
      */
-    public abstract com.sun.jna.Pointer stringWithFileSystemRepresentation_length(java.lang.String str, int len);
+    public abstract String stringWithFileSystemRepresentation_length(java.lang.String str, NSUInteger len);
 
     public abstract class NSDirectoryEnumerator implements NSObject {
         /**

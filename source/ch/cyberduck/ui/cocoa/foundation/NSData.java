@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :27</i>
 public abstract class NSData implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSData", _Class.class);
@@ -38,19 +40,19 @@ public abstract class NSData implements NSObject {
          * Original signature : <code>dataWithBytes(const void*, NSUInteger)</code><br>
          * <i>from NSDataCreation native declaration : :54</i>
          */
-        NSData dataWithBytes_length(com.sun.jna.Pointer bytes, int length);
+        NSData dataWithBytes_length(com.sun.jna.Pointer bytes, NSUInteger length);
 
         /**
          * Original signature : <code>dataWithBytesNoCopy(void*, NSUInteger)</code><br>
          * <i>from NSDataCreation native declaration : :55</i>
          */
-        NSData dataWithBytesNoCopy_length(com.sun.jna.Pointer bytes, int length);
+        NSData dataWithBytesNoCopy_length(com.sun.jna.Pointer bytes, NSUInteger length);
 
         /**
          * Original signature : <code>dataWithBytesNoCopy(void*, NSUInteger, BOOL)</code><br>
          * <i>from NSDataCreation native declaration : :57</i>
          */
-        NSData dataWithBytesNoCopy_length_freeWhenDone(com.sun.jna.Pointer bytes, int length, byte b);
+        NSData dataWithBytesNoCopy_length_freeWhenDone(com.sun.jna.Pointer bytes, NSUInteger length, byte b);
 
         /**
          * Original signature : <code>dataWithContentsOfFile(NSString*, NSUInteger, NSError**)</code><br>
@@ -93,7 +95,7 @@ public abstract class NSData implements NSObject {
      * Original signature : <code>NSUInteger length()</code><br>
      * <i>native declaration : :29</i>
      */
-    public abstract int length();
+    public abstract NSUInteger length();
 
     /**
      * Original signature : <code>const void* bytes()</code><br>
@@ -117,7 +119,7 @@ public abstract class NSData implements NSObject {
      * Original signature : <code>void getBytes(void*, NSUInteger)</code><br>
      * <i>from NSExtendedData native declaration : :38</i>
      */
-    public abstract void getBytes_length(com.sun.jna.Pointer buffer, int length);
+    public abstract void getBytes_length(com.sun.jna.Pointer buffer, NSUInteger length);
     /**
      * <i>from NSExtendedData native declaration : :39</i><br>
      * Conversion Error : /// Original signature : <code>void getBytes(void*, null)</code><br>
@@ -170,7 +172,7 @@ public abstract class NSData implements NSObject {
      * Original signature : <code>initWithBytes(const void*, NSUInteger)</code><br>
      * <i>from NSDataCreation native declaration : :66</i>
      */
-    public abstract NSData initWithBytes_length(com.sun.jna.Pointer bytes, int length);
+    public abstract NSData initWithBytes_length(com.sun.jna.Pointer bytes, NSUInteger length);
 
     /**
      * Original signature : <code>initWithBytesNoCopy(void*, NSUInteger)</code><br>
@@ -182,7 +184,7 @@ public abstract class NSData implements NSObject {
      * Original signature : <code>initWithBytesNoCopy(void*, NSUInteger, BOOL)</code><br>
      * <i>from NSDataCreation native declaration : :69</i>
      */
-    public abstract NSData initWithBytesNoCopy_length_freeWhenDone(com.sun.jna.Pointer bytes, int length, byte b);
+    public abstract NSData initWithBytesNoCopy_length_freeWhenDone(com.sun.jna.Pointer bytes, NSUInteger length, byte b);
 
     /**
      * Original signature : <code>initWithContentsOfFile(NSString*, NSUInteger, NSError**)</code><br>

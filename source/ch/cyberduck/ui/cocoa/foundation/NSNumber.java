@@ -30,7 +30,7 @@ public abstract class NSNumber extends NSValue {
         return CLASS.numberWithInt(value);
     }
 
-    public static NSNumber numberWithDouble(int value) {
+    public static NSNumber numberWithDouble(double value) {
         return CLASS.numberWithDouble(value);
     }
 

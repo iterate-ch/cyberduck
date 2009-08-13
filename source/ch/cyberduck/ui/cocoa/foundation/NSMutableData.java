@@ -25,12 +25,12 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSMutableData extends NSData {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableData", _Class.class);
 
-    public static NSMutableData dataWithCapacity(int aNumItems) {
-        return CLASS.dataWithCapacity(new NSUInteger(aNumItems));
+    public static NSMutableData dataWithCapacity(NSUInteger aNumItems) {
+        return CLASS.dataWithCapacity(aNumItems);
     }
 
-    public static NSMutableData dataWithLength(int length) {
-        return CLASS.dataWithLength(new NSUInteger(length));
+    public static NSMutableData dataWithLength(NSUInteger length) {
+        return CLASS.dataWithLength(length);
     }
 
     public interface _Class extends org.rococoa.NSClass {

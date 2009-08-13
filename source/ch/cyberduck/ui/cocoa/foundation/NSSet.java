@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:13</i>
 public abstract class NSSet implements NSObject {
 
@@ -37,7 +39,7 @@ public abstract class NSSet implements NSObject {
          * Original signature : <code>setWithObjects(id*, NSUInteger)</code><br>
          * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:45</i>
          */
-        NSSet setWithObjects_count(NSObject objects, int cnt);
+        NSSet setWithObjects_count(NSObject objects, NSUInteger cnt);
 
         /**
          * Original signature : <code>id setWithObjects(id, null)</code><br>
@@ -62,7 +64,7 @@ public abstract class NSSet implements NSObject {
      * Original signature : <code>NSUInteger count()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:15</i>
      */
-    public abstract int count();
+    public abstract NSUInteger count();
     /**
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:16</i><br>
      * Conversion Error : /// Original signature : <code>member(null)</code><br>
@@ -148,7 +150,7 @@ public abstract class NSSet implements NSObject {
      * Original signature : <code>id initWithObjects(id*, NSUInteger)</code><br>
      * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:50</i>
      */
-    public abstract NSSet initWithObjects_count(NSObject objects, int cnt);
+    public abstract NSSet initWithObjects_count(NSObject objects, NSUInteger cnt);
 
     /**
      * Original signature : <code>id initWithObjects(id, null)</code><br>

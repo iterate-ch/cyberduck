@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 public abstract class NSMutableAttributedString extends NSAttributedString {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableAttributedString", _Class.class);
@@ -73,10 +74,6 @@ public abstract class NSMutableAttributedString extends NSAttributedString {
         this.addAttribute_value_range(name, NSString.stringWithString(value), range);
     }
 
-    public void addAttributeInRange(String name, int value, NSRange range) {
-        this.addAttribute_value_range(name, NSString.stringWithString(String.valueOf(value)), range);
-    }
-
     /**
      * <i>from NSExtendedMutableAttributedString native declaration : :42</i><br>
      * Conversion Error : /// Original signature : <code>void addAttributes(NSDictionary*, null)</code><br>
@@ -114,7 +111,7 @@ public abstract class NSMutableAttributedString extends NSAttributedString {
      * Original signature : <code>void insertAttributedString(NSAttributedString*, NSUInteger)</code><br>
      * <i>from NSExtendedMutableAttributedString native declaration : :46</i>
      */
-    public abstract void insertAttributedString_atIndex(NSAttributedString attrString, int loc);
+    public abstract void insertAttributedString_atIndex(NSAttributedString attrString, NSUInteger loc);
 
     /**
      * Original signature : <code>void appendAttributedString(NSAttributedString*)</code><br>

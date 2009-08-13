@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.Foundation;
 
 /// <i>native declaration : :85</i>
@@ -56,7 +57,7 @@ public abstract class NSString implements NSObject, NSCopying {
 
     @Override
     public String toString() {
-        return Foundation.toString(id());
+        return Foundation.toString(this.id());
     }
     
     public interface _Class extends org.rococoa.NSClass {
@@ -101,13 +102,13 @@ public abstract class NSString implements NSObject, NSCopying {
          * @deprecated use the safer methods {@link #stringWithCharacters_length(char[], int)} and {@link #stringWithCharacters_length(char, int)} instead
          */
         @java.lang.Deprecated
-        NSString stringWithCharacters_length(char characters, int length);
+        NSString stringWithCharacters_length(char characters, NSUInteger length);
 
         /**
          * Original signature : <code>stringWithCharacters(const unichar*, NSUInteger)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :268</i>
          */
-        NSString stringWithCharacters_length(char characters[], int length);
+        NSString stringWithCharacters_length(char characters[], NSUInteger length);
 
         /**
          * Original signature : <code>stringWithUTF8String(const char*)</code><br>
@@ -212,13 +213,13 @@ public abstract class NSString implements NSObject, NSCopying {
          * @deprecated use the safer method {@link #stringWithCString_length(java.lang.String, int)} instead
          */
         @java.lang.Deprecated
-        NSString stringWithCString_length(com.sun.jna.ptr.ByteByReference bytes, int length);
+        NSString stringWithCString_length(com.sun.jna.ptr.ByteByReference bytes, NSUInteger length);
 
         /**
          * Original signature : <code>stringWithCString(const char*, NSUInteger)</code><br>
          * <i>from NSStringDeprecated native declaration : :364</i>
          */
-        NSString stringWithCString_length(java.lang.String bytes, int length);
+        NSString stringWithCString_length(java.lang.String bytes, NSUInteger length);
 
         /**
          * Original signature : <code>stringWithCString(const char*)</code><br>
@@ -241,13 +242,13 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>NSUInteger length()</code><br>
      * <i>native declaration : :89</i>
      */
-    public abstract int length();
+    public abstract NSUInteger length();
 
     /**
      * Original signature : <code>unichar characterAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :90</i>
      */
-    public abstract char characterAtIndex(int index);
+    public abstract char characterAtIndex(NSUInteger index);
 
     /**
      * Original signature : <code>void getCharacters(unichar*)</code><br>
@@ -263,13 +264,13 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>NSString* substringFromIndex(NSUInteger)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :99</i>
      */
-    public abstract NSString substringFromIndex(int from);
+    public abstract NSString substringFromIndex(NSUInteger from);
 
     /**
      * Original signature : <code>NSString* substringToIndex(NSUInteger)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :100</i>
      */
-    public abstract NSString substringToIndex(int to);
+    public abstract NSString substringToIndex(NSUInteger to);
     /**
      * <i>from NSStringExtensionMethods native declaration : :101</i><br>
      * Conversion Error : /// Original signature : <code>NSString* substringWithRange(null)</code><br>
@@ -377,7 +378,7 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>rangeOfComposedCharacterSequenceAtIndex(NSUInteger)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :131</i>
      */
-    public abstract NSRange rangeOfComposedCharacterSequenceAtIndex(int index);
+    public abstract NSRange rangeOfComposedCharacterSequenceAtIndex(NSUInteger index);
     /**
      * <i>from NSStringExtensionMethods native declaration : :133</i><br>
      * Conversion Error : /// Original signature : <code>rangeOfComposedCharacterSequencesForRange(null)</code><br>
@@ -479,7 +480,7 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>NSString* stringByPaddingToLength(NSUInteger, NSString*, NSUInteger)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :163</i>
      */
-    public abstract NSString stringByPaddingToLength_withString_startingAtIndex(int newLength, NSString padString, int padIndex);
+    public abstract NSString stringByPaddingToLength_withString_startingAtIndex(NSUInteger newLength, NSString padString, NSUInteger padIndex);
     /**
      * <i>from NSStringExtensionMethods native declaration : :166</i><br>
      * Conversion Error : /// Original signature : <code>void getLineStart(NSUInteger*, NSUInteger*, NSUInteger*, null)</code><br>
@@ -524,7 +525,7 @@ public abstract class NSString implements NSObject, NSCopying {
      *
      * @return An integer that can be used as a table address in a hash table structure.
      */
-    public abstract int hash();
+    public abstract NSUInteger hash();
 
     /**
      * Original signature : <code>NSStringEncoding fastestEncoding()</code><br>
@@ -607,14 +608,14 @@ public abstract class NSString implements NSObject, NSCopying {
      * Result in O(1) time; the estimate may be way over what's needed<br>
      * <i>from NSStringExtensionMethods native declaration : :209</i>
      */
-    public abstract int maximumLengthOfBytesUsingEncoding(int enc);
+    public abstract NSUInteger maximumLengthOfBytesUsingEncoding(int enc);
 
     /**
      * Original signature : <code>NSUInteger lengthOfBytesUsingEncoding(NSStringEncoding)</code><br>
      * Result in O(n) time; the result is exact<br>
      * <i>from NSStringExtensionMethods native declaration : :210</i>
      */
-    public abstract int lengthOfBytesUsingEncoding(int enc);
+    public abstract NSUInteger lengthOfBytesUsingEncoding(int enc);
 
     /**
      * Original signature : <code>NSString* decomposedStringWithCanonicalMapping()</code><br>
@@ -687,7 +688,7 @@ public abstract class NSString implements NSObject, NSCopying {
      * "NoCopy" is a hint<br>
      * <i>from NSStringExtensionMethods native declaration : :252</i>
      */
-    public abstract NSString initWithCharactersNoCopy_length_freeWhenDone(char characters, int length, boolean freeBuffer);
+    public abstract NSString initWithCharactersNoCopy_length_freeWhenDone(char characters, NSUInteger length, boolean freeBuffer);
 
     /**
      * Original signature : <code>initWithCharacters(const unichar*, NSUInteger)</code><br>
@@ -696,13 +697,13 @@ public abstract class NSString implements NSObject, NSCopying {
      * @deprecated use the safer methods {@link #initWithCharacters_length(char[], int)} and {@link #initWithCharacters_length(char, int)} instead
      */
     @java.lang.Deprecated
-    public abstract NSString initWithCharacters_length(char characters, int length);
+    public abstract NSString initWithCharacters_length(char characters, NSUInteger length);
 
     /**
      * Original signature : <code>initWithCharacters(const unichar*, NSUInteger)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :253</i>
      */
-    public abstract NSString initWithCharacters_length(char characters[], int length);
+    public abstract NSString initWithCharacters_length(char characters[], NSUInteger length);
 
     /**
      * Original signature : <code>initWithUTF8String(const char*)</code><br>
@@ -749,20 +750,20 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>initWithData(NSData*, NSStringEncoding)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :260</i>
      */
-    public abstract NSString initWithData_encoding(com.sun.jna.Pointer data, int encoding);
+    public abstract NSString initWithData_encoding(NSData data, int encoding);
 
     /**
      * Original signature : <code>initWithBytes(const void*, NSUInteger, NSStringEncoding)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :261</i>
      */
-    public abstract NSString initWithBytes_length_encoding(com.sun.jna.Pointer bytes, int len, int encoding);
+    public abstract NSString initWithBytes_length_encoding(com.sun.jna.Pointer bytes, NSUInteger len, int encoding);
 
     /**
      * Original signature : <code>initWithBytesNoCopy(void*, NSUInteger, NSStringEncoding, BOOL)</code><br>
      * "NoCopy" is a hint<br>
      * <i>from NSStringExtensionMethods native declaration : :263</i>
      */
-    public abstract NSString initWithBytesNoCopy_length_encoding_freeWhenDone(com.sun.jna.Pointer bytes, int len, int encoding, boolean freeBuffer);
+    public abstract NSString initWithBytesNoCopy_length_encoding_freeWhenDone(com.sun.jna.Pointer bytes, NSUInteger len, int encoding, boolean freeBuffer);
 
     /**
      * Original signature : <code>initWithCString(const char*, NSStringEncoding)</code><br>
@@ -866,7 +867,7 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>NSUInteger cStringLength()</code><br>
      * <i>from NSStringDeprecated native declaration : :348</i>
      */
-    public abstract int cStringLength();
+    public abstract NSUInteger cStringLength();
 
     /**
      * Original signature : <code>void getCString(char*)</code><br>
@@ -890,13 +891,13 @@ public abstract class NSString implements NSObject, NSCopying {
      * @deprecated use the safer method {@link #getCString_maxLength(java.nio.ByteBuffer, int)} instead
      */
     @java.lang.Deprecated
-    public abstract void getCString_maxLength(com.sun.jna.ptr.ByteByReference bytes, int maxLength);
+    public abstract void getCString_maxLength(com.sun.jna.ptr.ByteByReference bytes, NSUInteger maxLength);
 
     /**
      * Original signature : <code>void getCString(char*, NSUInteger)</code><br>
      * <i>from NSStringDeprecated native declaration : :350</i>
      */
-    public abstract void getCString_maxLength(java.nio.ByteBuffer bytes, int maxLength);
+    public abstract void getCString_maxLength(java.nio.ByteBuffer bytes, NSUInteger maxLength);
     /**
      * <i>from NSStringDeprecated native declaration : :351</i><br>
      * Conversion Error : /// Original signature : <code>void getCString(char*, NSUInteger, null, null)</code><br>
@@ -933,13 +934,13 @@ public abstract class NSString implements NSObject, NSCopying {
      * @deprecated use the safer method {@link #initWithCStringNoCopy_length_freeWhenDone(java.nio.ByteBuffer, int, boolean)} instead
      */
     @java.lang.Deprecated
-    public abstract NSString initWithCStringNoCopy_length_freeWhenDone(com.sun.jna.ptr.ByteByReference bytes, int length, boolean freeBuffer);
+    public abstract NSString initWithCStringNoCopy_length_freeWhenDone(com.sun.jna.ptr.ByteByReference bytes, NSUInteger length, boolean freeBuffer);
 
     /**
      * Original signature : <code>initWithCStringNoCopy(char*, NSUInteger, BOOL)</code><br>
      * <i>from NSStringDeprecated native declaration : :361</i>
      */
-    public abstract NSString initWithCStringNoCopy_length_freeWhenDone(java.nio.ByteBuffer bytes, int length, boolean freeBuffer);
+    public abstract NSString initWithCStringNoCopy_length_freeWhenDone(java.nio.ByteBuffer bytes, NSUInteger length, boolean freeBuffer);
 
     /**
      * Original signature : <code>initWithCString(const char*, NSUInteger)</code><br>
@@ -948,13 +949,13 @@ public abstract class NSString implements NSObject, NSCopying {
      * @deprecated use the safer method {@link #initWithCString_length(java.lang.String, int)} instead
      */
     @java.lang.Deprecated
-    public abstract NSString initWithCString_length(com.sun.jna.ptr.ByteByReference bytes, int length);
+    public abstract NSString initWithCString_length(com.sun.jna.ptr.ByteByReference bytes, NSUInteger length);
 
     /**
      * Original signature : <code>initWithCString(const char*, NSUInteger)</code><br>
      * <i>from NSStringDeprecated native declaration : :362</i>
      */
-    public abstract NSString initWithCString_length(java.lang.String bytes, int length);
+    public abstract NSString initWithCString_length(java.lang.String bytes, NSUInteger length);
 
     /**
      * Original signature : <code>initWithCString(const char*)</code><br>

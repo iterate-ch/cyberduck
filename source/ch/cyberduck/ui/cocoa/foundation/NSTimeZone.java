@@ -92,7 +92,7 @@ public abstract class NSTimeZone implements NSObject {
      * Original signature : <code>NSInteger secondsFromGMTForDate(NSDate*)</code><br>
      * <i>native declaration : :12</i>
      */
-    public abstract int secondsFromGMTForDate(NSDate aDate);
+    public abstract NSInteger secondsFromGMTForDate(NSDate aDate);
 
     /**
      * Original signature : <code>NSString* abbreviationForDate(NSDate*)</code><br>

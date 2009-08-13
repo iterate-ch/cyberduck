@@ -110,7 +110,7 @@ public abstract class NSArray implements NSObject {
      * Original signature : <code>NSUInteger count()</code><br>
      * <i>native declaration : :16</i>
      */
-    public abstract int count();
+    public abstract NSUInteger count();
 
     /**
      * Original signature : <code>objectAtIndex(NSUInteger)</code><br>
