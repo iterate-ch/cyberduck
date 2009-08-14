@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDPortablePreferencesImpl extends Preferences {
+public class CDPortablePreferencesImpl extends CDPreferencesImpl {
     private static Logger log = Logger.getLogger(CDPortablePreferencesImpl.class);
 
     private NSMutableDictionary dict;
@@ -44,16 +44,19 @@ public class CDPortablePreferencesImpl extends Preferences {
         return value;
     }
 
+    @Override
     public void setProperty(String property, String value) {
         log.info("setProperty:" + property + "," + value);
         this.dict.setObjectForKey(value, property);
     }
 
+    @Override
     public void deleteProperty(String property) {
         this.dict.removeObjectForKey(property);
         this.save();
     }
 
+    @Override
     protected void load() {
         Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
         if(f.exists()) {
@@ -66,6 +69,7 @@ public class CDPortablePreferencesImpl extends Preferences {
         }
     }
 
+    @Override
     public void save() {
         Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
         f.getParent().mkdir();
