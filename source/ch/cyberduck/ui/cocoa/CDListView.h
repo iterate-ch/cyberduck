@@ -29,8 +29,6 @@
 	
 	NSMutableString *select_string;
 	NSTimer *select_timer;
-
-	BOOL quickLookAvailable;
 }
 
 - (void)handleBrowserClick:(id)sender;

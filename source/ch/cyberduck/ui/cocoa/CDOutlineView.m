@@ -42,9 +42,6 @@ static NSTableColumn *localSelectionColumn;
 	select_string = [[NSMutableString alloc] init];
 	select_timer = nil;
 	autoexpand_timer = nil;
-
-	// First, load the private Quick Look framework if available (10.5)
-	quickLookAvailable = [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load];
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
@@ -225,6 +222,11 @@ static NSTableColumn *localSelectionColumn;
 	return frame;
 }
 
+- (NSRect)previewPanel:(id)panel sourceFrameOnScreenForPreviewItem:(id)item
+{
+    return [self previewPanel:panel frameForURL:[item previewItemURL]];
+}
+
 - (void)keyDown:(NSEvent *)event
 {
 	NSString *str = [event charactersIgnoringModifiers];
@@ -243,7 +245,7 @@ static NSTableColumn *localSelectionColumn;
 		return;
 	} 
 	else if (key == NSLeftArrowFunctionKey) {
-		if(quickLookAvailable && [[QLPreviewPanel sharedPreviewPanel] isOpen]) {
+		if([[QLPreviewPanel sharedPreviewPanel] isOpen]) {
 			[[QLPreviewPanel sharedPreviewPanel] selectPreviousItem];
 			return;
 		}
@@ -261,7 +263,7 @@ static NSTableColumn *localSelectionColumn;
 		return;
 	}
 	else if (key == NSRightArrowFunctionKey) {
-		if(quickLookAvailable && [[QLPreviewPanel sharedPreviewPanel] isOpen]) {
+		if([[QLPreviewPanel sharedPreviewPanel] isOpen]) {
 			[[QLPreviewPanel sharedPreviewPanel] selectNextItem];
 			return;
 		}
@@ -279,14 +281,12 @@ static NSTableColumn *localSelectionColumn;
 		return;
 	}
 	else if(key == ' ') {
-		if(quickLookAvailable) {
-			if ([[self delegate] respondsToSelector:@selector(spaceKeyPressed:)]) {
-				[[[QLPreviewPanel sharedPreviewPanel] windowController] setDelegate:self];
-				// Space bar invokes Quick Look
-				[[self delegate] performSelector:@selector(spaceKeyPressed:) withObject:event];
-			}
-			return;
-		}
+        if ([[self delegate] respondsToSelector:@selector(spaceKeyPressed:)]) {
+            [[[QLPreviewPanel sharedPreviewPanel] windowController] setDelegate:self];
+            // Space bar invokes Quick Look
+            [[self delegate] performSelector:@selector(spaceKeyPressed:) withObject:event];
+        }
+        return;
 	}
 	if (([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] ||
 			[[NSCharacterSet punctuationCharacterSet] characterIsMember:key] ||

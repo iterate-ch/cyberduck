@@ -40,9 +40,6 @@ static NSTableColumn *localSelectionColumn;
 	// browser typeahead selection
 	select_string = [[NSMutableString alloc] init];
 	select_timer = nil;
-
-	// First, load the private Quick Look framework if available (10.5+)
-	quickLookAvailable = [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load];
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
@@ -169,6 +166,11 @@ static NSTableColumn *localSelectionColumn;
 	return frame;
 }
 
+- (NSRect)previewPanel:(id)panel sourceFrameOnScreenForPreviewItem:(id)item
+{
+    return [self previewPanel:panel frameForURL:[item previewItemURL]];
+}
+
 - (void)keyDown:(NSEvent *)event
 {
 	NSString *str = [event characters];
@@ -187,14 +189,12 @@ static NSTableColumn *localSelectionColumn;
 		return;
     }
 	else if(key == ' ') {
-		if(quickLookAvailable) {
-			if ([[self delegate] respondsToSelector:@selector(spaceKeyPressed:)]) {
-				[[[QLPreviewPanel sharedPreviewPanel] windowController] setDelegate:self];
-				// Space bar invokes Quick Look
-				[[self delegate] performSelector:@selector(spaceKeyPressed:) withObject:event];
-			}
-			return;
-		}
+        if ([[self delegate] respondsToSelector:@selector(spaceKeyPressed:)]) {
+            [[[QLPreviewPanel sharedPreviewPanel] windowController] setDelegate:self];
+            // Space bar invokes Quick Look
+            [[self delegate] performSelector:@selector(spaceKeyPressed:) withObject:event];
+        }
+        return;
 	}
 	if (([[NSCharacterSet alphanumericCharacterSet] characterIsMember:key] ||
 			[[NSCharacterSet punctuationCharacterSet] characterIsMember:key] ||
