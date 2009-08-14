@@ -187,10 +187,17 @@
             <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
         </antcall>
+        <echo message="Creating DMG archive..."/>
         <exec dir="${home}" executable="./buildDMG.pl" spawn="false">
             <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
         </exec>
         <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
+                  algorithm="md5"/>
+        <echo message="Creating ZIP archive..."/>
+        <exec dir="${build.deploy}" executable="zip" spawn="false">
+            <arg line="-r ../${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip ${app.name}.app"/>
+        </exec>
+        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
                   algorithm="md5"/>
     </target>
 
@@ -218,17 +225,9 @@
         <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
             <arg line="--force --sign 'Cyberduck Code Signing Certificate' ${app.bundle}"/>
         </exec>
-        <echo message="Creating tar.gz archive..."/>
-        <exec dir="${build.deploy}" executable="tar" spawn="false">
-            <arg line="-czf ../${app.name}-${svn.revision}.tar.gz ${app.name}.app"/>
-        </exec>
-        <echo message="Calculating MD5 sum..."/>
-        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
-                  algorithm="md5" property="md5sum"/>
-        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
-                  algorithm="md5"/>
-        <property name="md5sum" value="${md5sum}"/>
-        <echo message="_MD5SUM_=${md5sum}"/>
+
+        <antcall target="tar"/>
+
         <copy todir="${build}" overwrite="true">
             <fileset dir="${home}/www/update/">
                 <include name="changelog.rss"/>
@@ -245,6 +244,20 @@
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
             <replacefilter token="_MD5SUM_" value="${md5sum}"/>
         </replace>
+    </target>
+
+    <target name="tar">
+        <echo message="Creating tar.gz archive..."/>
+        <exec dir="${build.deploy}" executable="tar" spawn="false">
+            <arg line="-czf ../${app.name}-${svn.revision}.tar.gz ${app.name}.app"/>
+        </exec>
+        <echo message="Calculating MD5 sum..."/>
+        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
+                  algorithm="md5" property="md5sum"/>
+        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
+                  algorithm="md5"/>
+        <property name="md5sum" value="${md5sum}"/>
+        <echo message="_MD5SUM_=${md5sum}"/>
     </target>
 
     <target name="mirror.alpha" depends="revision">
