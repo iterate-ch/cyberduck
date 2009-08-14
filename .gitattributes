@@ -230,9 +230,8 @@ cy.lproj/Transfer.nib/info.nib -text
 cy.lproj/Transfer.nib/keyedobjects.nib -text
 cy.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /cyberduck-application.icns -text svneol=unset#image/icns
-/cyberduck-application.psd -text
+/cyberduck-application.png -text svneol=unset#image/png
 /cyberduck-document.icns -text svneol=unset#image/icns
-/cyberduck-document.psd -text
 da.lproj/Alert.nib/classes.nib -text
 da.lproj/Alert.nib/info.nib -text
 da.lproj/Alert.nib/keyedobjects.nib -text
