@@ -599,7 +599,5 @@ public abstract class Preferences {
      * @return The preferred locale of all available in this application bundle
      *         for the currently logged in user
      */
-    protected String locale() {
-        return "en";
-    }
+    protected abstract String locale();
 }
