@@ -30,8 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.text.MessageFormat;
@@ -440,7 +438,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
                     NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
-                    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.intValue() - 16, dragPosition.y.intValue() - 16), new NSSize(32, 32));
+                    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x - 16, dragPosition.y - 16), new NSSize(32, 32));
                     view.dragPromisedFilesOfTypes(fileTypes, imageRect, this.id(), true, event);
                     // @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
                     return true;

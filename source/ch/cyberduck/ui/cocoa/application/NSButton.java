@@ -20,9 +20,8 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSRect;
 
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :15</i>

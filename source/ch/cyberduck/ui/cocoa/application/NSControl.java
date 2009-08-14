@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSRect;
 
 import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :10</i>
 public abstract class NSControl extends NSView {

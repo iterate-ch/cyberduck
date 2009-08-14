@@ -36,7 +36,9 @@ import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -357,6 +359,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      * @see NSDraggingSource
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
+    @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
         if(NSDraggingInfo.NSDragOperationDelete == operation) {
             controller.deleteBookmarkButtonClicked(null);
@@ -370,6 +373,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      * @return
      * @see NSDraggingSource
      */
+    @Override
     public int draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {
@@ -404,7 +408,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {
             NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
-            NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.intValue() - 16, dragPosition.y.intValue() - 16), new NSSize(32, 32));
+            NSRect imageRect = new NSRect(new NSPoint(dragPosition.x - 16, dragPosition.y - 16), new NSSize(32, 32));
             // Writing a promised file of the host as a bookmark file to the clipboard
             view.dragPromisedFilesOfTypes(NSArray.arrayWithObject("duck"), imageRect, this.id(), true, event);
             return true;

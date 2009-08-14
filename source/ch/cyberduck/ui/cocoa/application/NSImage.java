@@ -22,7 +22,6 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 /// <i>native declaration : :41</i>

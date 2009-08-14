@@ -21,10 +21,9 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSPoint;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.rococoa.cocoa.foundation.NSPoint;
 import org.apache.log4j.Logger;
 
 /**

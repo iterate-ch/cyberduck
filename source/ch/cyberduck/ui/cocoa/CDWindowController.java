@@ -21,17 +21,13 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -122,13 +118,13 @@ public abstract class CDWindowController extends CDBundleController implements N
     /**
      * Position this controller's window relative to other open windows
      */
-    public void cascade() {
+    protected void cascade() {
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count().intValue();
         if(count != 0) {
             NSWindow window = Rococoa.cast(windows.objectAtIndex(count - 1), NSWindow.class);
             NSPoint origin = window.frame().origin;
-            origin = new NSPoint(origin.x.intValue(), origin.y.intValue() + window.frame().size.height.intValue());
+            origin = new NSPoint(origin.x, origin.y + window.frame().size.height.intValue());
             this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
         }
     }

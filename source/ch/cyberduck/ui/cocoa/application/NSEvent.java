@@ -21,8 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-
-import org.rococoa.cocoa.foundation.NSPoint;
+import ch.cyberduck.ui.cocoa.foundation.NSPoint;
 
 public interface NSEvent extends NSObject, NSCopying {
 

@@ -33,7 +33,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -509,13 +508,19 @@ public class CDInfoController extends CDWindowController {
     private static NSPoint cascadedWindowPoint;
 
     @Override
-    public void awakeFromNib() {
+    protected void cascade() {
         if(null == cascadedWindowPoint) {
             cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(this.window.frame().origin);
         }
         else {
             cascadedWindowPoint = this.window.cascadeTopLeftFromPoint(cascadedWindowPoint);
         }
+    }
+
+    @Override
+    public void awakeFromNib() {
+        this.cascade();
+
         this.ownerr.setTarget(this.id());
         this.ownerr.setAction(Foundation.selector("permissionSelectionChanged:"));
         this.ownerr.setAllowsMixedState(true);
@@ -728,9 +733,6 @@ public class CDInfoController extends CDWindowController {
         checkbox.setEnabled(true);
     }
 
-    /**
-     * @param enabled
-     */
     private void initPermissionsCheckboxes() {
         ownerr.setState(NSCell.NSOffState);
         ownerw.setState(NSCell.NSOffState);
@@ -743,10 +745,6 @@ public class CDInfoController extends CDWindowController {
         otherx.setState(NSCell.NSOffState);
     }
 
-    /**
-     * @param count
-     * @param file
-     */
     private void initIcon() {
         if(this.numberOfFiles() > 1) {
             iconImageView.setImage(CDIconCache.instance().iconForName("multipleDocuments", 32));
