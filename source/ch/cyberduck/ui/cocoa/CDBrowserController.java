@@ -34,6 +34,8 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
+import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
+import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -47,9 +49,9 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
@@ -59,7 +61,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public class CDBrowserController extends CDWindowController implements NSToolbar.Delegate {
+public class CDBrowserController extends CDWindowController implements NSToolbar.Delegate, QLPreviewPanelController {
     private static Logger log = Logger.getLogger(CDBrowserController.class);
 
     public CDBrowserController() {
@@ -771,7 +773,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         public void cleanup() {
                             final Collection<Local> previews = new Collection<Local>();
                             for(Path download : downloads) {
-                                if(download.getLocal().attributes.getSize() == download.attributes.getSize()) {
+                                if(download.getStatus().isComplete()) {
                                     previews.add(download.getLocal());
                                 }
                             }
@@ -866,6 +868,37 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 browserOutlineView.setIndicatorImage_inTableColumn(image, browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
             }
         }
+    }
+
+    /**
+     * QuickLook support for 10.6+
+     *
+     * @param panel The Preview Panel looking for a controller.
+     * @return
+     * @ Sent to each object in the responder chain to find a controller.
+     */
+    public boolean acceptsPreviewPanelControl(QLPreviewPanel panel) {
+        return true;
+    }
+
+    /**
+     * QuickLook support for 10.6+
+     *
+     * @param panel The Preview Panel the receiver will control.
+     * @ Sent to the object taking control of the Preview Panel.
+     */
+    public void beginPreviewPanelControl(QLPreviewPanel panel) {
+        ;
+    }
+
+    /**
+     * QuickLook support for 10.6+
+     *
+     * @param panel The Preview Panel that the receiver will stop controlling.
+     * @ Sent to the object in control of the Preview Panel just before stopping its control.
+     */
+    public void endPreviewPanelControl(QLPreviewPanel panel) {
+        panel.setDataSource(null);
     }
 
     private CDBrowserOutlineViewModel browserOutlineModel;
