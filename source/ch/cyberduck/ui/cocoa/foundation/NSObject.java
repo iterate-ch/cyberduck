@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.Selector;
+import org.rococoa.NSClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :14</i>
