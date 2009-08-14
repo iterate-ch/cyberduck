@@ -331,13 +331,13 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public void mkdir(boolean recursive) {
         if(recursive) {
-            if(!_impl.mkdirs()) {
-                log.warn("Make directories failed:" + this.getAbsolute());
+            if(_impl.mkdirs()) {
+                log.info("Created directory " + this.getAbsolute());
             }
         }
         else {
-            if(!_impl.mkdir()) {
-                log.warn("Make directory failed:" + this.getAbsolute());
+            if(_impl.mkdir()) {
+                log.warn("Created directory " + this.getAbsolute());
             }
         }
     }
