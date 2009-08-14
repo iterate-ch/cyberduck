@@ -19,39 +19,19 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface IQuickLook {
+public abstract class QLPreviewItem extends CDController {
 
-    /**
-     * Does not open QuickLook panel but only changes the selection.
-     * @param files Display these files in QuickLook panel
-     */
-    public void select(Collection<Local> files);
+    public abstract NSURL previewItemURL();
 
-    /**
-     *
-     * @return QuickLook implementation found.
-     */
-    public boolean isAvailable();
-
-    /**
-     *
-     * @return QuickLook panel is visible
-     */
-    public boolean isOpen();
-
-    /**
-     * Open QuickLook panel
-     */
-    public void open();
-
-    /**
-     * Close QuickLook panel if any
-     */
-    public void close();
+    /*!
+    * @abstract The item's title this will be used as apparent item title.
+    * @discussion The title replaces the default item display name. This property is optional.
+    */
+    public abstract String previewItemTitle();
 }
