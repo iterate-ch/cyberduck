@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.NSSize;
+
 
 public abstract class NSView implements NSResponder {
 

@@ -20,9 +20,10 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSSize;
 
 import org.rococoa.ID;
-import org.rococoa.cocoa.foundation.NSSize;
+
 
 /// <i>native declaration : :31</i>
 public interface NSDrawer extends NSObject {

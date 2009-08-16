@@ -464,60 +464,6 @@ public abstract class NSFont implements NSObject, NSCopying {
      */
     public abstract int renderingMode();
 
-    /// <i>native declaration : :50</i>
-    public static class __fFlags extends com.sun.jna.Structure {
-        /// Allocate a new __fFlags struct on the heap
-        public __fFlags() {
-        }
-
-        /// Cast data at given memory location (pointer + offset) as an existing __fFlags struct
-        public __fFlags(com.sun.jna.Pointer pointer, int offset) {
-            super();
-            useMemory(pointer, offset);
-            read();
-        }
-
-        /// Create an instance that shares its memory with another __fFlags instance
-        public __fFlags(__fFlags struct) {
-            this(struct.getPointer(), 0);
-        }
-
-        public static class ByReference extends __fFlags implements com.sun.jna.Structure.ByReference {
-            /// Allocate a new __fFlags.ByRef struct on the heap
-            public ByReference() {
-            }
-
-            /// Create an instance that shares its memory with another __fFlags instance
-            public ByReference(__fFlags struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-
-        public static class ByValue extends __fFlags implements com.sun.jna.Structure.ByValue {
-            /// Allocate a new __fFlags.ByVal struct on the heap
-            public ByValue() {
-            }
-
-            /// Create an instance that shares its memory with another __fFlags instance
-            public ByValue(__fFlags struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-
-//        @com.sun.jna.Bits(1)
-//        public int _isScreenFont;
-//        @com.sun.jna.Bits(8)
-//        public int _systemFontType;
-//        @com.sun.jna.Bits(4)
-//        public int _reserved1;
-//        @com.sun.jna.Bits(1)
-//        public int _matrixIsIdentity;
-//        @com.sun.jna.Bits(3)
-//        public int _renderingMode;
-//        @com.sun.jna.Bits(15)
-//        public int _reserved2;
-    }
-
     /**
      * Original signature : <code>CGFloat widthOfString(NSString*)</code><br>
      * This API never returns correct value. Use NSStringDrawing API instead.<br>

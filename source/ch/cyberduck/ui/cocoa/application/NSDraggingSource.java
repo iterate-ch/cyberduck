@@ -23,6 +23,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSPoint;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
+
 /**
  * @version $Id$
  */

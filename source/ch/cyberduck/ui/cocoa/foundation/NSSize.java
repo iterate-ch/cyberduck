@@ -19,27 +19,29 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.CGFloat;
+
 import com.sun.jna.Structure;
 
 /**
  * @author <a href="mailto:harald.kuhr@gmail.com">Harald Kuhr</a>
  * @version $Id:$
  */
-public class NSRect extends Structure implements Structure.ByValue {
-    public final NSPoint origin;
-    public final NSSize size;
+public class NSSize extends Structure implements Structure.ByValue {
+    public final CGFloat width;
+    public final CGFloat height;
 
-    public NSRect() {
-        this(new NSPoint(0, 0), new NSSize());
+    public NSSize() {
+        this(0, 0);
     }
 
-    public NSRect(NSPoint origin, NSSize size) {
-        this.origin = origin;
-        this.size = size;
+    public NSSize(double width, double height) {
+        this.width = new CGFloat(width);
+        this.height = new CGFloat(height);
     }
 
-    public NSRect(double w, double h) {
-        this.origin = new NSPoint(0, 0);
-        this.size = new NSSize(w, h);
+    public NSSize(CGFloat width, CGFloat height) {
+        this.width = width;
+        this.height = height;
     }
 }

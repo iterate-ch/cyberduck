@@ -19,21 +19,29 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.CGFloat;
+
 import com.sun.jna.Structure;
 
 /**
- * @version $Id:$
+ * @author <a href="mailto:harald.kuhr@gmail.com">Harald Kuhr</a>
+ * @version $Id$
  */
 public class NSPoint extends Structure implements Structure.ByValue {
 
-    public final float x; //CGFloat cannot be mapped in Rococoa currently
-    public final float y; //CGFloat cannot be mapped in Rococoa currently
+    public final CGFloat x;
+    public final CGFloat y;
 
     public NSPoint() {
         this(0, 0);
     }
 
-    public NSPoint(float x, float y) {
+    public NSPoint(double x, double y) {
+        this.x = new CGFloat(x);
+        this.y = new CGFloat(y);
+    }
+
+    public NSPoint(CGFloat x, CGFloat y) {
         this.x = x;
         this.y = y;
     }

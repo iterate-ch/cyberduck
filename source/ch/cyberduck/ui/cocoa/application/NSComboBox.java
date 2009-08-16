@@ -22,9 +22,6 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.Rococoa;
-
 /// <i>native declaration : :16</i>
 public abstract class NSComboBox extends NSTextField {
 
