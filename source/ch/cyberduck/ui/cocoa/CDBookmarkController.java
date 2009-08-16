@@ -75,7 +75,7 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setWebURL(null);
         }
         if(selected.equals(Protocol.IDISK)) {
-            CDDotMacController controller = new CDDotMacController();
+            CDDotMacController controller = CDDotMacController.instance();
             final String member = controller.getAccountName();
             controller.invalidate();
             if(null != member) {

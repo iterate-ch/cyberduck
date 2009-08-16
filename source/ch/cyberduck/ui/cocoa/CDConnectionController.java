@@ -107,7 +107,7 @@ public class CDConnectionController extends CDSheetController {
             );
         }
         if(protocol.equals(Protocol.IDISK)) {
-            CDDotMacController controller = new CDDotMacController();
+            CDDotMacController controller = CDDotMacController.instance();
             final String member = controller.getAccountName();
             controller.invalidate();
             Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(

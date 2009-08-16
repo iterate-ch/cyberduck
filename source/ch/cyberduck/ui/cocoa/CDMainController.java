@@ -235,13 +235,13 @@ public class CDMainController extends CDBundleController {
     }
 
     public void downloadBookmarksFromDotMacClicked(final NSObject sender) {
-        CDDotMacController controller = new CDDotMacController();
+        CDDotMacController controller = CDDotMacController.instance();
         controller.downloadBookmarks();
         controller.invalidate();
     }
 
     public void uploadBookmarksToDotMacClicked(final NSObject sender) {
-        CDDotMacController c = new CDDotMacController();
+        CDDotMacController c = CDDotMacController.instance();
         c.uploadBookmarks();
         c.invalidate();
     }

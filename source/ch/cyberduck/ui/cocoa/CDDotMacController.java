@@ -28,17 +28,17 @@ import ch.cyberduck.ui.cocoa.application.NSAlert;
  */
 public class CDDotMacController extends CDController {
 
-    private static boolean JNI_LOADED = false;
+    private static CDDotMacController instance;
 
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("DotMac");
+    public static CDDotMacController instance() {
+        if(null == instance) {
+            instance = new CDDotMacController();
         }
-        return JNI_LOADED;
+        return instance;
     }
 
-    static {
-        CDDotMacController.loadNative();
+    private CDDotMacController() {
+        Native.load("DotMac");
     }
 
     /**
@@ -55,9 +55,6 @@ public class CDDotMacController extends CDController {
      *
      */
     public void downloadBookmarks() {
-        if(!CDDotMacController.loadNative()) {
-            return;
-        }
         final Local f = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
         this.downloadBookmarks(f.getAbsolute());
         if(f.exists()) {
