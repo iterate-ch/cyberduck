@@ -112,6 +112,10 @@ public abstract class Preferences {
         this.setProperty(property, String.valueOf(v));
     }
 
+    public void setProperty(String property, double v) {
+        this.setProperty(property, String.valueOf(v));
+    }
+
     /**
      * setting the default prefs values
      */
