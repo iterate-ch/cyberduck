@@ -29,6 +29,8 @@
 		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
 		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
 		47215AA707FC9A3E00451725 /* login.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47215AA607FC9A3E00451725 /* login.tiff */; };
+		47239D1E10383C5200C9536D /* DotMacKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47239D1D10383C5200C9536D /* DotMacKit.framework */; };
+		47239ED910383CF500C9536D /* DotMacKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47239D1D10383C5200C9536D /* DotMacKit.framework */; };
 		4726277F0FD5743C001D5BA5 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		472759650AF3BE6000EBE267 /* update.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 472759640AF3BE6000EBE267 /* update.tiff */; };
@@ -130,7 +132,6 @@
 		475D17C10805D54C00166B8A /* download1.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B70805D54C00166B8A /* download1.icns */; };
 		475D17C20805D54C00166B8A /* download4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B80805D54C00166B8A /* download4.icns */; };
 		475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475D461C0D9953CD009450C4 /* SecurityInterface.framework */; };
-		475DDD0A0F9C96BC00A38FB9 /* DotMacKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475DDCE30F9C96AE00A38FB9 /* DotMacKit.framework */; };
 		4762DABE09FC42EC0034C662 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4762DABF09FC42EC0034C662 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4762DAC009FC42EC0034C662 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479982AF05F54B1600F81519 /* Carbon.framework */; };
@@ -287,6 +288,13 @@
 			remoteGlobalIDString = 471D2C0B05A2505500675163;
 			remoteInfo = "app (International)";
 		};
+		47239ED710383CD400C9536D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4716D8AC0877533B00938886 /* libDotMac */;
+			remoteInfo = libDotMac;
+		};
 		4726A8D30DAD6E27001BC01D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -352,6 +360,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				47239ED910383CF500C9536D /* DotMacKit.framework in CopyFiles */,
 				47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */,
 				472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */,
 			);
@@ -538,6 +547,7 @@
 		471D2C5405A2505600675163 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47215AA607FC9A3E00451725 /* login.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = login.tiff; sourceTree = "<group>"; };
+		47239D1D10383C5200C9536D /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = lib/DotMacKit.framework; sourceTree = "<group>"; };
 		4725BE0A05D2E27000C7CCBD /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
 		4726277E0FD5743C001D5BA5 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = lib/Growl.framework; sourceTree = "<group>"; };
 		47271D8E09F4050B00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -955,7 +965,6 @@
 		475D17B70805D54C00166B8A /* download1.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download1.icns; sourceTree = "<group>"; };
 		475D17B80805D54C00166B8A /* download4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download4.icns; sourceTree = "<group>"; };
 		475D461C0D9953CD009450C4 /* SecurityInterface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityInterface.framework; path = System/Library/Frameworks/SecurityInterface.framework; sourceTree = SDKROOT; };
-		475DDCE30F9C96AE00A38FB9 /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = build/DotMacKit.framework; sourceTree = "<group>"; };
 		475E53F509AD1B48007CFC2B /* UKPrefsPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKPrefsPanel.h; sourceTree = "<group>"; };
 		475E53F609AD1B48007CFC2B /* UKPrefsPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKPrefsPanel.m; sourceTree = "<group>"; };
 		4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDiagnostics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1487,7 +1496,7 @@
 			files = (
 				4716D9A50877548600938886 /* Cocoa.framework in Frameworks */,
 				4716D8B20877533B00938886 /* JavaVM.framework in Frameworks */,
-				475DDD0A0F9C96BC00A38FB9 /* DotMacKit.framework in Frameworks */,
+				47239D1E10383C5200C9536D /* DotMacKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1639,10 +1648,10 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47239D1D10383C5200C9536D /* DotMacKit.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
 				470671150FD8896D00EE3291 /* Sparkle.framework */,
 				4726277E0FD5743C001D5BA5 /* Growl.framework */,
-				475DDCE30F9C96AE00A38FB9 /* DotMacKit.framework */,
 				47D4148E0F0ECFBD00BAF184 /* SecurityFoundation.framework */,
 				47D414940F0ECFF300BAF184 /* Security.framework */,
 				4773D6B00F9C86A7004658BD /* libAquaticPrime.a */,
@@ -2298,6 +2307,7 @@
 				4744AB250F9F749E00241A56 /* PBXTargetDependency */,
 				477A11D40FD0942800BAD4AD /* PBXTargetDependency */,
 				475C2DF70FDC287700E4251E /* PBXTargetDependency */,
+				47239ED810383CD400C9536D /* PBXTargetDependency */,
 			);
 			name = "app (International)";
 			productInstallPath = "$(USER_APPS_DIR)";
@@ -2941,6 +2951,11 @@
 			isa = PBXTargetDependency;
 			target = 471D2C0B05A2505500675163 /* app (International) */;
 			targetProxy = 471E21630A1734E8009E164E /* PBXContainerItemProxy */;
+		};
+		47239ED810383CD400C9536D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4716D8AC0877533B00938886 /* libDotMac */;
+			targetProxy = 47239ED710383CD400C9536D /* PBXContainerItemProxy */;
 		};
 		4726A8D40DAD6E27001BC01D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4139,8 +4154,16 @@
 		4716D8B70877533B00938886 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc7400,
+					i386,
+				);
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDotMac;
@@ -4472,8 +4495,16 @@
 		47A8AD69100A6A9E00DC800C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc7400,
+					i386,
+				);
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDotMac;
