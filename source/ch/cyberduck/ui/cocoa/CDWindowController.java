@@ -124,7 +124,7 @@ public abstract class CDWindowController extends CDBundleController implements N
         if(count != 0) {
             NSWindow window = Rococoa.cast(windows.objectAtIndex(count - 1), NSWindow.class);
             NSPoint origin = window.frame().origin;
-            origin = new NSPoint(origin.x, origin.y + window.frame().size.height.intValue());
+            origin = new NSPoint(origin.x.doubleValue(), origin.y.doubleValue() + window.frame().size.height.doubleValue());
             this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
         }
     }

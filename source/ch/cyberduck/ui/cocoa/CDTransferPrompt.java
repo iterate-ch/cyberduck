@@ -73,7 +73,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     public void awakeFromNib() {
         this.transfer.getSession().addProgressListener(l);
         this.reloadData();
-        if(browserView.numberOfRows() > 0) {
+        if(browserView.numberOfRows().intValue() > 0) {
             browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(0), false);
         }
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));

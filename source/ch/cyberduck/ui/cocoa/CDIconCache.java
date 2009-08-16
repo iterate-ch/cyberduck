@@ -27,10 +27,10 @@ import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSPoint;
 import ch.cyberduck.ui.cocoa.foundation.NSRect;
+import ch.cyberduck.ui.cocoa.foundation.NSSize;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.HashMap;
 

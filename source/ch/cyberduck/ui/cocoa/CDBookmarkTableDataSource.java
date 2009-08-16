@@ -37,7 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
+
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
@@ -234,7 +234,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
-                if(index > -1 && index < view.numberOfRows()) {
+                if(index > -1 && index < view.numberOfRows().intValue()) {
                     //only allow other files if there is at least one bookmark
                     view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropOn);
                     return NSDraggingInfo.NSDragOperationCopy;
@@ -255,7 +255,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             return NSDraggingInfo.NSDragOperationNone;
         }
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null) {
-            if(index > -1 && index < view.numberOfRows()) {
+            if(index > -1 && index < view.numberOfRows().intValue()) {
                 view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
                 // We accept any file promise within the bounds
                 return NSDraggingInfo.NSDragOperationMove;
@@ -289,8 +289,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     if(row < 0) {
                         row = 0;
                     }
-                    if(row > view.numberOfRows()) {
-                        row = view.numberOfRows();
+                    if(row > view.numberOfRows().intValue()) {
+                        row = view.numberOfRows().intValue();
                     }
                     source.add(row, HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
                     view.selectRow(new NSInteger(row), false);
@@ -359,14 +359,14 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      * @see NSDraggingSource
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
-    @Override
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
-        if(NSDraggingInfo.NSDragOperationDelete == operation) {
-            controller.deleteBookmarkButtonClicked(null);
-        }
-        NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
-        promisedDragBookmarks = null;
-    }
+//    @Override
+//    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+//        if(NSDraggingInfo.NSDragOperationDelete == operation) {
+//            controller.deleteBookmarkButtonClicked(null);
+//        }
+//        NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
+//        promisedDragBookmarks.clear();
+//    }
 
     /**
      * @param local
@@ -408,7 +408,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {
             NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
-            NSRect imageRect = new NSRect(new NSPoint(dragPosition.x - 16, dragPosition.y - 16), new NSSize(32, 32));
+            NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
             // Writing a promised file of the host as a bookmark file to the clipboard
             view.dragPromisedFilesOfTypes(NSArray.arrayWithObject("duck"), imageRect, this.id(), true, event);
             return true;

@@ -33,7 +33,6 @@ import ch.cyberduck.ui.cocoa.model.CDPathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSSize;
 
 import java.text.MessageFormat;
 import java.util.List;

@@ -84,7 +84,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             if(event != null) {
                 log.debug("Event:" + event.type());
                 if(NSEvent.NSLeftMouseDragged == event.type()) {
-                    final int draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null));
+                    final int draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null)).intValue();
                     if(draggingColumn != 0) {
                         log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem for column:" + draggingColumn);
                         // See ticket #60
@@ -150,7 +150,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                     || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(null != destination) {
                     // Dragging over file or folder
-                    final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation());
+                    final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation()).intValue();
                     if(0 == draggingColumn && destination.attributes.isDirectory()) {
                         // Drop target is directory
                         outlineView.setDropItem(destination.<NSObject>getReference().unique(), new NSInteger(NSOutlineView.NSOutlineViewDropOnItemIndex));

@@ -50,7 +50,6 @@ import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
@@ -372,7 +371,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 break;
             }
             case SWITCH_OUTLINE_VIEW: {
-                if(row < this.browserOutlineView.numberOfRows()) {
+                if(row < this.browserOutlineView.numberOfRows().intValue()) {
                     return this.lookup(new CDPathReference(this.browserOutlineView.itemAtRow(new NSInteger(row))));
                 }
                 break;
@@ -399,7 +398,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void drawerWillOpen(NSNotification notification) {
         logDrawer.setContentSize(new NSSize(
                 logDrawer.contentSize().width.doubleValue(),
-                Preferences.instance().getFloat("browser.logDrawer.size.height")
+                Preferences.instance().getDouble("browser.logDrawer.size.height")
         ));
     }
 
@@ -968,7 +967,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
                     if(NSEvent.NSLeftMouseDragged == event.type()) {
-                        final int draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null));
+                        final int draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null)).intValue();
                         if(draggingColumn != 0) {
                             log.debug("Returning false to #outlineViewShouldExpandItem for column:" + draggingColumn);
                             // See ticket #60
@@ -1885,7 +1884,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
-                    for(int i = 0; i < browserOutlineView.numberOfRows(); i++) {
+                    for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         this.lookup(new CDPathReference(browserOutlineView.itemAtRow(new NSInteger(i)))).invalidate();
                     }
                     break;

@@ -36,7 +36,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -167,8 +166,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private NSDrawer logDrawer;
 
     public void drawerWillOpen(NSNotification notification) {
-        logDrawer.setContentSize(new NSSize(
-                logDrawer.contentSize().width.doubleValue(),
+        logDrawer.setContentSize(new NSSize(logDrawer.contentSize().width.doubleValue(),
                 Preferences.instance().getDouble("queue.logDrawer.size.height")
         ));
     }
@@ -179,7 +177,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void drawerWillClose(NSNotification notification) {
         Preferences.instance().setProperty("queue.logDrawer.size.height",
-                logDrawer.contentSize().height.intValue());
+                logDrawer.contentSize().height.doubleValue());
     }
 
     public void drawerDidClose(NSNotification notification) {
@@ -1126,7 +1124,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             });
         }
         if(action.equals(Foundation.selector("clearButtonClicked:"))) {
-            return transferTable.numberOfRows() > 0;
+            return transferTable.numberOfRows().intValue() > 0;
         }
         return true;
     }

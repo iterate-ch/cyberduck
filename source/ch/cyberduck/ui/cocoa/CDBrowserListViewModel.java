@@ -69,9 +69,9 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
-            final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation());
+            final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
             if(0 == draggingColumn || 1 == draggingColumn) {
-                if(row != -1 && row < view.numberOfRows()) {
+                if(row != -1 && row < view.numberOfRows().intValue()) {
                     Path p = this.childs(this.controller.workdir()).get(row);
                     if(p.attributes.isDirectory()) {
                         destination = p;
@@ -86,7 +86,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
-            if(row != -1 && row < view.numberOfRows()) {
+            if(row != -1 && row < view.numberOfRows().intValue()) {
                 destination = this.childs(this.controller.workdir()).get(row);
             }
             return super.acceptDrop(view, destination, draggingInfo);

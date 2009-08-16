@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :69</i>
 public abstract class NSTableView extends NSControl {
@@ -250,13 +251,13 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>NSInteger numberOfColumns()</code><br>
      * <i>native declaration : :152</i>
      */
-    public abstract int numberOfColumns();
+    public abstract NSInteger numberOfColumns();
 
     /**
      * Original signature : <code>NSInteger numberOfRows()</code><br>
      * <i>native declaration : :153</i>
      */
-    public abstract int numberOfRows();
+    public abstract NSInteger numberOfRows();
 
     /**
      * Original signature : <code>void removeTableColumn(NSTableColumn*)</code><br>
@@ -629,14 +630,14 @@ public abstract class NSTableView extends NSControl {
      * Conversion Error : /// Original signature : <code>NSInteger columnAtPoint(null)</code><br>
      * - (NSInteger)columnAtPoint:(null)point; (Argument point cannot be converted)
      */
-    public abstract int columnAtPoint(NSPoint point);
+    public abstract NSInteger columnAtPoint(NSPoint point);
 
     /**
      * <i>native declaration : :309</i><br>
      * Conversion Error : /// Original signature : <code>NSInteger rowAtPoint(null)</code><br>
      * - (NSInteger)rowAtPoint:(null)point; (Argument point cannot be converted)
      */
-    public abstract int rowAtPoint(NSPoint point);
+    public abstract NSInteger rowAtPoint(NSPoint point);
     /**
      * <i>native declaration : :313</i><br>
      * Conversion Error : NSRect
@@ -751,7 +752,7 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void selectColumn(NSInteger, BOOL)</code><br>
      * <i>from NSDeprecated native declaration : :511</i>
      */
-    public abstract void selectColumn_byExtendingSelection(int column, boolean extend);
+    public abstract void selectColumn_byExtendingSelection(NSInteger column, boolean extend);
 
     /**
      * Deprecated in Mac OS 10.3.  You should use selectRowIndexes:byExtendingSelection: instead.  See that method for more details.<br>

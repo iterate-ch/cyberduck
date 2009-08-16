@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class CDListDataSource extends CDController implements NSTableView.DataSource, NSDraggingSource {
+public abstract class CDListDataSource extends CDController implements NSTableView.DataSource {
     private static Logger log = Logger.getLogger(CDListDataSource.class);
 
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row) {
@@ -53,18 +53,17 @@ public abstract class CDListDataSource extends CDController implements NSTableVi
         return NSDraggingInfo.NSDragOperationMove | NSDraggingInfo.NSDragOperationCopy;
     }
 
-    public void draggedImage_beganAt(NSImage image, NSPoint point) {
-        log.trace("draggedImage_beganAt");
-    }
-
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
-        log.trace("draggedImage_endedAt_operation");
-    }
-
-    public void draggedImage_movedTo(NSImage image, NSPoint point) {
-        log.trace("draggedImage_movedTo");
-
-    }
+//    public void draggedImage_beganAt(NSImage image, NSPoint point) {
+//        log.trace("draggedImage_beganAt");
+//    }
+//
+//    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+//        log.trace("draggedImage_endedAt_operation");
+//    }
+//
+//    public void draggedImage_movedTo(NSImage image, NSPoint point) {
+//        log.trace("draggedImage_movedTo");
+//    }
 
     public boolean ignoreModifierKeysWhileDragging() {
         return false;

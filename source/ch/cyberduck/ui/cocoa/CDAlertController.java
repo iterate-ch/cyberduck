@@ -54,7 +54,7 @@ public abstract class CDAlertController extends CDSheetController {
 
     protected void setAccessoryView(NSControl view) {
         view.sizeToFit();
-        view.setFrame(new NSRect(300, view.frame().size.height.doubleValue()));
+        view.setFrame(new NSRect(300, view.frame().size.height.floatValue()));
         alert.setAccessoryView(view);
     }
 

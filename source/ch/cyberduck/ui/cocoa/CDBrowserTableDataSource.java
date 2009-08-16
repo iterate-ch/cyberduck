@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -438,7 +437,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
                     NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
-                    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x - 16, dragPosition.y - 16), new NSSize(32, 32));
+                    NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
                     view.dragPromisedFilesOfTypes(fileTypes, imageRect, this.id(), true, event);
                     // @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
                     return true;
@@ -448,24 +447,24 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         return false;
     }
 
-    public void draggedImage_beganAt(NSImage image, NSPoint point) {
-        ;
-    }
-
-    /**
-     * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
-     */
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
-        log.debug("draggedImage_endedAt_operation:" + operation);
-        if(NSDraggingInfo.NSDragOperationDelete == operation) {
-            controller.deletePaths(promisedDragPaths);
-        }
-        promisedDragPaths.clear();
-    }
-
-    public void draggedImage_movedTo(NSImage image, NSPoint point) {
-        ;
-    }
+//    public void draggedImage_beganAt(NSImage image, NSPoint point) {
+//        ;
+//    }
+//
+//    /**
+//     * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
+//     */
+//    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+//        log.debug("draggedImage_endedAt_operation:" + operation);
+//        if(NSDraggingInfo.NSDragOperationDelete == operation) {
+//            controller.deletePaths(promisedDragPaths);
+//        }
+//        promisedDragPaths.clear();
+//    }
+//
+//    public void draggedImage_movedTo(NSImage image, NSPoint point) {
+//        ;
+//    }
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
