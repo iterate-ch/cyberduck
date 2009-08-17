@@ -36,26 +36,26 @@ public interface NSDraggingSource {
      */
     int draggingSourceOperationMaskForLocal(boolean flag);
 
-//    /**
-//     * <i>native declaration : line 76</i><br>
-//     * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null)</code><br>
-//     * - (void)draggedImage:(NSImage*)image beganAt:(null)screenPoint; (Argument screenPoint cannot be converted)
-//     */
-//    public void draggedImage_beganAt(NSImage image, NSPoint point);
-//
-//    /**
-//     * <i>native declaration : line 77</i><br>
-//     * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null, NSDragOperation)</code><br>
-//     * - (void)draggedImage:(NSImage*)image endedAt:(null)screenPoint operation:(NSDragOperation)operation; (Argument screenPoint cannot be converted)
-//     */
-//    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation);
-//
-//    /**
-//     * <i>native declaration : line 78</i><br>
-//     * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null)</code><br>
-//     * - (void)draggedImage:(NSImage*)image movedTo:(null)screenPoint; (Argument screenPoint cannot be converted)
-//     */
-//    public void draggedImage_movedTo(NSImage image, NSPoint point);
+    /**
+     * <i>native declaration : line 76</i><br>
+     * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null)</code><br>
+     * - (void)draggedImage:(NSImage*)image beganAt:(null)screenPoint; (Argument screenPoint cannot be converted)
+     */
+    public void draggedImage_beganAt(NSImage image, NSPoint point);
+
+    /**
+     * <i>native declaration : line 77</i><br>
+     * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null, NSDragOperation)</code><br>
+     * - (void)draggedImage:(NSImage*)image endedAt:(null)screenPoint operation:(NSDragOperation)operation; (Argument screenPoint cannot be converted)
+     */
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation);
+
+    /**
+     * <i>native declaration : line 78</i><br>
+     * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null)</code><br>
+     * - (void)draggedImage:(NSImage*)image movedTo:(null)screenPoint; (Argument screenPoint cannot be converted)
+     */
+    public void draggedImage_movedTo(NSImage image, NSPoint point);
 
     /**
      * Original signature : <code>BOOL ignoreModifierKeysWhileDragging()</code><br>

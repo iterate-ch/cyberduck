@@ -447,24 +447,24 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         return false;
     }
 
-//    public void draggedImage_beganAt(NSImage image, NSPoint point) {
-//        ;
-//    }
-//
-//    /**
-//     * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
-//     */
-//    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
-//        log.debug("draggedImage_endedAt_operation:" + operation);
-//        if(NSDraggingInfo.NSDragOperationDelete == operation) {
-//            controller.deletePaths(promisedDragPaths);
-//        }
-//        promisedDragPaths.clear();
-//    }
-//
-//    public void draggedImage_movedTo(NSImage image, NSPoint point) {
-//        ;
-//    }
+    public void draggedImage_beganAt(NSImage image, NSPoint point) {
+        log.trace("draggedImage_beganAt:" + point);
+    }
+
+    /**
+     * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
+     */
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+        log.trace("draggedImage_endedAt_operation:" + operation);
+        if(NSDraggingInfo.NSDragOperationDelete == operation) {
+            controller.deletePaths(promisedDragPaths);
+        }
+        promisedDragPaths.clear();
+    }
+
+    public void draggedImage_movedTo(NSImage image, NSPoint point) {
+        log.trace("draggedImage_movedTo:" + point);
+    }
 
     /**
      * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.

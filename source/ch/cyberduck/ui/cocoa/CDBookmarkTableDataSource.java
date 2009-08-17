@@ -359,14 +359,14 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      * @see NSDraggingSource
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
-//    @Override
-//    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
-//        if(NSDraggingInfo.NSDragOperationDelete == operation) {
-//            controller.deleteBookmarkButtonClicked(null);
-//        }
-//        NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
-//        promisedDragBookmarks.clear();
-//    }
+    @Override
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+        if(NSDraggingInfo.NSDragOperationDelete == operation) {
+            controller.deleteBookmarkButtonClicked(null);
+        }
+        NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
+        promisedDragBookmarks.clear();
+    }
 
     /**
      * @param local
