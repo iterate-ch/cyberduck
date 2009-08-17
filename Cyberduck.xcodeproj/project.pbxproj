@@ -29,8 +29,6 @@
 		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
 		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
 		47215AA707FC9A3E00451725 /* login.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47215AA607FC9A3E00451725 /* login.tiff */; };
-		47239D1E10383C5200C9536D /* DotMacKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47239D1D10383C5200C9536D /* DotMacKit.framework */; };
-		47239ED910383CF500C9536D /* DotMacKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47239D1D10383C5200C9536D /* DotMacKit.framework */; };
 		4726277F0FD5743C001D5BA5 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		472759650AF3BE6000EBE267 /* update.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 472759640AF3BE6000EBE267 /* update.tiff */; };
@@ -292,7 +290,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 4716D8AC0877533B00938886 /* libDotMac */;
+			remoteGlobalIDString = 4716D8AC0877533B00938886;
 			remoteInfo = libDotMac;
 		};
 		4726A8D30DAD6E27001BC01D /* PBXContainerItemProxy */ = {
@@ -360,7 +358,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				47239ED910383CF500C9536D /* DotMacKit.framework in CopyFiles */,
 				47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */,
 				472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */,
 			);
@@ -547,7 +544,6 @@
 		471D2C5405A2505600675163 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47215AA607FC9A3E00451725 /* login.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = login.tiff; sourceTree = "<group>"; };
-		47239D1D10383C5200C9536D /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = lib/DotMacKit.framework; sourceTree = "<group>"; };
 		4725BE0A05D2E27000C7CCBD /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
 		4726277E0FD5743C001D5BA5 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Growl.framework; path = lib/Growl.framework; sourceTree = "<group>"; };
 		47271D8E09F4050B00136347 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1496,7 +1492,6 @@
 			files = (
 				4716D9A50877548600938886 /* Cocoa.framework in Frameworks */,
 				4716D8B20877533B00938886 /* JavaVM.framework in Frameworks */,
-				47239D1E10383C5200C9536D /* DotMacKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1648,7 +1643,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				47239D1D10383C5200C9536D /* DotMacKit.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
 				470671150FD8896D00EE3291 /* Sparkle.framework */,
 				4726277E0FD5743C001D5BA5 /* Growl.framework */,
