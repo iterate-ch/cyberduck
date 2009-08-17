@@ -1049,6 +1049,15 @@ ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
 ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
+lib/DotMacKit.framework/DotMacKit -text
+lib/DotMacKit.framework/Headers -text
+lib/DotMacKit.framework/Resources -text
+lib/DotMacKit.framework/Versions/A/DotMacKit -text
+lib/DotMacKit.framework/Versions/A/Resources/English.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+lib/DotMacKit.framework/Versions/A/Resources/English.lproj/locversion.plist -text
+lib/DotMacKit.framework/Versions/A/Resources/Info.plist -text
+lib/DotMacKit.framework/Versions/A/Resources/version.plist -text
+lib/DotMacKit.framework/Versions/Current -text
 lib/Growl.framework/Growl -text
 lib/Growl.framework/Headers -text
 lib/Growl.framework/Resources -text
