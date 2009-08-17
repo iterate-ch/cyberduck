@@ -1049,22 +1049,6 @@ ko.lproj/Transfer.nib/classes.nib -text
 ko.lproj/Transfer.nib/info.nib -text
 ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
-lib/DotMacKit.framework/DotMacKit -text
-lib/DotMacKit.framework/Headers -text
-lib/DotMacKit.framework/Resources -text
-lib/DotMacKit.framework/Versions/A/DotMacKit -text
-lib/DotMacKit.framework/Versions/A/Resources/DotMacKit-Info.plist -text
-lib/DotMacKit.framework/Versions/A/Resources/Entries -text
-lib/DotMacKit.framework/Versions/A/Resources/Info.plist -text
-lib/DotMacKit.framework/Versions/A/Resources/Repository -text
-lib/DotMacKit.framework/Versions/A/Resources/Root -text
-lib/DotMacKit.framework/Versions/A/Resources/version.plist -text
-lib/DotMacKit.framework/Versions/A/Support/.MacMessageManager.app/Contents/Frameworks/DotMacKit.framework -text
-lib/DotMacKit.framework/Versions/A/Support/.MacMessageManager.app/Contents/Info.plist -text
-lib/DotMacKit.framework/Versions/A/Support/.MacMessageManager.app/Contents/MacOS/.MacMessageManager -text
-lib/DotMacKit.framework/Versions/A/Support/.MacMessageManager.app/Contents/PkgInfo -text
-lib/DotMacKit.framework/Versions/A/Support/.MacMessageManager.app/Contents/version.plist -text
-lib/DotMacKit.framework/Versions/Current -text
 lib/Growl.framework/Growl -text
 lib/Growl.framework/Headers -text
 lib/Growl.framework/Resources -text
