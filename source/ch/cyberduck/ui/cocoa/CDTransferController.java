@@ -231,7 +231,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
 
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int i, boolean shouldCancel) {
-            final int selected = transferTable.numberOfSelectedRows();
+            final int selected = transferTable.numberOfSelectedRows().intValue();
             final int tag = item.tag();
             NSIndexSet iterator = transferTable.selectedRowIndexes();
             for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
@@ -424,7 +424,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     private void updateLabels() {
         log.debug("updateLabels");
-        final int selected = transferTable.numberOfSelectedRows();
+        final int selected = transferTable.numberOfSelectedRows().intValue();
         if(1 == selected) {
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
@@ -453,7 +453,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     private void updateIcon() {
         log.debug("updateIcon");
-        final int selected = transferTable.numberOfSelectedRows();
+        final int selected = transferTable.numberOfSelectedRows().intValue();
         if(1 != selected) {
             iconView.setImage(null);
             return;
@@ -473,7 +473,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     private void updateBandwidthPopup() {
         log.debug("updateBandwidthPopup");
-        final int selected = transferTable.numberOfSelectedRows();
+        final int selected = transferTable.numberOfSelectedRows().intValue();
         bandwidthPopup.setEnabled(selected > 0);
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
@@ -860,7 +860,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     public void openButtonClicked(final NSObject sender) {
-        if(transferTable.numberOfSelectedRows() == 1) {
+        if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
@@ -891,7 +891,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     public void revealButtonClicked(final NSObject sender) {
-        if(transferTable.numberOfSelectedRows() == 1) {
+        if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();

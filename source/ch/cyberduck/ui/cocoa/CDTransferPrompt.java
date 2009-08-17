@@ -32,6 +32,7 @@ import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
@@ -300,7 +301,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.browserView.setAllowsColumnReordering(true);
         this.browserView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
         if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-            this.browserView.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask | NSTableView.NSTableViewSolidVerticalGridLineMask);
+            this.browserView.setGridStyleMask(new NSUInteger(NSTableView.NSTableViewSolidHorizontalGridLineMask.intValue() | NSTableView.NSTableViewSolidVerticalGridLineMask.intValue()));
         }
         else if(Preferences.instance().getBoolean("browser.verticalLines")) {
             this.browserView.setGridStyleMask(NSTableView.NSTableViewSolidVerticalGridLineMask);
