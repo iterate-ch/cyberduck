@@ -154,23 +154,23 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                     final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation()).intValue();
                     if(0 == draggingColumn && destination.attributes.isDirectory()) {
                         // Drop target is directory
-                        outlineView.setDropItem(destination.<NSObject>getReference().unique(), new NSInteger(NSOutlineView.NSOutlineViewDropOnItemIndex));
+                        outlineView.setDropItem(destination.<NSObject>getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
                         return super.validateDrop(outlineView, destination, row, draggingInfo);
                     }
                     else {
-                        outlineView.setDropItem(null, new NSInteger(NSOutlineView.NSOutlineViewDropOnItemIndex));
+                        outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
                         return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                     }
                 }
                 else {
                     // Dragging over empty rows
-                    outlineView.setDropItem(null, new NSInteger(NSOutlineView.NSOutlineViewDropOnItemIndex));
+                    outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
                     return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                 }
             }
         }
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            outlineView.setDropItem(null, new NSInteger(NSOutlineView.NSOutlineViewDropOnItemIndex));
+            outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
         }
         return super.validateDrop(outlineView, destination, row, draggingInfo);
     }

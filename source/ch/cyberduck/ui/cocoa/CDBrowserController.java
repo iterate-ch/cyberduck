@@ -349,7 +349,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     protected int getSelectionCount() {
-        return this.getSelectedBrowserView().numberOfSelectedRows();
+        return this.getSelectedBrowserView().numberOfSelectedRows().intValue();
     }
 
     private void deselectAll() {
@@ -931,7 +931,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
-                    if(browserOutlineView.numberOfSelectedRows() == 1) {
+                    if(browserOutlineView.numberOfSelectedRows().intValue() == 1) {
                         browserOutlineView.editRow(
                                 browserOutlineView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
                                 browserOutlineView.selectedRow(), true);
@@ -1046,7 +1046,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>() {
             public void enterKeyPressed(final NSObject sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
-                    if(browserListView.numberOfSelectedRows() == 1) {
+                    if(browserListView.numberOfSelectedRows().intValue() == 1) {
                         browserListView.editRow(
                                 browserListView.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
                                 browserListView.selectedRow(), true);
@@ -1105,7 +1105,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     protected void _updateBrowserAttributes(NSTableView tableView) {
         tableView.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
         if(Preferences.instance().getBoolean("browser.horizontalLines") && Preferences.instance().getBoolean("browser.verticalLines")) {
-            tableView.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask | NSTableView.NSTableViewSolidVerticalGridLineMask);
+            tableView.setGridStyleMask(new NSUInteger(NSTableView.NSTableViewSolidHorizontalGridLineMask.intValue() | NSTableView.NSTableViewSolidVerticalGridLineMask.intValue()));
         }
         else if(Preferences.instance().getBoolean("browser.verticalLines")) {
             tableView.setGridStyleMask(NSTableView.NSTableViewSolidVerticalGridLineMask);
@@ -1249,7 +1249,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
             public void selectionDidChange(NSNotification notification) {
                 addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsAdd());
-                final int selected = bookmarkTable.numberOfSelectedRows();
+                final int selected = bookmarkTable.numberOfSelectedRows().intValue();
                 editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit() && selected == 1);
                 deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete() && selected > 0);
             }
@@ -1492,7 +1492,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     // ----------------------------------------------------------
 
     public void connectBookmarkButtonClicked(final NSObject sender) {
-        if(bookmarkTable.numberOfSelectedRows() == 1) {
+        if(bookmarkTable.numberOfSelectedRows().intValue() == 1) {
             final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
             this.mount(selected);
         }
@@ -3659,7 +3659,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return !isActivityRunning();
         }
         if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
-            return bookmarkTable.numberOfSelectedRows() == 1;
+            return bookmarkTable.numberOfSelectedRows().intValue() == 1;
         }
         if(action.equals(Foundation.selector("addBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsAdd();
@@ -3668,7 +3668,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow().intValue() != -1;
         }
         if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
-            return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows() == 1;
+            return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
         }
         if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {

@@ -38,16 +38,16 @@ public abstract class NSTableView extends NSControl {
     public static final String NSTableViewColumnDidResizeNotification = "NSTableViewColumnDidResizeNotification";
     public static final String NSTableViewSelectionIsChangingNotification = "NSTableViewSelectionIsChangingNotification";
 
-    public static final int NSTableViewGridNone = 0;
-    public static final int NSTableViewSolidVerticalGridLineMask = 1;
-    public static final int NSTableViewSolidHorizontalGridLineMask = 2;
+    public static final NSUInteger NSTableViewGridNone = new NSUInteger(0);
+    public static final NSUInteger NSTableViewSolidVerticalGridLineMask = new NSUInteger(1);
+    public static final NSUInteger NSTableViewSolidHorizontalGridLineMask = new NSUInteger(2);
 
-    public static final int NSTableViewNoColumnAutoresizing = 0;
-    public static final int NSTableViewUniformColumnAutoresizingStyle = 1;
-    public static final int NSTableViewSequentialColumnAutoresizingStyle = 2;
-    public static final int NSTableViewReverseSequentialColumnAutoresizingStyle = 3;
-    public static final int NSTableViewLastColumnOnlyAutoresizingStyle = 4;
-    public static final int NSTableViewFirstColumnOnlyAutoresizingStyle = 5;
+    public static final NSUInteger NSTableViewNoColumnAutoresizing = new NSUInteger(0);
+    public static final NSUInteger NSTableViewUniformColumnAutoresizingStyle = new NSUInteger(1);
+    public static final NSUInteger NSTableViewSequentialColumnAutoresizingStyle = new NSUInteger(2);
+    public static final NSUInteger NSTableViewReverseSequentialColumnAutoresizingStyle = new NSUInteger(3);
+    public static final NSUInteger NSTableViewLastColumnOnlyAutoresizingStyle = new NSUInteger(4);
+    public static final NSUInteger NSTableViewFirstColumnOnlyAutoresizingStyle = new NSUInteger(5);
 
     public interface _Class extends org.rococoa.NSClass {
         NSTableView alloc();
@@ -157,25 +157,25 @@ public abstract class NSTableView extends NSControl {
      * Conversion Error : /// Original signature : <code>void setColumnAutoresizingStyle(null)</code><br>
      * - (void)setColumnAutoresizingStyle:(null)style; (Argument style cannot be converted)
      */
-    public abstract void setColumnAutoresizingStyle(int style);
+    public abstract void setColumnAutoresizingStyle(NSUInteger style);
 
     /**
      * Original signature : <code>columnAutoresizingStyle()</code><br>
      * <i>native declaration : :121</i>
      */
-    public abstract int columnAutoresizingStyle();
+    public abstract NSUInteger columnAutoresizingStyle();
 
     /**
      * Original signature : <code>void setGridStyleMask(NSUInteger)</code><br>
      * <i>native declaration : :125</i>
      */
-    public abstract void setGridStyleMask(int gridType);
+    public abstract void setGridStyleMask(NSUInteger gridType);
 
     /**
      * Original signature : <code>NSUInteger gridStyleMask()</code><br>
      * <i>native declaration : :126</i>
      */
-    public abstract int gridStyleMask();
+    public abstract NSUInteger gridStyleMask();
     /**
      * <i>native declaration : :128</i><br>
      * Conversion Error : NSSize
@@ -576,13 +576,13 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>NSInteger numberOfSelectedColumns()</code><br>
      * <i>native declaration : :260</i>
      */
-    public abstract int numberOfSelectedColumns();
+    public abstract NSInteger numberOfSelectedColumns();
 
     /**
      * Original signature : <code>NSInteger numberOfSelectedRows()</code><br>
      * <i>native declaration : :261</i>
      */
-    public abstract int numberOfSelectedRows();
+    public abstract NSInteger numberOfSelectedRows();
 
     /**
      * Original signature : <code>BOOL allowsTypeSelect()</code><br>
