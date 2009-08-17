@@ -167,13 +167,13 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     /**
      * @see NSTableView.DataSource
      */
-    public int numberOfRowsInTableView(NSTableView view) {
-        return this.getSource().size();
+    public NSInteger numberOfRowsInTableView(NSTableView view) {
+        return new NSInteger(this.getSource().size());
     }
 
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         final String identifier = tableColumn.identifier();
-        final Host host = this.getSource().get(row);
+        final Host host = this.getSource().get(row.intValue());
         if(identifier.equals(ICON_COLUMN)) {
             return CDIconCache.instance().iconForName(host.getProtocol().disk(),
                     Preferences.instance().getInteger("bookmark.icon.size"));
@@ -207,7 +207,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     }
 
     @Override
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int index, int operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger index, NSUInteger operation) {
         NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         if(!this.getSource().allowsEdit()) {
             // Do not allow drags for non writable collections
@@ -217,7 +217,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
                 if(Protocol.isURL(o)) {
-                    view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
+                    view.setDropRow(index, NSTableView.NSTableViewDropAbove);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
@@ -234,9 +234,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
-                if(index > -1 && index < view.numberOfRows().intValue()) {
+                if(index.intValue() > -1 && index.intValue() < view.numberOfRows().intValue()) {
                     //only allow other files if there is at least one bookmark
-                    view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropOn);
+                    view.setDropRow(index, NSTableView.NSTableViewDropOn);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
@@ -247,7 +247,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
-                        view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
+                        view.setDropRow(index, NSTableView.NSTableViewDropAbove);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
@@ -255,8 +255,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             return NSDraggingInfo.NSDragOperationNone;
         }
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null) {
-            if(index > -1 && index < view.numberOfRows().intValue()) {
-                view.setDropRow(new NSInteger(index), NSTableView.NSTableViewDropAbove);
+            if(index.intValue() > -1 && index.intValue() < view.numberOfRows().intValue()) {
+                view.setDropRow(index, NSTableView.NSTableViewDropAbove);
                 // We accept any file promise within the bounds
                 return NSDraggingInfo.NSDragOperationMove;
             }
@@ -272,7 +272,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         log.debug("tableViewAcceptDrop:" + row);
         final BookmarkCollection source = this.getSource();
@@ -286,19 +286,19 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                 String filename = filesList.objectAtIndex(i).toString();
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
-                    if(row < 0) {
-                        row = 0;
+                    if(row.intValue() < 0) {
+                        row = new NSInteger(0);
                     }
-                    if(row > view.numberOfRows().intValue()) {
-                        row = view.numberOfRows().intValue();
+                    if(row.intValue() > view.numberOfRows().intValue()) {
+                        row = new NSInteger(view.numberOfRows().intValue());
                     }
-                    source.add(row, HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
-                    view.selectRow(new NSInteger(row), false);
-                    view.scrollRowToVisible(new NSInteger(row));
+                    source.add(row.intValue(), HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
+                    view.selectRow(row, false);
+                    view.scrollRowToVisible(row);
                 }
                 else {
                     // The bookmark this file has been dropped onto
-                    Host h = source.get(row);
+                    Host h = source.get(row.intValue());
                     if(null == session) {
                         session = SessionFactory.createSession(h);
                     }
@@ -323,9 +323,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     final String url = elements.objectAtIndex(i).toString();
                     if(StringUtils.isNotBlank(url)) {
                         final Host h = Host.parse(url);
-                        source.add(row, h);
-                        view.selectRow(new NSInteger(row), false);
-                        view.scrollRowToVisible(new NSInteger(row));
+                        source.add(row.intValue(), h);
+                        view.selectRow(row, false);
+                        view.scrollRowToVisible(row);
                     }
                 }
                 return true;
@@ -336,9 +336,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
                 final Host h = Host.parse(o);
-                source.add(row, h);
-                view.selectRow(new NSInteger(row), false);
-                view.scrollRowToVisible(new NSInteger(row));
+                source.add(row.intValue(), h);
+                view.selectRow(row, false);
+                view.scrollRowToVisible(row);
                 return true;
             }
             return false;
@@ -346,9 +346,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null) {
             for(Host promisedDragBookmark : promisedDragBookmarks) {
                 source.remove(source.indexOf(promisedDragBookmark));
-                source.add(row, promisedDragBookmark);
-                view.selectRow(new NSInteger(row), false);
-                view.scrollRowToVisible(new NSInteger(row));
+                source.add(row.intValue(), promisedDragBookmark);
+                view.selectRow(row, false);
+                view.scrollRowToVisible(row);
             }
             return true;
         }
@@ -360,8 +360,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      * @see "http://www.cocoabuilder.com/archive/message/2005/10/5/118857"
      */
     @Override
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
-        if(NSDraggingInfo.NSDragOperationDelete == operation) {
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
+        if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deleteBookmarkButtonClicked(null);
         }
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
@@ -374,12 +374,12 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      * @see NSDraggingSource
      */
     @Override
-    public int draggingSourceOperationMaskForLocal(boolean local) {
+    public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {
-            return NSDraggingInfo.NSDragOperationMove | NSDraggingInfo.NSDragOperationCopy;
+            return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
         }
-        return NSDraggingInfo.NSDragOperationCopy | NSDraggingInfo.NSDragOperationDelete;
+        return new NSUInteger(NSDraggingInfo.NSDragOperationCopy.intValue() | NSDraggingInfo.NSDragOperationDelete.intValue());
     }
 
     /**

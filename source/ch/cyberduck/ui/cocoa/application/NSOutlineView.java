@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :73</i>
 public abstract class NSOutlineView extends NSTableView {
@@ -33,9 +34,9 @@ public abstract class NSOutlineView extends NSTableView {
     public static final int NSOutlineViewDropOnItemIndex = -1;
 
     public static interface DataSource {
-        int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item);
+        NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item);
 
-        NSObject outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSObject item);
+        NSObject outlineView_child_ofItem(final NSOutlineView outlineView, NSInteger index, NSObject item);
 
         void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                               final NSTableColumn tableColumn, NSObject item);
@@ -44,9 +45,9 @@ public abstract class NSOutlineView extends NSTableView {
 
         boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item);
 
-        int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row);
+        NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row);
 
-        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row);
+        boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row);
 
         boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard);
 

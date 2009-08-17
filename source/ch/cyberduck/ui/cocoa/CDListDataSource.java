@@ -22,14 +22,16 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
  */
-public abstract class CDListDataSource extends CDController implements NSTableView.DataSource {
+public abstract class CDListDataSource extends CDController implements NSTableView.DataSource, NSDraggingSource {
     private static Logger log = Logger.getLogger(CDListDataSource.class);
 
-    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row) {
+    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {
         throw new RuntimeException("Not editable");
     }
 
@@ -41,23 +43,23 @@ public abstract class CDListDataSource extends CDController implements NSTableVi
         return NSArray.array();
     }
 
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         return NSDraggingInfo.NSDragOperationNone;
     }
 
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         return false;
     }
 
-    public int draggingSourceOperationMaskForLocal(boolean flag) {
-        return NSDraggingInfo.NSDragOperationMove | NSDraggingInfo.NSDragOperationCopy;
+    public NSUInteger draggingSourceOperationMaskForLocal(boolean flag) {
+        return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
     }
 
     public void draggedImage_beganAt(NSImage image, NSPoint point) {
         log.trace("draggedImage_beganAt");
     }
 
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation");
     }
 

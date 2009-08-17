@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.List;
 
@@ -39,24 +40,24 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         super(controller);
     }
 
-    public int numberOfRowsInTableView(NSTableView view) {
+    public NSInteger numberOfRowsInTableView(NSTableView view) {
         if(controller.isMounted()) {
-            return this.childs(this.controller.workdir()).size();
+            return new NSInteger(this.childs(this.controller.workdir()).size());
         }
-        return 0;
+        return new NSInteger(0);
     }
 
-    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row) {
+    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {
         if(controller.isMounted()) {
-            super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row), value, tableColumn.identifier());
+            super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row.intValue()), value, tableColumn.identifier());
         }
     }
 
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         if(controller.isMounted()) {
             final List<Path> childs = this.childs(this.controller.workdir());
-            if(row < childs.size()) {
-                return super.objectValueForItem(childs.get(row), tableColumn.identifier());
+            if(row.intValue() < childs.size()) {
+                return super.objectValueForItem(childs.get(row.intValue()), tableColumn.identifier());
             }
         }
         return null;
@@ -66,13 +67,13 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
     // Drop methods
     // ----------------------------------------------------------
 
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
             if(0 == draggingColumn || 1 == draggingColumn) {
-                if(row != -1 && row < view.numberOfRows().intValue()) {
-                    Path p = this.childs(this.controller.workdir()).get(row);
+                if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
+                    Path p = this.childs(this.controller.workdir()).get(row.intValue());
                     if(p.attributes.isDirectory()) {
                         destination = p;
                     }
@@ -83,11 +84,11 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         return super.validateDrop(view, null, row, draggingInfo);
     }
 
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
-            if(row != -1 && row < view.numberOfRows().intValue()) {
-                destination = this.childs(this.controller.workdir()).get(row);
+            if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
+                destination = this.childs(this.controller.workdir()).get(row.intValue());
             }
             return super.acceptDrop(view, destination, draggingInfo);
         }

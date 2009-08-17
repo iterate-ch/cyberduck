@@ -35,6 +35,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -135,12 +136,12 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         errors.add(new CDErrorController(e));
                     }
                     this.errorView.setDataSource((model = new CDListDataSource() {
-                        public int numberOfRowsInTableView(NSTableView view) {
-                            return errors.size();
+                        public NSInteger numberOfRowsInTableView(NSTableView view) {
+                            return new NSInteger(errors.size());
                         }
 
-                        public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
-                            return errors.get(row).view();
+                        public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
+                            return errors.get(row.intValue()).view();
                         }
                     }).id());
                     this.errorView.setDelegate((delegate = new CDAbstractTableDelegate<CDErrorController>() {

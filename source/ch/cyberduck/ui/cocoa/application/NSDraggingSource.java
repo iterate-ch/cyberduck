@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSPoint;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
@@ -34,7 +36,7 @@ public interface NSDraggingSource {
      * Original signature : <code>NSDragOperation draggingSourceOperationMaskForLocal(BOOL)</code><br>
      * <i>native declaration : line 72</i>
      */
-    int draggingSourceOperationMaskForLocal(boolean flag);
+    NSUInteger draggingSourceOperationMaskForLocal(boolean flag);
 
     /**
      * <i>native declaration : line 76</i><br>
@@ -48,7 +50,7 @@ public interface NSDraggingSource {
      * Conversion Error : /// Original signature : <code>void draggedImage(NSImage*, null, NSDragOperation)</code><br>
      * - (void)draggedImage:(NSImage*)image endedAt:(null)screenPoint operation:(NSDragOperation)operation; (Argument screenPoint cannot be converted)
      */
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation);
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation);
 
     /**
      * <i>native declaration : line 78</i><br>

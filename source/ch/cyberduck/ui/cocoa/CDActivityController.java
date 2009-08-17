@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -143,8 +144,8 @@ public class CDActivityController extends CDWindowController {
             /**
              * @param view
              */
-            public int numberOfRowsInTableView(NSTableView view) {
-                return tasks.size();
+            public NSInteger numberOfRowsInTableView(NSTableView view) {
+                return new NSInteger(tasks.size());
             }
 
             /**
@@ -152,9 +153,9 @@ public class CDActivityController extends CDWindowController {
              * @param tableColumn
              * @param row
              */
-            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
                 final Collection<CDTaskController> values = tasks.values();
-                return values.toArray(new CDTaskController[values.size()])[row].view();
+                return values.toArray(new CDTaskController[values.size()])[row.intValue()].view();
             }
         }).id());
         this.table.setDelegate((delegate = new CDAbstractTableDelegate<CDTaskController>() {

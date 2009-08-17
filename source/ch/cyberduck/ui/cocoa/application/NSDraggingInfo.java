@@ -24,25 +24,26 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.foundation.NSPoint;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /// <i>native declaration : :32</i>
 public abstract class NSDraggingInfo implements NSObject {
 
     /// <i>native declaration : line 15</i>
-    public static final int NSDragOperationNone = 0;
+    public static final NSUInteger NSDragOperationNone = new NSUInteger(0);
     /// <i>native declaration : line 16</i>
-    public static final int NSDragOperationCopy = 1;
+    public static final NSUInteger NSDragOperationCopy = new NSUInteger(1);
     /// <i>native declaration : line 17</i>
-    public static final int NSDragOperationLink = 2;
+    public static final NSUInteger NSDragOperationLink = new NSUInteger(2);
     /// <i>native declaration : line 18</i>
-    public static final int NSDragOperationGeneric = 4;
+    public static final NSUInteger NSDragOperationGeneric = new NSUInteger(4);
     /// <i>native declaration : line 19</i>
-    public static final int NSDragOperationPrivate = 8;
-    /// <i>native declaration : line 20</i>
-    public static final int NSDragOperationAll_Obsolete = 15;
+    public static final NSUInteger NSDragOperationPrivate = new NSUInteger(8);
     /// <i>native declaration : line 21</i>
-    public static final int NSDragOperationMove = 16;
+    public static final NSUInteger NSDragOperationMove = new NSUInteger(16);
     /// <i>native declaration : line 22</i>
-    public static final int NSDragOperationDelete = 32;
+    public static final NSUInteger NSDragOperationDelete = new NSUInteger(32);
 
     /**
      * Original signature : <code>NSWindow* draggingDestinationWindow()</code><br>
@@ -54,7 +55,7 @@ public abstract class NSDraggingInfo implements NSObject {
      * Original signature : <code>NSDragOperation draggingSourceOperationMask()</code><br>
      * <i>native declaration : :34</i>
      */
-    public abstract int draggingSourceOperationMask();
+    public abstract NSUInteger draggingSourceOperationMask();
 
     /**
      * Original signature : <code>draggingLocation()</code><br>

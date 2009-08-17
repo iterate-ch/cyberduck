@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.model.CDPathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
@@ -75,10 +76,10 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     /**
      * @see NSOutlineView.DataSource
      */
-    public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
+    public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(controller.isMounted()) {
             if(null == item) {
-                return this.childs(controller.workdir()).size();
+                return new NSInteger(this.childs(controller.workdir()).size());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
@@ -88,18 +89,18 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                     if(draggingColumn != 0) {
                         log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem for column:" + draggingColumn);
                         // See ticket #60
-                        return 0;
+                        return new NSInteger(0);
                     }
                     if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
                         log.debug("Returning 0 to #outlineViewNumberOfChildrenOfItem while dragging because browser.view.autoexpand == false");
                         // See tickets #98 and #633
-                        return 0;
+                        return new NSInteger(0);
                     }
                 }
             }
-            return this.childs(new CDPathReference(item)).size();
+            return new NSInteger(this.childs(new CDPathReference(item)).size());
         }
-        return 0;
+        return new NSInteger(0);
     }
 
     /**
@@ -108,7 +109,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
      *      of a given parent item are accessed sequentially. If item is null, this method should
      *      return the appropriate child item of the root object
      */
-    public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, int index, NSObject item) {
+    public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, NSInteger index, NSObject item) {
         final Path path;
         if(null == item) {
             path = controller.workdir();
@@ -120,11 +121,11 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             return null;
         }
         final AttributedList<Path> childs = this.childs(path);
-        if(index >= childs.size()) {
+        if(index.intValue() >= childs.size()) {
             log.warn("Index " + index + " out of bound for " + item);
             return null;
         }
-        return childs.get(index).<NSObject>getReference().unique();
+        return childs.get(index.intValue()).<NSObject>getReference().unique();
     }
 
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
@@ -139,7 +140,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return super.objectValueForItem(controller.lookup(new CDPathReference(item)), tableColumn.identifier());
     }
 
-    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo draggingInfo, NSObject item, int row) {
+    public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo draggingInfo, NSObject item, NSInteger row) {
         Path destination = null;
         if(controller.isMounted()) {
             if(null != item) {
@@ -174,7 +175,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return super.validateDrop(outlineView, destination, row, draggingInfo);
     }
 
-    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row) {
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row) {
         Path destination = null;
         if(controller.isMounted()) {
             if(null == item) {

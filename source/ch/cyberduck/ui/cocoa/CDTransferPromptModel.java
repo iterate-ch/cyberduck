@@ -33,6 +33,7 @@ import ch.cyberduck.ui.cocoa.model.CDPathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -205,22 +206,22 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         return this.lookup(item).attributes.isDirectory();
     }
 
-    public int outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
+    public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(null == item) {
-            return _roots.size();
+            return new NSInteger(_roots.size());
         }
-        return this.childs(this.lookup(item)).size();
+        return new NSInteger(this.childs(this.lookup(item)).size());
     }
 
-    public NSObject outlineView_child_ofItem(final NSOutlineView view, int index, NSObject item) {
+    public NSObject outlineView_child_ofItem(final NSOutlineView view, NSInteger index, NSObject item) {
         if(null == item) {
-            return _roots.get(index).<NSObject>getReference().unique();
+            return _roots.get(index.intValue()).<NSObject>getReference().unique();
         }
         final AttributedList<Path> childs = this.childs(this.lookup(item));
         if(childs.isEmpty()) {
             return null;
         }
-        return childs.get(index).<NSObject>getReference().unique();
+        return childs.get(index.intValue()).<NSObject>getReference().unique();
     }
 
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {

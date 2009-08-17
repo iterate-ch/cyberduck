@@ -1057,10 +1057,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, int row) {
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final String identifier = tableColumn.identifier();
                 if(identifier.equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                    final Path item = browserListModel.childs(CDBrowserController.this.workdir()).get(row);
+                    final Path item = browserListModel.childs(CDBrowserController.this.workdir()).get(row.intValue());
                     cell.setEditable(item.isRenameSupported());
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {

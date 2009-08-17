@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -210,12 +211,12 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
      * @return
      * @see NSDraggingSource
      */
-    public int draggingSourceOperationMaskForLocal(boolean local) {
+    public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {
-            return NSDraggingInfo.NSDragOperationMove | NSDraggingInfo.NSDragOperationCopy;
+            return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
         }
-        return NSDraggingInfo.NSDragOperationCopy | NSDraggingInfo.NSDragOperationDelete;
+        return new NSUInteger(NSDraggingInfo.NSDragOperationCopy.intValue() | NSDraggingInfo.NSDragOperationDelete.intValue());
     }
 
     public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo draggingInfo) {
@@ -263,8 +264,8 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 if(o != null) {
                     // A file dragged within the browser has been received
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    if((draggingInfo.draggingSourceOperationMask() & NSDraggingInfo.NSDragOperationMove)
-                            == NSDraggingInfo.NSDragOperationMove) {
+                    if((draggingInfo.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationMove.intValue())
+                            == NSDraggingInfo.NSDragOperationMove.intValue()) {
                         // The file should be renamed
                         final Map<Path, Path> files = new HashMap<Path, Path>();
                         for(int i = 0; i < elements.count().intValue(); i++) {
@@ -281,7 +282,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                         controller.renamePaths(files);
                         return true;
                     }
-                    if(draggingInfo.draggingSourceOperationMask() == NSDraggingInfo.NSDragOperationCopy) {
+                    if(draggingInfo.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // The file should be duplicated
                         final Map<Path, Path> files = new HashMap<Path, Path>();
                         for(int i = 0; i < elements.count().intValue(); i++) {
@@ -305,7 +306,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         return false;
     }
 
-    public int validateDrop(NSTableView view, Path destination, int row, NSDraggingInfo info) {
+    public NSUInteger validateDrop(NSTableView view, Path destination, NSInteger row, NSDraggingInfo info) {
         if(controller.isMounted()) {
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(destination.attributes.isDirectory()) {
@@ -359,10 +360,10 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                             }
                         }
                     }
-                    log.debug("Operation Mask:" + info.draggingSourceOperationMask());
+                    log.debug("Operation Mask:" + info.draggingSourceOperationMask().intValue());
                     if(destination.attributes.isDirectory()) {
                         this.setDropRowAndDropOperation(view, destination, row);
-                        if(info.draggingSourceOperationMask() == NSDraggingInfo.NSDragOperationCopy) {
+                        if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                             return NSDraggingInfo.NSDragOperationCopy;
                         }
                         if(destination.isRenameSupported()) {
@@ -376,7 +377,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         return NSDraggingInfo.NSDragOperationNone;
     }
 
-    private void setDropRowAndDropOperation(NSTableView view, Path destination, int row) {
+    private void setDropRowAndDropOperation(NSTableView view, Path destination, NSInteger row) {
         if(destination.equals(controller.workdir())) {
             log.debug("setDropRowAndDropOperation:-1");
             // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
@@ -384,8 +385,8 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
             view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
         }
         else if(destination.attributes.isDirectory()) {
-            log.debug("setDropRowAndDropOperation:" + row);
-            view.setDropRow(new NSInteger(row), NSTableView.NSTableViewDropOn);
+            log.debug("setDropRowAndDropOperation:" + row.intValue());
+            view.setDropRow(row, NSTableView.NSTableViewDropOn);
         }
     }
 
@@ -454,9 +455,9 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
     /**
      * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
      */
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation:" + operation);
-        if(NSDraggingInfo.NSDragOperationDelete == operation) {
+        if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             controller.deletePaths(promisedDragPaths);
         }
         promisedDragPaths.clear();

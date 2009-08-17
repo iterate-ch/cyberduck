@@ -25,6 +25,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSPoint;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
@@ -37,11 +39,11 @@ public abstract class CDOutlineDataSource extends CDController implements NSOutl
         throw new RuntimeException("Not editable");
     }
 
-    public int outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject destination, int row) {
+    public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject destination, NSInteger row) {
         return NSDraggingInfo.NSDragOperationNone;
     }
 
-    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, int row) {
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row) {
         return false;
     }
 
@@ -53,15 +55,15 @@ public abstract class CDOutlineDataSource extends CDController implements NSOutl
         return NSArray.array();
     }
 
-    public int draggingSourceOperationMaskForLocal(boolean flag) {
-        return NSDraggingInfo.NSDragOperationMove | NSDraggingInfo.NSDragOperationCopy;
+    public NSUInteger draggingSourceOperationMaskForLocal(boolean flag) {
+        return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
     }
 
     public void draggedImage_beganAt(NSImage image, NSPoint point) {
         log.trace("draggedImage_beganAt");
     }
 
-    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, int operation) {
+    public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation");
     }
 

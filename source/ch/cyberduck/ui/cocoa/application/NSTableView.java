@@ -29,9 +29,9 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSTableView extends NSControl {
 
     /// <i>native declaration : :60</i>
-    public static final int NSTableViewDropOn = 0;
+    public static final NSUInteger NSTableViewDropOn = new NSUInteger(0);
     /// <i>native declaration : :60</i>
-    public static final int NSTableViewDropAbove = 1;
+    public static final NSUInteger NSTableViewDropAbove = new NSUInteger(1);
 
     public static final String NSTableViewSelectionDidChangeNotification = "NSTableViewSelectionDidChangeNotification";
     public static final String NSTableViewColumnDidMoveNotification = "NSTableViewColumnDidMoveNotification";
@@ -54,23 +54,23 @@ public abstract class NSTableView extends NSControl {
     }
 
     public static interface DataSource {
-        int numberOfRowsInTableView(NSTableView view);
+        NSInteger numberOfRowsInTableView(NSTableView view);
 
-        void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, int row);
+        void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row);
 
-        NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row);
+        NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row);
 
         boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard);
 
-        int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, int row, int operation);
+        NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo info, NSInteger row, NSUInteger operation);
 
-        boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation);
+        boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation);
 
         NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes);
     }
 
     public static interface Delegate {
-        void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, int row);
+        void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row);
     }
 
     /**
@@ -443,13 +443,13 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void setDropRow(NSInteger, NSTableViewDropOperation)</code><br>
      * <i>native declaration : :220</i>
      */
-    public abstract void setDropRow_dropOperation(NSInteger row, int op);
+    public abstract void setDropRow_dropOperation(NSInteger row, NSUInteger op);
 
     /**
      * @param row
      * @param op  operation
      */
-    public void setDropRow(NSInteger row, int op) {
+    public void setDropRow(NSInteger row, NSUInteger op) {
         this.setDropRow_dropOperation(row, op);
     }
 

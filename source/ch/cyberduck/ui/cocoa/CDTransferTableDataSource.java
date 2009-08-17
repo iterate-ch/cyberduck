@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -113,8 +114,8 @@ public class CDTransferTableDataSource extends CDListDataSource {
     /**
      * @param view
      */
-    public int numberOfRowsInTableView(NSTableView view) {
-        return this.getSource().size();
+    public NSInteger numberOfRowsInTableView(NSTableView view) {
+        return new NSInteger(this.getSource().size());
     }
 
     /**
@@ -122,13 +123,13 @@ public class CDTransferTableDataSource extends CDListDataSource {
      * @param tableColumn
      * @param row
      */
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
+    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         final String identifier = tableColumn.identifier();
         if(identifier.equals(PROGRESS_COLUMN)) {
-            return this.getController(this.getSource().get(row)).view();
+            return this.getController(this.getSource().get(row.intValue())).view();
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(this.getSource().get(row).getName());
+            return NSString.stringWithString(this.getSource().get(row.intValue()).getName());
         }
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }
@@ -138,15 +139,15 @@ public class CDTransferTableDataSource extends CDListDataSource {
     // ----------------------------------------------------------
 
     @Override
-    public int tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         log.debug("tableViewValidateDrop:row:" + row + ",operation:" + operation);
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
-            view.setDropRow(new NSInteger(row), NSTableView.NSTableViewDropAbove);
+            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
         NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            view.setDropRow(new NSInteger(row), NSTableView.NSTableViewDropAbove);
+            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
         log.debug("tableViewValidateDrop:DragOperationNone");
@@ -158,10 +159,9 @@ public class CDTransferTableDataSource extends CDListDataSource {
      *
      * @param draggingInfo contains details on this dragging operation.
      * @param row          The proposed location is row and action is operation.
-     *                     The data source should incorporate the data from the dragging pasteboard at this time.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, int row, int operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String droppedText = draggingInfo.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {
@@ -183,10 +183,10 @@ public class CDTransferTableDataSource extends CDListDataSource {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                    TransferCollection.instance().add(row, new TransferPlistReader().deserialize((dict)));
+                    TransferCollection.instance().add(row.intValue(), new TransferPlistReader().deserialize((dict)));
                     view.reloadData();
-                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                    view.scrollRowToVisible(new NSInteger(row));
+                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row.intValue()), false);
+                    view.scrollRowToVisible(row);
                 }
                 pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
                 return true;
