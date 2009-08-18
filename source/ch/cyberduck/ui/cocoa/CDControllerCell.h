@@ -20,6 +20,11 @@
 
 @interface CDControllerCell : NSCell {
 
+@private
+	NSView *view;
 }
+
+- (void)setView:(NSView *)aView;
+- (NSView *)view;
 
 @end

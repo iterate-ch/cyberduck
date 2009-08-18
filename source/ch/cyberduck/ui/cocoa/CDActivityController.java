@@ -154,8 +154,7 @@ public class CDActivityController extends CDWindowController {
              * @param row
              */
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
-                final Collection<CDTaskController> values = tasks.values();
-                return values.toArray(new CDTaskController[values.size()])[row.intValue()].view();
+                return null;
             }
         }).id());
         this.table.setDelegate((delegate = new CDAbstractTableDelegate<CDTaskController>() {
@@ -181,6 +180,11 @@ public class CDActivityController extends CDWindowController {
             }
 
             public void selectionDidChange(NSNotification notification) {
+            }
+
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
+                final Collection<CDTaskController> values = tasks.values();
+                Rococoa.cast(cell, CDControllerCell.class).setView(values.toArray(new CDTaskController[values.size()])[row.intValue()].view());
             }
         }).id());
         {

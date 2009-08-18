@@ -126,7 +126,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         final String identifier = tableColumn.identifier();
         if(identifier.equals(PROGRESS_COLUMN)) {
-            return this.getController(this.getSource().get(row.intValue())).view();
+            return null;
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
             return NSString.stringWithString(this.getSource().get(row.intValue()).getName());

@@ -371,6 +371,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 updateHighlight();
                 updateSelection();
             }
+
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
+                Rococoa.cast(cell, CDControllerCell.class).setView(transferModel.getController(row.intValue()).view());
+            }
         }).id());
         // receive drag events from types
         // in fact we are not interested in file promises, but because the browser model can only initiate

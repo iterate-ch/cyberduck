@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSView;
 
 /**
  * @version $Id$
@@ -35,4 +37,10 @@ public abstract class CDControllerCell implements NSCell {
     }
 
     public abstract CDControllerCell init();
+
+    /**
+     *
+     * @param aImage
+     */
+    public abstract void setView(NSView aImage);
 }

@@ -20,19 +20,37 @@
 
 @implementation CDControllerCell
 
-- (void)setObjectValue:(id <NSObject, NSCopying>)obj
+- (void)setView:(NSView *)aView
 {
-	[super setObjectValue:[NSValue valueWithNonretainedObject:obj]];
+    if(view == aView) {
+        return;
+    }
+	[view release];
+	view = [aView retain];
 }
 
-- (NSView*) objectValue 
+- (NSView*)view
 {
-    return [[super objectValue] nonretainedObjectValue];
+    return view;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    CDControllerCell *cell = (CDControllerCell *)[super copyWithZone:zone];
+    cell->view = nil;
+    [cell setView:[self view]];
+    return cell;
+}
+
+ - (void)dealloc
+{
+    [view release];
+    [super dealloc];
 }
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
-	NSView *controllerView = [self objectValue];
+	NSView *controllerView = [self view];
 	[controllerView setFrame:cellFrame];
 	if([controllerView superview] != controlView) {
 		[controlView addSubview:controllerView];

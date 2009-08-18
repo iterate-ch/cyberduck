@@ -24,16 +24,14 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.RepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.*;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
-import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -141,7 +139,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         }
 
                         public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
-                            return errors.get(row.intValue()).view();
+                            return null;
                         }
                     }).id());
                     this.errorView.setDelegate((delegate = new CDAbstractTableDelegate<CDErrorController>() {
@@ -170,6 +168,10 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
 
                         public String tooltip(CDErrorController e) {
                             return e.getTooltip();
+                        }
+
+                        public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
+                            Rococoa.cast(cell, CDControllerCell.class).setView(errors.get(row.intValue()).view());
                         }
                     }).id());
                     {
