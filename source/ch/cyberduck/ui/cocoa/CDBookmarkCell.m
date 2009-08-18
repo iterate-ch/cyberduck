@@ -114,8 +114,8 @@
     NSDictionary *commentFont = highlighted ? HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES : COMMENT_FONT_ATTRIBUTES;
 
     NSLayoutManager *l = [[NSLayoutManager alloc] init];
-    float nicknameFontHeight = [l defaultLineHeightForFont:[nicknameFont objectForKey:NSFontAttributeName]] + 2;
-    float detailsFontHeight = [l defaultLineHeightForFont:[detailsFont objectForKey:NSFontAttributeName]] + 2;
+    CGFloat nicknameFontHeight = [l defaultLineHeightForFont:[nicknameFont objectForKey:NSFontAttributeName]] + 2;
+    CGFloat detailsFontHeight = [l defaultLineHeightForFont:[detailsFont objectForKey:NSFontAttributeName]] + 2;
 	[l release];
 	
 	NSString *nickname = [bookmark objectForKey:@"Nickname"];
@@ -136,6 +136,9 @@
         [url drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight + detailsFontHeight,
                                    cellFrame.size.width - 5, cellFrame.size.height) withAttributes:detailsFont];
 	}
+    if(MEDIUM_BOOKMARK_SIZE == size) {
+        return;
+    }
 	NSString *comment = [bookmark objectForKey:@"Comment"];
 	if(comment) {
         [comment drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight + detailsFontHeight + 5 + detailsFontHeight,
