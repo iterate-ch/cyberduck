@@ -20,7 +20,7 @@
 - (void)removeSubviews;
 - (void)restoreSubviews;
 
-- (void)changeWindowHeightBy:(float)amount;
+- (void)changeWindowHeightBy:(CGFloat)amount;
 - (void)restoreAutoresizeMasks:(NSArray *)masks toViews:(NSArray *)views;
 
 @end
@@ -28,7 +28,7 @@
 
 @implementation SNDisclosableView
 
-const float kDefaultHiddenHeight = 0.0;
+const CGFloat kDefaultHiddenHeight = 0.0;
 
 static BOOL showSubviewsWhileResizing = NO;
     // Under Mac OS X 10.2, we can show our subviews while we animate the resizing of the window, so this can be set to YES.
@@ -105,12 +105,12 @@ static BOOL showSubviewsWhileResizing = NO;
         [self hide:nil];
 }
 
-- (float)hiddenHeight;
+- (CGFloat)hiddenHeight;
 {
     return hiddenHeight;
 }
 
-- (void)setHiddenHeight:(float)value;
+- (void)setHiddenHeight:(CGFloat)value;
 {
     hiddenHeight = value;
 }
@@ -245,7 +245,7 @@ static BOOL showSubviewsWhileResizing = NO;
     hiddenSubviews = nil;
 }
 
-- (void)changeWindowHeightBy:(float)amount;
+- (void)changeWindowHeightBy:(CGFloat)amount;
 {
     // This turns out to be more complicated than one might expect, because the way that the other views in the window should move is different than the normal case that the AppKit handles.
     //

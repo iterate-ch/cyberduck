@@ -312,16 +312,16 @@
 		contentRect = NSUnionRect(contentRect, [subview frame]);
 	}
 	contentRect.size.height += 40; //border
-	float height = NSHeight(contentRect) + [self toolbarHeightForWindow:[tabView window]];
+	CGFloat height = NSHeight(contentRect) + [self toolbarHeightForWindow:[tabView window]];
 	NSRect frameRect = NSMakeRect(NSMinX(windowFrame), NSMaxY(windowFrame) - height, NSWidth([[[tabView selectedTabViewItem] view] frame]), height);
 	NSRect newWindowFrame = [NSWindow frameRectForContentRect:frameRect styleMask:[[tabView window] styleMask]];
 	[[tabView window] setFrame:newWindowFrame display:YES animate:[[tabView window] isVisible]];
 }
 
--(float)toolbarHeightForWindow:(NSWindow *)window
+-(CGFloat)toolbarHeightForWindow:(NSWindow *)window
 {
     NSToolbar *toolbar;
-    float toolbarHeight = 0.0;
+    CGFloat toolbarHeight = 0.0;
     NSRect windowFrame;
     
     toolbar = [window toolbar];
