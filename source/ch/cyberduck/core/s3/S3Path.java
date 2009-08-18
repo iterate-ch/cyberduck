@@ -393,9 +393,6 @@ public class S3Path extends CloudPath {
                         this.getName()));
 
                 final S3Object details = this.getDetails();
-                if(null == details) {
-                    return;
-                }
                 attributes.setSize(details.getContentLength());
             }
             catch(S3ServiceException e) {
@@ -415,9 +412,6 @@ public class S3Path extends CloudPath {
                         this.getName()));
 
                 final S3Object details = this.getDetails();
-                if(null == details) {
-                    return;
-                }
                 attributes.setModificationDate(details.getLastModifiedDate().getTime());
             }
             catch(S3ServiceException e) {

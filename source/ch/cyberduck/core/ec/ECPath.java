@@ -68,11 +68,6 @@ public class ECPath extends S3Path {
         super(s, dict);
     }
 
-    @Override
-    protected S3Object getDetails() throws S3ServiceException {
-        return null;
-    }
-
     /**
      * @return
      */

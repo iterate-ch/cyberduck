@@ -31,6 +31,7 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -103,9 +104,6 @@ public class S3Session extends HTTPSession implements SSLSession {
      */
     protected Jets3tProperties configuration = new Jets3tProperties();
 
-    /**
-     * @param configuration
-     */
     protected void configure() {
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         // The maximum number of retries that will be attempted when an S3 connection fails
@@ -228,10 +226,18 @@ public class S3Session extends HTTPSession implements SSLSession {
 
     protected void login(final Credentials credentials) throws IOException {
         final HostConfiguration hostconfig = new StickyHostConfiguration();
-        hostconfig.setHost(host.getHostname(), host.getPort(),
-                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                        (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
-        );
+        if(host.getProtocol().isSecure()) {
+            hostconfig.setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+            );
+        }
+        else {
+            hostconfig.setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            new DefaultProtocolSocketFactory(), host.getPort())
+            );
+        }
         this.login(credentials, hostconfig);
     }
 
@@ -327,10 +333,15 @@ public class S3Session extends HTTPSession implements SSLSession {
     }
 
     /**
-     * Amazon CloudFront Extension
+     * Amazon CloudFront Extension to create a new distribution configuration
+     * *
      *
-     * @param path
-     * @return
+     * @param enabled Distribution status
+     * @param bucket  Name of the container
+     * @param cnames  DNS CNAME aliases for distribution
+     * @param logging Access log configuration
+     * @return Distribution configuration
+     * @throws CloudFrontServiceException CloudFront failure details
      */
     public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
@@ -347,8 +358,11 @@ public class S3Session extends HTTPSession implements SSLSession {
     /**
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      *
-     * @param distribution
+     * @param distribution Distribution configuration
      * @param cnames       DNS CNAME aliases for distribution
+     * @param enabled      Distribution status
+     * @param logging      Access log configuration
+     * @throws CloudFrontServiceException CloudFront failure details
      */
     public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
@@ -364,23 +378,26 @@ public class S3Session extends HTTPSession implements SSLSession {
     /**
      * Amazon CloudFront Extension used to list all configured distributions
      *
+     * @param bucket Name of the container
      * @return All distributions for the given AWS Credentials
+     * @throws CloudFrontServiceException CloudFront failure details
      */
     public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
         return this.createCloudFrontService().listDistributions(bucket);
     }
 
     /**
-     * @param distribution
+     * @param distribution Distribution configuration
      * @return
-     * @throws CloudFrontServiceException
+     * @throws CloudFrontServiceException CloudFront failure details
      */
-    public DistributionConfig getDistributionConfig(final Distribution distribution) throws CloudFrontServiceException {
+    protected DistributionConfig getDistributionConfig(final Distribution distribution) throws CloudFrontServiceException {
         return this.createCloudFrontService().getDistributionConfig(distribution.getId());
     }
 
     /**
      * @param distribution A distribution (the distribution must be disabled and deployed first)
+     * @throws CloudFrontServiceException CloudFront failure details
      */
     public void deleteDistribution(final Distribution distribution) throws CloudFrontServiceException {
         this.createCloudFrontService().deleteDistribution(distribution.getId());
@@ -395,7 +412,7 @@ public class S3Session extends HTTPSession implements SSLSession {
      * Amazon CloudFront Extension
      *
      * @return A cached cloud front service interface
-     * @throws CloudFrontServiceException
+     * @throws CloudFrontServiceException CloudFront failure
      */
     private CloudFrontService createCloudFrontService() throws CloudFrontServiceException {
         if(null == cloudfront) {
@@ -408,7 +425,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                 final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
                 hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
                         new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
+                                (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
                 );
             }
             catch(URIException e) {

@@ -19,15 +19,10 @@ package ch.cyberduck.core.ec;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.model.cloudfront.Distribution;
-
-import java.io.IOException;
 
 /**
  * Elastic Utility Computing Architecture for Linking Your Programs To Useful Systems - is an open-source software
@@ -37,7 +32,7 @@ import java.io.IOException;
  * using commonly available Linux tools and basic Web-service technologies making it easy to install and maintain.
  *
  * @version $Id$
- * @see http://eucalyptus.cs.ucsb.edu/
+ * @see "http://eucalyptus.cs.ucsb.edu/"
  */
 public class ECSession extends S3Session {
 
@@ -61,16 +56,6 @@ public class ECSession extends S3Session {
         configuration.setProperty("s3service.s3-endpoint", host.getHostname());
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize("/services/Walrus"));
-    }
-
-    @Override
-    protected void login(final Credentials credentials) throws IOException {
-        final HostConfiguration hostconfig = new StickyHostConfiguration();
-        hostconfig.setHost(host.getHostname(), host.getPort(),
-                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                        new DefaultProtocolSocketFactory(), host.getPort())
-        );
-        super.login(credentials, hostconfig);
     }
 
     /**
