@@ -221,6 +221,7 @@
 		47D5E5270FD132D30060AD43 /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D5E5250FD132D30060AD43 /* CDBookmarkCell.m */; };
 		47D5E5280FD132D30060AD43 /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47D5E5260FD132D30060AD43 /* CDBookmarkCell.h */; };
 		47DA1218103A866D00766A76 /* DotMacKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47DA1217103A866D00766A76 /* DotMacKit.framework */; };
+		47DD85F4103A8774004281BF /* DotMacKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47DA1217103A866D00766A76 /* DotMacKit.framework */; };
 		47DF9A26102CE43B00DCAD41 /* Local.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DF9A22102CE43B00DCAD41 /* Local.h */; };
 		47DF9A27102CE43B00DCAD41 /* Local.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DF9A23102CE43B00DCAD41 /* Local.m */; };
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
@@ -359,6 +360,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				47DD85F4103A8774004281BF /* DotMacKit.framework in CopyFiles */,
 				47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */,
 				472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */,
 			);
