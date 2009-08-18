@@ -62,6 +62,6 @@
 
 -(void) resize;
 
--(float)toolbarHeightForWindow: (NSWindow *)window;
+-(CGFloat)toolbarHeightForWindow: (NSWindow *)window;
 
 @end
