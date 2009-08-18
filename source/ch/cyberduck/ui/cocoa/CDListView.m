@@ -40,7 +40,6 @@ static NSTableColumn *localSelectionColumn;
 	// browser typeahead selection
 	select_string = [[NSMutableString alloc] init];
 	select_timer = nil;
-	autoexpand_timer = nil;
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
