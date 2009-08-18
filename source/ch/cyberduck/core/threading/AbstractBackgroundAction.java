@@ -94,7 +94,7 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
     }
 
     public String getActivity() {
-        return Locale.localizedString("Unknown", "");
+        return Locale.localizedString("Unknown");
     }
 
     @Override

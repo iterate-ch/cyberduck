@@ -306,10 +306,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
             //Saving state of transfer window
             Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());
             if(TransferCollection.instance().numberOfRunningTransfers() > 0) {
-                final NSAlert alert = NSAlert.alert(Locale.localizedString("Transfer in progress", ""), //title
-                        Locale.localizedString("There are files currently being transferred. Quit anyway?", ""), // message
-                        Locale.localizedString("Quit", ""), // defaultbutton
-                        Locale.localizedString("Cancel", ""), //alternative button
+                final NSAlert alert = NSAlert.alert(Locale.localizedString("Transfer in progress"), //title
+                        Locale.localizedString("There are files currently being transferred. Quit anyway?"), // message
+                        Locale.localizedString("Quit"), // defaultbutton
+                        Locale.localizedString("Cancel"), //alternative button
                         null //other button
                 );
                 instance.alert(alert, new CDSheetCallback() {
@@ -442,7 +442,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             else {
-                localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Multiple files", ""),
+                localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Multiple files"),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         }
@@ -695,80 +695,80 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
         final NSToolbarItem item = NSToolbarItem.itemWithIdentifier(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_STOP)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_STOP, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP, ""));
-            item.setToolTip(Locale.localizedString(TOOLBAR_STOP, ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_STOP));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP));
+            item.setToolTip(Locale.localizedString(TOOLBAR_STOP));
             item.setImage(CDIconCache.instance().iconForName("stop", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("stopButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_RESUME)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_RESUME, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_RESUME, ""));
-            item.setToolTip(Locale.localizedString(TOOLBAR_RESUME, ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_RESUME));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_RESUME));
+            item.setToolTip(Locale.localizedString(TOOLBAR_RESUME));
             item.setImage(NSImage.imageNamed("resume.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("resumeButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_RELOAD)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_RELOAD, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_RELOAD, ""));
-            item.setToolTip(Locale.localizedString(TOOLBAR_RELOAD, ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_RELOAD));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_RELOAD));
+            item.setToolTip(Locale.localizedString(TOOLBAR_RELOAD));
             item.setImage(NSImage.imageNamed("reload.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_SHOW)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_SHOW, ""));
-            item.setPaletteLabel(Locale.localizedString("Show in Finder", ""));
-            item.setToolTip(Locale.localizedString("Show in Finder", ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_SHOW));
+            item.setPaletteLabel(Locale.localizedString("Show in Finder"));
+            item.setToolTip(Locale.localizedString("Show in Finder"));
             item.setImage(NSImage.imageNamed("reveal.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("revealButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_OPEN)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_OPEN, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_OPEN, ""));
-            item.setToolTip(Locale.localizedString(TOOLBAR_OPEN, ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_OPEN));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_OPEN));
+            item.setToolTip(Locale.localizedString(TOOLBAR_OPEN));
             item.setImage(NSImage.imageNamed("open.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_REMOVE)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_REMOVE, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_REMOVE, ""));
-            item.setToolTip(Locale.localizedString(TOOLBAR_REMOVE, ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_REMOVE));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_REMOVE));
+            item.setToolTip(Locale.localizedString(TOOLBAR_REMOVE));
             item.setImage(NSImage.imageNamed("clean.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_CLEAN_UP)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_CLEAN_UP, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_CLEAN_UP, ""));
-            item.setToolTip(Locale.localizedString(TOOLBAR_CLEAN_UP, ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
+            item.setToolTip(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setImage(NSImage.imageNamed("cleanAll.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_TRASH)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_TRASH, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRASH, ""));
-            item.setToolTip(Locale.localizedString("Move to Trash", ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_TRASH));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRASH));
+            item.setToolTip(Locale.localizedString("Move to Trash"));
             item.setImage(NSImage.imageNamed("trash.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("trashButtonClicked:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_FILTER)) {
-            item.setLabel(Locale.localizedString(TOOLBAR_FILTER, ""));
-            item.setPaletteLabel(Locale.localizedString(TOOLBAR_FILTER, ""));
+            item.setLabel(Locale.localizedString(TOOLBAR_FILTER));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_FILTER));
             item.setView(this.filterField);
             item.setMinSize(this.filterField.frame().size);
             item.setMaxSize(this.filterField.frame().size);
@@ -870,21 +870,21 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 Local l = i.getLocal();
                 if(!NSWorkspace.sharedWorkspace().openFile(l.getAbsolute())) {
                     if(transfer.isComplete()) {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not open the file", ""), //title
-                                Locale.localizedString("Could not open the file", "") + " \""
+                        this.alert(NSAlert.alert(Locale.localizedString("Could not open the file"), //title
+                                Locale.localizedString("Could not open the file") + " \""
                                         + l.getName()
-                                        + "\". " + Locale.localizedString("It moved since you downloaded it.", ""), // message
-                                Locale.localizedString("OK", ""), // defaultbutton
+                                        + "\". " + Locale.localizedString("It moved since you downloaded it."), // message
+                                Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button
                                 null //other button
                         ));
                     }
                     else {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not open the file", ""), //title
-                                Locale.localizedString("Could not open the file", "") + " \""
+                        this.alert(NSAlert.alert(Locale.localizedString("Could not open the file"), //title
+                                Locale.localizedString("Could not open the file") + " \""
                                         + l.getName()
-                                        + "\". " + Locale.localizedString("The file has not yet been downloaded.", ""), // message
-                                Locale.localizedString("OK", ""), // defaultbutton
+                                        + "\". " + Locale.localizedString("The file has not yet been downloaded."), // message
+                                Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button
                                 null //other button
                         ));
@@ -903,21 +903,21 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 // empty string (@"") for this parameter, the file is selected in the main viewer.
                 if(!NSWorkspace.sharedWorkspace().selectFile(l.getAbsolute(), l.getParent().getAbsolute())) {
                     if(transfer.isComplete()) {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder", ""), //title
-                                Locale.localizedString("Could not show the file", "") + " \""
+                        this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder"), //title
+                                Locale.localizedString("Could not show the file") + " \""
                                         + l.getName()
-                                        + "\". " + Locale.localizedString("It moved since you downloaded it.", ""), // message
-                                Locale.localizedString("OK", ""), // defaultbutton
+                                        + "\". " + Locale.localizedString("It moved since you downloaded it."), // message
+                                Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button
                                 null //other button
                         ));
                     }
                     else {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder", ""), //title
-                                Locale.localizedString("Could not show the file", "") + " \""
+                        this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder"), //title
+                                Locale.localizedString("Could not show the file") + " \""
                                         + l.getName()
-                                        + "\". " + Locale.localizedString("The file has not yet been downloaded.", ""), // message
-                                Locale.localizedString("OK", ""), // defaultbutton
+                                        + "\". " + Locale.localizedString("The file has not yet been downloaded."), // message
+                                Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button
                                 null //other button
                         ));
@@ -1035,20 +1035,20 @@ public class CDTransferController extends CDWindowController implements NSToolba
                         NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                         final Transfer transfer = new TransferPlistReader().deserialize((dict));
                         if(transfer.numberOfRoots() == 1) {
-                            item.setTitle(Locale.localizedString("Paste", "Menu item") + " \""
+                            item.setTitle(Locale.localizedString("Paste") + " \""
                                     + transfer.getRoot().getName() + "\"");
                         }
                         else {
-                            item.setTitle(Locale.localizedString("Paste", "Menu item")
+                            item.setTitle(Locale.localizedString("Paste")
                                     + " (" + transfer.numberOfRoots() + " " +
-                                    Locale.localizedString("files", "") + ")");
+                                    Locale.localizedString("files") + ")");
                         }
                         valid = true;
                     }
                 }
             }
             if(!valid) {
-                item.setTitle(Locale.localizedString("Paste", "Menu item"));
+                item.setTitle(Locale.localizedString("Paste"));
             }
         }
         return this.validateItem(action);

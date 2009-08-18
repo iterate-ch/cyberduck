@@ -63,6 +63,10 @@ public abstract class NSImage implements NSObject, NSCopying {
         return CLASS.imageNamed(name);
     }
 
+    public static NSImage imageWithData(NSData data) {
+        return CLASS.alloc().initWithData(data);
+    }
+
     public static NSImage imageWithSize(NSSize size) {
         return CLASS.alloc().initWithSize(size);
     }

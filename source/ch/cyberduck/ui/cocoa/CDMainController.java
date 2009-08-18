@@ -71,12 +71,12 @@ public class CDMainController extends CDBundleController {
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
-        columns.put("browser.columnKind", Locale.localizedString("Kind", ""));
-        columns.put("browser.columnSize", Locale.localizedString("Size", ""));
-        columns.put("browser.columnModification", Locale.localizedString("Modified", ""));
-        columns.put("browser.columnOwner", Locale.localizedString("Owner", ""));
-        columns.put("browser.columnGroup", Locale.localizedString("Group", ""));
-        columns.put("browser.columnPermissions", Locale.localizedString("Permissions", ""));
+        columns.put("browser.columnKind", Locale.localizedString("Kind"));
+        columns.put("browser.columnSize", Locale.localizedString("Size"));
+        columns.put("browser.columnModification", Locale.localizedString("Modified"));
+        columns.put("browser.columnOwner", Locale.localizedString("Owner"));
+        columns.put("browser.columnGroup", Locale.localizedString("Group"));
+        columns.put("browser.columnPermissions", Locale.localizedString("Permissions"));
         Iterator identifiers = columns.keySet().iterator();
         int i = 0;
         for(Iterator iter = columns.values().iterator(); iter.hasNext(); i++) {
@@ -276,7 +276,7 @@ public class CDMainController extends CDBundleController {
                             Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                     + "\n\n"
                                     + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
-                            Locale.localizedString("Continue", ""), //default
+                            Locale.localizedString("Continue"), //default
                             null, //other
                             null);
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
@@ -288,7 +288,7 @@ public class CDMainController extends CDBundleController {
                     final NSAlert alert = NSAlert.alert(
                             Locale.localizedString("Not a valid donation key", "License"),
                             Locale.localizedString("This donation key does not appear to be valid.", "License"),
-                            Locale.localizedString("Continue", ""), //default
+                            Locale.localizedString("Continue"), //default
                             null, //other
                             null);
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
@@ -616,11 +616,11 @@ public class CDMainController extends CDBundleController {
             }
             if(controller.isConnected()) {
                 if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                    final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit", ""),
-                            Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?", ""),
-                            Locale.localizedString("Quit Anyway", ""), //default
-                            Locale.localizedString("Cancel", ""), //other
-                            Locale.localizedString("Review...", ""));
+                    final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit"),
+                            Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
+                            Locale.localizedString("Quit Anyway"), //default
+                            Locale.localizedString("Cancel"), //other
+                            Locale.localizedString("Review..."));
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     int choice = alert.runModal(); //alternate
                     if(choice == CDSheetCallback.OTHER_OPTION) {

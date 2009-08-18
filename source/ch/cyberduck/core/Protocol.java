@@ -108,7 +108,7 @@ public abstract class Protocol {
 
     public static final Protocol SFTP = new Protocol() {
         public String getDescription() {
-            return Locale.localizedString("SFTP (SSH File Transfer Protocol)", "");
+            return Locale.localizedString("SFTP (SSH File Transfer Protocol)");
         }
 
         public int getDefaultPort() {
@@ -127,7 +127,7 @@ public abstract class Protocol {
 
     public static final Protocol SCP = new Protocol() {
         public String getDescription() {
-            return Locale.localizedString("SCP (Secure Copy)", "");
+            return Locale.localizedString("SCP (Secure Copy)");
         }
 
         public int getDefaultPort() {
@@ -146,7 +146,7 @@ public abstract class Protocol {
 
     public static final Protocol FTP = new Protocol() {
         public String getDescription() {
-            return Locale.localizedString("FTP (File Transfer Protocol)", "");
+            return Locale.localizedString("FTP (File Transfer Protocol)");
         }
 
         public int getDefaultPort() {
@@ -165,7 +165,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return Locale.localizedString("FTP-SSL (Explicit AUTH TLS)", "");
+            return Locale.localizedString("FTP-SSL (Explicit AUTH TLS)");
         }
 
         public int getDefaultPort() {
@@ -302,7 +302,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return Locale.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)", "");
+            return Locale.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)");
         }
 
         @Override
@@ -331,7 +331,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return Locale.localizedString("WebDAV (HTTP/SSL)", "");
+            return Locale.localizedString("WebDAV (HTTP/SSL)");
         }
 
         @Override
@@ -375,7 +375,7 @@ public abstract class Protocol {
         }
 
         public String getDescription() {
-            return Locale.localizedString("MobileMe iDisk (WebDAV)", "");
+            return Locale.localizedString("MobileMe iDisk (WebDAV)");
         }
 
         @Override

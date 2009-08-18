@@ -121,7 +121,7 @@ public class Distribution {
      */
     public String getStatus() {
         if(null == status) {
-            return Locale.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown");
         }
         return status;
     }

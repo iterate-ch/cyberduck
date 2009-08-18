@@ -182,7 +182,7 @@ public class PathAttributes implements Attributes, Serializable {
      */
     public String getOwner() {
         if(null == this.owner) {
-            return Locale.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown");
         }
         return this.owner;
     }
@@ -196,7 +196,7 @@ public class PathAttributes implements Attributes, Serializable {
      */
     public String getGroup() {
         if(null == this.group) {
-            return Locale.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown");
         }
         return this.group;
     }

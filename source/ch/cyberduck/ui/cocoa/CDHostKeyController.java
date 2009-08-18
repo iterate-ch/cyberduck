@@ -76,14 +76,14 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             if(KnownHosts.HOSTKEY_IS_NEW == result) {
-                NSAlert alert = NSAlert.alert(Locale.localizedString("Unknown host key for", "") + " "
+                NSAlert alert = NSAlert.alert(Locale.localizedString("Unknown host key for") + " "
                         + hostname, //title
-                        Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is", "")
+                        Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is")
                                 + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
-                        Locale.localizedString("Allow", ""), // default button
-                        Locale.localizedString("Deny", ""), // alternate button
+                        Locale.localizedString("Allow"), // default button
+                        Locale.localizedString("Deny"), // alternate button
                         LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
-                                Locale.localizedString("Always", "") : null //other button
+                                Locale.localizedString("Always") : null //other button
                 );
                 CDSheetController c = new CDAlertController(parent, alert) {
                     public void callback(final int returncode) {
@@ -103,15 +103,15 @@ public class CDHostKeyController extends CDController implements ServerHostKeyVe
                         || c.returnCode() == CDSheetCallback.OTHER_OPTION;
             }
             if(KnownHosts.HOSTKEY_HAS_CHANGED == result) {
-                NSAlert alert = NSAlert.alert(Locale.localizedString("Host key mismatch:", "") + " " + hostname, //title
-                        Locale.localizedString("The host key supplied is", "") + ": "
+                NSAlert alert = NSAlert.alert(Locale.localizedString("Host key mismatch:") + " " + hostname, //title
+                        Locale.localizedString("The host key supplied is") + ": "
                                 + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
-//                            + "\n" + Locale.localizedString("The current allowed key for this host is", "") + " : "
+//                            + "\n" + Locale.localizedString("The current allowed key for this host is") + " : "
 //                            + allowedHostKey.getFingerprint() + "\n"
-                                + Locale.localizedString("Do you want to allow the host access?", ""),
-                        Locale.localizedString("Allow", ""), // defaultbutton
-                        Locale.localizedString("Deny", ""), //alternative button
-                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always", "") : null //other button
+                                + Locale.localizedString("Do you want to allow the host access?"),
+                        Locale.localizedString("Allow"), // defaultbutton
+                        Locale.localizedString("Deny"), //alternative button
+                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always") : null //other button
                 );
                 CDSheetController c = new CDAlertController(parent, alert) {
                     public void callback(final int returncode) {

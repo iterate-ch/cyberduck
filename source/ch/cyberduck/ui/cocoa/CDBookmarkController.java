@@ -267,7 +267,7 @@ public class CDBookmarkController extends CDWindowController {
     /**
      * Calculate timezone
      */
-    protected static final String AUTO = Locale.localizedString("Auto", "");
+    protected static final String AUTO = Locale.localizedString("Auto");
 
     @Outlet
     private NSPopUpButton timezonePopup; //IBOutlet
@@ -322,8 +322,8 @@ public class CDBookmarkController extends CDWindowController {
     @Outlet
     private NSPopUpButton connectmodePopup; //IBOutlet
 
-    private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active", "");
-    private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive", "");
+    private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active");
+    private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive");
 
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
@@ -352,8 +352,8 @@ public class CDBookmarkController extends CDWindowController {
     @Outlet
     private NSPopUpButton transferPopup; //IBOutlet
 
-    private static final String TRANSFER_NEWCONNECTION = Locale.localizedString("Open new connection", "");
-    private static final String TRANSFER_BROWSERCONNECTION = Locale.localizedString("Use browser connection", "");
+    private static final String TRANSFER_NEWCONNECTION = Locale.localizedString("Open new connection");
+    private static final String TRANSFER_BROWSERCONNECTION = Locale.localizedString("Use browser connection");
 
     public void setTransferPopup(NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
@@ -382,7 +382,7 @@ public class CDBookmarkController extends CDWindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup; //IBOutlet
 
-    private static final String CHOOSE = Locale.localizedString("Choose", "") + "...";
+    private static final String CHOOSE = Locale.localizedString("Choose") + "...";
 
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
@@ -562,7 +562,7 @@ public class CDBookmarkController extends CDWindowController {
 
     public void pkCheckboxSelectionChanged(final NSButton sender) {
         log.debug("pkCheckboxSelectionChanged");
-        if(this.pkLabel.stringValue().equals(Locale.localizedString("No Private Key selected", ""))) {
+        if(this.pkLabel.stringValue().equals(Locale.localizedString("No Private Key selected"))) {
             publicKeyPanel = NSOpenPanel.openPanel();
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
@@ -728,7 +728,7 @@ public class CDBookmarkController extends CDWindowController {
         }
         else {
             pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No Private Key selected", ""));
+            pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
         }
         webURLField.setEnabled(host.getProtocol().isWebUrlConfigurable());
         webUrlImage.setToolTip(host.getWebURL());

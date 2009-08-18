@@ -58,7 +58,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Overwrite", "");
+            return Locale.localizedString("Overwrite");
         }
     };
 
@@ -71,7 +71,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Resume", "");
+            return Locale.localizedString("Resume");
         }
     };
 
@@ -84,7 +84,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Rename", "");
+            return Locale.localizedString("Rename");
         }
     };
 
@@ -97,7 +97,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Skip", "");
+            return Locale.localizedString("Skip");
         }
     };
 
@@ -110,7 +110,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Prompt", "");
+            return Locale.localizedString("Prompt");
         }
     };
 
@@ -120,7 +120,7 @@ public abstract class TransferAction {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Cancel", "");
+            return Locale.localizedString("Cancel");
         }
     };
 }

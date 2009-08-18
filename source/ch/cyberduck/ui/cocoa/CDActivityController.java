@@ -122,7 +122,7 @@ public class CDActivityController extends CDWindowController {
         this.window = window;
         this.window.setReleasedWhenClosed(false);
         this.window.setDelegate(this.id());
-        this.window.setTitle(Locale.localizedString("Activity", ""));
+        this.window.setTitle(Locale.localizedString("Activity"));
     }
 
     /**

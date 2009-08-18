@@ -220,7 +220,7 @@ public class CDInfoController extends CDWindowController {
     public void setBucketLocationField(NSTextField t) {
         this.bucketLocationField = t;
         this.bucketLocationField.setStringValue(
-                Locale.localizedString("Unknown", "")
+                Locale.localizedString("Unknown")
         );
     }
 
@@ -264,7 +264,7 @@ public class CDInfoController extends CDWindowController {
         for(int i = 0; i < this.s3CachePopup.numberOfItems(); i++) {
             this.s3CachePopup.itemAtIndex(i).setState(NSCell.NSOffState);
         }
-        this.s3CachePopup.addItemWithTitle(Locale.localizedString("None", ""));
+        this.s3CachePopup.addItemWithTitle(Locale.localizedString("None"));
         this.s3CachePopup.addItemWithTitle("public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds"));
     }
 
@@ -702,12 +702,12 @@ public class CDInfoController extends CDWindowController {
                     }
                 }
                 if(numberOfFiles() > 1) {
-                    permissionsBox.setStringValue(Locale.localizedString("Permissions", "")
-                            + " | " + "(" + Locale.localizedString("Multiple files", "") + ")");
+                    permissionsBox.setStringValue(Locale.localizedString("Permissions")
+                            + " | " + "(" + Locale.localizedString("Multiple files") + ")");
                 }
                 else {
-                    permissionsBox.setStringValue(Locale.localizedString("Permissions", "")
-                            + " | " + (null == permission ? Locale.localizedString("Unknown", "") : permission.toString()));
+                    permissionsBox.setStringValue(Locale.localizedString("Permissions")
+                            + " | " + (null == permission ? Locale.localizedString("Unknown") : permission.toString()));
                 }
                 togglePermissionSettings(true);
             }
@@ -849,19 +849,19 @@ public class CDInfoController extends CDWindowController {
         final Credentials credentials = file.getHost().getCredentials();
         final boolean amazon = file instanceof S3Path && !credentials.isAnonymousLogin();
 
-        bucketLocationField.setStringValue(Locale.localizedString("Unknown", ""));
+        bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLocationField.setEnabled(amazon);
         s3CachePopup.setEnabled(amazon && file.attributes.isFile());
         bucketLoggingButton.setEnabled(amazon);
         bucketLoggingButton.setToolTip("");
-        s3PublicUrlField.setStringValue(Locale.localizedString("Unknown", ""));
-        s3torrentUrlField.setStringValue(Locale.localizedString("Unknown", ""));
+        s3PublicUrlField.setStringValue(Locale.localizedString("Unknown"));
+        s3torrentUrlField.setStringValue(Locale.localizedString("Unknown"));
         if(amazon) {
             final S3Path s3 = (S3Path) file;
             if(file.attributes.isFile()) {
                 if(this.numberOfFiles() > 1) {
-                    s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files", "") + ")");
-                    s3torrentUrlField.setStringValue("(" + Locale.localizedString("Multiple files", "") + ")");
+                    s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                    s3torrentUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                 }
                 else {
                     final String signedUrl = s3.createSignedUrl();
@@ -956,9 +956,9 @@ public class CDInfoController extends CDWindowController {
                 }
                 else {
                     this.alert(NSAlert.alert(
-                            Locale.localizedString("Error", "Alert sheet title"),
+                            Locale.localizedString("Error"),
                             Locale.localizedString("Invalid character in filename."), // message
-                            Locale.localizedString("OK", "Alert default button"), // defaultbutton
+                            Locale.localizedString("OK"), // defaultbutton
                             null, //alternative button
                             null //other button
                     ));

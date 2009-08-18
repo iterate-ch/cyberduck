@@ -120,7 +120,7 @@ public class SyncTransfer extends Transfer {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Download", "");
+            return Locale.localizedString("Download");
         }
     };
     public static final TransferAction ACTION_UPLOAD = new TransferAction() {
@@ -129,7 +129,7 @@ public class SyncTransfer extends Transfer {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Upload", "");
+            return Locale.localizedString("Upload");
         }
     };
     public static final TransferAction ACTION_MIRROR = new TransferAction() {
@@ -138,7 +138,7 @@ public class SyncTransfer extends Transfer {
         }
 
         public String getLocalizableString() {
-            return Locale.localizedString("Mirror", "");
+            return Locale.localizedString("Mirror");
         }
     };
 

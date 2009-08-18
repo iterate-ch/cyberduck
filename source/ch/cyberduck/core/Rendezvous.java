@@ -185,7 +185,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
                 return services.values().toArray(new Host[services.size()])[index].getNickname();
             }
         }
-        return Locale.localizedString("Unknown", "");
+        return Locale.localizedString("Unknown");
     }
 
     /**
@@ -195,7 +195,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
     public String getDisplayedName(String identifier) {
         Host host = services.get(identifier);
         if(null == host) {
-            return Locale.localizedString("Unknown", "");
+            return Locale.localizedString("Unknown");
         }
         return host.getNickname();
     }

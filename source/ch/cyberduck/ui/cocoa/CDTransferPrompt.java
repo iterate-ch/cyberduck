@@ -138,7 +138,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                browserView.numberOfRows() + " " + Locale.localizedString("files", ""),
+                browserView.numberOfRows() + " " + Locale.localizedString("files"),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
@@ -154,7 +154,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     }
 
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
-            Locale.localizedString("Unknown", ""),
+            Locale.localizedString("Unknown"),
             TRUNCATE_MIDDLE_ATTRIBUTES);
 
     /**

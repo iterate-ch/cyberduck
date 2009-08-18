@@ -58,7 +58,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
     protected static final String LOCAL_COLUMN = "LOCAL";
 
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
-            Locale.localizedString("Unknown", ""),
+            Locale.localizedString("Unknown"),
             CDTableCellAttributes.browserFontLeftAlignment());
 
     /**

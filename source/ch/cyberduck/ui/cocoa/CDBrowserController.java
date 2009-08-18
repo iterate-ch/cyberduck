@@ -212,7 +212,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
                 }
             }
-            this.updateStatusLabel(this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks", ""));
+            this.updateStatusLabel(this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks"));
             this.window().makeFirstResponder(bookmarkTable);
         }
         else {
@@ -1579,11 +1579,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             bookmarkTable.scrollRowToVisible(new NSInteger(row));
             Host host = bookmarkModel.getSource().get(row);
-            final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark", ""),
-                    Locale.localizedString("Do you want to delete the selected bookmark?", "")
+            final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark"),
+                    Locale.localizedString("Do you want to delete the selected bookmark?")
                             + " (" + host.getNickname() + ")",
-                    Locale.localizedString("Delete", ""),
-                    Locale.localizedString("Cancel", ""),
+                    Locale.localizedString("Delete"),
+                    Locale.localizedString("Cancel"),
                     null);
             switch(alert.runModal()) {
                 case CDSheetCallback.DEFAULT_OPTION:
@@ -1824,7 +1824,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             label = Locale.localizedString("Disconnected", "Status");
             if(this.isMounted()) {
                 if(this.isConnected()) {
-                    label = this.getSelectedBrowserView().numberOfRows() + " " + Locale.localizedString("Files", "");
+                    label = this.getSelectedBrowserView().numberOfRows() + " " + Locale.localizedString("Files");
                 }
             }
         }
@@ -2010,7 +2010,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private void checkOverwrite(final java.util.Collection<Path> selected, final BackgroundAction action) {
         if(selected.size() > 0) {
             StringBuffer alertText = new StringBuffer(
-                    Locale.localizedString("A file with the same name already exists. Do you want to replace the existing file?", ""));
+                    Locale.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
             int i = 0;
             Iterator<Path> iter = null;
             boolean shouldWarn = false;
@@ -2027,10 +2027,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             if(shouldWarn) {
                 NSAlert alert = NSAlert.alert(
-                        Locale.localizedString("Overwrite", "Alert sheet title"), //title
+                        Locale.localizedString("Overwrite"), //title
                         alertText.toString(),
-                        Locale.localizedString("Overwrite", "Alert sheet default button"), // defaultbutton
-                        Locale.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                        Locale.localizedString("Overwrite"), // defaultbutton
+                        Locale.localizedString("Cancel"), //alternative button
                         null //other button
                 );
                 this.alert(alert, new CDSheetCallback() {
@@ -2056,7 +2056,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(selected.size() > 0) {
             if(Preferences.instance().getBoolean("browser.confirmMove")) {
                 StringBuffer alertText = new StringBuffer(
-                        Locale.localizedString("Do you want to move the selected files?", ""));
+                        Locale.localizedString("Do you want to move the selected files?"));
                 int i = 0;
                 Iterator<Path> iter = null;
                 for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
@@ -2068,10 +2068,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     alertText.append("\n" + Character.toString('\u2022') + " ...)");
                 }
                 final NSAlert alert = NSAlert.alert(
-                        Locale.localizedString("Move", "Alert sheet title"), //title
+                        Locale.localizedString("Move"), //title
                         alertText.toString(),
-                        Locale.localizedString("Move", "Alert sheet default button"), // defaultbutton
-                        Locale.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                        Locale.localizedString("Move"), // defaultbutton
+                        Locale.localizedString("Cancel"), //alternative button
                         null //other button
                 );
                 this.alert(alert, new CDSheetCallback() {
@@ -2164,20 +2164,20 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         final List<Path> normalized = this.checkHierarchy(selected);
         if(normalized.size() > 0) {
             StringBuffer alertText =
-                    new StringBuffer(Locale.localizedString("Really delete the following files? This cannot be undone.", "Confirm deleting files."));
+                    new StringBuffer(Locale.localizedString("Really delete the following files? This cannot be undone."));
             int i = 0;
             Iterator<Path> iter = null;
             for(iter = normalized.iterator(); i < 10 && iter.hasNext();) {
-                alertText.append("\n" + Character.toString('\u2022') + " " + iter.next().getName());
+                alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getName());
                 i++;
             }
             if(iter.hasNext()) {
-                alertText.append("\n" + Character.toString('\u2022') + " " + "(...)");
+                alertText.append("\n").append(Character.toString('\u2022')).append(" " + "(...)");
             }
-            NSAlert alert = NSAlert.alert(Locale.localizedString("Delete", "Alert sheet title"), //title
+            NSAlert alert = NSAlert.alert(Locale.localizedString("Delete"), //title
                     alertText.toString(),
-                    Locale.localizedString("Delete", "Alert sheet default button"), // defaultbutton
-                    Locale.localizedString("Cancel", "Alert sheet alternate button"), //alternative button
+                    Locale.localizedString("Delete"), // defaultbutton
+                    Locale.localizedString("Cancel"), //alternative button
                     null //other button
             );
             this.alert(alert, new CDSheetCallback() {
@@ -2362,8 +2362,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         downloadToPanel.setCanCreateDirectories(true);
         downloadToPanel.setCanChooseFiles(false);
         downloadToPanel.setAllowsMultipleSelection(false);
-        downloadToPanel.setPrompt(Locale.localizedString("Download To", ""));
-        downloadToPanel.setTitle(Locale.localizedString("Download To", ""));
+        downloadToPanel.setPrompt(Locale.localizedString("Download To"));
+        downloadToPanel.setTitle(Locale.localizedString("Download To"));
         downloadToPanel.beginSheetForDirectory(
                 lastSelectedDownloadDirectory, //trying to be smart
                 null, this.window, this.id(),
@@ -2392,10 +2392,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void downloadAsButtonClicked(final NSObject sender) {
         downloadAsPanel = NSSavePanel.savePanel();
-        downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to...", ""));
-        downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:", ""));
-        downloadAsPanel.setPrompt(Locale.localizedString("Download", ""));
-        downloadAsPanel.setTitle(Locale.localizedString("Download", ""));
+        downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to..."));
+        downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:"));
+        downloadAsPanel.setPrompt(Locale.localizedString("Download"));
+        downloadAsPanel.setTitle(Locale.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);
         downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getLocal().getName(), this.window, this.id(),
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
@@ -2431,11 +2431,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         syncPanel.setCanChooseFiles(selection.attributes.isFile());
         syncPanel.setCanCreateDirectories(true);
         syncPanel.setAllowsMultipleSelection(false);
-        syncPanel.setMessage(Locale.localizedString("Synchronize", "")
+        syncPanel.setMessage(Locale.localizedString("Synchronize")
                 + " " + selection.getName() + " "
-                + Locale.localizedString("with", "Synchronize <file> with <file>"));
-        syncPanel.setPrompt(Locale.localizedString("Choose", ""));
-        syncPanel.setTitle(Locale.localizedString("Synchronize", ""));
+                + Locale.localizedString("with"));
+        syncPanel.setPrompt(Locale.localizedString("Choose"));
+        syncPanel.setTitle(Locale.localizedString("Synchronize"));
         syncPanel.beginSheetForDirectory(null, null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
@@ -2482,8 +2482,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setCanChooseFiles(true);
         uploadPanel.setAllowsMultipleSelection(true);
-        uploadPanel.setPrompt(Locale.localizedString("Upload", ""));
-        uploadPanel.setTitle(Locale.localizedString("Upload", ""));
+        uploadPanel.setPrompt(Locale.localizedString("Upload"));
+        uploadPanel.setTitle(Locale.localizedString("Upload"));
         uploadPanel.beginSheetForDirectory(lastSelectedUploadDirectory, //trying to be smart
                 null, this.window,
                 this.id(),
@@ -3330,10 +3330,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(this.isConnected() || this.isActivityRunning()) {
             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                 // Defer the unmount to the callback function
-                final NSAlert alert = NSAlert.alert(Locale.localizedString("Disconnect from", "Alert sheet title") + " " + this.session.getHost().getHostname(), //title
-                        Locale.localizedString("The connection will be closed.", "Alert sheet text"), // message
-                        Locale.localizedString("Disconnect", "Alert sheet default button"), // defaultbutton
-                        Locale.localizedString("Cancel", "Alert sheet alternate button"), // alternate button
+                final NSAlert alert = NSAlert.alert(Locale.localizedString("Disconnect from") + " " + this.session.getHost().getHostname(), //title
+                        Locale.localizedString("The connection will be closed."), // message
+                        Locale.localizedString("Disconnect"), // defaultbutton
+                        Locale.localizedString("Cancel"), // alternate button
                         null //other button
                 );
                 this.alert(alert, callback);
@@ -3530,20 +3530,20 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     if(o != null) {
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
                         if(elements.count().intValue() == 1) {
-                            item.setTitle(Locale.localizedString("Paste", "Menu item") + " \""
+                            item.setTitle(Locale.localizedString("Paste") + " \""
                                     + elements.objectAtIndex(0) + "\"");
                         }
                         else {
-                            item.setTitle(Locale.localizedString("Paste from Finder", "Menu item") + " (" +
+                            item.setTitle(Locale.localizedString("Paste from Finder") + " (" +
                                     elements.count().intValue() + " " +
-                                    Locale.localizedString("files", "") + ")");
+                                    Locale.localizedString("files") + ")");
                         }
                         valid = true;
                     }
                 }
             }
             if(!valid) {
-                item.setTitle(Locale.localizedString("Paste from Finder", "Menu item"));
+                item.setTitle(Locale.localizedString("Paste from Finder"));
             }
         }
         else if(action.equals(Foundation.selector("paste:"))) {
@@ -3558,13 +3558,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
                             Transfer q = new TransferPlistReader().deserialize((dict));
                             if(q.numberOfRoots() == 1) {
-                                item.setTitle(Locale.localizedString("Paste", "Menu item") + " \""
+                                item.setTitle(Locale.localizedString("Paste") + " \""
                                         + q.getRoot().getName() + "\"");
                             }
                             else {
-                                item.setTitle(Locale.localizedString("Paste", "Menu item")
+                                item.setTitle(Locale.localizedString("Paste")
                                         + " (" + q.numberOfRoots() + " " +
-                                        Locale.localizedString("files", "") + ")");
+                                        Locale.localizedString("files") + ")");
                             }
                             valid = true;
                         }
@@ -3572,23 +3572,23 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
             if(!valid) {
-                item.setTitle(Locale.localizedString("Paste", "Menu item"));
+                item.setTitle(Locale.localizedString("Paste"));
             }
         }
         else if(action.equals(Foundation.selector("cut:"))) {
             int count = this.getSelectionCount();
             if(this.isMounted() && count > 0) {
                 if(count > 1) {
-                    item.setTitle(Locale.localizedString("Cut", "Menu item")
+                    item.setTitle(Locale.localizedString("Cut")
                             + " " + this.getSelectionCount() + " " +
-                            Locale.localizedString("files", ""));
+                            Locale.localizedString("files"));
                 }
                 else {
-                    item.setTitle(Locale.localizedString("Cut", "Menu item") + " \"" + this.getSelectedPath().getName() + "\"");
+                    item.setTitle(Locale.localizedString("Cut") + " \"" + this.getSelectedPath().getName() + "\"");
                 }
             }
             else {
-                item.setTitle(Locale.localizedString("Cut", "Menu item"));
+                item.setTitle(Locale.localizedString("Cut"));
             }
         }
         else if(action.equals(Foundation.selector("showHiddenFilesClicked:"))) {

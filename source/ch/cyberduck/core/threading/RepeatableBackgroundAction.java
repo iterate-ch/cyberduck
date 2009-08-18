@@ -239,6 +239,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         if(session != null) {
             return session.getHost().getHostname();
         }
-        return Locale.localizedString("Unknown", "");
+        return Locale.localizedString("Unknown");
     }
 }
