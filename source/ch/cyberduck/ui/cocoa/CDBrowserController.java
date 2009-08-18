@@ -4254,6 +4254,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         Rendezvous.instance().removeListener(rendezvousCollectionListener);
         HistoryCollection.defaultCollection().removeListener(historyCollectionListener);
         HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
+
+        bookmarkModel.invalidate();
+        browserListModel.invalidate();
+        browserOutlineModel.invalidate();
+
         super.invalidate();
     }
 }
