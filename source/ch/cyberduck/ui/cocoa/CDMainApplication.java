@@ -42,12 +42,12 @@ public class CDMainApplication {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
         try {
-            log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
-
             registerFactories();
 
             final Logger root = Logger.getRootLogger();
             root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+
+            log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
 
             // This method also makes a connection to the window server and completes other initialization.
             // Your program should invoke this method as one of the first statements in main();
