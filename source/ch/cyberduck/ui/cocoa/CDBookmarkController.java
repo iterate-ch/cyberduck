@@ -25,16 +25,12 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.*;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -234,30 +230,12 @@ public class CDBookmarkController extends CDWindowController {
                 private NSImage favicon;
 
                 public void run() {
-                    InputStream stream = null;
-                    try {
-                        final URL url = new URL(host.getWebURL());
-                        int port = url.getPort();
-                        if(-1 == port) {
-                            port = 80;
-                        }
-                        // Default favicon location
-                        stream = new URL(url.getProtocol(), url.getHost(), port, "/favicon.ico").openStream();
-                        final byte[] bytes = IOUtils.toByteArray(stream);
-                        if(bytes.length == 0) {
-                            return;
-                        }
-//                        favicon = NSImage.imageWithData(new NSData(bytes));
+                    // Default favicon location
+                    final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(host.getWebURL() + "/favicon.ico"));
+                    if(null == data) {
+                        return;
                     }
-                    catch(java.net.MalformedURLException e) {
-                        log.warn(e.getMessage());
-                    }
-                    catch(IOException e) {
-                        log.warn(e.getMessage());
-                    }
-                    finally {
-                        IOUtils.closeQuietly(stream);
-                    }
+                    favicon = NSImage.imageWithData(data);
                 }
 
                 public void cleanup() {
@@ -533,9 +511,9 @@ public class CDBookmarkController extends CDWindowController {
     private final AbstractCollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
         @Override
         public void collectionItemRemoved(Host item) {
-            if (item.equals(host)) {
+            if(item.equals(host)) {
                 final NSWindow window = window();
-                if (null != window) {
+                if(null != window) {
                     window.close();
                 }
             }
