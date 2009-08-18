@@ -220,6 +220,7 @@
 		47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D414940F0ECFF300BAF184 /* Security.framework */; };
 		47D5E5270FD132D30060AD43 /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D5E5250FD132D30060AD43 /* CDBookmarkCell.m */; };
 		47D5E5280FD132D30060AD43 /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47D5E5260FD132D30060AD43 /* CDBookmarkCell.h */; };
+		47DA1218103A866D00766A76 /* DotMacKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47DA1217103A866D00766A76 /* DotMacKit.framework */; };
 		47DF9A26102CE43B00DCAD41 /* Local.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DF9A22102CE43B00DCAD41 /* Local.h */; };
 		47DF9A27102CE43B00DCAD41 /* Local.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DF9A23102CE43B00DCAD41 /* Local.m */; };
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
@@ -1366,6 +1367,7 @@
 		47D414940F0ECFF300BAF184 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47D5E5250FD132D30060AD43 /* CDBookmarkCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDBookmarkCell.m; sourceTree = "<group>"; };
 		47D5E5260FD132D30060AD43 /* CDBookmarkCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDBookmarkCell.h; sourceTree = "<group>"; };
+		47DA1217103A866D00766A76 /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = lib/DotMacKit.framework; sourceTree = "<group>"; };
 		47DC8E9308699CF300B9DD7D /* CDDotMacController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDDotMacController.h; sourceTree = "<group>"; };
 		47DC8E9408699CF300B9DD7D /* CDDotMacController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDDotMacController.m; sourceTree = "<group>"; };
 		47DF9A22102CE43B00DCAD41 /* Local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
@@ -1492,6 +1494,7 @@
 			files = (
 				4716D9A50877548600938886 /* Cocoa.framework in Frameworks */,
 				4716D8B20877533B00938886 /* JavaVM.framework in Frameworks */,
+				47DA1218103A866D00766A76 /* DotMacKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1643,6 +1646,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47DA1217103A866D00766A76 /* DotMacKit.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
 				470671150FD8896D00EE3291 /* Sparkle.framework */,
 				4726277E0FD5743C001D5BA5 /* Growl.framework */,
