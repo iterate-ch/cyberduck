@@ -23,6 +23,22 @@ package ch.cyberduck.core;
  */
 public abstract class BookmarkCollection extends Collection<Host> {
 
+    private static final BookmarkCollection EMPTY = new BookmarkCollection() {
+        @Override
+        public void save() {
+            ;
+        }
+
+        @Override
+        public void load() {
+            ;
+        }
+    };
+
+    public static BookmarkCollection empty() {
+        return EMPTY;
+    }
+
     public BookmarkCollection() {
         super();
     }

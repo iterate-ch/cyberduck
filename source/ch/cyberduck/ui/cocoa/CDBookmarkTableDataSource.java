@@ -61,14 +61,43 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
 
     public CDBookmarkTableDataSource(CDBrowserController controller, BookmarkCollection source) {
         this.controller = controller;
-        this.source = source;
+        this.setSource(source);
     }
 
-    private BookmarkCollection source;
+    private BookmarkCollection source = BookmarkCollection.empty();
+
+    private CollectionListener<Host> listener;
 
     public void setSource(final BookmarkCollection source) {
+        this.source.removeListener(listener); //Remove previous listener
         this.source = source;
+        this.source.addListener(listener = new AbstractCollectionListener<Host>() {
+            private Timer delayed = null;
+
+            @Override
+            public void collectionItemChanged(Host item) {
+                if(null != delayed) {
+                    delayed.cancel();
+                }
+                delayed = new Timer();
+                delayed.schedule(new TimerTask() {
+                    public void run() {
+                        controller.invoke(new DefaultMainAction() {
+                            public void run() {
+                                source.save();
+                            }
+                        });
+                    }
+                }, 5000); // Delay to 5 seconds. When typing changes we don't have to save every iteration.
+            }
+        });
         this.setFilter(null);
+    }
+
+    @Override
+    protected void invalidate() {
+        source.removeListener(listener);
+        super.invalidate();
     }
 
     private HostFilter filter;
@@ -129,35 +158,17 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     filtered.add(bookmark);
                 }
             }
-            filtered.addListener(new AbstractCollectionListener<Host>() {
-                @Override
+            filtered.addListener(new CollectionListener<Host>() {
                 public void collectionItemAdded(Host item) {
                     source.add(item);
                 }
 
-                @Override
                 public void collectionItemRemoved(Host item) {
                     source.remove(item);
                 }
 
-                private Timer delayed = null;
-
-                @Override
                 public void collectionItemChanged(Host item) {
-                    if(null != delayed) {
-                        delayed.cancel();
-                    }
-                    delayed = new Timer();
-                    delayed.schedule(new TimerTask() {
-                        public void run() {
-                            controller.invoke(new DefaultMainAction() {
-                                public void run() {
-                                    source.save();
-                                }
-                            });
-                        }
-                    }, 5000); // Delay to 5 seconds. When typing changes we don't have to save every iteration.
-                    super.collectionItemChanged(item);
+                    source.collectionItemChanged(item);
                 }
             });
         }
