@@ -104,6 +104,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     protected abstract Session getSession();
 
     /**
+     * 
+     */
+    private final int repeatAttempts = Preferences.instance().getInteger("connection.retry");
+
+    /**
      * The number of times a new connection attempt should be made. Takes into
      * account the number of times already tried.
      *
@@ -119,7 +124,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                         || cause instanceof UnknownHostException
                         || cause instanceof FTPNullReplyException) {
                     // The initial connection attempt does not count
-                    return (int) Preferences.instance().getDouble("connection.retry") - repeatCount;
+                    return repeatAttempts - repeatCount;
                 }
             }
         }
