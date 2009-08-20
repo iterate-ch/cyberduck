@@ -140,23 +140,23 @@ public class CDErrorController extends CDBundleController {
         StringBuilder buffer = new StringBuilder();
         if(null != cause) {
             if(StringUtils.isNotBlank(cause.getMessage())) {
-                buffer.append(cause.getMessage()).append(".");
+                buffer.append(cause.getMessage());
             }
             if(cause instanceof SFTPException) {
                 final SFTPException sftp = (SFTPException) cause;
                 if(StringUtils.isNotBlank(sftp.getServerErrorCodeVerbose())) {
-                    buffer.append(" ").append(sftp.getServerErrorCodeVerbose()).append(".");
+                    buffer.append(" ").append(sftp.getServerErrorCodeVerbose());
                 }
             }
             if(cause instanceof S3ServiceException) {
                 final S3ServiceException s3 = (S3ServiceException) cause;
                 if(StringUtils.isNotBlank(s3.getResponseStatus())) {
                     // HTTP method status
-                    buffer.append(" ").append(s3.getResponseStatus()).append(".");
+                    buffer.append(" ").append(s3.getResponseStatus());
                 }
                 if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
                     // S3 protocol message
-                    buffer.append(" ").append(s3.getS3ErrorMessage()).append(".");
+                    buffer.append(" ").append(s3.getS3ErrorMessage());
                 }
             }
             if(cause instanceof CloudFrontServiceException) {
@@ -165,7 +165,7 @@ public class CDErrorController extends CDBundleController {
                     buffer.append(cf.getErrorMessage()).append(". ");
                 }
                 if(StringUtils.isNotBlank(cf.getErrorDetail())) {
-                    buffer.append(" ").append(cf.getErrorDetail()).append(".");
+                    buffer.append(" ").append(cf.getErrorDetail());
                 }
             }
             if(cause instanceof FilesException) {
@@ -173,12 +173,16 @@ public class CDErrorController extends CDBundleController {
                 final StatusLine status = cf.getHttpStatusLine();
                 if(null != status) {
                     if(StringUtils.isNotBlank(status.getReasonPhrase())) {
-                        buffer.append(" ").append(status.getReasonPhrase()).append(".");
+                        buffer.append(" ").append(status.getReasonPhrase());
                     }
                 }
             }
         }
-        return Locale.localizedString(buffer.toString(), "Error");
+        String message = buffer.toString();
+        if(!message.endsWith(".")) {
+            message = message + ".";
+        }
+        return Locale.localizedString(message, "Error");
     }
 
     @Override
