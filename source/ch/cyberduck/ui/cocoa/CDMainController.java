@@ -50,8 +50,71 @@ import java.util.*;
 public class CDMainController extends CDBundleController {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
+    /**
+     * Apple event constants<br>
+     * **********************************************************************************************<br>
+     * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/AvailabilityMacros.h:117</i>
+     */
+    public static final int kInternetEventClass = 1196773964;
+    /**
+     * Apple event constants<br>
+     * **********************************************************************************************<br>
+     * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/AvailabilityMacros.h:118</i>
+     */
+    public static final int kAEGetURL = 1196773964;
+    /**
+     * Apple event constants<br>
+     * **********************************************************************************************<br>
+     * <i>native declaration : /Developer/SDKs/MacOSX10.5.sdk/usr/include/AvailabilityMacros.h:119</i>
+     */
+    public static final int kAEFetchURL = 1179996748;
+
+    /// 0x2d2d2d2d
+    public static final int keyAEResult = 757935405;
+
     public CDMainController() {
         this.loadBundle();
+    }
+
+    @Override
+    public void awakeFromNib() {
+        NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
+                this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
+
+        super.awakeFromNib();
+    }
+
+    /**
+     * Extract the URL from the Apple event and handle it here.
+     *
+     * @param event
+     * @param reply
+     */
+    public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
+        log.debug("Received URL from Apple Event:" + event);
+        final NSAppleEventDescriptor param = event.paramDescriptorForKeyword(keyAEResult);
+        if(null == param) {
+            log.error("No URL parameter");
+            return;
+        }
+        final String url = param.stringValue();
+        if(StringUtils.isEmpty(url)) {
+            log.error("URL parameter is empty");
+            return;
+        }
+        final Host h = Host.parse(url);
+        if(StringUtils.isNotEmpty(h.getDefaultPath())) {
+            if(!h.getDefaultPath().endsWith(Path.DELIMITER)) {
+                final Session s = SessionFactory.createSession(h);
+                final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
+                if(StringUtils.isNotBlank(p.getExtension())) {
+                    CDTransferController.instance().startTransfer(new DownloadTransfer(p));
+                    return;
+                }
+            }
+        }
+        CDBrowserController doc = newDocument();
+        doc.mount(h);
     }
 
     @Outlet
