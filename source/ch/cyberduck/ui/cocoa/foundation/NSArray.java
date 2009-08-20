@@ -116,7 +116,7 @@ public abstract class NSArray implements NSObject {
      * Original signature : <code>objectAtIndex(NSUInteger)</code><br>
      * <i>native declaration : :17</i>
      */
-    public abstract NSObject objectAtIndex(long index);
+    public abstract NSObject objectAtIndex(NSUInteger index);
 
     /**
      * <i>from NSExtendedArray native declaration : :23</i><br>
