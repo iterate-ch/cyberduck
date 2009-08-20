@@ -76,7 +76,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     /**
      * Display an alert dialog with a summary of all failed tasks
      */
-    public void alert() {
+    protected void alert() {
         if(controller.isVisible()) {
             alert = new CDSheetController(controller) {
 
