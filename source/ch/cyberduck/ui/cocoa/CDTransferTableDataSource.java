@@ -23,12 +23,13 @@ import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -145,8 +146,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
+        if(!PathPasteboard.allPasteboards().isEmpty()) {
             view.setDropRow(row, NSTableView.NSTableViewDropAbove);
             return NSDraggingInfo.NSDragOperationCopy;
         }
@@ -172,31 +172,21 @@ public class CDTransferTableDataSource extends CDListDataSource {
             }
             return false;
         }
-        // we are only interested in our private pasteboard with a description of the queue
-        // encoded in as a xml.
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-        log.debug("availableTypeFromArray:TransferPasteboardType: " + pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)));
-        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
-            log.debug("tableViewAcceptDrop:" + o);
-            if(o != null) {
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                    TransferCollection.instance().add(row.intValue(), new TransferPlistReader().deserialize((dict)));
-                    view.reloadData();
-                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row.intValue()), false);
-                    view.scrollRowToVisible(row);
-                }
-                pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
-                return true;
+        final Map<Host, PathPasteboard> boards = PathPasteboard.allPasteboards();
+        if(!boards.isEmpty()) {
+            for(PathPasteboard pasteboard : boards.values()) {
+                TransferCollection.instance().add(row.intValue(), new DownloadTransfer(pasteboard.getFiles()));
+                view.reloadData();
+                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row.intValue()), false);
+                view.scrollRowToVisible(row);
             }
+            boards.clear();
+            return true;
         }
         return false;
     }
 
     /**
-     *
      * @param row
      * @return
      */
@@ -205,7 +195,6 @@ public class CDTransferTableDataSource extends CDListDataSource {
     }
 
     /**
-     *
      * @param t
      * @return
      */
@@ -214,7 +203,6 @@ public class CDTransferTableDataSource extends CDListDataSource {
     }
 
     /**
-     *
      * @param row
      * @param highlighted
      */

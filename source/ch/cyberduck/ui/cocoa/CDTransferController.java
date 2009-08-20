@@ -25,7 +25,6 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
@@ -36,8 +35,10 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
+
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -381,7 +382,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
         // and then use the private pasteboard instead.
         this.transferTable.registerForDraggedTypes(NSArray.arrayWithObjects(
-                CDPasteboards.TransferPasteboardType,
+                PathPasteboard.identifier(),
                 NSPasteboard.StringPboardType,
                 NSPasteboard.FilesPromisePboardType));
 
@@ -781,18 +782,13 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void paste(final NSObject sender) {
         log.debug("paste");
-        NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
-            if(o != null) {
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                    TransferCollection.instance().add(new TransferPlistReader().deserialize((dict)));
-                }
-                pboard.setPropertyListForType(null, CDPasteboards.TransferPasteboardType);
-                this.reloadData();
+        final Map<Host, PathPasteboard> boards = PathPasteboard.allPasteboards();
+        if(!boards.isEmpty()) {
+            for(PathPasteboard pasteboard : boards.values()) {
+                TransferCollection.instance().add(new DownloadTransfer(pasteboard.getFiles()));
             }
+            boards.clear();
+            this.reloadData();
         }
     }
 
@@ -819,8 +815,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void stopAllButtonClicked(final NSObject sender) {
         final Collection<Transfer> transfers = transferModel.getSource();
-        for(int i = 0; i < transfers.size(); i++) {
-            final Transfer transfer = transfers.get(i);
+        for(final Transfer transfer : transfers) {
             if(transfer.isRunning() || transfer.isQueued()) {
                 this.background(new AbstractBackgroundAction() {
                     public void run() {
@@ -1025,29 +1020,21 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
-            boolean valid = false;
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-            if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-                NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
-                if(o != null) {
-                    final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    for(int i = 0; i < elements.count().intValue(); i++) {
-                        NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                        final Transfer transfer = new TransferPlistReader().deserialize((dict));
-                        if(transfer.numberOfRoots() == 1) {
-                            item.setTitle(Locale.localizedString("Paste") + " \""
-                                    + transfer.getRoot().getName() + "\"");
-                        }
-                        else {
-                            item.setTitle(Locale.localizedString("Paste")
-                                    + " (" + transfer.numberOfRoots() + " " +
-                                    Locale.localizedString("files") + ")");
-                        }
-                        valid = true;
+            final Map<Host, PathPasteboard> boards = PathPasteboard.allPasteboards();
+            if(!boards.isEmpty() && boards.size() == 1) {
+                for(PathPasteboard pasteboard : boards.values()) {
+                    if(pasteboard.size() == 1) {
+                        item.setTitle(Locale.localizedString("Paste") + " \""
+                                + pasteboard.getFiles().get(0).getName() + "\"");
+                    }
+                    else {
+                        item.setTitle(Locale.localizedString("Paste")
+                                + " (" + pasteboard.size() + " " +
+                                Locale.localizedString("files") + ")");
                     }
                 }
             }
-            if(!valid) {
+            else {
                 item.setTitle(Locale.localizedString("Paste"));
             }
         }
@@ -1069,11 +1056,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      */
     private boolean validateItem(final Selector action) {
         if(action.equals(Foundation.selector("paste:"))) {
-            NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-            if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-                return pboard.propertyListForType(CDPasteboards.TransferPasteboardType) != null;
-            }
-            return false;
+            return !PathPasteboard.allPasteboards().isEmpty();
         }
         if(action.equals(Foundation.selector("stopButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {

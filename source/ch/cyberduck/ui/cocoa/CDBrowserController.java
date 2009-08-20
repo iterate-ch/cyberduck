@@ -37,7 +37,6 @@ import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
-import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.growl.Growl;
@@ -909,7 +908,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserOutlineView = view;
         // receive drag events from types
         browserOutlineView.registerForDraggedTypes(NSArray.arrayWithObjects(
-                CDPasteboards.TransferPasteboardType,
+                PathPasteboard.identifier(),
                 NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
@@ -1024,7 +1023,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserListView = view;
         // receive drag events from types
         browserListView.registerForDraggedTypes(NSArray.arrayWithObjects(
-                CDPasteboards.TransferPasteboardType,
+                PathPasteboard.identifier(),
                 NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
@@ -2127,11 +2126,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     protected List<Path> checkHierarchy(final List<Path> selected) {
         final List<Path> normalized = new Collection<Path>();
-        for(Iterator<Path> iter = selected.iterator(); iter.hasNext();) {
-            Path f = iter.next();
+        for(Path f : selected) {
             boolean duplicate = false;
-            for(Iterator<Path> normalizedIter = normalized.iterator(); normalizedIter.hasNext();) {
-                Path n = normalizedIter.next();
+            for(Path n: normalized) {
                 if(f.isChild(n)) {
                     // The selected file is a child of a directory
                     // already included for deletion
@@ -2162,42 +2159,43 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     public void deletePaths(final List<Path> selected) {
         final List<Path> normalized = this.checkHierarchy(selected);
-        if(normalized.size() > 0) {
-            StringBuffer alertText =
-                    new StringBuffer(Locale.localizedString("Really delete the following files? This cannot be undone."));
-            int i = 0;
-            Iterator<Path> iter = null;
-            for(iter = normalized.iterator(); i < 10 && iter.hasNext();) {
-                alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getName());
-                i++;
-            }
-            if(iter.hasNext()) {
-                alertText.append("\n").append(Character.toString('\u2022')).append(" " + "(...)");
-            }
-            NSAlert alert = NSAlert.alert(Locale.localizedString("Delete"), //title
-                    alertText.toString(),
-                    Locale.localizedString("Delete"), // defaultbutton
-                    Locale.localizedString("Cancel"), //alternative button
-                    null //other button
-            );
-            this.alert(alert, new CDSheetCallback() {
-                public void callback(final int returncode) {
-                    if(returncode == DEFAULT_OPTION) {
-                        CDBrowserController.this.deletePathsImpl(normalized);
-                    }
-                }
-            });
+        if(normalized.isEmpty()) {
+            return;
         }
+        StringBuffer alertText =
+                new StringBuffer(Locale.localizedString("Really delete the following files? This cannot be undone."));
+        int i = 0;
+        Iterator<Path> iter = null;
+        for(iter = normalized.iterator(); i < 10 && iter.hasNext();) {
+            alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getName());
+            i++;
+        }
+        if(iter.hasNext()) {
+            alertText.append("\n").append(Character.toString('\u2022')).append(" " + "(...)");
+        }
+        NSAlert alert = NSAlert.alert(Locale.localizedString("Delete"), //title
+                alertText.toString(),
+                Locale.localizedString("Delete"), // defaultbutton
+                Locale.localizedString("Cancel"), //alternative button
+                null //other button
+        );
+        this.alert(alert, new CDSheetCallback() {
+            public void callback(final int returncode) {
+                if(returncode == DEFAULT_OPTION) {
+                    CDBrowserController.this.deletePathsImpl(normalized);
+                }
+            }
+        });
     }
 
     private void deletePathsImpl(final List<Path> files) {
         this.background(new BrowserBackgroundAction(this) {
             public void run() {
-                for(Iterator<Path> iter = files.iterator(); iter.hasNext();) {
+                for(Path file : files) {
                     if(this.isCanceled()) {
                         break;
                     }
-                    Path f = iter.next();
+                    final Path f = file;
                     f.delete();
                     f.getParent().invalidate();
                     if(!isConnected()) {
@@ -2520,9 +2518,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     /**
-     * @return The session to be used for file transfers
+     * @return The session to be used for file transfers. Null if not mounted
      */
     protected Session getTransferSession() {
+        if(!this.isMounted()) {
+            return null;
+        }
         if(this.session.getMaxConnections() == 1) {
             return this.session;
         }
@@ -2752,16 +2753,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     public void cut(final NSObject sender) {
-        final List<Path> roots = new Collection<Path>();
         for(Path selected : this.getSelectedPaths()) {
-            roots.add(selected);
-        }
-        final Transfer q = new DownloadTransfer(roots);
-        // Writing data for private use when the item gets dragged to the transfer queue.
-        final NSPasteboard transferPasteboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard.toString());
-        transferPasteboard.declareTypes(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType), null);
-        if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObject(q.<NSDictionary>getAsDictionary()), CDPasteboards.TransferPasteboardType.toString())) {
-            log.debug("TransferPasteboardType data sucessfully written to pasteboard");
+            // Writing data for private use when the item gets dragged to the transfer queue.
+            PathPasteboard.getPasteboard(this.getSession().getHost()).add(selected.<NSDictionary>getAsDictionary());
         }
         final NSPasteboard generalPasteboard = NSPasteboard.generalPasteboard();
         generalPasteboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
@@ -2771,37 +2765,30 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     public void paste(final NSObject sender) {
-        final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-            NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);// get the data from paste board
-            if(o != null) {
-                final Map<Path, Path> files = new HashMap<Path, Path>();
-                Path parent = this.workdir();
-                if(this.getSelectionCount() == 1) {
-                    Path selected = this.getSelectedPath();
-                    if(selected.attributes.isDirectory()) {
-                        parent = selected;
-                    }
-                    else {
-                        parent = (Path) selected.getParent();
-                    }
-                }
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                    Transfer q = new TransferPlistReader().deserialize((dict));
-                    for(final Path next : q.getRoots()) {
-                        Path current = PathFactory.createPath(getSession(),
-                                next.getAbsolute(), next.attributes.getType());
-                        Path renamed = PathFactory.createPath(getSession(),
-                                parent.getAbsolute(), current.getName(), next.attributes.getType());
-                        files.put(current, renamed);
-                    }
-                }
-                this.renamePaths(files);
-                pboard.declareTypes(null, null);
+        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession().getHost());
+        if(pasteboard.isEmpty()) {
+            return;
+        }
+        final Map<Path, Path> files = new HashMap<Path, Path>();
+        Path parent = this.workdir();
+        if(this.getSelectionCount() == 1) {
+            Path selected = this.getSelectedPath();
+            if(selected.attributes.isDirectory()) {
+                parent = selected;
+            }
+            else {
+                parent = (Path) selected.getParent();
             }
         }
+        for(final Path next : pasteboard.getFiles(this.getSession())) {
+            Path current = PathFactory.createPath(getSession(),
+                    next.getAbsolute(), next.attributes.getType());
+            Path renamed = PathFactory.createPath(getSession(),
+                    parent.getAbsolute(), current.getName(), next.attributes.getType());
+            files.put(current, renamed);
+        }
+        pasteboard.clear();
+        this.renamePaths(files);
     }
 
     public void pasteFromFinder(final NSObject sender) {
@@ -2816,7 +2803,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     Path p = PathFactory.createPath(session,
                             workdir.getAbsolute(),
-                            LocalFactory.createLocal(elements.objectAtIndex(i).toString()));
+                            LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     roots.add(p);
                 }
                 final Transfer q = new UploadTransfer(roots);
@@ -3531,7 +3518,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         final NSArray elements = Rococoa.cast(o, NSArray.class);
                         if(elements.count().intValue() == 1) {
                             item.setTitle(Locale.localizedString("Paste") + " \""
-                                    + elements.objectAtIndex(0) + "\"");
+                                    + elements.objectAtIndex(new NSUInteger(0)) + "\"");
                         }
                         else {
                             item.setTitle(Locale.localizedString("Paste from Finder") + " (" +
@@ -3547,31 +3534,18 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         }
         else if(action.equals(Foundation.selector("paste:"))) {
-            boolean valid = false;
-            if(this.isMounted()) {
-                NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-                if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-                    NSObject o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
-                    if(o != null) {
-                        final NSArray elements = Rococoa.cast(o, NSArray.class);
-                        for(int i = 0; i < elements.count().intValue(); i++) {
-                            NSDictionary dict = Rococoa.cast(elements.objectAtIndex(i), NSDictionary.class);
-                            Transfer q = new TransferPlistReader().deserialize((dict));
-                            if(q.numberOfRoots() == 1) {
-                                item.setTitle(Locale.localizedString("Paste") + " \""
-                                        + q.getRoot().getName() + "\"");
-                            }
-                            else {
-                                item.setTitle(Locale.localizedString("Paste")
-                                        + " (" + q.numberOfRoots() + " " +
-                                        Locale.localizedString("files") + ")");
-                            }
-                            valid = true;
-                        }
-                    }
+            if(this.isMounted() && !PathPasteboard.getPasteboard(this.getSession().getHost()).isEmpty()) {
+                if(PathPasteboard.getPasteboard(this.getSession().getHost()).size() == 1) {
+                    item.setTitle(Locale.localizedString("Paste") + " \""
+                            + PathPasteboard.getPasteboard(this.getSession().getHost()).getFiles(this.getSession()).get(0).getName() + "\"");
+                }
+                else {
+                    item.setTitle(Locale.localizedString("Paste")
+                            + " (" + PathPasteboard.getPasteboard(this.getSession().getHost()).size() + " " +
+                            Locale.localizedString("files") + ")");
                 }
             }
-            if(!valid) {
+            else {
                 item.setTitle(Locale.localizedString("Paste"));
             }
         }
@@ -3645,13 +3619,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         if(action.equals(Foundation.selector("paste:"))) {
             if(this.isMounted()) {
-                NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-                if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null) {
-                    Object o = pboard.propertyListForType(CDPasteboards.TransferPasteboardType);
-                    if(o != null) {
-                        return true;
-                    }
-                }
+                return !PathPasteboard.getPasteboard(this.getSession().getHost()).isEmpty();
             }
             return false;
         }

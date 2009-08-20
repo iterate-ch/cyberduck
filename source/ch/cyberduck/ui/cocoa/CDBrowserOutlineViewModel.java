@@ -146,8 +146,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             if(null != item) {
                 destination = controller.lookup(new CDPathReference(item));
             }
-            final NSPasteboard pboard = NSPasteboard.pasteboardWithName(CDPasteboards.TransferPasteboard);
-            if(pboard.availableTypeFromArray(NSArray.arrayWithObject(CDPasteboards.TransferPasteboardType)) != null
+            if(!PathPasteboard.getPasteboard(controller.getSession().getHost()).isEmpty()
                     || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(null != destination) {
                     // Dragging over file or folder
