@@ -239,7 +239,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    String file = elements.objectAtIndex(i).toString();
+                    String file = elements.objectAtIndex(new NSUInteger(i)).toString();
                     if(file.contains(".duck")) {
                         //allow file drags if bookmark file even if list is empty
                         return NSDraggingInfo.NSDragOperationCopy;
@@ -257,7 +257,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    if(Protocol.isURL(elements.objectAtIndex(i).toString())) {
+                    if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
                         view.setDropRow(index, NSTableView.NSTableViewDropAbove);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
@@ -294,7 +294,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             final List<Path> roots = new Collection<Path>();
             Session session = null;
             for(int i = 0; i < filesList.count().intValue(); i++) {
-                String filename = filesList.objectAtIndex(i).toString();
+                String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
                     if(row.intValue() < 0) {
@@ -331,7 +331,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    final String url = elements.objectAtIndex(i).toString();
+                    final String url = elements.objectAtIndex(new NSUInteger(i)).toString();
                     if(StringUtils.isNotBlank(url)) {
                         final Host h = Host.parse(url);
                         source.add(row.intValue(), h);

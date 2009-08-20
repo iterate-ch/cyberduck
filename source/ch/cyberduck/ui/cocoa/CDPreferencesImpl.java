@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes.
@@ -153,7 +154,7 @@ public class CDPreferencesImpl extends Preferences {
             return locale;
         }
         if(preferredLocalizations.count().intValue() > 0) {
-            locale = preferredLocalizations.objectAtIndex(0).toString();
+            locale = preferredLocalizations.objectAtIndex(new NSUInteger(0)).toString();
         }
         return locale;
     }

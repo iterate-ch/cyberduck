@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -122,7 +123,7 @@ public abstract class CDWindowController extends CDBundleController implements N
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count().intValue();
         if(count != 0) {
-            NSWindow window = Rococoa.cast(windows.objectAtIndex(count - 1), NSWindow.class);
+            NSWindow window = Rococoa.cast(windows.objectAtIndex(new NSUInteger(count - 1)), NSWindow.class);
             NSPoint origin = window.frame().origin;
             origin = new NSPoint(origin.x.doubleValue(), origin.y.doubleValue() + window.frame().size.height.doubleValue());
             this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
