@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /**
  * @version $Id$
  */
@@ -26,15 +28,15 @@ public abstract class NSDateFormatter extends NSFormatter {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDateFormatter", _Class.class);
 
     /// <i>native declaration : :24</i>
-    public static final int kCFDateFormatterNoStyle = 0;
+    public static final NSUInteger kCFDateFormatterNoStyle = new NSUInteger(0);
     /// <i>native declaration : :25</i>
-    public static final int kCFDateFormatterShortStyle = 1;
+    public static final NSUInteger kCFDateFormatterShortStyle = new NSUInteger(1);
     /// <i>native declaration : :26</i>
-    public static final int kCFDateFormatterMediumStyle = 2;
+    public static final NSUInteger kCFDateFormatterMediumStyle = new NSUInteger(2);
     /// <i>native declaration : :27</i>
-    public static final int kCFDateFormatterLongStyle = 3;
+    public static final NSUInteger kCFDateFormatterLongStyle = new NSUInteger(3);
     /// <i>native declaration : :28</i>
-    public static final int kCFDateFormatterFullStyle = 4;
+    public static final NSUInteger kCFDateFormatterFullStyle = new NSUInteger(4);
 
     public static NSDateFormatter dateFormatter() {
         return CLASS.alloc().init();
@@ -72,25 +74,25 @@ public abstract class NSDateFormatter extends NSFormatter {
      * Original signature : <code>dateStyle()</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract int dateStyle();
+    public abstract NSUInteger dateStyle();
 
     /**
      * <i>native declaration : :42</i><br>
      * Conversion Error : /// Original signature : <code>void setDateStyle(null)</code><br>
      * - (void)setDateStyle:(null)style; (Argument style cannot be converted)
      */
-    public abstract void setDateStyle(int style);
+    public abstract void setDateStyle(NSUInteger style);
 
     /**
      * Original signature : <code>timeStyle()</code><br>
      * <i>native declaration : :44</i>
      */
-    public abstract int timeStyle();
+    public abstract NSUInteger timeStyle();
     /**
      * <i>native declaration : :45</i><br>
      * Conversion Error : /// Original signature : <code>void setTimeStyle(null)</code><br>
      */
-     public abstract void setTimeStyle(int style);
+     public abstract void setTimeStyle(NSUInteger style);
 
     /**
      * Original signature : <code>NSLocale* locale()</code><br>
