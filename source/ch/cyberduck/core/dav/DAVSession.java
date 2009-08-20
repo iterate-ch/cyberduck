@@ -108,6 +108,7 @@ public class DAVSession extends HTTPSession {
         this.fireConnectionDidOpenEvent();
     }
 
+    @Override
     public void setLoginController(final LoginController c) {
         this.login = new LoginController() {
 

@@ -58,6 +58,7 @@ public class Keychain {
      * @param serviceName
      * @param user
      * @return
+     * @deprecated Use #getInternetPasswordFromKeychain
      */
     public synchronized native String getPasswordFromKeychain(String serviceName, String user);
 
@@ -65,6 +66,7 @@ public class Keychain {
      * @param serviceName
      * @param user
      * @param password
+     * @deprecated Use #addInternetPasswordToKeychain
      */
     public synchronized native void addPasswordToKeychain(String serviceName, String user, String password);
 

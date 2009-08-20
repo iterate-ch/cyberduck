@@ -472,9 +472,9 @@ public abstract class Protocol {
      */
     public static Protocol getDefaultProtocol(int port) {
         final Protocol[] protocols = getKnownProtocols();
-        for(int i = 0; i < protocols.length; i++) {
-            if(protocols[i].getDefaultPort() == port) {
-                return protocols[i];
+        for(Protocol protocol : protocols) {
+            if(protocol.getDefaultPort() == port) {
+                return protocol;
             }
         }
         log.warn("Cannot find default protocol for port:" + port);
