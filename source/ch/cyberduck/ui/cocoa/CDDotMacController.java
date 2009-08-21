@@ -37,26 +37,45 @@ public class CDDotMacController extends CDController {
         return instance;
     }
 
+    private static boolean JNI_LOADED = false;
+
+    /**
+     * Load native library extensions
+     *
+     * @return
+     */
+    private static boolean loadNative() {
+        if(!JNI_LOADED) {
+            JNI_LOADED = Native.load("DotMac");
+        }
+        return JNI_LOADED;
+    }
+
     private CDDotMacController() {
-        Native.load("DotMac");
+        ;
     }
 
     /**
      * @return Member name of the MobileMe account configured in System Preferences
      */
-    public native String getAccountName();
+    public String getAccountName() {
+        if(!loadNative()) {
+            return null;
+        }
+        return getAccountNameNative();
+    }
 
-    /**
-     * @param path
-     */
-    private native void downloadBookmarks(String path);
+    protected native String getAccountNameNative();
 
     /**
      *
      */
     public void downloadBookmarks() {
+        if(!loadNative()) {
+            return;
+        }
         final Local f = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), "Favorites.plist");
-        this.downloadBookmarks(f.getAbsolute());
+        this.downloadBookmarksNative(f.getAbsolute());
         if(f.exists()) {
             final Collection<Host> collection = HostReaderFactory.instance().readCollection(f);
             for(Host bookmark : collection) {
@@ -79,8 +98,17 @@ public class CDDotMacController extends CDController {
         f.delete();
     }
 
+    protected native void downloadBookmarksNative(String path);
+
     /**
      *
      */
-    public native void uploadBookmarks();
+    public void uploadBookmarks() {
+        if(!loadNative()) {
+            return;
+        }
+        this.uploadBookmarksNative();
+    }
+
+    public native void uploadBookmarksNative();
 }

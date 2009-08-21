@@ -71,10 +71,8 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setWebURL(null);
         }
         if(selected.equals(Protocol.IDISK)) {
-            CDDotMacController controller = CDDotMacController.instance();
-            final String member = controller.getAccountName();
-            controller.invalidate();
-            if(null != member) {
+            final String member = CDDotMacController.instance().getAccountName();
+            if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
                 this.host.getCredentials().setUsername(member);
                 this.host.setDefaultPath(Path.DELIMITER + member);

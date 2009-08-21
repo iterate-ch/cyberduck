@@ -27,18 +27,26 @@ extern "C" {
 #endif
 /*
  * Class:     ch_cyberduck_ui_cocoa_CDDotMacController
- * Method:    downloadBookmarksFromDotMacActionNative
+ * Method:    getAccountNameNative
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_getAccountNameNative
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     ch_cyberduck_ui_cocoa_CDDotMacController
+ * Method:    downloadBookmarksNative
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBookmarks
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBookmarksNative
   (JNIEnv *, jobject, jstring);
 
 /*
  * Class:     ch_cyberduck_ui_cocoa_CDDotMacController
- * Method:    uploadBookmarksToDotMacActionNative
+ * Method:    uploadBookmarksNative
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookmarks
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookmarksNative
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus
