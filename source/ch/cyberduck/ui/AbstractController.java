@@ -49,7 +49,9 @@ public abstract class AbstractController implements Controller {
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
     public void background(final BackgroundAction runnable) {
-        log.debug("background:" + runnable);
+        if(log.isDebugEnabled()) {
+            log.debug("background:" + runnable);
+        }
         runnable.init();
         // Start background task
         new Thread("Background") {
@@ -58,9 +60,10 @@ public abstract class AbstractController implements Controller {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
                 synchronized(runnable.lock()) {
-                    log.info("Acquired lock for background runnable:" + runnable);
-
                     final OperationBatcher autorelease = AbstractController.this.getBatcher();
+                    if(log.isDebugEnabled()) {
+                        log.debug("Acquired lock for background runnable:" + runnable);
+                    }
                     try {
                         if(runnable.prepare()) {
                             // Execute the action of the runnable
@@ -76,8 +79,10 @@ public abstract class AbstractController implements Controller {
                                 runnable.cleanup();
                             }
                         });
+                        if(log.isDebugEnabled()) {
+                            log.debug("Releasing lock for background runnable:" + runnable);
+                        }
                         autorelease.operate();
-                        log.info("Releasing lock for background runnable:" + runnable);
                     }
                 }
             }
