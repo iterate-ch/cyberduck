@@ -174,7 +174,6 @@
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4784DAAB07AEFB5900A8FC38 /* transparent.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4784DAAA07AEFB5900A8FC38 /* transparent.tiff */; };
-		4785B6060806FC6500F4E71F /* download10.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4785B6050806FC6500F4E71F /* download10.icns */; };
 		4786CB6C0E253B800029848F /* Error.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB660E253B800029848F /* Error.nib */; };
 		4786CB6D0E253B800029848F /* Activity.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB670E253B800029848F /* Activity.nib */; };
 		4786CB6E0E253B800029848F /* Transcript.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB680E253B800029848F /* Transcript.nib */; };
@@ -1100,7 +1099,6 @@
 		478427210F9F76280068BA2E /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/License.strings; sourceTree = "<group>"; };
 		478427220F9F762A0068BA2E /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/License.strings; sourceTree = "<group>"; };
 		4784DAAA07AEFB5900A8FC38 /* transparent.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = transparent.tiff; sourceTree = "<group>"; };
-		4785B6050806FC6500F4E71F /* download10.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download10.icns; sourceTree = "<group>"; };
 		4786CB660E253B800029848F /* Error.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Error.nib; path = resources/Error.nib; sourceTree = "<group>"; };
 		4786CB670E253B800029848F /* Activity.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Activity.nib; path = resources/Activity.nib; sourceTree = "<group>"; };
 		4786CB680E253B800029848F /* Transcript.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Transcript.nib; path = resources/Transcript.nib; sourceTree = "<group>"; };
@@ -1892,7 +1890,6 @@
 				475D17B00805D54C00166B8A /* download7.icns */,
 				475D17B20805D54C00166B8A /* download8.icns */,
 				475D17B40805D54C00166B8A /* download9.icns */,
-				4785B6050806FC6500F4E71F /* download10.icns */,
 				47FD456E0801ED1C00716715 /* browser.tiff */,
 				47FD45700801ED1C00716715 /* general.tiff */,
 				47FF630307F34E6100C0BDB9 /* gear.tiff */,
@@ -2641,7 +2638,6 @@
 				475D17C00805D54C00166B8A /* download2.icns in Resources */,
 				475D17C10805D54C00166B8A /* download1.icns in Resources */,
 				475D17C20805D54C00166B8A /* download4.icns in Resources */,
-				4785B6060806FC6500F4E71F /* download10.icns in Resources */,
 				4781AF410828423100B3E0FA /* download0.icns in Resources */,
 				47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */,
 				47748982085825460030AED1 /* Cyberduck.scriptSuite in Resources */,
