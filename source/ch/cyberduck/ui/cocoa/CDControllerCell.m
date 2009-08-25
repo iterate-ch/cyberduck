@@ -37,8 +37,10 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     CDControllerCell *cell = (CDControllerCell *)[super copyWithZone:zone];
-    cell->view = nil;
-    [cell setView:[self view]];
+    if (cell != nil) {
+        cell->view = nil;
+        [cell setView:[self view]];
+    }
     return cell;
 }
 

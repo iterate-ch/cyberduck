@@ -37,8 +37,10 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     CDOutlineCell *cell = (CDOutlineCell *)[super copyWithZone:zone];
-    cell->icon = nil;
-    [cell setIcon:[self icon]];
+    if (cell != nil) {
+        cell->icon = nil;
+        [cell setIcon:[self icon]];
+    }
     return cell;
 }
 
