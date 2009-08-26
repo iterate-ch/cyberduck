@@ -30,7 +30,7 @@ def mailreport(crashlog):
 	s.connect("localhost")
 	s.sendmail("noreply@cyberduck.ch", "bugs@cyberduck.ch", mail.as_string())
 	s.quit()
-	
+
 
 if __name__=="__main__":
 	print "Content-type: text/html"
@@ -39,9 +39,11 @@ if __name__=="__main__":
 		form = cgi.FieldStorage()
 		if form.has_key("crashlog"):
 			crashlog = form["crashlog"].value
-			revision = form["revision"].value
+			revision = None
+			if form.has_key("revision"):
+				revision = form["revision"].value
 			ip = cgi.escape(os.environ["REMOTE_ADDR"])
-			logging.info("Crash Report from %s", ip)
+			logging.info("Crash Report from %s for revision %s", ip, revision)
 
 			#add database entry
 			conn = sqlite3.connect(db)
