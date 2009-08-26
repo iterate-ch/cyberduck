@@ -51,8 +51,12 @@ static NSTableColumn *localSelectionColumn;
 
 - (void)dealloc
 {
-    [typeAheadSelectionColumn release];
-    [localSelectionColumn release];
+    if(typeAheadSelectionColumn) {
+        [typeAheadSelectionColumn release];
+    }
+    if(localSelectionColumn) {
+        [localSelectionColumn release];
+    }
 	[select_string release];
 	[super dealloc];
 }
