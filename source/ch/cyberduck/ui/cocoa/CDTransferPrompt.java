@@ -319,7 +319,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(800f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(prototype);
+            c.setDataCell(outlineCellPrototype);
             this.browserView.addTableColumn(c);
             this.browserView.setOutlineTableColumn(c);
         }
@@ -331,7 +331,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(100f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(NSTextFieldCell.textFieldCell());
+            c.setDataCell(textCellPrototype);
             this.browserView.addTableColumn(c);
         }
         {
@@ -342,7 +342,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(NSImageCell.imageCell());
+            c.setDataCell(imageCellPrototype);
             c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
             this.browserView.addTableColumn(c);
         }
@@ -354,7 +354,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            final NSButtonCell cell = NSButtonCell.buttonCell();
+            final NSButtonCell cell = buttonCellPrototype;
             cell.setTitle("");
             cell.setControlSize(NSCell.NSSmallControlSize);
             cell.setButtonType(NSButtonCell.NSSwitchButton);
@@ -367,7 +367,10 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.browserView.sizeToFit();
     }
 
-    private final NSTextFieldCell prototype = CDOutlineCell.outlineCell();
+    protected final NSButtonCell buttonCellPrototype = NSButtonCell.buttonCell();
+    protected final NSTextFieldCell outlineCellPrototype = CDOutlineCell.outlineCell();
+    protected final NSImageCell imageCellPrototype = NSImageCell.imageCell();
+    protected final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
 
     @Outlet
     private NSTextField remoteURLField;

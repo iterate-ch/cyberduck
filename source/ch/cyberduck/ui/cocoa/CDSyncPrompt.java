@@ -43,6 +43,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
         return super.prompt();
     }
 
+    @Override
     public void setBrowserView(NSOutlineView view) {
         super.setBrowserView(view);
         {
@@ -53,7 +54,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(NSImageCell.imageCell());
+            c.setDataCell(imageCellPrototype);
             c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
             view.addTableColumn(c);
         }
@@ -65,13 +66,14 @@ public class CDSyncPrompt extends CDTransferPrompt {
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
-            c.setDataCell(NSImageCell.imageCell());
+            c.setDataCell(imageCellPrototype);
             c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
             view.addTableColumn(c);
         }
         view.sizeToFit();
     }
 
+    @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) { // Continue
             action = TransferAction.ACTION_OVERWRITE;
@@ -81,10 +83,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
         }
     }
 
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
-
+    @Override
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;
         this.actionPopup.removeAllItems();
@@ -112,6 +111,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
         this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
     }
 
+    @Override
     public void actionPopupClicked(NSPopUpButton sender) {
         final TransferAction current = ((SyncTransfer) transfer).getAction();
         final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
