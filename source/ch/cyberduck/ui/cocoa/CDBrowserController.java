@@ -1003,7 +1003,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             c.setWidth(new CGFloat(250));
             c.setMaxWidth(new CGFloat(1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
-            NSTextFieldCell cell = CDOutlineCell.outlineCell();
+            final NSTextFieldCell cell = prototype;
             {
                 cell.setTarget(browserOutlineView.target());
                 cell.setAction(browserOutlineView.action());
@@ -1013,6 +1013,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             this.browserOutlineView.setOutlineTableColumn(c);
         }
     }
+
+    private final NSTextFieldCell prototype = CDOutlineCell.outlineCell();
 
     private CDBrowserListViewModel browserListModel;
     @Outlet

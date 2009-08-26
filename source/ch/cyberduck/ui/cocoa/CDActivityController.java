@@ -192,11 +192,13 @@ public class CDActivityController extends CDWindowController {
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(CDControllerCell.controllerCell());
+            c.setDataCell(prototype);
             this.table.addTableColumn(c);
         }
         this.table.sizeToFit();
     }
+
+    private final NSCell prototype = CDControllerCell.controllerCell();
 
     @Override
     protected String getBundleName() {

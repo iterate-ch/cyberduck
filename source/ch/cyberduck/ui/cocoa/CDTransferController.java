@@ -391,7 +391,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(CDControllerCell.controllerCell());
+            c.setDataCell(prototype);
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
@@ -402,6 +402,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.transferTable.setAllowsColumnReordering(false);
         this.transferTable.sizeToFit();
     }
+
+    private final NSCell prototype = CDControllerCell.controllerCell();
 
     /**
      *

@@ -319,7 +319,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             c.setMaxWidth(800f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setEditable(false);
-            c.setDataCell(CDOutlineCell.outlineCell());
+            c.setDataCell(prototype);
             this.browserView.addTableColumn(c);
             this.browserView.setOutlineTableColumn(c);
         }
@@ -366,6 +366,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         }
         this.browserView.sizeToFit();
     }
+
+    private final NSTextFieldCell prototype = CDOutlineCell.outlineCell();
 
     @Outlet
     private NSTextField remoteURLField;

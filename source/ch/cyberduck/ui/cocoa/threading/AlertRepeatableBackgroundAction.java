@@ -121,6 +121,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     this.transcriptButton = transcriptButton;
                 }
 
+                @Outlet
                 private NSTableView errorView;
                 private CDListDataSource model;
                 private CDAbstractTableDelegate<CDErrorController> delegate;
@@ -179,13 +180,16 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         c.setMinWidth(50f);
                         c.setWidth(400f);
                         c.setMaxWidth(1000f);
-                        c.setDataCell(CDControllerCell.controllerCell());
+                        c.setDataCell(prototype);
                         this.errorView.addTableColumn(c);
                     }
                     this.errorView.setRowHeight(new CGFloat(77f));
                 }
 
-                public NSTextView transcriptView;
+                private final NSCell prototype = CDControllerCell.controllerCell();
+
+                @Outlet
+                private NSTextView transcriptView;
 
                 public void setTranscriptView(NSTextView transcriptView) {
                     this.transcriptView = transcriptView;
