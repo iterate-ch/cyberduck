@@ -72,6 +72,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 		
 		// Get the log file, its last change date and last report date:
 		NSString*		appName = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleExecutable"];
+		NSString*		appRevision = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleVersion"];
 		NSString*		crashLogsFolder = [@"~/Library/Logs/CrashReporter/" stringByExpandingTildeInPath];
 		NSString*		crashLogName = [appName stringByAppendingString: @".crash.log"];
 		NSString*		crashLogPath = nil;
@@ -105,7 +106,8 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
                     NSString            *boundary = @"0xKhTmLbOuNdArY";
 
                     // Prepare a request:
-                    NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL:[NSURL URLWithString: @"http://crash.cyberduck.ch/report/"]];
+                    NSString            *url = [[@"http://crash.cyberduck.ch/report" stringByAppendingString:@"?revision="] stringByAppendingString:appRevision];
+                    NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL:[NSURL URLWithString: url]];
                     NSString            *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
                     NSString			*agent = [NSString stringWithFormat:@"Cyberduck (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
 
