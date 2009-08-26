@@ -304,7 +304,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                         row = new NSInteger(view.numberOfRows().intValue());
                     }
                     source.add(row.intValue(), HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
-                    view.selectRow(row, false);
+                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                     view.scrollRowToVisible(row);
                 }
                 else {
@@ -335,7 +335,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     if(StringUtils.isNotBlank(url)) {
                         final Host h = Host.parse(url);
                         source.add(row.intValue(), h);
-                        view.selectRow(row, false);
+                        view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                         view.scrollRowToVisible(row);
                     }
                 }
@@ -348,7 +348,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(o != null) {
                 final Host h = Host.parse(o);
                 source.add(row.intValue(), h);
-                view.selectRow(row, false);
+                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                 view.scrollRowToVisible(row);
                 return true;
             }
@@ -358,7 +358,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             for(Host promisedDragBookmark : promisedDragBookmarks) {
                 source.remove(source.indexOf(promisedDragBookmark));
                 source.add(row.intValue(), promisedDragBookmark);
-                view.selectRow(row, false);
+                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                 view.scrollRowToVisible(row);
             }
             return true;

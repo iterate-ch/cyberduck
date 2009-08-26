@@ -20,13 +20,18 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :28</i>
 public abstract class NSIndexSet implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSIndexSet", _Class.class);
 
-    public static NSIndexSet indexSetWithIndex(long value) {
-        return CLASS.indexSetWithIndex(new NSUInteger(value));
+    public static NSIndexSet indexSetWithIndex(NSInteger value) {
+        return CLASS.indexSetWithIndex(value);
+    }
+
+    public static NSIndexSet indexSetWithIndexesInRange(NSRange range) {
+        return CLASS.indexSetWithIndexesInRange(range);
     }
 
     public static final long NSNotFound = 2147483647L;
@@ -42,12 +47,13 @@ public abstract class NSIndexSet implements NSObject {
          * Original signature : <code>indexSetWithIndex(NSUInteger)</code><br>
          * <i>native declaration : :31</i>
          */
-        NSIndexSet indexSetWithIndex(NSUInteger value);
+        NSIndexSet indexSetWithIndex(NSInteger value);
         /**
          * <i>native declaration : :32</i><br>
          * Conversion Error : /// Original signature : <code>indexSetWithIndexesInRange(null)</code><br>
          * + (null)indexSetWithIndexesInRange:(null)range; (Argument range cannot be converted)
          */
+        NSIndexSet indexSetWithIndexesInRange(NSRange range);
     }
 
     /**

@@ -532,8 +532,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
         TransferCollection.instance().add(transfer);
         final int row = TransferCollection.instance().size() - 1;
         this.reloadData();
-        transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-        transferTable.scrollRowToVisible(new NSInteger(row));
+        final NSInteger index = new NSInteger(row);
+        transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
+        transferTable.scrollRowToVisible(index);
     }
 
     /**

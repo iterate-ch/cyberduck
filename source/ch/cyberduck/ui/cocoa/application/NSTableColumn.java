@@ -76,7 +76,7 @@ public abstract class NSTableColumn implements NSObject {
      */
     public abstract void setWidth(CGFloat width);
 
-    public void setWidth(float width) {
+    public void setWidth(double width) {
         this.setWidth(new CGFloat(width));
     }
 
@@ -92,7 +92,7 @@ public abstract class NSTableColumn implements NSObject {
      */
     public abstract void setMinWidth(CGFloat width);
 
-    public void setMinWidth(float width) {
+    public void setMinWidth(double width) {
         this.setMinWidth(new CGFloat(width));
     }
 
@@ -108,7 +108,7 @@ public abstract class NSTableColumn implements NSObject {
      */
     public abstract void setMaxWidth(CGFloat maxWidth);
 
-    public void setMaxWidth(float width) {
+    public void setMaxWidth(double width) {
         this.setMaxWidth(new CGFloat(width));
     }
 

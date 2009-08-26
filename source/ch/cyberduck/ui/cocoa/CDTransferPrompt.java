@@ -32,6 +32,7 @@ import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -74,7 +75,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.transfer.getSession().addProgressListener(l);
         this.reloadData();
         if(browserView.numberOfRows().intValue() > 0) {
-            browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(0), false);
+            browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
         }
         this.setState(this.toggleDetailsButton, Preferences.instance().getBoolean("transfer.toggle.details"));
 

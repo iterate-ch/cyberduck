@@ -177,7 +177,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
             for(PathPasteboard pasteboard : boards.values()) {
                 TransferCollection.instance().add(row.intValue(), new DownloadTransfer(pasteboard.getFiles()));
                 view.reloadData();
-                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row.intValue()), false);
+                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                 view.scrollRowToVisible(row);
             }
             boards.clear();

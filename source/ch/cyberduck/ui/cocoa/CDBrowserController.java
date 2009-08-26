@@ -209,7 +209,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             if(this.isMounted()) {
                 int row = this.bookmarkModel.getSource().indexOf(this.getSession().getHost());
                 if(row != -1) {
-                    this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                    this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
                     this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
                 }
             }
@@ -278,8 +278,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return;
         }
         final NSTableView browser = this.getSelectedBrowserView();
-        browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), expand);
-        browser.scrollRowToVisible(new NSInteger(row));
+        final NSInteger index = new NSInteger(row);
+        browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), expand);
+        browser.scrollRowToVisible(index);
     }
 
     /**
@@ -1130,13 +1131,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(CDBookmarkCell.LARGE_BOOKMARK_SIZE == size) {
             this.bookmarkTable.setRowHeight(new CGFloat(70));
         }
-        final int width = (int) (size * 1.5);
+        final double width = size * 1.5;
         final NSTableColumn c = this.bookmarkTable.tableColumnWithIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
-        c.setMinWidth((width));
-        c.setWidth((width));
-        c.setMaxWidth((width));
-        this.bookmarkTable.sizeToFit();
-        this.bookmarkTable.reloadData();
+        c.setMinWidth(width);
+        c.setMaxWidth(width);
+        c.setWidth(width);
     }
 
     private final NSTextFieldCell outlineCellPrototype = CDOutlineCell.outlineCell();
@@ -1272,7 +1271,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         {
             NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
             c.headerCell().setStringValue("");
-            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
+            c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
             c.setDataCell(imageCellPrototype);
             this.bookmarkTable.addTableColumn(c);
         }
@@ -1551,8 +1550,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         bookmarkModel.setFilter(null);
         bookmarkModel.getSource().add(item);
         final int row = bookmarkModel.getSource().lastIndexOf(item);
-        bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-        bookmarkTable.scrollRowToVisible(new NSInteger(row));
+        final NSInteger index = new NSInteger(row);
+        bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
+        bookmarkTable.scrollRowToVisible(index);
         CDBookmarkController c = CDBookmarkController.Factory.create(item);
         c.window().makeKeyAndOrderFront(null);
     }
@@ -1582,8 +1582,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         int j = 0;
         for(i = 0; i < indexes.length; i++) {
             int row = indexes[i].intValue() - j;
-            bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-            bookmarkTable.scrollRowToVisible(new NSInteger(row));
+            final NSInteger index = new NSInteger(row);
+            bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
+            bookmarkTable.scrollRowToVisible(index);
             Host host = bookmarkModel.getSource().get(row);
             final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark"),
                     Locale.localizedString("Do you want to delete the selected bookmark?")

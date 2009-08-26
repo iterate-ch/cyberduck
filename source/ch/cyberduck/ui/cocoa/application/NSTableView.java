@@ -755,17 +755,6 @@ public abstract class NSTableView extends NSControl {
     public abstract void selectColumn_byExtendingSelection(NSInteger column, boolean extend);
 
     /**
-     * Deprecated in Mac OS 10.3.  You should use selectRowIndexes:byExtendingSelection: instead.  See that method for more details.<br>
-     * Original signature : <code>void selectRow(NSInteger, BOOL)</code><br>
-     * <i>from NSDeprecated native declaration : :513</i>
-     */
-    public abstract void selectRow_byExtendingSelection(NSInteger row, boolean extend);
-
-    public void selectRow(NSInteger row, boolean extend) {
-        this.selectRow_byExtendingSelection(row, extend);
-    }
-
-    /**
      * Deprecated in Mac OS 10.3.  You should use selectedColumnIndexes instead.<br>
      * Original signature : <code>NSEnumerator* selectedColumnEnumerator()</code><br>
      * <i>from NSDeprecated native declaration : :515</i>
