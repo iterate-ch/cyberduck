@@ -33,6 +33,7 @@ import ch.cyberduck.ui.growl.Growl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.Selector;
 
 import java.io.File;
 import java.io.IOException;
@@ -849,5 +850,16 @@ public class CDMainController extends CDBundleController {
     @Override
     protected String getBundleName() {
         return "Main";
+    }
+
+    public boolean validateMenuItem(NSMenuItem item) {
+        final Selector action = item.action();
+        if(action.equals(Foundation.selector("downloadBookmarksFromDotMacClicked:"))) {
+            return CDDotMacController.instance().isAvailable();
+        }
+        if(action.equals(Foundation.selector("uploadBookmarksToDotMacClicked:"))) {
+            return CDDotMacController.instance().isAvailable();
+        }
+        return true;
     }
 }
