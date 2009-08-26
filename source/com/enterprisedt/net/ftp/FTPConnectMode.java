@@ -38,6 +38,7 @@ public class FTPConnectMode {
 	 * Represents active connect mode
 	 */
 	public static FTPConnectMode ACTIVE = new FTPConnectMode() {
+        @Override
         public String toString() {
             return "active";
         }
@@ -47,6 +48,7 @@ public class FTPConnectMode {
 	 * Represents PASV connect mode
 	 */
 	public static FTPConnectMode PASV = new FTPConnectMode() {
+        @Override
         public String toString() {
             return "passive";
         }

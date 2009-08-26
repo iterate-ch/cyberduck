@@ -39,6 +39,7 @@ public class FTPTransferType {
 	 * Represents ASCII transfer type
 	 */
 	public static FTPTransferType ASCII = new FTPTransferType() {
+        @Override
         public String toString() {
             return "ascii";
         }
@@ -48,12 +49,14 @@ public class FTPTransferType {
 	 * Represents Image (or binary) transfer type
 	 */
 	public static FTPTransferType BINARY = new FTPTransferType() {
+        @Override
         public String toString() {
             return "binary";
         }
     };
 
     public static FTPTransferType AUTO = new FTPTransferType() {
+        @Override
         public String toString() {
             return "auto";
         }
