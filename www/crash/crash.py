@@ -19,6 +19,19 @@ logging.basicConfig(level=logging.DEBUG,
 #create table crash(ip TEXT, crashlog TEXT);
 db = 'crash.sqlite'
 
+def mailreport(crashlog):
+	mail = MIMEText(crashlog)
+	mail["To"] = "bugs@cyberduck.ch"
+	mail["From"] = "noreply@cyberduck.ch"
+	mail["Subject"] = "Cyberduck Crash Report from " + ip
+	mail["Date"] = email.Utils.formatdate(localtime=1)
+	mail["Message-ID"] = email.Utils.make_msgid()
+	s = smtplib.SMTP()
+	s.connect("localhost")
+	s.sendmail("noreply@cyberduck.ch", "bugs@cyberduck.ch", mail.as_string())
+	s.quit()
+	
+
 if __name__=="__main__":
 	print "Content-type: text/html"
 	print
@@ -26,6 +39,7 @@ if __name__=="__main__":
 		form = cgi.FieldStorage()
 		if form.has_key("crashlog"):
 			crashlog = form["crashlog"].value
+			revision = form["revision"].value
 			ip = cgi.escape(os.environ["REMOTE_ADDR"])
 			logging.info("Crash Report from %s", ip)
 
@@ -33,9 +47,9 @@ if __name__=="__main__":
 			conn = sqlite3.connect(db)
 			c = conn.cursor()
 
-			row = (ip, crashlog)
+			row = (ip, crashlog, revision)
 			try:
-				c.execute('insert into crash values(?,?)', row)
+				c.execute('insert into crash values(?,?,?)', row)
 			except sqlite3.IntegrityError, (ErrorMessage):
 				logging.error('Error adding crashlog from IP %s:%s', ip, ErrorMessage)
 				pass
@@ -46,16 +60,7 @@ if __name__=="__main__":
 				c.close()
 
 			#send mail
-			mail = MIMEText(crashlog)
-			mail["To"] = "bugs@cyberduck.ch"
-			mail["From"] = "noreply@cyberduck.ch"
-			mail["Subject"] = "Cyberduck Crash Report from " + ip
-			mail["Date"] = email.Utils.formatdate(localtime=1)
-			mail["Message-ID"] = email.Utils.make_msgid()
-			s = smtplib.SMTP()
-			s.connect("localhost")
-			s.sendmail("noreply@cyberduck.ch", "bugs@cyberduck.ch", mail.as_string())
-			s.quit()
+			mailreport(crashlog)
 	except:
 		logging.error("Unexpected error:".join(format_exception(*exc_info())))
 		cgi.print_exception()
