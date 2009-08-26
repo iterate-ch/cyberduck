@@ -37,6 +37,7 @@ public class Cache<E extends AbstractPath> {
     private Map<String, AttributedList<E>> _impl = Collections.<String, AttributedList<E>>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("browser.cache.size")
     ) {
+        @Override
         protected boolean removeLRU(LinkEntry entry) {
             log.debug("Removing from cache:" + entry);
             return true;

@@ -149,6 +149,7 @@ public class Resolver implements Runnable {
         }
     }
 
+    @Override
     public String toString() {
         return "Resolver for "+this.hostname;
     }

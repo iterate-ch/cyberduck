@@ -36,6 +36,7 @@ public abstract class TransferAction {
 
     public abstract String toString();
 
+    @Override
     public boolean equals(Object other) {
         if(null == other) {
             return false;
@@ -53,6 +54,7 @@ public abstract class TransferAction {
      * Overwrite any prior existing file
      */
     public static final TransferAction ACTION_OVERWRITE = new TransferAction() {
+        @Override
         public String toString() {
             return "overwrite";
         }
@@ -66,6 +68,7 @@ public abstract class TransferAction {
      * Append to any exsisting file when writing
      */
     public static final TransferAction ACTION_RESUME = new TransferAction() {
+        @Override
         public String toString() {
             return "resume";
         }
@@ -79,6 +82,7 @@ public abstract class TransferAction {
      * Create a new file with a similar name
      */
     public static final TransferAction ACTION_RENAME = new TransferAction() {
+        @Override
         public String toString() {
             return "similar";
         }
@@ -92,6 +96,7 @@ public abstract class TransferAction {
      * Do not transfer file
      */
     public static final TransferAction ACTION_SKIP = new TransferAction() {
+        @Override
         public String toString() {
             return "skip";
         }
@@ -105,6 +110,7 @@ public abstract class TransferAction {
      * Prompt the user about existing files
      */
     public static final TransferAction ACTION_CALLBACK = new TransferAction() {
+        @Override
         public String toString() {
             return "ask";
         }
@@ -115,6 +121,7 @@ public abstract class TransferAction {
     };
 
     public static final TransferAction ACTION_CANCEL = new TransferAction() {
+        @Override
         public String toString() {
             return "cancel";
         }

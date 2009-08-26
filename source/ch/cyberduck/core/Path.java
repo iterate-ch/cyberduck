@@ -655,6 +655,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return The absolute path name
      */
+    @Override
     public String toString() {
         return this.getAbsolute();
     }

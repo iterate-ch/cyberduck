@@ -779,6 +779,7 @@ public abstract class Transfer implements Serializable {
         this.transferred = transferred;
     }
 
+    @Override
     public String toString() {
         return this.getName();
     }
