@@ -187,14 +187,14 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
             // files
             final boolean skipped = !transfer.isIncluded(item)
                     || ((CDTransferPrompt) controller).getAction().equals(TransferAction.ACTION_SKIP);
-            return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
+            return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState).retain().autorelease();
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    CDTableCellAttributes.browserFontLeftAlignment());
+                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(item.getName());
+            return NSString.stringWithString(item.getName()).retain().autorelease();
         }
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }

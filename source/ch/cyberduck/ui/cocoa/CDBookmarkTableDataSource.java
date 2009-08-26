@@ -187,7 +187,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         final Host host = this.getSource().get(row.intValue());
         if(identifier.equals(ICON_COLUMN)) {
             return CDIconCache.instance().iconForName(host.getProtocol().disk(),
-                    Preferences.instance().getInteger("bookmark.icon.size"));
+                    Preferences.instance().getInteger("bookmark.icon.size")).retain().autorelease();
         }
         if(identifier.equals(BOOKMARK_COLUMN)) {
             NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());
@@ -195,24 +195,24 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(StringUtils.isNotBlank(host.getComment())) {
                 dict.setObjectForKey(StringUtils.remove(StringUtils.remove(host.getComment(), CharUtils.LF), CharUtils.CR), "Comment");
             }
-            return dict;
+            return dict.retain().autorelease();
         }
         if(identifier.equals(STATUS_COLUMN)) {
             if(controller.hasSession()) {
                 final Session session = controller.getSession();
                 if(host.equals(session.getHost())) {
                     if(session.isConnected()) {
-                        return NSImage.imageNamed("statusGreen.tiff");
+                        return NSImage.imageNamed("statusGreen.tiff").retain().autorelease();
                     }
                     if(session.isOpening()) {
-                        return NSImage.imageNamed("statusYellow.tiff");
+                        return NSImage.imageNamed("statusYellow.tiff").retain().autorelease();
                     }
                 }
             }
             return null;
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(host.getNickname());
+            return NSString.stringWithString(host.getNickname()).retain().autorelease();
         }
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }

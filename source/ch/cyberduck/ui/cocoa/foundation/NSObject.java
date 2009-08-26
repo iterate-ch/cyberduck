@@ -31,6 +31,10 @@ public interface NSObject extends org.rococoa.NSObject {
 
     public abstract NSObject copy();
 
+    public abstract NSObject retain();
+
+    public abstract NSObject autorelease();
+
     /**
      * <i>native declaration : :16</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isEqual(null)</code><br>
