@@ -56,6 +56,8 @@ import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.*;
 
+import com.sun.jna.ptr.PointerByReference;
+
 /**
  * @version $Id$
  */
@@ -2870,15 +2872,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 + "\\\"cd " + workdir + " && exec \\\\$SHELL\\\"\""
                 + "\n"
                 + "end tell";
-//        NSAppleScript as = new NSAppleScript(command);
-//        final NSMutableDictionary result = new NSMutableDictionary();
-//        as.execute(result);
-//        if(!(result.count() == 0)) {
-//            final Enumeration errors = result.keyEnumerator();
-//            while(errors.hasMoreElements()) {
-//                log.error(result.valueForKey(errors.nextElement().toString()));
-//            }
-//        }
+        final NSAppleScript as = NSAppleScript.createWithSource(command);
+        as.executeAndReturnError(new PointerByReference());
         NSWorkspace.sharedWorkspace().launchApplication(
                 NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal")
         );
