@@ -55,6 +55,10 @@ public class CDDotMacController extends CDController {
         ;
     }
 
+    public boolean isAvailable() {
+        return loadNative();
+    }
+
     /**
      * @return Member name of the MobileMe account configured in System Preferences
      */
