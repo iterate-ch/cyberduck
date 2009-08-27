@@ -4312,8 +4312,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					ppc7400,
-					ppc64,
 					i386,
 					x86_64,
 				);
@@ -4640,8 +4638,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					ppc7400,
-					ppc64,
 					i386,
 					x86_64,
 				);
