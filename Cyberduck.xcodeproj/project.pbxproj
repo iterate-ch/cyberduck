@@ -4323,7 +4323,7 @@
 					"$(SRCROOT)/lib",
 					"$(SRCROOT)/build",
 				);
-				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_VERSION = 4.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
@@ -4645,13 +4645,13 @@
 					i386,
 					x86_64,
 				);
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SRCROOT)/lib",
 					"$(SRCROOT)/build",
 				);
+				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_VERSION = 4.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
