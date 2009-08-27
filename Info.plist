@@ -120,13 +120,13 @@
         <string>_REVISION_</string>
         <key>CFBundleShortVersionString</key>
         <string>_VERSION_ (_REVISION_)</string>
-		<key>LSArchitecturePriority</key>
-		<array>
-            <string>x86_64</string>
+        <key>LSArchitecturePriority</key>
+        <array>
             <string>i386</string>
-            <string>ppc64</string>
+            <string>x86_64</string>
             <string>ppc</string>
-		</array>
+            <string>ppc64</string>
+        </array>
         <key>Java</key>
         <dict>
             <key>ClassPath</key>
@@ -189,16 +189,16 @@
         </array>
         <key>LSMinimumSystemVersion</key>
         <string>10.5</string>
-		<key>LSMinimumSystemVersionByArchitecture</key>
-		<dict>
-			<key>ppc</key>
-	        <string>10.5</string>
-			<key>ppc64</key>
-	        <string>10.5</string>
-			<key>i386</key>
-	        <string>10.5</string>
-			<key>x86_64</key>
-	        <string>10.5</string>
-		</dict>
+        <key>LSMinimumSystemVersionByArchitecture</key>
+        <dict>
+            <key>ppc</key>
+            <string>10.5</string>
+            <key>ppc64</key>
+            <string>10.5</string>
+            <key>i386</key>
+            <string>10.5</string>
+            <key>x86_64</key>
+            <string>10.5</string>
+        </dict>
     </dict>
 </plist>
