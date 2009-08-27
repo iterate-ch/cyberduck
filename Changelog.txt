@@ -4,9 +4,8 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.3
+3.3b1
 - [Bugfix] Incompatibility with Mac OS X 10.6 (Snow Leopard) [#3039]
-- [Feature] 64-Bit support
 - [Feature] New application icon (Thanks to Dietmar Kerschner)
 
 3.2.1
