@@ -188,7 +188,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 }
             }
 
-            public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, Object context) {
+            public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, NSObject context) {
                 log.debug("pkSelectionPanelDidEnd");
                 if(returncode == NSPanel.NSOKButton) {
                     NSArray selected = sheet.filenames();
