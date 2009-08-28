@@ -35,7 +35,7 @@ import org.rococoa.internal.OperationBatcher;
 /**
  * @version $Id$
  */
-public abstract class CDController extends AbstractController {
+public class CDController extends AbstractController {
     private static Logger log = Logger.getLogger(CDController.class);
 
     /**
@@ -123,6 +123,7 @@ public abstract class CDController extends AbstractController {
             runnable.run();
             return;
         }
+        final MainActionRegistry registry = MainActionRegistry.instance();
         final MainAction main = new MainAction() {
             @Override
             public boolean isValid() {
@@ -135,12 +136,12 @@ public abstract class CDController extends AbstractController {
                 }
                 finally {
                     //Remove strong reference
-                    MainActionRegistry.instance().remove(this);
+                    registry.remove(this);
                 }
             }
         };
         //Make sure to keep a strong reference
-        MainActionRegistry.instance().add(main);
+        registry.add(main);
         //Defer to main thread
         Foundation.runOnMainThread(main, wait);
     }

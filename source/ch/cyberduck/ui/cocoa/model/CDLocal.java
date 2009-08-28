@@ -102,9 +102,6 @@ public class CDLocal extends Local {
         return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
     }
 
-    private static CDController c = new CDController() {
-    };
-
     private static boolean JNI_LOADED = false;
 
     private static boolean loadNative() {
@@ -142,7 +139,7 @@ public class CDLocal extends Local {
 
     @Override
     public void writePermissions(final Permission perm, final boolean recursive) {
-        c.invoke(new DefaultMainAction() {
+        new CDController().invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSFileManager.defaultManager().changeFileAttributes(
                         NSDictionary.dictionaryWithObjectsForKeys(
@@ -163,7 +160,7 @@ public class CDLocal extends Local {
 
     @Override
     public void writeModificationDate(final long millis) {
-        c.invoke(new DefaultMainAction() {
+        new CDController().invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSFileManager.defaultManager().changeFileAttributes(
                         NSDictionary.dictionaryWithObjectsForKeys(
@@ -203,7 +200,7 @@ public class CDLocal extends Local {
     public void trash() {
         if(this.exists()) {
             final Local file = this;
-            c.invoke(new DefaultMainAction() {
+            new CDController().invoke(new DefaultMainAction() {
                 public void run() {
                     log.debug("Move " + file + " to Trash");
                     if(!NSWorkspace.sharedWorkspace().performFileOperation(
@@ -235,7 +232,11 @@ public class CDLocal extends Local {
         if(!loadNative()) {
             return;
         }
-        this.setQuarantine(this.getAbsolute(), originUrl, dataUrl);
+        new CDController().invoke(new DefaultMainAction() {
+            public void run() {
+                setQuarantine(getAbsolute(), originUrl, dataUrl);
+            }
+        });
     }
 
     /**
@@ -257,7 +258,11 @@ public class CDLocal extends Local {
         if(!loadNative()) {
             return;
         }
-        this.setWhereFrom(this.getAbsolute(), dataUrl);
+        new CDController().invoke(new DefaultMainAction() {
+            public void run() {
+                setWhereFrom(getAbsolute(), dataUrl);
+            }
+        });
     }
 
     /**
@@ -285,7 +290,7 @@ public class CDLocal extends Local {
                 return;
             }
             final String path = this.getAbsolute();
-            c.invoke(new DefaultMainAction() {
+            new CDController().invoke(new DefaultMainAction() {
                 public void run() {
                     if(-1 == progress) {
                         removeResourceFork();
