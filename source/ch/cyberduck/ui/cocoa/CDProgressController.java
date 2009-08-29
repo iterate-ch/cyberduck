@@ -71,8 +71,9 @@ public class CDProgressController extends CDBundleController {
 
     @Override
     protected void invalidate() {
-        this.transfer.getSession().removeProgressListener(pl);
-        this.transfer.removeListener(tl);
+        transfer.getSession().removeProgressListener(pl);
+        transfer.removeListener(tl);
+        filesPopup.menu().setDelegate(null);
         super.invalidate();
     }
 
@@ -104,10 +105,10 @@ public class CDProgressController extends CDBundleController {
 
             @Override
             public void transferWillStart() {
-                progressBar.setIndeterminate(true);
-                progressBar.startAnimation(null);
                 invoke(new DefaultMainAction() {
                     public void run() {
+                        progressBar.setIndeterminate(true);
+                        progressBar.startAnimation(null);
                         statusIconView.setImage(YELLOW_ICON);
                         setProgressText();
                         setStatusText();
@@ -117,9 +118,9 @@ public class CDProgressController extends CDBundleController {
 
             @Override
             public void transferDidEnd() {
-                progressBar.stopAnimation(null);
                 invoke(new DefaultMainAction() {
                     public void run() {
+                        progressBar.stopAnimation(null);
                         messageText = null;
                         // Do not display any progress text when transfer is stopped
                         final Date timestamp = transfer.getTimestamp();
@@ -324,7 +325,7 @@ public class CDProgressController extends CDBundleController {
     public void setProgressBar(final NSProgressIndicator progressBar) {
         this.progressBar = progressBar;
         this.progressBar.setDisplayedWhenStopped(false);
-        this.progressBar.setUsesThreadedAnimation(false);
+        this.progressBar.setUsesThreadedAnimation(true);
         this.progressBar.setControlSize(NSCell.NSSmallControlSize);
         this.progressBar.setStyle(NSProgressIndicator.NSProgressIndicatorBarStyle);
         this.progressBar.setMinValue(0);
