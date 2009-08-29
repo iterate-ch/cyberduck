@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
+import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -171,11 +172,11 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.browserView.setDataSource(this.browserModel.id());
         this.browserView.setDelegate((this.browserViewDelegate = new CDAbstractPathTableDelegate() {
 
-            public void enterKeyPressed(final NSObject sender) {
+            public void enterKeyPressed(final ID sender) {
                 ;
             }
 
-            public void deleteKeyPressed(final NSObject sender) {
+            public void deleteKeyPressed(final ID sender) {
                 ;
             }
 
@@ -183,7 +184,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 ;
             }
 
-            public void tableRowDoubleClicked(final NSObject sender) {
+            public void tableRowDoubleClicked(final ID sender) {
                 ;
             }
 

@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSError;
 
 /// <i>native declaration : :11</i>
@@ -222,7 +223,7 @@ public interface NSResponder extends NSObject {
      * Original signature : <code>void showContextHelp(id)</code><br>
      * <i>native declaration : :56</i>
      */
-    public abstract void showContextHelp(NSObject sender);
+    public abstract void showContextHelp(final ID sender);
 
     /**
      * Original signature : <code>void helpRequested(NSEvent*)</code><br>
@@ -256,409 +257,409 @@ public interface NSResponder extends NSObject {
      * Original signature : <code>void moveForward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :85</i>
      */
-    public abstract void moveForward(NSObject sender);
+    public abstract void moveForward(final ID sender);
 
     /**
      * Original signature : <code>void moveRight(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :86</i>
      */
-    public abstract void moveRight(NSObject sender);
+    public abstract void moveRight(final ID sender);
 
     /**
      * Original signature : <code>void moveBackward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :87</i>
      */
-    public abstract void moveBackward(NSObject sender);
+    public abstract void moveBackward(final ID sender);
 
     /**
      * Original signature : <code>void moveLeft(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :88</i>
      */
-    public abstract void moveLeft(NSObject sender);
+    public abstract void moveLeft(final ID sender);
 
     /**
      * Original signature : <code>void moveUp(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :89</i>
      */
-    public abstract void moveUp(NSObject sender);
+    public abstract void moveUp(final ID sender);
 
     /**
      * Original signature : <code>void moveDown(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :90</i>
      */
-    public abstract void moveDown(NSObject sender);
+    public abstract void moveDown(final ID sender);
 
     /**
      * Original signature : <code>void moveWordForward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :91</i>
      */
-    public abstract void moveWordForward(NSObject sender);
+    public abstract void moveWordForward(final ID sender);
 
     /**
      * Original signature : <code>void moveWordBackward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :92</i>
      */
-    public abstract void moveWordBackward(NSObject sender);
+    public abstract void moveWordBackward(final ID sender);
 
     /**
      * Original signature : <code>void moveToBeginningOfLine(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :93</i>
      */
-    public abstract void moveToBeginningOfLine(NSObject sender);
+    public abstract void moveToBeginningOfLine(final ID sender);
 
     /**
      * Original signature : <code>void moveToEndOfLine(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :94</i>
      */
-    public abstract void moveToEndOfLine(NSObject sender);
+    public abstract void moveToEndOfLine(final ID sender);
 
     /**
      * Original signature : <code>void moveToBeginningOfParagraph(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :95</i>
      */
-    public abstract void moveToBeginningOfParagraph(NSObject sender);
+    public abstract void moveToBeginningOfParagraph(final ID sender);
 
     /**
      * Original signature : <code>void moveToEndOfParagraph(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :96</i>
      */
-    public abstract void moveToEndOfParagraph(NSObject sender);
+    public abstract void moveToEndOfParagraph(final ID sender);
 
     /**
      * Original signature : <code>void moveToEndOfDocument(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :97</i>
      */
-    public abstract void moveToEndOfDocument(NSObject sender);
+    public abstract void moveToEndOfDocument(final ID sender);
 
     /**
      * Original signature : <code>void moveToBeginningOfDocument(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :98</i>
      */
-    public abstract void moveToBeginningOfDocument(NSObject sender);
+    public abstract void moveToBeginningOfDocument(final ID sender);
 
     /**
      * Original signature : <code>void pageDown(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :99</i>
      */
-    public abstract void pageDown(NSObject sender);
+    public abstract void pageDown(final ID sender);
 
     /**
      * Original signature : <code>void pageUp(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :100</i>
      */
-    public abstract void pageUp(NSObject sender);
+    public abstract void pageUp(final ID sender);
 
     /**
      * Original signature : <code>void centerSelectionInVisibleArea(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :101</i>
      */
-    public abstract void centerSelectionInVisibleArea(NSObject sender);
+    public abstract void centerSelectionInVisibleArea(final ID sender);
 
     /**
      * Original signature : <code>void moveBackwardAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :103</i>
      */
-    public abstract void moveBackwardAndModifySelection(NSObject sender);
+    public abstract void moveBackwardAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveForwardAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :104</i>
      */
-    public abstract void moveForwardAndModifySelection(NSObject sender);
+    public abstract void moveForwardAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveWordForwardAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :105</i>
      */
-    public abstract void moveWordForwardAndModifySelection(NSObject sender);
+    public abstract void moveWordForwardAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveWordBackwardAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :106</i>
      */
-    public abstract void moveWordBackwardAndModifySelection(NSObject sender);
+    public abstract void moveWordBackwardAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveUpAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :107</i>
      */
-    public abstract void moveUpAndModifySelection(NSObject sender);
+    public abstract void moveUpAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveDownAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :108</i>
      */
-    public abstract void moveDownAndModifySelection(NSObject sender);
+    public abstract void moveDownAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveWordRight(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :111</i>
      */
-    public abstract void moveWordRight(NSObject sender);
+    public abstract void moveWordRight(final ID sender);
 
     /**
      * Original signature : <code>void moveWordLeft(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :112</i>
      */
-    public abstract void moveWordLeft(NSObject sender);
+    public abstract void moveWordLeft(final ID sender);
 
     /**
      * Original signature : <code>void moveRightAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :113</i>
      */
-    public abstract void moveRightAndModifySelection(NSObject sender);
+    public abstract void moveRightAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveLeftAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :114</i>
      */
-    public abstract void moveLeftAndModifySelection(NSObject sender);
+    public abstract void moveLeftAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveWordRightAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :115</i>
      */
-    public abstract void moveWordRightAndModifySelection(NSObject sender);
+    public abstract void moveWordRightAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void moveWordLeftAndModifySelection(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :116</i>
      */
-    public abstract void moveWordLeftAndModifySelection(NSObject sender);
+    public abstract void moveWordLeftAndModifySelection(final ID sender);
 
     /**
      * Original signature : <code>void scrollPageUp(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :119</i>
      */
-    public abstract void scrollPageUp(NSObject sender);
+    public abstract void scrollPageUp(final ID sender);
 
     /**
      * Original signature : <code>void scrollPageDown(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :120</i>
      */
-    public abstract void scrollPageDown(NSObject sender);
+    public abstract void scrollPageDown(final ID sender);
 
     /**
      * Original signature : <code>void scrollLineUp(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :121</i>
      */
-    public abstract void scrollLineUp(NSObject sender);
+    public abstract void scrollLineUp(final ID sender);
 
     /**
      * Original signature : <code>void scrollLineDown(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :122</i>
      */
-    public abstract void scrollLineDown(NSObject sender);
+    public abstract void scrollLineDown(final ID sender);
 
     /**
      * Original signature : <code>void transpose(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :126</i>
      */
-    public abstract void transpose(NSObject sender);
+    public abstract void transpose(final ID sender);
 
     /**
      * Original signature : <code>void transposeWords(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :127</i>
      */
-    public abstract void transposeWords(NSObject sender);
+    public abstract void transposeWords(final ID sender);
 
     /**
      * Original signature : <code>void selectAll(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :131</i>
      */
-    public abstract void selectAll(NSObject sender);
+    public abstract void selectAll(final ID sender);
 
     /**
      * Original signature : <code>void selectParagraph(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :132</i>
      */
-    public abstract void selectParagraph(NSObject sender);
+    public abstract void selectParagraph(final ID sender);
 
     /**
      * Original signature : <code>void selectLine(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :133</i>
      */
-    public abstract void selectLine(NSObject sender);
+    public abstract void selectLine(final ID sender);
 
     /**
      * Original signature : <code>void selectWord(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :134</i>
      */
-    public abstract void selectWord(NSObject sender);
+    public abstract void selectWord(final ID sender);
 
     /**
      * Original signature : <code>void indent(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :138</i>
      */
-    public abstract void indent(NSObject sender);
+    public abstract void indent(final ID sender);
 
     /**
      * Original signature : <code>void insertTab(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :139</i>
      */
-    public abstract void insertTab(NSObject sender);
+    public abstract void insertTab(final ID sender);
 
     /**
      * Original signature : <code>void insertBacktab(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :140</i>
      */
-    public abstract void insertBacktab(NSObject sender);
+    public abstract void insertBacktab(final ID sender);
 
     /**
      * Original signature : <code>void insertNewline(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :141</i>
      */
-    public abstract void insertNewline(NSObject sender);
+    public abstract void insertNewline(final ID sender);
 
     /**
      * Original signature : <code>void insertParagraphSeparator(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :142</i>
      */
-    public abstract void insertParagraphSeparator(NSObject sender);
+    public abstract void insertParagraphSeparator(final ID sender);
 
     /**
      * Original signature : <code>void insertNewlineIgnoringFieldEditor(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :143</i>
      */
-    public abstract void insertNewlineIgnoringFieldEditor(NSObject sender);
+    public abstract void insertNewlineIgnoringFieldEditor(final ID sender);
 
     /**
      * Original signature : <code>void insertTabIgnoringFieldEditor(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :144</i>
      */
-    public abstract void insertTabIgnoringFieldEditor(NSObject sender);
+    public abstract void insertTabIgnoringFieldEditor(final ID sender);
 
     /**
      * Original signature : <code>void insertLineBreak(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :146</i>
      */
-    public abstract void insertLineBreak(NSObject sender);
+    public abstract void insertLineBreak(final ID sender);
 
     /**
      * Original signature : <code>void insertContainerBreak(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :147</i>
      */
-    public abstract void insertContainerBreak(NSObject sender);
+    public abstract void insertContainerBreak(final ID sender);
 
     /**
      * Original signature : <code>void changeCaseOfLetter(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :152</i>
      */
-    public abstract void changeCaseOfLetter(NSObject sender);
+    public abstract void changeCaseOfLetter(final ID sender);
 
     /**
      * Original signature : <code>void uppercaseWord(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :153</i>
      */
-    public abstract void uppercaseWord(NSObject sender);
+    public abstract void uppercaseWord(final ID sender);
 
     /**
      * Original signature : <code>void lowercaseWord(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :154</i>
      */
-    public abstract void lowercaseWord(NSObject sender);
+    public abstract void lowercaseWord(final ID sender);
 
     /**
      * Original signature : <code>void capitalizeWord(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :155</i>
      */
-    public abstract void capitalizeWord(NSObject sender);
+    public abstract void capitalizeWord(final ID sender);
 
     /**
      * Original signature : <code>void deleteForward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :159</i>
      */
-    public abstract void deleteForward(NSObject sender);
+    public abstract void deleteForward(final ID sender);
 
     /**
      * Original signature : <code>void deleteBackward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :160</i>
      */
-    public abstract void deleteBackward(NSObject sender);
+    public abstract void deleteBackward(final ID sender);
 
     /**
      * Original signature : <code>void deleteBackwardByDecomposingPreviousCharacter(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :162</i>
      */
-    public abstract void deleteBackwardByDecomposingPreviousCharacter(NSObject sender);
+    public abstract void deleteBackwardByDecomposingPreviousCharacter(final ID sender);
 
     /**
      * Original signature : <code>void deleteWordForward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :164</i>
      */
-    public abstract void deleteWordForward(NSObject sender);
+    public abstract void deleteWordForward(final ID sender);
 
     /**
      * Original signature : <code>void deleteWordBackward(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :165</i>
      */
-    public abstract void deleteWordBackward(NSObject sender);
+    public abstract void deleteWordBackward(final ID sender);
 
     /**
      * Original signature : <code>void deleteToBeginningOfLine(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :166</i>
      */
-    public abstract void deleteToBeginningOfLine(NSObject sender);
+    public abstract void deleteToBeginningOfLine(final ID sender);
 
     /**
      * Original signature : <code>void deleteToEndOfLine(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :167</i>
      */
-    public abstract void deleteToEndOfLine(NSObject sender);
+    public abstract void deleteToEndOfLine(final ID sender);
 
     /**
      * Original signature : <code>void deleteToBeginningOfParagraph(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :168</i>
      */
-    public abstract void deleteToBeginningOfParagraph(NSObject sender);
+    public abstract void deleteToBeginningOfParagraph(final ID sender);
 
     /**
      * Original signature : <code>void deleteToEndOfParagraph(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :169</i>
      */
-    public abstract void deleteToEndOfParagraph(NSObject sender);
+    public abstract void deleteToEndOfParagraph(final ID sender);
 
     /**
      * Original signature : <code>void yank(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :171</i>
      */
-    public abstract void yank(NSObject sender);
+    public abstract void yank(final ID sender);
 
     /**
      * Original signature : <code>void complete(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :175</i>
      */
-    public abstract void complete(NSObject sender);
+    public abstract void complete(final ID sender);
 
     /**
      * Original signature : <code>void setMark(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :179</i>
      */
-    public abstract void setMark(NSObject sender);
+    public abstract void setMark(final ID sender);
 
     /**
      * Original signature : <code>void deleteToMark(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :180</i>
      */
-    public abstract void deleteToMark(NSObject sender);
+    public abstract void deleteToMark(final ID sender);
 
     /**
      * Original signature : <code>void selectToMark(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :181</i>
      */
-    public abstract void selectToMark(NSObject sender);
+    public abstract void selectToMark(final ID sender);
 
     /**
      * Original signature : <code>void swapWithMark(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :182</i>
      */
-    public abstract void swapWithMark(NSObject sender);
+    public abstract void swapWithMark(final ID sender);
 
     /**
      * Original signature : <code>void cancelOperation(id)</code><br>
      * <i>from NSStandardKeyBindingMethods native declaration : :187</i>
      */
-    public abstract void cancelOperation(NSObject sender);
+    public abstract void cancelOperation(final ID sender);
 
     /**
      * Original signature : <code>NSUndoManager* undoManager()</code><br>

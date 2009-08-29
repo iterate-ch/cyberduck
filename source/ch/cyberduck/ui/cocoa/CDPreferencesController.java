@@ -750,7 +750,7 @@ public class CDPreferencesController extends CDWindowController {
     @Outlet
     private NSButton dotherx; //IBOutlet
 
-    public void defaultPermissionsDownloadChanged(final NSObject sender) {
+    public void defaultPermissionsDownloadChanged(final ID sender) {
         boolean[][] p = new boolean[3][3];
 
         p[Permission.OWNER][Permission.READ] = (downerr.state() == NSCell.NSOnState);
@@ -784,7 +784,7 @@ public class CDPreferencesController extends CDWindowController {
     public NSButton uotherw; //IBOutlet
     public NSButton uotherx; //IBOutlet
 
-    public void defaultPermissionsUploadChanged(final NSObject sender) {
+    public void defaultPermissionsUploadChanged(final ID sender) {
         boolean[][] p = new boolean[3][3];
 
         p[Permission.OWNER][Permission.READ] = (uownerr.state() == NSCell.NSOnState);

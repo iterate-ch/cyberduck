@@ -25,10 +25,10 @@ import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.ID;
 
 /**
  * @version $Id$
@@ -70,7 +70,7 @@ public class CDTaskController extends CDBundleController {
         this.stopButton.setAction(Foundation.selector("stopButtonClicked:"));
     }
 
-    public void stopButtonClicked(NSObject sender) {
+    public void stopButtonClicked(final ID sender) {
         task.cancel();
     }
 

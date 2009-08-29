@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
+import org.rococoa.ID;
 
 import java.util.Comparator;
 
@@ -128,7 +129,7 @@ public abstract class CDAbstractTableDelegate<E> extends CDController implements
     /**
      * @param sender
      */
-    public abstract void tableRowDoubleClicked(final NSObject sender);
+    public abstract void tableRowDoubleClicked(final ID sender);
 
     /**
      * @param notification
@@ -189,7 +190,7 @@ public abstract class CDAbstractTableDelegate<E> extends CDController implements
         //cache custom sorting preference
         this.sortAscending = sortAscending;
         //set default value
-        Preferences.instance().setProperty("browser.sort.ascending", this.sortAscending.booleanValue());
+        Preferences.instance().setProperty("browser.sort.ascending", this.sortAscending);
     }
 
     public boolean isSortedAscending() {

@@ -462,7 +462,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>void orderFrontCharacterPalette(id)</code><br>
      * <i>native declaration : :204</i>
      */
-    public abstract void orderFrontCharacterPalette(NSObject sender);
+    public abstract void orderFrontCharacterPalette(final ID sender);
 
     /**
      * Original signature : <code>void setWindowsMenu(NSMenu*)</code><br>
@@ -480,7 +480,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>void arrangeInFront(id)</code><br>
      * <i>from NSWindowsMenu native declaration : :211</i>
      */
-    public abstract void arrangeInFront(NSObject sender);
+    public abstract void arrangeInFront(final ID sender);
 
     /**
      * Original signature : <code>void removeWindowsItem(NSWindow*)</code><br>
@@ -510,7 +510,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>void miniaturizeAll(id)</code><br>
      * <i>from NSWindowsMenu native declaration : :216</i>
      */
-    public abstract void miniaturizeAll(NSObject sender);
+    public abstract void miniaturizeAll(final ID sender);
 
     /**
      * Original signature : <code>void setServicesMenu(NSMenu*)</code><br>
@@ -546,7 +546,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>void orderFrontStandardAboutPanel(id)</code><br>
      * <i>from NSStandardAboutPanel native declaration : :291</i>
      */
-    public abstract void orderFrontStandardAboutPanel(NSObject sender);
+    public abstract void orderFrontStandardAboutPanel(final ID sender);
 
     /**
      * Original signature : <code>void orderFrontStandardAboutPanelWithOptions(NSDictionary*)</code><br>

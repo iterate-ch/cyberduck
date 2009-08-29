@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 
 
@@ -419,13 +420,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void miniaturize(id)</code><br>
      * <i>native declaration : :312</i>
      */
-    public abstract void miniaturize(NSObject sender);
+    public abstract void miniaturize(final ID sender);
 
     /**
      * Original signature : <code>void deminiaturize(id)</code><br>
      * <i>native declaration : :313</i>
      */
-    public abstract void deminiaturize(NSObject sender);
+    public abstract void deminiaturize(final ID sender);
 
     /**
      * Original signature : <code>BOOL isZoomed()</code><br>
@@ -437,7 +438,7 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void zoom(id)</code><br>
      * <i>native declaration : :315</i>
      */
-    public abstract void zoom(NSObject sender);
+    public abstract void zoom(final ID sender);
 
     /**
      * Original signature : <code>BOOL isMiniaturized()</code><br>
@@ -533,25 +534,25 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void makeKeyAndOrderFront(id)</code><br>
      * <i>native declaration : :343</i>
      */
-    public abstract void makeKeyAndOrderFront(NSObject sender);
+    public abstract void makeKeyAndOrderFront(final ID sender);
 
     /**
      * Original signature : <code>void orderFront(id)</code><br>
      * <i>native declaration : :344</i>
      */
-    public abstract void orderFront(NSObject sender);
+    public abstract void orderFront(final ID sender);
 
     /**
      * Original signature : <code>void orderBack(id)</code><br>
      * <i>native declaration : :345</i>
      */
-    public abstract void orderBack(NSObject sender);
+    public abstract void orderBack(final ID sender);
 
     /**
      * Original signature : <code>void orderOut(id)</code><br>
      * <i>native declaration : :346</i>
      */
-    public abstract void orderOut(NSObject sender);
+    public abstract void orderOut(final ID sender);
     /**
      * <i>native declaration : :347</i><br>
      * Conversion Error : /// Original signature : <code>void orderWindow(null, NSInteger)</code><br>
@@ -690,19 +691,19 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void performClose(id)</code><br>
      * <i>native declaration : :376</i>
      */
-    public abstract void performClose(NSObject sender);
+    public abstract void performClose(final ID sender);
 
     /**
      * Original signature : <code>void performMiniaturize(id)</code><br>
      * <i>native declaration : :377</i>
      */
-    public abstract void performMiniaturize(NSObject sender);
+    public abstract void performMiniaturize(final ID sender);
 
     /**
      * Original signature : <code>void performZoom(id)</code><br>
      * <i>native declaration : :378</i>
      */
-    public abstract void performZoom(NSObject sender);
+    public abstract void performZoom(final ID sender);
 
     /**
      * Original signature : <code>NSInteger gState()</code><br>
@@ -733,7 +734,7 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void print(id)</code><br>
      * <i>native declaration : :384</i>
      */
-    public abstract void print(NSObject sender);
+    public abstract void print(final ID sender);
 
     /**
      * Original signature : <code>void disableCursorRects()</code><br>
@@ -1231,13 +1232,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void selectNextKeyView(id)</code><br>
      * <i>from NSKeyboardUI native declaration : :541</i>
      */
-    public abstract void selectNextKeyView(NSObject sender);
+    public abstract void selectNextKeyView(final ID sender);
 
     /**
      * Original signature : <code>void selectPreviousKeyView(id)</code><br>
      * <i>from NSKeyboardUI native declaration : :542</i>
      */
-    public abstract void selectPreviousKeyView(NSObject sender);
+    public abstract void selectPreviousKeyView(final ID sender);
 
     /**
      * Original signature : <code>void selectKeyViewFollowingView(NSView*)</code><br>
@@ -1315,13 +1316,13 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void toggleToolbarShown(id)</code><br>
      * <i>from NSToolbarSupport native declaration : :560</i>
      */
-    public abstract void toggleToolbarShown(NSObject sender);
+    public abstract void toggleToolbarShown(final ID sender);
 
     /**
      * Original signature : <code>void runToolbarCustomizationPalette(id)</code><br>
      * <i>from NSToolbarSupport native declaration : :561</i>
      */
-    public abstract void runToolbarCustomizationPalette(NSObject sender);
+    public abstract void runToolbarCustomizationPalette(final ID sender);
 
     /**
      * Original signature : <code>void setShowsToolbarButton(BOOL)</code><br>

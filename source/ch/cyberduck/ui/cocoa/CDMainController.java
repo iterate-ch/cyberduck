@@ -33,6 +33,7 @@ import ch.cyberduck.ui.growl.Growl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.ID;
 import org.rococoa.Selector;
 
 import java.io.File;
@@ -216,45 +217,45 @@ public class CDMainController extends CDBundleController {
         NSWorkspace.sharedWorkspace().openFile(HistoryCollection.defaultCollection().getFile().getAbsolute());
     }
 
-    public void bugreportMenuClicked(final NSObject sender) {
+    public void bugreportMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openURL(
                 NSURL.URLWithString(Preferences.instance().getProperty("website.bug")));
     }
 
-    public void helpMenuClicked(final NSObject sender) {
+    public void helpMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openURL(
                 NSURL.URLWithString(Preferences.instance().getProperty("website.help"))
         );
     }
 
-    public void faqMenuClicked(final NSObject sender) {
+    public void faqMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openFile(
                 new File(NSBundle.mainBundle().pathForResource_ofType("Cyberduck FAQ", "rtfd")).toString());
     }
 
-    public void licenseMenuClicked(final NSObject sender) {
+    public void licenseMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openFile(
                 new File(NSBundle.mainBundle().pathForResource_ofType("License", "txt")).toString());
     }
 
-    public void acknowledgmentsMenuClicked(final NSObject sender) {
+    public void acknowledgmentsMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openFile(
                 new File(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")).toString());
     }
 
-    public void websiteMenuClicked(final NSObject sender) {
+    public void websiteMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.home")));
     }
 
-    public void forumMenuClicked(final NSObject sender) {
+    public void forumMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.forum")));
     }
 
-    public void donateMenuClicked(final NSObject sender) {
+    public void donateMenuClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
     }
 
-    public void aboutMenuClicked(final NSObject sender) {
+    public void aboutMenuClicked(final ID sender) {
         NSDictionary dict = NSDictionary.dictionaryWithObjectsForKeys(
                 NSArray.arrayWithObjects(NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString(), ""),
                 NSArray.arrayWithObjects("ApplicationVersion", "Version")
@@ -262,33 +263,33 @@ public class CDMainController extends CDBundleController {
         NSApplication.sharedApplication().orderFrontStandardAboutPanelWithOptions(dict);
     }
 
-    public void feedbackMenuClicked(final NSObject sender) {
+    public void feedbackMenuClicked(final ID sender) {
         String versionString = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion").toString();
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("mail.feedback")
                 + "?subject=" + NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "-" + versionString));
     }
 
-    public void preferencesMenuClicked(final NSObject sender) {
+    public void preferencesMenuClicked(final ID sender) {
         CDPreferencesController controller = CDPreferencesController.instance();
         controller.window().makeKeyAndOrderFront(null);
     }
 
-    public void newDownloadMenuClicked(final NSObject sender) {
+    public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
         CDSheetController c = new CDDownloadController(CDTransferController.instance());
         c.beginSheet();
     }
 
-    public void newBrowserMenuClicked(final NSObject sender) {
+    public void newBrowserMenuClicked(final ID sender) {
         this.openDefaultBookmark(CDMainController.newDocument(true));
     }
 
-    public void showTransferQueueClicked(final NSObject sender) {
+    public void showTransferQueueClicked(final ID sender) {
         CDTransferController c = CDTransferController.instance();
         c.window().makeKeyAndOrderFront(null);
     }
 
-    public void showActivityWindowClicked(final NSObject sender) {
+    public void showActivityWindowClicked(final ID sender) {
         CDActivityController c = CDActivityController.instance();
         if(c.isVisible()) {
             c.window().close();
@@ -298,12 +299,12 @@ public class CDMainController extends CDBundleController {
         }
     }
 
-    public void downloadBookmarksFromDotMacClicked(final NSObject sender) {
+    public void downloadBookmarksFromDotMacClicked(final ID sender) {
         final CDDotMacController controller = CDDotMacController.instance();
         controller.downloadBookmarks();
     }
 
-    public void uploadBookmarksToDotMacClicked(final NSObject sender) {
+    public void uploadBookmarksToDotMacClicked(final ID sender) {
         final CDDotMacController c = CDDotMacController.instance();
         c.uploadBookmarks();
     }

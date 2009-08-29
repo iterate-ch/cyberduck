@@ -32,6 +32,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
+import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -149,7 +150,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         }
 
                         @Override
-                        public void tableRowDoubleClicked(NSObject sender) {
+                        public void tableRowDoubleClicked(final ID sender) {
                         }
 
                         @Override
@@ -161,10 +162,10 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         public void selectionDidChange(NSNotification notification) {
                         }
 
-                        public void enterKeyPressed(NSObject sender) {
+                        public void enterKeyPressed(final ID sender) {
                         }
 
-                        public void deleteKeyPressed(NSObject sender) {
+                        public void deleteKeyPressed(final ID sender) {
                         }
 
                         public String tooltip(CDErrorController e) {

@@ -22,6 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
+
 /// <i>native declaration : :23</i>
 public abstract class NSTabView implements NSObject {
 
@@ -54,7 +56,7 @@ public abstract class NSTabView implements NSObject {
      * May raise an NSRangeException<br>
      * <i>native declaration : :77</i>
      */
-    public abstract void takeSelectedTabViewItemFromSender(NSObject sender);
+    public abstract void takeSelectedTabViewItemFromSender(final ID sender);
 
     /**
      * Original signature : <code>void selectFirstTabViewItem(id)</code><br>

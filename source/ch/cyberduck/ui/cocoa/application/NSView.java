@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 
 
@@ -978,7 +979,7 @@ public abstract class NSView implements NSResponder {
      * Original signature : <code>void print(id)</code><br>
      * <i>from NSPrinting native declaration : :370</i>
      */
-    public abstract void print(NSObject sender);
+    public abstract void print(final ID sender);
     /**
      * <i>from NSPrinting native declaration : :373</i><br>
      * Conversion Error : /**<br>

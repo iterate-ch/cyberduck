@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 
 public abstract class NSButtonCell implements NSActionCell {
@@ -282,7 +282,7 @@ public abstract class NSButtonCell implements NSActionCell {
      * Significant NSCell override, actually clicks itself.<br>
      * <i>native declaration : :175</i>
      */
-    public abstract void performClick(NSObject sender);
+    public abstract void performClick(final ID sender);
     /**
      * <i>native declaration : :178</i><br>
      * Conversion Error : /// Original signature : <code>void drawImage(NSImage*, null, NSView*)</code><br>

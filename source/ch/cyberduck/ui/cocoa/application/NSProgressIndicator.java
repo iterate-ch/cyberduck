@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
+
 /// <i>native declaration : :42</i>
 public abstract class NSProgressIndicator extends NSView {
 
@@ -155,20 +157,20 @@ public abstract class NSProgressIndicator extends NSView {
      * Original signature : <code>void startAnimation(id)</code><br>
      * <i>native declaration : :118</i>
      */
-    public abstract void startAnimation(NSObject sender);
+    public abstract void startAnimation(ID sender);
 
     /**
      * Original signature : <code>void stopAnimation(id)</code><br>
      * <i>native declaration : :119</i>
      */
-    public abstract void stopAnimation(NSObject sender);
+    public abstract void stopAnimation(ID sender);
 
     /**
      * Original signature : <code>void animate(id)</code><br>
      * manual animation<br>
      * <i>native declaration : :121</i>
      */
-    public abstract void animate(NSObject sender);
+    public abstract void animate(final ID sender);
 
     /**
      * Original signature : <code>void setStyle(NSProgressIndicatorStyle)</code><br>

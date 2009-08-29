@@ -124,7 +124,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.queueSizeStepper.setAction(Foundation.selector("queueSizeStepperChanged:"));
     }
 
-    public void queueSizeStepperChanged(final NSObject sender) {
+    public void queueSizeStepperChanged(final ID sender) {
         synchronized(Queue.instance()) {
             Queue.instance().notify();
         }
@@ -158,7 +158,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      * @param sender
      */
-    public void searchButtonClicked(final NSObject sender) {
+    public void searchButtonClicked(final ID sender) {
         this.window().makeFirstResponder(this.filterField);
     }
 
@@ -348,11 +348,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 return t.getName();
             }
 
-            public void enterKeyPressed(final NSObject sender) {
+            public void enterKeyPressed(final ID sender) {
                 this.tableRowDoubleClicked(sender);
             }
 
-            public void deleteKeyPressed(final NSObject sender) {
+            public void deleteKeyPressed(final ID sender) {
                 deleteButtonClicked(sender);
             }
 
@@ -360,7 +360,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 ;
             }
 
-            public void tableRowDoubleClicked(final NSObject sender) {
+            public void tableRowDoubleClicked(final ID sender) {
                 reloadButtonClicked(sender);
             }
 
@@ -783,7 +783,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         return null;
     }
 
-    public void paste(final NSObject sender) {
+    public void paste(final ID sender) {
         log.debug("paste");
         final Map<Host, PathPasteboard> boards = PathPasteboard.allPasteboards();
         if(!boards.isEmpty()) {
@@ -795,7 +795,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
-    public void stopButtonClicked(final NSObject sender) {
+    public void stopButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
             if(index.intValue() == -1) {
@@ -816,7 +816,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
-    public void stopAllButtonClicked(final NSObject sender) {
+    public void stopAllButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferModel.getSource();
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning() || transfer.isQueued()) {
@@ -833,7 +833,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
-    public void resumeButtonClicked(final NSObject sender) {
+    public void resumeButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
             if(index.intValue() == -1) {
@@ -847,7 +847,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
-    public void reloadButtonClicked(final NSObject sender) {
+    public void reloadButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
             if(index.intValue() == -1) {
@@ -861,7 +861,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
-    public void openButtonClicked(final NSObject sender) {
+    public void openButtonClicked(final ID sender) {
         if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
@@ -892,7 +892,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
-    public void revealButtonClicked(final NSObject sender) {
+    public void revealButtonClicked(final ID sender) {
         if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
@@ -928,7 +928,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
-    public void deleteButtonClicked(final NSObject sender) {
+    public void deleteButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferModel.getSource();
         for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
@@ -944,7 +944,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.reloadData();
     }
 
-    public void clearButtonClicked(final NSObject sender) {
+    public void clearButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferModel.getSource();
         for(Transfer transfer : transfers) {
             if(!transfer.isRunning() && !transfer.isQueued() && transfer.isComplete()) {
@@ -955,7 +955,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.reloadData();
     }
 
-    public void trashButtonClicked(final NSObject sender) {
+    public void trashButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferModel.getSource();
         for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {

@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.log4j.Logger;
+import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -158,10 +159,10 @@ public class CDActivityController extends CDWindowController {
             }
         }).id());
         this.table.setDelegate((delegate = new CDAbstractTableDelegate<CDTaskController>() {
-            public void enterKeyPressed(NSObject sender) {
+            public void enterKeyPressed(final ID sender) {
             }
 
-            public void deleteKeyPressed(NSObject sender) {
+            public void deleteKeyPressed(final ID sender) {
             }
 
             public String tooltip(CDTaskController c) {
@@ -176,7 +177,7 @@ public class CDActivityController extends CDWindowController {
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
             }
 
-            public void tableRowDoubleClicked(NSObject sender) {
+            public void tableRowDoubleClicked(final ID sender) {
             }
 
             public void selectionDidChange(NSNotification notification) {

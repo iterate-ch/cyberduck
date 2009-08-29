@@ -20,7 +20,8 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+
+import org.rococoa.ID;
 
 /// <i>native declaration : :8</i>
 public abstract class NSTextField extends NSControl {
@@ -113,7 +114,7 @@ public abstract class NSTextField extends NSControl {
      * Original signature : <code>void selectText(id)</code><br>
      * <i>native declaration : :29</i>
      */
-    public abstract void selectText(NSObject sender);
+    public abstract void selectText(final ID sender);
 
     /**
      * Original signature : <code>id delegate()</code><br>

@@ -569,7 +569,7 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
-    public void helpButtonClicked(final NSObject sender) {
+    public void helpButtonClicked(final ID sender) {
         final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
         NSWorkspace.sharedWorkspace().openURL(
                 NSURL.URLWithString(Preferences.instance().getProperty("website.help")

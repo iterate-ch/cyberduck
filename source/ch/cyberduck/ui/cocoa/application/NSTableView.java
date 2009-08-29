@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -494,13 +495,13 @@ public abstract class NSTableView extends NSControl {
      * Original signature : <code>void selectAll(id)</code><br>
      * <i>native declaration : :232</i>
      */
-    public abstract void selectAll(NSObject sender);
+    public abstract void selectAll(final ID sender);
 
     /**
      * Original signature : <code>void deselectAll(id)</code><br>
      * <i>native declaration : :233</i>
      */
-    public abstract void deselectAll(NSObject sender);
+    public abstract void deselectAll(final ID sender);
 
     /**
      * Sets the column selection using the indexes.  Selection is set/extended based on the extend flag. <br>

@@ -24,6 +24,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSZone;
 
+import org.rococoa.ID;
+
 public abstract class NSMenu implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenu", _Class.class);
 
@@ -389,5 +391,5 @@ public abstract class NSMenu implements NSObject, NSCopying {
      * Original signature : <code>void submenuAction(id)</code><br>
      * <i>from NSSubmenuAction native declaration : :140</i>
      */
-    public abstract void submenuAction(NSObject sender);
+    public abstract void submenuAction(final ID sender);
 }

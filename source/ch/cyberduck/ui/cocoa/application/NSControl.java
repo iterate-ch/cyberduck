@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSRect;
 
+import org.rococoa.ID;
 import org.rococoa.Selector;
 
 /// <i>native declaration : :10</i>
@@ -291,31 +292,31 @@ public abstract class NSControl extends NSView {
      * Original signature : <code>void takeIntValueFrom(id)</code><br>
      * <i>native declaration : :74</i>
      */
-    public abstract void takeIntValueFrom(NSObject sender);
+    public abstract void takeIntValueFrom(final ID sender);
 
     /**
      * Original signature : <code>void takeFloatValueFrom(id)</code><br>
      * <i>native declaration : :75</i>
      */
-    public abstract void takeFloatValueFrom(NSObject sender);
+    public abstract void takeFloatValueFrom(final ID sender);
 
     /**
      * Original signature : <code>void takeDoubleValueFrom(id)</code><br>
      * <i>native declaration : :76</i>
      */
-    public abstract void takeDoubleValueFrom(NSObject sender);
+    public abstract void takeDoubleValueFrom(final ID sender);
 
     /**
      * Original signature : <code>void takeStringValueFrom(id)</code><br>
      * <i>native declaration : :77</i>
      */
-    public abstract void takeStringValueFrom(NSObject sender);
+    public abstract void takeStringValueFrom(final ID sender);
 
     /**
      * Original signature : <code>void takeObjectValueFrom(id)</code><br>
      * <i>native declaration : :78</i>
      */
-    public abstract void takeObjectValueFrom(NSObject sender);
+    public abstract void takeObjectValueFrom(final ID sender);
 
     /**
      * Original signature : <code>NSText* currentEditor()</code><br>

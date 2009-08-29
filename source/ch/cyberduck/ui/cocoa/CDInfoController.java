@@ -32,6 +32,7 @@ import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.ID;
 import org.rococoa.Rococoa;
 
 import java.text.MessageFormat;
@@ -1004,7 +1005,7 @@ public class CDInfoController extends CDWindowController {
      *
      * @param sender
      */
-    public void permissionApplyButtonClicked(final NSObject sender) {
+    public void permissionApplyButtonClicked(final ID sender) {
         this.togglePermissionSettings(false);
         permissionProgress.startAnimation(null);
         final Permission permission = this.getPermissionFromSelection();
@@ -1085,7 +1086,7 @@ public class CDInfoController extends CDWindowController {
     /**
      * @param sender
      */
-    public void distributionApplyButtonClicked(final NSObject sender) {
+    public void distributionApplyButtonClicked(final ID sender) {
         this.toggleDistributionSettings(false, false);
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
@@ -1113,7 +1114,7 @@ public class CDInfoController extends CDWindowController {
     /**
      * @param sender
      */
-    public void distributionStatusButtonClicked(final NSObject sender) {
+    public void distributionStatusButtonClicked(final ID sender) {
         this.toggleDistributionSettings(false, false);
         controller.background(new BrowserBackgroundAction(controller) {
             Distribution distribution;
@@ -1178,7 +1179,7 @@ public class CDInfoController extends CDWindowController {
     /**
      * @param sender
      */
-    public void calculateSizeButtonClicked(final NSObject sender) {
+    public void calculateSizeButtonClicked(final ID sender) {
         log.debug("calculateSizeButtonClicked");
         sizeButton.setEnabled(false);
         sizeProgress.startAnimation(null);

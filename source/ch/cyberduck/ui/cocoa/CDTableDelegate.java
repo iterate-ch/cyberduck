@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import org.rococoa.ID;
 
 import java.util.Comparator;
 
@@ -26,9 +26,9 @@ import java.util.Comparator;
  * @version $Id$
  */
 public interface CDTableDelegate<E> {
-    abstract void enterKeyPressed(final NSObject sender);
+    abstract void enterKeyPressed(final ID sender);
 
-    abstract void deleteKeyPressed(final NSObject sender);
+    abstract void deleteKeyPressed(final ID sender);
 
     abstract boolean isSortedAscending();
 

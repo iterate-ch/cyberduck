@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.CDBrowserController;
  * @version $Id$
  */
 public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundAction {
+    
     private CDBrowserController controller;
 
     public BrowserBackgroundAction(CDBrowserController controller) {

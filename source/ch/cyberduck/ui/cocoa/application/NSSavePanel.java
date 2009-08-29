@@ -241,19 +241,19 @@ public abstract class NSSavePanel implements NSPanel {
      * Original signature : <code>void selectText(id)</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:138</i>
      */
-    public abstract void selectText(NSObject sender);
+    public abstract void selectText(final ID sender);
 
     /**
      * Original signature : <code>void ok(id)</code><br>
      * <i>from NSSavePanelRuntime native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:145</i>
      */
-    public abstract void ok(NSObject sender);
+    public abstract void ok(final ID sender);
 
     /**
      * Original signature : <code>void cancel(id)</code><br>
      * <i>from NSSavePanelRuntime native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:146</i>
      */
-    public abstract void cancel(NSObject sender);
+    public abstract void cancel(final ID sender);
 
     /**
      * <i>from NSSavePanelRuntime native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:152</i><br>

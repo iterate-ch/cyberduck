@@ -612,7 +612,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.bookmarkSwitchView.setSelectedSegment(SWITCH_BOOKMARK_VIEW);
     }
 
-    public void bookmarkSwitchClicked(final NSObject sender) {
+    public void bookmarkSwitchClicked(final ID sender) {
         this.toggleBookmarks(this.getSelectedTabView() != TAB_BOOKMARKS);
     }
 
@@ -728,11 +728,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return false;
         }
 
-        public void tableRowDoubleClicked(final NSObject sender) {
+        public void tableRowDoubleClicked(final ID sender) {
             CDBrowserController.this.insideButtonClicked(sender);
         }
 
-        public void spaceKeyPressed(final NSObject sender) {
+        public void spaceKeyPressed(final ID sender) {
             if(QuickLookFactory.instance().isAvailable()) {
                 if(QuickLookFactory.instance().isOpen()) {
                     QuickLookFactory.instance().close();
@@ -800,7 +800,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         }
 
-        public void deleteKeyPressed(final NSObject sender) {
+        public void deleteKeyPressed(final ID sender) {
             CDBrowserController.this.deleteFileButtonClicked(sender);
         }
 
@@ -931,7 +931,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         browserOutlineView.setDataSource((this.browserOutlineModel = new CDBrowserOutlineViewModel(this)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
-            public void enterKeyPressed(final NSObject sender) {
+            public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows().intValue() == 1) {
                         browserOutlineView.editRow(
@@ -1046,7 +1046,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         browserListView.setDataSource((browserListModel = new CDBrowserListViewModel(this)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>() {
-            public void enterKeyPressed(final NSObject sender) {
+            public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserListView.numberOfSelectedRows().intValue() == 1) {
                         browserListView.editRow(
@@ -1234,15 +1234,15 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 return bookmark.toURL();
             }
 
-            public void tableRowDoubleClicked(final NSObject sender) {
+            public void tableRowDoubleClicked(final ID sender) {
                 CDBrowserController.this.connectBookmarkButtonClicked(sender);
             }
 
-            public void enterKeyPressed(final NSObject sender) {
+            public void enterKeyPressed(final ID sender) {
                 this.tableRowDoubleClicked(sender);
             }
 
-            public void deleteKeyPressed(final NSObject sender) {
+            public void deleteKeyPressed(final ID sender) {
                 if(bookmarkModel.getSource().allowsDelete()) {
                     CDBrowserController.this.deleteBookmarkButtonClicked(sender);
                 }
@@ -1463,7 +1463,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      *
      * @param sender
      */
-    public void searchButtonClicked(final NSObject sender) {
+    public void searchButtonClicked(final ID sender) {
         this.window().makeFirstResponder(searchField);
     }
 
@@ -1496,7 +1496,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     // Manage Bookmarks
     // ----------------------------------------------------------
 
-    public void connectBookmarkButtonClicked(final NSObject sender) {
+    public void connectBookmarkButtonClicked(final ID sender) {
         if(bookmarkTable.numberOfSelectedRows().intValue() == 1) {
             final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
             this.mount(selected);
@@ -1513,7 +1513,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.editBookmarkButton.setAction(Foundation.selector("editBookmarkButtonClicked:"));
     }
 
-    public void editBookmarkButtonClicked(final NSObject sender) {
+    public void editBookmarkButtonClicked(final ID sender) {
         CDBookmarkController c = CDBookmarkController.Factory.create(
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
@@ -1529,7 +1529,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.addBookmarkButton.setAction(Foundation.selector("addBookmarkButtonClicked:"));
     }
 
-    public void addBookmarkButtonClicked(final NSObject sender) {
+    public void addBookmarkButtonClicked(final ID sender) {
         final Host item;
         if(this.isMounted()) {
             Path selected = this.getSelectedPath();
@@ -1567,7 +1567,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.deleteBookmarkButton.setAction(Foundation.selector("deleteBookmarkButtonClicked:"));
     }
 
-    public void deleteBookmarkButtonClicked(final NSObject sender) {
+    public void deleteBookmarkButtonClicked(final ID sender) {
         final NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
         NSUInteger[] indexes = new NSUInteger[iterator.count().intValue()];
         int i = 0;
@@ -1671,7 +1671,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.upButton.setAction(Foundation.selector("upButtonClicked:"));
     }
 
-    public void upButtonClicked(final NSObject sender) {
+    public void upButtonClicked(final ID sender) {
         final Path previous = this.workdir();
         this.setWorkdir((Path) previous.getParent(), previous);
     }
@@ -1723,7 +1723,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void pathPopupSelectionChanged(final NSObject sender) {
+    public void pathPopupSelectionChanged(final ID sender) {
         final String selected = pathPopupButton.itemAtIndex(
                 pathPopupButton.indexOfSelectedItem()).representedObject();
         final Path previous = this.workdir();
@@ -1798,7 +1798,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     // Drawers
     // ----------------------------------------------------------
 
-    public void toggleLogDrawer(final NSObject sender) {
+    public void toggleLogDrawer(final ID sender) {
         this.logDrawer.toggle(this.id());
     }
 
@@ -1850,7 +1850,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.securityLabel.setAction(Foundation.selector("securityLabelClicked:"));
     }
 
-    public void securityLabelClicked(final NSObject sender) {
+    public void securityLabelClicked(final ID sender) {
         if(session instanceof SSLSession) {
             final X509Certificate[] certificates = ((SSLSession) this.session).getTrustManager().getAcceptedIssuers();
             if(0 == certificates.length) {
@@ -1865,7 +1865,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
 
-    public void quicklookButtonClicked(final NSObject sender) {
+    public void quicklookButtonClicked(final ID sender) {
         if(QuickLookFactory.instance().isOpen()) {
             QuickLookFactory.instance().close();
         }
@@ -1881,7 +1881,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      *
      * @param sender
      */
-    public void reloadButtonClicked(final NSObject sender) {
+    public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
             final Collection<Path> selected = this.getSelectedPaths();
             switch(this.browserSwitchView.selectedSegment()) {
@@ -1906,7 +1906,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      *
      * @param sender
      */
-    public void newBrowserButtonClicked(final NSObject sender) {
+    public void newBrowserButtonClicked(final ID sender) {
         Path selected = this.getSelectedPath();
         if(null == selected || !selected.attributes.isDirectory()) {
             selected = this.workdir();
@@ -2239,7 +2239,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     private CDSheetController sheet;
 
-    public void gotoButtonClicked(final NSObject sender) {
+    public void gotoButtonClicked(final ID sender) {
         sheet = new CDGotoController(this) {
             @Override
             public void callback(final int returncode) {
@@ -2250,7 +2250,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         sheet.beginSheet();
     }
 
-    public void createFileButtonClicked(final NSObject sender) {
+    public void createFileButtonClicked(final ID sender) {
         sheet = new CDCreateFileController(this) {
             @Override
             public void callback(final int returncode) {
@@ -2261,7 +2261,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         sheet.beginSheet();
     }
 
-    public void duplicateFileButtonClicked(final NSObject sender) {
+    public void duplicateFileButtonClicked(final ID sender) {
         sheet = new CDDuplicateFileController(this) {
             @Override
             public void callback(final int returncode) {
@@ -2272,7 +2272,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         sheet.beginSheet();
     }
 
-    public void createFolderButtonClicked(final NSObject sender) {
+    public void createFolderButtonClicked(final ID sender) {
         sheet = new CDFolderController(this) {
             @Override
             public void callback(final int returncode) {
@@ -2283,14 +2283,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         sheet.beginSheet();
     }
 
-    public void renameFileButtonClicked(final NSObject sender) {
+    public void renameFileButtonClicked(final ID sender) {
         final NSTableView browser = this.getSelectedBrowserView();
         browser.editRow(
                 browser.columnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN),
                 browser.selectedRow(), true);
     }
 
-    public void sendCustomCommandClicked(final NSObject sender) {
+    public void sendCustomCommandClicked(final ID sender) {
         sheet = new CDCommandController(this, this.session) {
             @Override
             public void callback(final int returncode) {
@@ -2311,14 +2311,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void editButtonClicked(final NSObject sender) {
+    public void editButtonClicked(final ID sender) {
         for(Path selected : this.getSelectedPaths()) {
             Editor editor = EditorFactory.createEditor(this, selected);
             editor.open();
         }
     }
 
-    public void openBrowserButtonClicked(final NSObject sender) {
+    public void openBrowserButtonClicked(final ID sender) {
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(this.getSelectedPathWebUrl()));
     }
 
@@ -2335,7 +2335,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private CDInfoController inspector;
 
-    public void infoButtonClicked(final NSObject sender) {
+    public void infoButtonClicked(final ID sender) {
         if(this.getSelectionCount() > 0) {
             final List<Path> selected = this.getSelectedPaths();
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
@@ -2354,7 +2354,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void deleteFileButtonClicked(final NSObject sender) {
+    public void deleteFileButtonClicked(final ID sender) {
         this.deletePaths(this.getSelectedPaths());
     }
 
@@ -2362,7 +2362,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private NSOpenPanel downloadToPanel;
 
-    public void downloadToButtonClicked(final NSObject sender) {
+    public void downloadToButtonClicked(final ID sender) {
         downloadToPanel = NSOpenPanel.openPanel();
         downloadToPanel.setCanChooseDirectories(true);
         downloadToPanel.setCanCreateDirectories(true);
@@ -2396,7 +2396,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private NSSavePanel downloadAsPanel;
 
-    public void downloadAsButtonClicked(final NSObject sender) {
+    public void downloadAsButtonClicked(final ID sender) {
         downloadAsPanel = NSSavePanel.savePanel();
         downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to..."));
         downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:"));
@@ -2423,7 +2423,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private NSOpenPanel syncPanel;
 
-    public void syncButtonClicked(final NSObject sender) {
+    public void syncButtonClicked(final ID sender) {
         final Path selection;
         if(this.getSelectionCount() == 1 &&
                 this.getSelectedPath().attributes.isDirectory()) {
@@ -2466,7 +2466,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void downloadButtonClicked(final NSObject sender) {
+    public void downloadButtonClicked(final ID sender) {
         final Session session = this.getTransferSession();
         final List<Path> roots = new Collection<Path>();
         for(Path selected : this.getSelectedPaths()) {
@@ -2482,7 +2482,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private NSOpenPanel uploadPanel;
 
-    public void uploadButtonClicked(final NSObject sender) {
+    public void uploadButtonClicked(final ID sender) {
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
         uploadPanel.setCanCreateDirectories(false);
@@ -2667,7 +2667,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void insideButtonClicked(final NSObject sender) {
+    public void insideButtonClicked(final ID sender) {
         final Path selected = this.getSelectedPath(); //last row selected
         if(null == selected) {
             return;
@@ -2685,7 +2685,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void connectButtonClicked(final NSObject sender) {
+    public void connectButtonClicked(final ID sender) {
         final CDSheetController controller = CDConnectionController.instance(this);
         this.addListener(new CDWindowListener() {
             public void windowWillClose() {
@@ -2695,7 +2695,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         controller.beginSheet();
     }
 
-    public void interruptButtonClicked(final NSObject sender) {
+    public void interruptButtonClicked(final ID sender) {
         // Remove all pending actions
         BackgroundAction[] l = (BackgroundAction[]) BackgroundActionRegistry.instance().toArray(
                 new BackgroundAction[BackgroundActionRegistry.instance().size()]);
@@ -2706,7 +2706,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.interrupt();
     }
 
-    public void disconnectButtonClicked(final NSObject sender) {
+    public void disconnectButtonClicked(final ID sender) {
         if(this.isActivityRunning()) {
             this.interruptButtonClicked(sender);
         }
@@ -2760,7 +2760,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return false;
     }
 
-    public void cut(final NSObject sender) {
+    public void cut(final ID sender) {
         for(Path selected : this.getSelectedPaths()) {
             // Writing data for private use when the item gets dragged to the transfer queue.
             PathPasteboard.getPasteboard(this.getSession().getHost()).add(selected.<NSDictionary>getAsDictionary());
@@ -2772,7 +2772,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void paste(final NSObject sender) {
+    public void paste(final ID sender) {
         final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession().getHost());
         if(pasteboard.isEmpty()) {
             return;
@@ -2799,7 +2799,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.renamePaths(files);
     }
 
-    public void pasteFromFinder(final NSObject sender) {
+    public void pasteFromFinder(final ID sender) {
         NSPasteboard pboard = NSPasteboard.generalPasteboard();
         if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
@@ -2822,7 +2822,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void copyURLButtonClicked(final NSObject sender) {
+    public void copyURLButtonClicked(final ID sender) {
         final StringBuffer url = new StringBuffer();
         if(this.getSelectionCount() > 0) {
             for(Iterator<Path> iter = this.getSelectedPaths().iterator(); iter.hasNext();) {
@@ -2842,7 +2842,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void copyWebURLButtonClicked(final NSObject sender) {
+    public void copyWebURLButtonClicked(final ID sender) {
         NSPasteboard pboard = NSPasteboard.generalPasteboard();
         pboard.declareTypes(NSArray.arrayWithObject(NSPasteboard.StringPboardType), null);
         if(!pboard.setString_forType(this.getSelectedPathWebUrl(), NSPasteboard.StringPboardType)) {
@@ -2850,7 +2850,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
     }
 
-    public void openTerminalButtonClicked(final NSObject sender) {
+    public void openTerminalButtonClicked(final ID sender) {
         final boolean identity = this.getSession().getHost().getCredentials().isPublicKeyAuthentication();
         String workdir = null;
         if(this.getSelectionCount() == 1) {
@@ -2924,7 +2924,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     /**
      * @param sender
      */
-    public void unarchiveButtonClicked(final NSObject sender) {
+    public void unarchiveButtonClicked(final ID sender) {
         final List<Path> expanded = new ArrayList<Path>();
         for(final Path selected : this.getSelectedPaths()) {
             final Archive archive = Archive.forName(selected.getName());
@@ -3452,7 +3452,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     /**
      * @param sender
      */
-    public void printDocument(final NSObject sender) {
+    public void printDocument(final ID sender) {
 //        NSPrintOperation op = NSPrintOperation.printOperationWithView(this.getSelectedBrowserView());
 //        op.runModalOperation(this.window, this,
 //                Foundation.selector("printOperationDidRun",

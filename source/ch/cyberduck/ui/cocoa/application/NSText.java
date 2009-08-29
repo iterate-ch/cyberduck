@@ -23,6 +23,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
+import org.rococoa.ID;
+
 // BridgeSupport v 0.017
 public abstract class NSText extends NSView {
 
@@ -408,120 +410,120 @@ public abstract class NSText extends NSView {
      * Original signature : <code>void copy(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:136</i>
      */
-    public abstract void copy(org.rococoa.NSObject sender);
+    public abstract void copy(final ID sender);
 
     /**
      * Original signature : <code>void copyFont(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:137</i>
      */
-    public abstract void copyFont(org.rococoa.NSObject sender);
+    public abstract void copyFont(final ID sender);
 
     /**
      * Original signature : <code>void copyRuler(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:138</i>
      */
-    public abstract void copyRuler(org.rococoa.NSObject sender);
+    public abstract void copyRuler(final ID sender);
 
     /**
      * Original signature : <code>void cut(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:139</i>
      */
-    public abstract void cut(org.rococoa.NSObject sender);
+    public abstract void cut(final ID sender);
 
     /**
      * Original signature : <code>void delete(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:140</i>
      */
-    public abstract void delete(org.rococoa.NSObject sender);
+    public abstract void delete(final ID sender);
 
     /**
      * Original signature : <code>void paste(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:141</i>
      */
-    public abstract void paste(org.rococoa.NSObject sender);
+    public abstract void paste(final ID sender);
 
     /**
      * Original signature : <code>void pasteFont(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:142</i>
      */
-    public abstract void pasteFont(org.rococoa.NSObject sender);
+    public abstract void pasteFont(final ID sender);
 
     /**
      * Original signature : <code>void pasteRuler(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:143</i>
      */
-    public abstract void pasteRuler(org.rococoa.NSObject sender);
+    public abstract void pasteRuler(final ID sender);
 
     /**
      * Original signature : <code>void selectAll(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:144</i>
      */
-    public abstract void selectAll(org.rococoa.NSObject sender);
+    public abstract void selectAll(final ID sender);
 
     /**
      * Original signature : <code>void changeFont(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:145</i>
      */
-    public abstract void changeFont(org.rococoa.NSObject sender);
+    public abstract void changeFont(final ID sender);
 
     /**
      * Original signature : <code>void alignLeft(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:146</i>
      */
-    public abstract void alignLeft(org.rococoa.NSObject sender);
+    public abstract void alignLeft(final ID sender);
 
     /**
      * Original signature : <code>void alignRight(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:147</i>
      */
-    public abstract void alignRight(org.rococoa.NSObject sender);
+    public abstract void alignRight(final ID sender);
 
     /**
      * Original signature : <code>void alignCenter(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:148</i>
      */
-    public abstract void alignCenter(org.rococoa.NSObject sender);
+    public abstract void alignCenter(final ID sender);
 
     /**
      * Original signature : <code>void subscript(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:149</i>
      */
-    public abstract void subscript(org.rococoa.NSObject sender);
+    public abstract void subscript(final ID sender);
 
     /**
      * Original signature : <code>void superscript(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:150</i>
      */
-    public abstract void superscript(org.rococoa.NSObject sender);
+    public abstract void superscript(final ID sender);
 
     /**
      * Original signature : <code>void underline(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:151</i>
      */
-    public abstract void underline(org.rococoa.NSObject sender);
+    public abstract void underline(final ID sender);
 
     /**
      * Original signature : <code>void unscript(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:152</i>
      */
-    public abstract void unscript(org.rococoa.NSObject sender);
+    public abstract void unscript(final ID sender);
 
     /**
      * Original signature : <code>void showGuessPanel(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:153</i>
      */
-    public abstract void showGuessPanel(org.rococoa.NSObject sender);
+    public abstract void showGuessPanel(final ID sender);
 
     /**
      * Original signature : <code>void checkSpelling(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:154</i>
      */
-    public abstract void checkSpelling(org.rococoa.NSObject sender);
+    public abstract void checkSpelling(final ID sender);
 
     /**
      * Original signature : <code>void toggleRuler(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:155</i>
      */
-    public abstract void toggleRuler(org.rococoa.NSObject sender);
+    public abstract void toggleRuler(final ID sender);
 
 }

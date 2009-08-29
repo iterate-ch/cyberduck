@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :17</i>
@@ -124,7 +125,7 @@ public abstract class NSToolbar implements NSObject {
      * Original signature : <code>void runCustomizationPalette(id)</code><br>
      * <i>native declaration : :83</i>
      */
-    public abstract void runCustomizationPalette(NSObject sender);
+    public abstract void runCustomizationPalette(final ID sender);
 
     /**
      * Original signature : <code>BOOL customizationPaletteIsRunning()</code><br>
