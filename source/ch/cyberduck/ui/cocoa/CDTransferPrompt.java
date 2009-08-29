@@ -85,7 +85,9 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     @Override
     public void invalidate() {
-        this.transfer.getSession().removeProgressListener(l);
+        transfer.getSession().removeProgressListener(l);
+        browserView.setDataSource(null);
+        browserView.setDelegate(null);
         super.invalidate();
     }
 

@@ -93,6 +93,13 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     super.awakeFromNib();
                 }
 
+                @Override
+                protected void invalidate() {
+                    errorView.setDataSource(null);
+                    errorView.setDelegate(null);
+                    super.invalidate();
+                }
+
                 @Outlet
                 private NSButton diagnosticsButton;
 

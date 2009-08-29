@@ -66,6 +66,8 @@ public class CDActivityController extends CDWindowController {
     @Override
     protected void invalidate() {
         BackgroundActionRegistry.instance().removeListener(backgroundActionListener);
+        table.setDataSource(null);
+        table.setDelegate(null);
         super.invalidate();
     }
 

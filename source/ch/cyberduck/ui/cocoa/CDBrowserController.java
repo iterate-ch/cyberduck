@@ -4224,9 +4224,17 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         HistoryCollection.defaultCollection().removeListener(historyCollectionListener);
         HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
 
+        bookmarkTable.setDelegate(null);
+        bookmarkTable.setDataSource(null);
         bookmarkModel.invalidate();
+        browserListView.setDelegate(null);
+        browserListView.setDataSource(null);
         browserListModel.invalidate();
+        browserOutlineView.setDelegate(null);
+        browserOutlineView.setDataSource(null);
         browserOutlineModel.invalidate();
+
+        toolbar.setDelegate(null);
 
         super.invalidate();
     }

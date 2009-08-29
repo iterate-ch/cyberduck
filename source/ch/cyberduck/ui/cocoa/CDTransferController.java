@@ -283,7 +283,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private CDTransferController() {
         this.loadBundle();
     }
-
     public static CDTransferController instance() {
         synchronized(NSApplication.sharedApplication()) {
             if(null == instance) {
@@ -296,6 +295,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
     @Override
     protected String getBundleName() {
         return "Transfer";
+    }
+
+    @Override
+    protected void invalidate() {
+        toolbar.setDelegate(null);
+        super.invalidate();
     }
 
     /*
