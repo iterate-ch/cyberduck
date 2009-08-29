@@ -125,12 +125,7 @@ static NSTableColumn *localSelectionColumn;
 {
 	NSPoint where = [self convertPoint:[event locationInWindow] fromView:nil];
 	int row = [self rowAtPoint:where];
-	int col = [self columnAtPoint:where];
 	if(row >= 0) {
-		NSTableColumn *column = nil;
-		if(col >= 0) {
-			column = [[self tableColumns] objectAtIndex:col];
-		}
 		if([[self delegate] respondsToSelector:@selector(tableView:shouldSelectRow:)]) {
 			if([[self delegate] tableView:self shouldSelectRow:row])
 				[self selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:[self isRowSelected:row]];
