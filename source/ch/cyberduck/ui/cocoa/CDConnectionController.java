@@ -422,7 +422,7 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
-    public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel window, int returncode, ID context) {
+    public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel window, int returncode, ID contextInfo) {
         if(NSPanel.NSOKButton == returncode) {
             NSArray selected = window.filenames();
             final NSEnumerator enumerator = selected.objectEnumerator();

@@ -22,8 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSError;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :20</i>
 public abstract class NSAlert implements NSObject {
@@ -227,9 +227,9 @@ public abstract class NSAlert implements NSObject {
      * Original signature : <code>void beginSheetModalForWindow(NSWindow*, id, SEL, void*)</code><br>
      * <i>native declaration : :139</i>
      */
-    public abstract void beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo(NSWindow window, org.rococoa.ID delegate, org.rococoa.Selector didEndSelector, com.sun.jna.Pointer contextInfo);
+    public abstract void beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo(NSWindow window, org.rococoa.ID delegate, org.rococoa.Selector didEndSelector, ID contextInfo);
 
-    public void beginSheet(NSWindow window, org.rococoa.ID delegate, org.rococoa.Selector didEndSelector, com.sun.jna.Pointer contextInfo) {
+    public void beginSheet(NSWindow window, org.rococoa.ID delegate, org.rococoa.Selector didEndSelector, ID contextInfo) {
         this.beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo(window, delegate, didEndSelector, contextInfo);
     }
 

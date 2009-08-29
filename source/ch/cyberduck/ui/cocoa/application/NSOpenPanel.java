@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.Selector;
+import org.rococoa.ID;
 
 /// <i>native declaration : :14</i>
 public abstract class NSOpenPanel extends NSSavePanel {
@@ -108,7 +109,7 @@ public abstract class NSOpenPanel extends NSSavePanel {
      * didEndSelector:(null)didEndSelector contextInfo:(void*)contextInfo; (Argument delegate cannot be converted)
      */
     public abstract void beginSheetForDirectory_file_types_modalForWindow_modalDelegate_didEndSelector_contextInfo(
-            String path, String name, NSArray fileTypes, NSWindow docWindow, NSObject delegate, Selector didEndSelector, NSObject contextInfo
+            String path, String name, NSArray fileTypes, NSWindow docWindow, NSObject delegate, Selector didEndSelector, ID contextInfo
     );
     /**
      * <i>from NSOpenPanelRuntime native declaration : :43</i><br>

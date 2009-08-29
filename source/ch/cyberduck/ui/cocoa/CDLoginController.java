@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.ID;
 
 /**
  * @version $Id$
@@ -188,7 +189,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 }
             }
 
-            public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, NSObject context) {
+            public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
                 log.debug("pkSelectionPanelDidEnd");
                 if(returncode == NSPanel.NSOKButton) {
                     NSArray selected = sheet.filenames();

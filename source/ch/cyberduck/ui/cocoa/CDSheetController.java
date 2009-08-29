@@ -175,11 +175,11 @@ public abstract class CDSheetController extends CDWindowController implements CD
      *
      * @param sheet
      * @param returncode Identifier for the button clicked by the user
-     * @param context    Not used
+     * @param contextInfo    Not used
      */
-    public void sheetDidClose_returnCode_contextInfo(final NSPanel sheet, final int returncode, ID context) {
+    public void sheetDidClose_returnCode_contextInfo(final NSPanel sheet, final int returncode, ID contextInfo) {
         sheet.orderOut(null);
-        this.callback(returncode, context);
+        this.callback(returncode, contextInfo);
     }
 
     /**

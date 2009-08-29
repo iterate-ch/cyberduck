@@ -78,9 +78,9 @@ public abstract class CDAlertController extends CDSheetController {
      *
      * @param alert
      * @param returnCode
-     * @param context
+     * @param contextInfo
      */
-    public void alertDidEnd_returnCode_contextInfo(NSAlert alert, int returnCode, ID context) {
-        this.callback(returnCode, context);
+    public void alertDidEnd_returnCode_contextInfo(NSAlert alert, int returnCode, ID contextInfo) {
+        this.callback(returnCode, contextInfo);
     }
 }

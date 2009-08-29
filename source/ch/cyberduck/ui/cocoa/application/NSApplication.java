@@ -290,9 +290,9 @@ public abstract class NSApplication implements NSObject {
      * * /<br>
      * - (void)beginSheet:(NSWindow*)sheet modalForWindow:(NSWindow*)docWindow modalDelegate:(id)modalDelegate didEndSelector:(null)didEndSelector contextInfo:(void*)contextInfo; (Argument didEndSelector cannot be converted)
      */
-    public abstract void beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo(NSWindow sheet, NSWindow docWindow, ID modalDelegate, Selector didEndSelector, Pointer contextInfo);
+    public abstract void beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo(NSWindow sheet, NSWindow docWindow, ID modalDelegate, Selector didEndSelector, ID contextInfo);
 
-    public void beginSheet(NSWindow sheet, NSWindow docWindow, ID modalDelegate, Selector didEndSelector, Pointer contextInfo) {
+    public void beginSheet(NSWindow sheet, NSWindow docWindow, ID modalDelegate, Selector didEndSelector, ID contextInfo) {
         this.beginSheet_modalForWindow_modalDelegate_didEndSelector_contextInfo(sheet, docWindow, modalDelegate, didEndSelector, contextInfo);
     }
 
