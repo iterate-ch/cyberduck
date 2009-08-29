@@ -42,18 +42,22 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_getAccountNameNative(JNIEnv *env, jobject this) {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
-    return (*env)->NewStringUTF(env, [[[c account] name] UTF8String]);
+    jstring account = (*env)->NewStringUTF(env, [[[c account] name] UTF8String]);
+	[c release];
+	return account;
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_downloadBookmarksNative(JNIEnv *env, jobject this, jstring file)
 {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
 	[c downloadBookmarksFromDotMacAction:convertToNSString(env, file)];
+	[c release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_CDDotMacController_uploadBookmarksNative(JNIEnv *env, jobject this) {
 	CDDotMacController *c = [[CDDotMacController alloc] init];
 	[c uploadBookmarksToDotMacAction:nil];
+	[c release];
 }
 
 @implementation CDDotMacController
