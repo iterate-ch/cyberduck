@@ -16,7 +16,8 @@
 
 #!/bin/bash
 
-nibtool="/Xcode2.5/usr/bin/nibtool"
+# From Xcode 2.5 Developer Tools installation
+nibtool="nibtool"
 base_language="en.lproj"
 arch="i386"
 
