@@ -49,7 +49,9 @@ public abstract class CDWindowController extends CDBundleController implements N
     @Override
     protected void invalidate() {
         listeners.clear();
-        window.setDelegate(null);
+        if(window != null) {
+            window.setDelegate(null);
+        }
         super.invalidate();
     }
 
