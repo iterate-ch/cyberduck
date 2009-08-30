@@ -284,7 +284,17 @@
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
              passphrase="">
         </scp>
-        <!-- Changelog Nightly - version.cyberduck.ch -->
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip.md5"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <!-- Changelog Beta - version.cyberduck.ch -->
         <scp file="${build}/changelog.rss"
              todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta/"
              keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
@@ -332,6 +342,16 @@
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
              passphrase="">
         </scp>
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip.md5"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -371,17 +391,6 @@
         </scp>
         <scp file="${www.update}/changelog.html"
              todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <!-- Changelog Nightly - version.cyberduck.ch -->
-        <scp file="${build}/changelog.rss"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${www.update}/changelog.html"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
              keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
              passphrase="">
         </scp>
