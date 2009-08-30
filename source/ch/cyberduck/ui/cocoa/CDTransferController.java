@@ -1052,7 +1052,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     /**
      * @param item
      */
-    public boolean validateToolbarItem(NSToolbarItem item) {
+    public boolean validateToolbarItem(final NSToolbarItem item) {
         return this.validateItem(item.action());
     }
 

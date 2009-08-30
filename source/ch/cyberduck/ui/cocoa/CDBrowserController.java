@@ -3840,7 +3840,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private static final String TOOLBAR_ARCHIVE = "Archive";
     private static final String TOOLBAR_QUICKLOOK = "Quick Look";
 
-    public boolean validateToolbarItem(NSToolbarItem item) {
+    public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         if(identifier.equals(TOOLBAR_EDIT)) {
             final String selectedEditor = EditorFactory.getSelectedEditor();
