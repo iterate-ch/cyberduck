@@ -2247,17 +2247,17 @@
 			passBuildSettingsInEnvironment = 1;
 			productName = "all-modules";
 		};
-		479B79C8100A42C7006656FA /* alpha */ = {
+		479B79C8100A42C7006656FA /* beta */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "-emacs alpha";
-			buildConfigurationList = 479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "alpha" */;
+			buildArgumentsString = "-emacs beta";
+			buildConfigurationList = 479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "beta" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/ant;
 			dependencies = (
 				479B79C9100A42C7006656FA /* PBXTargetDependency */,
 			);
-			name = alpha;
+			name = beta;
 			passBuildSettingsInEnvironment = 1;
 			productName = "all-modules";
 		};
@@ -2556,7 +2556,7 @@
 				4734485D04575C6D00A801C6 /* build */,
 				474432380736A1DB00BA512B /* release */,
 				478D627A0B74849300096EC7 /* nightly */,
-				479B79C8100A42C7006656FA /* alpha */,
+				479B79C8100A42C7006656FA /* beta */,
 				4739EF670856981300405FD3 /* libKeychain */,
 				4739EF83085698F600405FD3 /* libODBEdit */,
 				4739EF950856990000405FD3 /* libGrowl */,
@@ -4765,7 +4765,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "alpha" */ = {
+		479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "beta" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				479B79CC100A42C7006656FA /* Release */,

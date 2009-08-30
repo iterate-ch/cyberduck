@@ -14,10 +14,10 @@ release:
 	cd Dashboard\ Widget; make release
 	xcodebuild -project $(PROJECT) -target release -configuration $(BUILDSTYLE)
 
-alpha:
+beta:
 	cd Spotlight\ Importer; make release
 	cd Dashboard\ Widget; make release
-	xcodebuild -project $(PROJECT) -target alpha -configuration $(BUILDSTYLE)
+	xcodebuild -project $(PROJECT) -target beta -configuration $(BUILDSTYLE)
 
 nightly:
 	cd Spotlight\ Importer; make release
