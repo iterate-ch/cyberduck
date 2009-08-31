@@ -20,8 +20,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
@@ -34,7 +32,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class PathPasteboard extends Collection<NSDictionary> {
+public class PathPasteboard extends Collection<NSDictionary> implements Pasteboard<NSDictionary> {
     private static Logger log = Logger.getLogger(PathPasteboard.class);
 
     private static Map<Host, PathPasteboard> instances = new HashMap<Host, PathPasteboard>() {
@@ -81,10 +79,6 @@ public class PathPasteboard extends Collection<NSDictionary> {
         this.host = host;
     }
 
-    public static String identifier() {
-        return "PathPBoardType";
-    }
-
     /**
      * @return
      */
@@ -105,33 +99,8 @@ public class PathPasteboard extends Collection<NSDictionary> {
     }
 
     @Override
-    public boolean add(NSDictionary dict) {
-        // Writing data for private use when the item gets dragged to the transfer queue.
-        NSPasteboard transferPasteboard = this.pasteboard();
-        transferPasteboard.declareTypes(NSArray.arrayWithObjects(identifier()), null);
-//        if(transferPasteboard.setPropertyListForType(NSArray.arrayWithObjects((NSDictionary[])this.toArray()), TransferPasteboardType)) {
-//            log.debug("TransferPasteboardType data sucessfully written to pasteboard");
-//        }
-        return super.add(dict);
-    }
-
-    @Override
     public void clear() {
-        //this.pasteboard().setPropertyListForType(null, CDPasteboard.TransferPasteboardType);
-        this.pasteboard().declareTypes(null, null);
         instances.remove(host);
         super.clear();
-    }
-
-    /**
-     * @return
-     */
-    private NSPasteboard pasteboard() {
-        return NSPasteboard.pasteboardWithName("PathPBoard");
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return super.isEmpty();// && this.pasteboard().availableTypeFromArray(NSArray.arrayWithObject(CDPasteboard.TransferPasteboardType)) != null;
     }
 }

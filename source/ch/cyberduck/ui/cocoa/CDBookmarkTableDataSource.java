@@ -19,28 +19,19 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -265,7 +256,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             }
             return NSDraggingInfo.NSDragOperationNone;
         }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null) {
+        if(!HostPasteboard.getPasteboard().isEmpty()) {
             if(index.intValue() > -1 && index.intValue() < view.numberOfRows().intValue()) {
                 view.setDropRow(index, NSTableView.NSTableViewDropAbove);
                 // We accept any file promise within the bounds
@@ -354,8 +345,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             }
             return false;
         }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType)) != null) {
-            for(Host promisedDragBookmark : promisedDragBookmarks) {
+        if(!HostPasteboard.getPasteboard().isEmpty()) {
+            for(Host promisedDragBookmark : HostPasteboard.getPasteboard()) {
                 source.remove(source.indexOf(promisedDragBookmark));
                 source.add(row.intValue(), promisedDragBookmark);
                 view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
@@ -376,7 +367,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             controller.deleteBookmarkButtonClicked(null);
         }
         NSPasteboard.pasteboardWithName(NSPasteboard.DragPboard).declareTypes_owner(null, null);
-        promisedDragBookmarks.clear();
+        HostPasteboard.getPasteboard().clear();
     }
 
     /**
@@ -394,11 +385,6 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     }
 
     /**
-     * The files dragged from the favorits drawer to the Finder --> bookmark files
-     */
-    private List<Host> promisedDragBookmarks = new ArrayList<Host>();
-
-    /**
      * @param rowIndexes is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place
      *         the drag data onto pboard (data, owner, and so on).
@@ -409,12 +395,11 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
      */
     @Override
     public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
-        promisedDragBookmarks.clear();
         for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
             if(index.intValue() == -1) {
                 break;
             }
-            promisedDragBookmarks.add(this.getSource().get(index.intValue()));
+            HostPasteboard.getPasteboard().add(this.getSource().get(index.intValue()));
         }
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {
@@ -440,11 +425,15 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         final NSMutableArray promisedDragNames = NSMutableArray.array();
-        for(Host promisedDragBookmark : promisedDragBookmarks) {
-            final Local file = LocalFactory.createLocal(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
-            HostWriterFactory.instance().write(promisedDragBookmark, file);
-            // Adding the filename that is promised to be created at the dropDestination
-            promisedDragNames.addObject(NSString.stringWithString(file.getName()));
+        if(null != dropDestination) {
+            final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
+            for(Host promisedDragBookmark : pasteboard) {
+                final Local file = LocalFactory.createLocal(dropDestination.path(), promisedDragBookmark.getNickname() + ".duck");
+                HostWriterFactory.instance().write(promisedDragBookmark, file);
+                // Adding the filename that is promised to be created at the dropDestination
+                promisedDragNames.addObject(NSString.stringWithString(file.getName()));
+            }
+            pasteboard.clear();
         }
         return promisedDragNames;
     }

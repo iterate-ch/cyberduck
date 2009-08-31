@@ -911,7 +911,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserOutlineView = view;
         // receive drag events from types
         browserOutlineView.registerForDraggedTypes(NSArray.arrayWithObjects(
-                PathPasteboard.identifier(),
                 NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
@@ -1026,7 +1025,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserListView = view;
         // receive drag events from types
         browserListView.registerForDraggedTypes(NSArray.arrayWithObjects(
-                PathPasteboard.identifier(),
                 NSPasteboard.URLPboardType,
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType

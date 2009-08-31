@@ -389,7 +389,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
         // a drag with tableView.dragPromisedFilesOfTypes(), we listens for those events
         // and then use the private pasteboard instead.
         this.transferTable.registerForDraggedTypes(NSArray.arrayWithObjects(
-                PathPasteboard.identifier(),
                 NSPasteboard.StringPboardType,
                 NSPasteboard.FilesPromisePboardType));
 
