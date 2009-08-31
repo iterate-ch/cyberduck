@@ -417,9 +417,9 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             final List<Path> files = pasteboard.getFiles(controller.getSession());
-            pasteboard.clear();
             controller.deletePaths(files);
         }
+        pasteboard.clear();
     }
 
     public void draggedImage_movedTo(NSImage image, NSPoint point) {
@@ -437,7 +437,8 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
-            final List<Path> promisedPaths = PathPasteboard.getPasteboard(controller.getSession().getHost()).getFiles(controller.getTransferSession());
+            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+            final List<Path> promisedPaths = pasteboard.getFiles(controller.getTransferSession());
             for(Path p: promisedPaths) {
                 p.setLocal(LocalFactory.createLocal(dropDestination.path(), p.getName()));
                 // Add to returned path names
@@ -455,6 +456,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
             if(q.numberOfRoots() > 0) {
                 controller.transfer(q);
             }
+            pasteboard.clear();
         }
         // Filenames
         return promisedDragNames;

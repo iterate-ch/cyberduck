@@ -799,9 +799,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
             for(PathPasteboard pasteboard : boards.values()) {
                 TransferCollection.instance().add(new DownloadTransfer(pasteboard.getFiles()));
             }
-            boards.clear();
             this.reloadData();
         }
+        boards.clear();
     }
 
     public void stopButtonClicked(final ID sender) {
