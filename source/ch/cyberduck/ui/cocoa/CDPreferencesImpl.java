@@ -84,6 +84,9 @@ public class CDPreferencesImpl extends Preferences {
         this.props = NSUserDefaults.standardUserDefaults();
     }
 
+    /**
+     * Properties that must be accessible in NSUserDefaults with default values
+     */
     @Override
     protected void legacy() {
         _init("browser.view.autoexpand.useDelay");
@@ -94,6 +97,8 @@ public class CDPreferencesImpl extends Preferences {
         _init("connection.retry");
         _init("connection.retry.delay");
         _init("connection.timeout.seconds");
+
+        _init("bookmark.icon.size");
 
         if(this.getBoolean("update.check")) {
             // Will override SUCheckAtStartup
