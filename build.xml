@@ -168,20 +168,19 @@
         <delete dir="${java.io.tmpdir}/${localization}"/>
     </target>
 
-    <target name="beta">
-        <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
-        </antcall>
-        <antcall target="zip"/>
-    </target>
-
     <target name="nightly">
         <antcall target="package">
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
+        </antcall>
+    </target>
+
+    <target name="beta">
+        <antcall target="package">
+            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
         <antcall target="zip"/>
     </target>
@@ -208,7 +207,7 @@
     <target name="zip">
         <echo message="Creating ZIP archive..."/>
         <exec dir="${build.deploy}" executable="zip" spawn="false">
-            <arg line="-r ../${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip ${app.name}.app"/>
+            <arg line="-y -r ../${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip ${app.name}.app"/>
         </exec>
         <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
                   algorithm="md5"/>
@@ -486,6 +485,9 @@
         <delete dir="${build}/Cyberduck.build"/>
         <delete>
             <fileset dir="${build}" includes="*.jar"/>
+        </delete>
+        <delete>
+            <fileset dir="${build}" includes="*.zip"/>
         </delete>
         <delete>
             <fileset dir="${build.deploy}" includes="*.dylib"/>
