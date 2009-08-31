@@ -3888,8 +3888,17 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         return validateItem(item.action());
     }
 
+    /**
+     * Keep reference to weak toolbar items
+     */
+    private Map<String,NSToolbarItem> toolbarItems
+            = new HashMap<String,NSToolbarItem>();
+
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
-        final NSToolbarItem item = NSToolbarItem.itemWithIdentifier(itemIdentifier);
+        if(!toolbarItems.containsKey(itemIdentifier)) {
+            toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
+        }
+        final NSToolbarItem item = toolbarItems.get(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_BROWSER_VIEW)) {
             item.setLabel(Locale.localizedString("View"));
             item.setPaletteLabel(Locale.localizedString("View"));
@@ -4235,6 +4244,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserOutlineModel.invalidate();
 
         toolbar.setDelegate(null);
+        toolbarItems.clear();
 
         super.invalidate();
     }

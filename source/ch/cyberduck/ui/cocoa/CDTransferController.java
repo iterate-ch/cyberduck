@@ -39,6 +39,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -300,6 +301,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     @Override
     protected void invalidate() {
         toolbar.setDelegate(null);
+        toolbarItems.clear();
         super.invalidate();
     }
 
@@ -695,14 +697,16 @@ public class CDTransferController extends CDWindowController implements NSToolba
     private static final String TOOLBAR_FILTER = "Search";
 
     /**
-     * NSToolbar.Delegate
-     *
-     * @param toolbar
-     * @param itemIdentifier
-     * @param flag
+     * Keep reference to weak toolbar items
      */
+    private Map<String,NSToolbarItem> toolbarItems
+            = new HashMap<String,NSToolbarItem>();
+
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
-        final NSToolbarItem item = NSToolbarItem.itemWithIdentifier(itemIdentifier);
+        if(!toolbarItems.containsKey(itemIdentifier)) {
+            toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
+        }
+        final NSToolbarItem item = toolbarItems.get(itemIdentifier);
         if(itemIdentifier.equals(TOOLBAR_STOP)) {
             item.setLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP));
