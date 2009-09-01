@@ -1392,7 +1392,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     @Outlet
     private NSComboBox quickConnectPopup;
 
-    private CDController quickConnectPopupModel;
+    private CDController quickConnectPopupModel = new QuickConnectModel();
 
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
@@ -1400,23 +1400,25 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.quickConnectPopup.setCompletes(true);
         this.quickConnectPopup.setAction(Foundation.selector("quickConnectSelectionChanged:"));
         this.quickConnectPopup.setUsesDataSource(true);
-        this.quickConnectPopup.setDataSource((this.quickConnectPopupModel = new CDController() {
-            public int numberOfItemsInComboBox(final NSComboBox combo) {
-                return HostCollection.defaultCollection().size();
-            }
-
-            public String comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
-                if(row < numberOfItemsInComboBox(sender)) {
-                    return HostCollection.defaultCollection().get(row).getNickname();
-                }
-                return null;
-            }
-        }).id());
+        this.quickConnectPopup.setDataSource(quickConnectPopupModel.id());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("quickConnectWillPopUp:"),
                 NSComboBox.ComboBoxWillPopUpNotification,
                 this.quickConnectPopup);
         this.quickConnectWillPopUp(null);
+    }
+
+    private class QuickConnectModel extends CDController implements NSComboBox.DataSource {
+        public int numberOfItemsInComboBox(final NSComboBox combo) {
+            return HostCollection.defaultCollection().size();
+        }
+
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
+            if(row < numberOfItemsInComboBox(sender)) {
+                return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname()).retain().autorelease();
+            }
+            return null;
+        }
     }
 
     public void quickConnectWillPopUp(NSNotification notification) {
@@ -2134,7 +2136,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         final List<Path> normalized = new Collection<Path>();
         for(Path f : selected) {
             boolean duplicate = false;
-            for(Path n: normalized) {
+            for(Path n : normalized) {
                 if(f.isChild(n)) {
                     // The selected file is a child of a directory
                     // already included for deletion
@@ -3889,8 +3891,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     /**
      * Keep reference to weak toolbar items
      */
-    private Map<String,NSToolbarItem> toolbarItems
-            = new HashMap<String,NSToolbarItem>();
+    private Map<String, NSToolbarItem> toolbarItems
+            = new HashMap<String, NSToolbarItem>();
 
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
         if(!toolbarItems.containsKey(itemIdentifier)) {

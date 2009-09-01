@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -45,39 +46,36 @@ public class CDGotoController extends CDSheetController {
 
     @Outlet
     private NSComboBox folderCombobox;
-    private CDController folderComboboxModel;
+    private CDController folderComboboxModel = new FolderComboboxModel();
 
     public void setFolderCombobox(NSComboBox folderCombobox) {
         this.folderCombobox = folderCombobox;
         this.folderCombobox.setCompletes(true);
         this.folderCombobox.setUsesDataSource(true);
-        this.folderCombobox.setDataSource((this.folderComboboxModel = new CDController() {
-            final CDBrowserController c = (CDBrowserController) parent;
-            private final Comparator<Path> comparator = new NullComparator<Path>();
-            private final PathFilter<Path> filter = new PathFilter<Path>() {
-                public boolean accept(Path p) {
-                    return p.attributes.isDirectory();
-                }
-            };
-
-            /**
-             * @see NSComboBox.DataSource
-             */
-            public int numberOfItemsInComboBox(NSComboBox combo) {
-                if(!c.isMounted()) {
-                    return 0;
-                }
-                return c.workdir().childs(comparator, filter).size();
-            }
-
-            /**
-             * @see NSComboBox.DataSource
-             */
-            public String comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
-                return c.workdir().childs(comparator, filter).get(row).getAbsolute();
-            }
-        }).id());
+        this.folderCombobox.setDataSource(folderComboboxModel.id());
         this.folderCombobox.setStringValue(((CDBrowserController) this.parent).workdir().getAbsolute());
+    }
+
+    private class FolderComboboxModel extends CDController implements NSComboBox.DataSource {
+
+        private final Comparator<Path> comparator = new NullComparator<Path>();
+
+        private final PathFilter<Path> filter = new PathFilter<Path>() {
+            public boolean accept(Path p) {
+                return p.attributes.isDirectory();
+            }
+        };
+
+        public int numberOfItemsInComboBox(NSComboBox combo) {
+            if(!((CDBrowserController) parent).isMounted()) {
+                return 0;
+            }
+            return ((CDBrowserController) parent).workdir().childs(comparator, filter).size();
+        }
+
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
+            return ((CDBrowserController) parent).workdir().childs(comparator, filter).get(row).<NSObject>getReference().unique();
+        }
     }
 
     public CDGotoController(final CDWindowController parent) {

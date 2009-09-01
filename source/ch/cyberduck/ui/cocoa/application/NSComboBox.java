@@ -28,7 +28,7 @@ public abstract class NSComboBox extends NSTextField {
     public static interface DataSource {
         int numberOfItemsInComboBox(NSComboBox combo);
 
-        String comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row);
+        NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row);
     }
 
     /**
