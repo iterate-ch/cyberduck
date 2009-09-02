@@ -52,4 +52,10 @@ public interface Controller {
      * @param wait     Block calling thread
      */
     public void invoke(final MainAction runnable, final boolean wait);
+
+    /**
+     * 
+     * @return
+     */
+    public boolean isMainThread();
 }

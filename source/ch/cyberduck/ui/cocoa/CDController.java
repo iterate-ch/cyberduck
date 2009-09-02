@@ -118,7 +118,7 @@ public class CDController extends AbstractController {
      */
     public void invoke(final MainAction runnable, final boolean wait) {
         log.debug("invoke:" + runnable);
-        if(isMainThread()) {
+        if(this.isMainThread()) {
             log.debug("Already on main thread. Invoke " + runnable + " directly.");
             runnable.run();
             return;
@@ -149,7 +149,7 @@ public class CDController extends AbstractController {
     /**
      * @return True if the current thread is not a background worker thread
      */
-    public static boolean isMainThread() {
+    public boolean isMainThread() {
         return NSThread.isMainThread();
     }
 }
