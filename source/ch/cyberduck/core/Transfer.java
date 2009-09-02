@@ -220,7 +220,7 @@ public abstract class Transfer implements Serializable {
         canceled = false;
         running = true;
         queued = false;
-        for(TransferListener listener : listeners) {
+        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferWillStart();
         }
     }
@@ -230,14 +230,14 @@ public abstract class Transfer implements Serializable {
         Growl.instance().notify("Transfer queued", session.getHost().getHostname());
         session.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
         queued = true;
-        for(TransferListener listener : listeners) {
+        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferQueued();
         }
     }
 
     public void fireTransferResumed() {
         queued = false;
-        for(TransferListener listener : listeners) {
+        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferResumed();
         }
     }
@@ -245,7 +245,7 @@ public abstract class Transfer implements Serializable {
     protected void fireTransferDidEnd() {
         running = false;
         queued = false;
-        for(TransferListener listener : listeners) {
+        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferDidEnd();
         }
         synchronized(Queue.instance()) {
@@ -255,13 +255,13 @@ public abstract class Transfer implements Serializable {
     }
 
     protected void fireWillTransferPath(Path path) {
-        for(TransferListener listener : listeners) {
+        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.willTransferPath(path);
         }
     }
 
     protected void fireDidTransferPath(Path path) {
-        for(TransferListener listener : listeners) {
+        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.didTransferPath(path);
         }
     }
@@ -277,7 +277,7 @@ public abstract class Transfer implements Serializable {
     public void setBandwidth(float bytesPerSecond) {
         log.debug("setBandwidth:" + bytesPerSecond);
         bandwidth.setRate(bytesPerSecond);
-        for(TransferListener listener : listeners) {
+        for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.bandwidthChanged(bandwidth);
         }
     }
