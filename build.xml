@@ -125,16 +125,16 @@
     <target name="stub">
         <echo message="Using stub: ${apple.appstub}"/>
         <!-- copy application stub -->
-        <copy file="${apple.appstub}" toFile="${app.macos}/${ant.project.name}"/>
+        <copy file="${apple.appstub}" toFile="${app.macos}/${ant.project.name}" overwrite="true"/>
         <!-- fix stub permissions -->
         <exec executable="/bin/chmod">
             <arg line="755 '${app.macos}/${ant.project.name}'"/>
         </exec>
         <exec executable="/usr/bin/lipo">
-            <arg line="-remove x86_64 '${app.macos}/${ant.project.name}' -output '${app.macos}/${ant.project.name}'"/>
+            <arg line="-remove ppc7400 '${app.macos}/${ant.project.name}' -output '${app.macos}/${ant.project.name}'"/>
         </exec>
         <exec executable="/usr/bin/lipo">
-            <arg line="-remove ppc7400 '${app.macos}/${ant.project.name}' -output '${app.macos}/${ant.project.name}'"/>
+            <arg line="-remove ppc '${app.macos}/${ant.project.name}' -output '${app.macos}/${ant.project.name}'"/>
         </exec>
     </target>
 
