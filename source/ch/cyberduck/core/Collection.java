@@ -67,7 +67,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public boolean addAll(java.util.Collection<? extends E> es) {
         super.addAll(es);
-        for(E item: es) {
+        for(E item : es) {
             this.collectionItemAdded(item);
         }
         return true;
@@ -128,31 +128,25 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public boolean remove(Object item) {
         boolean previous = super.remove(item);
-        this.collectionItemRemoved((E)item);
+        this.collectionItemRemoved((E) item);
         return previous;
     }
 
     public void collectionItemAdded(E item) {
-        CollectionListener<E>[] l = listeners.toArray(
-                new CollectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].collectionItemAdded(item);
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+            listener.collectionItemAdded(item);
         }
     }
 
     public void collectionItemRemoved(E item) {
-        CollectionListener<E>[] l = listeners.toArray(
-                new CollectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].collectionItemRemoved(item);
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+            listener.collectionItemRemoved(item);
         }
     }
 
     public void collectionItemChanged(E item) {
-        CollectionListener<E>[] l = listeners.toArray(
-                new CollectionListener[listeners.size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].collectionItemChanged(item);
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+            listener.collectionItemChanged(item);
         }
     }
 }

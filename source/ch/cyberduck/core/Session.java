@@ -396,15 +396,15 @@ public abstract class Session {
         return resolver != null;
     }
 
-    private Set<ConnectionListener> listeners
+    private Set<ConnectionListener> connectionListeners
             = Collections.synchronizedSet(new HashSet<ConnectionListener>());
 
     public void addConnectionListener(ConnectionListener listener) {
-        listeners.add(listener);
+        connectionListeners.add(listener);
     }
 
     public void removeConnectionListener(ConnectionListener listener) {
-        listeners.remove(listener);
+        connectionListeners.remove(listener);
     }
 
     /**
@@ -416,7 +416,7 @@ public abstract class Session {
      */
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         log.debug("connectionWillOpen");
-        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
+        ConnectionListener[] l = connectionListeners.toArray(new ConnectionListener[connectionListeners.size()]);
         for(ConnectionListener listener : l) {
             listener.connectionWillOpen();
         }
@@ -441,8 +441,7 @@ public abstract class Session {
         log.debug("connectionDidOpen");
         this.resolver = null;
 
-        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
-        for(ConnectionListener listener : l) {
+        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidOpen();
         }
     }
@@ -456,9 +455,9 @@ public abstract class Session {
         log.debug("connectionWillClose");
         this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                 this.getHost().getHostname()));
-        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
-        for(ConnectionListener listeneraL : l) {
-            listeneraL.connectionWillClose();
+
+        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
+            listener.connectionWillClose();
         }
     }
 
@@ -473,8 +472,7 @@ public abstract class Session {
         this.resolver = null;
         this.workdir = null;
 
-        ConnectionListener[] l = listeners.toArray(new ConnectionListener[listeners.size()]);
-        for(ConnectionListener listener : l) {
+        for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidClose();
         }
     }
@@ -522,7 +520,7 @@ public abstract class Session {
      */
     public void message(final String message) {
         log.info(message);
-        for(ProgressListener listener : progressListeners) {
+        for(ProgressListener listener : progressListeners.toArray(new ProgressListener[progressListeners.size()])) {
             listener.message(message);
         }
     }
@@ -548,7 +546,7 @@ public abstract class Session {
     public void error(Path path, String message, Throwable e) {
         final BackgroundException failure = new BackgroundException(this, path, message, e);
         this.message(failure.getMessage());
-        for(ErrorListener listener : errorListeners) {
+        for(ErrorListener listener : errorListeners.toArray(new ErrorListener[errorListeners.size()])) {
             listener.error(failure);
         }
     }
