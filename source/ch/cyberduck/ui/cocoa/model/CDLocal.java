@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa.model;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
@@ -242,9 +243,9 @@ public class CDLocal extends Local {
     /**
      * UKXattrMetadataStore
      *
-     * @param path Absolute path reference
+     * @param path      Absolute path reference
      * @param originUrl Page that linked to the downloaded file
-     * @param dataUrl Href where the file was downloaded from
+     * @param dataUrl   Href where the file was downloaded from
      */
     private native void setQuarantine(String path, String originUrl, String dataUrl);
 
@@ -268,7 +269,7 @@ public class CDLocal extends Local {
     /**
      * Set the kMDItemWhereFroms on the file.
      *
-     * @param path Absolute path reference
+     * @param path    Absolute path reference
      * @param dataUrl Href where the file was downloaded from
      */
     private native void setWhereFrom(String path, String dataUrl);
@@ -296,13 +297,13 @@ public class CDLocal extends Local {
                         removeResourceFork();
                     }
                     else {
-                        setIconFromFile(path, "download" + progress + ".icns");
+                        // Specify 0 if you want to generate icons in all available icon representation formats
+                        NSWorkspace.sharedWorkspace().setIcon_forFile_options(
+                                NSImage.imageNamed("download" + progress + ".icns"), getAbsolute(), 0);
                     }
                 }
             });
         }
-        // Disabled because of #221
-        // NSWorkspace.sharedWorkspace().noteFileSystemChanged(this.getAbsolute());
     }
 
     /**
@@ -319,12 +320,6 @@ public class CDLocal extends Local {
 //            log.error("Failed to remove resource fork from file:" + e.getMessage());
 //        }
     }
-
-    /**
-     * @param path Absolute path reference
-     * @param icon the absolute path to the image file to use as an icon
-     */
-    private native void setIconFromFile(String path, String icon);
 
     private void removeCustomIcon() {
         this.removeCustomIcon(this.getAbsolute());
@@ -353,7 +348,7 @@ public class CDLocal extends Local {
      * download folder to bounce just once.
      */
     @Override
-    public void bounce(){
+    public void bounce() {
         NSDistributedNotificationCenter.defaultCenter().postNotification(
                 NSNotification.notificationWithName("com.apple.DownloadFileFinished", this.getAbsolute())
         );
