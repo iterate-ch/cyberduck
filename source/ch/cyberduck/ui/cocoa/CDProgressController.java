@@ -279,11 +279,10 @@ public class CDProgressController extends CDBundleController {
         this.filesPopup.removeAllItems();
         {
             Path path = transfer.getRoot();
-            NSMenuItem item = NSMenuItem.itemWithTitle(path.getName(), Foundation.selector("reveal:"), "");
+            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), "");
             item.setRepresentedObject(path.getAbsolute());
             item.setImage(CDIconCache.instance().iconForPath(path, 16));
             item.setEnabled(path.getLocal().exists());
-            this.filesPopup.menu().addItem(item);
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer.getRoots());
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
