@@ -40,6 +40,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgroundAction {
     private static Logger log = Logger.getLogger(AlertRepeatableBackgroundAction.class);
@@ -129,6 +130,16 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     this.transcriptButton = transcriptButton;
                 }
 
+                private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
+
+                class TableColumnFactory extends HashMap<String,NSTableColumn> {
+                    private NSTableColumn create(String identifier) {
+                        if(!this.containsKey(identifier)) {
+                            this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
+                        }
+                        return this.get(identifier);
+                    }
+                }
                 @Outlet
                 private NSTableView errorView;
                 private CDListDataSource model;
@@ -184,7 +195,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         }
                     }).id());
                     {
-                        NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Error");
+                        NSTableColumn c = tableColumnsFactory.create("Error");
                         c.setMinWidth(50f);
                         c.setWidth(400f);
                         c.setMaxWidth(1000f);

@@ -35,6 +35,8 @@ import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.util.HashMap;
+
 /**
  * @version $Id$
  */
@@ -159,6 +161,17 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             Locale.localizedString("Unknown"),
             TRUNCATE_MIDDLE_ATTRIBUTES);
+
+    protected final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
+
+    protected class TableColumnFactory extends HashMap<String,NSTableColumn> {
+        protected NSTableColumn create(String identifier) {
+            if(!this.containsKey(identifier)) {
+                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
+            }
+            return this.get(identifier);
+        }
+    }
 
     /**
      * A browsable listing of duplicate files and folders
@@ -316,7 +329,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             this.browserView.setGridStyleMask(NSTableView.NSTableViewGridNone);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.FILENAME_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(CDTransferPromptModel.FILENAME_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Filename"));
             c.setMinWidth(100f);
             c.setWidth(220f);
@@ -328,7 +341,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             this.browserView.setOutlineTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.SIZE_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(CDTransferPromptModel.SIZE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(50f);
             c.setWidth(80f);
@@ -339,7 +352,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.WARNING_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(CDTransferPromptModel.WARNING_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -351,7 +364,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferPromptModel.INCLUDE_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(CDTransferPromptModel.INCLUDE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);

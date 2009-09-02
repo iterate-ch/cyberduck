@@ -47,7 +47,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
     public void setBrowserView(NSOutlineView view) {
         super.setBrowserView(view);
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDSyncPromptModel.SYNC_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(CDSyncPromptModel.SYNC_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -59,7 +59,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
             view.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDSyncPromptModel.CREATE_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(CDSyncPromptModel.CREATE_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth(20f);
             c.setWidth(20f);

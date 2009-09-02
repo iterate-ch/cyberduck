@@ -928,7 +928,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserOutlineView.setAllowsColumnSelection(false);
         browserOutlineView.setAllowsColumnReordering(true);
 
-        browserOutlineView.setDataSource((this.browserOutlineModel = new CDBrowserOutlineViewModel(this)).id());
+        browserOutlineView.setDataSource((browserOutlineModel = new CDBrowserOutlineViewModel(this)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
             public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
@@ -999,7 +999,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         }).id());
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN);
+            NSTableColumn c = browserOutlineColumnsFactory.create(CDBrowserTableDataSource.FILENAME_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Filename"));
             c.setMinWidth(new CGFloat(100));
             c.setWidth(new CGFloat(250));
@@ -1074,7 +1074,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         }).id());
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.ICON_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.ICON_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth((20));
             c.setWidth((20));
@@ -1085,7 +1085,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             browserListView.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.FILENAME_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.FILENAME_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Filename"));
             c.setMinWidth((100));
             c.setWidth((250));
@@ -1141,10 +1141,23 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
     private final NSTextFieldCell filenameCellPrototype = NSTextFieldCell.textFieldCell();
 
+    private final TableColumnFactory browserListColumnsFactory = new TableColumnFactory();
+    private final TableColumnFactory browserOutlineColumnsFactory = new TableColumnFactory();
+    private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
+
+    private class TableColumnFactory extends HashMap<String, NSTableColumn> {
+        private NSTableColumn create(String identifier) {
+            if(!this.containsKey(identifier)) {
+                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
+            }
+            return this.get(identifier);
+        }
+    }
+
     protected void _updateBrowserColumns(NSTableView table) {
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.SIZE_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnSize")) {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.SIZE_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.SIZE_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Size"));
             c.setMinWidth((50f));
             c.setWidth((80f));
@@ -1155,7 +1168,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.MODIFIED_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnModification")) {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.MODIFIED_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.MODIFIED_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Modified"));
             c.setMinWidth((100f));
             c.setWidth((150));
@@ -1166,7 +1179,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.OWNER_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnOwner")) {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.OWNER_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.OWNER_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Owner"));
             c.setMinWidth((50));
             c.setWidth((80));
@@ -1177,7 +1190,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.GROUP_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnGroup")) {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.GROUP_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.GROUP_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Group"));
             c.setMinWidth((50));
             c.setWidth((80));
@@ -1188,7 +1201,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.PERMISSIONS_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnPermissions")) {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.PERMISSIONS_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.PERMISSIONS_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Permissions"));
             c.setMinWidth((100));
             c.setWidth((100));
@@ -1199,7 +1212,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         table.removeTableColumn(table.tableColumnWithIdentifier(CDBrowserTableDataSource.KIND_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnKind")) {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBrowserTableDataSource.KIND_COLUMN);
+            NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.KIND_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Kind"));
             c.setMinWidth((50));
             c.setWidth((80));
@@ -1267,14 +1280,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         ));
 
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
+            NSTableColumn c = bookmarkTableColumnFactory.create(CDBookmarkTableDataSource.ICON_COLUMN);
             c.headerCell().setStringValue("");
             c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
             c.setDataCell(imageCellPrototype);
             this.bookmarkTable.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBookmarkTableDataSource.BOOKMARK_COLUMN);
+            NSTableColumn c = bookmarkTableColumnFactory.create(CDBookmarkTableDataSource.BOOKMARK_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Bookmarks"));
             c.setMinWidth((150));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
@@ -1282,7 +1295,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             this.bookmarkTable.addTableColumn(c);
         }
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDBookmarkTableDataSource.STATUS_COLUMN);
+            NSTableColumn c = bookmarkTableColumnFactory.create(CDBookmarkTableDataSource.STATUS_COLUMN);
             c.headerCell().setStringValue("");
             c.setMinWidth((20));
             c.setWidth((20));
@@ -3907,13 +3920,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             // Add a menu representation for text mode of toolbar
             NSMenuItem viewMenu = NSMenuItem.itemWithTitle(Locale.localizedString("View"), null, "");
             NSMenu viewSubmenu = NSMenu.menu();
-            viewSubmenu.addItem(NSMenuItem.itemWithTitle(Locale.localizedString("List"),
-                    Foundation.selector("browserSwitchMenuClicked:"),
-                    ""));
+            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("List"),
+                    Foundation.selector("browserSwitchMenuClicked:"), "");
             viewSubmenu.itemWithTitle(Locale.localizedString("List")).setTag(0);
-            viewSubmenu.addItem(NSMenuItem.itemWithTitle(Locale.localizedString("Outline"),
-                    Foundation.selector("browserSwitchMenuClicked:"),
-                    ""));
+            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("Outline"),
+                    Foundation.selector("browserSwitchMenuClicked:"), "");
             viewSubmenu.itemWithTitle(Locale.localizedString("Outline")).setTag(1);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
@@ -3946,7 +3957,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             NSMenuItem toolMenu = NSMenuItem.itemWithTitle("", null, "");
             toolMenu.setTitle(Locale.localizedString("Action"));
             NSMenu toolSubmenu = NSMenu.menu();
-            for(int i = 1; i < this.actionPopupButton.menu().numberOfItems(); i++) {
+            for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
                 NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(i);
                 toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
                         template.action(),
@@ -3979,9 +3990,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             String[] charsets = CDMainController.availableCharsets();
             NSMenu charsetMenu = NSMenu.menu();
             for(String charset : charsets) {
-                charsetMenu.addItem(NSMenuItem.itemWithTitle(charset,
-                        Foundation.selector("encodingMenuClicked:"),
-                        ""));
+                charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), "");
             }
             encodingMenu.setSubmenu(charsetMenu);
             item.setMenuFormRepresentation(encodingMenu);
@@ -4236,15 +4245,21 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         bookmarkTable.setDelegate(null);
         bookmarkTable.setDataSource(null);
         bookmarkModel.invalidate();
+
         browserListView.setDelegate(null);
         browserListView.setDataSource(null);
         browserListModel.invalidate();
+
         browserOutlineView.setDelegate(null);
         browserOutlineView.setDataSource(null);
         browserOutlineModel.invalidate();
 
         toolbar.setDelegate(null);
         toolbarItems.clear();
+
+        browserListColumnsFactory.clear();
+        browserOutlineColumnsFactory.clear();
+        bookmarkTableColumnFactory.clear();
 
         super.invalidate();
     }

@@ -228,11 +228,11 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     private class BandwidthDelegate extends MenuDelegate {
-        public int numberOfItemsInMenu(NSMenu menu) {
+        public NSInteger numberOfItemsInMenu(NSMenu menu) {
             return menu.numberOfItems();
         }
 
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int i, boolean shouldCancel) {
+        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean shouldCancel) {
             final int selected = transferTable.numberOfSelectedRows().intValue();
             final int tag = item.tag();
             NSIndexSet iterator = transferTable.selectedRowIndexes();
@@ -342,6 +342,17 @@ public class CDTransferController extends CDWindowController implements NSToolba
         return NSApplication.NSTerminateNow;
     }
 
+    private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
+
+    private class TableColumnFactory extends HashMap<String,NSTableColumn> {
+        private NSTableColumn create(String identifier) {
+            if(!this.containsKey(identifier)) {
+                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
+            }
+            return this.get(identifier);
+        }
+    }
+
     private CDTransferTableDataSource transferModel;
     @Outlet
     private NSTableView transferTable;
@@ -393,7 +404,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 NSPasteboard.FilesPromisePboardType));
 
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier(CDTransferTableDataSource.PROGRESS_COLUMN);
+            NSTableColumn c = tableColumnsFactory.create(CDTransferTableDataSource.PROGRESS_COLUMN);
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);

@@ -926,14 +926,14 @@ public class CDPreferencesController extends CDWindowController {
         this.addDownloadPath(action, LocalFactory.createLocal("~/Downloads"));
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.downloadPathPopup.menu().addItem(NSMenuItem.itemWithTitle(CHOOSE, action, ""));
+        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, "");
         this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
     }
 
     private void addDownloadPath(Selector action, Local f) {
         if(f.exists()) {
-            this.downloadPathPopup.menu().addItem(NSMenuItem.itemWithTitle(NSFileManager.defaultManager().displayNameAtPath(
-                    f.getAbsolute()), action, ""));
+            this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(NSFileManager.defaultManager().displayNameAtPath(
+                    f.getAbsolute()), action, "");
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
                     CDIconCache.instance().iconForPath(f, 16)

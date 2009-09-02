@@ -32,10 +32,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -136,6 +133,17 @@ public class CDActivityController extends CDWindowController {
         // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
 
+    private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
+
+    private class TableColumnFactory extends HashMap<String,NSTableColumn> {
+        private NSTableColumn create(String identifier) {
+            if(!this.containsKey(identifier)) {
+                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
+            }
+            return this.get(identifier);
+        }
+    }
+
     @Outlet
     private NSTableView table;
     private CDListDataSource model;
@@ -191,7 +199,7 @@ public class CDActivityController extends CDWindowController {
             }
         }).id());
         {
-            NSTableColumn c = NSTableColumn.tableColumnWithIdentifier("Default");
+            NSTableColumn c = tableColumnsFactory.create("Default");
             c.setMinWidth(80f);
             c.setWidth(300f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);

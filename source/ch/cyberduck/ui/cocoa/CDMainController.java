@@ -125,8 +125,7 @@ public class CDMainController extends CDBundleController {
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
         for(String charset : availableCharsets()) {
-            NSMenuItem item = NSMenuItem.itemWithTitle(charset, Foundation.selector("encodingMenuClicked:"), "");
-            this.encodingMenu.addItem(item);
+            this.encodingMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), "");
         }
     }
 
@@ -142,16 +141,14 @@ public class CDMainController extends CDBundleController {
         columns.put("browser.columnOwner", Locale.localizedString("Owner"));
         columns.put("browser.columnGroup", Locale.localizedString("Group"));
         columns.put("browser.columnPermissions", Locale.localizedString("Permissions"));
-        Iterator identifiers = columns.keySet().iterator();
+        Iterator<String> identifiers = columns.keySet().iterator();
         int i = 0;
         for(Iterator iter = columns.values().iterator(); iter.hasNext(); i++) {
-            NSMenuItem item = NSMenuItem.itemWithTitle((String) iter.next(),
-                    Foundation.selector("columnMenuClicked:"),
-                    "");
-            final String identifier = (String) identifiers.next();
+            NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent((String) iter.next(),
+                    Foundation.selector("columnMenuClicked:"), "");
+            final String identifier = identifiers.next();
             item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(identifier);
-            this.columnMenu.insertItem(item, i);
         }
     }
 
@@ -648,7 +645,7 @@ public class CDMainController extends CDBundleController {
                                 // Remeber this reminder date
                                 Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
                                 // Quit again
-                                NSApplication.sharedApplication().terminate(this.id());
+                                NSApplication.sharedApplication().terminate(null);
                             }
                         };
                         donationController.loadBundle();
