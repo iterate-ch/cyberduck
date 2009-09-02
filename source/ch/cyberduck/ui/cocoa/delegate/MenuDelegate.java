@@ -22,12 +22,14 @@ import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 /**
  * @version $Id$
  */
 public abstract class MenuDelegate extends CDController implements NSMenu.Delegate {
 
-    public abstract int numberOfItemsInMenu(NSMenu menu);
+    public abstract NSInteger numberOfItemsInMenu(NSMenu menu);
 
     /**
      * Called to let you update a menu item before it is displayed. If your
@@ -37,9 +39,9 @@ public abstract class MenuDelegate extends CDController implements NSMenu.Delega
      * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
      * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
      */
-    public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+    public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         return this.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
     }
 
-    public abstract boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel);
+    public abstract boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel);
 }

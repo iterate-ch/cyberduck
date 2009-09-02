@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -35,31 +36,27 @@ import org.rococoa.Foundation;
 public class BookmarkMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
-    public int numberOfItemsInMenu(NSMenu menu) {
-        return HostCollection.defaultCollection().size() + 10;
+    public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        return new NSInteger(HostCollection.defaultCollection().size() + 10);
         //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
         // 6 is Bonjour with submenu, 7 is sepearator
     }
 
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-        if(index >= this.numberOfItemsInMenu(menu)) {
-            log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-            return false;
-        }
-        if(index == 6) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+        if(index.intValue() == 6) {
             item.setEnabled(true);
             item.setImage(CDIconCache.instance().iconForName("me-icon.png", 16));
         }
-        if(index == 7) {
+        if(index.intValue() == 7) {
             item.setEnabled(true);
             item.setImage(CDIconCache.instance().iconForName("history", 16));
         }
-        if(index == 8) {
+        if(index.intValue() == 8) {
             item.setEnabled(true);
             item.setImage(CDIconCache.instance().iconForName("rendezvous", 16));
         }
-        if(index > 9) {
-            Host h = HostCollection.defaultCollection().get(index - 10);
+        if(index.intValue() > 9) {
+            Host h = HostCollection.defaultCollection().get(index.intValue() - 10);
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));

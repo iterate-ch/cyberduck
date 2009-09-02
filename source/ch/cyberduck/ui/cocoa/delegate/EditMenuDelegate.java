@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -34,24 +35,24 @@ import org.rococoa.Foundation;
 public class EditMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
-    public int numberOfItemsInMenu(NSMenu menu) {
+    public NSInteger numberOfItemsInMenu(NSMenu menu) {
         int n = EditorFactory.getInstalledOdbEditors().size();
         if(0 == n) {
-            return 1;
+            return new NSInteger(1);
         }
-        return n;
+        return new NSInteger(n);
     }
 
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(EditorFactory.getInstalledOdbEditors().size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
         String identifier = EditorFactory.getInstalledOdbEditors().values().toArray(
-                new String[EditorFactory.getInstalledOdbEditors().size()])[index];
+                new String[EditorFactory.getInstalledOdbEditors().size()])[index.intValue()];
         item.setRepresentedObject(identifier);
         String editor = EditorFactory.getInstalledOdbEditors().keySet().toArray(
-                new String[EditorFactory.getInstalledOdbEditors().size()])[index];
+                new String[EditorFactory.getInstalledOdbEditors().size()])[index.intValue()];
         item.setTitle(editor);
         if(identifier.equals(EditorFactory.getSelectedEditor())) {
             item.setKeyEquivalent("k");

@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.List;
 
@@ -47,12 +48,12 @@ public class TransferMenuDelegate extends MenuDelegate {
         this.roots = roots;
     }
 
-    public int numberOfItemsInMenu(NSMenu menu) {
-        return roots.size();
+    public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        return new NSInteger(roots.size());
     }
 
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-        Path path = roots.get(index);
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+        final Path path = roots.get(index.intValue());
         item.setTitle(path.getName());
         if(path.getLocal().exists()) {
             item.setEnabled(true);

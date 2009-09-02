@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -36,15 +37,15 @@ import org.rococoa.Foundation;
 public class HistoryMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
-    public int numberOfItemsInMenu(NSMenu menu) {
+    public NSInteger numberOfItemsInMenu(NSMenu menu) {
         if(HistoryCollection.defaultCollection().size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
-            return HistoryCollection.defaultCollection().size() + 2;
+            return new NSInteger(HistoryCollection.defaultCollection().size() + 2);
         }
-        return 1;
+        return new NSInteger(1);
     }
 
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, int index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, NSInteger index, boolean shouldCancel) {
         if(HistoryCollection.defaultCollection().size() == 0) {
             sender.setTitle(Locale.localizedString("No recently connected servers available"));
             sender.setTarget(null);
@@ -53,34 +54,33 @@ public class HistoryMenuDelegate extends MenuDelegate {
             sender.setEnabled(false);
             return false;
         }
-        if(index < HistoryCollection.defaultCollection().size()) {
-            Host h = HistoryCollection.defaultCollection().get(index);
+        if(index.intValue() < HistoryCollection.defaultCollection().size()) {
+            Host h = HistoryCollection.defaultCollection().get(index.intValue());
             // This is a hack. We insert a new NSMenuItem as NSMenu has
             // a bug caching old entries since we introduced the separator item below
             menu.removeItemAtIndex(index);
-            NSMenuItem bookmark = NSMenuItem.itemWithTitle(
-                    h.getNickname(), Foundation.selector("historyMenuItemClicked:"), "");
+            NSMenuItem bookmark = menu.insertItemWithTitle_action_keyEquivalent_atIndex(
+                    h.getNickname(), Foundation.selector("historyMenuItemClicked:"), "", index);
             bookmark.setRepresentedObject(h.getNickname());
             bookmark.setTarget(this.id());
             bookmark.setEnabled(true);
             bookmark.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
-            menu.insertItem(bookmark, index);
             return !shouldCancel;
         }
-        if(index == HistoryCollection.defaultCollection().size()) {
+        if(index.intValue() == HistoryCollection.defaultCollection().size()) {
             menu.removeItemAtIndex(index);
             // There is no way in this wonderful API to add a separator item
             // without creating a new NSMenuItem first
             NSMenuItem separator = NSMenuItem.separatorItem();
-            menu.insertItem(separator, index);
+            menu.insertItem_atIndex(separator, index);
             return !shouldCancel;
         }
-        if(index == HistoryCollection.defaultCollection().size() + 1) {
+        if(index.intValue() == HistoryCollection.defaultCollection().size() + 1) {
             menu.removeItemAtIndex(index);
-            NSMenuItem clear = NSMenuItem.itemWithTitle(Locale.localizedString("Clear Menu"), Foundation.selector("clearMenuItemClicked:"), "");
+            NSMenuItem clear = menu.insertItemWithTitle_action_keyEquivalent_atIndex(Locale.localizedString("Clear Menu"),
+                    Foundation.selector("clearMenuItemClicked:"), "", index);
             clear.setTarget(this.id());
             clear.setEnabled(true);
-            menu.insertItem(clear, index);
             return !shouldCancel;
         }
         return true;

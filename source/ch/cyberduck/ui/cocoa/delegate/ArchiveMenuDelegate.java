@@ -23,18 +23,19 @@ import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
  */
 public class ArchiveMenuDelegate extends MenuDelegate {
 
-    public int numberOfItemsInMenu(NSMenu menu) {
-        return Archive.getKnownArchives().length;
+    public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        return new NSInteger(Archive.getKnownArchives().length);
     }
 
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
-        final Archive archive = Archive.getKnownArchives()[index];
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+        final Archive archive = Archive.getKnownArchives()[index.intValue()];
         item.setRepresentedObject(archive.getIdentifier());
         item.setTitle(archive.getIdentifier());
         item.setAction(Foundation.selector("archiveMenuClicked:"));

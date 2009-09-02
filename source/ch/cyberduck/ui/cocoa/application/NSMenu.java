@@ -25,6 +25,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSZone;
 
 import org.rococoa.ID;
+import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 public abstract class NSMenu implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenu", _Class.class);
@@ -78,9 +80,9 @@ public abstract class NSMenu implements NSObject, NSCopying {
     }
 
     public static interface Delegate {
-        public int numberOfItemsInMenu(NSMenu menu);
+        public NSInteger numberOfItemsInMenu(NSMenu menu);
 
-        public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel);
+        public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel);
     }
 
     public abstract NSMenu init();
@@ -119,11 +121,7 @@ public abstract class NSMenu implements NSObject, NSCopying {
      * Original signature : <code>void insertItem(NSMenuItem*, NSInteger)</code><br>
      * <i>native declaration : :63</i>
      */
-    public abstract void insertItem_atIndex(NSMenuItem newItem, int index);
-
-    public void insertItem(NSMenuItem item, int index) {
-        this.insertItem_atIndex(item, index);
-    }
+    public abstract void insertItem_atIndex(NSMenuItem newItem, NSInteger index);
 
     /**
      * Original signature : <code>void addItem(NSMenuItem*)</code><br>
@@ -135,16 +133,19 @@ public abstract class NSMenu implements NSObject, NSCopying {
      * Conversion Error : /// Original signature : <code>NSMenuItem* insertItemWithTitle(NSString*, null, NSString*, NSInteger)</code><br>
      * - (NSMenuItem*)insertItemWithTitle:(NSString*)aString action:(null)aSelector keyEquivalent:(NSString*)charCode atIndex:(NSInteger)index; (Argument aSelector cannot be converted)
      */
+    public abstract NSMenuItem insertItemWithTitle_action_keyEquivalent_atIndex(String title, Selector action, String charCode, NSInteger index);
     /**
      * <i>native declaration : :66</i><br>
      * Conversion Error : /// Original signature : <code>NSMenuItem* addItemWithTitle(NSString*, null, NSString*)</code><br>
      * - (NSMenuItem*)addItemWithTitle:(NSString*)aString action:(null)aSelector keyEquivalent:(NSString*)charCode; (Argument aSelector cannot be converted)
      */
+    public abstract NSMenuItem addItemWithTitle_action_keyEquivalent(String title, Selector action, String charCode);
+
     /**
      * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :67</i>
      */
-    public abstract void removeItemAtIndex(int index);
+    public abstract void removeItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>void removeItem(NSMenuItem*)</code><br>
@@ -168,7 +169,7 @@ public abstract class NSMenu implements NSObject, NSCopying {
      * Original signature : <code>NSInteger numberOfItems()</code><br>
      * <i>native declaration : :72</i>
      */
-    public abstract int numberOfItems();
+    public abstract NSInteger numberOfItems();
 
     /**
      * Original signature : <code>NSInteger indexOfItem(NSMenuItem*)</code><br>

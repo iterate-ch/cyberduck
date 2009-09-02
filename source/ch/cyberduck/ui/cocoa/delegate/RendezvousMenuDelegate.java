@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -36,26 +37,22 @@ import org.rococoa.Foundation;
 public class RendezvousMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
-    public int numberOfItemsInMenu(NSMenu menu) {
+    public NSInteger numberOfItemsInMenu(NSMenu menu) {
         int n = Rendezvous.instance().numberOfServices();
         if(n > 0) {
-            return n;
+            return new NSInteger(n);
         }
-        return 1;
+        return new NSInteger(1);
     }
 
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, int index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(Rendezvous.instance().numberOfServices() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
             item.setEnabled(false);
             return !shouldCancel;
         }
         else {
-            if(index >= this.numberOfItemsInMenu(menu)) {
-                log.warn("Invalid index in menuUpdateItemAtIndex:" + index);
-                return false;
-            }
-            final String title = Rendezvous.instance().getDisplayedName(index);
+            final String title = Rendezvous.instance().getDisplayedName(index.intValue());
             final Host h = Rendezvous.instance().getServiceWithDisplayedName(title);
             item.setTitle(title);
             item.setTarget(this.id());
