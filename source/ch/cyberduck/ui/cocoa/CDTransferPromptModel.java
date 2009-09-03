@@ -52,7 +52,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     /**
      * The root nodes to be included in the prompt dialog
      */
-    protected final List<Path> _roots = new Collection<Path>();
+    private final List<Path> roots = new Collection<Path>();
 
     /**
      *
@@ -69,7 +69,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     }
 
     public void add(Path p) {
-        _roots.add(p);
+        roots.add(p);
     }
 
     protected abstract class PromptFilter implements PathFilter<Path> {
@@ -86,7 +86,15 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         }
     }
 
+    /**
+     *
+     * @param reference
+     * @return
+     */
     protected Path lookup(NSObject reference) {
+        if(roots.contains(reference)) {
+            return roots.get(roots.indexOf(reference));
+        }
         return transfer.getSession().cache().lookup(new CDPathReference(reference));
     }
 
@@ -118,11 +126,6 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     protected abstract PathFilter<Path> filter();
 
     /**
-     * File listing cache for children of the root paths
-     */
-    private final Cache<Path> cache = new Cache<Path>();
-
-    /**
      * Container for all paths currently being listed in the background
      */
     private final List<Path> isLoadingListingInBackground = new Collection<Path>();
@@ -147,9 +150,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                     // Delay until path is cached in the background
                     controller.background(new AbstractBackgroundAction() {
                         public void run() {
-                            cache.put(path, transfer.childs(path));
-                            //Hack to filter the list first in the background thread
-                            cache.get(path, new NullComparator<Path>(), CDTransferPromptModel.this.filter());
+                            transfer.childs(path);
                         }
 
                         @Override
@@ -169,11 +170,11 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                     });
                 }
             }
-            return path.cache().get(path, new NullComparator<Path>(), filter());
+            return transfer.getSession().cache().get(path, new NullComparator<Path>(), filter());
         }
     }
 
-    protected static final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
+    protected final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
 
     /**
      * @param item
@@ -208,14 +209,14 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
 
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(null == item) {
-            return new NSInteger(_roots.size());
+            return new NSInteger(roots.size());
         }
         return new NSInteger(this.childs(this.lookup(item)).size());
     }
 
     public NSObject outlineView_child_ofItem(final NSOutlineView view, NSInteger index, NSObject item) {
         if(null == item) {
-            return _roots.get(index.intValue()).<NSObject>getReference().unique();
+            return roots.get(index.intValue()).<NSObject>getReference().unique();
         }
         final AttributedList<Path> childs = this.childs(this.lookup(item));
         if(childs.isEmpty()) {
