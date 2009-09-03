@@ -226,6 +226,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isHostnameConfigurable() {
+            return false;
+        }
+
+        @Override
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
