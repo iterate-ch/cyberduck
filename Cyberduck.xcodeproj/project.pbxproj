@@ -4323,7 +4323,7 @@
 				);
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = supported;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
@@ -4649,7 +4649,7 @@
 				);
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = supported;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
