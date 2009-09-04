@@ -24,6 +24,7 @@ import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
@@ -489,6 +490,24 @@ public class CDMainController extends CDBundleController {
         if(log.isInfoEnabled()) {
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         }
+        this.background(new AbstractBackgroundAction() {
+            public void run() {
+                HostCollection.defaultCollection().load();
+            }
+
+            public void cleanup() {
+                ;
+            }
+        });
+        this.background(new AbstractBackgroundAction() {
+            public void run() {
+                HistoryCollection.defaultCollection().load();
+            }
+
+            public void cleanup() {
+                ;
+            }
+        });
         if(Preferences.instance().getBoolean("queue.openByDefault")) {
             this.showTransferQueueClicked(null);
         }

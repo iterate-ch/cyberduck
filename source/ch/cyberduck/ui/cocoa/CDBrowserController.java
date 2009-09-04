@@ -1355,7 +1355,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         private void reloadBookmarks() {
             if(bookmarkModel.getSource().equals(HistoryCollection.defaultCollection())) {
-                bookmarkTable.deselectAll(null);
                 bookmarkTable.reloadData();
             }
         }
@@ -1376,7 +1375,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         private void reloadBookmarks() {
             if(bookmarkModel.getSource().equals(HostCollection.defaultCollection())) {
-                bookmarkTable.deselectAll(null);
                 bookmarkTable.reloadData();
             }
         }
@@ -1401,7 +1399,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         private void reloadBookmarks() {
             if(bookmarkModel.getSource().equals(RendezvousCollection.defaultCollection())) {
-                bookmarkTable.deselectAll(null);
                 bookmarkTable.reloadData();
             }
         }

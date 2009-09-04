@@ -48,7 +48,6 @@ public class HostCollection extends BookmarkCollection {
      */
     public HostCollection(Local file) {
         this.setFile(file);
-        this.load();
     }
 
     /**
@@ -74,7 +73,7 @@ public class HostCollection extends BookmarkCollection {
     }
 
     @Override
-    public synchronized Host get(int row) {
+    public Host get(int row) {
         return super.get(row);
     }
 
@@ -84,7 +83,7 @@ public class HostCollection extends BookmarkCollection {
      * @see Host
      */
     @Override
-    public synchronized boolean add(Host host) {
+    public boolean add(Host host) {
         this.add(this.size(), host);
         return true;
     }
@@ -95,7 +94,7 @@ public class HostCollection extends BookmarkCollection {
      * @see Host
      */
     @Override
-    public synchronized void add(int row, Host host) {
+    public void add(int row, Host host) {
         super.add(row, this.unique(host));
         this.sort();
         this.save();
@@ -120,7 +119,7 @@ public class HostCollection extends BookmarkCollection {
      * @return the element that was removed from the list.
      */
     @Override
-    public synchronized Host remove(int row) {
+    public Host remove(int row) {
         final Host previous = super.remove(row);
         this.save();
         return previous;
