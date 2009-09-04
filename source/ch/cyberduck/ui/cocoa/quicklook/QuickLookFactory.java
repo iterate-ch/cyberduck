@@ -42,11 +42,7 @@ public abstract class QuickLookFactory extends Factory {
             instance = create();
         }
         if(null == instance) {
-            return new QuickLookInterface() {
-                public void select(Collection<Local> files) {
-                    throw new UnsupportedOperationException();
-                }
-
+            return new AbstractQuickLook() {
                 public boolean isAvailable() {
                     return false;
                 }
