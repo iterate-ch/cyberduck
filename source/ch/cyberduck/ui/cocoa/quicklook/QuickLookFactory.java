@@ -28,21 +28,21 @@ import ch.cyberduck.core.Local;
  */
 public abstract class QuickLookFactory extends Factory {
 
-    private static IQuickLook instance = null;
+    private static QuickLookInterface instance = null;
 
-    protected static IQuickLook create() {
+    protected static QuickLookInterface create() {
         if(VERSION_PLATFORM.matches("10.6*")) {
             return new QuartzQuickLook();
         }
-        return new QuickLook();
+        return new DeprecatedQuickLook();
     }
 
-    public static IQuickLook instance() {
+    public static QuickLookInterface instance() {
         if(null == instance) {
             instance = create();
         }
         if(null == instance) {
-            return new IQuickLook() {
+            return new QuickLookInterface() {
                 public void select(Collection<Local> files) {
                     throw new UnsupportedOperationException();
                 }

@@ -1,5 +1,8 @@
 package ch.cyberduck.ui.cocoa.quicklook;
 
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Local;
+
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -19,39 +22,22 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Local;
-
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface IQuickLook {
+public abstract class AbstractQuickLook implements QuickLookInterface {
 
-    /**
-     * Does not open QuickLook panel but only changes the selection.
-     * @param files Display these files in QuickLook panel
-     */
-    public void select(Collection<Local> files);
+    protected Collection<Local> selected;
 
-    /**
-     *
-     * @return QuickLook implementation found.
-     */
-    public boolean isAvailable();
+    public void select(final Collection<Local> files) {
+        this.selected = files;
+    }
 
-    /**
-     *
-     * @return QuickLook panel is visible
-     */
-    public boolean isOpen();
+    public void willBeginQuickLook() {
+        ;
+    }
 
-    /**
-     * Open QuickLook panel
-     */
-    public void open();
-
-    /**
-     * Close QuickLook panel if any
-     */
-    public void close();
+    public void didEndQuickLook() {
+        selected.clear();
+    }
 }

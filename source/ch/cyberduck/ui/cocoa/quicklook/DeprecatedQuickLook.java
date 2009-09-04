@@ -31,8 +31,8 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class QuickLook implements IQuickLook {
-    private static Logger log = Logger.getLogger(QuickLook.class);
+public class DeprecatedQuickLook extends AbstractQuickLook {
+    private static Logger log = Logger.getLogger(DeprecatedQuickLook.class);
 
     private static boolean JNI_LOADED = false;
 
@@ -43,14 +43,14 @@ public class QuickLook implements IQuickLook {
         return JNI_LOADED;
     }
 
-    protected QuickLook() {
+    protected DeprecatedQuickLook() {
         loadNative();
     }
 
     /**
      * @param files
      */
-    private native void select(String[] files);
+    private native void selectNative(String[] files);
 
     /**
      * Add this files to the Quick Look Preview shared window
@@ -61,21 +61,37 @@ public class QuickLook implements IQuickLook {
         if(!loadNative()) {
             return;
         }
-        if(!QuickLook.loadNative()) {
+        if(!DeprecatedQuickLook.loadNative()) {
             return;
         }
         final List<String> paths = new ArrayList<String>();
         for(Local file : files) {
             paths.add(file.getAbsolute());
         }
-        this.select(paths.toArray(new String[]{}));
+        this.selectNative(paths.toArray(new String[]{}));
     }
 
     public native boolean isAvailable();
 
     public native boolean isOpen();
 
-    public native void open();
+    public void open() {
+        if(!loadNative()) {
+            return;
+        }
+        this.willBeginQuickLook();
+        this.openNative();
+    }
 
-    public native void close();
+    public native void openNative();
+
+    public void close() {
+        if(!loadNative()) {
+            return;
+        }
+        this.closeNative();
+        this.didEndQuickLook();
+    }
+
+    public native void closeNative();
 }

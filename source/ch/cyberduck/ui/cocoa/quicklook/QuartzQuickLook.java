@@ -21,58 +21,75 @@ package ch.cyberduck.ui.cocoa.quicklook;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class QuartzQuickLook extends CDController implements IQuickLook {
+public class QuartzQuickLook extends AbstractQuickLook {
+    private static Logger log = Logger.getLogger(QuartzQuickLook.class);
 
-    private QLPreviewPanelDataSource model;
+    private QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
 
-    protected QuartzQuickLook() {
-        ;
-    }
+        private Map<Local,ID> previews = new HashMap<Local,ID>();
 
-    /**
-     *
-     */
-    private List<QLPreviewItem> items
-            = new ArrayList<QLPreviewItem>();
+        @Override
+        public NSInteger numberOfPreviewItemsInPreviewPanel(QLPreviewPanel panel) {
+            return new NSInteger(selected.size());
+        }
 
-    public void select(final Collection<Local> files) {
-        items.clear();
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
-        panel.updateController();
-        panel.setDataSource((this.model = new QLPreviewPanelDataSource() {
-            @Override
-            public int numberOfPreviewItemsInPreviewPanel(QLPreviewPanel panel) {
-                return files.size();
-            }
-
-            @Override
-            public ID previewPanel_previewItemAtIndex(QLPreviewPanel panel, final int index) {
+        @Override
+        public ID previewPanel_previewItemAtIndex(QLPreviewPanel panel, final int index) {
+            final Local preview = selected.get(index);
+            if(!previews.containsKey(preview)) {
                 final QLPreviewItem item = new QLPreviewItem() {
                     @Override
                     public NSURL previewItemURL() {
-                        return NSURL.fileURLWithPath(files.get(index).getAbsolute());
+                        return NSURL.fileURLWithPath(preview.getAbsolute());
                     }
 
                     @Override
                     public String previewItemTitle() {
-                        return files.get(index).getName();
+                        return preview.getName();
                     }
                 };
-                items.add(item);
-                return item.id();
+                previews.put(preview, item.id());
             }
-        }).id());
+            return previews.get(preview);
+        }
+
+        public void windowWillClose(NSNotification notification) {
+            log.debug("windowWillClose:" + notification);
+            previews.clear();
+        }
+    };
+
+    protected QuartzQuickLook() {
+        NSNotificationCenter.defaultCenter().addObserver(model.id(),
+                Foundation.selector("windowWillClose:"),
+                NSWindow.WindowWillCloseNotification,
+                QLPreviewPanel.sharedPreviewPanel());
+    }
+
+    public void select(final Collection<Local> files) {
+        log.debug("select");
+        super.select(files);
+        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        // The Preview Panel automatically updates its controller (by searching the responder
+        // chain) whenever the main or key window changes. Invoke updateController if
+        // the responder chain changes without explicit notice
+        panel.updateController();
         panel.reloadData();
     }
 
@@ -85,13 +102,24 @@ public class QuartzQuickLook extends CDController implements IQuickLook {
                 && QLPreviewPanel.sharedPreviewPanel().isVisible();
     }
 
+    public void willBeginQuickLook() {
+        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        panel.setDataSource(this.model.id());
+        super.willBeginQuickLook();
+    }
+
     public void open() {
-        QLPreviewPanel.sharedPreviewPanel().makeKeyAndOrderFront(null);
+        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        panel.makeKeyAndOrderFront(null);
     }
 
     public void close() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.orderOut(null);
+    }
+
+    public void didEndQuickLook() {
+        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.setDataSource(null);
     }
 }

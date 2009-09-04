@@ -34,9 +34,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
-import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
-import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
-import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
+import ch.cyberduck.ui.cocoa.quicklook.*;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.growl.Growl;
@@ -603,7 +601,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void setBookmarkSwitchView(NSSegmentedControl bookmarkSwitchView) {
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(1);
-        this.bookmarkSwitchView.setImage(NSImage.imageNamed("bookmarks.tiff"), SWITCH_BOOKMARK_VIEW);
+        final NSImage image = NSImage.imageNamed("bookmarks.tiff");
+        this.bookmarkSwitchView.setImage(image, SWITCH_BOOKMARK_VIEW);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectAny);
         cell.setControlSize(NSCell.NSRegularControlSize);
@@ -643,8 +642,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void setBrowserSwitchView(NSSegmentedControl browserSwitchView) {
         this.browserSwitchView = browserSwitchView;
         this.browserSwitchView.setSegmentCount(2); // list, outline
-        this.browserSwitchView.setImage(NSImage.imageNamed("list.tiff"), SWITCH_LIST_VIEW);
-        this.browserSwitchView.setImage(NSImage.imageNamed("outline.tiff"), SWITCH_OUTLINE_VIEW);
+        final NSImage list = NSImage.imageNamed("list.tiff");
+        list.setTemplate(true);
+        this.browserSwitchView.setImage(list, SWITCH_LIST_VIEW);
+        final NSImage outline = NSImage.imageNamed("outline.tiff");
+        outline.setTemplate(true);
+        this.browserSwitchView.setImage(outline, SWITCH_OUTLINE_VIEW);
         this.browserSwitchView.setTarget(this.id());
         this.browserSwitchView.setAction(Foundation.selector("browserSwitchButtonClicked:"));
         final NSSegmentedCell cell = Rococoa.cast(this.browserSwitchView.cell(), NSSegmentedCell.class);
@@ -695,12 +698,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private abstract class AbstractBrowserTableDelegate<E> extends CDAbstractPathTableDelegate {
 
-        private Collection<Local> temporaryQuickLookFiles = new Collection<Local>() {
-            public void collectionItemRemoved(Local o) {
-                (o).delete(false);
-            }
-        };
-
         public AbstractBrowserTableDelegate() {
             CDBrowserController.this.addListener(new CDWindowListener() {
                 public void windowWillClose() {
@@ -709,7 +706,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             QuickLookFactory.instance().close();
                         }
                     }
-                    temporaryQuickLookFiles.clear();
                 }
             });
         }
@@ -745,6 +741,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         }
 
+        /**
+         *
+         * @param selected
+         */
         private void updateQuickLookSelection(final Collection<Path> selected) {
             if(QuickLookFactory.instance().isAvailable()) {
                 final Collection<Path> downloads = new Collection<Path>();
@@ -772,14 +772,21 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         }
 
                         public void cleanup() {
-                            final Collection<Local> previews = new Collection<Local>();
+                            final Collection<Local> previews = new Collection<Local>() {
+                                @Override
+                                public void collectionItemRemoved(Local o) {
+                                    super.collectionItemRemoved(o);
+                                    (o).delete(false);
+                                }
+                            };
                             for(Path download : downloads) {
-                                if(download.getStatus().isComplete()) {
+                                if(download.getLocal().attributes.getSize() == download.attributes.getSize()) {
                                     previews.add(download.getLocal());
                                 }
                             }
-                            // Keep references to delete later
-                            temporaryQuickLookFiles.addAll(previews);
+                            if(previews.isEmpty()) {
+                                return;
+                            }
                             // Change files in Quick Look
                             QuickLookFactory.instance().select(previews);
                             // Open Quick Look Preview Panel
@@ -879,27 +886,32 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @ Sent to each object in the responder chain to find a controller.
      */
     public boolean acceptsPreviewPanelControl(QLPreviewPanel panel) {
+        log.debug("acceptsPreviewPanelControl");
         return true;
     }
 
     /**
      * QuickLook support for 10.6+
+     * The receiver should setup the preview panel (data source, delegate, binding, etc.) here.
      *
      * @param panel The Preview Panel the receiver will control.
      * @ Sent to the object taking control of the Preview Panel.
      */
     public void beginPreviewPanelControl(QLPreviewPanel panel) {
-        ;
+        log.debug("beginPreviewPanelControl");
+        QuickLookFactory.instance().willBeginQuickLook();
     }
 
     /**
      * QuickLook support for 10.6+
+     * The receiver should unsetup the preview panel (data source, delegate, binding, etc.) here.
      *
      * @param panel The Preview Panel that the receiver will stop controlling.
      * @ Sent to the object in control of the Preview Panel just before stopping its control.
      */
     public void endPreviewPanelControl(QLPreviewPanel panel) {
-        panel.setDataSource(null);
+        log.debug("endPreviewPanelControl");
+        QuickLookFactory.instance().didEndQuickLook();
     }
 
     private CDBrowserOutlineViewModel browserOutlineModel;
@@ -950,6 +962,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                                                                         NSTableColumn tableColumn, NSObject item) {
                 if(tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
                     final Path path = lookup(new CDPathReference(item));
+                    if(null == path) {
+                        return;
+                    }
                     cell.setEditable(path.isRenameSupported());
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }

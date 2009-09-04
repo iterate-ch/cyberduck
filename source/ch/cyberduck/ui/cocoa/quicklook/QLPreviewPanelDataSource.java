@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
 import ch.cyberduck.ui.cocoa.CDController;
 
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
@@ -38,7 +39,7 @@ public abstract class QLPreviewPanelDataSource extends CDController {
      * Original signature : <code>-(NSInteger)numberOfPreviewItemsInPreviewPanel:(QLPreviewPanel*)</code><br>
      * <i>native declaration : line 12</i>
      */
-    public abstract int numberOfPreviewItemsInPreviewPanel(QLPreviewPanel panel);
+    public abstract NSInteger numberOfPreviewItemsInPreviewPanel(QLPreviewPanel panel);
 
     /**
      * @param panel The Preview Panel.<br>
