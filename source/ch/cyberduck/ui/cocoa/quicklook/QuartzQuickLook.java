@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.CDController;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -40,9 +41,9 @@ import java.util.HashMap;
 public class QuartzQuickLook extends AbstractQuickLook {
     private static Logger log = Logger.getLogger(QuartzQuickLook.class);
 
-    private QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
+    private Map<Local,ID> previews = new HashMap<Local,ID>();
 
-        private Map<Local,ID> previews = new HashMap<Local,ID>();
+    private QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
 
         @Override
         public NSInteger numberOfPreviewItemsInPreviewPanel(QLPreviewPanel panel) {
@@ -68,20 +69,21 @@ public class QuartzQuickLook extends AbstractQuickLook {
             }
             return previews.get(preview);
         }
-
-        public void windowWillClose(NSNotification notification) {
-            log.debug("windowWillClose:" + notification);
-            previews.clear();
-        }
     };
 
     protected QuartzQuickLook() {
-        NSNotificationCenter.defaultCenter().addObserver(model.id(),
-                Foundation.selector("windowWillClose:"),
-                NSWindow.WindowWillCloseNotification,
-                QLPreviewPanel.sharedPreviewPanel());
+        ;
     }
 
+    private CDController windowListener = new CDController() {
+        public void windowWillClose(NSNotification notification) {
+            log.debug("windowWillClose:" + notification);
+            previews.clear();
+            QuartzQuickLook.super.didEndQuickLook();
+        }
+    };
+
+    @Override
     public void select(final Collection<Local> files) {
         log.debug("select");
         super.select(files);
@@ -102,6 +104,7 @@ public class QuartzQuickLook extends AbstractQuickLook {
                 && QLPreviewPanel.sharedPreviewPanel().isVisible();
     }
 
+    @Override
     public void willBeginQuickLook() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.setDataSource(this.model.id());
@@ -110,14 +113,20 @@ public class QuartzQuickLook extends AbstractQuickLook {
 
     public void open() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        NSNotificationCenter.defaultCenter().addObserver(windowListener.id(),
+                Foundation.selector("windowWillClose:"),
+                NSWindow.WindowWillCloseNotification,
+                panel);
         panel.makeKeyAndOrderFront(null);
     }
 
     public void close() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
+        NSNotificationCenter.defaultCenter().removeObserver(panel.id());
         panel.orderOut(null);
     }
 
+    @Override
     public void didEndQuickLook() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.setDataSource(null);
