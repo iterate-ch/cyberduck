@@ -5,12 +5,59 @@
 	<key>IBClasses</key>
 	<array>
 		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>addBookmarkButtonClicked</key>
+				<string>id</string>
+				<key>archiveButtonClicked</key>
+				<string>id</string>
+				<key>connectBookmarkButtonClicked</key>
+				<string>id</string>
+				<key>copyURLButtonClicked</key>
+				<string>id</string>
+				<key>createFileButtonClicked</key>
+				<string>id</string>
+				<key>createFolderButtonClicked</key>
+				<string>id</string>
+				<key>deleteBookmarkButtonClicked</key>
+				<string>id</string>
+				<key>deleteFileButtonClicked</key>
+				<string>id</string>
+				<key>downloadAsButtonClicked</key>
+				<string>id</string>
+				<key>downloadButtonClicked</key>
+				<string>id</string>
+				<key>downloadToButtonClicked</key>
+				<string>id</string>
+				<key>duplicateFileButtonClicked</key>
+				<string>id</string>
+				<key>editBookmarkButtonClicked</key>
+				<string>id</string>
+				<key>editButtonClicked</key>
+				<string>id</string>
+				<key>infoButtonClicked</key>
+				<string>id</string>
+				<key>newBrowserButtonClicked</key>
+				<string>id</string>
+				<key>openBrowserButtonClicked</key>
+				<string>id</string>
+				<key>reloadButtonClicked</key>
+				<string>id</string>
+				<key>renameFileButtonClicked</key>
+				<string>id</string>
+				<key>syncButtonClicked</key>
+				<string>id</string>
+				<key>unarchiveButtonClicked</key>
+				<string>id</string>
+				<key>uploadButtonClicked</key>
+				<string>id</string>
+			</dict>
 			<key>CLASS</key>
-			<string>NSSegmentedControl</string>
+			<string>FirstResponder</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
 			<key>SUPERCLASS</key>
-			<string>NSControl</string>
+			<string>NSObject</string>
 		</dict>
 		<dict>
 			<key>CLASS</key>
@@ -76,61 +123,6 @@
 			<string>NSObject</string>
 		</dict>
 		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>addBookmarkButtonClicked</key>
-				<string>id</string>
-				<key>archiveButtonClicked</key>
-				<string>id</string>
-				<key>connectBookmarkButtonClicked</key>
-				<string>id</string>
-				<key>copyURLButtonClicked</key>
-				<string>id</string>
-				<key>createFileButtonClicked</key>
-				<string>id</string>
-				<key>createFolderButtonClicked</key>
-				<string>id</string>
-				<key>deleteBookmarkButtonClicked</key>
-				<string>id</string>
-				<key>deleteFileButtonClicked</key>
-				<string>id</string>
-				<key>downloadAsButtonClicked</key>
-				<string>id</string>
-				<key>downloadButtonClicked</key>
-				<string>id</string>
-				<key>downloadToButtonClicked</key>
-				<string>id</string>
-				<key>duplicateFileButtonClicked</key>
-				<string>id</string>
-				<key>editBookmarkButtonClicked</key>
-				<string>id</string>
-				<key>editButtonClicked</key>
-				<string>id</string>
-				<key>infoButtonClicked</key>
-				<string>id</string>
-				<key>newBrowserButtonClicked</key>
-				<string>id</string>
-				<key>openBrowserButtonClicked</key>
-				<string>id</string>
-				<key>reloadButtonClicked</key>
-				<string>id</string>
-				<key>renameFileButtonClicked</key>
-				<string>id</string>
-				<key>syncButtonClicked</key>
-				<string>id</string>
-				<key>unarchiveButtonClicked</key>
-				<string>id</string>
-				<key>uploadButtonClicked</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>FirstResponder</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
 			<key>CLASS</key>
 			<string>CDOutlineView</string>
 			<key>LANGUAGE</key>
@@ -140,19 +132,19 @@
 		</dict>
 		<dict>
 			<key>CLASS</key>
-			<string>CDListView</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSTableView</string>
-		</dict>
-		<dict>
-			<key>CLASS</key>
 			<string>SKWSegmentedControl</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
 			<key>SUPERCLASS</key>
 			<string>NSSegmentedControl</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>NSSegmentedControl</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSControl</string>
 		</dict>
 		<dict>
 			<key>ACTIONS</key>
@@ -170,6 +162,14 @@
 			<string>ObjC</string>
 			<key>SUPERCLASS</key>
 			<string>NSView</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>CDListView</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSTableView</string>
 		</dict>
 	</array>
 	<key>IBVersion</key>
