@@ -19,9 +19,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Local;
 
 /**
  * @version $Id$
