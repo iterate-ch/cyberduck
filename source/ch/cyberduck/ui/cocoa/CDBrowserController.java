@@ -221,7 +221,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             else {
                 this.window().makeFirstResponder(this.quickConnectPopup);
             }
-            this.updateStatusLabel(null);
+            this.updateStatusLabel();
         }
     }
 
@@ -792,7 +792,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             // Open Quick Look Preview Panel
                             QuickLookFactory.instance().open();
                             // Revert status label
-                            CDBrowserController.this.updateStatusLabel(null);
+                            CDBrowserController.this.updateStatusLabel();
                             // Restore the focus to our window to demo the selection changing, scrolling
                             // (left/right) and closing (space) functionality
                             CDBrowserController.this.window().makeKeyWindow();
@@ -1003,14 +1003,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
              * @see NSOutlineView.Delegate
              */
             public void outlineViewItemDidExpand(NSNotification notification) {
-                updateStatusLabel(null);
+                updateStatusLabel();
             }
 
             /**
              * @see NSOutlineView.Delegate
              */
             public void outlineViewItemDidCollapse(NSNotification notification) {
-                updateStatusLabel(null);
+                updateStatusLabel();
             }
         }).id());
         {
@@ -1355,7 +1355,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         private void reloadBookmarks() {
             if(bookmarkModel.getSource().equals(HistoryCollection.defaultCollection())) {
-                bookmarkTable.reloadData();
+                invoke(new WindowMainAction(CDBrowserController.this) {
+                    public void run() {
+                        bookmarkTable.reloadData();
+                        updateStatusLabel();
+                    }
+                });
             }
         }
     };
@@ -1375,31 +1380,33 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         private void reloadBookmarks() {
             if(bookmarkModel.getSource().equals(HostCollection.defaultCollection())) {
-                bookmarkTable.reloadData();
+                invoke(new WindowMainAction(CDBrowserController.this) {
+                    public void run() {
+                        bookmarkTable.reloadData();
+                        updateStatusLabel();
+                    }
+                });
             }
         }
     };
 
     private final RendezvousListener rendezvousCollectionListener = new RendezvousListener() {
         public void serviceResolved(String servicename, String hostname) {
-            invoke(new DefaultMainAction() {
-                public void run() {
-                    reloadBookmarks();
-                }
-            });
+            reloadBookmarks();
         }
 
         public void serviceLost(String servicename) {
-            invoke(new DefaultMainAction() {
-                public void run() {
-                    reloadBookmarks();
-                }
-            });
+            reloadBookmarks();
         }
 
         private void reloadBookmarks() {
             if(bookmarkModel.getSource().equals(RendezvousCollection.defaultCollection())) {
-                bookmarkTable.reloadData();
+                invoke(new WindowMainAction(CDBrowserController.this) {
+                    public void run() {
+                        bookmarkTable.reloadData();
+                        updateStatusLabel();
+                    }
+                });
             }
         }
     };
@@ -1851,15 +1858,22 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.statusLabel = statusLabel;
     }
 
-    public void updateStatusLabel(String label) {
-        if(StringUtils.isEmpty(label)) {
-            label = Locale.localizedString("Disconnected", "Status");
+    public void updateStatusLabel() {
+        String label = Locale.localizedString("Disconnected", "Status");
+        if(this.getSelectedTabView() == TAB_BOOKMARKS) {
+            label = this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks");
+        }
+        else {
             if(this.isMounted()) {
                 if(this.isConnected()) {
                     label = this.getSelectedBrowserView().numberOfRows() + " " + Locale.localizedString("Files");
                 }
             }
         }
+        this.updateStatusLabel(label);
+    }
+
+    public void updateStatusLabel(String label) {
         // Update the status label at the bottom of the browser window
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
@@ -2678,7 +2692,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
 
                 public void cleanup() {
-                    updateStatusLabel(null);
+                    updateStatusLabel();
                 }
 
                 @Override
@@ -3245,7 +3259,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         securityLabel.setImage(NSImage.imageNamed("unlocked.tiff"));
                         securityLabel.setEnabled(false);
 
-                        updateStatusLabel(null);
+                        updateStatusLabel();
                     }
                 });
             }
