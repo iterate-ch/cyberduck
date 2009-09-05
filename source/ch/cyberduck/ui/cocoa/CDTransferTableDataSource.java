@@ -67,7 +67,6 @@ public class CDTransferTableDataSource extends CDListDataSource {
                 }
             }
         });
-        TransferCollection.instance().load();
     }
 
     /**

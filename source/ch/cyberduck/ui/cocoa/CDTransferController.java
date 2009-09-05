@@ -283,6 +283,15 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     private CDTransferController() {
         this.loadBundle();
+        this.background(new AbstractBackgroundAction() {
+            public void run() {
+                TransferCollection.instance().load();
+            }
+
+            public void cleanup() {
+                transferTable.reloadData();
+            }
+        });
     }
     public static CDTransferController instance() {
         synchronized(NSApplication.sharedApplication()) {
