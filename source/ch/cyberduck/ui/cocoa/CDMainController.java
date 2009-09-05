@@ -490,6 +490,21 @@ public class CDMainController extends CDBundleController {
         if(log.isInfoEnabled()) {
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         }
+        if(Preferences.instance().getBoolean("browser.serialize")) {
+            if(sessions.size() == 0) {
+                // Open empty browser if no saved sessions
+                if(Preferences.instance().getBoolean("browser.openUntitled")) {
+                    this.openDefaultBookmark(CDMainController.newDocument());
+                }
+            }
+            for(Host host : sessions) {
+                CDMainController.newDocument(true).mount(host);
+            }
+            sessions.clear();
+        }
+        else if(Preferences.instance().getBoolean("browser.openUntitled")) {
+            this.openDefaultBookmark(CDMainController.newDocument());
+        }
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 HostCollection.defaultCollection().load();
@@ -535,21 +550,6 @@ public class CDMainController extends CDBundleController {
                 ;
             }
         });
-        if(Preferences.instance().getBoolean("browser.serialize")) {
-            if(sessions.size() == 0) {
-                // Open empty browser if no saved sessions
-                if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                    this.openDefaultBookmark(CDMainController.newDocument());
-                }
-            }
-            for(Host host : sessions) {
-                CDMainController.newDocument(true).mount(host);
-            }
-            sessions.clear();
-        }
-        else if(Preferences.instance().getBoolean("browser.openUntitled")) {
-            this.openDefaultBookmark(CDMainController.newDocument());
-        }
         if(Preferences.instance().getBoolean("defaulthandler.reminder")) {
             if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
                     new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()})) {
