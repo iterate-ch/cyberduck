@@ -21,12 +21,14 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSPoint;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -80,11 +82,8 @@ public abstract class CDWindowController extends CDBundleController implements N
 
     public void setWindow(NSWindow window) {
         this.window = window;
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("windowWillClose:"),
-                NSWindow.WindowWillCloseNotification,
-                this.window);
-        this.window.setReleasedWhenClosed(true);
+        this.window.setDelegate(this.id());
+        this.window.setReleasedWhenClosed(!this.isSingleton());
     }
 
     public NSWindow window() {
@@ -92,10 +91,35 @@ public abstract class CDWindowController extends CDBundleController implements N
     }
 
     /**
+     * A singleton window is not released when closed and the controller is not invalidated
+     *
+     * @return
+     * @see #invalidate()
+     * @see ch.cyberduck.ui.cocoa.application.NSWindow#setReleasedWhenClosed(boolean)
+     */
+    public boolean isSingleton() {
+        return false;
+    }
+
+    /**
      * @return True if the controller window is on screen.
      */
     public boolean isVisible() {
         return this.window().isVisible();
+    }
+
+    /**
+     * @param notification
+     */
+    public void windowDidBecomeKey(NSNotification notification) {
+        ;
+    }
+
+    /**
+     * @param notification
+     */
+    public void windowDidResignKey(NSNotification notification) {
+        ;
     }
 
     /**
@@ -115,8 +139,10 @@ public abstract class CDWindowController extends CDBundleController implements N
         for(CDWindowListener listener : listeners) {
             listener.windowWillClose();
         }
-        //If the window is closed it is assumed the controller object is no longer used
-        this.invalidate();
+        if(!this.isSingleton()) {
+            //If the window is closed it is assumed the controller object is no longer used
+            this.invalidate();
+        }
     }
 
     /**

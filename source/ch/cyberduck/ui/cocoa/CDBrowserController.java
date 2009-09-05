@@ -26,7 +26,6 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
@@ -34,7 +33,9 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
-import ch.cyberduck.ui.cocoa.quicklook.*;
+import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
+import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
+import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.growl.Growl;
@@ -383,7 +384,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     @Override
     public void setWindow(NSWindow window) {
-        window.setDelegate(this.id());
         window.setTitle(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
         window.setMiniwindowImage(NSImage.imageNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
@@ -2736,10 +2736,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void interruptButtonClicked(final ID sender) {
         // Remove all pending actions
-        BackgroundAction[] l = (BackgroundAction[]) BackgroundActionRegistry.instance().toArray(
-                new BackgroundAction[BackgroundActionRegistry.instance().size()]);
-        for(int i = 0; i < l.length; i++) {
-            l[i].cancel();
+        for(BackgroundAction action: BackgroundActionRegistry.instance().toArray(
+                new BackgroundAction[BackgroundActionRegistry.instance().size()])) {
+            action.cancel();
         }
         // Interrupt any pending operation by forcefully closing the socket
         this.interrupt();

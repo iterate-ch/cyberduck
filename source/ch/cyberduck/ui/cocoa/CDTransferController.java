@@ -64,33 +64,24 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     @Override
     public void setWindow(NSWindow window) {
-        this.window = window;
-        this.window.setReleasedWhenClosed(false);
-        this.window.setDelegate(this.id());
-        this.window.setMovableByWindowBackground(true);
-        this.window.setTitle(Locale.localizedString("Transfers"));
+        window.setMovableByWindowBackground(true);
+        window.setTitle(Locale.localizedString("Transfers"));
+        super.setWindow(window);
     }
 
-    /**
-     * @param notification
-     */
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+
+    @Override
     public void windowDidBecomeKey(NSNotification notification) {
         this.updateHighlight();
     }
 
-    /**
-     * @param notification
-     */
+    @Override
     public void windowDidResignKey(NSNotification notification) {
         this.updateHighlight();
-    }
-
-    /**
-     * @param notification
-     */
-    @Override
-    public void windowWillClose(NSNotification notification) {
-        // Do not call super as we are a singleton. super#windowWillClose would invalidate me
     }
 
     @Outlet

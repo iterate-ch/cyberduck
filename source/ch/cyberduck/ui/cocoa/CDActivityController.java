@@ -119,18 +119,13 @@ public class CDActivityController extends CDWindowController {
 
     @Override
     public void setWindow(NSWindow window) {
-        this.window = window;
-        this.window.setReleasedWhenClosed(false);
-        this.window.setDelegate(this.id());
-        this.window.setTitle(Locale.localizedString("Activity"));
+        window.setTitle(Locale.localizedString("Activity"));
+        super.setWindow(window);
     }
 
-    /**
-     * @param notification
-     */
     @Override
-    public void windowWillClose(NSNotification notification) {
-        // Do not call super as we are a singleton. super#windowWillClose would invalidate me
+    public boolean isSingleton() {
+        return true;
     }
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();

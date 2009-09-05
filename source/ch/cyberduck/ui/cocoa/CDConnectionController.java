@@ -500,7 +500,6 @@ public class CDConnectionController extends CDSheetController {
                     super.invalidate();
                 }
             };
-            controller.loadBundle();
             controllers.put(parent, controller);
         }
         final CDConnectionController c = controllers.get(parent);
@@ -508,6 +507,7 @@ public class CDConnectionController extends CDSheetController {
         return c;
     }
 
+    @Override
     public boolean isSingleton() {
         return true;
     }
@@ -517,6 +517,7 @@ public class CDConnectionController extends CDSheetController {
      */
     private CDConnectionController(final CDWindowController parent) {
         super(parent);
+        this.loadBundle();
     }
 
     @Override
@@ -527,9 +528,13 @@ public class CDConnectionController extends CDSheetController {
     @Override
     public void awakeFromNib() {
         this.protocolSelectionDidChange(null);
-        this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
 
         super.awakeFromNib();
+    }
+
+    @Override
+    public void windowDidBecomeKey(NSNotification notification) {
+        this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
     }
 
     /**

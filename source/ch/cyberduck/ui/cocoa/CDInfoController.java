@@ -423,11 +423,11 @@ public class CDInfoController extends CDWindowController {
         Preferences.instance().setProperty("info.toggle.distribution", distributionToggle.state());
         Preferences.instance().setProperty("info.toggle.s3", s3Toggle.state());
 
-        if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-            //Do not mark this controller as invalid if it should be used again 
-            return;
-        }
         super.windowWillClose(notification);
+    }
+
+    public boolean isSingleton() {
+        return Preferences.instance().getBoolean("browser.info.isInspector");
     }
 
     // ----------------------------------------------------------
