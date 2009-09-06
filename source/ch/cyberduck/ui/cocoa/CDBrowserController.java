@@ -1447,7 +1447,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
             if(row < numberOfItemsInComboBox(sender)) {
-                return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname()).retain().autorelease();
+                return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname());
             }
             return null;
         }

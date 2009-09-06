@@ -206,7 +206,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             return null;
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(host.getNickname()).retain().autorelease();
+            return NSString.stringWithString(host.getNickname());
         }
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }

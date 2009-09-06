@@ -129,7 +129,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
             return null;
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(this.getSource().get(row.intValue()).getName()).retain().autorelease();
+            return NSString.stringWithString(this.getSource().get(row.intValue()).getName());
         }
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }

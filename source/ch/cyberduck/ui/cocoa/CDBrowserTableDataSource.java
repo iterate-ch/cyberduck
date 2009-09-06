@@ -184,10 +184,10 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(item.getName()).retain().autorelease();
+            return NSString.stringWithString(item.getName());
         }
         if(identifier.equals(LOCAL_COLUMN)) {
-            return NSString.stringWithString(item.getLocal().getAbsolute()).retain().autorelease();
+            return NSString.stringWithString(item.getLocal().getAbsolute());
         }
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }

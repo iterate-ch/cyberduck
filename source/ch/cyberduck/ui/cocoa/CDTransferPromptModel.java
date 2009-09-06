@@ -195,7 +195,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                     CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(item.getName()).retain().autorelease();
+            return NSString.stringWithString(item.getName());
         }
         throw new IllegalArgumentException("Unknown identifier: " + identifier);
     }
