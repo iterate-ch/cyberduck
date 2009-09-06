@@ -142,7 +142,8 @@ public class CDBookmarkController extends CDWindowController {
 
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
-        this.alertIcon.setHidden(true);
+        this.alertIcon.setEnabled(false);
+        this.alertIcon.setImage(null);
         this.alertIcon.setTarget(this.id());
         this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
     }
@@ -614,12 +615,14 @@ public class CDBookmarkController extends CDWindowController {
                 }
 
                 public void cleanup() {
-                    alertIcon.setHidden(reachable);
+                    alertIcon.setEnabled(!reachable);
+                    alertIcon.setImage(reachable ? null : NSImage.imageNamed("alert.tiff"));
                 }
             });
         }
         else {
-            alertIcon.setHidden(true);
+            alertIcon.setImage(NSImage.imageNamed("alert.tiff"));
+            alertIcon.setEnabled(false);
         }
     }
 
