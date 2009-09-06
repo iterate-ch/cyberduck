@@ -119,7 +119,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv 
     NSEnumerator *exceptions = [[proxies objectForKey:(NSString *)kSCPropNetProxiesExceptionsList] objectEnumerator];
     NSString *domain;
     BOOL excluded = NO;
-    while(domain = [exceptions nextObject]) {
+    while((domain = [exceptions nextObject])) {
         if([domain rangeOfString: hostname].location != NSNotFound) {
             excluded = YES;
             break;
@@ -167,7 +167,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv 
 + (BOOL)isHTTPProxyEnabled
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
+    if(!proxies) return NO;
 	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPEnable] boolValue];
 	if (proxies != NULL) {
         CFRelease(proxies);
@@ -200,7 +200,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv 
 + (BOOL)isHTTPSProxyEnabled
 {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return nil;
+    if(!proxies) return NO;
 	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesHTTPSEnable] boolValue];
 	if (proxies != NULL) {
         CFRelease(proxies);
