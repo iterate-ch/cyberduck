@@ -410,12 +410,6 @@ public class CDInfoController extends CDWindowController {
     }
 
     @Override
-    public void setWindow(NSWindow window) {
-        super.setWindow(window);
-        this.window.setReleasedWhenClosed(false);
-    }
-
-    @Override
     public void windowWillClose(NSNotification notification) {
         this.window().endEditingFor(null);
 
@@ -426,6 +420,7 @@ public class CDInfoController extends CDWindowController {
         super.windowWillClose(notification);
     }
 
+    @Override
     public boolean isSingleton() {
         return Preferences.instance().getBoolean("browser.info.isInspector");
     }

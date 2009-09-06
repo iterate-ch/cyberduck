@@ -71,7 +71,46 @@ public interface NSWindow extends NSObject {
     }
 
     public static interface Delegate {
+        /**
+         * Tells the delegate that the user has attempted to close a window or the window has
+         * received a performClose: message. This method is optional.
+         * <p/>
+         * This method may not always be called during window closing. Specifically, this method
+         * is not called when a user quits an application. You can find additional information on
+         * application termination in Graceful Application Termination.
+         *
+         * @param sender
+         * @return
+         */
         public boolean windowShouldClose(NSWindow sender);
+
+        /**
+         * Tells the delegate that the user has attempted to close a window or the window has received
+         * a performClose: message. This method is optional.
+         * <p/>
+         * You can retrieve the NSWindow object in question by sending object to notification.
+         *
+         * @param notification
+         */
+        public void windowWillClose(NSNotification notification);
+
+        /**
+         * Informs the delegate that the window has become the key window. This method is optional.
+         * <p/>
+         * You can retrieve the window object in question by sending object to notification.
+         *
+         * @param notification
+         */
+        public void windowDidBecomeKey(NSNotification notification);
+
+        /**
+         * Informs the delegate that the window has resigned key window status. This method is optional.
+         * <p/>
+         * You can retrieve the window object in question by sending object to notification.
+         *
+         * @param notification
+         */
+        public void windowDidResignKey(NSNotification notification);
     }
 
     /**
