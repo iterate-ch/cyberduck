@@ -219,13 +219,14 @@ public class CDBookmarkController extends CDWindowController {
         this.updateFavicon();
     }
 
+    private NSImage favicon;
+
     /**
      *
      */
     private void updateFavicon() {
         if(Preferences.instance().getBoolean("bookmark.favicon.download")) {
             this.background(new AbstractBackgroundAction() {
-                private NSImage favicon;
 
                 public void run() {
                     // Default favicon location
@@ -233,14 +234,14 @@ public class CDBookmarkController extends CDWindowController {
                     if(null == data) {
                         return;
                     }
-                    favicon = NSImage.imageWithData(data);
+                    favicon = CDIconCache.instance().convert(NSImage.imageWithData(data), 16);
                 }
 
                 public void cleanup() {
                     if(null == favicon) {
                         return;
                     }
-                    webUrlImage.setImage(CDIconCache.instance().convert(favicon, 16));
+                    webUrlImage.setImage(favicon);
                 }
             });
         }
