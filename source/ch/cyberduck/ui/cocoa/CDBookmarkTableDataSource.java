@@ -173,6 +173,9 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
+    private static final NSImage STATUS_GREEN = NSImage.imageNamed("statusGreen.tiff");
+    private static final NSImage STATUS_YELLOW = NSImage.imageNamed("statusYellow.tiff");
+
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         final String identifier = tableColumn.identifier();
         final Host host = this.getSource().get(row.intValue());
@@ -193,10 +196,10 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                 final Session session = controller.getSession();
                 if(host.equals(session.getHost())) {
                     if(session.isConnected()) {
-                        return NSImage.imageNamed("statusGreen.tiff").retain().autorelease();
+                        return STATUS_GREEN;
                     }
                     if(session.isOpening()) {
-                        return NSImage.imageNamed("statusYellow.tiff").retain().autorelease();
+                        return STATUS_YELLOW;
                     }
                 }
             }
