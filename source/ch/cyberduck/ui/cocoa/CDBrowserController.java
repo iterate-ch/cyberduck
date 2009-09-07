@@ -1931,7 +1931,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
-                        this.lookup(new CDPathReference(browserOutlineView.itemAtRow(new NSInteger(i)))).invalidate();
+                        final Path item = this.lookup(new CDPathReference(browserOutlineView.itemAtRow(new NSInteger(i))));
+                        if(null == item) {
+                            continue;
+                        }
+                        item.invalidate();
                     }
                     break;
                 }
@@ -3005,7 +3009,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     /**
      * @param path
-     * @return
+     * @return Null if not mounted or lookup fails
      */
     public Path lookup(CDPathReference path) {
         if(this.isMounted()) {

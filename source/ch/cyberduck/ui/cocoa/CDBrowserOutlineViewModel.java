@@ -70,6 +70,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             return false;
         }
         final Path path = controller.lookup(new CDPathReference(item));
+        if(null == path) {
+            return false;
+        }
         return path.attributes.isDirectory();
     }
 

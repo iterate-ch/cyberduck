@@ -375,6 +375,9 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
                 for(int i = 0; i < items.count().intValue(); i++) {
                     final Path path = controller.lookup(new CDPathReference(items.objectAtIndex(new NSUInteger(i))));
+                    if(null == path) {
+                        continue;
+                    }
                     if(path.attributes.isFile()) {
                         if(StringUtils.isNotEmpty(path.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(path.getExtension()));
