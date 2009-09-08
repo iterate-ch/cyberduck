@@ -188,11 +188,11 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
             // files
             final boolean skipped = !transfer.isIncluded(item)
                     || ((CDTransferPrompt) controller).getAction().equals(TransferAction.ACTION_SKIP);
-            return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState).retain().autorelease();
+            return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
+                    CDTableCellAttributes.browserFontLeftAlignment());
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
             return NSString.stringWithString(item.getName());

@@ -181,7 +181,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         final Host host = this.getSource().get(row.intValue());
         if(identifier.equals(ICON_COLUMN)) {
             return CDIconCache.instance().iconForName(host.getProtocol().disk(),
-                    Preferences.instance().getInteger("bookmark.icon.size")).retain().autorelease();
+                    Preferences.instance().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(BOOKMARK_COLUMN)) {
             NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());
@@ -189,7 +189,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             if(StringUtils.isNotBlank(host.getComment())) {
                 dict.setObjectForKey(StringUtils.remove(StringUtils.remove(host.getComment(), CharUtils.LF), CharUtils.CR), "Comment");
             }
-            return dict.retain().autorelease();
+            return dict;
         }
         if(identifier.equals(STATUS_COLUMN)) {
             if(controller.hasSession()) {
