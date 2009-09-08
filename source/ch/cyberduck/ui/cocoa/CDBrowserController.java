@@ -2815,7 +2815,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     public void paste(final ID sender) {
-        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession().getHost());
+        final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(this.getSession().getHost());
         if(pasteboard.isEmpty()) {
             return;
         }

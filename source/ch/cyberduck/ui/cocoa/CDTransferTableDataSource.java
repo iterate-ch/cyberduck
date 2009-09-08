@@ -23,10 +23,7 @@ import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -171,9 +168,9 @@ public class CDTransferTableDataSource extends CDListDataSource {
             }
             return false;
         }
-        final Map<Host, PathPasteboard> boards = PathPasteboard.allPasteboards();
+        final Map<Host, PathPasteboard<NSDictionary>> boards = PathPasteboard.allPasteboards();
         if(!boards.isEmpty()) {
-            for(PathPasteboard pasteboard : boards.values()) {
+            for(PathPasteboard<NSDictionary> pasteboard : boards.values()) {
                 TransferCollection.instance().add(row.intValue(), new DownloadTransfer(pasteboard.getFiles()));
                 view.reloadData();
                 view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);

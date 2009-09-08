@@ -804,9 +804,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     public void paste(final ID sender) {
         log.debug("paste");
-        final Map<Host, PathPasteboard> boards = PathPasteboard.allPasteboards();
+        final Map<Host, PathPasteboard<NSDictionary>> boards = PathPasteboard.allPasteboards();
         if(!boards.isEmpty()) {
-            for(PathPasteboard pasteboard : boards.values()) {
+            for(PathPasteboard<NSDictionary> pasteboard : boards.values()) {
                 TransferCollection.instance().add(new DownloadTransfer(pasteboard.getFiles()));
             }
             this.reloadData();
@@ -1042,9 +1042,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
-            final Map<Host, PathPasteboard> boards = PathPasteboard.allPasteboards();
+            final Map<Host, PathPasteboard<NSDictionary>> boards = PathPasteboard.allPasteboards();
             if(!boards.isEmpty() && boards.size() == 1) {
-                for(PathPasteboard pasteboard : boards.values()) {
+                for(PathPasteboard<NSDictionary> pasteboard : boards.values()) {
                     if(pasteboard.size() == 1) {
                         item.setTitle(Locale.localizedString("Paste") + " \""
                                 + pasteboard.getFiles().get(0).getName() + "\"");

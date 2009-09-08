@@ -32,18 +32,10 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class PathPasteboard extends Collection<NSDictionary> implements Pasteboard<NSDictionary> {
+public class PathPasteboard<T> extends Collection<T> implements Pasteboard<T> {
     private static Logger log = Logger.getLogger(PathPasteboard.class);
 
-    private static Map<Host, PathPasteboard> instances = new HashMap<Host, PathPasteboard>() {
-        @Override
-        public void clear() {
-            for(PathPasteboard board : instances.values()) {
-                board.clear();
-            }
-            super.clear();
-        }
-
+    private static Map<Host, PathPasteboard<NSDictionary>> instances = new HashMap<Host, PathPasteboard<NSDictionary>>() {
         @Override
         public boolean isEmpty() {
             for(PathPasteboard pasteboard : this.values()) {
@@ -59,9 +51,9 @@ public class PathPasteboard extends Collection<NSDictionary> implements Pasteboa
      * @param host
      * @return Pasteboard for a given host
      */
-    public static PathPasteboard getPasteboard(Host host) {
+    public static PathPasteboard<NSDictionary> getPasteboard(Host host) {
         if(!instances.containsKey(host)) {
-            instances.put(host, new PathPasteboard(host));
+            instances.put(host, new PathPasteboard<NSDictionary>(host));
         }
         return instances.get(host);
     }
@@ -69,7 +61,7 @@ public class PathPasteboard extends Collection<NSDictionary> implements Pasteboa
     /**
      * @return
      */
-    public static Map<Host, PathPasteboard> allPasteboards() {
+    public static Map<Host, PathPasteboard<NSDictionary>> allPasteboards() {
         return instances;
     }
 
@@ -92,7 +84,7 @@ public class PathPasteboard extends Collection<NSDictionary> implements Pasteboa
      */
     public List<Path> getFiles(final Session session) {
         List<Path> content = new ArrayList<Path>();
-        for(NSDictionary dict : this) {
+        for(T dict : this) {
             content.add(PathFactory.createPath(session, dict));
         }
         return content;

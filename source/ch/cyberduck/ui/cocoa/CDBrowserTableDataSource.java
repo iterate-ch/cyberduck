@@ -256,7 +256,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
             }
         }
         if(controller.isMounted()) {
-            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+            final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
             if(!pasteboard.isEmpty()) {
                 // A file dragged within the browser has been received
                 if((draggingInfo.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationMove.intValue())
