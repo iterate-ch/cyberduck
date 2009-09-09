@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CDBundleController extends CDController {
     private static Logger log = Logger.getLogger(CDBundleController.class);
@@ -45,7 +45,7 @@ public abstract class CDBundleController extends CDController {
 
     protected void loadBundle() {
         final String bundleName = this.getBundleName();
-        if (null == bundleName) {
+        if(null == bundleName) {
             log.debug("No bundle to load for " + this.toString());
             return;
         }
@@ -53,12 +53,16 @@ public abstract class CDBundleController extends CDController {
     }
 
     protected void loadBundle(final String bundleName) {
+        if(awaked) {
+            log.warn("Bundle " + bundleName + " already loaded");
+            return;
+        }
         log.info("Loading bundle " + bundleName);
-        if (!NSBundle.loadNibNamed(bundleName, this.id())) {
+        if(!NSBundle.loadNibNamed(bundleName, this.id())) {
             log.fatal("Couldn't load " + bundleName + ".nib");
             return;
         }
-        if (!awaked) {
+        if(!awaked) {
             this.awakeFromNib();
         }
     }
