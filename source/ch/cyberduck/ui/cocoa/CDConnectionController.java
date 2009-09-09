@@ -502,9 +502,7 @@ public class CDConnectionController extends CDSheetController {
             };
             controllers.put(parent, controller);
         }
-        final CDConnectionController c = controllers.get(parent);
-        c.passField.setStringValue("");
-        return c;
+        return controllers.get(parent);
     }
 
     @Override
@@ -517,7 +515,6 @@ public class CDConnectionController extends CDSheetController {
      */
     private CDConnectionController(final CDWindowController parent) {
         super(parent);
-        this.loadBundle();
     }
 
     @Override
@@ -528,13 +525,8 @@ public class CDConnectionController extends CDSheetController {
     @Override
     public void awakeFromNib() {
         this.protocolSelectionDidChange(null);
-
+        this.setState(toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
         super.awakeFromNib();
-    }
-
-    @Override
-    public void windowDidBecomeKey(NSNotification notification) {
-        this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
     }
 
     /**
@@ -622,6 +614,11 @@ public class CDConnectionController extends CDSheetController {
             }
             ((CDBrowserController) parent).mount(host);
         }
+        this.reset();
+    }
+
+    private void reset() {
+        passField.setStringValue("");
         Preferences.instance().setProperty("connection.toggle.options", this.toggleOptionsButton.state());
     }
 }
