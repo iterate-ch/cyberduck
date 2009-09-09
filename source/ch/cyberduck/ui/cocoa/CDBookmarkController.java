@@ -80,6 +80,7 @@ public class CDBookmarkController extends CDWindowController {
         }
         this.host.setProtocol(selected);
         this.itemChanged();
+        this.init();
         this.reachable();
     }
 
@@ -460,7 +461,7 @@ public class CDBookmarkController extends CDWindowController {
                 CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
         downloadPathPopup.selectItemAtIndex(0);
         downloadPathPanel = null;
-        itemChanged();
+        this.itemChanged();
     }
 
     @Outlet
@@ -590,7 +591,7 @@ public class CDBookmarkController extends CDWindowController {
             host.getCredentials().setIdentity(null);
         }
         publicKeyPanel = null;
-        itemChanged();
+        this.itemChanged();
     }
 
     public void hostFieldDidChange(final NSNotification sender) {
@@ -602,6 +603,7 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setHostname(input);
         }
         this.itemChanged();
+        this.init();
         this.reachable();
     }
 
@@ -634,11 +636,13 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setPort(-1);
         }
         this.itemChanged();
+        this.init();
     }
 
     public void pathInputDidChange(final NSNotification sender) {
         this.host.setDefaultPath(pathField.stringValue());
         this.itemChanged();
+        this.init();
     }
 
     public void nicknameInputDidChange(final NSNotification sender) {
@@ -668,7 +672,6 @@ public class CDBookmarkController extends CDWindowController {
      */
     private void itemChanged() {
         HostCollection.defaultCollection().collectionItemChanged(host);
-        this.init();
     }
 
     private void init() {
