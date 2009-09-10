@@ -325,7 +325,7 @@ public class CDProgressController extends CDBundleController {
     public void setProgressBar(final NSProgressIndicator progressBar) {
         this.progressBar = progressBar;
         this.progressBar.setDisplayedWhenStopped(false);
-        this.progressBar.setUsesThreadedAnimation(false);
+        this.progressBar.setUsesThreadedAnimation(true);
         this.progressBar.setControlSize(NSCell.NSSmallControlSize);
         this.progressBar.setStyle(NSProgressIndicator.NSProgressIndicatorBarStyle);
         this.progressBar.setMinValue(0);
