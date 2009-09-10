@@ -209,6 +209,7 @@
 		47BEDB120B92968400141EB4 /* URLSchemeHandlerConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BEDB0D0B92967600141EB4 /* URLSchemeHandlerConfiguration.h */; };
 		47BEDB130B92968E00141EB4 /* URLSchemeHandlerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
+		47C4E87710584D710001F618 /* bookmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C4E87610584D710001F618 /* bookmark.png */; };
 		47CD32A10751163400B82A2B /* plus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CD32A00751163400B82A2B /* plus.tiff */; };
 		47D31BFE1013AD19006423B2 /* eucalyptus-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D31BFD1013AD19006423B2 /* eucalyptus-icon.png */; };
 		47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327A30F0829EC00619C38 /* rendezvous.tiff */; };
@@ -1352,6 +1353,7 @@
 		47C4E81B0879EC4F007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Goto.nib; sourceTree = "<group>"; };
 		47C4E8210879EC5C007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Download.nib; sourceTree = "<group>"; };
 		47C4E8290879EC6C007A1D39 /* ca */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ca; path = ca.lproj/Folder.nib; sourceTree = "<group>"; };
+		47C4E87610584D710001F618 /* bookmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bookmark.png; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Command.nib; sourceTree = "<group>"; };
 		47C761EA06A88D7600B464FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		47CD32A00751163400B82A2B /* plus.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = plus.tiff; sourceTree = "<group>"; };
@@ -1854,6 +1856,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				47C4E87610584D710001F618 /* bookmark.png */,
 				4717BE100F3096FD00BB4496 /* s3.icns */,
 				4717BE110F3096FD00BB4496 /* ftp.icns */,
 				4717BE120F3096FD00BB4496 /* dav.icns */,
@@ -2704,6 +2707,7 @@
 				47F73ACE0F93721B0054C930 /* s3-icon.png in Resources */,
 				478426F40F9F75900068BA2E /* License.strings in Resources */,
 				47D31BFE1013AD19006423B2 /* eucalyptus-icon.png in Resources */,
+				47C4E87710584D710001F618 /* bookmark.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
