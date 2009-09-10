@@ -742,7 +742,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
 
         /**
-         *
          * @param selected
          */
         private void updateQuickLookSelection(final Collection<Path> selected) {
@@ -2740,7 +2739,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void interruptButtonClicked(final ID sender) {
         // Remove all pending actions
-        for(BackgroundAction action: BackgroundActionRegistry.instance().toArray(
+        for(BackgroundAction action : BackgroundActionRegistry.instance().toArray(
                 new BackgroundAction[BackgroundActionRegistry.instance().size()])) {
             action.cancel();
         }
@@ -3495,17 +3494,18 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param sender
      */
     public void printDocument(final ID sender) {
-//        NSPrintOperation op = NSPrintOperation.printOperationWithView(this.getSelectedBrowserView());
-//        op.runModalOperation(this.window, this,
-//                Foundation.selector("printOperationDidRun",
-//                        new Class[]{NSPrintOperation.class, boolean.class, Object.class}), null);
+        NSPrintInfo print = NSPrintInfo.sharedPrintInfo();
+        print.setOrientation(NSPrintInfo.NSPrintingOrientation.NSLandscapeOrientation);
+        NSPrintOperation op = NSPrintOperation.printOperationWithView_printInfo(this.getSelectedBrowserView(), print);
+        op.runOperationModalForWindow_delegate_didRunSelector_contextInfo(this.window(), this.id(),
+                Foundation.selector("printOperationDidRun:success:contextInfo:"), null);
     }
 
-//    public void printOperationDidRun(NSPrintOperation printOperation, boolean success, ID contextInfo) {
-//        if(success) {
-//            log.info("Successfully printed" + contextInfo);
-//        }
-//    }
+    public void printOperationDidRun_success_contextInfo(NSPrintOperation printOperation, boolean success, ID contextInfo) {
+        if(success) {
+            log.info("Successfully printed" + contextInfo);
+        }
+    }
 
     /**
      * @param app
@@ -4134,7 +4134,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
             item.setToolTip(Locale.localizedString("New Bookmark"));
-            item.setImage(CDIconCache.instance().iconForName("cyberduck-document", 32));
+            item.setImage(CDIconCache.instance().iconForName("bookmark", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("addBookmarkButtonClicked:"));
             return item;
