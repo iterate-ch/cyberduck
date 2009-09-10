@@ -146,30 +146,30 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
             return null;
         }
         if(identifier.equals(ICON_COLUMN)) {
-            return this.iconForPath(item);
+            return this.iconForPath(item).retain().autorelease();
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    CDTableCellAttributes.browserFontLeftAlignment());
+                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(SIZE_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
-                    CDTableCellAttributes.browserFontRightAlignment());
+                    CDTableCellAttributes.browserFontRightAlignment()).retain().autorelease();
         }
         if(identifier.equals(MODIFIED_COLUMN)) {
             if(item.attributes.getModificationDate() != -1) {
                 return NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
-                        CDTableCellAttributes.browserFontLeftAlignment());
+                        CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
             }
             return UNKNOWN_STRING;
         }
         if(identifier.equals(OWNER_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
-                    CDTableCellAttributes.browserFontLeftAlignment());
+                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(GROUP_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
-                    CDTableCellAttributes.browserFontLeftAlignment());
+                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(PERMISSIONS_COLUMN)) {
             Permission permission = item.attributes.getPermission();
@@ -177,11 +177,11 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 return UNKNOWN_STRING;
             }
             return NSAttributedString.attributedStringWithAttributes(permission.toString(),
-                    CDTableCellAttributes.browserFontLeftAlignment());
+                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(KIND_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(item.kind(),
-                    CDTableCellAttributes.browserFontLeftAlignment());
+                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
             return NSString.stringWithString(item.getName());
