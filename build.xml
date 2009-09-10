@@ -130,9 +130,6 @@
         <exec executable="/bin/chmod">
             <arg line="755 '${app.macos}/${ant.project.name}'"/>
         </exec>
-        <exec executable="/usr/bin/lipo">
-            <arg line="-remove ppc7400 '${app.macos}/${ant.project.name}' -output '${app.macos}/${ant.project.name}'"/>
-        </exec>
     </target>
 
     <target name="release-localization" depends="build" if="localization">
