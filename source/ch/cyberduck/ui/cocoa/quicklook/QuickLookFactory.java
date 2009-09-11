@@ -29,7 +29,7 @@ public abstract class QuickLookFactory extends Factory {
     private static QuickLookInterface instance = null;
 
     protected static QuickLookInterface create() {
-        if(VERSION_PLATFORM.matches("10.6*")) {
+        if(VERSION_PLATFORM.matches("10\\.6.*")) {
             return new QuartzQuickLook();
         }
         return new DeprecatedQuickLook();
