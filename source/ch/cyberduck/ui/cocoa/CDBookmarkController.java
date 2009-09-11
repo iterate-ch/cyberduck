@@ -287,8 +287,6 @@ public class CDBookmarkController extends CDWindowController {
             this.timezonePopup.addItemWithTitle(UTC.getID());
         }
         this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
-//        this.timezonePopup.addItem(AUTO);
-        this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
         final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
         Collections.sort(timezones, new Comparator<String>() {
             public int compare(String o1, String o2) {

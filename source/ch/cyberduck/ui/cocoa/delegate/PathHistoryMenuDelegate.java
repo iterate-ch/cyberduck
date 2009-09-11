@@ -73,10 +73,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
         }
         if(index.intValue() == length) {
             menu.removeItemAtIndex(index);
-            // There is no way in this wonderful API to add a separator item
-            // without creating a new NSMenuItem first
-            NSMenuItem separator = NSMenuItem.separatorItem();
-            menu.insertItem_atIndex(separator, index);
+            menu.insertItem_atIndex(NSMenuItem.separatorItem(), index);
             return !shouldCancel;
         }
         if(index.intValue() == length + 1) {
