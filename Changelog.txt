@@ -5,7 +5,12 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 3.3b2
+- [Feature] PPC support again available
+- [Bugfix] Various bugfixes
+
+3.3b2
 - [Feature] 64-bit support
+- [Bugfix] Various bugfixes
 
 3.3b1
 - [Bugfix] Incompatibility with Mac OS X 10.6 (Snow Leopard) [#3039]
