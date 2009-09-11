@@ -57,6 +57,7 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
      *
      * @param files
      */
+    @Override
     public void select(Collection<Local> files) {
         if(!loadNative()) {
             return;
@@ -68,12 +69,26 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
         for(Local file : files) {
             paths.add(file.getAbsolute());
         }
-        this.selectNative(paths.toArray(new String[]{}));
+        this.selectNative(paths.toArray(new String[paths.size()]));
     }
 
-    public native boolean isAvailable();
+    public boolean isAvailable() {
+        if(!loadNative()) {
+            return false;
+        }
+        return this.isAvailableNative();
+    }
 
-    public native boolean isOpen();
+    public native boolean isAvailableNative();
+
+    public boolean isOpen() {
+        if(!loadNative()) {
+            return false;
+        }
+        return this.isOpenNative();
+    }
+
+    public native boolean isOpenNative();
 
     public void open() {
         if(!loadNative()) {

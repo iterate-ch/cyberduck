@@ -13,7 +13,7 @@ extern "C" {
  * Method:    select
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_select
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_selectNative
   (JNIEnv *, jobject, jobjectArray);
 
 /*
@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_
  * Method:    isAvailable
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isAvailable
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isAvailableNative
   (JNIEnv *, jobject);
 
 /*
@@ -29,7 +29,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickL
  * Method:    isOpen
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isOpen
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isOpenNative
   (JNIEnv *, jobject);
 
 /*

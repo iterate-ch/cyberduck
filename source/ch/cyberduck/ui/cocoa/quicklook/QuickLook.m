@@ -41,7 +41,7 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
 // First, load the private Quick Look framework if available (10.5+)
 #define QUICK_LOOK_AVAILABLE [[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load]
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_select(JNIEnv *env, jobject this, jobjectArray paths)
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_selectNative(JNIEnv *env, jobject this, jobjectArray paths)
 {
 	if(QUICK_LOOK_AVAILABLE) {
 		NSMutableArray* URLs = nil;
@@ -54,13 +54,13 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_
 	}
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isAvailable
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isAvailableNative
   (JNIEnv *env, jobject this)
 {
     return QUICK_LOOK_AVAILABLE;
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isOpen
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_quicklook_DeprecatedQuickLook_isOpenNative
   (JNIEnv *env, jobject this)
 {
 	if(QUICK_LOOK_AVAILABLE) {
