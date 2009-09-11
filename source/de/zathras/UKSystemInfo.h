@@ -17,7 +17,7 @@ NSString*	UKMachineName();							// Name of Mac model, as best as we can determi
 NSString*	UKCPUName();								// Same as UKAutoreleasedCPUName( NO );
 NSString*	UKAutoreleasedCPUName( BOOL releaseIt );	// Returns CPU name, i.e. "G3", "G4" etc. If releaseIt is YES, this will look up the name anew each time, otherwise it will cache the name for subsequent calls. Doesn't support the G5 :-(
 //NSString*	UKSystemSerialNumber();
-void		UKGetSystemVersionComponents( long* outMajor, long* outMinor, long* outBugfix );	// System version as the separate components (Major.Minor.Bugfix).
+void		UKGetSystemVersionComponents( SInt32* outMajor, SInt32* outMinor, SInt32* outBugfix );	// System version as the separate components (Major.Minor.Bugfix).
 
 // Don't use the following for new code:
 //	(Since the number is in BCD, the maximum for minor and bugfix revisions is 9, so this returns 1049 for 10.4.10)

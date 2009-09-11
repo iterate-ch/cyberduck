@@ -42,7 +42,7 @@
 
 -(id) init
 {
-	if( self = [super init] )
+	if( (self = [super init]) )
 	{
 		tabView = nil;
 		itemsList = [[NSMutableDictionary alloc] init];
