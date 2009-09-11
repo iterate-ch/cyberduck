@@ -651,9 +651,7 @@ public class CDMainController extends CDBundleController {
                             }
 
                             public void closeDonationSheet(final NSButton sender) {
-                                this.window().close();
-                                boolean never = neverShowDonationCheckbox.state() == NSCell.NSOnState;
-                                if(never) {
+                                if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
                                     Preferences.instance().setProperty("donate.reminder",
                                             NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
                                 }
