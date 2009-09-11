@@ -23,7 +23,7 @@
     // Check whether the file exists already.  If not, create an empty file if requested.
     if (![fileManager fileExistsAtPath:self]) {
         if (createFile) {
-            if (![@"" writeToFile:self atomically:YES]) {
+            if (![@"" writeToFile:self atomically:YES encoding:NSASCIIStringEncoding error:nil]) {
                 return NO;
             }
         } else {
