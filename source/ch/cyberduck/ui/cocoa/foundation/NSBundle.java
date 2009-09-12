@@ -25,14 +25,6 @@ public abstract class NSBundle implements NSObject {
 
     /**
      * @param key
-     * @return
-     */
-    public static String localizedString(String key) {
-        return NSBundle.mainBundle().localizedStringForKey_value_table(key, key, "Localizable");
-    }
-
-    /**
-     * @param key
      * @param tableName
      * @return
      */
@@ -58,7 +50,7 @@ public abstract class NSBundle implements NSObject {
     }
 
     /**
-     * /* This is the primitive that loads the contents of a .nib file.  Context holds key value
+     * This is the primitive that loads the contents of a .nib file.  Context holds key value
      * pairs that can name objects that are referenced by the objects within the nib
      * file (e.g., "NSOwner").  Objects from the nib are allocated in zone.
      *
@@ -70,7 +62,6 @@ public abstract class NSBundle implements NSObject {
     public static boolean loadNibNamed(String fileName, NSDictionary context, NSZone zone) {
         return CLASS.loadNibFile_externalNameTable_withZone(fileName, context, zone);
     }
-
 
     /**
      * @param path

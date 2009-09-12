@@ -41,7 +41,7 @@ public class BundleLocale extends Locale {
 
     public String get(final String key, final String table) {
         if(StringUtils.isEmpty(table)) {
-            return NSBundle.localizedString(key);
+            return NSBundle.localizedString(key, "Localizable");
         }
         return NSBundle.localizedString(key, table);
     }
