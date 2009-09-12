@@ -36,10 +36,11 @@ import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -309,7 +310,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
       * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
       * running transfers to be checked first
       */
-    public static int applicationShouldTerminate(final NSApplication app) {
+    public static NSUInteger applicationShouldTerminate(final NSApplication app) {
         if(null != instance) {
             //Saving state of transfer window
             Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());

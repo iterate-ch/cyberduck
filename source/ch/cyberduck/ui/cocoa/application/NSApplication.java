@@ -19,16 +19,14 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.ID;
 import org.rococoa.NSClass;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
-
-import com.sun.jna.Pointer;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
@@ -36,9 +34,29 @@ import com.sun.jna.Pointer;
 public abstract class NSApplication implements NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSApplication", _Class.class); //$NON-NLS-1$
 
-    public static final int NSTerminateCancel = 0;
-    public static final int NSTerminateNow = 1;
-    public static final int NSTerminateLater = 2;
+    public interface Delegate {
+        boolean application_openFile(NSApplication app, String filename);
+
+        boolean application_openTempFile(NSApplication app, String filename);
+
+        boolean applicationShouldOpenUntitledFile(NSApplication sender);
+
+        boolean applicationOpenUntitledFile(NSApplication app);
+
+        boolean applicationShouldHandleReopen_hasVisibleWindows(NSApplication app, boolean visibleWindowsFound);
+
+        void applicationDidFinishLaunching(NSNotification notification);
+
+        NSUInteger applicationShouldTerminate(NSApplication app);
+
+        void applicationWillTerminate(NSNotification notification);
+
+        boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app);
+    }
+
+    public static final NSUInteger NSTerminateCancel = new NSUInteger(0);
+    public static final NSUInteger NSTerminateNow = new NSUInteger(1);
+    public static final NSUInteger NSTerminateLater = new NSUInteger(2);
 
     /// <i>native declaration : :36</i>
     public static final int NSRunStoppedResponse = (-1000);
@@ -318,7 +336,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>NSInteger runModalForWindow(NSWindow*, NSWindow*)</code><br>
      * <i>native declaration : :157</i>
      */
-    public abstract int runModalForWindow_relativeToWindow(com.sun.jna.Pointer theWindow, com.sun.jna.Pointer docWindow);
+    public abstract NSInteger runModalForWindow_relativeToWindow(NSWindow theWindow, NSWindow docWindow);
 
     /**
      * * beginModalSessionForWindow:relativeToWindow: is deprecated.<br>
@@ -326,13 +344,13 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>NSModalSession beginModalSessionForWindow(NSWindow*, NSWindow*)</code><br>
      * <i>native declaration : :163</i>
      */
-    public abstract com.sun.jna.Pointer beginModalSessionForWindow_relativeToWindow(com.sun.jna.Pointer theWindow, com.sun.jna.Pointer docWindow);
+    public abstract com.sun.jna.Pointer beginModalSessionForWindow_relativeToWindow(NSWindow theWindow, NSWindow docWindow);
 
     /**
      * Original signature : <code>NSEvent* nextEventMatchingMask(NSUInteger, NSDate*, NSString*, BOOL)</code><br>
      * <i>native declaration : :164</i>
      */
-    public abstract com.sun.jna.Pointer nextEventMatchingMask_untilDate_inMode_dequeue(int mask, com.sun.jna.Pointer expiration, com.sun.jna.Pointer mode, boolean deqFlag);
+    public abstract com.sun.jna.Pointer nextEventMatchingMask_untilDate_inMode_dequeue(int mask, NSDate expiration, String mode, boolean deqFlag);
 
     /**
      * Original signature : <code>void discardEventsMatchingMask(NSUInteger, NSEvent*)</code><br>
@@ -434,7 +452,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>id validRequestorForSendType(NSString*, NSString*)</code><br>
      * <i>native declaration : :190</i>
      */
-    public abstract com.sun.jna.Pointer validRequestorForSendType_returnType(com.sun.jna.Pointer sendType, com.sun.jna.Pointer returnType);
+    public abstract com.sun.jna.Pointer validRequestorForSendType_returnType(String sendType, String returnType);
 
     /**
      * Original signature : <code>void reportException(NSException*)</code><br>

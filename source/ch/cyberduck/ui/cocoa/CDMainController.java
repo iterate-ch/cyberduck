@@ -23,8 +23,8 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.HostReaderFactory;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +51,7 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class CDMainController extends CDBundleController {
+public class CDMainController extends CDBundleController implements NSApplication.Delegate {
     private static Logger log = Logger.getLogger(CDMainController.class);
 
     /**
@@ -491,16 +492,24 @@ public class CDMainController extends CDBundleController {
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         }
         if(Preferences.instance().getBoolean("browser.serialize")) {
-            if(sessions.size() == 0) {
-                // Open empty browser if no saved sessions
-                if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                    this.openDefaultBookmark(CDMainController.newDocument());
+            this.background(new AbstractBackgroundAction() {
+                public void run() {
+                    sessions.load();
                 }
-            }
-            for(Host host : sessions) {
-                CDMainController.newDocument(true).mount(host);
-            }
-            sessions.clear();
+
+                public void cleanup() {
+                    if(sessions.isEmpty()) {
+                        // Open empty browser if no saved sessions
+                        if(Preferences.instance().getBoolean("browser.openUntitled")) {
+                            openDefaultBookmark(CDMainController.newDocument());
+                        }
+                    }
+                    for(Host host : sessions) {
+                        CDMainController.newDocument(true).mount(host);
+                    }
+                    sessions.clear();
+                }
+            });
         }
         else if(Preferences.instance().getBoolean("browser.openUntitled")) {
             this.openDefaultBookmark(CDMainController.newDocument());
@@ -584,15 +593,27 @@ public class CDMainController extends CDBundleController {
                 Foundation.selector("workspaceWillLogout:"),
                 NSWorkspace.WorkspaceSessionDidResignActiveNotification,
                 null);
+        NSWorkspace.sharedWorkspace().notificationCenter().addObserver(this.id(),
+                Foundation.selector("workspaceWillSleep:"),
+                NSWorkspace.WorkspaceWillSleepNotification,
+                null);
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            Rendezvous.instance().init();
+            this.background(new AbstractBackgroundAction() {
+                public void run() {
+                    Rendezvous.instance().init();
+                }
+
+                public void cleanup() {
+                    ;
+                }
+            });
         }
     }
 
     /**
      * Saved browsers
      */
-    private Collection<Host> sessions = new HistoryCollection(
+    private HistoryCollection sessions = new HistoryCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Sessions"));
 
     /**
@@ -611,7 +632,7 @@ public class CDMainController extends CDBundleController {
      * @param app
      * @return Return true to allow the application to terminate.
      */
-    public int applicationShouldTerminate(NSApplication app) {
+    public NSUInteger applicationShouldTerminate(NSApplication app) {
         log.debug("applicationShouldTerminate");
         if(donationPrompt) {
             try {
@@ -702,8 +723,8 @@ public class CDMainController extends CDBundleController {
                     int choice = alert.runModal(); //alternate
                     if(choice == CDSheetCallback.OTHER_OPTION) {
                         // Review if at least one window reqested to terminate later, we shall wait
-                        final int result = CDBrowserController.applicationShouldTerminate(app);
-                        if(NSApplication.NSTerminateNow == result) {
+                        final NSUInteger result = CDBrowserController.applicationShouldTerminate(app);
+                        if(NSApplication.NSTerminateNow.equals(result)) {
                             return CDTransferController.applicationShouldTerminate(app);
                         }
                         return result;
@@ -761,6 +782,10 @@ public class CDMainController extends CDBundleController {
      */
     public void workspaceWillLogout(NSNotification notification) {
         log.debug("workspaceWillLogout");
+    }
+
+    public void workspaceWillSleep(NSNotification notification) {
+        log.debug("workspaceWillSleep");
     }
 
     /**
