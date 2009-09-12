@@ -7,10 +7,10 @@
 
 #ifdef __OBJC__
 #define XSTR(x) (@x)
-#define STRING NSString *
+#define STRING_TYPE NSString *
 #else
 #define XSTR CFSTR
-#define STRING CFStringRef
+#define STRING_TYPE CFStringRef
 #endif
 
 /*!	@header GrowlDefines.h

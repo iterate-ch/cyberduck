@@ -13,11 +13,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.8</string>
+	<string>1.2b3</string>
 	<key>CFBundleSignature</key>
 	<string>GRRR</string>
 	<key>CFBundleVersion</key>
-	<string>exported</string>
+	<string>1.2b3</string>
 	<key>NSPrincipalClass</key>
 	<string>GrowlApplicationBridge</string>
 </dict>
