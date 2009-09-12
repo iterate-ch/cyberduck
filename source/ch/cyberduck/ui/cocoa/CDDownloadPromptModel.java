@@ -66,7 +66,7 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
-                    CDTableCellAttributes.browserFontRightAlignment());
+                    CDTableCellAttributes.browserFontRightAlignment()).retain().autorelease();
         }
         if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
             if(item.attributes.isFile()) {

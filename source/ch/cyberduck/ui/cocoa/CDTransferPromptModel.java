@@ -192,7 +192,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         }
         if(identifier.equals(FILENAME_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    CDTableCellAttributes.browserFontLeftAlignment());
+                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
         }
         if(identifier.equals(TYPEAHEAD_COLUMN)) {
             return NSString.stringWithString(item.getName());

@@ -71,7 +71,7 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
         }
         if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
             return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
-                    CDTableCellAttributes.browserFontRightAlignment());
+                    CDTableCellAttributes.browserFontRightAlignment()).retain().autorelease();
         }
         return super.objectValueForItem(item, identifier);
     }
