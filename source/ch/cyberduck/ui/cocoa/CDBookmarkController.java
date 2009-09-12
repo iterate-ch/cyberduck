@@ -413,7 +413,7 @@ public class CDBookmarkController extends CDWindowController {
                     f.getAbsolute()), action, "");
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
-                    CDIconCache.instance().iconForPath(f, 16)
+                    CDIconCache.instance().iconForLocal(f, 16)
             );
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
                     f.getAbsolute());
@@ -456,7 +456,7 @@ public class CDBookmarkController extends CDWindowController {
         downloadPathPopup.itemAtIndex(0).setRepresentedObject(
                 host.getDownloadFolder().getAbsolute());
         downloadPathPopup.itemAtIndex(0).setImage(
-                CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
+                CDIconCache.instance().iconForLocal(host.getDownloadFolder(), 16));
         downloadPathPopup.selectItemAtIndex(0);
         downloadPathPanel = null;
         this.itemChanged();
@@ -616,12 +616,12 @@ public class CDBookmarkController extends CDWindowController {
 
                 public void cleanup() {
                     alertIcon.setEnabled(!reachable);
-                    alertIcon.setImage(reachable ? null : NSImage.imageNamed("alert.tiff"));
+                    alertIcon.setImage(reachable ? null : CDIconCache.imageNamed("alert.tiff"));
                 }
             });
         }
         else {
-            alertIcon.setImage(NSImage.imageNamed("alert.tiff"));
+            alertIcon.setImage(CDIconCache.imageNamed("alert.tiff"));
             alertIcon.setEnabled(false);
         }
     }

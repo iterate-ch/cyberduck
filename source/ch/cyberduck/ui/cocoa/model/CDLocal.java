@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa.model;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.CDController;
-import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
@@ -300,7 +300,7 @@ public class CDLocal extends Local {
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                NSImage.imageNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
+                                CDIconCache.imageNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
                     }
                 }
             });

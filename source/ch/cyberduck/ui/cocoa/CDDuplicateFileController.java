@@ -37,7 +37,7 @@ public class CDDuplicateFileController extends CDFileController {
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
         this.iconView.setImage(
-                CDIconCache.instance().iconForFileType(((CDBrowserController) parent).getSelectedPath().getExtension(), 64)
+                CDIconCache.instance().iconForExtension(((CDBrowserController) parent).getSelectedPath().getExtension(), 64)
         );
     }
 

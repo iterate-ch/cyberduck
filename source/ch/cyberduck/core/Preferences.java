@@ -163,6 +163,7 @@ public abstract class Preferences {
          * Maximum number of directory listings to cache using a most recently used implementation
          */
         defaults.put("browser.cache.size", String.valueOf(1000));
+        defaults.put("icon.cache.size", String.valueOf(50));
 
         /**
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)

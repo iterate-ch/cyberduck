@@ -63,12 +63,12 @@ public class EditMenuDelegate extends MenuDelegate {
         }
         final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
         if(StringUtils.isNotEmpty(path)) {
-            item.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(path), 16));
+            item.setImage(CDIconCache.instance().iconForLocal(LocalFactory.createLocal(path), 16));
         }
         else {
             // Used to provide a custom icon for the edit menu and disable the menu
             // if no external editor can be found
-            item.setImage(NSImage.imageNamed("pencil.tiff"));
+            item.setImage(CDIconCache.imageNamed("pencil.tiff"));
         }
         item.setAction(Foundation.selector("editMenuClicked:"));
         return !shouldCancel;

@@ -174,7 +174,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         }
     }
 
-    protected final NSImage ALERT_ICON = NSImage.imageNamed("alert.tiff");
+    protected final NSImage ALERT_ICON = CDIconCache.imageNamed("alert.tiff");
 
     /**
      * @param item

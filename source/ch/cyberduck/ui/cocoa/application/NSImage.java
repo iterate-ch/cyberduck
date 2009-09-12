@@ -73,6 +73,10 @@ public abstract class NSImage implements NSObject, NSCopying {
         return CLASS.alloc().initWithSize(size);
     }
 
+    public static NSImage imageWithContentsOfFile(String filename) {
+        return CLASS.alloc().initWithContentsOfFile(filename);
+    }
+
     public interface _Class extends org.rococoa.NSClass {
         /**
          * Original signature : <code>id imageNamed(NSString*)</code><br>

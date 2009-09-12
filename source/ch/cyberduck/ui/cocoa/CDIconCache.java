@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -33,12 +34,21 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
  */
-public class CDIconCache extends HashMap<String, NSImage> {
+public class CDIconCache {
     private static Logger log = Logger.getLogger(CDIconCache.class);
+
+    /**
+     * @param name
+     * @return
+     */
+    public static NSImage imageNamed(final String name) {
+        return CDIconCache.instance().iconForName(name);
+    }
 
     private static CDIconCache instance = null;
 
@@ -53,23 +63,122 @@ public class CDIconCache extends HashMap<String, NSImage> {
         return instance;
     }
 
-    @Override
-    public NSImage put(String extension, NSImage image) {
-        return super.put(extension, image);
+    /**
+     * Cache limited to n entries
+     */
+    private Map<String, Map<Integer, NSImage>> cache = new LRUMap(
+            Preferences.instance().getInteger("icon.cache.size")) {
+        @Override
+        protected boolean removeLRU(LinkEntry entry) {
+            log.debug("Removing from cache:" + entry);
+            return true;
+        }
+    };
+
+    private void put(String key, NSImage image, Integer size) {
+        Map<Integer, NSImage> versions;
+        if(cache.containsKey(key)) {
+            versions = cache.get(key);
+        }
+        else {
+            versions = new HashMap<Integer, NSImage>();
+        }
+        versions.put(size, image);
+        cache.put(key, versions);
+    }
+
+    private NSImage get(String key, Integer size) {
+        if(!cache.containsKey(key)) {
+            log.warn("No cached image for " + key);
+            return null;
+        }
+        final Map<Integer, NSImage> versions = cache.get(key);
+        return versions.get(size);
     }
 
     /**
-     * @param key
+     * @param extension
      * @return
      */
-    public NSImage iconForFileType(String key, int size) {
-        NSImage img = this.get(key);
+    public NSImage iconForExtension(String extension, Integer size) {
+        NSImage img = this.get(extension, size);
         if(null == img) {
-            img = NSWorkspace.sharedWorkspace().iconForFileType(key);
-            this.put(key, img);
+            img = NSWorkspace.sharedWorkspace().iconForFileType(extension);
+            this.put(extension, this.convert(img, size), size);
         }
-        return this.convert(img, size);
+        return img;
     }
+
+    /**
+     * @param name
+     * @return
+     */
+    public NSImage iconForName(final String name) {
+        return this.iconForName(name, null);
+    }
+
+    /**
+     * @param name
+     * @param size
+     * @return
+     * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer)
+     */
+    public NSImage iconForName(final String name, Integer size) {
+        return this.iconForName(name, size, size);
+    }
+
+    /**
+     * @param name
+     * @param width
+     * @param height
+     * @return
+     * @see NSImage#imageNamed(String)
+     * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer, Integer)
+     */
+    public NSImage iconForName(final String name, Integer width, Integer height) {
+        NSImage image = this.get(name, width);
+        if(null == image) {
+            image = NSImage.imageNamed(name);
+//            if(null == image) {
+//                // Look for icon in system System Core Types Bundle
+//                Local l = LocalFactory.createLocal(NSBundle.bundleWithPath(
+//                        "/System/Library/CoreServices/CoreTypes.bundle").resourcePath(),
+//                        name);
+//                if(!l.exists()) {
+//                    return null;
+//                }
+//                image = NSImage.imageWithContentsOfFile(l.getAbsolute());
+//            }
+            if(null == image) {
+                log.error("No icon named " + name);
+                return null;
+            }
+            this.put(name, this.convert(image, width, height), width);
+        }
+        return image;
+    }
+
+    /**
+     * @param item
+     * @param size
+     * @return
+     */
+    public NSImage iconForLocal(final Local item, Integer size) {
+        if(item.exists()) {
+            NSImage icon = this.iconForName(item.getAbsolute(), size);
+            if(null == icon) {
+                icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
+                this.put(item.getAbsolute(), this.convert(icon, size), size);
+            }
+            return icon;
+        }
+        return this.iconForName("notfound.tiff", size);
+    }
+
+    private final NSRect NSZeroRect = new NSRect(0, 0);
+
+    private final boolean overlayFolderImage
+            = Preferences.instance().getBoolean("browser.markInaccessibleFolders");
 
     private static Local FOLDER_PATH
             = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
@@ -77,76 +186,20 @@ public class CDIconCache extends HashMap<String, NSImage> {
     public static final NSImage FOLDER_ICON
             = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
 
-    static {
-        FOLDER_ICON.setSize(new NSSize(128, 128));
-    }
-
-    public NSImage iconForName(final String name, int size) {
-        return this.iconForName(name, size, size);
-    }
-
-    /**
-     *
-     * @param name
-     * @param width
-     * @param height
-     * @return
-     */
-    public NSImage iconForName(final String name, int width, int height) {
-        NSImage loaded = NSImage.imageNamed(name + width);
-        if(null == loaded) {
-            loaded = NSImage.imageNamed(name);
-            if(null == loaded) {
-                log.error("No icon named " + name);
-                return null;
-            }
-            loaded.setName(name + width);
-        }
-//        if(null == image) {
-//            // Look for icon in system System Core Types Bundle
-//            Local l = LocalFactory.createLocalLocal(NSBundle.bundleWithPath(
-//                    "/System/Library/CoreServices/CoreTypes.bundle").resourcePath(),
-//                    name);
-//            if(!l.exists()) {
-//                return null;
-//            }
-//            image = new NSImage(l.getAbsolute(), false);
-//        }
-        return this.convert(loaded, width, height);
-    }
-
     /**
      * @param item
      * @param size
      * @return
      */
-    public NSImage iconForPath(final Local item, int size) {
-        final NSImage icon;
-        if(item.exists()) {
-            icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
-        }
-        else {
-            icon = NSImage.imageNamed("notfound.tiff");
-        }
-        return this.convert(icon, size);
-    }
-
-    private final NSRect NSZeroRect = new NSRect(0, 0);
-
-    /**
-     * @param item
-     * @param size
-     * @return
-     */
-    public NSImage iconForPath(final Path item, int size) {
+    public NSImage iconForPath(final Path item, Integer size) {
         if(item.attributes.isSymbolicLink()) {
             if(item.attributes.isDirectory()) {
                 final NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                 folder.lockFocus();
-                NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
+                NSImage f = FOLDER_ICON;
                 f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                         NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                NSImage o = NSImage.imageNamed("AliasBadgeIcon.icns");
+                NSImage o = this.iconForName("AliasBadgeIcon.icns");
                 o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                         NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                 folder.unlockFocus();
@@ -154,10 +207,10 @@ public class CDIconCache extends HashMap<String, NSImage> {
             }
             final NSImage symlink = NSImage.imageWithSize(new NSSize(size, size));
             symlink.lockFocus();
-            NSImage f = this.iconForFileType(item.getExtension(), size);
+            NSImage f = this.iconForExtension(item.getExtension(), size);
             f.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-            NSImage o = NSImage.imageNamed("AliasBadgeIcon.icns");
+            NSImage o = this.iconForName("AliasBadgeIcon.icns");
             o.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
             symlink.unlockFocus();
@@ -166,25 +219,24 @@ public class CDIconCache extends HashMap<String, NSImage> {
         if(item.attributes.isFile()) {
             if(StringUtils.isEmpty(item.getExtension()) && null != item.attributes.getPermission()) {
                 if(item.isExecutable()) {
-                    return this.convert(NSImage.imageNamed("executable.tiff"), size);
+                    return this.iconForName("executable.tiff", size);
                 }
             }
-            return this.iconForFileType(item.getExtension(), size);
+            return this.iconForExtension(item.getExtension(), size);
         }
         if(item.attributes.isVolume()) {
             return this.iconForName(item.getHost().getProtocol().disk(), size);
         }
         if(item.attributes.isDirectory()) {
-            if(Preferences.instance().getBoolean("browser.markInaccessibleFolders")
-                    && null != item.attributes.getPermission()) {
+            if(overlayFolderImage && null != item.attributes.getPermission()) {
                 if(!item.isExecutable()
                         || (item.isCached() && !item.cache().get(item).attributes().isReadable())) {
                     NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                     folder.lockFocus();
-                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
+                    NSImage f = FOLDER_ICON;
                     f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                             NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                    NSImage o = NSImage.imageNamed("PrivateFolderBadgeIcon.icns");
+                    NSImage o = this.iconForName("PrivateFolderBadgeIcon.icns");
                     o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                             NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                     folder.unlockFocus();
@@ -194,10 +246,10 @@ public class CDIconCache extends HashMap<String, NSImage> {
                     if(item.isWritable()) {
                         NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                         folder.lockFocus();
-                        NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
+                        NSImage f = FOLDER_ICON;
                         f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                                 NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                        NSImage o = NSImage.imageNamed("DropFolderBadgeIcon.icns");
+                        NSImage o = this.iconForName("DropFolderBadgeIcon.icns");
                         o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                                 NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                         folder.unlockFocus();
@@ -207,34 +259,37 @@ public class CDIconCache extends HashMap<String, NSImage> {
                 if(!item.isWritable()) {
                     NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                     folder.lockFocus();
-                    NSImage f = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
+                    NSImage f = FOLDER_ICON;
                     f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                             NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                    NSImage o = NSImage.imageNamed("ReadOnlyFolderBadgeIcon.icns");
+                    NSImage o = this.iconForName("ReadOnlyFolderBadgeIcon.icns");
                     o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                             NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                     folder.unlockFocus();
                     return this.convert(folder, size);
                 }
             }
-            return this.convert(NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute()), size);
+            return this.convert(FOLDER_ICON, size);
         }
-        return this.convert(NSImage.imageNamed("notfound.tiff"), size);
+        return this.iconForName("notfound.tiff", size);
     }
 
-    protected NSImage convert(NSImage icon, int size) {
+    protected NSImage convert(NSImage icon, Integer size) {
         return this.convert(icon, size, size);
     }
 
-    protected NSImage convert(NSImage icon, int width, int height) {
+    protected NSImage convert(NSImage icon, Integer width, Integer height) {
         if(null == icon) {
             log.warn("Icon is null");
             return null;
         }
+        if(null == width || null == height) {
+            log.info("Return default size for " + icon.name());
+            return icon;
+        }
+        icon.setName(icon.name() + width + height);
+        icon.setCacheMode(NSImage.NSImageCacheNever);
         icon.setScalesWhenResized(true);
-//        icon.setCacheMode(NSImage.NSImageCacheBySize);
-//        icon.setCachedSeparately(true);
-//        icon.setMatchesOnMultipleResolution(false);
         icon.setSize(new NSSize(width, height));
         return icon;
     }

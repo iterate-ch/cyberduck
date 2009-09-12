@@ -196,8 +196,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
-    private static final NSImage STATUS_GREEN = NSImage.imageNamed("statusGreen.tiff");
-    private static final NSImage STATUS_YELLOW = NSImage.imageNamed("statusYellow.tiff");
+    private static final NSImage STATUS_GREEN = CDIconCache.imageNamed("statusGreen.tiff");
+    private static final NSImage STATUS_YELLOW = CDIconCache.imageNamed("statusYellow.tiff");
 
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         final String identifier = tableColumn.identifier();

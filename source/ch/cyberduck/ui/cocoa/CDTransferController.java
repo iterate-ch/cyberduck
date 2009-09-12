@@ -480,7 +480,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
         // Draw file type icon
         if(transfer.numberOfRoots() == 1) {
-            iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
+            iconView.setImage(CDIconCache.instance().iconForLocal(transfer.getRoot().getLocal(), 32));
         }
         else {
             iconView.setImage(CDIconCache.instance().iconForName("multipleDocuments", 32));
@@ -506,7 +506,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
             if(transfer.getBandwidth() != BandwidthThrottle.UNLIMITED) {
                 // Mark as throttled
-                this.bandwidthPopup.itemAtIndex(0).setImage(NSImage.imageNamed("turtle.tiff"));
+                this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.imageNamed("turtle.tiff"));
                 return;
             }
         }
@@ -722,7 +722,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_RESUME));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_RESUME));
             item.setToolTip(Locale.localizedString(TOOLBAR_RESUME));
-            item.setImage(NSImage.imageNamed("resume.tiff"));
+            item.setImage(CDIconCache.imageNamed("resume.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("resumeButtonClicked:"));
             return item;
@@ -731,7 +731,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_RELOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_RELOAD));
             item.setToolTip(Locale.localizedString(TOOLBAR_RELOAD));
-            item.setImage(NSImage.imageNamed("reload.tiff"));
+            item.setImage(CDIconCache.imageNamed("reload.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
@@ -740,7 +740,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_SHOW));
             item.setPaletteLabel(Locale.localizedString("Show in Finder"));
             item.setToolTip(Locale.localizedString("Show in Finder"));
-            item.setImage(NSImage.imageNamed("reveal.tiff"));
+            item.setImage(CDIconCache.imageNamed("reveal.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("revealButtonClicked:"));
             return item;
@@ -749,7 +749,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_OPEN));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_OPEN));
             item.setToolTip(Locale.localizedString(TOOLBAR_OPEN));
-            item.setImage(NSImage.imageNamed("open.tiff"));
+            item.setImage(CDIconCache.imageNamed("open.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openButtonClicked:"));
             return item;
@@ -758,7 +758,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_REMOVE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REMOVE));
             item.setToolTip(Locale.localizedString(TOOLBAR_REMOVE));
-            item.setImage(NSImage.imageNamed("clean.tiff"));
+            item.setImage(CDIconCache.imageNamed("clean.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteButtonClicked:"));
             return item;
@@ -767,7 +767,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setToolTip(Locale.localizedString(TOOLBAR_CLEAN_UP));
-            item.setImage(NSImage.imageNamed("cleanAll.tiff"));
+            item.setImage(CDIconCache.imageNamed("cleanAll.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearButtonClicked:"));
             return item;
@@ -776,7 +776,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_TRASH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRASH));
             item.setToolTip(Locale.localizedString("Move to Trash"));
-            item.setImage(NSImage.imageNamed("trash.tiff"));
+            item.setImage(CDIconCache.imageNamed("trash.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("trashButtonClicked:"));
             return item;
