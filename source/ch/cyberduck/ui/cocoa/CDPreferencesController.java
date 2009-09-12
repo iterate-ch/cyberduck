@@ -136,12 +136,12 @@ public class CDPreferencesController extends CDWindowController {
     @Override
     public void setWindow(NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
+        window.setShowsToolbarButton(false);
         super.setWindow(window);
     }
 
     @Override
     public void awakeFromNib() {
-        this.window.setShowsToolbarButton(false);
         this.window.center();
 
         this.transfermodeComboboxClicked(this.transfermodeCombobox);

@@ -51,12 +51,6 @@ public interface NSPanel extends NSWindow {
     public abstract void setBecomesKeyOnlyIfNeeded(boolean flag);
 
     /**
-     * Original signature : <code>BOOL worksWhenModal()</code><br>
-     * <i>native declaration : :92</i>
-     */
-    public abstract boolean worksWhenModal();
-
-    /**
      * Original signature : <code>void setWorksWhenModal(BOOL)</code><br>
      * <i>native declaration : :93</i>
      */

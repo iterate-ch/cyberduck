@@ -30,7 +30,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 
 /// <i>native declaration : :119</i>
-public interface NSWindow extends NSObject {
+public interface NSWindow extends NSResponder {
 
     public interface _Class extends org.rococoa.NSClass {
         /**
@@ -434,12 +434,6 @@ public interface NSWindow extends NSObject {
      * <i>native declaration : :307</i>
      */
     public abstract int resizeFlags();
-
-    /**
-     * Original signature : <code>void keyDown(NSEvent*)</code><br>
-     * <i>native declaration : :308</i>
-     */
-    public abstract void keyDown(NSEvent event);
 
     /**
      * Original signature : <code>void close()</code><br>

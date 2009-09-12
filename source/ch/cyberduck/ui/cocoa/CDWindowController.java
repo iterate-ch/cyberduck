@@ -23,11 +23,13 @@ import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -82,8 +84,11 @@ public abstract class CDWindowController extends CDBundleController implements N
 
     public void setWindow(NSWindow window) {
         this.window = window;
-        this.window.setDelegate(this.id());
         this.window.setReleasedWhenClosed(!this.isSingleton());
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("windowWillClose:"),
+                NSWindow.WindowWillCloseNotification,
+                this.window);
     }
 
     public NSWindow window() {

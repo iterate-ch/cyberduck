@@ -386,6 +386,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         window.setTitle(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
         window.setMiniwindowImage(NSImage.imageNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
+        window.setDelegate(this.id());
         super.setWindow(window);
     }
 
