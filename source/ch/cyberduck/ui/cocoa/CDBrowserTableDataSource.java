@@ -21,15 +21,20 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.model.CDPathReference;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.*;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -372,7 +377,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 final NSMutableArray fileTypes = NSMutableArray.array();
-                final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+                final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
                 for(int i = 0; i < items.count().intValue(); i++) {
                     final Path path = controller.lookup(new CDPathReference(items.objectAtIndex(new NSUInteger(i))));
                     if(null == path) {
@@ -417,7 +422,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
      */
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation:" + operation);
-        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+        final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
             final List<Path> files = pasteboard.getFiles(controller.getSession());
             controller.deletePaths(files);
@@ -440,7 +445,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != dropDestination) {
-            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+            final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
             final List<Path> promisedPaths = pasteboard.getFiles(controller.getTransferSession());
             for(Path p: promisedPaths) {
                 p.setLocal(LocalFactory.createLocal(dropDestination.path(), p.getName()));

@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.HashMap;
@@ -183,15 +184,12 @@ public class CDConnectionController extends CDSheetController {
     }
 
     private class HostFieldModel extends CDController implements NSComboBox.DataSource {
-        public int numberOfItemsInComboBox(final NSComboBox sender) {
-            return HostCollection.defaultCollection().size();
+        public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
+            return new NSInteger(HostCollection.defaultCollection().size());
         }
 
-        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
-            if(row < this.numberOfItemsInComboBox(sender)) {
-                return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname());
-            }
-            return null;
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
+            return NSString.stringWithString(HostCollection.defaultCollection().get(row.intValue()).getNickname());
         }
     }
 
@@ -368,7 +366,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     @Outlet
-    private NSButton anonymousCheckbox; //IBOutlet
+    private NSButton anonymousCheckbox;
 
     public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
         this.anonymousCheckbox = anonymousCheckbox;
@@ -466,7 +464,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     @Outlet
-    private NSPopUpButton connectmodePopup; //IBOutlet
+    private NSPopUpButton connectmodePopup;
 
     private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active");
     private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive");
@@ -482,7 +480,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     @Outlet
-    private NSButton toggleOptionsButton; //IBOutlet
+    private NSButton toggleOptionsButton;
 
     public void setToggleOptionsButton(NSButton b) {
         this.toggleOptionsButton = b;

@@ -35,7 +35,7 @@ public class CDFolderController extends CDFileController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
     @Outlet
-    protected NSImageView iconView; //IBOutlet
+    protected NSImageView iconView;
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;

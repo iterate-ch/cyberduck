@@ -332,7 +332,7 @@ public class CDProgressController extends CDBundleController {
     }
 
     @Outlet
-    private NSImageView statusIconView; //IBOutlet
+    private NSImageView statusIconView;
 
     private static final NSImage RED_ICON = NSImage.imageNamed("statusRed.tiff");
     private static final NSImage GREEN_ICON = NSImage.imageNamed("statusGreen.tiff");
@@ -344,7 +344,7 @@ public class CDProgressController extends CDBundleController {
     }
 
     @Outlet
-    private NSImageView iconImageView; //IBOutlet
+    private NSImageView iconImageView;
 
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;

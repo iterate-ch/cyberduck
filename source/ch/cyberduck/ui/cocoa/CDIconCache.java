@@ -19,18 +19,18 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSPoint;
-import ch.cyberduck.ui.cocoa.foundation.NSRect;
-import ch.cyberduck.ui.cocoa.foundation.NSSize;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.HashMap;
 

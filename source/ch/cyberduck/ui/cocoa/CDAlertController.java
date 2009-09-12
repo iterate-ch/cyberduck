@@ -21,10 +21,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.foundation.NSRect;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class CDAlertController extends CDSheetController {
 

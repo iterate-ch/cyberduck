@@ -48,6 +48,8 @@ import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
@@ -335,10 +337,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         Collection<Path> selectedFiles = new Collection<Path>();
         if(this.isMounted()) {
             NSIndexSet iterator = this.getSelectedBrowserView().selectedRowIndexes();
-            for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
-                if(index.intValue() == -1) {
-                    break;
-                }
+            for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
                 Path selected = this.pathAtRow(index.intValue());
                 if(null == selected) {
                     break;
@@ -602,7 +601,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(1);
         final NSImage image = NSImage.imageNamed("bookmarks.tiff");
-        this.bookmarkSwitchView.setImage(image, SWITCH_BOOKMARK_VIEW);
+        this.bookmarkSwitchView.setImage_forSegment(image, SWITCH_BOOKMARK_VIEW);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectAny);
         cell.setControlSize(NSCell.NSRegularControlSize);
@@ -644,10 +643,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.browserSwitchView.setSegmentCount(2); // list, outline
         final NSImage list = NSImage.imageNamed("list.tiff");
         list.setTemplate(true);
-        this.browserSwitchView.setImage(list, SWITCH_LIST_VIEW);
+        this.browserSwitchView.setImage_forSegment(list, SWITCH_LIST_VIEW);
         final NSImage outline = NSImage.imageNamed("outline.tiff");
         outline.setTemplate(true);
-        this.browserSwitchView.setImage(outline, SWITCH_OUTLINE_VIEW);
+        this.browserSwitchView.setImage_forSegment(outline, SWITCH_OUTLINE_VIEW);
         this.browserSwitchView.setTarget(this.id());
         this.browserSwitchView.setAction(Foundation.selector("browserSwitchButtonClicked:"));
         final NSSegmentedCell cell = Rococoa.cast(this.browserSwitchView.cell(), NSSegmentedCell.class);
@@ -982,15 +981,15 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
                     if(NSEvent.NSLeftMouseDragged == event.type()) {
-                        final int draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null)).intValue();
-                        if(draggingColumn != 0) {
-                            log.debug("Returning false to #outlineViewShouldExpandItem for column:" + draggingColumn);
-                            // See ticket #60
-                            return false;
-                        }
                         if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
                             log.debug("Returning false to #outlineViewShouldExpandItem while dragging because browser.view.autoexpand == false");
                             // See tickets #98 and #633
+                            return false;
+                        }
+                        final NSInteger draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null));
+                        if(draggingColumn.intValue() != 0) {
+                            log.debug("Returning false to #outlineViewShouldExpandItem for column:" + draggingColumn);
+                            // See ticket #60
                             return false;
                         }
                     }
@@ -1173,9 +1172,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(Preferences.instance().getBoolean("browser.columnSize")) {
             NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.SIZE_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Size"));
-            c.setMinWidth((50f));
-            c.setWidth((80f));
-            c.setMaxWidth((150f));
+            c.setMinWidth(50f);
+            c.setWidth(80f);
+            c.setMaxWidth(150f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
@@ -1184,9 +1183,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(Preferences.instance().getBoolean("browser.columnModification")) {
             NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.MODIFIED_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Modified"));
-            c.setMinWidth((100f));
-            c.setWidth((150));
-            c.setMaxWidth((500));
+            c.setMinWidth(100f);
+            c.setWidth(150);
+            c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
@@ -1195,9 +1194,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(Preferences.instance().getBoolean("browser.columnOwner")) {
             NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.OWNER_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Owner"));
-            c.setMinWidth((50));
-            c.setWidth((80));
-            c.setMaxWidth((500));
+            c.setMinWidth(50);
+            c.setWidth(80);
+            c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
@@ -1206,9 +1205,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(Preferences.instance().getBoolean("browser.columnGroup")) {
             NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.GROUP_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Group"));
-            c.setMinWidth((50));
-            c.setWidth((80));
-            c.setMaxWidth((500));
+            c.setMinWidth(50);
+            c.setWidth(80);
+            c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
@@ -1217,9 +1216,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(Preferences.instance().getBoolean("browser.columnPermissions")) {
             NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.PERMISSIONS_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Permissions"));
-            c.setMinWidth((100));
-            c.setWidth((100));
-            c.setMaxWidth((800));
+            c.setMinWidth(100);
+            c.setWidth(100);
+            c.setMaxWidth(800);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
@@ -1228,9 +1227,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(Preferences.instance().getBoolean("browser.columnKind")) {
             NSTableColumn c = browserListColumnsFactory.create(CDBrowserTableDataSource.KIND_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Kind"));
-            c.setMinWidth((50));
-            c.setWidth((80));
-            c.setMaxWidth((500));
+            c.setMinWidth(50);
+            c.setWidth(80);
+            c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
@@ -1303,7 +1302,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(CDBookmarkTableDataSource.BOOKMARK_COLUMN);
             c.headerCell().setStringValue(Locale.localizedString("Bookmarks"));
-            c.setMinWidth((150));
+            c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(CDBookmarkCell.bookmarkCell());
             this.bookmarkTable.addTableColumn(c);
@@ -1311,9 +1310,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(CDBookmarkTableDataSource.STATUS_COLUMN);
             c.headerCell().setStringValue("");
-            c.setMinWidth((20));
-            c.setWidth((20));
-            c.setMaxWidth((20));
+            c.setMinWidth(20);
+            c.setWidth(20);
+            c.setMaxWidth(20);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
             c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
@@ -1440,21 +1439,18 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     private class QuickConnectModel extends CDController implements NSComboBox.DataSource {
-        public int numberOfItemsInComboBox(final NSComboBox combo) {
-            return HostCollection.defaultCollection().size();
+        public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
+            return new NSInteger(HostCollection.defaultCollection().size());
         }
 
-        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
-            if(row < numberOfItemsInComboBox(sender)) {
-                return NSString.stringWithString(HostCollection.defaultCollection().get(row).getNickname());
-            }
-            return null;
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
+            return NSString.stringWithString(HostCollection.defaultCollection().get(row.intValue()).getNickname());
         }
     }
 
     public void quickConnectWillPopUp(NSNotification notification) {
         int size = HostCollection.defaultCollection().size();
-        this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? 10 : size);
+        this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? new NSInteger(10) : new NSInteger(size));
     }
 
     public void quickConnectSelectionChanged(final NSControl sender) {
@@ -1602,10 +1598,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         final NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
         NSUInteger[] indexes = new NSUInteger[iterator.count().intValue()];
         int i = 0;
-        for(NSUInteger index = iterator.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = iterator.indexGreaterThanIndex(index)) {
-            if(index.intValue() == -1) {
-                break;
-            }
+        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             indexes[i] = index;
             i++;
         }
@@ -1739,11 +1732,11 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             this.addPathToNavigation(p);
         }
 
-        this.navigationButton.setEnabled(this.isMounted() && this.getBackHistory().size() > 1,
+        this.navigationButton.setEnabled_forSegment(this.isMounted() && this.getBackHistory().size() > 1,
                 NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.navigationButton.setEnabled(this.isMounted() && this.getForwardHistory().size() > 0,
+        this.navigationButton.setEnabled_forSegment(this.isMounted() && this.getForwardHistory().size() > 0,
                 NAVIGATION_RIGHT_SEGMENT_BUTTON);
-        this.upButton.setEnabled(this.isMounted() && !this.workdir().isRoot(),
+        this.upButton.setEnabled_forSegment(this.isMounted() && !this.workdir().isRoot(),
                 NAVIGATION_UP_SEGMENT_BUTTON);
 
         this.pathPopupButton.setEnabled(this.isMounted());
@@ -3511,14 +3504,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param app
      * @return NSApplication.TerminateLater if the application should not yet be terminated
      */
-    public static int applicationShouldTerminate(final NSApplication app) {
+    public static NSUInteger applicationShouldTerminate(final NSApplication app) {
         // Determine if there are any open connections
         for(final CDBrowserController controller : CDMainController.getBrowsers()) {
             if(!controller.unmount(new CDSheetCallback() {
                 public void callback(final int returncode) {
                     if(returncode == DEFAULT_OPTION) { //Disconnect
                         controller.window().close();
-                        if(NSApplication.NSTerminateNow == CDBrowserController.applicationShouldTerminate(app)) {
+                        if(NSApplication.NSTerminateNow.equals(CDBrowserController.applicationShouldTerminate(app))) {
                             app.terminate(null);
                         }
                     }

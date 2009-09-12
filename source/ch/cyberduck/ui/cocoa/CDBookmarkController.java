@@ -271,7 +271,7 @@ public class CDBookmarkController extends CDWindowController {
     protected static final String AUTO = Locale.localizedString("Auto");
 
     @Outlet
-    private NSPopUpButton timezonePopup; //IBOutlet
+    private NSPopUpButton timezonePopup;
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
@@ -319,7 +319,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton connectmodePopup; //IBOutlet
+    private NSPopUpButton connectmodePopup;
 
     private static final String CONNECTMODE_ACTIVE = Locale.localizedString("Active");
     private static final String CONNECTMODE_PASSIVE = Locale.localizedString("Passive");
@@ -349,7 +349,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton transferPopup; //IBOutlet
+    private NSPopUpButton transferPopup;
 
     private static final String TRANSFER_NEWCONNECTION = Locale.localizedString("Open new connection");
     private static final String TRANSFER_BROWSERCONNECTION = Locale.localizedString("Use browser connection");
@@ -379,7 +379,7 @@ public class CDBookmarkController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton downloadPathPopup; //IBOutlet
+    private NSPopUpButton downloadPathPopup;
 
     private static final String CHOOSE = Locale.localizedString("Choose") + "...";
 

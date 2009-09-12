@@ -111,10 +111,7 @@ public class CDBrowserListViewModel extends CDBrowserTableDataSource implements 
         if(controller.isMounted()) {
             NSMutableArray items = NSMutableArray.array();
             final AttributedList<Path> childs = this.childs(this.controller.workdir());
-            for(NSUInteger index = rowIndexes.firstIndex(); index.longValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
-                if(index.intValue() == -1) {
-                    break;
-                }
+            for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
                 items.addObject(NSString.stringWithString(childs.get(index.intValue()).getAbsolute()));
             }
             return super.writeItemsToPasteBoard(view, items, pboard);

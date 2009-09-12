@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class CDInfoController extends CDWindowController {
     // ----------------------------------------------------------
 
     @Outlet
-    private NSTextField filenameField; //IBOutlet
+    private NSTextField filenameField;
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
@@ -64,49 +65,49 @@ public class CDInfoController extends CDWindowController {
     }
 
     @Outlet
-    private NSTextField groupField; //IBOutlet
+    private NSTextField groupField;
 
     public void setGroupField(NSTextField t) {
         this.groupField = t;
     }
 
     @Outlet
-    private NSTextField kindField; //IBOutlet
+    private NSTextField kindField;
 
     public void setKindField(NSTextField t) {
         this.kindField = t;
     }
 
     @Outlet
-    private NSTextField modifiedField; //IBOutlet
+    private NSTextField modifiedField;
 
     public void setModifiedField(NSTextField t) {
         this.modifiedField = t;
     }
 
     @Outlet
-    private NSTextField ownerField; //IBOutlet
+    private NSTextField ownerField;
 
     public void setOwnerField(NSTextField ownerField) {
         this.ownerField = ownerField;
     }
 
     @Outlet
-    private NSTextField sizeField; //IBOutlet
+    private NSTextField sizeField;
 
     public void setSizeField(NSTextField sizeField) {
         this.sizeField = sizeField;
     }
 
     @Outlet
-    private NSTextField pathField; //IBOutlet
+    private NSTextField pathField;
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
     }
 
     @Outlet
-    private NSTextField webUrlField; //IBOutlet
+    private NSTextField webUrlField;
 
     public void setWebUrlField(NSTextField webUrlField) {
         this.webUrlField = webUrlField;
@@ -115,7 +116,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     @Outlet
-    private NSTextField permissionsBox; //IBOutlet
+    private NSTextField permissionsBox;
 
     public void setPermissionsBox(NSTextField t) {
         this.permissionsBox = t;
@@ -255,7 +256,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton s3CachePopup; //IBOutlet
+    private NSPopUpButton s3CachePopup;
 
     public void setS3CachePopup(NSPopUpButton b) {
         this.s3CachePopup = b;
@@ -336,15 +337,24 @@ public class CDInfoController extends CDWindowController {
         this.distributionCnameUrlField.setSelectable(true);
     }
 
-    public NSButton ownerr; //IBOutlet
-    public NSButton ownerw; //IBOutlet
-    public NSButton ownerx; //IBOutlet
-    public NSButton groupr; //IBOutlet
-    public NSButton groupw; //IBOutlet
-    public NSButton groupx; //IBOutlet
-    public NSButton otherr; //IBOutlet
-    public NSButton otherw; //IBOutlet
-    public NSButton otherx; //IBOutlet
+    @Outlet
+    public NSButton ownerr;
+    @Outlet
+    public NSButton ownerw;
+    @Outlet
+    public NSButton ownerx;
+    @Outlet
+    public NSButton groupr;
+    @Outlet
+    public NSButton groupw;
+    @Outlet
+    public NSButton groupx;
+    @Outlet
+    public NSButton otherr;
+    @Outlet
+    public NSButton otherw;
+    @Outlet
+    public NSButton otherx;
 
     public void setOwnerr(NSButton ownerr) {
         this.ownerr = ownerr;
@@ -382,7 +392,7 @@ public class CDInfoController extends CDWindowController {
         this.otherx = otherx;
     }
 
-    private NSImageView iconImageView; //IBOutlet
+    private NSImageView iconImageView;
 
     public void setIconImageView(NSImageView iconImageView) {
         this.iconImageView = iconImageView;

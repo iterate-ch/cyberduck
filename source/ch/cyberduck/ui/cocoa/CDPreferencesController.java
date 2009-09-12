@@ -32,6 +32,7 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -238,7 +239,7 @@ public class CDPreferencesController extends CDWindowController {
     // ----------------------------------------------------------
 
     @Outlet
-    private NSPopUpButton editorCombobox; //IBOutlet
+    private NSPopUpButton editorCombobox;
 
     public void setEditorCombobox(NSPopUpButton editorCombobox) {
         this.editorCombobox = editorCombobox;
@@ -275,7 +276,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton bookmarkSizePopup; //IBOutlet
+    private NSPopUpButton bookmarkSizePopup;
 
     public void setBookmarkSizePopup(NSPopUpButton bookmarkSizePopup) {
         this.bookmarkSizePopup = bookmarkSizePopup;
@@ -310,7 +311,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton openUntitledBrowserCheckbox; //IBOutlet
+    private NSButton openUntitledBrowserCheckbox;
 
     public void setOpenUntitledBrowserCheckbox(NSButton openUntitledBrowserCheckbox) {
         this.openUntitledBrowserCheckbox = openUntitledBrowserCheckbox;
@@ -325,7 +326,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton browserSerializeCheckbox; //IBOutlet
+    private NSButton browserSerializeCheckbox;
 
     public void setBrowserSerializeCheckbox(NSButton browserSerializeCheckbox) {
         this.browserSerializeCheckbox = browserSerializeCheckbox;
@@ -340,7 +341,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton defaultBookmarkCombobox; //IBOutlet
+    private NSPopUpButton defaultBookmarkCombobox;
 
     private final CollectionListener<Host> bookmarkCollectionListener = new CollectionListener<Host>() {
         public void collectionItemAdded(Host bookmark) {
@@ -353,8 +354,8 @@ public class CDPreferencesController extends CDWindowController {
             if(CDPreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
                 Preferences.instance().deleteProperty("browser.defaultBookmark");
             }
-            int i = CDPreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getNickname());
-            if(i > -1) {
+            NSInteger i = CDPreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getNickname());
+            if(i.intValue() > -1) {
                 CDPreferencesController.this.defaultBookmarkCombobox.removeItemAtIndex(i);
             }
         }
@@ -405,7 +406,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton encodingCombobox; //IBOutlet
+    private NSPopUpButton encodingCombobox;
 
     public void setEncodingCombobox(NSPopUpButton encodingCombobox) {
         this.encodingCombobox = encodingCombobox;
@@ -501,7 +502,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton chmodUploadCheckbox; //IBOutlet
+    private NSButton chmodUploadCheckbox;
 
     public void setChmodUploadCheckbox(NSButton chmodUploadCheckbox) {
         this.chmodUploadCheckbox = chmodUploadCheckbox;
@@ -528,7 +529,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton chmodUploadDefaultCheckbox; //IBOutlet
+    private NSButton chmodUploadDefaultCheckbox;
 
     public void setChmodUploadDefaultCheckbox(NSButton chmodUploadDefaultCheckbox) {
         this.chmodUploadDefaultCheckbox = chmodUploadDefaultCheckbox;
@@ -554,7 +555,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton chmodUploadCustomCheckbox; //IBOutlet
+    private NSButton chmodUploadCustomCheckbox;
 
     public void setChmodUploadCustomCheckbox(NSButton chmodUploadCustomCheckbox) {
         this.chmodUploadCustomCheckbox = chmodUploadCustomCheckbox;
@@ -580,7 +581,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton chmodDownloadCheckbox; //IBOutlet
+    private NSButton chmodDownloadCheckbox;
 
     public void setChmodDownloadCheckbox(NSButton chmodDownloadCheckbox) {
         this.chmodDownloadCheckbox = chmodDownloadCheckbox;
@@ -607,7 +608,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton chmodDownloadDefaultCheckbox; //IBOutlet
+    private NSButton chmodDownloadDefaultCheckbox;
 
     public void setChmodDownloadDefaultCheckbox(NSButton chmodDownloadDefaultCheckbox) {
         this.chmodDownloadDefaultCheckbox = chmodDownloadDefaultCheckbox;
@@ -633,7 +634,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton chmodDownloadCustomCheckbox; //IBOutlet
+    private NSButton chmodDownloadCustomCheckbox;
 
     public void setChmodDownloadCustomCheckbox(NSButton chmodDownloadCustomCheckbox) {
         this.chmodDownloadCustomCheckbox = chmodDownloadCustomCheckbox;
@@ -731,23 +732,23 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton downerr; //IBOutlet
+    private NSButton downerr;
     @Outlet
-    private NSButton downerw; //IBOutlet
+    private NSButton downerw;
     @Outlet
-    private NSButton downerx; //IBOutlet
+    private NSButton downerx;
     @Outlet
-    private NSButton dgroupr; //IBOutlet
+    private NSButton dgroupr;
     @Outlet
-    private NSButton dgroupw; //IBOutlet
+    private NSButton dgroupw;
     @Outlet
-    private NSButton dgroupx; //IBOutlet
+    private NSButton dgroupx;
     @Outlet
     private NSButton dotherr; //IBOutletdownerr
     @Outlet
-    private NSButton dotherw; //IBOutlet
+    private NSButton dotherw;
     @Outlet
-    private NSButton dotherx; //IBOutlet
+    private NSButton dotherx;
 
     public void defaultPermissionsDownloadChanged(final ID sender) {
         boolean[][] p = new boolean[3][3];
@@ -773,15 +774,15 @@ public class CDPreferencesController extends CDWindowController {
         }
     }
 
-    public NSButton uownerr; //IBOutlet
-    public NSButton uownerw; //IBOutlet
-    public NSButton uownerx; //IBOutlet
-    public NSButton ugroupr; //IBOutlet
-    public NSButton ugroupw; //IBOutlet
-    public NSButton ugroupx; //IBOutlet
-    public NSButton uotherr; //IBOutlet
-    public NSButton uotherw; //IBOutlet
-    public NSButton uotherx; //IBOutlet
+    public NSButton uownerr;
+    public NSButton uownerw;
+    public NSButton uownerx;
+    public NSButton ugroupr;
+    public NSButton ugroupw;
+    public NSButton ugroupx;
+    public NSButton uotherr;
+    public NSButton uotherw;
+    public NSButton uotherx;
 
     public void defaultPermissionsUploadChanged(final ID sender) {
         boolean[][] p = new boolean[3][3];
@@ -808,7 +809,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton preserveModificationDownloadCheckbox; //IBOutlet
+    private NSButton preserveModificationDownloadCheckbox;
 
     public void setPreserveModificationDownloadCheckbox(NSButton preserveModificationDownloadCheckbox) {
         this.preserveModificationDownloadCheckbox = preserveModificationDownloadCheckbox;
@@ -823,7 +824,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton preserveModificationUploadCheckbox; //IBOutlet
+    private NSButton preserveModificationUploadCheckbox;
 
     public void setPreserveModificationUploadCheckbox(NSButton preserveModificationUploadCheckbox) {
         this.preserveModificationUploadCheckbox = preserveModificationUploadCheckbox;
@@ -838,7 +839,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton horizontalLinesCheckbox; //IBOutlet
+    private NSButton horizontalLinesCheckbox;
 
     public void setHorizontalLinesCheckbox(NSButton horizontalLinesCheckbox) {
         this.horizontalLinesCheckbox = horizontalLinesCheckbox;
@@ -854,7 +855,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton verticalLinesCheckbox; //IBOutlet
+    private NSButton verticalLinesCheckbox;
 
     public void setVerticalLinesCheckbox(NSButton verticalLinesCheckbox) {
         this.verticalLinesCheckbox = verticalLinesCheckbox;
@@ -870,7 +871,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton alternatingRowBackgroundCheckbox; //IBOutlet
+    private NSButton alternatingRowBackgroundCheckbox;
 
     public void setAlternatingRowBackgroundCheckbox(NSButton alternatingRowBackgroundCheckbox) {
         this.alternatingRowBackgroundCheckbox = alternatingRowBackgroundCheckbox;
@@ -886,7 +887,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton infoWindowAsInspectorCheckbox; //IBOutlet
+    private NSButton infoWindowAsInspectorCheckbox;
 
     public void setInfoWindowAsInspectorCheckbox(NSButton infoWindowAsInspectorCheckbox) {
         this.infoWindowAsInspectorCheckbox = infoWindowAsInspectorCheckbox;
@@ -901,7 +902,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton downloadPathPopup; //IBOutlet
+    private NSPopUpButton downloadPathPopup;
 
     private static final String CHOOSE = Locale.localizedString("Choose") + "...";
 
@@ -981,7 +982,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton transferPopup; //IBOutlet
+    private NSPopUpButton transferPopup;
 
     public void setTransferPopup(NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
@@ -1004,7 +1005,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSTextField anonymousField; //IBOutlet
+    private NSTextField anonymousField;
 
     public void setAnonymousField(NSTextField anonymousField) {
         this.anonymousField = anonymousField;
@@ -1020,7 +1021,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSTextField textFileTypeRegexField; //IBOutlet
+    private NSTextField textFileTypeRegexField;
 
     public void setTextFileTypeRegexField(NSTextField textFileTypeRegexField) {
         this.textFileTypeRegexField = textFileTypeRegexField;
@@ -1044,7 +1045,7 @@ public class CDPreferencesController extends CDWindowController {
         }
     }
 
-//    @Outlet private NSTextField binaryFileTypeRegexField; //IBOutlet
+//    @Outlet private NSTextField binaryFileTypeRegexField;
 //
 //    public void setBinaryFileTypeRegexField(NSTextField binaryFileTypeRegexField) {
 //        this.binaryFileTypeRegexField = binaryFileTypeRegexField;
@@ -1068,7 +1069,7 @@ public class CDPreferencesController extends CDWindowController {
 //    }
 
     @Outlet
-    private NSButton downloadSkipButton; //IBOutlet
+    private NSButton downloadSkipButton;
 
     public void setDownloadSkipButton(NSButton downloadSkipButton) {
         this.downloadSkipButton = downloadSkipButton;
@@ -1086,7 +1087,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton downloadSkipRegexDefaultButton; //IBOutlet
+    private NSButton downloadSkipRegexDefaultButton;
 
     public void setDownloadSkipRegexDefaultButton(NSButton downloadSkipRegexDefaultButton) {
         this.downloadSkipRegexDefaultButton = downloadSkipRegexDefaultButton;
@@ -1100,7 +1101,7 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("queue.download.skip.regex", regex);
     }
 
-    private NSTextView downloadSkipRegexField; //IBOutlet
+    private NSTextView downloadSkipRegexField;
 
     public void setDownloadSkipRegexField(NSTextView downloadSkipRegexField) {
         this.downloadSkipRegexField = downloadSkipRegexField;
@@ -1131,7 +1132,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton uploadSkipButton; //IBOutlet
+    private NSButton uploadSkipButton;
 
     public void setUploadSkipButton(NSButton uploadSkipButton) {
         this.uploadSkipButton = uploadSkipButton;
@@ -1149,7 +1150,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton uploadSkipRegexDefaultButton; //IBOutlet
+    private NSButton uploadSkipRegexDefaultButton;
 
     public void setUploadSkipRegexDefaultButton(NSButton uploadSkipRegexDefaultButton) {
         this.uploadSkipRegexDefaultButton = uploadSkipRegexDefaultButton;
@@ -1163,7 +1164,7 @@ public class CDPreferencesController extends CDWindowController {
         Preferences.instance().setProperty("queue.upload.skip.regex", regex);
     }
 
-    private NSTextView uploadSkipRegexField; //IBOutlet
+    private NSTextView uploadSkipRegexField;
 
     public void setUploadSkipRegexField(NSTextView uploadSkipRegexField) {
         this.uploadSkipRegexField = uploadSkipRegexField;
@@ -1218,7 +1219,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSTextField loginField; //IBOutlet
+    private NSTextField loginField;
 
     /**
      * Default SSH login name
@@ -1239,7 +1240,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton keychainCheckbox; //IBOutlet
+    private NSButton keychainCheckbox;
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
@@ -1254,7 +1255,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton doubleClickCheckbox; //IBOutlet
+    private NSButton doubleClickCheckbox;
 
     public void setDoubleClickCheckbox(NSButton doubleClickCheckbox) {
         this.doubleClickCheckbox = doubleClickCheckbox;
@@ -1269,7 +1270,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton returnKeyCheckbox; //IBOutlet
+    private NSButton returnKeyCheckbox;
 
     public void setReturnKeyCheckbox(NSButton returnKeyCheckbox) {
         this.returnKeyCheckbox = returnKeyCheckbox;
@@ -1284,7 +1285,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton showHiddenCheckbox; //IBOutlet
+    private NSButton showHiddenCheckbox;
 
     public void setShowHiddenCheckbox(NSButton showHiddenCheckbox) {
         this.showHiddenCheckbox = showHiddenCheckbox;
@@ -1299,7 +1300,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton bringQueueToFrontCheckbox; //IBOutlet
+    private NSButton bringQueueToFrontCheckbox;
 
     public void setBringQueueToFrontCheckbox(NSButton bringQueueToFrontCheckbox) {
         this.bringQueueToFrontCheckbox = bringQueueToFrontCheckbox;
@@ -1314,7 +1315,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton bringQueueToBackCheckbox; //IBOutlet
+    private NSButton bringQueueToBackCheckbox;
 
     public void setBringQueueToBackCheckbox(NSButton bringQueueToBackCheckbox) {
         this.bringQueueToBackCheckbox = bringQueueToBackCheckbox;
@@ -1329,7 +1330,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton removeFromQueueCheckbox; //IBOutlet
+    private NSButton removeFromQueueCheckbox;
 
     public void setRemoveFromQueueCheckbox(NSButton removeFromQueueCheckbox) {
         this.removeFromQueueCheckbox = removeFromQueueCheckbox;
@@ -1344,7 +1345,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton openAfterDownloadCheckbox; //IBOutlet
+    private NSButton openAfterDownloadCheckbox;
 
     public void setOpenAfterDownloadCheckbox(NSButton openAfterDownloadCheckbox) {
         this.openAfterDownloadCheckbox = openAfterDownloadCheckbox;
@@ -1377,7 +1378,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton duplicateDownloadCombobox; //IBOutlet
+    private NSPopUpButton duplicateDownloadCombobox;
 
     public void setDuplicateDownloadCombobox(NSPopUpButton duplicateDownloadCombobox) {
         this.duplicateDownloadCombobox = duplicateDownloadCombobox;
@@ -1435,7 +1436,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton duplicateUploadCombobox; //IBOutlet
+    private NSPopUpButton duplicateUploadCombobox;
 
     public void setDuplicateUploadCombobox(NSPopUpButton duplicateUploadCombobox) {
         this.duplicateUploadCombobox = duplicateUploadCombobox;
@@ -1493,7 +1494,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton lineEndingCombobox; //IBOutlet
+    private NSPopUpButton lineEndingCombobox;
 
     public void setLineEndingCombobox(NSPopUpButton lineEndingCombobox) {
         this.lineEndingCombobox = lineEndingCombobox;
@@ -1526,7 +1527,7 @@ public class CDPreferencesController extends CDWindowController {
 
 
     @Outlet
-    private NSPopUpButton transfermodeCombobox; //IBOutlet
+    private NSPopUpButton transfermodeCombobox;
 
     public void setTransfermodeCombobox(NSPopUpButton transfermodeCombobox) {
         this.transfermodeCombobox = transfermodeCombobox;
@@ -1564,7 +1565,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton protocolCombobox; //IBOutlet
+    private NSPopUpButton protocolCombobox;
 
     public void setProtocolCombobox(NSPopUpButton protocolCombobox) {
         this.protocolCombobox = protocolCombobox;
@@ -1591,7 +1592,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton confirmDisconnectCheckbox; //IBOutlet
+    private NSButton confirmDisconnectCheckbox;
 
     public void setConfirmDisconnectCheckbox(NSButton confirmDisconnectCheckbox) {
         this.confirmDisconnectCheckbox = confirmDisconnectCheckbox;
@@ -1606,7 +1607,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton secureDataChannelCheckbox; //IBOutlet
+    private NSButton secureDataChannelCheckbox;
 
     /**
      * FTPS Data Channel Security
@@ -1631,7 +1632,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton failInsecureDataChannelCheckbox; //IBOutlet
+    private NSButton failInsecureDataChannelCheckbox;
 
     /**
      * FTPS Data Channel Security
@@ -1653,7 +1654,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton sshTransfersCombobox; //IBOutlet
+    private NSPopUpButton sshTransfersCombobox;
 
     /**
      * SSH Transfers (SFTP or SCP)
@@ -1712,7 +1713,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton defaultFTPHandlerCombobox; //IBOutlet
+    private NSPopUpButton defaultFTPHandlerCombobox;
 
     /**
      * Protocol Handler FTP
@@ -1735,7 +1736,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton defaultSFTPHandlerCombobox; //IBOutlet
+    private NSPopUpButton defaultSFTPHandlerCombobox;
 
     /**
      * Protocol Handler SFTP
@@ -1757,7 +1758,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton defaultDownloadThrottleCombobox; //IBOutlet
+    private NSPopUpButton defaultDownloadThrottleCombobox;
 
     /**
      * Download Bandwidth
@@ -1789,7 +1790,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton defaultUploadThrottleCombobox; //IBOutlet
+    private NSPopUpButton defaultUploadThrottleCombobox;
 
     /**
      * Upload Bandwidth
@@ -1820,7 +1821,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSButton updateCheckbox; //IBOutlet
+    private NSButton updateCheckbox;
 
     public void setUpdateCheckbox(NSButton updateCheckbox) {
         this.updateCheckbox = updateCheckbox;
@@ -1842,7 +1843,7 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Outlet
-    private NSPopUpButton defaultBucketLocation; //IBOutlet
+    private NSPopUpButton defaultBucketLocation;
 
     public void setDefaultBucketLocation(NSPopUpButton defaultBucketLocation) {
         this.defaultBucketLocation = defaultBucketLocation;

@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
@@ -299,7 +300,7 @@ public class CDLocal extends Local {
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                NSImage.imageNamed("download" + progress + ".icns"), getAbsolute(), 0);
+                                NSImage.imageNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
                     }
                 }
             });

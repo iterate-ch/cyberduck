@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Comparator;
 
@@ -37,7 +38,8 @@ import java.util.Comparator;
 public class CDGotoController extends CDSheetController {
     private static Logger log = Logger.getLogger(CDGotoController.class);
 
-    protected NSImageView iconView; //IBOutlet
+    @Outlet
+    protected NSImageView iconView;
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
@@ -66,15 +68,15 @@ public class CDGotoController extends CDSheetController {
             }
         };
 
-        public int numberOfItemsInComboBox(NSComboBox combo) {
+        public NSInteger numberOfItemsInComboBox(NSComboBox combo) {
             if(!((CDBrowserController) parent).isMounted()) {
-                return 0;
+                return new NSInteger(0);
             }
-            return ((CDBrowserController) parent).workdir().childs(comparator, filter).size();
+            return new NSInteger(((CDBrowserController) parent).workdir().childs(comparator, filter).size());
         }
 
-        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row) {
-            return ((CDBrowserController) parent).workdir().childs(comparator, filter).get(row).<NSObject>getReference().unique();
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
+            return ((CDBrowserController) parent).workdir().childs(comparator, filter).get(row.intValue()).<NSObject>getReference().unique();
         }
     }
 
