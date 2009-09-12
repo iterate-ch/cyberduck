@@ -46,13 +46,13 @@ public abstract class NSFormatter implements NSObject {
      * Original signature : <code>BOOL getObjectValue(id*, NSString*, NSString**)</code><br>
      * <i>native declaration : :21</i>
      */
-    public abstract boolean getObjectValue_forString_errorDescription(NSObject obj, com.sun.jna.Pointer string, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean getObjectValue_forString_errorDescription(NSObject obj, String string, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>BOOL isPartialStringValid(NSString*, NSString**, NSString**)</code><br>
      * <i>native declaration : :23</i>
      */
-    public abstract boolean isPartialStringValid_newEditingString_errorDescription(com.sun.jna.Pointer partialString, com.sun.jna.ptr.PointerByReference newString, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean isPartialStringValid_newEditingString_errorDescription(String partialString, com.sun.jna.ptr.PointerByReference newString, com.sun.jna.ptr.PointerByReference error);
     /**
      * <i>native declaration : :26</i><br>
      * Conversion Error : /// Original signature : <code>BOOL isPartialStringValid(NSString**, null, NSString*, null, NSString**)</code><br>

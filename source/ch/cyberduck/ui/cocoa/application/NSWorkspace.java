@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import com.sun.jna.NativeLong;
 
@@ -218,7 +219,7 @@ public abstract class NSWorkspace implements NSObject {
      * Original signature : <code>BOOL getInfoForFile(NSString*, NSString**, NSString**)</code><br>
      * <i>native declaration : :82</i>
      */
-    public abstract boolean getInfoForFile_application_type(com.sun.jna.Pointer fullPath1, com.sun.jna.ptr.PointerByReference appName2, com.sun.jna.ptr.PointerByReference type3);
+    public abstract boolean getInfoForFile_application_type(String fullPath1, com.sun.jna.ptr.PointerByReference appName2, com.sun.jna.ptr.PointerByReference type3);
 
     /**
      * Original signature : <code>BOOL isFilePackageAtPath(NSString*)</code><br>
@@ -236,7 +237,7 @@ public abstract class NSWorkspace implements NSObject {
      * Original signature : <code>NSImage* iconForFiles(NSArray*)</code><br>
      * <i>native declaration : :86</i>
      */
-    public abstract NSImage iconForFiles(com.sun.jna.Pointer fullPaths1);
+    public abstract NSImage iconForFiles(NSArray fullPaths1);
 
     /**
      * Original signature : <code>NSImage* iconForFileType(NSString*)</code><br>
@@ -248,7 +249,7 @@ public abstract class NSWorkspace implements NSObject {
      * Original signature : <code>BOOL setIcon(NSImage*, NSString*, NSWorkspaceIconCreationOptions)</code><br>
      * <i>native declaration : :89</i>
      */
-    public abstract boolean setIcon_forFile_options(NSImage image1, String fullPath2, int options3);
+    public abstract boolean setIcon_forFile_options(NSImage image1, String fullPath2, NSUInteger options3);
 
     /**
      * Original signature : <code>BOOL getFileSystemInfoForPath(NSString*, BOOL*, BOOL*, BOOL*, NSString**, NSString**)</code><br>

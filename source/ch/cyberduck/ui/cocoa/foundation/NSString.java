@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
-import org.rococoa.Foundation;
 
 /// <i>native declaration : :85</i>
 public abstract class NSString implements NSObject, NSCopying {
@@ -69,7 +69,7 @@ public abstract class NSString implements NSObject, NSCopying {
          * Should be rarely used<br>
          * <i>from NSStringExtensionMethods native declaration : :242</i>
          */
-        int defaultCStringEncoding();
+        NSUInteger defaultCStringEncoding();
 
         /**
          * Original signature : <code>const NSStringEncoding* availableStringEncodings()</code><br>
@@ -81,7 +81,7 @@ public abstract class NSString implements NSObject, NSCopying {
          * Original signature : <code>NSString* localizedNameOfStringEncoding(NSStringEncoding)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :245</i>
          */
-        NSString localizedNameOfStringEncoding(int encoding);
+        NSString localizedNameOfStringEncoding(NSUInteger encoding);
 
         /**
          * Original signature : <code>string()</code><br>
@@ -97,33 +97,15 @@ public abstract class NSString implements NSObject, NSCopying {
 
         /**
          * Original signature : <code>stringWithCharacters(const unichar*, NSUInteger)</code><br>
-         * <i>from NSStringExtensionMethods native declaration : :268</i><br>
-         *
-         * @deprecated use the safer methods {@link #stringWithCharacters_length(char[], int)} and {@link #stringWithCharacters_length(char, int)} instead
-         */
-        @java.lang.Deprecated
-        NSString stringWithCharacters_length(char characters, NSUInteger length);
-
-        /**
-         * Original signature : <code>stringWithCharacters(const unichar*, NSUInteger)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :268</i>
          */
         NSString stringWithCharacters_length(char characters[], NSUInteger length);
 
         /**
          * Original signature : <code>stringWithUTF8String(const char*)</code><br>
-         * <i>from NSStringExtensionMethods native declaration : :269</i><br>
-         *
-         * @deprecated use the safer method {@link #stringWithUTF8String(java.lang.String)} instead
-         */
-        @java.lang.Deprecated
-        NSString stringWithUTF8String(com.sun.jna.ptr.ByteByReference nullTerminatedCString);
-
-        /**
-         * Original signature : <code>stringWithUTF8String(const char*)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :269</i>
          */
-        NSString stringWithUTF8String(java.lang.String nullTerminatedCString);
+        NSString stringWithUTF8String(String nullTerminatedCString);
 
         /**
          * Original signature : <code>stringWithFormat(NSString*, null)</code><br>
@@ -139,54 +121,27 @@ public abstract class NSString implements NSObject, NSCopying {
 
         /**
          * Original signature : <code>stringWithCString(const char*, NSStringEncoding)</code><br>
-         * <i>from NSStringExtensionMethods native declaration : :275</i><br>
-         *
-         * @deprecated use the safer method {@link #stringWithCString_encoding(java.lang.String, int)} instead
-         */
-        @java.lang.Deprecated
-        NSString stringWithCString_encoding(com.sun.jna.ptr.ByteByReference cString, int enc);
-
-        /**
-         * Original signature : <code>stringWithCString(const char*, NSStringEncoding)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :275</i>
          */
-        NSString stringWithCString_encoding(java.lang.String cString, int enc);
+        NSString stringWithCString_encoding(String cString, NSUInteger enc);
 
         /**
          * Original signature : <code>stringWithContentsOfURL(NSURL*, NSStringEncoding, NSError**)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :281</i>
          */
-        NSString stringWithContentsOfURL_encoding_error(NSURL url, int enc, com.sun.jna.ptr.PointerByReference error);
+        NSString stringWithContentsOfURL_encoding_error(NSURL url, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
 
         /**
          * Original signature : <code>stringWithContentsOfFile(NSString*, NSStringEncoding, NSError**)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :282</i>
          */
-        NSString stringWithContentsOfFile_encoding_error(NSString path, int enc, com.sun.jna.ptr.PointerByReference error);
-
-        /**
-         * Original signature : <code>stringWithContentsOfURL(NSURL*, NSStringEncoding*, NSError**)</code><br>
-         * <i>from NSStringExtensionMethods native declaration : :288</i><br>
-         *
-         * @deprecated use the safer method {@link #stringWithContentsOfURL_usedEncoding_error(com.sun.jna.Pointer, java.nio.IntBuffer, com.sun.jna.ptr.PointerByReference)} instead
-         */
-        @java.lang.Deprecated
-        NSString stringWithContentsOfURL_usedEncoding_error(NSURL url, com.sun.jna.ptr.IntByReference enc, com.sun.jna.ptr.PointerByReference error);
+        NSString stringWithContentsOfFile_encoding_error(NSString path, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
 
         /**
          * Original signature : <code>stringWithContentsOfURL(NSURL*, NSStringEncoding*, NSError**)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :288</i>
          */
         NSString stringWithContentsOfURL_usedEncoding_error(NSURL url, java.nio.IntBuffer enc, com.sun.jna.ptr.PointerByReference error);
-
-        /**
-         * Original signature : <code>stringWithContentsOfFile(NSString*, NSStringEncoding*, NSError**)</code><br>
-         * <i>from NSStringExtensionMethods native declaration : :289</i><br>
-         *
-         * @deprecated use the safer method {@link #stringWithContentsOfFile_usedEncoding_error(NSString, java.nio.IntBuffer, com.sun.jna.ptr.PointerByReference)} instead
-         */
-        @java.lang.Deprecated
-        NSString stringWithContentsOfFile_usedEncoding_error(NSString path, com.sun.jna.ptr.IntByReference enc, com.sun.jna.ptr.PointerByReference error);
 
         /**
          * Original signature : <code>stringWithContentsOfFile(NSString*, NSStringEncoding*, NSError**)</code><br>
@@ -208,33 +163,15 @@ public abstract class NSString implements NSObject, NSCopying {
 
         /**
          * Original signature : <code>stringWithCString(const char*, NSUInteger)</code><br>
-         * <i>from NSStringDeprecated native declaration : :364</i><br>
-         *
-         * @deprecated use the safer method {@link #stringWithCString_length(java.lang.String, int)} instead
-         */
-        @java.lang.Deprecated
-        NSString stringWithCString_length(com.sun.jna.ptr.ByteByReference bytes, NSUInteger length);
-
-        /**
-         * Original signature : <code>stringWithCString(const char*, NSUInteger)</code><br>
          * <i>from NSStringDeprecated native declaration : :364</i>
          */
-        NSString stringWithCString_length(java.lang.String bytes, NSUInteger length);
-
-        /**
-         * Original signature : <code>stringWithCString(const char*)</code><br>
-         * <i>from NSStringDeprecated native declaration : :365</i><br>
-         *
-         * @deprecated use the safer method {@link #stringWithCString(java.lang.String)} instead
-         */
-        @java.lang.Deprecated
-        NSString stringWithCString(com.sun.jna.ptr.ByteByReference bytes);
+        NSString stringWithCString_length(String bytes, NSUInteger length);
 
         /**
          * Original signature : <code>stringWithCString(const char*)</code><br>
          * <i>from NSStringDeprecated native declaration : :365</i>
          */
-        NSString stringWithCString(java.lang.String bytes);
+        NSString stringWithCString(String bytes);
     }
 
     /**
@@ -532,34 +469,34 @@ public abstract class NSString implements NSObject, NSCopying {
      * Result in O(1) time; a rough estimate<br>
      * <i>from NSStringExtensionMethods native declaration : :180</i>
      */
-    public abstract int fastestEncoding();
+    public abstract NSUInteger fastestEncoding();
 
     /**
      * Original signature : <code>NSStringEncoding smallestEncoding()</code><br>
      * Result in O(n) time; the encoding in which the string is most compact<br>
      * <i>from NSStringExtensionMethods native declaration : :181</i>
      */
-    public abstract int smallestEncoding();
+    public abstract NSUInteger smallestEncoding();
 
     /**
      * Original signature : <code>NSData* dataUsingEncoding(NSStringEncoding, BOOL)</code><br>
      * External representation<br>
      * <i>from NSStringExtensionMethods native declaration : :183</i>
      */
-    public abstract NSData dataUsingEncoding_allowLossyConversion(int encoding, boolean lossy);
+    public abstract NSData dataUsingEncoding_allowLossyConversion(NSUInteger encoding, boolean lossy);
 
     /**
      * Original signature : <code>NSData* dataUsingEncoding(NSStringEncoding)</code><br>
      * External representation<br>
      * <i>from NSStringExtensionMethods native declaration : :184</i>
      */
-    public abstract NSData dataUsingEncoding(int encoding);
+    public abstract NSData dataUsingEncoding(NSUInteger encoding);
 
     /**
      * Original signature : <code>BOOL canBeConvertedToEncoding(NSStringEncoding)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :186</i>
      */
-    public abstract boolean canBeConvertedToEncoding(int encoding);
+    public abstract boolean canBeConvertedToEncoding(NSUInteger encoding);
 
     /**
      * Methods to convert NSString to a NULL-terminated cString using the specified encoding. Note, these are the "new" cString methods, and are not deprecated like the older cString methods which do not take encoding arguments.<br>
@@ -567,24 +504,14 @@ public abstract class NSString implements NSObject, NSCopying {
      * "Autoreleased"; NULL return if encoding conversion not possible; for performance reasons, lifetime of this should not be considered longer than the lifetime of the receiving string (if the receiver string is freed, this might go invalid then, before the end of the autorelease scope)<br>
      * <i>from NSStringExtensionMethods native declaration : :191</i>
      */
-    public abstract com.sun.jna.ptr.ByteByReference cStringUsingEncoding(int encoding);
-
-    /**
-     * Original signature : <code>BOOL getCString(char*, NSUInteger, NSStringEncoding)</code><br>
-     * NO return if conversion not possible due to encoding errors or too small of a buffer. The buffer should include room for maxBufferCount bytes; this number should accomodate the expected size of the return value plus the NULL termination character, which this method adds. (So note that the maxLength passed to this method is one more than the one you would have passed to the deprecated getCString:maxLength:.)<br>
-     * <i>from NSStringExtensionMethods native declaration : :192</i><br>
-     *
-     * @deprecated use the safer method {@link #getCString_maxLength_encoding(java.nio.ByteBuffer, int, int)} instead
-     */
-    @java.lang.Deprecated
-    public abstract boolean getCString_maxLength_encoding(com.sun.jna.ptr.ByteByReference buffer, int maxBufferCount, int encoding);
+    public abstract com.sun.jna.ptr.ByteByReference cStringUsingEncoding(NSUInteger encoding);
 
     /**
      * Original signature : <code>BOOL getCString(char*, NSUInteger, NSStringEncoding)</code><br>
      * NO return if conversion not possible due to encoding errors or too small of a buffer. The buffer should include room for maxBufferCount bytes; this number should accomodate the expected size of the return value plus the NULL termination character, which this method adds. (So note that the maxLength passed to this method is one more than the one you would have passed to the deprecated getCString:maxLength:.)<br>
      * <i>from NSStringExtensionMethods native declaration : :192</i>
      */
-    public abstract boolean getCString_maxLength_encoding(java.nio.ByteBuffer buffer, int maxBufferCount, int encoding);
+    public abstract boolean getCString_maxLength_encoding(java.nio.ByteBuffer buffer, NSUInteger maxBufferCount, NSUInteger encoding);
     /**
      * <i>from NSStringExtensionMethods native declaration : :205</i><br>
      * Conversion Error : /**<br>
@@ -692,33 +619,15 @@ public abstract class NSString implements NSObject, NSCopying {
 
     /**
      * Original signature : <code>initWithCharacters(const unichar*, NSUInteger)</code><br>
-     * <i>from NSStringExtensionMethods native declaration : :253</i><br>
-     *
-     * @deprecated use the safer methods {@link #initWithCharacters_length(char[], int)} and {@link #initWithCharacters_length(char, int)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithCharacters_length(char characters, NSUInteger length);
-
-    /**
-     * Original signature : <code>initWithCharacters(const unichar*, NSUInteger)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :253</i>
      */
     public abstract NSString initWithCharacters_length(char characters[], NSUInteger length);
 
     /**
      * Original signature : <code>initWithUTF8String(const char*)</code><br>
-     * <i>from NSStringExtensionMethods native declaration : :254</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithUTF8String(java.lang.String)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithUTF8String(com.sun.jna.ptr.ByteByReference nullTerminatedCString);
-
-    /**
-     * Original signature : <code>initWithUTF8String(const char*)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :254</i>
      */
-    public abstract NSString initWithUTF8String(java.lang.String nullTerminatedCString);
+    public abstract NSString initWithUTF8String(String nullTerminatedCString);
 
     /**
      * Original signature : <code>initWithString(NSString*)</code><br>
@@ -750,58 +659,39 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>initWithData(NSData*, NSStringEncoding)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :260</i>
      */
-    public abstract NSString initWithData_encoding(NSData data, int encoding);
+    public abstract NSString initWithData_encoding(NSData data, NSUInteger encoding);
 
     /**
      * Original signature : <code>initWithBytes(const void*, NSUInteger, NSStringEncoding)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :261</i>
      */
-    public abstract NSString initWithBytes_length_encoding(com.sun.jna.Pointer bytes, NSUInteger len, int encoding);
+    public abstract NSString initWithBytes_length_encoding(com.sun.jna.Pointer bytes, NSUInteger len, NSUInteger encoding);
 
     /**
      * Original signature : <code>initWithBytesNoCopy(void*, NSUInteger, NSStringEncoding, BOOL)</code><br>
      * "NoCopy" is a hint<br>
      * <i>from NSStringExtensionMethods native declaration : :263</i>
      */
-    public abstract NSString initWithBytesNoCopy_length_encoding_freeWhenDone(com.sun.jna.Pointer bytes, NSUInteger len, int encoding, boolean freeBuffer);
-
-    /**
-     * Original signature : <code>initWithCString(const char*, NSStringEncoding)</code><br>
-     * <i>from NSStringExtensionMethods native declaration : :274</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithCString_encoding(java.lang.String, int)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithCString_encoding(com.sun.jna.ptr.ByteByReference nullTerminatedCString, int encoding);
+    public abstract NSString initWithBytesNoCopy_length_encoding_freeWhenDone(com.sun.jna.Pointer bytes, NSUInteger len, NSUInteger encoding, boolean freeBuffer);
 
     /**
      * Original signature : <code>initWithCString(const char*, NSStringEncoding)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :274</i>
      */
-    public abstract NSString initWithCString_encoding(java.lang.String nullTerminatedCString, int encoding);
+    public abstract NSString initWithCString_encoding(String nullTerminatedCString, NSUInteger encoding);
 
     /**
      * These use the specified encoding.  If nil is returned, the optional error return indicates problem that was encountered (for instance, file system or encoding errors).<br>
      * Original signature : <code>initWithContentsOfURL(NSURL*, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :279</i>
      */
-    public abstract NSString initWithContentsOfURL_encoding_error(NSURL url, int enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSString initWithContentsOfURL_encoding_error(NSURL url, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>initWithContentsOfFile(NSString*, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :280</i>
      */
-    public abstract NSString initWithContentsOfFile_encoding_error(NSString path, int enc, com.sun.jna.ptr.PointerByReference error);
-
-    /**
-     * These try to determine the encoding, and return the encoding which was used.  Note that these methods might get "smarter" in subsequent releases of the system, and use additional techniques for recognizing encodings. If nil is returned, the optional error return indicates problem that was encountered (for instance, file system or encoding errors).<br>
-     * Original signature : <code>initWithContentsOfURL(NSURL*, NSStringEncoding*, NSError**)</code><br>
-     * <i>from NSStringExtensionMethods native declaration : :286</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithContentsOfURL_usedEncoding_error(com.sun.jna.Pointer, java.nio.IntBuffer, com.sun.jna.ptr.PointerByReference)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithContentsOfURL_usedEncoding_error(NSURL url, com.sun.jna.ptr.IntByReference enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSString initWithContentsOfFile_encoding_error(NSString path, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * These try to determine the encoding, and return the encoding which was used.  Note that these methods might get "smarter" in subsequent releases of the system, and use additional techniques for recognizing encodings. If nil is returned, the optional error return indicates problem that was encountered (for instance, file system or encoding errors).<br>
@@ -809,15 +699,6 @@ public abstract class NSString implements NSObject, NSCopying {
      * <i>from NSStringExtensionMethods native declaration : :286</i>
      */
     public abstract NSString initWithContentsOfURL_usedEncoding_error(NSURL url, java.nio.IntBuffer enc, com.sun.jna.ptr.PointerByReference error);
-
-    /**
-     * Original signature : <code>initWithContentsOfFile(NSString*, NSStringEncoding*, NSError**)</code><br>
-     * <i>from NSStringExtensionMethods native declaration : :287</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithContentsOfFile_usedEncoding_error(NSString, java.nio.IntBuffer, com.sun.jna.ptr.PointerByReference)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithContentsOfFile_usedEncoding_error(NSString path, com.sun.jna.ptr.IntByReference enc, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>initWithContentsOfFile(NSString*, NSStringEncoding*, NSError**)</code><br>
@@ -830,13 +711,13 @@ public abstract class NSString implements NSObject, NSCopying {
      * Original signature : <code>BOOL writeToURL(NSURL*, BOOL, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :293</i>
      */
-    public abstract boolean writeToURL_atomically_encoding_error(NSURL url, boolean useAuxiliaryFile, int enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean writeToURL_atomically_encoding_error(NSURL url, boolean useAuxiliaryFile, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>BOOL writeToFile(NSString*, BOOL, NSStringEncoding, NSError**)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :294</i>
      */
-    public abstract boolean writeToFile_atomically_encoding_error(NSString path, boolean useAuxiliaryFile, int enc, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean writeToFile_atomically_encoding_error(NSString path, boolean useAuxiliaryFile, NSUInteger enc, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>propertyList()</code><br>
@@ -871,27 +752,9 @@ public abstract class NSString implements NSObject, NSCopying {
 
     /**
      * Original signature : <code>void getCString(char*)</code><br>
-     * <i>from NSStringDeprecated native declaration : :349</i><br>
-     *
-     * @deprecated use the safer method {@link #getCString(java.nio.ByteBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getCString(com.sun.jna.ptr.ByteByReference bytes);
-
-    /**
-     * Original signature : <code>void getCString(char*)</code><br>
      * <i>from NSStringDeprecated native declaration : :349</i>
      */
     public abstract void getCString(java.nio.ByteBuffer bytes);
-
-    /**
-     * Original signature : <code>void getCString(char*, NSUInteger)</code><br>
-     * <i>from NSStringDeprecated native declaration : :350</i><br>
-     *
-     * @deprecated use the safer method {@link #getCString_maxLength(java.nio.ByteBuffer, int)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getCString_maxLength(com.sun.jna.ptr.ByteByReference bytes, NSUInteger maxLength);
 
     /**
      * Original signature : <code>void getCString(char*, NSUInteger)</code><br>
@@ -929,48 +792,21 @@ public abstract class NSString implements NSObject, NSCopying {
 
     /**
      * Original signature : <code>initWithCStringNoCopy(char*, NSUInteger, BOOL)</code><br>
-     * <i>from NSStringDeprecated native declaration : :361</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithCStringNoCopy_length_freeWhenDone(java.nio.ByteBuffer, int, boolean)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithCStringNoCopy_length_freeWhenDone(com.sun.jna.ptr.ByteByReference bytes, NSUInteger length, boolean freeBuffer);
-
-    /**
-     * Original signature : <code>initWithCStringNoCopy(char*, NSUInteger, BOOL)</code><br>
      * <i>from NSStringDeprecated native declaration : :361</i>
      */
     public abstract NSString initWithCStringNoCopy_length_freeWhenDone(java.nio.ByteBuffer bytes, NSUInteger length, boolean freeBuffer);
 
     /**
      * Original signature : <code>initWithCString(const char*, NSUInteger)</code><br>
-     * <i>from NSStringDeprecated native declaration : :362</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithCString_length(java.lang.String, int)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithCString_length(com.sun.jna.ptr.ByteByReference bytes, NSUInteger length);
-
-    /**
-     * Original signature : <code>initWithCString(const char*, NSUInteger)</code><br>
      * <i>from NSStringDeprecated native declaration : :362</i>
      */
-    public abstract NSString initWithCString_length(java.lang.String bytes, NSUInteger length);
-
-    /**
-     * Original signature : <code>initWithCString(const char*)</code><br>
-     * <i>from NSStringDeprecated native declaration : :363</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithCString(java.lang.String)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSString initWithCString(com.sun.jna.ptr.ByteByReference bytes);
+    public abstract NSString initWithCString_length(String bytes, NSUInteger length);
 
     /**
      * Original signature : <code>initWithCString(const char*)</code><br>
      * <i>from NSStringDeprecated native declaration : :363</i>
      */
-    public abstract NSString initWithCString(java.lang.String bytes);
+    public abstract NSString initWithCString(String bytes);
 
     /**
      * Original signature : <code>NSArray* pathComponents()</code><br>

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSUserInterfaceValidation.h:69</i>
 public interface NSValidatedUserInterfaceItem {

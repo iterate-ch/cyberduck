@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.CGFloat;
+
 
 /// <i>native declaration : :72</i>
 public abstract class NSTextView extends NSText {
@@ -250,7 +252,7 @@ public abstract class NSTextView extends NSText {
      * Original signature : <code>CGFloat rulerView(NSRulerView*, NSRulerMarker*, CGFloat)</code><br>
      * <i>native declaration : :171</i>
      */
-    public abstract float rulerView_willMoveMarker_toLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, float location);
+    public abstract CGFloat rulerView_willMoveMarker_toLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, CGFloat location);
 
     /**
      * Original signature : <code>BOOL rulerView(NSRulerView*, NSRulerMarker*)</code><br>
@@ -262,7 +264,7 @@ public abstract class NSTextView extends NSText {
      * Original signature : <code>CGFloat rulerView(NSRulerView*, NSRulerMarker*, CGFloat)</code><br>
      * <i>native declaration : :173</i>
      */
-    public abstract float rulerView_willAddMarker_atLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, float location);
+    public abstract CGFloat rulerView_willAddMarker_atLocation(com.sun.jna.Pointer ruler, com.sun.jna.Pointer marker, CGFloat location);
 
     /**
      * Original signature : <code>void rulerView(NSRulerView*, NSEvent*)</code><br>

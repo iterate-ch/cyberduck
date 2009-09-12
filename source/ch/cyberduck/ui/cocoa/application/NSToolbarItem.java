@@ -21,10 +21,11 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSSize;
 
 import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :10</i>
 public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedUserInterfaceItem {
@@ -122,13 +123,7 @@ public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedU
      * Original signature : <code>void setTag(NSInteger)</code><br>
      * <i>native declaration : :87</i>
      */
-    public abstract void setTag(int tag);
-
-    /**
-     * Original signature : <code>NSInteger tag()</code><br>
-     * <i>native declaration : :88</i>
-     */
-    public abstract int tag();
+    public abstract void setTag(NSInteger tag);
 
     /**
      * Original signature : <code>void setTarget(id)</code><br>
@@ -148,12 +143,6 @@ public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedU
      * - (void)setAction:(null)action; (Argument action cannot be converted)
      */
     public abstract void setAction(Selector action);
-
-    /**
-     * Original signature : <code>action()</code><br>
-     * <i>native declaration : :96</i>
-     */
-    public abstract Selector action();
 
     /**
      * Original signature : <code>void setEnabled(BOOL)</code><br>

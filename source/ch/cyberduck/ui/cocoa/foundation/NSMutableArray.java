@@ -115,15 +115,6 @@ public abstract class NSMutableArray extends NSArray {
 
     /**
      * Original signature : <code>void removeObjectsFromIndices(NSUInteger*, NSUInteger)</code><br>
-     * <i>from NSExtendedMutableArray native declaration : :99</i><br>
-     *
-     * @deprecated use the safer method {@link #removeObjectsFromIndices_numIndices(java.nio.IntBuffer, NSUInteger)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void removeObjectsFromIndices_numIndices(com.sun.jna.ptr.IntByReference indices, NSUInteger cnt);
-
-    /**
-     * Original signature : <code>void removeObjectsFromIndices(NSUInteger*, NSUInteger)</code><br>
      * <i>from NSExtendedMutableArray native declaration : :99</i>
      */
     public abstract void removeObjectsFromIndices_numIndices(java.nio.IntBuffer indices, NSUInteger cnt);

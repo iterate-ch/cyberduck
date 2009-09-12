@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :150</i>
 public abstract class NSMutableParagraphStyle extends NSParagraphStyle {
@@ -163,5 +164,5 @@ public abstract class NSMutableParagraphStyle extends NSParagraphStyle {
      * Original signature : <code>public abstract void setHeaderLevel(NSInteger)</code><br>
      * <i>native declaration : :178</i>
      */
-    public abstract void setHeaderLevel(int level);
+    public abstract void setHeaderLevel(NSInteger level);
 }

@@ -4,7 +4,7 @@ import org.rococoa.ReleaseInFinalize;
 import org.rococoa.Rococoa;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public
 @ReleaseInFinalize(false)

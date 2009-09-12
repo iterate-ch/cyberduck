@@ -450,14 +450,6 @@ public abstract class NSLayoutManager implements NSObject {
      * Conversion Error : /// Original signature : <code>void setAttachmentSize(null, NSRange)</code><br>
      * - (void)setAttachmentSize:(null)attachmentSize forGlyphRange:(NSRange)glyphRange; (Argument attachmentSize cannot be converted)
      */
-    /**
-     * Original signature : <code>void getFirstUnlaidCharacterIndex(NSUInteger*, NSUInteger*)</code><br>
-     * <i>native declaration : :394</i><br>
-     *
-     * @deprecated use the safer method {@link #getFirstUnlaidCharacterIndex_glyphIndex(java.nio.IntBuffer, java.nio.IntBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getFirstUnlaidCharacterIndex_glyphIndex(com.sun.jna.ptr.IntByReference charIndex, com.sun.jna.ptr.IntByReference glyphIndex);
 
     /**
      * Original signature : <code>void getFirstUnlaidCharacterIndex(NSUInteger*, NSUInteger*)</code><br>
@@ -612,14 +604,6 @@ public abstract class NSLayoutManager implements NSObject {
      * <i>native declaration : :483</i><br>
      * Conversion Error : NSPoint
      */
-    /**
-     * Original signature : <code>NSUInteger getLineFragmentInsertionPointsForCharacterAtIndex(NSUInteger, BOOL, BOOL, CGFloat*, NSUInteger*)</code><br>
-     * <i>native declaration : :488</i><br>
-     *
-     * @deprecated use the safer method {@link #getLineFragmentInsertionPointsForCharacterAtIndex_alternatePositions_inDisplayOrder_positions_characterIndexes(int, boolean, boolean, java.nio.FloatBuffer, java.nio.IntBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract int getLineFragmentInsertionPointsForCharacterAtIndex_alternatePositions_inDisplayOrder_positions_characterIndexes(int charIndex, boolean aFlag, boolean dFlag, com.sun.jna.ptr.FloatByReference positions, com.sun.jna.ptr.IntByReference charIndexes);
 
     /**
      * Original signature : <code>NSUInteger getLineFragmentInsertionPointsForCharacterAtIndex(NSUInteger, BOOL, BOOL, CGFloat*, NSUInteger*)</code><br>

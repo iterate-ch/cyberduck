@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
+import com.sun.jna.Structure;
+
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -22,5 +24,5 @@ package ch.cyberduck.ui.cocoa.foundation;
 /**
  * @version $Id$
  */
-public abstract class NSZone implements NSObject {
+public abstract class NSZone extends Structure implements Structure.ByValue {
 }

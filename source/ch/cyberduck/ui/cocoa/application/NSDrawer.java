@@ -20,9 +20,10 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSSize;
 
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.CGFloat;
 
 
 /// <i>native declaration : :31</i>
@@ -158,25 +159,25 @@ public interface NSDrawer extends NSObject {
      * Original signature : <code>void setLeadingOffset(CGFloat)</code><br>
      * <i>native declaration : :86</i>
      */
-    public abstract void setLeadingOffset(float offset);
+    public abstract void setLeadingOffset(CGFloat offset);
 
     /**
      * Original signature : <code>CGFloat leadingOffset()</code><br>
      * <i>native declaration : :87</i>
      */
-    public abstract float leadingOffset();
+    public abstract CGFloat leadingOffset();
 
     /**
      * Original signature : <code>void setTrailingOffset(CGFloat)</code><br>
      * <i>native declaration : :88</i>
      */
-    public abstract void setTrailingOffset(float offset);
+    public abstract void setTrailingOffset(CGFloat offset);
 
     /**
      * Original signature : <code>CGFloat trailingOffset()</code><br>
      * <i>native declaration : :89</i>
      */
-    public abstract float trailingOffset();
+    public abstract CGFloat trailingOffset();
 
     public static final int NSDrawerClosedState = 0;
     public static final int NSDrawerOpeningState = 1;

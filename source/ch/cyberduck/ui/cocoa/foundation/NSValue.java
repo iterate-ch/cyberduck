@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
+import org.rococoa.cocoa.foundation.NSSize;
+
 /*
 * Copyright (c) 2002-2009 David Kocher. All rights reserved.
 *
@@ -42,15 +44,6 @@ public abstract class NSValue implements NSObject {
      * <i>native declaration : /Users/dkocher/null:13</i>
      */
     public abstract com.sun.jna.ptr.ByteByReference objCType();
-
-    /**
-     * Original signature : <code>initWithBytes(const void*, const char*)</code><br>
-     * <i>from NSValueCreation native declaration : /Users/dkocher/null:19</i><br>
-     *
-     * @deprecated use the safer method {@link #initWithBytes_objCType(com.sun.jna.Pointer, java.lang.String)} instead
-     */
-    @java.lang.Deprecated
-    public abstract NSValue initWithBytes_objCType(com.sun.jna.Pointer value, com.sun.jna.ptr.ByteByReference type);
 
     /**
      * Original signature : <code>initWithBytes(const void*, const char*)</code><br>

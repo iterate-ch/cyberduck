@@ -19,8 +19,10 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface NSDraggingDestination {
 
@@ -28,14 +30,14 @@ public interface NSDraggingDestination {
      * Original signature : <code>NSDragOperation draggingEntered(id<NSDraggingInfo>)</code><br>
      * <i>native declaration : line 47</i>
      */
-    int draggingEntered(org.rococoa.ID sender);
+    NSUInteger draggingEntered(org.rococoa.ID sender);
 
     /**
      * Original signature : <code>NSDragOperation draggingUpdated(org.rococoa.ID)</code><br>
      * if the destination responded to draggingEntered: but not to draggingUpdated: the return value from draggingEntered: is used<br>
      * <i>native declaration : line 48</i>
      */
-    int draggingUpdated(org.rococoa.ID sender);
+    NSUInteger draggingUpdated(org.rococoa.ID sender);
 
     /**
      * Original signature : <code>void draggingExited(org.rococoa.ID)</code><br>

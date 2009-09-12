@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 public abstract class NSImageView implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImageView", _Class.class);
 
@@ -44,7 +46,7 @@ public abstract class NSImageView implements NSObject {
      * Original signature : <code>imageAlignment()</code><br>
      * <i>native declaration : :29</i>
      */
-    public abstract com.sun.jna.Pointer imageAlignment();
+    public abstract NSUInteger imageAlignment();
     /**
      * <i>native declaration : :30</i><br>
      * Conversion Error : /// Original signature : <code>void setImageAlignment(null)</code><br>
@@ -54,7 +56,7 @@ public abstract class NSImageView implements NSObject {
      * Original signature : <code>imageScaling()</code><br>
      * <i>native declaration : :31</i>
      */
-    public abstract com.sun.jna.Pointer imageScaling();
+    public abstract NSUInteger imageScaling();
     /**
      * <i>native declaration : :32</i><br>
      * Conversion Error : /// Original signature : <code>void setImageScaling(null)</code><br>
@@ -64,7 +66,7 @@ public abstract class NSImageView implements NSObject {
      * Original signature : <code>imageFrameStyle()</code><br>
      * <i>native declaration : :33</i>
      */
-    public abstract com.sun.jna.Pointer imageFrameStyle();
+    public abstract NSUInteger imageFrameStyle();
     /**
      * <i>native declaration : :34</i><br>
      * Conversion Error : /// Original signature : <code>void setImageFrameStyle(null)</code><br>
@@ -74,7 +76,7 @@ public abstract class NSImageView implements NSObject {
      * Original signature : <code>void setEditable(BOOL)</code><br>
      * <i>native declaration : :35</i>
      */
-    public abstract void setEditable(boolean yn);
+    public abstract void setEditable(boolean editable);
 
     /**
      * Original signature : <code>BOOL isEditable()</code><br>

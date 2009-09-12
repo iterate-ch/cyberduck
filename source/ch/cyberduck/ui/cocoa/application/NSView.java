@@ -19,11 +19,14 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
-
+import org.rococoa.cocoa.foundation.*;
 
 public abstract class NSView implements NSResponder {
 
@@ -111,15 +114,6 @@ public abstract class NSView implements NSResponder {
      * <i>native declaration : :126</i>
      */
     public abstract boolean isHiddenOrHasHiddenAncestor();
-
-    /**
-     * Original signature : <code>void getRectsBeingDrawn(const NSRect**, NSInteger*)</code><br>
-     * <i>native declaration : :128</i><br>
-     *
-     * @deprecated use the safer method {@link #getRectsBeingDrawn_count(com.sun.jna.ptr.PointerByReference, java.nio.IntBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getRectsBeingDrawn_count(com.sun.jna.ptr.PointerByReference rects, com.sun.jna.ptr.IntByReference count);
 
     /**
      * Original signature : <code>void getRectsBeingDrawn(const NSRect**, NSInteger*)</code><br>
@@ -255,13 +249,13 @@ public abstract class NSView implements NSResponder {
      * Original signature : <code>void setAutoresizingMask(NSUInteger)</code><br>
      * <i>native declaration : :157</i>
      */
-    public abstract void setAutoresizingMask(int mask);
+    public abstract void setAutoresizingMask(NSUInteger mask);
 
     /**
      * Original signature : <code>NSUInteger autoresizingMask()</code><br>
      * <i>native declaration : :158</i>
      */
-    public abstract int autoresizingMask();
+    public abstract NSUInteger autoresizingMask();
 
     /**
      * <i>native declaration : :160</i><br>
@@ -332,7 +326,7 @@ public abstract class NSView implements NSResponder {
      * Original signature : <code>CGFloat boundsRotation()</code><br>
      * <i>native declaration : :174</i>
      */
-    public abstract float boundsRotation();
+    public abstract CGFloat boundsRotation();
     /**
      * <i>native declaration : :175</i><br>
      * Conversion Error : /// Original signature : <code>void translateOriginToPoint(null)</code><br>
@@ -631,12 +625,6 @@ public abstract class NSView implements NSResponder {
     public abstract int tag();
 
     /**
-     * Original signature : <code>BOOL performKeyEquivalent(NSEvent*)</code><br>
-     * <i>native declaration : :253</i>
-     */
-    public abstract boolean performKeyEquivalent(NSEvent event);
-
-    /**
      * Original signature : <code>BOOL acceptsFirstMouse(NSEvent*)</code><br>
      * <i>native declaration : :254</i>
      */
@@ -716,13 +704,13 @@ public abstract class NSView implements NSResponder {
      * Original signature : <code>void setAlphaValue(CGFloat)</code><br>
      * <i>native declaration : :276</i>
      */
-    public abstract void setAlphaValue(float viewAlpha);
+    public abstract void setAlphaValue(CGFloat viewAlpha);
 
     /**
      * Original signature : <code>CGFloat alphaValue()</code><br>
      * <i>native declaration : :277</i>
      */
-    public abstract float alphaValue();
+    public abstract CGFloat alphaValue();
 
     /**
      * Original signature : <code>void setBackgroundFilters(NSArray*)</code><br>
@@ -886,15 +874,6 @@ public abstract class NSView implements NSResponder {
      * <i>native declaration : :330</i><br>
      * Conversion Error : NSRect
      */
-    /**
-     * On return from -getRectsExposedDuringLiveResize, exposedRects indicates the parts of the view that are newly exposed (at most 4 rects).  *count indicates how many rects are in the exposedRects list<br>
-     * Original signature : <code>void getRectsExposedDuringLiveResize(NSRect[], NSInteger*)</code><br>
-     * <i>native declaration : :332</i><br>
-     *
-     * @deprecated use the safer method {@link #getRectsExposedDuringLiveResize_count(com.sun.jna.Pointer, java.nio.IntBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getRectsExposedDuringLiveResize_count(com.sun.jna.Pointer exposedRects, com.sun.jna.ptr.IntByReference count);
 
     /**
      * On return from -getRectsExposedDuringLiveResize, exposedRects indicates the parts of the view that are newly exposed (at most 4 rects).  *count indicates how many rects are in the exposedRects list<br>
@@ -992,43 +971,25 @@ public abstract class NSView implements NSResponder {
      * Original signature : <code>CGFloat heightAdjustLimit()</code><br>
      * <i>from NSPrinting native declaration : :374</i>
      */
-    public abstract float heightAdjustLimit();
+    public abstract CGFloat heightAdjustLimit();
 
     /**
      * Original signature : <code>CGFloat widthAdjustLimit()</code><br>
      * <i>from NSPrinting native declaration : :375</i>
      */
-    public abstract float widthAdjustLimit();
-
-    /**
-     * Original signature : <code>void adjustPageWidthNew(CGFloat*, CGFloat, CGFloat, CGFloat)</code><br>
-     * <i>from NSPrinting native declaration : :376</i><br>
-     *
-     * @deprecated use the safer method {@link #adjustPageWidthNew_left_right_limit(java.nio.FloatBuffer, float, float, float)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void adjustPageWidthNew_left_right_limit(com.sun.jna.ptr.FloatByReference newRight, float oldLeft, float oldRight, float rightLimit);
+    public abstract CGFloat widthAdjustLimit();
 
     /**
      * Original signature : <code>void adjustPageWidthNew(CGFloat*, CGFloat, CGFloat, CGFloat)</code><br>
      * <i>from NSPrinting native declaration : :376</i>
      */
-    public abstract void adjustPageWidthNew_left_right_limit(java.nio.FloatBuffer newRight, float oldLeft, float oldRight, float rightLimit);
-
-    /**
-     * Original signature : <code>void adjustPageHeightNew(CGFloat*, CGFloat, CGFloat, CGFloat)</code><br>
-     * <i>from NSPrinting native declaration : :377</i><br>
-     *
-     * @deprecated use the safer method {@link #adjustPageHeightNew_top_bottom_limit(java.nio.FloatBuffer, float, float, float)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void adjustPageHeightNew_top_bottom_limit(com.sun.jna.ptr.FloatByReference newBottom, float oldTop, float oldBottom, float bottomLimit);
+    public abstract void adjustPageWidthNew_left_right_limit(java.nio.FloatBuffer newRight, CGFloat oldLeft, CGFloat oldRight, CGFloat rightLimit);
 
     /**
      * Original signature : <code>void adjustPageHeightNew(CGFloat*, CGFloat, CGFloat, CGFloat)</code><br>
      * <i>from NSPrinting native declaration : :377</i>
      */
-    public abstract void adjustPageHeightNew_top_bottom_limit(java.nio.FloatBuffer newBottom, float oldTop, float oldBottom, float bottomLimit);
+    public abstract void adjustPageHeightNew_top_bottom_limit(java.nio.FloatBuffer newBottom, CGFloat oldTop, CGFloat oldBottom, CGFloat bottomLimit);
     /**
      * <i>from NSPrinting native declaration : :378</i><br>
      * Conversion Error : NSRect

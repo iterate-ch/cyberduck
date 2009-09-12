@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :23</i>
 public abstract class NSTabView implements NSObject {
@@ -132,13 +133,13 @@ public abstract class NSTabView implements NSObject {
      * Original signature : <code>controlTint()</code><br>
      * <i>native declaration : :95</i>
      */
-    public abstract NSObject controlTint();
+    public abstract NSUInteger controlTint();
 
     /**
      * Original signature : <code>controlSize()</code><br>
      * <i>native declaration : :96</i>
      */
-    public abstract NSObject controlSize();
+    public abstract NSUInteger controlSize();
 
     /**
      * Original signature : <code>void setFont(NSFont*)</code><br>

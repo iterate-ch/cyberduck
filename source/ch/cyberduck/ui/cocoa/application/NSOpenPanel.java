@@ -22,8 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.rococoa.Selector;
 import org.rococoa.ID;
+import org.rococoa.Selector;
 
 /// <i>native declaration : :14</i>
 public abstract class NSOpenPanel extends NSSavePanel {

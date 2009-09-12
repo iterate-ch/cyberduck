@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-import org.rococoa.Rococoa;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 
 /*
@@ -74,14 +74,14 @@ public abstract class NSAppleEventManager implements NSObject {
      * Original signature : <code>-(NSAppleEventDescriptor*)currentAppleEvent</code><br>
      * <i>native declaration : line 45</i>
      */
-    public abstract com.sun.jna.Pointer currentAppleEvent();
+    public abstract NSAppleEventDescriptor currentAppleEvent();
 
     /**
      * If an Apple event is being handled on the current thread (i.e., -currentAppleEvent would not return nil), return the corresponding reply event descriptor.  Return nil otherwise.  This descriptor, including any mutatations, will be returned to the sender of the current event when all handling of the event has been completed, if the sender has requested a reply.  The effects of retaining the descriptor are undefined; it may be copied, but mutations of the copy will not be returned to the sender of the current event.<br>
      * Original signature : <code>-(NSAppleEventDescriptor*)currentReplyAppleEvent</code><br>
      * <i>native declaration : line 48</i>
      */
-    public abstract com.sun.jna.Pointer currentReplyAppleEvent();
+    public abstract NSAppleEventDescriptor currentReplyAppleEvent();
 
     /**
      * If an Apple event is being handled on the current thread (i.e., -currentAppleEvent would not return nil), suspend the handling of the event, returning an ID that must be used to resume the handling of the event.  Return zero otherwise.  The suspended event will no longer be the current event after this method has returned.<br>
@@ -95,14 +95,14 @@ public abstract class NSAppleEventManager implements NSObject {
      * Original signature : <code>-(NSAppleEventDescriptor*)appleEventForSuspensionID:(NSAppleEventManagerSuspensionID)</code><br>
      * <i>native declaration : line 54</i>
      */
-    public abstract com.sun.jna.Pointer appleEventForSuspensionID(com.sun.jna.Pointer suspensionID);
+    public abstract NSAppleEventDescriptor appleEventForSuspensionID(com.sun.jna.Pointer suspensionID);
 
     /**
      * Given a nonzero suspension ID returned by an invocation of -suspendCurrentAppleEvent, return the corresponding reply event descriptor.  This descriptor, including any mutatations, will be returned to the sender of the suspended event when handling of the event is resumed, if the sender has requested a reply.  The effects of retaining the descriptor are undefined; it may be copied, but mutations of the copy will not be returned to the sender of the suspended event.  This method may be invoked in any thread, not just the one in which the corresponding invocation of -suspendCurrentAppleEvent occurred.<br>
      * Original signature : <code>-(NSAppleEventDescriptor*)replyAppleEventForSuspensionID:(NSAppleEventManagerSuspensionID)</code><br>
      * <i>native declaration : line 57</i>
      */
-    public abstract com.sun.jna.Pointer replyAppleEventForSuspensionID(com.sun.jna.Pointer suspensionID);
+    public abstract NSAppleEventDescriptor replyAppleEventForSuspensionID(com.sun.jna.Pointer suspensionID);
 
     /**
      * Given a nonzero suspension ID returned by an invocation of -suspendCurrentAppleEvent, set the values that will be returned by subsequent invocations of -currentAppleEvent and -currentReplyAppleEvent to be the event whose handling was suspended and its corresponding reply event, respectively.  Redundant invocations of this method will be ignored.<br>

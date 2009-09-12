@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 /// <i>native declaration : :52</i>
 public abstract class NSPasteboard implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPasteboard", _Class.class);
@@ -102,7 +104,7 @@ public abstract class NSPasteboard implements NSObject {
      */
     public abstract int declareTypes_owner(NSArray newTypes, org.rococoa.ID newOwner);
 
-    public int addTypes(NSArray newTypes, org.rococoa.ID newOwner) {
+    public NSInteger addTypes(NSArray newTypes, org.rococoa.ID newOwner) {
         return this.addTypes_owner(newTypes, newOwner);
     }
 
@@ -110,13 +112,13 @@ public abstract class NSPasteboard implements NSObject {
      * Original signature : <code>NSInteger addTypes(NSArray*, id)</code><br>
      * <i>native declaration : :80</i>
      */
-    public abstract int addTypes_owner(NSArray newTypes, org.rococoa.ID newOwner);
+    public abstract NSInteger addTypes_owner(NSArray newTypes, org.rococoa.ID newOwner);
 
     /**
      * Original signature : <code>NSInteger changeCount()</code><br>
      * <i>native declaration : :81</i>
      */
-    public abstract int changeCount();
+    public abstract NSInteger changeCount();
 
     /**
      * Original signature : <code>NSArray* types()</code><br>
@@ -184,7 +186,7 @@ public abstract class NSPasteboard implements NSObject {
      * Original signature : <code>NSString* readFileContentsType(NSString*, NSString*)</code><br>
      * <i>from NSFileContents native declaration : :99</i>
      */
-    public abstract com.sun.jna.Pointer readFileContentsType_toFile(String type, String filename);
+    public abstract String readFileContentsType_toFile(String type, String filename);
 
     /**
      * Original signature : <code>BOOL writeFileWrapper(NSFileWrapper*)</code><br>

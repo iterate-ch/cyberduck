@@ -29,7 +29,6 @@ public abstract class NSFileManager implements NSObject {
         return CLASS.defaultManager();
     }
 
-
     public static final String NSFileType = "NSFileType";
     public static final String NSFileTypeDirectory = "NSFileTypeDirectory";
     public static final String NSFileTypeRegular = "NSFileTypeRegular";
@@ -107,7 +106,7 @@ public abstract class NSFileManager implements NSObject {
      * Original signature : <code>NSArray* contentsOfDirectoryAtPath(NSString*, NSError**)</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract com.sun.jna.Pointer contentsOfDirectoryAtPath_error(String path, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSArray contentsOfDirectoryAtPath_error(String path, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * subpathsOfDirectoryAtPath:error: returns an NSArray of NSStrings represeting the filenames of the items in the specified directory and all its subdirectories recursively. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. If the directory contains no items, this method will return the empty array.<br>
@@ -115,7 +114,7 @@ public abstract class NSFileManager implements NSObject {
      * Original signature : <code>NSArray* subpathsOfDirectoryAtPath(NSString*, NSError**)</code><br>
      * <i>native declaration : :47</i>
      */
-    public abstract com.sun.jna.Pointer subpathsOfDirectoryAtPath_error(String path, com.sun.jna.ptr.PointerByReference error);
+    public abstract NSArray subpathsOfDirectoryAtPath_error(String path, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * attributesOfItemAtPath:error: returns an NSDictionary of key/value pairs containing the attributes of the item (file, directory, symlink, etc.) at the path in question. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. This method does not traverse an initial symlink.<br>
@@ -139,7 +138,7 @@ public abstract class NSFileManager implements NSObject {
      * Original signature : <code>BOOL createSymbolicLinkAtPath(NSString*, NSString*, NSError**)</code><br>
      * <i>native declaration : :65</i>
      */
-    public abstract boolean createSymbolicLinkAtPath_withDestinationPath_error(String path, com.sun.jna.Pointer destPath, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean createSymbolicLinkAtPath_withDestinationPath_error(String path, String destPath, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * destinationOfSymbolicLinkAtPath:error: returns an NSString containing the path of the item pointed at by the symlink specified by 'path'. If this method returns 'nil', an NSError will be returned by reference in the 'error' parameter. This method does not traverse an initial symlink.<br>
@@ -154,19 +153,19 @@ public abstract class NSFileManager implements NSObject {
      * Original signature : <code>BOOL copyItemAtPath(NSString*, NSString*, NSError**)</code><br>
      * <i>native declaration : :75</i>
      */
-    public abstract boolean copyItemAtPath_toPath_error(com.sun.jna.Pointer srcPath, com.sun.jna.Pointer dstPath, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean copyItemAtPath_toPath_error(String srcPath, String dstPath, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>BOOL moveItemAtPath(NSString*, NSString*, NSError**)</code><br>
      * <i>native declaration : :76</i>
      */
-    public abstract boolean moveItemAtPath_toPath_error(com.sun.jna.Pointer srcPath, com.sun.jna.Pointer dstPath, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean moveItemAtPath_toPath_error(String srcPath, String dstPath, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>BOOL linkItemAtPath(NSString*, NSString*, NSError**)</code><br>
      * <i>native declaration : :77</i>
      */
-    public abstract boolean linkItemAtPath_toPath_error(com.sun.jna.Pointer srcPath, com.sun.jna.Pointer dstPath, com.sun.jna.ptr.PointerByReference error);
+    public abstract boolean linkItemAtPath_toPath_error(String srcPath, String dstPath, com.sun.jna.ptr.PointerByReference error);
 
     /**
      * Original signature : <code>BOOL removeItemAtPath(NSString*, NSError**)</code><br>
@@ -217,7 +216,7 @@ public abstract class NSFileManager implements NSObject {
      * Original signature : <code>BOOL createSymbolicLinkAtPath(NSString*, NSString*)</code><br>
      * <i>native declaration : :89</i>
      */
-    public abstract boolean createSymbolicLinkAtPath_pathContent(String path, com.sun.jna.Pointer otherpath);
+    public abstract boolean createSymbolicLinkAtPath_pathContent(String path, String otherpath);
 
     /**
      * Original signature : <code>BOOL createDirectoryAtPath(NSString*, NSDictionary*)</code><br>
@@ -340,7 +339,7 @@ public abstract class NSFileManager implements NSObject {
      * Original signature : <code>BOOL createFileAtPath(NSString*, NSData*, NSDictionary*)</code><br>
      * <i>native declaration : :135</i>
      */
-    public abstract boolean createFileAtPath_contents_attributes(String path, com.sun.jna.Pointer data, NSDictionary attr);
+    public abstract boolean createFileAtPath_contents_attributes(String path, NSData data, NSDictionary attr);
 
     /**
      * fileSystemRepresentationWithPath: returns an array of characters suitable for passing to lower-level POSIX style APIs. The string is provided in the representation most appropriate for the filesystem in question.<br>
@@ -348,16 +347,6 @@ public abstract class NSFileManager implements NSObject {
      * <i>native declaration : :139</i>
      */
     public abstract com.sun.jna.ptr.ByteByReference fileSystemRepresentationWithPath(String path);
-
-    /**
-     * stringWithFileSystemRepresentation:length: returns an NSString created from an array of bytes that are in the filesystem representation.<br>
-     * Original signature : <code>NSString* stringWithFileSystemRepresentation(const char*, NSUInteger)</code><br>
-     * <i>native declaration : :143</i><br>
-     *
-     * @deprecated use the safer method {@link #stringWithFileSystemRepresentation_length(java.lang.String, int)} instead
-     */
-    @java.lang.Deprecated
-    public abstract String stringWithFileSystemRepresentation_length(com.sun.jna.ptr.ByteByReference str, NSUInteger len);
 
     /**
      * stringWithFileSystemRepresentation:length: returns an NSString created from an array of bytes that are in the filesystem representation.<br>

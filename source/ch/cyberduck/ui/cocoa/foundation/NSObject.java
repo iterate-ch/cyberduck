@@ -19,16 +19,14 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.Selector;
 import org.rococoa.NSClass;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :14</i>
 public interface NSObject extends org.rococoa.NSObject {
 
     public abstract NSObject copy();
-
-    public abstract NSObject retain();
 
     public abstract NSObject autorelease();
 
@@ -89,13 +87,6 @@ public interface NSObject extends org.rococoa.NSObject {
      * <i>native declaration : :28</i>
      */
     public abstract boolean isProxy();
-
-    /**
-     * <i>native declaration : :30</i><br>
-     * Conversion Error : /// Original signature : <code>BOOL isKindOfClass(null)</code><br>
-     * - (BOOL)isKindOfClass:(null)aClass; (Argument aClass cannot be converted)
-     */
-    public abstract boolean isKindOfClass(NSClass aClass);
 
     /**
      * <i>native declaration : :31</i><br>

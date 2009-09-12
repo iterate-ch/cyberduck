@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :17</i>
 public abstract class NSToolbar implements NSObject {
@@ -137,13 +138,13 @@ public abstract class NSToolbar implements NSObject {
      * Original signature : <code>void setDisplayMode(NSToolbarDisplayMode)</code><br>
      * <i>native declaration : :90</i>
      */
-    public abstract void setDisplayMode(int displayMode);
+    public abstract void setDisplayMode(NSUInteger displayMode);
 
     /**
      * Original signature : <code>NSToolbarDisplayMode displayMode()</code><br>
      * <i>native declaration : :91</i>
      */
-    public abstract int displayMode();
+    public abstract NSUInteger displayMode();
 
     /**
      * Original signature : <code>void setSelectedItemIdentifier(NSString*)</code><br>
@@ -161,13 +162,13 @@ public abstract class NSToolbar implements NSObject {
      * Original signature : <code>void setSizeMode(NSToolbarSizeMode)</code><br>
      * <i>native declaration : :100</i>
      */
-    public abstract void setSizeMode(int sizeMode);
+    public abstract void setSizeMode(NSUInteger sizeMode);
 
     /**
      * Original signature : <code>NSToolbarSizeMode sizeMode()</code><br>
      * <i>native declaration : :101</i>
      */
-    public abstract int sizeMode();
+    public abstract NSUInteger sizeMode();
 
     /**
      * Use this API to hide the baseline NSToolbar draws between itself and the main window contents.  The default is YES.  This method should only be used before the toolbar is attached to its window (-[NSWindow setToolbar:]).<br>

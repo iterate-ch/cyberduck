@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /**
@@ -80,7 +81,7 @@ public abstract class NSPrintInfo implements NSObject {
          * Original signature : <code>+(id)sizeForPaperName:(NSString*)</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:133</i>
          */
-        public abstract NSObject sizeForPaperName(com.sun.jna.Pointer name);
+        public abstract NSObject sizeForPaperName(String name);
 
         /// <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h</i>
         public abstract NSPrintInfo alloc();
@@ -108,14 +109,14 @@ public abstract class NSPrintInfo implements NSObject {
      * Original signature : <code>-(id)initWithDictionary:(NSDictionary*)</code><br>
      * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:70</i>
      */
-    public abstract NSPrintInfo initWithDictionary(com.sun.jna.Pointer attributes);
+    public abstract NSPrintInfo initWithDictionary(NSDictionary attributes);
 
     /**
      * Factory method<br>
      *
-     * @see #initWithDictionary(com.sun.jna.Pointer)
+     * @see #initWithDictionary(NSDictionary)
      */
-    public static NSPrintInfo createWithDictionary(com.sun.jna.Pointer attributes) {
+    public static NSPrintInfo createWithDictionary(NSDictionary attributes) {
         return CLASS.alloc().initWithDictionary(attributes);
     }
 
@@ -343,7 +344,7 @@ public abstract class NSPrintInfo implements NSObject {
      * Original signature : <code>+(id)sizeForPaperName:(NSString*)</code><br>
      * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:133</i>
      */
-    public static NSObject sizeForPaperName(com.sun.jna.Pointer name) {
+    public static NSObject sizeForPaperName(String name) {
         return CLASS.sizeForPaperName(name);
     }
 

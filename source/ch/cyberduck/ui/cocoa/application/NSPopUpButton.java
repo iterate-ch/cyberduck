@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+
 /// <i>native declaration : :10</i>
 public abstract class NSPopUpButton extends NSButton {
     /**
@@ -93,19 +95,19 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>void insertItemWithTitle(NSString*, NSInteger)</code><br>
      * <i>native declaration : :42</i>
      */
-    public abstract void insertItemWithTitle_atIndex(String title, int index);
+    public abstract void insertItemWithTitle_atIndex(String title, NSInteger index);
 
     /**
      * Original signature : <code>void removeItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :44</i>
      */
-    public abstract void removeItemWithTitle(com.sun.jna.Pointer title);
+    public abstract void removeItemWithTitle(String title);
 
     /**
      * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :45</i>
      */
-    public abstract void removeItemAtIndex(int index);
+    public abstract void removeItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>void removeAllItems()</code><br>
@@ -142,7 +144,7 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>NSInteger indexOfItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :55</i>
      */
-    public abstract int indexOfItemWithTag(int tag);
+    public abstract int indexOfItemWithTag(NSInteger tag);
     /**
      * <i>native declaration : :56</i><br>
      * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithRepresentedObject(null)</code><br>
@@ -195,12 +197,6 @@ public abstract class NSPopUpButton extends NSButton {
      * <i>native declaration : :69</i>
      */
     public abstract boolean selectItemWithTag(int tag);
-
-    /**
-     * Original signature : <code>void setTitle(NSString*)</code><br>
-     * <i>native declaration : :71</i>
-     */
-    public abstract void setTitle(String aString);
 
     /**
      * Original signature : <code>NSMenuItem* selectedItem()</code><br>

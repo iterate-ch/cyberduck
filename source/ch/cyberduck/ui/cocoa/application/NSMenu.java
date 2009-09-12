@@ -56,13 +56,13 @@ public abstract class NSMenu implements NSObject, NSCopying {
          * Original signature : <code>void popUpContextMenu(NSMenu*, NSEvent*, NSView*)</code><br>
          * <i>native declaration : :44</i>
          */
-        void popUpContextMenu_withEvent_forView(NSMenu menu, NSEvent event, com.sun.jna.Pointer view);
+        void popUpContextMenu_withEvent_forView(NSMenu menu, NSEvent event, NSView view);
 
         /**
          * Original signature : <code>void popUpContextMenu(NSMenu*, NSEvent*, NSView*, NSFont*)</code><br>
          * <i>native declaration : :46</i>
          */
-        void popUpContextMenu_withEvent_forView_withFont(NSMenu menu, NSEvent event, com.sun.jna.Pointer view, com.sun.jna.Pointer font);
+        void popUpContextMenu_withEvent_forView_withFont(NSMenu menu, NSEvent event, NSView view, NSFont font);
 
         /**
          * Original signature : <code>void setMenuBarVisible(BOOL)</code><br>
@@ -157,7 +157,7 @@ public abstract class NSMenu implements NSObject, NSCopying {
      * Original signature : <code>void setSubmenu(NSMenu*, NSMenuItem*)</code><br>
      * <i>native declaration : :69</i>
      */
-    public abstract void setSubmenu_forItem(NSMenu aMenu, com.sun.jna.Pointer anItem);
+    public abstract void setSubmenu_forItem(NSMenu aMenu, NSMenuItem anItem);
 
     /**
      * Original signature : <code>NSArray* itemArray()</code><br>
@@ -175,31 +175,31 @@ public abstract class NSMenu implements NSObject, NSCopying {
      * Original signature : <code>NSInteger indexOfItem(NSMenuItem*)</code><br>
      * <i>native declaration : :74</i>
      */
-    public abstract int indexOfItem(NSMenuItem index);
+    public abstract NSInteger indexOfItem(NSMenuItem index);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :75</i>
      */
-    public abstract int indexOfItemWithTitle(String aTitle);
+    public abstract NSInteger indexOfItemWithTitle(String aTitle);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :76</i>
      */
-    public abstract int indexOfItemWithTag(int aTag);
+    public abstract NSInteger indexOfItemWithTag(int aTag);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithRepresentedObject(id)</code><br>
      * <i>native declaration : :77</i>
      */
-    public abstract int indexOfItemWithRepresentedObject(String object);
+    public abstract NSInteger indexOfItemWithRepresentedObject(String object);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithSubmenu(NSMenu*)</code><br>
      * <i>native declaration : :78</i>
      */
-    public abstract int indexOfItemWithSubmenu(NSMenu submenu);
+    public abstract NSInteger indexOfItemWithSubmenu(NSMenu submenu);
     /**
      * <i>native declaration : :79</i><br>
      * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithTarget(id, null)</code><br>

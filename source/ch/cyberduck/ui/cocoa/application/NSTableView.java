@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :69</i>

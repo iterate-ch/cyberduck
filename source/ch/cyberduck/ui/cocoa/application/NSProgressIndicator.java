@@ -19,9 +19,8 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :42</i>
 public abstract class NSProgressIndicator extends NSView {
@@ -88,7 +87,7 @@ public abstract class NSProgressIndicator extends NSView {
      * Conversion Error : /// Original signature : <code>void setControlSize(null)</code><br>
      * - (void)setControlSize:(null)size; (Argument size cannot be converted)
      */
-    public abstract int setControlSize(int size);
+    public abstract void setControlSize(int size);
 
     /**
      * Original signature : <code>double doubleValue()</code><br>

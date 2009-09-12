@@ -20,10 +20,10 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:30</i>
 public abstract class NSSavePanel implements NSPanel {
@@ -275,11 +275,11 @@ public abstract class NSSavePanel implements NSPanel {
      * Original signature : <code>NSInteger runModalForDirectory(NSString*, NSString*)</code><br>
      * <i>from NSSavePanelRuntime native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:154</i>
      */
-    public abstract int runModalForDirectory_file(String path, String name);
+    public abstract NSInteger runModalForDirectory_file(String path, String name);
 
     /**
      * Original signature : <code>NSInteger runModal()</code><br>
      * <i>from NSSavePanelRuntime native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:155</i>
      */
-    public abstract int runModal();
+    public abstract NSInteger runModal();
 }

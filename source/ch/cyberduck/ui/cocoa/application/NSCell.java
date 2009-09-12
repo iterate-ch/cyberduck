@@ -27,6 +27,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 public interface NSCell extends NSObject, NSCopying {
 
@@ -477,7 +479,7 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>BOOL isEntryAcceptable(NSString*)</code><br>
      * <i>native declaration : :223</i>
      */
-    public abstract boolean isEntryAcceptable(com.sun.jna.Pointer aString);
+    public abstract boolean isEntryAcceptable(String aString);
 
     /**
      * Original signature : <code>void setFloatingPointFormat(BOOL, NSUInteger, NSUInteger)</code><br>
@@ -615,19 +617,19 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>void setImage(NSImage*)</code><br>
      * <i>native declaration : :246</i>
      */
-    public abstract void setImage(com.sun.jna.Pointer image);
+    public abstract void setImage(NSImage image);
 
     /**
      * Original signature : <code>void setControlTint(NSControlTint)</code><br>
      * <i>native declaration : :247</i>
      */
-    public abstract void setControlTint(int controlTint);
+    public abstract void setControlTint(NSUInteger controlTint);
 
     /**
      * Original signature : <code>NSControlTint controlTint()</code><br>
      * <i>native declaration : :248</i>
      */
-    public abstract int controlTint();
+    public abstract NSUInteger controlTint();
 
     /**
      * Original signature : <code>void setControlSize(NSControlSize)</code><br>
@@ -683,7 +685,7 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>cellSize()</code><br>
      * <i>native declaration : :258</i>
      */
-    public abstract com.sun.jna.Pointer cellSize();
+    public abstract NSSize cellSize();
     /**
      * <i>native declaration : :259</i><br>
      * Conversion Error : /// Original signature : <code>cellSizeForBounds(null)</code><br>
@@ -703,7 +705,7 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>NSText* setUpFieldEditorAttributes(NSText*)</code><br>
      * <i>native declaration : :262</i>
      */
-    public abstract com.sun.jna.Pointer setUpFieldEditorAttributes(com.sun.jna.Pointer textObj);
+    public abstract NSText setUpFieldEditorAttributes(com.sun.jna.Pointer textObj);
     /**
      * <i>native declaration : :263</i><br>
      * Conversion Error : /// Original signature : <code>void drawInteriorWithFrame(null, NSView*)</code><br>
@@ -724,15 +726,6 @@ public interface NSCell extends NSObject, NSCopying {
      * <i>native declaration : :266</i>
      */
     public abstract int mouseDownFlags();
-
-    /**
-     * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
-     * <i>native declaration : :267</i><br>
-     *
-     * @deprecated use the safer method {@link #getPeriodicDelay_interval(java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
@@ -773,7 +766,7 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>void endEditing(NSText*)</code><br>
      * <i>native declaration : :274</i>
      */
-    public abstract void endEditing(com.sun.jna.Pointer textObj);
+    public abstract void endEditing(NSText textObj);
     /**
      * <i>native declaration : :275</i><br>
      * Conversion Error : /// Original signature : <code>void resetCursorRect(null, NSView*)</code><br>
@@ -783,7 +776,7 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>void setMenu(NSMenu*)</code><br>
      * <i>native declaration : :277</i>
      */
-    public abstract void setMenu(com.sun.jna.Pointer aMenu);
+    public abstract void setMenu(NSMenu aMenu);
 
     /**
      * Original signature : <code>NSMenu* menu()</code><br>
@@ -811,7 +804,7 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>baseWritingDirection()</code><br>
      * <i>native declaration : :286</i>
      */
-    public abstract com.sun.jna.Pointer baseWritingDirection();
+    public abstract int baseWritingDirection();
     /**
      * <i>native declaration : :287</i><br>
      * Conversion Error : /// Original signature : <code>void setBaseWritingDirection(null)</code><br>
@@ -1053,13 +1046,13 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>NSBackgroundStyle backgroundStyle()</code><br>
      * <i>from NSCellBackgroundStyle native declaration : :407</i>
      */
-    public abstract int backgroundStyle();
+    public abstract NSUInteger backgroundStyle();
 
     /**
      * Original signature : <code>void setBackgroundStyle(NSBackgroundStyle)</code><br>
      * <i>from NSCellBackgroundStyle native declaration : :408</i>
      */
-    public abstract void setBackgroundStyle(int style);
+    public abstract void setBackgroundStyle(NSUInteger style);
 
     /**
      * Describes the surface drawn onto in -[NSCell drawInteriorWithFrame:inView:]. This is often the same as the backgroundStyle, but a button that draws a bezel would have a different interiorBackgroundStyle.  <br>
@@ -1067,5 +1060,5 @@ public interface NSCell extends NSObject, NSCopying {
      * Original signature : <code>NSBackgroundStyle interiorBackgroundStyle()</code><br>
      * <i>from NSCellBackgroundStyle native declaration : :415</i>
      */
-    public abstract int interiorBackgroundStyle();
+    public abstract NSUInteger interiorBackgroundStyle();
 }

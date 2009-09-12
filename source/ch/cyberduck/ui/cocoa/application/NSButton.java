@@ -20,9 +20,10 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSRect;
 
+import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :15</i>
 public abstract class NSButton extends NSControl {
@@ -171,15 +172,6 @@ public abstract class NSButton extends NSControl {
      * <i>native declaration : :34</i>
      */
     public abstract void setPeriodicDelay_interval(float delay, float interval);
-
-    /**
-     * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
-     * <i>native declaration : :35</i><br>
-     *
-     * @deprecated use the safer method {@link #getPeriodicDelay_interval(java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
 
     /**
      * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>

@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -21,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : :12</i>
-public abstract class NSNotification implements org.rococoa.cocoa.foundation.NSNotification {
+public abstract class NSNotification implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSNotification", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {
@@ -30,7 +29,7 @@ public abstract class NSNotification implements org.rococoa.cocoa.foundation.NSN
          * Conversion Error : /// Original signature : <code>notificationWithName(NSString*, null)</code><br>
          * + (null)notificationWithName:(NSString*)aName object:(null)anObject; (Argument anObject cannot be converted)
          */
-        NSNotification notificationWithName_object(String notificationName, NSObject object);
+        NSNotification notificationWithName_object(String notificationName, org.rococoa.ID object);
 
         /**
          * <i>from NSNotificationCreation native declaration : :23</i><br>
@@ -40,12 +39,12 @@ public abstract class NSNotification implements org.rococoa.cocoa.foundation.NSN
         NSNotification alloc();
     }
 
-    public static NSNotification notificationWithName(String notificationName, NSObject object) {
+    public static NSNotification notificationWithName(String notificationName, org.rococoa.ID object) {
         return CLASS.notificationWithName_object(notificationName, object);
     }
 
     public static NSNotification notificationWithName(String notificationName, String object) {
-        return CLASS.notificationWithName_object(notificationName, NSString.stringWithString(object));
+        return CLASS.notificationWithName_object(notificationName, NSString.stringWithString(object).id());
     }
 
     /**

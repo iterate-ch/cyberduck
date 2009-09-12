@@ -151,12 +151,6 @@ public abstract class NSTimeZone implements NSObject {
     public abstract NSDate nextDaylightSavingTimeTransition();
 
     /**
-     * Original signature : <code>NSString* description()</code><br>
-     * <i>from NSExtendedTimeZone native declaration : :40</i>
-     */
-    public abstract String description();
-
-    /**
      * Original signature : <code>BOOL isEqualToTimeZone(NSTimeZone*)</code><br>
      * <i>from NSExtendedTimeZone native declaration : :42</i>
      */

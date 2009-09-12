@@ -28,7 +28,7 @@ public abstract class NSDistributedNotificationCenter extends NSNotificationCent
          * Original signature : <code>NSDistributedNotificationCenter* notificationCenterForType(NSString*)</code><br>
          * <i>native declaration : :29</i>
          */
-        NSDistributedNotificationCenter notificationCenterForType(com.sun.jna.Pointer notificationCenterType);
+        NSDistributedNotificationCenter notificationCenterForType(String notificationCenterType);
 
         /**
          * Original signature : <code>defaultCenter()</code><br>
@@ -45,5 +45,5 @@ public abstract class NSDistributedNotificationCenter extends NSNotificationCent
      * Original signature : <code>void postNotificationName(NSString*, NSString*, NSDictionary*, BOOL)</code><br>
      * <i>native declaration : :38</i>
      */
-    public abstract void postNotificationName_object_userInfo_deliverImmediately(com.sun.jna.Pointer name, com.sun.jna.Pointer object, com.sun.jna.Pointer userInfo, byte deliverImmediately);
+    public abstract void postNotificationName_object_userInfo_deliverImmediately(String name, String object, NSDictionary userInfo, boolean deliverImmediately);
 }

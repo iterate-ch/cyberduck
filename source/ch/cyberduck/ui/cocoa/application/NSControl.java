@@ -20,11 +20,13 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSRect;
 
 import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :10</i>
 public abstract class NSControl extends NSView {
@@ -92,22 +94,16 @@ public abstract class NSControl extends NSView {
     public abstract void setAction(Selector action);
 
     /**
-     * Original signature : <code>NSInteger tag()</code><br>
-     * <i>native declaration : :39</i>
-     */
-    public abstract int tag();
-
-    /**
      * Original signature : <code>void setTag(NSInteger)</code><br>
      * <i>native declaration : :40</i>
      */
-    public abstract void setTag(int anInt);
+    public abstract void setTag(NSInteger anInt);
 
     /**
      * Original signature : <code>NSInteger selectedTag()</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract int selectedTag();
+    public abstract NSInteger selectedTag();
 
     /**
      * Original signature : <code>void setIgnoresMultiClick(BOOL)</code><br>
@@ -183,7 +179,7 @@ public abstract class NSControl extends NSView {
      * Original signature : <code>void setFormatter(NSFormatter*)</code><br>
      * <i>native declaration : :54</i>
      */
-    public abstract void setFormatter(com.sun.jna.Pointer newFormatter);
+    public abstract void setFormatter(NSFormatter newFormatter);
 
     /**
      * Original signature : <code>id formatter()</code><br>

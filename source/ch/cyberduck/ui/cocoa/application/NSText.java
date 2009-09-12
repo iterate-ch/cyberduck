@@ -157,13 +157,13 @@ public abstract class NSText extends NSView {
      * Original signature : <code>BOOL writeRTFDToFile(NSString*, BOOL)</code><br>
      * <i>native declaration : /Users/dkocher/null:80</i>
      */
-    public abstract boolean writeRTFDToFile_atomically(com.sun.jna.Pointer path, boolean flag);
+    public abstract boolean writeRTFDToFile_atomically(String path, boolean flag);
 
     /**
      * Original signature : <code>BOOL readRTFDFromFile(NSString*)</code><br>
      * <i>native declaration : /Users/dkocher/null:81</i>
      */
-    public abstract boolean readRTFDFromFile(com.sun.jna.Pointer path);
+    public abstract boolean readRTFDFromFile(String path);
 
     /**
      * Original signature : <code>id delegate()</code><br>
@@ -274,7 +274,7 @@ public abstract class NSText extends NSView {
      * Original signature : <code>void setBackgroundColor(NSColor*)</code><br>
      * <i>native declaration : /Users/dkocher/null:101</i>
      */
-    public abstract void setBackgroundColor(com.sun.jna.Pointer color);
+    public abstract void setBackgroundColor(NSColor color);
 
     /**
      * Original signature : <code>BOOL isRulerVisible()</code><br>

@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 public abstract class NSImageCell implements NSCell, NSCopying {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImageCell", _Class.class);
 
@@ -38,19 +40,19 @@ public abstract class NSImageCell implements NSCell, NSCopying {
      * Original signature : <code>NSImageAlignment imageAlignment()</code><br>
      * <i>native declaration : :51</i>
      */
-    public abstract int imageAlignment();
+    public abstract NSUInteger imageAlignment();
 
     /**
      * Original signature : <code>void setImageAlignment(NSImageAlignment)</code><br>
      * <i>native declaration : :52</i>
      */
-    public abstract void setImageAlignment(int newAlign);
+    public abstract void setImageAlignment(NSUInteger newAlign);
 
     /**
      * Original signature : <code>imageScaling()</code><br>
      * <i>native declaration : :53</i>
      */
-    public abstract com.sun.jna.Pointer imageScaling();
+    public abstract NSUInteger imageScaling();
     /**
      * <i>native declaration : :54</i><br>
      * Conversion Error : /// Original signature : <code>void setImageScaling(null)</code><br>
@@ -60,12 +62,12 @@ public abstract class NSImageCell implements NSCell, NSCopying {
      * Original signature : <code>NSImageFrameStyle imageFrameStyle()</code><br>
      * <i>native declaration : :55</i>
      */
-    public abstract int imageFrameStyle();
+    public abstract NSUInteger imageFrameStyle();
 
     /**
      * Original signature : <code>void setImageFrameStyle(NSImageFrameStyle)</code><br>
      * <i>native declaration : :56</i>
      */
-    public abstract void setImageFrameStyle(int newStyle);
+    public abstract void setImageFrameStyle(NSUInteger newStyle);
 }
 

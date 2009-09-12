@@ -22,8 +22,10 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :45</i>
 public abstract class NSFont implements NSObject, NSCopying {
@@ -35,7 +37,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Aqua Application font<br>
      * <i>native declaration : :77</i>
      */
-    public static NSFont userFontOfSize(float fontSize) {
+    public static NSFont userFontOfSize(double fontSize) {
         return CLASS.userFontOfSize(new CGFloat(fontSize));
     }
 
@@ -44,7 +46,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Aqua fixed-pitch font<br>
      * <i>native declaration : :78</i>
      */
-    public static NSFont userFixedPitchFontOfSize(float fontSize) {
+    public static NSFont userFixedPitchFontOfSize(double fontSize) {
         return CLASS.userFixedPitchFontOfSize(new CGFloat(fontSize));
     }
 
@@ -54,7 +56,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Aqua System font<br>
      * <i>native declaration : :84</i>
      */
-    public static NSFont systemFontOfSize(float fontSize) {
+    public static NSFont systemFontOfSize(double fontSize) {
         return CLASS.systemFontOfSize(new CGFloat(fontSize));
     }
 
@@ -63,20 +65,20 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Aqua System font (emphasized)<br>
      * <i>native declaration : :85</i>
      */
-    public static NSFont boldSystemFontOfSize(float fontSize) {
+    public static NSFont boldSystemFontOfSize(double fontSize) {
         return CLASS.boldSystemFontOfSize(new CGFloat(fontSize));
     }
 
-    public static float smallSystemFontSize() {
-        return CLASS.smallSystemFontSize().floatValue();
+    public static double smallSystemFontSize() {
+        return CLASS.smallSystemFontSize().doubleValue();
     }
 
-    public static float systemFontSize() {
-        return CLASS.systemFontSize().floatValue();
+    public static double systemFontSize() {
+        return CLASS.systemFontSize().doubleValue();
     }
 
-    public static float labelFontSize() {
-        return CLASS.labelFontSize().floatValue();
+    public static double labelFontSize() {
+        return CLASS.labelFontSize().doubleValue();
     }
 
     public interface _Class extends org.rococoa.NSClass {
@@ -89,24 +91,15 @@ public abstract class NSFont implements NSObject, NSCopying {
 
         /**
          * Original signature : <code>NSFont* fontWithName(NSString*, const CGFloat*)</code><br>
-         * <i>native declaration : :63</i><br>
-         *
-         * @deprecated use the safer methods {@link #fontWithName_matrix(com.sun.jna.Pointer, float[])} and {@link #fontWithName_matrix(com.sun.jna.Pointer, java.nio.FloatBuffer)} instead
+         * <i>native declaration : :63</i>
          */
-        @java.lang.Deprecated
-        NSFont fontWithName_matrix(String fontName, com.sun.jna.ptr.FloatByReference fontMatrix);
+        NSFont fontWithName_matrix(String fontName, CGFloat fontMatrix[]);
 
         /**
          * Original signature : <code>NSFont* fontWithName(NSString*, const CGFloat*)</code><br>
          * <i>native declaration : :63</i>
          */
-        NSFont fontWithName_matrix(String fontName, float fontMatrix[]);
-
-        /**
-         * Original signature : <code>NSFont* fontWithName(NSString*, const CGFloat*)</code><br>
-         * <i>native declaration : :63</i>
-         */
-        NSFont fontWithName_matrix(String fontName, java.nio.FloatBuffer fontMatrix);
+        NSFont fontWithName_matrix(String fontName, CGFloat fontMatrix);
 
         /**
          * Instantiates an NSFont object matching fontDescriptor. If fontSize is greater than 0.0, it has precedence over NSFontSizeAttribute in fontDescriptor.<br>
@@ -310,7 +303,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Original signature : <code>NSUInteger numberOfGlyphs()</code><br>
      * <i>native declaration : :122</i>
      */
-    public abstract int numberOfGlyphs();
+    public abstract NSUInteger numberOfGlyphs();
 
     /**
      * Original signature : <code>mostCompatibleStringEncoding()</code><br>
@@ -347,7 +340,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Original signature : <code>CGFloat ascender()</code><br>
      * <i>native declaration : :135</i>
      */
-    public abstract float ascender();
+    public abstract CGFloat ascender();
 
     /**
      * Original signature : <code>CGFloat descender()</code><br>
@@ -365,31 +358,31 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Original signature : <code>CGFloat underlinePosition()</code><br>
      * <i>native declaration : :141</i>
      */
-    public abstract float underlinePosition();
+    public abstract CGFloat underlinePosition();
 
     /**
      * Original signature : <code>CGFloat underlineThickness()</code><br>
      * <i>native declaration : :142</i>
      */
-    public abstract float underlineThickness();
+    public abstract CGFloat underlineThickness();
 
     /**
      * Original signature : <code>CGFloat italicAngle()</code><br>
      * <i>native declaration : :143</i>
      */
-    public abstract float italicAngle();
+    public abstract CGFloat italicAngle();
 
     /**
      * Original signature : <code>CGFloat capHeight()</code><br>
      * <i>native declaration : :144</i>
      */
-    public abstract float capHeight();
+    public abstract CGFloat capHeight();
 
     /**
      * Original signature : <code>CGFloat xHeight()</code><br>
      * <i>native declaration : :145</i>
      */
-    public abstract float xHeight();
+    public abstract CGFloat xHeight();
 
     /**
      * Original signature : <code>BOOL isFixedPitch()</code><br>
@@ -469,7 +462,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * This API never returns correct value. Use NSStringDrawing API instead.<br>
      * <i>from NSFontDeprecated native declaration : :212</i>
      */
-    public abstract float widthOfString(com.sun.jna.Pointer string);
+    public abstract CGFloat widthOfString(com.sun.jna.Pointer string);
 
     /**
      * Original signature : <code>BOOL isBaseFont()</code><br>
@@ -481,7 +474,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Original signature : <code>NSDictionary* afmDictionary()</code><br>
      * <i>from NSFontDeprecated native declaration : :214</i>
      */
-    public abstract com.sun.jna.Pointer afmDictionary();
+    public abstract NSDictionary afmDictionary();
 
     /**
      * Original signature : <code>BOOL glyphIsEncoded(NSGlyph)</code><br>
@@ -501,7 +494,7 @@ public abstract class NSFont implements NSObject, NSCopying {
      * Original signature : <code>NSString* encodingScheme()</code><br>
      * <i>from NSFontDeprecated native declaration : :219</i>
      */
-    public abstract com.sun.jna.Pointer encodingScheme();
+    public abstract String encodingScheme();
 
     /**
      * Original signature : <code>NSMultibyteGlyphPacking glyphPacking()</code><br>

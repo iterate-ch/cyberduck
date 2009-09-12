@@ -19,12 +19,14 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :35</i>
-public abstract class NSColor implements NSObject {
+public abstract class NSColor implements NSObject, NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSColor", _Class.class);
 
     public static NSColor whiteColor() {
@@ -348,7 +350,7 @@ public abstract class NSColor implements NSObject {
          * Original signature : <code>NSColor* colorWithDeviceWhite(CGFloat, CGFloat)</code><br>
          * <i>native declaration : :50</i>
          */
-        NSColor colorWithDeviceWhite_alpha(float white, float alpha);
+        NSColor colorWithDeviceWhite_alpha(CGFloat white, CGFloat alpha);
 
         /**
          * Original signature : <code>NSColor* colorWithDeviceHue(CGFloat, CGFloat, CGFloat, CGFloat)</code><br>
@@ -374,16 +376,6 @@ public abstract class NSColor implements NSObject {
          * <i>native declaration : :58</i>
          */
         NSColor colorWithCatalogName_colorName(com.sun.jna.Pointer listName, com.sun.jna.Pointer colorName);
-
-        /**
-         * Create colors with arbitrary colorspace. The number of components in the provided array should match the number dictated by the specified colorspace, plus one for alpha (supply 1.0 for opaque colors); otherwise an exception will be raised.  If the colorspace is one which cannot be used with NSColors, nil is returned.<br>
-         * Original signature : <code>NSColor* colorWithColorSpace(NSColorSpace*, const CGFloat*, NSInteger)</code><br>
-         * <i>native declaration : :64</i><br>
-         *
-         * @deprecated use the safer methods {@link #colorWithColorSpace_components_count(com.sun.jna.Pointer, float[], int)} and {@link #colorWithColorSpace_components_count(com.sun.jna.Pointer, java.nio.FloatBuffer, int)} instead
-         */
-        @java.lang.Deprecated
-        NSColor colorWithColorSpace_components_count(com.sun.jna.Pointer space, com.sun.jna.ptr.FloatByReference components, int numberOfComponents);
 
         /**
          * Create colors with arbitrary colorspace. The number of components in the provided array should match the number dictated by the specified colorspace, plus one for alpha (supply 1.0 for opaque colors); otherwise an exception will be raised.  If the colorspace is one which cannot be used with NSColors, nil is returned.<br>
@@ -727,7 +719,7 @@ public abstract class NSColor implements NSObject {
          * Standard colors for alternating colored rows in tables and lists (for instance, light blue/white; don't assume just two colors)<br>
          * <i>native declaration : :127</i>
          */
-        com.sun.jna.Pointer controlAlternatingRowBackgroundColors();
+        NSArray controlAlternatingRowBackgroundColors();
         /**
          * <i>native declaration : :133</i><br>
          * Conversion Error : /// Original signature : <code>NSColor* colorForControlTint(null)</code><br>
@@ -753,7 +745,7 @@ public abstract class NSColor implements NSObject {
          * Original signature : <code>NSColor* colorWithPatternImage(NSImage*)</code><br>
          * <i>native declaration : :248</i>
          */
-        NSColor colorWithPatternImage(com.sun.jna.Pointer image);
+        NSColor colorWithPatternImage(NSImage image);
 
         /**
          * Global flag for determining whether an application supports alpha.  This flag is consulted when an application imports alpha (through color dragging, for instance). The value of this flag also determines whether the color panel has an opacity slider. This value is YES by default, indicating that the opacity components of imported colors will be set to 1.0. If an application wants alpha, it can either set the "NSIgnoreAlpha" default to NO or call the set method below.<br>
@@ -859,88 +851,70 @@ public abstract class NSColor implements NSObject {
      * Original signature : <code>NSString* catalogNameComponent()</code><br>
      * <i>native declaration : :189</i>
      */
-    public abstract com.sun.jna.Pointer catalogNameComponent();
+    public abstract String catalogNameComponent();
 
     /**
      * Original signature : <code>NSString* colorNameComponent()</code><br>
      * <i>native declaration : :190</i>
      */
-    public abstract com.sun.jna.Pointer colorNameComponent();
+    public abstract String colorNameComponent();
 
     /**
      * Return localized versions of the above.<br>
      * Original signature : <code>NSString* localizedCatalogNameComponent()</code><br>
      * <i>native declaration : :194</i>
      */
-    public abstract com.sun.jna.Pointer localizedCatalogNameComponent();
+    public abstract String localizedCatalogNameComponent();
 
     /**
      * Original signature : <code>NSString* localizedColorNameComponent()</code><br>
      * <i>native declaration : :195</i>
      */
-    public abstract com.sun.jna.Pointer localizedColorNameComponent();
+    public abstract String localizedColorNameComponent();
 
     /**
      * Get the red, green, or blue components of NSCalibratedRGB or NSDeviceRGB colors.<br>
      * Original signature : <code>CGFloat redComponent()</code><br>
      * <i>native declaration : :199</i>
      */
-    public abstract float redComponent();
+    public abstract CGFloat redComponent();
 
     /**
      * Original signature : <code>CGFloat greenComponent()</code><br>
      * <i>native declaration : :200</i>
      */
-    public abstract float greenComponent();
+    public abstract CGFloat greenComponent();
 
     /**
      * Original signature : <code>CGFloat blueComponent()</code><br>
      * <i>native declaration : :201</i>
      */
-    public abstract float blueComponent();
-
-    /**
-     * Original signature : <code>void getRed(CGFloat*, CGFloat*, CGFloat*, CGFloat*)</code><br>
-     * <i>native declaration : :202</i><br>
-     *
-     * @deprecated use the safer method {@link #getRed_green_blue_alpha(java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getRed_green_blue_alpha(com.sun.jna.ptr.FloatByReference red, com.sun.jna.ptr.FloatByReference green, com.sun.jna.ptr.FloatByReference blue, com.sun.jna.ptr.FloatByReference alpha);
+    public abstract CGFloat blueComponent();
 
     /**
      * Original signature : <code>void getRed(CGFloat*, CGFloat*, CGFloat*, CGFloat*)</code><br>
      * <i>native declaration : :202</i>
      */
-    public abstract void getRed_green_blue_alpha(java.nio.FloatBuffer red, java.nio.FloatBuffer green, java.nio.FloatBuffer blue, java.nio.FloatBuffer alpha);
+    public abstract void getRed_green_blue_alpha(CGFloat red, CGFloat green, CGFloat blue, CGFloat alpha);
 
     /**
      * Get the components of NSCalibratedRGB or NSDeviceRGB colors as hue, saturation, or brightness.<br>
      * Original signature : <code>CGFloat hueComponent()</code><br>
      * <i>native declaration : :206</i>
      */
-    public abstract float hueComponent();
+    public abstract CGFloat hueComponent();
 
     /**
      * Original signature : <code>CGFloat saturationComponent()</code><br>
      * <i>native declaration : :207</i>
      */
-    public abstract float saturationComponent();
+    public abstract CGFloat saturationComponent();
 
     /**
      * Original signature : <code>CGFloat brightnessComponent()</code><br>
      * <i>native declaration : :208</i>
      */
-    public abstract float brightnessComponent();
-
-    /**
-     * Original signature : <code>void getHue(CGFloat*, CGFloat*, CGFloat*, CGFloat*)</code><br>
-     * <i>native declaration : :209</i><br>
-     *
-     * @deprecated use the safer method {@link #getHue_saturation_brightness_alpha(java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getHue_saturation_brightness_alpha(com.sun.jna.ptr.FloatByReference hue, com.sun.jna.ptr.FloatByReference saturation, com.sun.jna.ptr.FloatByReference brightness, com.sun.jna.ptr.FloatByReference alpha);
+    public abstract CGFloat brightnessComponent();
 
     /**
      * Original signature : <code>void getHue(CGFloat*, CGFloat*, CGFloat*, CGFloat*)</code><br>
@@ -953,16 +927,7 @@ public abstract class NSColor implements NSObject {
      * Original signature : <code>CGFloat whiteComponent()</code><br>
      * <i>native declaration : :214</i>
      */
-    public abstract float whiteComponent();
-
-    /**
-     * Original signature : <code>void getWhite(CGFloat*, CGFloat*)</code><br>
-     * <i>native declaration : :215</i><br>
-     *
-     * @deprecated use the safer method {@link #getWhite_alpha(java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getWhite_alpha(com.sun.jna.ptr.FloatByReference white, com.sun.jna.ptr.FloatByReference alpha);
+    public abstract CGFloat whiteComponent();
 
     /**
      * Original signature : <code>void getWhite(CGFloat*, CGFloat*)</code><br>
@@ -975,34 +940,25 @@ public abstract class NSColor implements NSObject {
      * Original signature : <code>CGFloat cyanComponent()</code><br>
      * <i>native declaration : :220</i>
      */
-    public abstract float cyanComponent();
+    public abstract CGFloat cyanComponent();
 
     /**
      * Original signature : <code>CGFloat magentaComponent()</code><br>
      * <i>native declaration : :221</i>
      */
-    public abstract float magentaComponent();
+    public abstract CGFloat magentaComponent();
 
     /**
      * Original signature : <code>CGFloat yellowComponent()</code><br>
      * <i>native declaration : :222</i>
      */
-    public abstract float yellowComponent();
+    public abstract CGFloat yellowComponent();
 
     /**
      * Original signature : <code>CGFloat blackComponent()</code><br>
      * <i>native declaration : :223</i>
      */
-    public abstract float blackComponent();
-
-    /**
-     * Original signature : <code>void getCyan(CGFloat*, CGFloat*, CGFloat*, CGFloat*, CGFloat*)</code><br>
-     * <i>native declaration : :224</i><br>
-     *
-     * @deprecated use the safer method {@link #getCyan_magenta_yellow_black_alpha(java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getCyan_magenta_yellow_black_alpha(com.sun.jna.ptr.FloatByReference cyan, com.sun.jna.ptr.FloatByReference magenta, com.sun.jna.ptr.FloatByReference yellow, com.sun.jna.ptr.FloatByReference black, com.sun.jna.ptr.FloatByReference alpha);
+    public abstract CGFloat blackComponent();
 
     /**
      * Original signature : <code>void getCyan(CGFloat*, CGFloat*, CGFloat*, CGFloat*, CGFloat*)</code><br>
@@ -1025,15 +981,6 @@ public abstract class NSColor implements NSObject {
 
     /**
      * Original signature : <code>void getComponents(CGFloat*)</code><br>
-     * <i>native declaration : :232</i><br>
-     *
-     * @deprecated use the safer method {@link #getComponents(java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getComponents(com.sun.jna.ptr.FloatByReference components);
-
-    /**
-     * Original signature : <code>void getComponents(CGFloat*)</code><br>
      * <i>native declaration : :232</i>
      */
     public abstract void getComponents(java.nio.FloatBuffer components);
@@ -1043,7 +990,7 @@ public abstract class NSColor implements NSObject {
      * Original signature : <code>CGFloat alphaComponent()</code><br>
      * <i>native declaration : :238</i>
      */
-    public abstract float alphaComponent();
+    public abstract CGFloat alphaComponent();
 
     /**
      * Original signature : <code>void writeToPasteboard(NSPasteboard*)</code><br>
@@ -1055,7 +1002,7 @@ public abstract class NSColor implements NSObject {
      * Original signature : <code>NSImage* patternImage()</code><br>
      * <i>native declaration : :249</i>
      */
-    public abstract com.sun.jna.Pointer patternImage();
+    public abstract NSImage patternImage();
     /**
      * <i>native declaration : :253</i><br>
      * Conversion Error : /**<br>

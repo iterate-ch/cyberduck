@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :8</i>
 public abstract class NSTextField extends NSControl {
@@ -159,20 +160,17 @@ public abstract class NSTextField extends NSControl {
     public abstract void textDidChange(NSNotification notification);
 
     /**
-     * Original signature : <code>BOOL acceptsFirstResponder()</code><br>
-     * <i>native declaration : :37</i>
-     */
-    public abstract boolean acceptsFirstResponder();
-    /**
      * <i>native declaration : :40</i><br>
      * Conversion Error : /// Original signature : <code>void setBezelStyle(null)</code><br>
      * - (void)setBezelStyle:(null)style; (Argument style cannot be converted)
      */
+    public abstract void setBezelStyle(NSUInteger style);
+
     /**
      * Original signature : <code>bezelStyle()</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract com.sun.jna.Pointer bezelStyle();
+    public abstract NSUInteger bezelStyle();
 
     /**
      * Original signature : <code>void setTitleWithMnemonic(NSString*)</code><br>

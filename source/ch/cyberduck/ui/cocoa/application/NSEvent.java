@@ -21,7 +21,10 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSPoint;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.CGFloat;
 
 public interface NSEvent extends NSObject, NSCopying {
 
@@ -426,20 +429,20 @@ public interface NSEvent extends NSObject, NSCopying {
      * Original signature : <code>CGFloat deltaX()</code><br>
      * <i>native declaration : :196</i>
      */
-    public abstract float deltaX();
+    public abstract CGFloat deltaX();
 
     /**
      * Original signature : <code>CGFloat deltaY()</code><br>
      * <i>native declaration : :197</i>
      */
-    public abstract float deltaY();
+    public abstract CGFloat deltaY();
 
     /**
      * Original signature : <code>CGFloat deltaZ()</code><br>
      * 0 for most scroll wheel and mouse events<br>
      * <i>native declaration : :198</i>
      */
-    public abstract float deltaZ();
+    public abstract CGFloat deltaZ();
 
     /**
      * these messages are valid for keyup and keydown events<br>
@@ -580,7 +583,7 @@ public interface NSEvent extends NSObject, NSCopying {
      * Original signature : <code>vendorDefined()</code><br>
      * <i>native declaration : :269</i>
      */
-    public abstract com.sun.jna.Pointer vendorDefined();
+    public abstract NSArray vendorDefined();
 
     /**
      * vendor defined, typically USB vendor ID<br>

@@ -58,32 +58,6 @@ public abstract class NSApplication implements NSObject {
     public static final NSUInteger NSTerminateNow = new NSUInteger(1);
     public static final NSUInteger NSTerminateLater = new NSUInteger(2);
 
-    /// <i>native declaration : :36</i>
-    public static final int NSRunStoppedResponse = (-1000);
-    /// <i>native declaration : :37</i>
-    public static final int NSRunAbortedResponse = (-1001);
-    /// <i>native declaration : :38</i>
-    public static final int NSRunContinuesResponse = (-1002);
-    /// <i>native declaration : :43</i>
-    public static final int NSUpdateWindowsRunLoopOrdering = 500000;
-    /**
-     * Conversion Error : null<br>
-     * SKIPPED:<br>
-     * <i>native declaration : </i><br>
-     * const double NSAppKitVersionNumber;
-     */
-    public static final double NSAppKitVersionNumber10_3_9 = 743.36;
-    public static final int NSAppKitVersionNumber10_0 = 577;
-    public static final double NSAppKitVersionNumber10_2_3 = 663.6;
-    public static final double NSAppKitVersionNumber10_3_5 = 743.24;
-    public static final double NSAppKitVersionNumber10_3_7 = 743.33;
-    public static final int NSAppKitVersionNumber10_1 = 620;
-    public static final int NSAppKitVersionNumber10_2 = 663;
-    public static final int NSAppKitVersionNumber10_3 = 743;
-    public static final int NSAppKitVersionNumber10_4 = 824;
-    public static final double NSAppKitVersionNumber10_3_2 = 743.14;
-    public static final double NSAppKitVersionNumber10_3_3 = 743.2;
-
     public interface _Class extends NSClass {
         /**
          * This method also makes a connection to the window server and completes other initialization.
@@ -212,7 +186,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>NSInteger runModalForWindow(NSWindow*)</code><br>
      * <i>native declaration : :128</i>
      */
-    public abstract int runModalForWindow(NSWindow theWindow);
+    public abstract NSInteger runModalForWindow(NSWindow theWindow);
 
     /**
      * Original signature : <code>void stop(id)</code><br>
@@ -254,7 +228,7 @@ public abstract class NSApplication implements NSObject {
      * Original signature : <code>NSInteger runModalSession(NSModalSession)</code><br>
      * <i>native declaration : :135</i>
      */
-    public abstract int runModalSession(com.sun.jna.Pointer session);
+    public abstract NSInteger runModalSession(com.sun.jna.Pointer session);
 
     /**
      * Original signature : <code>void endModalSession(NSModalSession)</code><br>

@@ -23,6 +23,10 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 
 /// <i>native declaration : :119</i>
@@ -41,7 +45,7 @@ public interface NSWindow extends NSObject {
          * Original signature : <code>CGFloat minFrameWidthWithTitle(NSString*, NSUInteger)</code><br>
          * <i>native declaration : :219</i>
          */
-        float minFrameWidthWithTitle_styleMask(String aTitle, int aStyle);
+        CGFloat minFrameWidthWithTitle_styleMask(String aTitle, NSUInteger aStyle);
 
         /**
          * Original signature : <code>defaultDepthLimit()</code><br>
@@ -907,7 +911,7 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>void setAlphaValue(CGFloat)</code><br>
      * <i>native declaration : :417</i>
      */
-    public abstract void setAlphaValue(float windowAlpha);
+    public abstract void setAlphaValue(CGFloat windowAlpha);
 
     /**
      * Original signature : <code>CGFloat alphaValue()</code><br>
@@ -1253,7 +1257,7 @@ public interface NSWindow extends NSObject {
      * Original signature : <code>CGFloat userSpaceScaleFactor()</code><br>
      * <i>native declaration : :533</i>
      */
-    public abstract float userSpaceScaleFactor();
+    public abstract CGFloat userSpaceScaleFactor();
 
     /**
      * Original signature : <code>void setInitialFirstResponder(NSView*)</code><br>

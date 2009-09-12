@@ -1,5 +1,8 @@
 package ch.cyberduck.ui.cocoa.application;
 
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.CGFloat;
+
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -50,29 +53,25 @@ public abstract class NSSegmentedControl extends NSControl {
      * Original signature : <code>BOOL selectSegmentWithTag(NSInteger)</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract boolean selectSegmentWithTag(int tag);
+    public abstract boolean selectSegmentWithTag(NSInteger tag);
 
     /**
      * Original signature : <code>public abstract void setWidth(CGFloat, NSInteger)</code><br>
      * <i>native declaration : :44</i>
      */
-    public abstract void setWidth_forSegment(float width, int segment);
+    public abstract void setWidth_forSegment(CGFloat width, int segment);
 
     /**
      * Original signature : <code>CGFloat widthForSegment(NSInteger)</code><br>
      * <i>native declaration : :45</i>
      */
-    public abstract float widthForSegment(int segment);
+    public abstract CGFloat widthForSegment(int segment);
 
     /**
      * Original signature : <code>public abstract void setImage(NSImage*, NSInteger)</code><br>
      * <i>native declaration : :47</i>
      */
     public abstract void setImage_forSegment(NSImage image, int segment);
-
-    public void setImage(NSImage image, int segment) {
-        this.setImage_forSegment(image, segment);
-    }
 
     /**
      * Original signature : <code>NSImage* imageForSegment(NSInteger)</code><br>
@@ -126,10 +125,6 @@ public abstract class NSSegmentedControl extends NSControl {
      */
     public abstract boolean isSelectedForSegment(int segment);
 
-    public void setEnabled(boolean enabled, int segment) {
-        this.setEnabled_forSegment(enabled, segment);
-    }
-
     /**
      * Original signature : <code>public abstract void setEnabled(BOOL, NSInteger)</code><br>
      * <i>native declaration : :66</i>
@@ -146,11 +141,11 @@ public abstract class NSSegmentedControl extends NSControl {
      * Original signature : <code>public abstract void setSegmentStyle(NSSegmentStyle)</code><br>
      * <i>native declaration : :70</i>
      */
-    public abstract void setSegmentStyle(int segmentStyle);
+    public abstract void setSegmentStyle(NSInteger segmentStyle);
 
     /**
      * Original signature : <code>NSSegmentStyle segmentStyle()</code><br>
      * <i>native declaration : :71</i>
      */
-    public abstract int segmentStyle();
+    public abstract NSInteger segmentStyle();
 }

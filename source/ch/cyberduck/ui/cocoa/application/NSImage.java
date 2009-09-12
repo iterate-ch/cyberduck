@@ -22,6 +22,8 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 
 /// <i>native declaration : :41</i>
@@ -372,7 +374,7 @@ public abstract class NSImage implements NSObject, NSCopying {
      * Original signature : <code>public abstract  void addRepresentations(NSArray*)</code><br>
      * <i>native declaration : :122</i>
      */
-    public abstract void addRepresentations(com.sun.jna.Pointer imageReps);
+    public abstract void addRepresentations(NSArray imageReps);
 
     /**
      * Original signature : <code>public abstract  void addRepresentation(NSImageRep*)</code><br>
@@ -414,7 +416,7 @@ public abstract class NSImage implements NSObject, NSCopying {
      * Original signature : <code>NSImageRep* bestRepresentationForDevice(NSDictionary*)</code><br>
      * <i>native declaration : :131</i>
      */
-    public abstract com.sun.jna.Pointer bestRepresentationForDevice(com.sun.jna.Pointer deviceDescription);
+    public abstract com.sun.jna.Pointer bestRepresentationForDevice(NSDictionary deviceDescription);
 
     /**
      * Original signature : <code>public abstract  void setDelegate(id)</code><br>

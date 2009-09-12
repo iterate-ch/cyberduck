@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 
 /// <i>native declaration : :14</i>
@@ -298,22 +299,10 @@ public abstract class NSMenuItem implements NSObject, NSCopying, NSValidatedUser
     public abstract void setAction(org.rococoa.Selector aSelector);
 
     /**
-     * Original signature : <code>SEL action()</code><br>
-     * <i>native declaration : :108</i>
-     */
-    public abstract org.rococoa.Selector action();
-
-    /**
      * Original signature : <code>void setTag(NSInteger)</code><br>
      * <i>native declaration : :110</i>
      */
     public abstract void setTag(int anInt);
-
-    /**
-     * Original signature : <code>NSInteger tag()</code><br>
-     * <i>native declaration : :111</i>
-     */
-    public abstract int tag();
 
     /**
      * Original signature : <code>void setRepresentedObject(id)</code><br>

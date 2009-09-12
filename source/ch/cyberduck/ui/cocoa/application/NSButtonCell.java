@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 public abstract class NSButtonCell implements NSActionCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButtonCell", _Class.class);
@@ -191,18 +192,6 @@ public abstract class NSButtonCell implements NSActionCell {
     public abstract void setButtonType(int aType);
 
     /**
-     * Original signature : <code>BOOL isOpaque()</code><br>
-     * <i>native declaration : :162</i>
-     */
-    public abstract boolean isOpaque();
-
-    /**
-     * Original signature : <code>void setFont(NSFont*)</code><br>
-     * <i>native declaration : :163</i>
-     */
-    public abstract void setFont(NSFont fontObj);
-
-    /**
      * Original signature : <code>BOOL isTransparent()</code><br>
      * <i>native declaration : :164</i>
      */
@@ -219,27 +208,6 @@ public abstract class NSButtonCell implements NSActionCell {
      * <i>native declaration : :166</i>
      */
     public abstract void setPeriodicDelay_interval(float delay, float interval);
-
-    /**
-     * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
-     * <i>native declaration : :167</i><br>
-     *
-     * @deprecated use the safer method {@link #getPeriodicDelay_interval(java.nio.FloatBuffer, java.nio.FloatBuffer)} instead
-     */
-    @java.lang.Deprecated
-    public abstract void getPeriodicDelay_interval(com.sun.jna.ptr.FloatByReference delay, com.sun.jna.ptr.FloatByReference interval);
-
-    /**
-     * Original signature : <code>void getPeriodicDelay(float*, float*)</code><br>
-     * <i>native declaration : :167</i>
-     */
-    public abstract void getPeriodicDelay_interval(java.nio.FloatBuffer delay, java.nio.FloatBuffer interval);
-
-    /**
-     * Original signature : <code>NSString* keyEquivalent()</code><br>
-     * <i>native declaration : :168</i>
-     */
-    public abstract String keyEquivalent();
 
     /**
      * Original signature : <code>void setKeyEquivalent(NSString*)</code><br>
@@ -302,13 +270,13 @@ public abstract class NSButtonCell implements NSActionCell {
      * Original signature : <code>void setTitleWithMnemonic(NSString*)</code><br>
      * <i>from NSKeyboardUI native declaration : :185</i>
      */
-    public abstract void setTitleWithMnemonic(com.sun.jna.Pointer stringWithAmpersand);
+    public abstract void setTitleWithMnemonic(String stringWithAmpersand);
 
     /**
      * Original signature : <code>void setAlternateTitleWithMnemonic(NSString*)</code><br>
      * <i>from NSKeyboardUI native declaration : :186</i>
      */
-    public abstract void setAlternateTitleWithMnemonic(com.sun.jna.Pointer stringWithAmpersand);
+    public abstract void setAlternateTitleWithMnemonic(String stringWithAmpersand);
 
     /**
      * Original signature : <code>void setAlternateMnemonicLocation(NSUInteger)</code><br>
@@ -411,19 +379,19 @@ public abstract class NSButtonCell implements NSActionCell {
      * Original signature : <code>void setAttributedAlternateTitle(NSAttributedString*)</code><br>
      * <i>from NSButtonCellAttributedStringMethods native declaration : :234</i>
      */
-    public abstract void setAttributedAlternateTitle(com.sun.jna.Pointer obj);
+    public abstract void setAttributedAlternateTitle(String obj);
 
     /**
      * Original signature : <code>void setBezelStyle(NSBezelStyle)</code><br>
      * <i>from NSButtonCellBezelStyles native declaration : :239</i>
      */
-    public abstract void setBezelStyle(int bezelStyle);
+    public abstract void setBezelStyle(NSUInteger bezelStyle);
 
     /**
      * Original signature : <code>NSBezelStyle bezelStyle()</code><br>
      * <i>from NSButtonCellBezelStyles native declaration : :240</i>
      */
-    public abstract int bezelStyle();
+    public abstract NSUInteger bezelStyle();
 
     /**
      * Original signature : <code>void setSound(NSSound*)</code><br>

@@ -22,13 +22,16 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSInteger;
+
 /// <i>native declaration : :16</i>
 public abstract class NSComboBox extends NSTextField {
 
     public static interface DataSource {
-        int numberOfItemsInComboBox(NSComboBox combo);
+        NSInteger numberOfItemsInComboBox(NSComboBox combo);
 
-        NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final int row);
+        NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row);
     }
 
     /**
@@ -57,25 +60,25 @@ public abstract class NSComboBox extends NSTextField {
      * Original signature : <code>CGFloat itemHeight()</code><br>
      * <i>native declaration : :25</i>
      */
-    public abstract float itemHeight();
+    public abstract CGFloat itemHeight();
 
     /**
      * Original signature : <code>void setItemHeight(CGFloat)</code><br>
      * <i>native declaration : :26</i>
      */
-    public abstract void setItemHeight(float itemHeight);
+    public abstract void setItemHeight(CGFloat itemHeight);
 
     /**
      * Original signature : <code>NSInteger numberOfVisibleItems()</code><br>
      * <i>native declaration : :27</i>
      */
-    public abstract int numberOfVisibleItems();
+    public abstract NSInteger numberOfVisibleItems();
 
     /**
      * Original signature : <code>void setNumberOfVisibleItems(NSInteger)</code><br>
      * <i>native declaration : :28</i>
      */
-    public abstract void setNumberOfVisibleItems(int visibleItems);
+    public abstract void setNumberOfVisibleItems(NSInteger visibleItems);
 
     /**
      * Original signature : <code>void setButtonBordered(BOOL)</code><br>
@@ -117,37 +120,37 @@ public abstract class NSComboBox extends NSTextField {
      * Original signature : <code>void scrollItemAtIndexToTop(NSInteger)</code><br>
      * <i>native declaration : :41</i>
      */
-    public abstract void scrollItemAtIndexToTop(int index);
+    public abstract void scrollItemAtIndexToTop(NSInteger index);
 
     /**
      * Original signature : <code>void scrollItemAtIndexToVisible(NSInteger)</code><br>
      * <i>native declaration : :42</i>
      */
-    public abstract void scrollItemAtIndexToVisible(int index);
+    public abstract void scrollItemAtIndexToVisible(NSInteger index);
 
     /**
      * Original signature : <code>void selectItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :44</i>
      */
-    public abstract void selectItemAtIndex(int index);
+    public abstract void selectItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>void deselectItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :45</i>
      */
-    public abstract void deselectItemAtIndex(int index);
+    public abstract void deselectItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>NSInteger indexOfSelectedItem()</code><br>
      * <i>native declaration : :46</i>
      */
-    public abstract int indexOfSelectedItem();
+    public abstract NSInteger indexOfSelectedItem();
 
     /**
      * Original signature : <code>NSInteger numberOfItems()</code><br>
      * <i>native declaration : :47</i>
      */
-    public abstract int numberOfItems();
+    public abstract NSInteger numberOfItems();
 
     /**
      * Original signature : <code>BOOL completes()</code><br>
@@ -185,13 +188,13 @@ public abstract class NSComboBox extends NSTextField {
      * Original signature : <code>void addItemsWithObjectValues(NSArray*)</code><br>
      * <i>native declaration : :58</i>
      */
-    public abstract void addItemsWithObjectValues(com.sun.jna.Pointer objects);
+    public abstract void addItemsWithObjectValues(NSArray objects);
 
     /**
      * Original signature : <code>void insertItemWithObjectValue(id, NSInteger)</code><br>
      * <i>native declaration : :59</i>
      */
-    public abstract void insertItemWithObjectValue_atIndex(NSObject object, int index);
+    public abstract void insertItemWithObjectValue_atIndex(NSObject object, NSInteger index);
 
     /**
      * Original signature : <code>void removeItemWithObjectValue(id)</code><br>
@@ -203,7 +206,7 @@ public abstract class NSComboBox extends NSTextField {
      * Original signature : <code>void removeItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :61</i>
      */
-    public abstract void removeItemAtIndex(int index);
+    public abstract void removeItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>void removeAllItems()</code><br>
@@ -221,7 +224,7 @@ public abstract class NSComboBox extends NSTextField {
      * Original signature : <code>id itemObjectValueAtIndex(NSInteger)</code><br>
      * <i>native declaration : :64</i>
      */
-    public abstract NSObject itemObjectValueAtIndex(int index);
+    public abstract NSObject itemObjectValueAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>id objectValueOfSelectedItem()</code><br>
@@ -233,7 +236,7 @@ public abstract class NSComboBox extends NSTextField {
      * Original signature : <code>NSInteger indexOfItemWithObjectValue(id)</code><br>
      * <i>native declaration : :66</i>
      */
-    public abstract int indexOfItemWithObjectValue(NSObject object);
+    public abstract NSInteger indexOfItemWithObjectValue(NSObject object);
 
     /**
      * Original signature : <code>NSArray* objectValues()</code><br>
