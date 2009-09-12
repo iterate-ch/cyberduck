@@ -19,8 +19,10 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
+
+import com.sun.jna.Native;
 
 /// <i>native declaration : :28</i>
 public abstract class NSIndexSet implements NSObject {
@@ -34,7 +36,10 @@ public abstract class NSIndexSet implements NSObject {
         return CLASS.indexSetWithIndexesInRange(range);
     }
 
-    public static final long NSNotFound = 2147483647L;
+    /**
+     * NSNotFound is set to LONG_MAX in NSObjCRuntime.h, which has different values on 32-bit and 64-bit
+     */
+    public static final NSUInteger NSNotFound = new NSUInteger(Native.LONG_SIZE == 4 ? Integer.MAX_VALUE : Long.MAX_VALUE);
 
     public interface _Class extends org.rococoa.NSClass {
         /**
@@ -48,6 +53,7 @@ public abstract class NSIndexSet implements NSObject {
          * <i>native declaration : :31</i>
          */
         NSIndexSet indexSetWithIndex(NSInteger value);
+
         /**
          * <i>native declaration : :32</i><br>
          * Conversion Error : /// Original signature : <code>indexSetWithIndexesInRange(null)</code><br>
