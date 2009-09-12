@@ -28,6 +28,8 @@ public interface NSObject extends org.rococoa.NSObject {
 
     public abstract NSObject copy();
 
+    public abstract NSObject retain();
+
     public abstract NSObject autorelease();
 
     /**
