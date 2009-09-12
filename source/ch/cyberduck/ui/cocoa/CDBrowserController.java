@@ -588,7 +588,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         bookmarkTableDelegate.selectionDidChange(null);
         this.setBookmarkFilter(null);
-        bookmarkTable.deselectAll(null);
+        this.reloadBookmarks();
+    }
+
+    /**
+     * Reload bookmark table from currently selected model
+     */
+    public void reloadBookmarks() {
         bookmarkTable.reloadData();
         this.getFocus();
     }
@@ -1332,82 +1338,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.bookmarkTable.setAllowsColumnSelection(false);
         this.bookmarkTable.setAllowsColumnReordering(false);
         this.bookmarkTable.sizeToFit();
-
-        HistoryCollection.defaultCollection().addListener(historyCollectionListener);
-        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
-        Rendezvous.instance().addListener(rendezvousCollectionListener);
     }
-
-    private final CollectionListener<Host> historyCollectionListener = new CollectionListener<Host>() {
-        public void collectionItemAdded(Host item) {
-            this.reloadBookmarks();
-        }
-
-        public void collectionItemRemoved(Host item) {
-            this.reloadBookmarks();
-        }
-
-        public void collectionItemChanged(Host item) {
-            this.reloadBookmarks();
-        }
-
-        private void reloadBookmarks() {
-            if(bookmarkModel.getSource().equals(HistoryCollection.defaultCollection())) {
-                invoke(new WindowMainAction(CDBrowserController.this) {
-                    public void run() {
-                        bookmarkTable.reloadData();
-                        updateStatusLabel();
-                    }
-                });
-            }
-        }
-    };
-
-    private final CollectionListener<Host> bookmarkCollectionListener = new CollectionListener<Host>() {
-        public void collectionItemAdded(Host item) {
-            this.reloadBookmarks();
-        }
-
-        public void collectionItemRemoved(Host item) {
-            this.reloadBookmarks();
-        }
-
-        public void collectionItemChanged(Host item) {
-            this.reloadBookmarks();
-        }
-
-        private void reloadBookmarks() {
-            if(bookmarkModel.getSource().equals(HostCollection.defaultCollection())) {
-                invoke(new WindowMainAction(CDBrowserController.this) {
-                    public void run() {
-                        bookmarkTable.reloadData();
-                        updateStatusLabel();
-                    }
-                });
-            }
-        }
-    };
-
-    private final RendezvousListener rendezvousCollectionListener = new RendezvousListener() {
-        public void serviceResolved(String servicename, String hostname) {
-            this.reloadBookmarks();
-        }
-
-        public void serviceLost(String servicename) {
-            this.reloadBookmarks();
-        }
-
-        private void reloadBookmarks() {
-            if(bookmarkModel.getSource().equals(RendezvousCollection.defaultCollection())) {
-                invoke(new WindowMainAction(CDBrowserController.this) {
-                    public void run() {
-                        bookmarkTable.reloadData();
-                        updateStatusLabel();
-                    }
-                });
-            }
-        }
-    };
 
     @Outlet
     private NSPopUpButton actionPopupButton;
@@ -1516,7 +1447,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             });
         }
-        this.bookmarkTable.reloadData();
+        this.reloadBookmarks();
     }
 
     // ----------------------------------------------------------
@@ -4260,9 +4191,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(this.hasSession()) {
             this.session.removeConnectionListener(this.listener);
         }
-        Rendezvous.instance().removeListener(rendezvousCollectionListener);
-        HistoryCollection.defaultCollection().removeListener(historyCollectionListener);
-        HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
 
         bookmarkTable.setDelegate(null);
         bookmarkTable.setDataSource(null);

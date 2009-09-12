@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,11 +69,27 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     public void setSource(final BookmarkCollection source) {
         this.source.removeListener(listener); //Remove previous listener
         this.source = source;
-        this.source.addListener(listener = new AbstractCollectionListener<Host>() {
+        this.source.addListener(listener = new CollectionListener<Host>() {
             private Timer delayed = null;
 
-            @Override
+            public void collectionItemAdded(Host item) {
+                controller.invoke(new WindowMainAction(controller) {
+                    public void run() {
+                        controller.reloadBookmarks();
+                    }
+                });
+            }
+
+            public void collectionItemRemoved(Host item) {
+                controller.invoke(new WindowMainAction(controller) {
+                    public void run() {
+                        controller.reloadBookmarks();
+                    }
+                });
+            }
+
             public void collectionItemChanged(Host item) {
+                controller.reloadBookmarks();
                 if(null != delayed) {
                     delayed.cancel();
                 }

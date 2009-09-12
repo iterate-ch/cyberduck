@@ -60,8 +60,8 @@ public class Rendezvous implements BrowseListener, ResolveListener {
 
     private Rendezvous() {
         log.debug("Rendezvous");
-        this.services = new HashMap<String, Host>();
-        this.browsers = new HashMap<String, DNSSDService>();
+        this.services = Collections.synchronizedMap(new HashMap<String, Host>());
+        this.browsers = Collections.synchronizedMap(new HashMap<String, DNSSDService>());
     }
 
     /**
@@ -170,9 +170,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
     }
 
     public Host getService(int index) {
-        synchronized(this) {
-            return services.values().toArray(new Host[services.size()])[index];
-        }
+        return services.values().toArray(new Host[services.size()])[index];
     }
 
     /**
@@ -181,9 +179,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
      */
     public String getDisplayedName(int index) {
         if(index < this.numberOfServices()) {
-            synchronized(this) {
-                return services.values().toArray(new Host[services.size()])[index].getNickname();
-            }
+            return services.values().toArray(new Host[services.size()])[index].getNickname();
         }
         return Locale.localizedString("Unknown");
     }
@@ -232,12 +228,10 @@ public class Rendezvous implements BrowseListener, ResolveListener {
         log.debug("serviceLost:" + serviceName);
         try {
             String identifier = DNSSD.constructFullName(serviceName, regType, domain);
-            notifier.serviceLost(identifier);
-            synchronized(this) {
-                if(null == this.services.remove(identifier)) {
-                    return;
-                }
+            if(null == this.services.remove(identifier)) {
+                return;
             }
+            notifier.serviceLost(identifier);
         }
         catch(DNSSDException e) {
             log.error(e.getMessage());
@@ -269,9 +263,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
         try {
             final Host host = new Host(this.getProtocol(fullname, port), hostname, port);
             host.getCredentials().setUsername(null);
-            synchronized(this) {
-                this.services.put(fullname, host);
-            }
+            this.services.put(fullname, host);
             this.notifier.serviceResolved(fullname, hostname);
         }
         finally {
