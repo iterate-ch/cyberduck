@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -75,6 +76,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             public void collectionItemAdded(Host item) {
                 controller.invoke(new WindowMainAction(controller) {
                     public void run() {
+                        cache.clear();
                         controller.reloadBookmarks();
                     }
                 });
@@ -83,6 +85,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             public void collectionItemRemoved(Host item) {
                 controller.invoke(new WindowMainAction(controller) {
                     public void run() {
+                        cache.clear();
                         controller.reloadBookmarks();
                     }
                 });
@@ -110,6 +113,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
 
     @Override
     protected void invalidate() {
+        cache.clear();
         source.removeListener(listener);
         super.invalidate();
     }
@@ -199,39 +203,50 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
     private static final NSImage STATUS_GREEN = CDIconCache.imageNamed("statusGreen.tiff");
     private static final NSImage STATUS_YELLOW = CDIconCache.imageNamed("statusYellow.tiff");
 
+    /**
+     * Second cache because it is expensive to create proxy instances
+     */
+    private AttributeCache<Host> cache = new AttributeCache<Host>(
+            Preferences.instance().getInteger("bookmark.model.cache.size")
+    );
+
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         final String identifier = tableColumn.identifier();
         final Host host = this.getSource().get(row.intValue());
-        if(identifier.equals(ICON_COLUMN)) {
-            return CDIconCache.instance().iconForName(host.getProtocol().disk(),
-                    Preferences.instance().getInteger("bookmark.icon.size"));
-        }
-        if(identifier.equals(BOOKMARK_COLUMN)) {
-            NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());
-            dict.setObjectForKey(host.toURL() + Path.normalize(host.getDefaultPath()), "URL");
-            if(StringUtils.isNotBlank(host.getComment())) {
-                dict.setObjectForKey(StringUtils.remove(StringUtils.remove(host.getComment(), CharUtils.LF), CharUtils.CR), "Comment");
+        final NSObject cached = cache.get(host, identifier);
+        if(null == cached) {
+            if(identifier.equals(ICON_COLUMN)) {
+                return cache.put(host, identifier, CDIconCache.instance().iconForName(host.getProtocol().disk(),
+                        Preferences.instance().getInteger("bookmark.icon.size")));
             }
-            return dict;
-        }
-        if(identifier.equals(STATUS_COLUMN)) {
-            if(controller.hasSession()) {
-                final Session session = controller.getSession();
-                if(host.equals(session.getHost())) {
-                    if(session.isConnected()) {
-                        return STATUS_GREEN;
-                    }
-                    if(session.isOpening()) {
-                        return STATUS_YELLOW;
+            if(identifier.equals(BOOKMARK_COLUMN)) {
+                NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());
+                dict.setObjectForKey(host.toURL() + Path.normalize(host.getDefaultPath()), "URL");
+                if(StringUtils.isNotBlank(host.getComment())) {
+                    dict.setObjectForKey(StringUtils.remove(StringUtils.remove(host.getComment(), CharUtils.LF), CharUtils.CR), "Comment");
+                }
+                return cache.put(host, identifier, dict);
+            }
+            if(identifier.equals(STATUS_COLUMN)) {
+                if(controller.hasSession()) {
+                    final Session session = controller.getSession();
+                    if(host.equals(session.getHost())) {
+                        if(session.isConnected()) {
+                            return STATUS_GREEN;
+                        }
+                        if(session.isOpening()) {
+                            return STATUS_YELLOW;
+                        }
                     }
                 }
+                return null;
             }
-            return null;
+            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                return cache.put(host, identifier, NSString.stringWithString(host.getNickname()));
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
-        if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(host.getNickname());
-        }
-        throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        return cached;
     }
 
     @Override
