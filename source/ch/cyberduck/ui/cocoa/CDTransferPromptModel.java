@@ -68,6 +68,12 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         this.transfer = transfer;
     }
 
+    @Override
+    protected void invalidate() {
+        cache.clear();
+        super.invalidate();
+    }
+
     public void add(Path p) {
         roots.add(p);
     }
@@ -177,27 +183,38 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     protected final NSImage ALERT_ICON = CDIconCache.imageNamed("alert.tiff");
 
     /**
+     * Second cache because it is expensive to create proxy instances
+     */
+    protected AttributeCache<Path> cache = new AttributeCache<Path>(
+            Preferences.instance().getInteger("browser.model.cache.size")
+    );
+
+    /**
      * @param item
      * @param identifier
      * @return
      */
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(INCLUDE_COLUMN)) {
-            // Not included if the particular path should be skipped or skip
-            // existing is selected as the default transfer action for duplicate
-            // files
-            final boolean skipped = !transfer.isIncluded(item)
-                    || ((CDTransferPrompt) controller).getAction().equals(TransferAction.ACTION_SKIP);
-            return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
+        final NSObject cached = cache.get(item, identifier);
+        if(null == cached) {
+            if(identifier.equals(INCLUDE_COLUMN)) {
+                // Not included if the particular path should be skipped or skip
+                // existing is selected as the default transfer action for duplicate
+                // files
+                final boolean skipped = !transfer.isIncluded(item)
+                        || ((CDTransferPrompt) controller).getAction().equals(TransferAction.ACTION_SKIP);
+                return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
+            }
+            if(identifier.equals(FILENAME_COLUMN)) {
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
+                        CDTableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                return cache.put(item, identifier, NSString.stringWithString(item.getName()));
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
-        if(identifier.equals(FILENAME_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
-        }
-        if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(item.getName());
-        }
-        throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        return cached;
     }
 
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {

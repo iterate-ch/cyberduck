@@ -90,6 +90,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         transfer.getSession().removeProgressListener(l);
         browserView.setDataSource(null);
         browserView.setDelegate(null);
+        browserModel.invalidate();
         super.invalidate();
     }
 

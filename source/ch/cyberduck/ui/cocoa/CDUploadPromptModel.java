@@ -58,20 +58,23 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
-            if(item.attributes.isFile()) {
-                if(item.getLocal().attributes.getSize() == 0) {
-                    return ALERT_ICON;
+        final NSObject cached = cache.get(item, identifier);
+        if(null == cached) {
+            if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
+                if(item.attributes.isFile()) {
+                    if(item.getLocal().attributes.getSize() == 0) {
+                        return cache.put(item, identifier, ALERT_ICON);
+                    }
+                    if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
+                        return cache.put(item, identifier, ALERT_ICON);
+                    }
                 }
-                if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
-                    return ALERT_ICON;
-                }
+                return null;
             }
-            return null;
-        }
-        if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
-                    CDTableCellAttributes.browserFontRightAlignment()).retain().autorelease();
+            if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
+                        CDTableCellAttributes.browserFontRightAlignment()));
+            }
         }
         return super.objectValueForItem(item, identifier);
     }
