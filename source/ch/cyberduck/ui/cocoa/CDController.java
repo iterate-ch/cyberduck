@@ -24,6 +24,7 @@ import ch.cyberduck.ui.AbstractController;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSThread;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -131,14 +132,14 @@ public class CDController extends AbstractController {
             }
 
             public void run() {
-                final OperationBatcher autorelease = CDController.this.getBatcher();
+                final NSAutoreleasePool pool = NSAutoreleasePool.push();
                 try {
                     runnable.run();
                 }
                 finally {
                     //Remove strong reference
                     registry.remove(this);
-                    autorelease.operate();
+                    pool.drain();
                 }
             }
         };
