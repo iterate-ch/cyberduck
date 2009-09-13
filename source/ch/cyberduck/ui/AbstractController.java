@@ -90,6 +90,9 @@ public abstract class AbstractController implements Controller {
         log.info("Started background runnable:" + runnable);
     }
 
+    /**
+     * Placeholder implementation
+     */
     private final OperationBatcher b = new OperationBatcher(0) {
         @Override
         protected void operation() {
@@ -102,10 +105,11 @@ public abstract class AbstractController implements Controller {
         }
     };
 
-    /**
-     * @return
-     */
     protected OperationBatcher getBatcher() {
+        return this.getBatcher(1);
+    }
+
+    protected OperationBatcher getBatcher(int size) {
         return b;
     }
 }

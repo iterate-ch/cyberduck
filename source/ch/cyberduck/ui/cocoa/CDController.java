@@ -97,8 +97,8 @@ public class CDController extends AbstractController {
      * @return
      */
     @Override
-    protected OperationBatcher getBatcher() {
-        return AutoreleaseBatcher.forThread(1);
+    protected OperationBatcher getBatcher(int size) {
+        return AutoreleaseBatcher.forThread(size);
     }
 
     /**
@@ -131,12 +131,14 @@ public class CDController extends AbstractController {
             }
 
             public void run() {
+                final OperationBatcher autorelease = CDController.this.getBatcher();
                 try {
                     runnable.run();
                 }
                 finally {
                     //Remove strong reference
                     registry.remove(this);
+                    autorelease.operate();
                 }
             }
         };
