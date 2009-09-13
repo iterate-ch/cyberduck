@@ -590,6 +590,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         bookmarkTableDelegate.selectionDidChange(null);
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
+        this.getFocus();
     }
 
     /**
@@ -597,7 +598,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     public void reloadBookmarks() {
         bookmarkTable.reloadData();
-        this.getFocus();
+        this.updateStatusLabel();
     }
 
     private NSSegmentedControl bookmarkSwitchView;
