@@ -297,6 +297,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     protected void invalidate() {
         toolbar.setDelegate(null);
         toolbarItems.clear();
+        transferModel.invalidate();
         super.invalidate();
     }
 

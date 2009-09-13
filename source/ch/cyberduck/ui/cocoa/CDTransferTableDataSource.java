@@ -66,6 +66,12 @@ public class CDTransferTableDataSource extends CDListDataSource {
         });
     }
 
+    @Override
+    protected void invalidate() {
+        cache.clear();
+        super.invalidate();
+    }
+
     /**
      *
      */
@@ -116,19 +122,31 @@ public class CDTransferTableDataSource extends CDListDataSource {
     }
 
     /**
+     * Second cache because it is expensive to create proxy instances
+     */
+    private AttributeCache<Transfer> cache = new AttributeCache<Transfer>(
+            Preferences.instance().getInteger("queue.model.cache.size")
+    );
+
+    /**
      * @param view
      * @param tableColumn
      * @param row
      */
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         final String identifier = tableColumn.identifier();
-        if(identifier.equals(PROGRESS_COLUMN)) {
-            return null;
+        final Transfer item = this.getSource().get(row.intValue());
+        final NSObject cached = cache.get(item, identifier);
+        if(null == cached) {
+            if(identifier.equals(PROGRESS_COLUMN)) {
+                return null;
+            }
+            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                return cache.put(item, identifier, NSString.stringWithString(item.getName()));
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
-        if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(this.getSource().get(row.intValue()).getName());
-        }
-        throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        return cached;
     }
 
     // ----------------------------------------------------------
