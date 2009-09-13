@@ -80,6 +80,9 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
      * @see NSOutlineView.DataSource
      */
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
+        if(log.isDebugEnabled()) {
+            log.debug("outlineView_numberOfChildrenOfItem:");
+        }
         if(controller.isMounted()) {
             if(null == item) {
                 return new NSInteger(this.childs(controller.workdir()).size());

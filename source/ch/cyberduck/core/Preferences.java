@@ -166,6 +166,13 @@ public abstract class Preferences {
         defaults.put("icon.cache.size", String.valueOf(50));
 
         /**
+         * Caching NS* proxy instances.
+         */
+        defaults.put("browser.model.cache.size", String.valueOf(200));
+        defaults.put("bookmark.model.cache.size", String.valueOf(50));
+        defaults.put("queue.model.cache.size", String.valueOf(20));
+
+        /**
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
         defaults.put("browser.view", "1");

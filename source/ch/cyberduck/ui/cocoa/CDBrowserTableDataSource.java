@@ -76,6 +76,12 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         this.controller = controller;
     }
 
+    @Override
+    protected void invalidate() {
+        cache.clear();
+        super.invalidate();
+    }
+
     /**
      * Must be efficient; called very frequently by the table view
      *
@@ -110,6 +116,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                             isLoadingListingInBackground.remove(path);
                             if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
                                 if(controller.isConnected()) {
+                                    cache.clear();
                                     controller.reloadData(true);
                                 }
                             }
@@ -145,56 +152,66 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         return CDIconCache.instance().iconForPath(item, 16);
     }
 
+    /**
+     * Second cache because it is expensive to create proxy instances
+     */
+    private AttributeCache<Path> cache = new AttributeCache<Path>(
+            Preferences.instance().getInteger("browser.model.cache.size")
+    );
+
     protected NSObject objectValueForItem(Path item, String identifier) {
-        if(null == item) {
-            log.warn("objectValueForItem:Path is null");
-            return null;
+        if(log.isDebugEnabled()) {
+            log.debug("objectValueForItem:"+item.getAbsolute());
         }
-        if(identifier.equals(ICON_COLUMN)) {
-            return this.iconForPath(item).retain().autorelease();
-        }
-        if(identifier.equals(FILENAME_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
-        }
-        if(identifier.equals(SIZE_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
-                    CDTableCellAttributes.browserFontRightAlignment()).retain().autorelease();
-        }
-        if(identifier.equals(MODIFIED_COLUMN)) {
-            if(item.attributes.getModificationDate() != -1) {
-                return NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
-                        CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
+        final NSObject cached = cache.get(item, identifier);
+        if(null == cached) {
+            if(identifier.equals(ICON_COLUMN)) {
+                return cache.put(item, identifier, this.iconForPath(item));
             }
-            return UNKNOWN_STRING;
-        }
-        if(identifier.equals(OWNER_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
-                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
-        }
-        if(identifier.equals(GROUP_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
-                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
-        }
-        if(identifier.equals(PERMISSIONS_COLUMN)) {
-            Permission permission = item.attributes.getPermission();
-            if(null == permission) {
-                return UNKNOWN_STRING;
+            if(identifier.equals(FILENAME_COLUMN)) {
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
+                        CDTableCellAttributes.browserFontLeftAlignment()));
             }
-            return NSAttributedString.attributedStringWithAttributes(permission.toString(),
-                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
+            if(identifier.equals(SIZE_COLUMN)) {
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
+                        CDTableCellAttributes.browserFontRightAlignment()));
+            }
+            if(identifier.equals(MODIFIED_COLUMN)) {
+                if(item.attributes.getModificationDate() != -1) {
+                    return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
+                            CDTableCellAttributes.browserFontLeftAlignment()));
+                }
+                return cache.put(item, identifier, UNKNOWN_STRING);
+            }
+            if(identifier.equals(OWNER_COLUMN)) {
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
+                        CDTableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(GROUP_COLUMN)) {
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
+                        CDTableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(PERMISSIONS_COLUMN)) {
+                Permission permission = item.attributes.getPermission();
+                if(null == permission) {
+                    return cache.put(item, identifier, UNKNOWN_STRING);
+                }
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(permission.toString(),
+                        CDTableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(KIND_COLUMN)) {
+                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.kind(),
+                        CDTableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                return cache.put(item, identifier, NSString.stringWithString(item.getName()));
+            }
+            if(identifier.equals(LOCAL_COLUMN)) {
+                return cache.put(item, identifier, NSString.stringWithString(item.getLocal().getAbsolute()));
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
-        if(identifier.equals(KIND_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(item.kind(),
-                    CDTableCellAttributes.browserFontLeftAlignment()).retain().autorelease();
-        }
-        if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(item.getName());
-        }
-        if(identifier.equals(LOCAL_COLUMN)) {
-            return NSString.stringWithString(item.getLocal().getAbsolute());
-        }
-        throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        return cached;
     }
 
     /**

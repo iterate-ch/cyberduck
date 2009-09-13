@@ -2937,9 +2937,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     public Path lookup(CDPathReference path) {
         if(this.isMounted()) {
-            final Session session = this.getSession();
-            final Cache<Path> cache = session.cache();
-            return cache.lookup(path);
+            return this.getSession().cache().lookup(path);
         }
         return null;
     }
