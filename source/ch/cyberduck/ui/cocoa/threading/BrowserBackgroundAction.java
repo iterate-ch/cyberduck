@@ -44,6 +44,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
         BackgroundActionRegistry.instance().add(this);
     }
 
+    @Override
     public Session getSession() {
         return controller.getSession();
     }

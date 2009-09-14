@@ -52,6 +52,7 @@ public class TransferMenuDelegate extends MenuDelegate {
         return new NSInteger(roots.size());
     }
 
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         final Path path = roots.get(index.intValue());
         item.setTitle(path.getName());

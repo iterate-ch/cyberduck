@@ -72,7 +72,7 @@ public class CDCommandController extends CDSheetController implements Transcript
     public void setImage(NSImageView image) {
         this.image = image;
         final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
-        this.image.setImage(CDIconCache.instance().iconForLocal(LocalFactory.createLocal(t), 128));
+        this.image.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
     }
 
     public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
@@ -100,9 +100,7 @@ public class CDCommandController extends CDSheetController implements Transcript
         return "Command";
     }
 
-    /**
-     * @param sender
-     */
+    @Action
     public void sendButtonClicked(final NSButton sender) {
         final String command = this.inputField.stringValue();
         if(StringUtils.isNotBlank(command)) {

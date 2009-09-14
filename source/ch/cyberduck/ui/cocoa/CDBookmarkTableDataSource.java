@@ -98,6 +98,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                 }
                 delayed = new Timer();
                 delayed.schedule(new TimerTask() {
+                    @Override
                     public void run() {
                         controller.invoke(new DefaultMainAction() {
                             public void run() {
@@ -200,8 +201,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
-    private static final NSImage STATUS_GREEN = CDIconCache.imageNamed("statusGreen.tiff");
-    private static final NSImage STATUS_YELLOW = CDIconCache.imageNamed("statusYellow.tiff");
+    private static final NSImage STATUS_GREEN = CDIconCache.iconNamed("statusGreen.tiff");
+    private static final NSImage STATUS_YELLOW = CDIconCache.iconNamed("statusYellow.tiff");
 
     /**
      * Second cache because it is expensive to create proxy instances
@@ -216,8 +217,8 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         final NSObject cached = cache.get(host, identifier);
         if(null == cached) {
             if(identifier.equals(ICON_COLUMN)) {
-                return cache.put(host, identifier, CDIconCache.instance().iconForName(host.getProtocol().disk(),
-                        Preferences.instance().getInteger("bookmark.icon.size")));
+                return CDIconCache.iconNamed(host.getProtocol().disk(),
+                        Preferences.instance().getInteger("bookmark.icon.size"));
             }
             if(identifier.equals(BOOKMARK_COLUMN)) {
                 NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());

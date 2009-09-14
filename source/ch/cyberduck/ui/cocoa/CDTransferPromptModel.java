@@ -180,7 +180,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         }
     }
 
-    protected final NSImage ALERT_ICON = CDIconCache.imageNamed("alert.tiff");
+    protected final NSImage ALERT_ICON = CDIconCache.iconNamed("alert.tiff");
 
     /**
      * Second cache because it is expensive to create proxy instances

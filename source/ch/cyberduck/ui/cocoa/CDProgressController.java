@@ -334,9 +334,9 @@ public class CDProgressController extends CDBundleController {
     @Outlet
     private NSImageView statusIconView;
 
-    private static final NSImage RED_ICON = CDIconCache.imageNamed("statusRed.tiff");
-    private static final NSImage GREEN_ICON = CDIconCache.imageNamed("statusGreen.tiff");
-    private static final NSImage YELLOW_ICON = CDIconCache.imageNamed("statusYellow.tiff");
+    private static final NSImage RED_ICON = CDIconCache.iconNamed("statusRed.tiff");
+    private static final NSImage GREEN_ICON = CDIconCache.iconNamed("statusGreen.tiff");
+    private static final NSImage YELLOW_ICON = CDIconCache.iconNamed("statusYellow.tiff");
 
     public void setStatusIconView(final NSImageView statusIconView) {
         this.statusIconView = statusIconView;
@@ -349,13 +349,13 @@ public class CDProgressController extends CDBundleController {
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;
         if(transfer instanceof DownloadTransfer) {
-            iconImageView.setImage(CDIconCache.instance().iconForName("arrowDown", 32));
+            iconImageView.setImage(CDIconCache.iconNamed("arrowDown", 32));
         }
         else if(transfer instanceof UploadTransfer) {
-            iconImageView.setImage(CDIconCache.instance().iconForName("arrowUp", 32));
+            iconImageView.setImage(CDIconCache.iconNamed("arrowUp", 32));
         }
         else if(transfer instanceof SyncTransfer) {
-            iconImageView.setImage(CDIconCache.instance().iconForName("sync", 32));
+            iconImageView.setImage(CDIconCache.iconNamed("sync", 32));
         }
     }
 

@@ -27,7 +27,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegate<Path> {
     private static Logger log = Logger.getLogger(CDAbstractTableDelegate.class);
@@ -70,13 +70,14 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         return new NullComparator<Path>();
     }
 
-    private class FileTypeComparator extends BrowserComparator {
+    private static class FileTypeComparator extends BrowserComparator {
         private Collator impl = Collator.getInstance(Locale.getDefault());
 
         public FileTypeComparator(boolean ascending) {
             super(ascending);
         }
 
+        @Override
         public int compare(Path p1, Path p2) {
             if((p1.attributes.isDirectory() && p2.attributes.isDirectory())
                     || p1.attributes.isFile() && p2.attributes.isFile()) {
@@ -96,13 +97,14 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         }
     }
 
-    private class FilenameComparator extends BrowserComparator {
+    private static class FilenameComparator extends BrowserComparator {
         private Comparator<String> impl = new NaturalOrderComparator();
 
         public FilenameComparator(boolean ascending) {
             super(ascending);
         }
 
+        @Override
         public int compare(Path p1, Path p2) {
             if(ascending) {
                 return impl.compare(p1.getName(), p2.getName());
@@ -115,12 +117,13 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         }
     }
 
-    private class SizeComparator extends BrowserComparator {
+    private static class SizeComparator extends BrowserComparator {
 
         public SizeComparator(boolean ascending) {
             super(ascending);
         }
 
+        @Override
         public int compare(Path p1, Path p2) {
             if(p1.attributes.getSize() > p2.attributes.getSize()) {
                 return ascending ? 1 : -1;
@@ -136,12 +139,13 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         }
     }
 
-    private class TimestampComparator extends BrowserComparator {
+    private static class TimestampComparator extends BrowserComparator {
 
         public TimestampComparator(boolean ascending) {
             super(ascending);
         }
 
+        @Override
         public int compare(Path p1, Path p2) {
             long d1 = p1.attributes.getModificationDate();
             if(-1 == d1) {
@@ -162,12 +166,13 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         }
     }
 
-    private class OwnerComparator extends BrowserComparator {
+    private static class OwnerComparator extends BrowserComparator {
 
         public OwnerComparator(boolean ascending) {
             super(ascending);
         }
 
+        @Override
         public int compare(Path p1, Path p2) {
             if(ascending) {
                 return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
@@ -180,12 +185,13 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         }
     }
 
-    private class GroupComparator extends BrowserComparator {
+    private static class GroupComparator extends BrowserComparator {
 
         public GroupComparator(boolean ascending) {
             super(ascending);
         }
 
+        @Override
         public int compare(Path p1, Path p2) {
             if(ascending) {
                 return p1.attributes.getGroup().compareToIgnoreCase(p2.attributes.getGroup());
@@ -198,12 +204,13 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
         }
     }
 
-    private class PermissionsComparator extends BrowserComparator {
+    private static class PermissionsComparator extends BrowserComparator {
 
         public PermissionsComparator(boolean ascending) {
             super(ascending);
         }
 
+        @Override
         public int compare(Path p1, Path p2) {
             Permission perm1 = p1.attributes.getPermission();
             if(null == perm1) {

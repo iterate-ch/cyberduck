@@ -25,7 +25,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BackPathHistoryMenuDelegate extends PathHistoryMenuDelegate {
 
@@ -33,10 +33,12 @@ public class BackPathHistoryMenuDelegate extends PathHistoryMenuDelegate {
         super(controller);
     }
 
+    @Override
     public List<Path> getHistory() {
         return controller.getBackHistory();
     }
 
+    @Override
     public void clearMenuItemClicked(NSMenuItem sender) {
         controller.clearBackHistory();
     }

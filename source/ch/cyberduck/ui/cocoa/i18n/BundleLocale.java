@@ -34,11 +34,13 @@ public class BundleLocale extends Locale {
     }
 
     private static class Factory extends LocaleFactory {
+        @Override
         protected Locale create() {
             return new BundleLocale();
         }
     }
 
+    @Override
     public String get(final String key, final String table) {
         if(StringUtils.isEmpty(table)) {
             return NSBundle.localizedString(key, "Localizable");

@@ -59,7 +59,7 @@ public class CDConnectionController extends CDSheetController {
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
             item.setRepresentedObject(protocol.getIdentifier());
-            item.setImage(CDIconCache.instance().iconForName(protocol.icon(), 16));
+            item.setImage(CDIconCache.iconNamed(protocol.icon(), 16));
         }
         final Protocol defaultProtocol
                 = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));

@@ -56,10 +56,11 @@ public class CDBookmarkController extends CDWindowController {
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
             item.setRepresentedObject(protocol.getIdentifier());
-            item.setImage(CDIconCache.instance().iconForName(protocol.icon(), 16));
+            item.setImage(CDIconCache.iconNamed(protocol.icon(), 16));
         }
     }
 
+    @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
         final Protocol selected = Protocol.forName(protocolPopup.selectedItem().representedObject());
@@ -105,6 +106,7 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup.setAction(action);
     }
 
+    @Action
     public void encodingSelectionChanged(final NSPopUpButton sender) {
         log.debug("encodingSelectionChanged:" + sender);
         if(sender.selectedItem().title().equals(DEFAULT)) {
@@ -149,6 +151,7 @@ public class CDBookmarkController extends CDWindowController {
         this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
     }
 
+    @Action
     public void launchNetworkAssistant(final NSButton sender) {
         this.host.diagnose();
     }
@@ -217,7 +220,7 @@ public class CDBookmarkController extends CDWindowController {
         this.webUrlImage = b;
         this.webUrlImage.setTarget(this.id());
         this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
-        this.webUrlImage.setImage(CDIconCache.instance().iconForName("site", 16));
+        this.webUrlImage.setImage(CDIconCache.iconNamed("site", 16));
         this.updateFavicon();
     }
 
@@ -249,6 +252,7 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
+    @Action
     public void openWebUrl(final NSButton sender) {
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(host.getWebURL()));
     }
@@ -300,6 +304,7 @@ public class CDBookmarkController extends CDWindowController {
         }
     }
 
+    @Action
     public void timezonePopupClicked(NSPopUpButton sender) {
         String selected = sender.selectedItem().title();
         if(selected.equals(AUTO)) {
@@ -335,6 +340,7 @@ public class CDBookmarkController extends CDWindowController {
         this.connectmodePopup.addItemWithTitle(CONNECTMODE_PASSIVE);
     }
 
+    @Action
     public void connectmodePopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(DEFAULT)) {
             this.host.setFTPConnectMode(null);
@@ -365,6 +371,7 @@ public class CDBookmarkController extends CDWindowController {
         this.transferPopup.addItemWithTitle(TRANSFER_BROWSERCONNECTION);
     }
 
+    @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(DEFAULT)) {
             this.host.setMaxConnections(null);
@@ -413,7 +420,7 @@ public class CDBookmarkController extends CDWindowController {
                     f.getAbsolute()), action, "");
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
-                    CDIconCache.instance().iconForLocal(f, 16)
+                    CDIconCache.instance().iconForPath(f, 16)
             );
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
                     f.getAbsolute());
@@ -425,6 +432,7 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSOpenPanel downloadPathPanel;
 
+    @Action
     public void downloadPathPopupClicked(final NSMenuItem sender) {
         if(sender.title().equals(CHOOSE)) {
             downloadPathPanel = NSOpenPanel.openPanel();
@@ -456,7 +464,7 @@ public class CDBookmarkController extends CDWindowController {
         downloadPathPopup.itemAtIndex(0).setRepresentedObject(
                 host.getDownloadFolder().getAbsolute());
         downloadPathPopup.itemAtIndex(0).setImage(
-                CDIconCache.instance().iconForLocal(host.getDownloadFolder(), 16));
+                CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
         downloadPathPopup.selectItemAtIndex(0);
         downloadPathPanel = null;
         this.itemChanged();
@@ -559,6 +567,7 @@ public class CDBookmarkController extends CDWindowController {
 
     private NSOpenPanel publicKeyPanel;
 
+    @Action
     public void pkCheckboxSelectionChanged(final NSButton sender) {
         log.debug("pkCheckboxSelectionChanged");
         if(this.pkLabel.stringValue().equals(Locale.localizedString("No Private Key selected"))) {
@@ -616,12 +625,12 @@ public class CDBookmarkController extends CDWindowController {
 
                 public void cleanup() {
                     alertIcon.setEnabled(!reachable);
-                    alertIcon.setImage(reachable ? null : CDIconCache.imageNamed("alert.tiff"));
+                    alertIcon.setImage(reachable ? null : CDIconCache.iconNamed("alert.tiff"));
                 }
             });
         }
         else {
-            alertIcon.setImage(CDIconCache.imageNamed("alert.tiff"));
+            alertIcon.setImage(CDIconCache.iconNamed("alert.tiff"));
             alertIcon.setEnabled(false);
         }
     }

@@ -140,6 +140,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 this.anonymousCheckbox.setAction(Foundation.selector("anonymousCheckboxClicked:"));
             }
 
+            @Action
             public void anonymousCheckboxClicked(final NSButton sender) {
                 if(sender.state() == NSCell.NSOnState) {
                     credentials.setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
@@ -172,6 +173,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
 
             private NSOpenPanel publicKeyPanel;
 
+            @Action
             public void pkCheckboxSelectionChanged(final NSButton sender) {
                 log.debug("pkCheckboxSelectionChanged");
                 if(this.pkLabel.stringValue().equals(Locale.localizedString("No Private Key selected"))) {

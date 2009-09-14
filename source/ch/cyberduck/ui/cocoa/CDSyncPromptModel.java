@@ -37,6 +37,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
      */
     private PathFilter<Path> filter;
 
+    @Override
     protected PathFilter<Path> filter() {
         if(null == filter) {
             filter = new PromptFilter() {
@@ -72,10 +73,10 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             if(identifier.equals(SYNC_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
                 if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return cache.put(item, identifier, CDIconCache.instance().iconForName("arrowDown", 16));
+                    return cache.put(item, identifier, CDIconCache.iconNamed("arrowDown", 16));
                 }
                 if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return cache.put(item, identifier, CDIconCache.instance().iconForName("arrowUp", 16));
+                    return cache.put(item, identifier, CDIconCache.iconNamed("arrowUp", 16));
                 }
                 return null;
             }
@@ -96,7 +97,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             }
             if(identifier.equals(CREATE_COLUMN)) {
                 if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
-                    return cache.put(item, identifier, CDIconCache.instance().iconForName("plus", 16));
+                    return cache.put(item, identifier, CDIconCache.iconNamed("plus", 16));
                 }
                 return null;
             }

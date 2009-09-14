@@ -34,6 +34,7 @@ public class ArchiveMenuDelegate extends MenuDelegate {
         return new NSInteger(Archive.getKnownArchives().length);
     }
 
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         final Archive archive = Archive.getKnownArchives()[index.intValue()];
         item.setRepresentedObject(archive.getIdentifier());

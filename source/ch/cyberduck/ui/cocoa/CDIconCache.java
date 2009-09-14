@@ -46,8 +46,35 @@ public class CDIconCache {
      * @param name
      * @return
      */
-    public static NSImage imageNamed(final String name) {
+    public static NSImage iconNamed(final String name) {
         return CDIconCache.instance().iconForName(name);
+    }
+
+    /**
+     * @param name
+     * @param size
+     * @return
+     */
+    public static NSImage iconNamed(final String name, Integer size) {
+        return CDIconCache.instance().iconForName(name, size);
+    }
+
+    /**
+     * @param name
+     * @param width
+     * @param height
+     * @return
+     */
+    public static NSImage iconNamed(final String name, Integer width, Integer height) {
+        return CDIconCache.instance().iconForName(name, width, height);
+    }
+
+    /**
+     * @param size
+     * @return Standard folder icon for this platform
+     */
+    public static NSImage folderIcon(Integer size) {
+        return CDIconCache.instance().iconForPath(FOLDER_PATH, size);
     }
 
     private static CDIconCache instance = null;
@@ -113,7 +140,7 @@ public class CDIconCache {
      * @param name
      * @return
      */
-    public NSImage iconForName(final String name) {
+    protected NSImage iconForName(final String name) {
         return this.iconForName(name, null);
     }
 
@@ -123,7 +150,7 @@ public class CDIconCache {
      * @return
      * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer)
      */
-    public NSImage iconForName(final String name, Integer size) {
+    protected NSImage iconForName(final String name, Integer size) {
         return this.iconForName(name, size, size);
     }
 
@@ -135,7 +162,7 @@ public class CDIconCache {
      * @see NSImage#imageNamed(String)
      * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer, Integer)
      */
-    public NSImage iconForName(final String name, Integer width, Integer height) {
+    protected NSImage iconForName(final String name, Integer width, Integer height) {
         NSImage image = this.get(name, width);
         if(null == image) {
             image = NSImage.imageNamed(name);
@@ -150,7 +177,7 @@ public class CDIconCache {
 //                image = NSImage.imageWithContentsOfFile(l.getAbsolute());
 //            }
             if(null == image) {
-                log.error("No icon named " + name);
+                log.warn("No icon named " + name);
                 return null;
             }
             this.put(name, this.convert(image, width, height), width);
@@ -158,12 +185,16 @@ public class CDIconCache {
         return image;
     }
 
+    public NSImage iconForPath(final Local item) {
+        return this.iconForPath(item, null);
+    }
+
     /**
      * @param item
      * @param size
      * @return
      */
-    public NSImage iconForLocal(final Local item, Integer size) {
+    public NSImage iconForPath(final Local item, Integer size) {
         if(item.exists()) {
             NSImage icon = this.iconForName(item.getAbsolute(), size);
             if(null == icon) {
@@ -183,8 +214,7 @@ public class CDIconCache {
     private static Local FOLDER_PATH
             = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
 
-    public static final NSImage FOLDER_ICON
-            = NSWorkspace.sharedWorkspace().iconForFile(FOLDER_PATH.getAbsolute());
+    private final NSImage FOLDER_ICON = this.iconForPath(FOLDER_PATH);
 
     /**
      * @param item
@@ -269,16 +299,16 @@ public class CDIconCache {
                     return this.convert(folder, size);
                 }
             }
-            return this.convert(FOLDER_ICON, size);
+            return this.iconForPath(FOLDER_PATH, size);
         }
         return this.iconForName("notfound.tiff", size);
     }
 
-    protected NSImage convert(NSImage icon, Integer size) {
+    public NSImage convert(NSImage icon, Integer size) {
         return this.convert(icon, size, size);
     }
 
-    protected NSImage convert(NSImage icon, Integer width, Integer height) {
+    public NSImage convert(NSImage icon, Integer width, Integer height) {
         if(null == icon) {
             log.warn("Icon is null");
             return null;

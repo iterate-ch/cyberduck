@@ -270,9 +270,7 @@ public class CDInfoController extends CDWindowController {
         this.s3CachePopup.addItemWithTitle("public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds"));
     }
 
-    /**
-     * @param sender
-     */
+    @Action
     public void s3CachePopupClicked(final NSPopUpButton sender) {
         if(sender.indexOfSelectedItem() == 0) {
             this.toggleS3Settings(false);
@@ -753,7 +751,7 @@ public class CDInfoController extends CDWindowController {
 
     private void initIcon() {
         if(this.numberOfFiles() > 1) {
-            iconImageView.setImage(CDIconCache.instance().iconForName("multipleDocuments", 32));
+            iconImageView.setImage(CDIconCache.iconNamed("multipleDocuments", 32));
         }
         else {
             iconImageView.setImage(CDIconCache.instance().iconForPath(files.get(0), 32));
@@ -920,9 +918,7 @@ public class CDInfoController extends CDWindowController {
         }
     }
 
-    /**
-     * @param sender
-     */
+    @Action
     public void bucketLoggingButtonClicked(Object sender) {
         this.toggleS3Settings(false);
         controller.background(new BrowserBackgroundAction(controller) {
@@ -994,9 +990,7 @@ public class CDInfoController extends CDWindowController {
         return new Permission(p);
     }
 
-    /**
-     * @param sender
-     */
+    @Action
     public void permissionSelectionChanged(final NSButton sender) {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
@@ -1010,6 +1004,7 @@ public class CDInfoController extends CDWindowController {
      *
      * @param sender
      */
+    @Action
     public void permissionApplyButtonClicked(final ID sender) {
         this.togglePermissionSettings(false);
         permissionProgress.startAnimation(null);
@@ -1088,9 +1083,7 @@ public class CDInfoController extends CDWindowController {
         }
     }
 
-    /**
-     * @param sender
-     */
+    @Action
     public void distributionApplyButtonClicked(final ID sender) {
         this.toggleDistributionSettings(false, false);
         controller.background(new BrowserBackgroundAction(controller) {
@@ -1116,9 +1109,7 @@ public class CDInfoController extends CDWindowController {
         });
     }
 
-    /**
-     * @param sender
-     */
+    @Action
     public void distributionStatusButtonClicked(final ID sender) {
         this.toggleDistributionSettings(false, false);
         controller.background(new BrowserBackgroundAction(controller) {
@@ -1181,9 +1172,7 @@ public class CDInfoController extends CDWindowController {
         });
     }
 
-    /**
-     * @param sender
-     */
+    @Action
     public void calculateSizeButtonClicked(final ID sender) {
         log.debug("calculateSizeButtonClicked");
         sizeButton.setEnabled(false);
@@ -1232,6 +1221,7 @@ public class CDInfoController extends CDWindowController {
     }
 
     @Override
+    @Action
     public void helpButtonClicked(final NSButton sender) {
         NSWorkspace.sharedWorkspace().openURL(
                 NSURL.URLWithString(Preferences.instance().getProperty("website.help")

@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-@java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD})
+@java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD})
 @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE)
-public @interface Outlet {
+public @interface Action {
 }

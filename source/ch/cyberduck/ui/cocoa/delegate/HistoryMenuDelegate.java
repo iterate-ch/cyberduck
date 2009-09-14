@@ -45,6 +45,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
         return new NSInteger(1);
     }
 
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, NSInteger index, boolean shouldCancel) {
         if(HistoryCollection.defaultCollection().size() == 0) {
             sender.setTitle(Locale.localizedString("No recently connected servers available"));
@@ -64,7 +65,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
             bookmark.setRepresentedObject(h.getNickname());
             bookmark.setTarget(this.id());
             bookmark.setEnabled(true);
-            bookmark.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
+            bookmark.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
             return !shouldCancel;
         }
         if(index.intValue() == HistoryCollection.defaultCollection().size()) {

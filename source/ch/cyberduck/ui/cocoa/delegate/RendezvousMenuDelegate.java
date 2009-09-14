@@ -45,6 +45,7 @@ public class RendezvousMenuDelegate extends MenuDelegate {
         return new NSInteger(1);
     }
 
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(Rendezvous.instance().numberOfServices() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
@@ -57,7 +58,7 @@ public class RendezvousMenuDelegate extends MenuDelegate {
             item.setTitle(title);
             item.setTarget(this.id());
             item.setEnabled(true);
-            item.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
+            item.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(Foundation.selector("rendezvousMenuClicked:"));
             item.setRepresentedObject(h.getNickname());
             return !shouldCancel;

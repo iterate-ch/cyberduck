@@ -108,14 +108,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
     }
 
     /**
-     * Called after the sheet has been dismissed by the user. The return codes are defined in
-     * <code>ch.cyberduck.ui.cooca.CDSheetCallback</code>
-     *
-     * @param returncode
-     */
-    public abstract void callback(final int returncode);
-
-    /**
      * @param returncode
      * @param context
      */

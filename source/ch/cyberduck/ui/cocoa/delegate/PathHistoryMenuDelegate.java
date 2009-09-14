@@ -55,6 +55,7 @@ public abstract class PathHistoryMenuDelegate extends MenuDelegate {
 
     public abstract List<Path> getHistory();
 
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, NSInteger index, boolean shouldCancel) {
         final List<Path> history = this.getHistory();
         final int length = history.size();

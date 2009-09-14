@@ -130,7 +130,7 @@ public class CDActivityController extends CDWindowController {
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    private class TableColumnFactory extends HashMap<String,NSTableColumn> {
+    private static class TableColumnFactory extends HashMap<String,NSTableColumn> {
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -179,12 +179,15 @@ public class CDActivityController extends CDWindowController {
                 return false;
             }
 
+            @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
             }
 
+            @Override
             public void tableRowDoubleClicked(final ID sender) {
             }
 
+            @Override
             public void selectionDidChange(NSNotification notification) {
             }
 

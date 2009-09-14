@@ -45,6 +45,7 @@ public class CDPathReference extends PathReference<NSObject> {
         this.hashcode = absolute.toString().hashCode();
     }
 
+    @Override
     public NSObject unique() {
         return reference;
     }

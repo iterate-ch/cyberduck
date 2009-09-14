@@ -40,6 +40,7 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
      */
     private PathFilter<Path> filter;
 
+    @Override
     protected PathFilter<Path> filter() {
         if(null == filter) {
             filter = new PromptFilter() {

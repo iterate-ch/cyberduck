@@ -29,8 +29,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
  */
 public abstract class MenuDelegate extends CDController implements NSMenu.Delegate {
 
-    public abstract NSInteger numberOfItemsInMenu(NSMenu menu);
-
     /**
      * Called to let you update a menu item before it is displayed. If your
      * numberOfItemsInMenu delegate method returns a positive value,

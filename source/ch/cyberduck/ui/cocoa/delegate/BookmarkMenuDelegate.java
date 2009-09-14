@@ -45,21 +45,21 @@ public class BookmarkMenuDelegate extends MenuDelegate {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(index.intValue() == 6) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.instance().iconForName("me-icon.png", 16));
+            item.setImage(CDIconCache.iconNamed("me-icon.png", 16));
         }
         if(index.intValue() == 7) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.instance().iconForName("history", 16));
+            item.setImage(CDIconCache.iconNamed("history", 16));
         }
         if(index.intValue() == 8) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.instance().iconForName("rendezvous", 16));
+            item.setImage(CDIconCache.iconNamed("rendezvous", 16));
         }
         if(index.intValue() > 9) {
             Host h = HostCollection.defaultCollection().get(index.intValue() - 10);
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
-            item.setImage(CDIconCache.instance().iconForName(h.getProtocol().icon(), 16));
+            item.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(Foundation.selector("bookmarkMenuItemClicked:"));
             item.setRepresentedObject(h.getNickname());
         }

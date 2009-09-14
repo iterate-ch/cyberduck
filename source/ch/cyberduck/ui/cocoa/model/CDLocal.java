@@ -300,7 +300,7 @@ public class CDLocal extends Local {
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                CDIconCache.imageNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
+                                CDIconCache.iconNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
                     }
                 }
             });

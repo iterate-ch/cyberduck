@@ -205,20 +205,17 @@ public abstract class CDWindowController extends CDBundleController implements N
         });
     }
 
-    private CDAlertController alert;
-
     /**
      * @param alert
      * @param callback
      */
     protected void alert(final NSAlert alert, final CDSheetCallback callback) {
-        this.alert = new CDAlertController(this, alert) {
+        CDSheetController c = new CDAlertController(this, alert) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
-                CDWindowController.this.alert = null;
             }
         };
-        this.alert.beginSheet();
+        c.beginSheet();
     }
 
     /**
@@ -262,6 +259,7 @@ public abstract class CDWindowController extends CDBundleController implements N
         f.setStringValue(StringUtils.isNotBlank(value) ? value : "");
     }
 
+    @Action
     public void helpButtonClicked(final NSButton sender) {
         NSWorkspace.sharedWorkspace().openURL(
                 NSURL.URLWithString(Preferences.instance().getProperty("website.help"))

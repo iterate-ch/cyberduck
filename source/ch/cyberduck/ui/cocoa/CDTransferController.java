@@ -117,6 +117,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.queueSizeStepper.setAction(Foundation.selector("queueSizeStepperChanged:"));
     }
 
+    @Action
     public void queueSizeStepperChanged(final ID sender) {
         synchronized(Queue.instance()) {
             Queue.instance().notify();
@@ -151,6 +152,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
      *
      * @param sender
      */
+    @Action
     public void searchButtonClicked(final ID sender) {
         this.window().makeFirstResponder(this.filterField);
     }
@@ -215,7 +217,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.bandwidthPopup.setAllowsMixedState(true);
         this.bandwidthPopup.setTarget(this.id());
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
-        this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForName("bandwidth", 16));
+        this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.iconNamed("bandwidth", 16));
         this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthDelegate()).id());
     }
 
@@ -254,6 +256,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    @Action
     public void bandwidthPopupChanged(NSPopUpButton sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         int bandwidth = BandwidthThrottle.UNLIMITED;
@@ -481,10 +484,10 @@ public class CDTransferController extends CDWindowController implements NSToolba
         final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
         // Draw file type icon
         if(transfer.numberOfRoots() == 1) {
-            iconView.setImage(CDIconCache.instance().iconForLocal(transfer.getRoot().getLocal(), 32));
+            iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
         }
         else {
-            iconView.setImage(CDIconCache.instance().iconForName("multipleDocuments", 32));
+            iconView.setImage(CDIconCache.iconNamed("multipleDocuments", 32));
         }
     }
 
@@ -507,12 +510,12 @@ public class CDTransferController extends CDWindowController implements NSToolba
             }
             if(transfer.getBandwidth() != BandwidthThrottle.UNLIMITED) {
                 // Mark as throttled
-                this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.imageNamed("turtle.tiff"));
+                this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.iconNamed("turtle.tiff"));
                 return;
             }
         }
         // Set the standard icon
-        this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForName("bandwidth", 16));
+        this.bandwidthPopup.itemAtIndex(0).setImage(CDIconCache.iconNamed("bandwidth", 16));
     }
 
     private void reloadData() {
@@ -714,7 +717,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setToolTip(Locale.localizedString(TOOLBAR_STOP));
-            item.setImage(CDIconCache.instance().iconForName("stop", 32));
+            item.setImage(CDIconCache.iconNamed("stop", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("stopButtonClicked:"));
             return item;
@@ -723,7 +726,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_RESUME));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_RESUME));
             item.setToolTip(Locale.localizedString(TOOLBAR_RESUME));
-            item.setImage(CDIconCache.imageNamed("resume.tiff"));
+            item.setImage(CDIconCache.iconNamed("resume.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("resumeButtonClicked:"));
             return item;
@@ -732,7 +735,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_RELOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_RELOAD));
             item.setToolTip(Locale.localizedString(TOOLBAR_RELOAD));
-            item.setImage(CDIconCache.imageNamed("reload.tiff"));
+            item.setImage(CDIconCache.iconNamed("reload.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
@@ -741,7 +744,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_SHOW));
             item.setPaletteLabel(Locale.localizedString("Show in Finder"));
             item.setToolTip(Locale.localizedString("Show in Finder"));
-            item.setImage(CDIconCache.imageNamed("reveal.tiff"));
+            item.setImage(CDIconCache.iconNamed("reveal.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("revealButtonClicked:"));
             return item;
@@ -750,7 +753,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_OPEN));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_OPEN));
             item.setToolTip(Locale.localizedString(TOOLBAR_OPEN));
-            item.setImage(CDIconCache.imageNamed("open.tiff"));
+            item.setImage(CDIconCache.iconNamed("open.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openButtonClicked:"));
             return item;
@@ -759,7 +762,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_REMOVE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REMOVE));
             item.setToolTip(Locale.localizedString(TOOLBAR_REMOVE));
-            item.setImage(CDIconCache.imageNamed("clean.tiff"));
+            item.setImage(CDIconCache.iconNamed("clean.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteButtonClicked:"));
             return item;
@@ -768,7 +771,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_CLEAN_UP));
             item.setToolTip(Locale.localizedString(TOOLBAR_CLEAN_UP));
-            item.setImage(CDIconCache.imageNamed("cleanAll.tiff"));
+            item.setImage(CDIconCache.iconNamed("cleanAll.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearButtonClicked:"));
             return item;
@@ -777,7 +780,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             item.setLabel(Locale.localizedString(TOOLBAR_TRASH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRASH));
             item.setToolTip(Locale.localizedString("Move to Trash"));
-            item.setImage(CDIconCache.imageNamed("trash.tiff"));
+            item.setImage(CDIconCache.iconNamed("trash.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("trashButtonClicked:"));
             return item;
@@ -795,6 +798,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         return null;
     }
 
+    @Action
     public void paste(final ID sender) {
         log.debug("paste");
         final Map<Host, PathPasteboard<NSDictionary>> boards = PathPasteboard.allPasteboards();
@@ -807,6 +811,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         boards.clear();
     }
 
+    @Action
     public void stopButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
@@ -825,6 +830,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    @Action
     public void stopAllButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferModel.getSource();
         for(final Transfer transfer : transfers) {
@@ -842,6 +848,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    @Action
     public void resumeButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
@@ -853,6 +860,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    @Action
     public void reloadButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
@@ -864,6 +872,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    @Action
     public void openButtonClicked(final ID sender) {
         if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
@@ -895,6 +904,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    @Action
     public void revealButtonClicked(final ID sender) {
         if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
@@ -931,6 +941,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         }
     }
 
+    @Action
     public void deleteButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferModel.getSource();
@@ -944,6 +955,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.reloadData();
     }
 
+    @Action
     public void clearButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferModel.getSource();
         for(Transfer transfer : transfers) {
@@ -955,6 +967,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.reloadData();
     }
 
+    @Action
     public void trashButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferModel.getSource();

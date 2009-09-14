@@ -43,7 +43,7 @@ public class CDGotoController extends CDSheetController {
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
-        this.iconView.setImage(CDIconCache.FOLDER_ICON);
+        this.iconView.setImage(CDIconCache.folderIcon(64));
     }
 
     @Outlet
