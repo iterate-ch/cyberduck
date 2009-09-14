@@ -28,6 +28,9 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @version $Id$
  */
@@ -73,6 +76,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      *
      * @param sender A button in the sheet dialog
      */
+    @Action
     public void closeSheet(final NSButton sender) {
         log.debug("closeSheet:" + sender);
         if(sender.tag() == DEFAULT_OPTION
@@ -158,6 +162,14 @@ public abstract class CDSheetController extends CDWindowController implements CD
         }
     }
 
+    /**
+     * Keep a reference to the sheet to protect it from being
+     * deallocated as a weak reference before the callback from the runtime
+     */
+    @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
+    private static final List<CDSheetController> sheetRegistry
+            = new ArrayList<CDSheetController>();
+
     protected void beginSheetImpl() {
         this.loadBundle();
         final NSApplication app = NSApplication.sharedApplication();
@@ -166,6 +178,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
                 this.id(), // modalDelegate
                 Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
                 null); //context
+        sheetRegistry.add(this);
     }
 
     /**
@@ -174,12 +187,13 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * garbage collected and notifies the lock object
      *
      * @param sheet
-     * @param returncode Identifier for the button clicked by the user
-     * @param contextInfo    Not used
+     * @param returncode  Identifier for the button clicked by the user
+     * @param contextInfo Not used
      */
     public void sheetDidClose_returnCode_contextInfo(final NSPanel sheet, final int returncode, ID contextInfo) {
         sheet.orderOut(null);
         this.callback(returncode, contextInfo);
+        sheetRegistry.remove(this);
     }
 
     /**
