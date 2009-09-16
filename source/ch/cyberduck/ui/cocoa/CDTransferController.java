@@ -330,7 +330,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                             }
                             app.replyToApplicationShouldTerminate(true);
                         }
-                        if(returncode == OTHER_OPTION) { //Cancel
+                        if(returncode == ALTERNATE_OPTION) { //Cancel
                             app.replyToApplicationShouldTerminate(false);
                         }
                     }
@@ -628,7 +628,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.removeListener(tl);
             }
 
-            @Override
             public void cleanup() {
                 if(transfer.isComplete() && !transfer.isCanceled()) {
                     if(transfer.isReset()) {
