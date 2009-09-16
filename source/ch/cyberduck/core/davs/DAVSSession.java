@@ -37,6 +37,7 @@ public class DAVSSession extends DAVSession implements SSLSession {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new DAVSSession(h);
         }
@@ -46,6 +47,7 @@ public class DAVSSession extends DAVSession implements SSLSession {
         super(h);
     }
 
+    @Override
     protected void configure() throws IOException {
         super.configure();
         final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);

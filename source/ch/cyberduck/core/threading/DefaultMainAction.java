@@ -22,8 +22,7 @@ package ch.cyberduck.core.threading;
  */
 public abstract class DefaultMainAction extends MainAction {
 
-    public abstract void run();
-
+    @Override
     public boolean isValid() {
         return true;
     }

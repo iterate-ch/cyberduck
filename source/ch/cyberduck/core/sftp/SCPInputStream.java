@@ -88,6 +88,7 @@ public class SCPInputStream extends BufferedInputStream
         this.remaining = lnp.length;
     }
 
+    @Override
     public int read() throws IOException
     {
         if(!(remaining > 0)) {
@@ -103,6 +104,7 @@ public class SCPInputStream extends BufferedInputStream
         return read;
     }
 
+    @Override
     public int read(byte b[], int off, int len) throws IOException
     {
         if(!(remaining > 0)) {
@@ -122,6 +124,7 @@ public class SCPInputStream extends BufferedInputStream
         return read;
     }
 
+    @Override
     public void close() throws IOException
     {
         try {

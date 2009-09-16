@@ -48,6 +48,7 @@ public abstract class HTTPSession extends Session {
             return false;
         }
 
+        @Override
         protected void append(LoggingEvent event) {
             final String m = event.getMessage().toString();
             if(m.startsWith(IN)) {

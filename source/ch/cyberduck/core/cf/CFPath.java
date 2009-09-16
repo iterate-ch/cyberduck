@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 import org.w3c.util.DateParser;
@@ -57,21 +58,25 @@ public class CFPath extends CloudPath {
         PathFactory.addFactory(Protocol.MOSSO, new Factory());
     }
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String path, int type) {
-            return new CFPath((CFSession) session, path, type);
+    private static class Factory extends PathFactory<CFSession> {
+        @Override
+        protected Path create(CFSession session, String path, int type) {
+            return new CFPath(session, path, type);
         }
 
-        protected Path create(Session session, String parent, String name, int type) {
-            return new CFPath((CFSession) session, parent, name, type);
+        @Override
+        protected Path create(CFSession session, String parent, String name, int type) {
+            return new CFPath(session, parent, name, type);
         }
 
-        protected Path create(Session session, String path, Local file) {
-            return new CFPath((CFSession) session, path, file);
+        @Override
+        protected Path create(CFSession session, String path, Local file) {
+            return new CFPath(session, path, file);
         }
 
-        protected <T> Path create(Session session, T dict) {
-            return new CFPath((CFSession) session, dict);
+        @Override
+        protected <T> Path create(CFSession session, T dict) {
+            return new CFPath(session, dict);
         }
     }
 
@@ -97,6 +102,7 @@ public class CFPath extends CloudPath {
         this.session = s;
     }
 
+    @Override
     public Session getSession() {
         return this.session;
     }
@@ -106,6 +112,7 @@ public class CFPath extends CloudPath {
      * @param cnames  Currently ignored
      * @param logging
      */
+    @Override
     public void writeDistribution(boolean enabled, String[] cnames, boolean logging) {
         final String container = this.getContainerName();
         final AbstractX509TrustManager trust = session.getTrustManager();
@@ -144,6 +151,7 @@ public class CFPath extends CloudPath {
         }
     }
 
+    @Override
     public Distribution readDistribution() {
         final String container = this.getContainerName();
         if(null != container) {
@@ -185,6 +193,7 @@ public class CFPath extends CloudPath {
         return super.exists();
     }
 
+    @Override
     public void readSize() {
         try {
             session.check();
@@ -193,7 +202,7 @@ public class CFPath extends CloudPath {
 
             if(this.isContainer()) {
                 attributes.setSize(
-                        Long.valueOf(session.CF.getContainerInfo(this.getContainerName()).getTotalSize())
+                        session.CF.getContainerInfo(this.getContainerName()).getTotalSize()
                 );
             }
             else if(this.attributes.isFile()) {
@@ -207,6 +216,7 @@ public class CFPath extends CloudPath {
         }
     }
 
+    @Override
     public void readTimestamp() {
         try {
             session.check();
@@ -231,6 +241,7 @@ public class CFPath extends CloudPath {
         }
     }
 
+    @Override
     public void readPermission() {
         ;
     }
@@ -240,14 +251,17 @@ public class CFPath extends CloudPath {
      *
      * @return Always false
      */
+    @Override
     public boolean isWritePermissionsSupported() {
         return false;
     }
 
+    @Override
     public void writePermissions(Permission perm, boolean recursive) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
@@ -258,7 +272,7 @@ public class CFPath extends CloudPath {
             if(this.isRoot()) {
                 // List all containers
                 for(FilesContainerInfo container : session.CF.listContainersInfo()) {
-                    CFPath p = (CFPath) PathFactory.createPath(session, this.getAbsolute(), container.getName(),
+                    Path p = PathFactory.createPath(session, this.getAbsolute(), container.getName(),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     p.attributes.setSize(container.getTotalSize());
                     p.attributes.setOwner(session.CF.getUserName());
@@ -268,7 +282,7 @@ public class CFPath extends CloudPath {
             }
             else {
                 for(FilesObject object : session.CF.listObjects(this.getContainerName(), this.getKey())) {
-                    final CFPath file = (CFPath) PathFactory.createPath(session, this.getContainerName(), object.getName(),
+                    final Path file = PathFactory.createPath(session, this.getContainerName(), object.getName(),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     if(file.getParent().equals(this)) {
                         file.setParent(this);
@@ -298,6 +312,7 @@ public class CFPath extends CloudPath {
         return childs;
     }
 
+    @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         if(attributes.isFile()) {
             OutputStream out = null;
@@ -324,17 +339,8 @@ public class CFPath extends CloudPath {
                 this.error("Download failed", e);
             }
             finally {
-                try {
-                    if(in != null) {
-                        in.close();
-                    }
-                    if(out != null) {
-                        out.close();
-                    }
-                }
-                catch(IOException e) {
-                    log.error(e.getMessage());
-                }
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
         }
         if(attributes.isDirectory()) {
@@ -342,6 +348,7 @@ public class CFPath extends CloudPath {
         }
     }
 
+    @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, Permission p, boolean check) {
         try {
             if(check) {
@@ -394,21 +401,16 @@ public class CFPath extends CloudPath {
                         metadata, md5sum
                 );
             }
-        if(attributes.isDirectory()) {
-            this.mkdir();
+            if(attributes.isDirectory()) {
+                this.mkdir();
+            }
+        }
+        catch(IOException e) {
+            this.error("Upload failed", e);
         }
     }
 
-    catch(
-    IOException e
-    )
-
-    {
-        this.error("Upload failed", e);
-    }
-
-}
-
+    @Override
     public void mkdir(boolean recursive) {
         log.debug("mkdir:" + this.getName());
         try {
@@ -430,6 +432,7 @@ public class CFPath extends CloudPath {
         }
     }
 
+    @Override
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
@@ -467,6 +470,7 @@ public class CFPath extends CloudPath {
         return false;
     }
 
+    @Override
     public void rename(AbstractPath renamed) {
         throw new UnsupportedOperationException();
     }

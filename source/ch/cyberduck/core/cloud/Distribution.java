@@ -43,7 +43,6 @@ public class Distribution {
 
     /**
      * @param enabled
-     * @param origin
      * @param url
      * @param status
      */
@@ -53,7 +52,6 @@ public class Distribution {
 
     /**
      * @param enabled    Deployment Enabled
-     * @param inprogress Deployment Status is about to be changed
      * @param url        Where to find this distribution
      * @param status     Status Message about Deployment Status
      * @param cnames     Multiple CNAME aliases of this distribution

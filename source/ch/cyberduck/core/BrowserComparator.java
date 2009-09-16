@@ -49,6 +49,7 @@ public abstract class BrowserComparator implements Comparator<Path> {
      * @see #isAscending()
      * @return True if the same identifier and ascending boolean value
      */
+    @Override
     public boolean equals(Object object) {
         if (object instanceof BrowserComparator) {
             BrowserComparator other = (BrowserComparator) object;

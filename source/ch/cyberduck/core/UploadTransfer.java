@@ -55,6 +55,7 @@ public class UploadTransfer extends Transfer {
         return dict.<T>getSerialized();
     }
 
+    @Override
     protected void init() {
         log.debug("init");
         this.bandwidth = new BandwidthThrottle(
@@ -116,6 +117,7 @@ public class UploadTransfer extends Transfer {
             return UploadTransfer.this.exists(file.getLocal());
         }
 
+        @Override
         public void prepare(Path p) {
             if(p.attributes.isFile()) {
                 // Read file size
@@ -150,6 +152,7 @@ public class UploadTransfer extends Transfer {
 
     private final Cache<Path> _cache = new Cache<Path>();
 
+    @Override
     public AttributedList<Path> childs(final Path parent) {
         if(!this.exists(parent.getLocal())) {
             // Cannot fetch file listing of non existant file
@@ -170,6 +173,7 @@ public class UploadTransfer extends Transfer {
         return _cache.get(parent);
     }
 
+    @Override
     public boolean isCached(Path file) {
         return _cache.containsKey(file);
     }
@@ -335,6 +339,7 @@ public class UploadTransfer extends Transfer {
         super.clear(options);
     }
 
+    @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
         log.debug("action:" + resumeRequested + "," + reloadRequested);
         if(resumeRequested) {
@@ -352,6 +357,7 @@ public class UploadTransfer extends Transfer {
         );
     }
 
+    @Override
     protected void _transferImpl(final Path p) {
         Permission permission = null;
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {

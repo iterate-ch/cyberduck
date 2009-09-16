@@ -42,6 +42,7 @@ public class FTPSSession extends FTPSession implements SSLSession {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new FTPSSession(h);
         }

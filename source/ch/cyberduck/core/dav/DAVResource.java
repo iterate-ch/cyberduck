@@ -51,6 +51,7 @@ public class DAVResource extends WebdavResource {
      *
      * @return true if the given httpURL is the client for this resource.
      */
+    @Override
     protected synchronized boolean isTheClient() throws URIException {
         final HostConfiguration hostConfig = client.getHostConfiguration();
         // Hack to enable preemptive authentication
@@ -71,6 +72,7 @@ public class DAVResource extends WebdavResource {
      * Add all additionals headers that have been previously registered
      * with addRequestHeader to the method
      */
+    @Override
     protected void generateAdditionalHeaders(HttpMethod method) {
         for(Object o : headers.keySet()) {
             String header = (String) o;
@@ -84,6 +86,7 @@ public class DAVResource extends WebdavResource {
         return resume;
     }
 
+    @Override
     protected void setStatusCode(int statusCode, String message) {
         latestStatusCode = statusCode;
         final String statusText = WebdavStatus.getStatusText(statusCode);
@@ -100,6 +103,7 @@ public class DAVResource extends WebdavResource {
      * @return InputStream
      * @throws IOException
      */
+    @Override
     public InputStream getMethodData(String path)
             throws IOException {
         setClient();
@@ -132,7 +136,7 @@ public class DAVResource extends WebdavResource {
      * Execute the PUT method for the given path.
      *
      * @param path        the server relative path to put the data
-     * @param inputStream The input stream.
+     * @param requestEntity The input stream.
      * @return true if the method is succeeded.
      * @throws IOException
      */
@@ -197,6 +201,7 @@ public class DAVResource extends WebdavResource {
         return true;
     }
 
+    @Override
     protected void setWebdavProperties(final Enumeration responses)
             throws HttpException, IOException {
 

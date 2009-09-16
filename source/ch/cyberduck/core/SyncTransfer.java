@@ -56,6 +56,7 @@ public class SyncTransfer extends Transfer {
      */
     private Transfer _delegateDownload;
 
+    @Override
     protected void init() {
         log.debug("init");
         _delegateUpload = new UploadTransfer(this.getRoots());
@@ -119,6 +120,7 @@ public class SyncTransfer extends Transfer {
             return "download";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Download");
         }
@@ -128,6 +130,7 @@ public class SyncTransfer extends Transfer {
             return "upload";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Upload");
         }
@@ -137,6 +140,7 @@ public class SyncTransfer extends Transfer {
             return "mirror";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Mirror");
         }
@@ -155,6 +159,7 @@ public class SyncTransfer extends Transfer {
         private TransferFilter _delegateFilterUpload
                 = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
 
+        @Override
         public void prepare(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(COMPARISON_REMOTE_NEWER)) {
@@ -197,6 +202,7 @@ public class SyncTransfer extends Transfer {
 
     private final Cache<Path> _cache = new Cache<Path>();
 
+    @Override
     public AttributedList<Path> childs(final Path parent) {
         if(!_cache.containsKey(parent)) {
             Set<Path> childs = new HashSet<Path>();
@@ -207,6 +213,7 @@ public class SyncTransfer extends Transfer {
         return _cache.get(parent);
     }
 
+    @Override
     public boolean isCached(Path file) {
         return _cache.containsKey(file);
     }
@@ -216,12 +223,14 @@ public class SyncTransfer extends Transfer {
         return item.attributes.isDirectory() || !this.compare(item).equals(COMPARISON_EQUAL);
     }
 
+    @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
         log.debug("action:" + resumeRequested + "," + reloadRequested);
         // Always prompt for synchronization
         return TransferAction.ACTION_CALLBACK;
     }
 
+    @Override
     protected void _transferImpl(final Path p) {
         final Comparison compare = this.compare(p);
         if(compare.equals(COMPARISON_REMOTE_NEWER)) {

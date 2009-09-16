@@ -18,7 +18,10 @@ package ch.cyberduck.core.me;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.davs.DAVSPath;
 
 /**
@@ -30,21 +33,25 @@ public class MEPath extends DAVSPath {
         PathFactory.addFactory(Protocol.IDISK, new Factory());
     }
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String path, int type) {
-            return new MEPath((MESession) session, path, type);
+    private static class Factory extends PathFactory<MESession> {
+        @Override
+        protected Path create(MESession session, String path, int type) {
+            return new MEPath(session, path, type);
         }
 
-        protected Path create(Session session, String parent, String name, int type) {
-            return new MEPath((MESession) session, parent, name, type);
+        @Override
+        protected Path create(MESession session, String parent, String name, int type) {
+            return new MEPath(session, parent, name, type);
         }
 
-        protected Path create(Session session, String path, Local file) {
-            return new MEPath((MESession) session, path, file);
+        @Override
+        protected Path create(MESession session, String path, Local file) {
+            return new MEPath(session, path, file);
         }
 
-        protected <T> Path create(Session session, T dict) {
-            return new MEPath((MESession) session, dict);
+        @Override
+        protected <T> Path create(MESession session, T dict) {
+            return new MEPath(session, dict);
         }
     }
 

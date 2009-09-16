@@ -22,7 +22,7 @@ import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpHost;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class StickyHostConfiguration extends HostConfiguration {
 
@@ -37,10 +37,12 @@ public class StickyHostConfiguration extends HostConfiguration {
     /**
      * @return
      */
+    @Override
     public Object clone() {
         return new StickyHostConfiguration(this);
     }
 
+    @Override
     public synchronized void setHost(final String host, int port, final String scheme) {
         this.setHost(new HttpHost(host, port, this.getCachedProtocol(scheme)));
     }

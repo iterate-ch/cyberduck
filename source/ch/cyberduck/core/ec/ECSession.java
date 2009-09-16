@@ -41,6 +41,7 @@ public class ECSession extends S3Session {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new ECSession(h);
         }

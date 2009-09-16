@@ -44,6 +44,7 @@ public class SFTPSession extends Session {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new SFTPSession(h);
         }
@@ -137,6 +138,7 @@ public class SFTPSession extends Session {
         return client;
     }
 
+    @Override
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         if(this.isConnected()) {
             return;
@@ -162,6 +164,7 @@ public class SFTPSession extends Session {
         this.fireConnectionDidOpenEvent();
     }
 
+    @Override
     protected void login(final Credentials credentials) throws IOException {
         if(host.getCredentials().isPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(credentials)) {
@@ -242,7 +245,7 @@ public class SFTPSession extends Session {
      * The logic that one has to implement if "keyboard-interactive" autentication shall be
      * supported.
      */
-    private class InteractiveLogic implements InteractiveCallback {
+    private static class InteractiveLogic implements InteractiveCallback {
         int promptCount = 0;
         Credentials credentials;
 
@@ -274,6 +277,7 @@ public class SFTPSession extends Session {
         }
     }
 
+    @Override
     public void close() {
         try {
             this.fireConnectionWillCloseEvent();
@@ -334,6 +338,7 @@ public class SFTPSession extends Session {
         }
     }
 
+    @Override
     public Path workdir() throws IOException {
         if(null == SFTP) {
             throw new ConnectionCanceledException();
@@ -348,6 +353,7 @@ public class SFTPSession extends Session {
         return workdir;
     }
 
+    @Override
     protected void noop() throws IOException {
         if(this.isConnected()) {
             SSH.sendIgnorePacket();
@@ -369,6 +375,7 @@ public class SFTPSession extends Session {
         return true;
     }
 
+    @Override
     public void sendCommand(String command) throws IOException {
         final ch.ethz.ssh2.Session sess = SSH.openSession();
         try {
@@ -401,6 +408,7 @@ public class SFTPSession extends Session {
         }
     }
 
+    @Override
     public boolean isConnected() {
         return null != SSH;
     }

@@ -60,6 +60,7 @@ public class Keychain {
      * @return
      * @deprecated Use #getInternetPasswordFromKeychain
      */
+    @Deprecated
     public synchronized native String getPasswordFromKeychain(String serviceName, String user);
 
     /**
@@ -68,6 +69,7 @@ public class Keychain {
      * @param password
      * @deprecated Use #addInternetPasswordToKeychain
      */
+    @Deprecated
     public synchronized native void addPasswordToKeychain(String serviceName, String user, String password);
 
     /**

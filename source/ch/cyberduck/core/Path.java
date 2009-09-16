@@ -141,7 +141,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(StringUtils.isNotBlank(this.getSymbolicLinkPath())) {
             dict.setStringForKey(this.getSymbolicLinkPath(), "Symlink");
         }
-        dict.setObjectForKey((PathAttributes)attributes, "Attributes");
+        dict.setObjectForKey((PathAttributes) attributes, "Attributes");
         if(this.getStatus().isComplete()) {
             dict.setStringForKey(String.valueOf(true), "Complete");
         }
@@ -302,6 +302,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return the path relative to its parent directory
      */
+    @Override
     public String getName() {
         if(this.isRoot()) {
             return DELIMITER;
@@ -314,6 +315,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return the absolute path name, e.g. /home/user/filename
      */
+    @Override
     public String getAbsolute() {
         return this.path;
     }
@@ -325,6 +327,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @return
      */
+    @Override
     public <T> PathReference<T> getReference() {
         if(null == reference) {
             reference = new CDPathReference(this.getAbsolute());
@@ -591,6 +594,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         out.flush();
     }
 
+    @Override
     public void copy(final AbstractPath copy) {
         final Local local = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 copy.getName());
@@ -620,6 +624,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return true if the path exists (or is cached!)
      */
+    @Override
     public boolean exists() {
         if(this.isRoot()) {
             return true;
@@ -685,6 +690,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return Null if there is a encoding failure
      */
+    @Override
     public String toURL() {
         // Do not use java.net.URL because it doesn't know about custom protocols!
         return this.getHost().toURL() + this.encode(this.getAbsolute());

@@ -24,6 +24,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,21 +49,25 @@ public class SFTPPath extends Path {
         PathFactory.addFactory(Protocol.SFTP, new Factory());
     }
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String path, int type) {
-            return new SFTPPath((SFTPSession) session, path, type);
+    private static class Factory extends PathFactory<SFTPSession> {
+        @Override
+        protected Path create(SFTPSession session, String path, int type) {
+            return new SFTPPath(session, path, type);
         }
 
-        protected Path create(Session session, String parent, String name, int type) {
-            return new SFTPPath((SFTPSession) session, parent, name, type);
+        @Override
+        protected Path create(SFTPSession session, String parent, String name, int type) {
+            return new SFTPPath(session, parent, name, type);
         }
 
-        protected Path create(Session session, String path, Local file) {
-            return new SFTPPath((SFTPSession) session, path, file);
+        @Override
+        protected Path create(SFTPSession session, String path, Local file) {
+            return new SFTPPath(session, path, file);
         }
 
-        protected <T> Path create(Session session, T dict) {
-            return new SFTPPath((SFTPSession) session, dict);
+        @Override
+        protected <T> Path create(SFTPSession session, T dict) {
+            return new SFTPPath(session, dict);
         }
     }
 
@@ -88,10 +93,12 @@ public class SFTPPath extends Path {
         this.session = s;
     }
 
+    @Override
     public Session getSession() {
         return this.session;
     }
 
+    @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
@@ -155,6 +162,7 @@ public class SFTPPath extends Path {
         return childs;
     }
 
+    @Override
     public void mkdir(boolean recursive) {
         log.debug("mkdir:" + this.getName());
         try {
@@ -175,6 +183,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void rename(AbstractPath renamed) {
         try {
             session.check();
@@ -197,6 +206,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
@@ -230,6 +240,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void readSize() {
         if(this.attributes.isFile()) {
             SFTPv3FileHandle handle = null;
@@ -260,6 +271,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void readTimestamp() {
         if(this.attributes.isFile()) {
             SFTPv3FileHandle handle = null;
@@ -289,6 +301,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void readPermission() {
         if(this.attributes.isFile()) {
             SFTPv3FileHandle handle = null;
@@ -324,6 +337,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void writeOwner(String owner, boolean recursive) {
         log.debug("changeOwner");
         try {
@@ -354,6 +368,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void writeGroup(String group, boolean recursive) {
         log.debug("changeGroup");
         try {
@@ -383,6 +398,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void writePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions");
         try {
@@ -427,6 +443,7 @@ public class SFTPPath extends Path {
         }
     }
 
+    @Override
     public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         log.debug("download:" + this.toString());
         InputStream in = null;
@@ -463,22 +480,12 @@ public class SFTPPath extends Path {
             this.error("Download failed", e);
         }
         finally {
-            try {
-                if(in != null) {
-                    in.close();
-                    in = null;
-                }
-                if(out != null) {
-                    out.close();
-                    out = null;
-                }
-            }
-            catch(IOException e) {
-                log.error(e.getMessage());
-            }
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
     }
 
+    @Override
     public void upload(BandwidthThrottle throttle, StreamListener listener, final Permission p, final boolean check) {
         log.debug("upload:" + this.toString());
         InputStream in = null;
@@ -573,14 +580,8 @@ public class SFTPPath extends Path {
                 if(handle != null) {
                     session.sftp().closeFile(handle);
                 }
-                if(in != null) {
-                    in.close();
-                    in = null;
-                }
-                if(out != null) {
-                    out.close();
-                    out = null;
-                }
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
             catch(IOException e) {
                 log.error(e.getMessage());

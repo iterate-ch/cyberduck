@@ -59,6 +59,7 @@ public abstract class TransferAction {
             return "overwrite";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Overwrite");
         }
@@ -73,6 +74,7 @@ public abstract class TransferAction {
             return "resume";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Resume");
         }
@@ -87,6 +89,7 @@ public abstract class TransferAction {
             return "similar";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Rename");
         }
@@ -101,6 +104,7 @@ public abstract class TransferAction {
             return "skip";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Skip");
         }
@@ -115,6 +119,7 @@ public abstract class TransferAction {
             return "ask";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Prompt");
         }
@@ -126,6 +131,7 @@ public abstract class TransferAction {
             return "cancel";
         }
 
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Cancel");
         }

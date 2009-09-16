@@ -62,6 +62,7 @@ public class S3Session extends HTTPSession implements SSLSession {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new S3Session(h);
         }

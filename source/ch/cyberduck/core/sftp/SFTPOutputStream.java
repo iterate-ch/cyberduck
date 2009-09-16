@@ -57,6 +57,7 @@ public class SFTPOutputStream extends OutputStream
      *
      * @see ch.ethz.ssh2.sftp.SFTPv3Client#upload(SFTPv3FileHandle,long,byte[],int,int)
      */
+    @Override
     public void write(byte[] buffer, int offset, int len)
             throws IOException
     {
@@ -68,6 +69,7 @@ public class SFTPOutputStream extends OutputStream
         writeOffset += len;
     }
 
+    @Override
     public void write(int b)
             throws IOException
     {
@@ -84,6 +86,7 @@ public class SFTPOutputStream extends OutputStream
         return n;
     }
 
+    @Override
     public void close()
             throws IOException
     {

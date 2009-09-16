@@ -54,6 +54,7 @@ public class SCPOutputStream extends BufferedOutputStream {
         scp.readResponse(is);
     }
 
+    @Override
     public void close() throws IOException
     {
         try {

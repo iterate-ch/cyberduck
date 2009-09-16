@@ -18,12 +18,12 @@ package ch.cyberduck.core.ec;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Path;
-
-import org.jets3t.service.S3ServiceException;
-import org.jets3t.service.model.S3Object;
 
 /**
  * @version $Id$
@@ -34,21 +34,25 @@ public class ECPath extends S3Path {
         PathFactory.addFactory(Protocol.EUCALYPTUS, new Factory());
     }
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String path, int type) {
-            return new ECPath((ECSession) session, path, type);
+    private static class Factory extends PathFactory<ECSession> {
+        @Override
+        protected Path create(ECSession session, String path, int type) {
+            return new ECPath(session, path, type);
         }
 
-        protected Path create(Session session, String parent, String name, int type) {
-            return new ECPath((ECSession) session, parent, name, type);
+        @Override
+        protected Path create(ECSession session, String parent, String name, int type) {
+            return new ECPath(session, parent, name, type);
         }
 
-        protected Path create(Session session, String path, Local file) {
-            return new ECPath((ECSession) session, path, file);
+        @Override
+        protected Path create(ECSession session, String path, Local file) {
+            return new ECPath(session, path, file);
         }
 
-        protected <T> Path create(Session session, T dict) {
-            return new ECPath((ECSession) session, dict);
+        @Override
+        protected <T> Path create(ECSession session, T dict) {
+            return new ECPath(session, dict);
         }
     }
 

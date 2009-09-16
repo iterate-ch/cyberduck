@@ -40,6 +40,7 @@ public class BackgroundException extends Exception {
         this.message = message;
     }
 
+    @Override
     public String getMessage() {
         return Locale.localizedString(this.message, "Error");
     }
@@ -47,6 +48,7 @@ public class BackgroundException extends Exception {
     /**
      * @return The real cause of the exception thrown
      */
+    @Override
     public Throwable getCause() {
         return super.getCause();
     }

@@ -67,6 +67,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactor
         return this.sslcontext;
     }
 
+    @Override
     public Socket createSocket(String host,
                                int port,
                                InetAddress clientHost,
@@ -79,6 +80,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactor
                 clientPort);
     }
 
+    @Override
     public Socket createSocket(String host, int port, InetAddress localAddress, int localPort, HttpConnectionParams params)
             throws IOException, UnknownHostException, ConnectTimeoutException {
 
@@ -88,12 +90,14 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactor
                 localPort);
     }
 
+    @Override
     public Socket createSocket(String host, int port)
             throws IOException, UnknownHostException {
         return this.getSSLContext().getSocketFactory().createSocket(host,
                 port);
     }
 
+    @Override
     public Socket createSocket(Socket socket,
                                String host,
                                int port,

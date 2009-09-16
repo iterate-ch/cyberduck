@@ -47,6 +47,7 @@ public class CFSession extends HTTPSession implements SSLSession {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new CFSession(h);
         }
@@ -84,6 +85,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         super(h);
     }
 
+    @Override
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         if(this.isConnected()) {
             return;
@@ -111,6 +113,7 @@ public class CFSession extends HTTPSession implements SSLSession {
 
     }
 
+    @Override
     protected void login(Credentials credentials) throws IOException {
         this.CF.setUserName(credentials.getUsername());
         this.CF.setPassword(credentials.getPassword());
@@ -124,6 +127,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         this.getTrustManager().setHostname(URI.create(CF.getStorageURL()).getHost());
     }
 
+    @Override
     public void close() {
         try {
             if(this.isConnected()) {
@@ -151,6 +155,7 @@ public class CFSession extends HTTPSession implements SSLSession {
         }
     }
 
+    @Override
     public Path workdir() throws IOException {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
@@ -161,14 +166,17 @@ public class CFSession extends HTTPSession implements SSLSession {
         return workdir;
     }
 
+    @Override
     protected void noop() {
         ;
     }
 
+    @Override
     public void sendCommand(String command) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isConnected() {
         return CF != null;
     }

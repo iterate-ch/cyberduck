@@ -172,8 +172,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         super.finish();
     }
 
-    public abstract void cleanup();
-
     /**
      * Idle this action for some time. Blocks the caller.
      */
@@ -185,8 +183,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
              */
             private int delay = (int) Preferences.instance().getDouble("connection.retry.delay");
 
+            @Override
             public void run() {
-
                 final NSAutoreleasePool pool = NSAutoreleasePool.push();
                 try {
                     if(0 == delay || RepeatableBackgroundAction.this.isCanceled()) {

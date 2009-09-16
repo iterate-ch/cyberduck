@@ -54,6 +54,7 @@ public class SFTPInputStream extends InputStream
      *
      * @see ch.ethz.ssh2.sftp.SFTPv3Client#read(SFTPv3FileHandle,long,byte[],int,int)
      */
+    @Override
     public int read(byte[] buffer, int offset, int len)
             throws IOException
     {
@@ -82,6 +83,7 @@ public class SFTPInputStream extends InputStream
      *         stream is reached.
      * @throws IOException if an I/O error occurs.
      */
+    @Override
     public int read()
             throws IOException
     {
@@ -104,12 +106,14 @@ public class SFTPInputStream extends InputStream
      * @param n the number of bytes to be skipped.
      * @return the actual number of bytes skipped.
      */
+    @Override
     public long skip(long n)
     {
         readOffset += n;
         return n;
     }
 
+    @Override
     public void close()
             throws IOException
     {

@@ -25,7 +25,7 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.davs.DAVSSession;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MESession extends DAVSSession {
 
@@ -34,6 +34,7 @@ public class MESession extends DAVSSession {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new MESession(h);
         }

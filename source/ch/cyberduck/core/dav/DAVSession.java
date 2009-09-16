@@ -46,6 +46,7 @@ public class DAVSession extends HTTPSession {
     }
 
     private static class Factory extends SessionFactory {
+        @Override
         protected Session create(Host h) {
             return new DAVSession(h);
         }
@@ -116,7 +117,7 @@ public class DAVSession extends HTTPSession {
                 final Credentials credentials = host.getCredentials();
                 if(!credentials.isValid()) {
                     if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                        credentials.setPassword(((AbstractLoginController)c).find(host));
+                        credentials.setPassword(((AbstractLoginController) c).find(host));
                     }
                 }
                 // Do not prompt for credentials yet but in the credentials provider

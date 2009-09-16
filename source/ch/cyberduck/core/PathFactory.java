@@ -21,20 +21,20 @@ package ch.cyberduck.core;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class PathFactory {
+public abstract class PathFactory<S extends Session> {
 
     /**
      * Registered factories
      */
     private static Map<Protocol, PathFactory> factories = new HashMap<Protocol, PathFactory>();
 
-    protected abstract Path create(Session session, String path, int type);
+    protected abstract Path create(S session, String path, int type);
 
-    protected abstract Path create(Session session, String parent, String name, int type);
+    protected abstract Path create(S session, String parent, String name, int type);
 
-    protected abstract Path create(Session session, String path, Local file);
+    protected abstract Path create(S session, String path, Local file);
 
-    protected abstract <T> Path create(Session session, T dict);
+    protected abstract <T> Path create(S session, T dict);
 
     /**
      * Register new factory

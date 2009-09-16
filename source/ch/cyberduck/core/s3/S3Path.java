@@ -25,6 +25,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.S3ObjectsChunk;
@@ -62,21 +63,25 @@ public class S3Path extends CloudPath {
         PathFactory.addFactory(Protocol.S3, new Factory());
     }
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String path, int type) {
-            return new S3Path((S3Session) session, path, type);
+    private static class Factory extends PathFactory<S3Session> {
+        @Override
+        protected Path create(S3Session session, String path, int type) {
+            return new S3Path(session, path, type);
         }
 
-        protected Path create(Session session, String parent, String name, int type) {
-            return new S3Path((S3Session) session, parent, name, type);
+        @Override
+        protected Path create(S3Session session, String parent, String name, int type) {
+            return new S3Path(session, parent, name, type);
         }
 
-        protected Path create(Session session, String path, Local file) {
-            return new S3Path((S3Session) session, path, file);
+        @Override
+        protected Path create(S3Session session, String path, Local file) {
+            return new S3Path(session, path, file);
         }
 
-        protected <T> Path create(Session session, T dict) {
-            return new S3Path((S3Session) session, dict);
+        @Override
+        protected <T> Path create(S3Session session, T dict) {
+            return new S3Path(session, dict);
         }
     }
 
@@ -102,6 +107,7 @@ public class S3Path extends CloudPath {
         this.session = s;
     }
 
+    @Override
     public Session getSession() {
         return this.session;
     }
@@ -385,6 +391,7 @@ public class S3Path extends CloudPath {
         return false;
     }
 
+    @Override
     public void readSize() {
         if(attributes.isFile()) {
             try {
@@ -404,6 +411,7 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public void readTimestamp() {
         if(attributes.isFile()) {
             try {
@@ -433,6 +441,7 @@ public class S3Path extends CloudPath {
         DEFAULT_FOLDER_PERMISSION = new Permission(access);
     }
 
+    @Override
     public void readPermission() {
         try {
             session.check();
@@ -534,6 +543,7 @@ public class S3Path extends CloudPath {
 //            }
 //        }
 
+        @Override
         public void s3ServiceEventPerformed(CreateObjectsEvent event) {
             super.s3ServiceEventPerformed(event);
 
@@ -560,6 +570,7 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes.isFile()) {
             OutputStream out = null;
@@ -600,17 +611,8 @@ public class S3Path extends CloudPath {
                 this.error("Download failed", e);
             }
             finally {
-                try {
-                    if(in != null) {
-                        in.close();
-                    }
-                    if(out != null) {
-                        out.close();
-                    }
-                }
-                catch(IOException e) {
-                    log.error(e.getMessage());
-                }
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
         }
         if(attributes.isDirectory()) {
@@ -618,6 +620,7 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
         try {
             if(check) {
@@ -672,6 +675,7 @@ public class S3Path extends CloudPath {
 
     private static final int BUCKET_LIST_CHUNKING_SIZE = 1000;
 
+    @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
@@ -789,6 +793,7 @@ public class S3Path extends CloudPath {
      */
     private final static String MIMETYPE_DIRECTORY = "application/x-directory";
 
+    @Override
     public void mkdir() {
         log.debug("mkdir:" + this.getName());
         try {
@@ -822,10 +827,12 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public void mkdir(boolean recursive) {
         this.mkdir();
     }
 
+    @Override
     public void writePermissions(Permission perm, boolean recursive) {
         log.debug("writePermissions:" + perm);
         try {
@@ -885,6 +892,7 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
@@ -923,6 +931,7 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
     public void rename(AbstractPath renamed) {
         try {
             if(attributes.isFile()) {
@@ -1052,6 +1061,7 @@ public class S3Path extends CloudPath {
     /**
      * @return
      */
+    @Override
     public Distribution readDistribution() {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             return new Distribution(false, null, null);
@@ -1087,6 +1097,7 @@ public class S3Path extends CloudPath {
      * @param cnames
      * @param logging
      */
+    @Override
     public void writeDistribution(final boolean enabled, final String[] cnames, boolean logging) {
         final String container = this.getContainerName();
         if(this.getHost().getCredentials().isAnonymousLogin()) {

@@ -100,6 +100,7 @@ public class DownloadTransfer extends Transfer {
     /**
      * Set download bandwidth
      */
+    @Override
     protected void init() {
         log.debug("init");
         this.bandwidth = new BandwidthThrottle(
@@ -167,6 +168,7 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
+    @Override
     public AttributedList<Path> childs(final Path parent) {
         if(!this.exists(parent)) {
             // Cannot fetch file listing of non existant file
@@ -184,6 +186,7 @@ public class DownloadTransfer extends Transfer {
         return downloads;
     }
 
+    @Override
     public boolean isCached(Path file) {
         return file.isCached();
     }
@@ -306,6 +309,7 @@ public class DownloadTransfer extends Transfer {
         return super.filter(action);
     }
 
+    @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
         log.debug("action:" + resumeRequested + "," + reloadRequested);
         if(resumeRequested) {
@@ -323,6 +327,7 @@ public class DownloadTransfer extends Transfer {
         );
     }
 
+    @Override
     protected void _transferImpl(final Path p) {
         p.download(bandwidth, new AbstractStreamListener() {
             @Override

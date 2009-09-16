@@ -61,10 +61,12 @@ public class License {
     }
 
     private static final License EMPTY = new License() {
+        @Override
         public boolean verify() {
             return false;
         }
 
+        @Override
         public String getValue(String property) {
             return null;
         }

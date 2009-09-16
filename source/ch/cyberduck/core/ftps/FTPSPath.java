@@ -18,7 +18,10 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.FTPPath;
 
 /**
@@ -30,21 +33,25 @@ public class FTPSPath extends FTPPath {
         PathFactory.addFactory(Protocol.FTP_TLS, new Factory());
     }
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String parent, String name, int type) {
-            return new FTPSPath((FTPSSession) session, parent, name, type);
+    private static class Factory extends PathFactory<FTPSSession> {
+        @Override
+        protected Path create(FTPSSession session, String parent, String name, int type) {
+            return new FTPSPath(session, parent, name, type);
         }
 
-        protected Path create(Session session, String path, int type) {
-            return new FTPSPath((FTPSSession) session, path, type);
+        @Override
+        protected Path create(FTPSSession session, String path, int type) {
+            return new FTPSPath(session, path, type);
         }
 
-        protected Path create(Session session, String path, Local file) {
-            return new FTPSPath((FTPSSession) session, path, file);
+        @Override
+        protected Path create(FTPSSession session, String path, Local file) {
+            return new FTPSPath(session, path, file);
         }
 
-        protected <T> Path create(Session session, T dict) {
-            return new FTPSPath((FTPSSession) session, dict);
+        @Override
+        protected <T> Path create(FTPSSession session, T dict) {
+            return new FTPSPath(session, dict);
         }
     }
 

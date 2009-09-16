@@ -24,6 +24,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.methods.DepthSupport;
@@ -43,21 +44,25 @@ public class DAVPath extends Path {
         PathFactory.addFactory(Protocol.WEBDAV, new Factory());
     }
 
-    private static class Factory extends PathFactory {
-        protected Path create(Session session, String path, int type) {
-            return new DAVPath((DAVSession) session, path, type);
+    private static class Factory extends PathFactory<DAVSession> {
+        @Override
+        protected Path create(DAVSession session, String path, int type) {
+            return new DAVPath(session, path, type);
         }
 
-        protected Path create(Session session, String parent, String name, int type) {
-            return new DAVPath((DAVSession) session, parent, name, type);
+        @Override
+        protected Path create(DAVSession session, String parent, String name, int type) {
+            return new DAVPath(session, parent, name, type);
         }
 
-        protected Path create(Session session, String path, Local file) {
-            return new DAVPath((DAVSession) session, path, file);
+        @Override
+        protected Path create(DAVSession session, String path, Local file) {
+            return new DAVPath(session, path, file);
         }
 
-        protected <T> Path create(Session session, T dict) {
-            return new DAVPath((DAVSession) session, dict);
+        @Override
+        protected <T> Path create(DAVSession session, T dict) {
+            return new DAVPath(session, dict);
         }
     }
 
@@ -83,10 +88,12 @@ public class DAVPath extends Path {
         this.session = s;
     }
 
+    @Override
     public Session getSession() {
         return this.session;
     }
 
+    @Override
     public void readSize() {
         try {
             session.check();
@@ -104,6 +111,7 @@ public class DAVPath extends Path {
         }
     }
 
+    @Override
     public void readTimestamp() {
         try {
             session.check();
@@ -122,10 +130,12 @@ public class DAVPath extends Path {
     }
 
 
+    @Override
     public void readPermission() {
         ;
     }
 
+    @Override
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
@@ -148,6 +158,7 @@ public class DAVPath extends Path {
     }
 
 
+    @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
@@ -159,8 +170,7 @@ public class DAVPath extends Path {
             session.DAV.setContentType("text/xml");
             WebdavResource[] resources = session.DAV.listWebdavResources();
 
-            for(int i = 0; i < resources.length; i++) {
-                final WebdavResource resource = resources[i];
+            for(final WebdavResource resource : resources) {
                 boolean collection = false;
                 if(null != resource.getResourceType()) {
                     collection = resource.getResourceType().isCollection();
@@ -188,7 +198,7 @@ public class DAVPath extends Path {
         return childs;
     }
 
-
+    @Override
     public void mkdir(boolean recursive) {
         log.debug("mkdir:" + this.getName());
         try {
@@ -212,6 +222,7 @@ public class DAVPath extends Path {
 
     }
 
+    @Override
     public void writePermissions(Permission perm, boolean recursive) {
 //            log.debug("changePermissions:" + perm);
 //            try {
@@ -224,6 +235,7 @@ public class DAVPath extends Path {
 //            }
     }
 
+    @Override
     public void rename(AbstractPath renamed) {
         log.debug("rename:" + renamed);
         try {
@@ -267,6 +279,7 @@ public class DAVPath extends Path {
         }
     }
 
+    @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes.isFile()) {
             OutputStream out = null;
@@ -294,17 +307,8 @@ public class DAVPath extends Path {
                 this.error("Download failed", e);
             }
             finally {
-                try {
-                    if(in != null) {
-                        in.close();
-                    }
-                    if(out != null) {
-                        out.close();
-                    }
-                }
-                catch(IOException e) {
-                    log.error(e.getMessage());
-                }
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
         }
         if(attributes.isDirectory()) {
@@ -313,6 +317,7 @@ public class DAVPath extends Path {
 
     }
 
+    @Override
     public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
         try {
             if(check) {
@@ -366,14 +371,7 @@ public class DAVPath extends Path {
                     }
                 }
                 finally {
-                    try {
-                        if(in != null) {
-                            in.close();
-                        }
-                    }
-                    catch(IOException e) {
-                        log.error(e.getMessage());
-                    }
+                    IOUtils.closeQuietly(in);
                 }
             }
             if(attributes.isDirectory()) {

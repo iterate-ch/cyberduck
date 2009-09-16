@@ -330,7 +330,7 @@ public abstract class Transfer implements Serializable {
         return name;
     }
 
-    protected abstract class TransferFilter implements PathFilter<Path> {
+    protected abstract static class TransferFilter implements PathFilter<Path> {
         /**
          * Called before the file will actually get transferred. Should prepare for the transfer
          * such as calculating its size.
