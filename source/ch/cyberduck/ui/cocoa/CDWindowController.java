@@ -206,16 +206,24 @@ public abstract class CDWindowController extends CDBundleController implements N
     }
 
     /**
+     * Keep strong reference to currently displayed sheet
+     */
+    private CDSheetController sheet;
+
+    /**
+     * Display alert as sheet to the window of this controller
+     *
      * @param alert
      * @param callback
      */
     protected void alert(final NSAlert alert, final CDSheetCallback callback) {
-        CDSheetController c = new CDAlertController(this, alert) {
+        this.sheet = new CDAlertController(this, alert) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
+                CDWindowController.this.sheet = null;
             }
         };
-        c.beginSheet();
+        this.sheet.beginSheet();
     }
 
     /**
@@ -231,8 +239,6 @@ public abstract class CDWindowController extends CDBundleController implements N
             }
         });
     }
-
-    private CDSheetController sheet;
 
     /**
      * Attach a sheet to this window
