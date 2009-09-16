@@ -263,8 +263,9 @@ public class Rendezvous implements BrowseListener, ResolveListener {
         try {
             final Host host = new Host(this.getProtocol(fullname, port), hostname, port);
             host.getCredentials().setUsername(null);
-            this.services.put(fullname, host);
-            this.notifier.serviceResolved(fullname, hostname);
+            if(null == this.services.put(fullname, host)) {
+                this.notifier.serviceResolved(fullname, hostname);
+            }
         }
         finally {
             // Note: When the desired results have been returned, the client MUST terminate
