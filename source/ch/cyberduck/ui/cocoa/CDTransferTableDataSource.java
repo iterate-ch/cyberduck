@@ -139,7 +139,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
         final NSObject cached = cache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(PROGRESS_COLUMN)) {
-                return null;
+                return cache.put(item, identifier, null);
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
                 return cache.put(item, identifier, NSString.stringWithString(item.getName()));
