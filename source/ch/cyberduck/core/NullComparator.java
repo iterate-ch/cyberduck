@@ -29,6 +29,7 @@ public class NullComparator<V> implements Comparator<V> {
         return 0;
     }
 
+    @Override
     public boolean equals(Object object) {
         return object instanceof NullComparator;
     }
