@@ -55,7 +55,7 @@ public class Cache<E extends AbstractPath> {
      * @param path
      * @return
      */
-    public synchronized E lookup(PathReference path) {
+    public E lookup(PathReference path) {
         final AttributedList<E> childs = this.get(Path.getParent(path.toString()));
         if(null == childs) {
             log.warn("Lookup failed for " + path + " in cache");
@@ -142,9 +142,10 @@ public class Cache<E extends AbstractPath> {
         }
         if(needsFiltering) {
             //add previously hidden files to childs
-            childs.addAll((Set) childs.attributes().get(AttributedList.HIDDEN));
+            final Set<E> hidden = childs.attributes().getHidden();
+            childs.addAll(hidden);
             //clear the previously set of hidden files
-            ((Set) childs.attributes().get(AttributedList.HIDDEN)).clear();
+            hidden.clear();
             for(Iterator<E> i = childs.iterator(); i.hasNext();) {
                 E child = i.next();
                 if(!filter.accept(child)) {

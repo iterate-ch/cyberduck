@@ -83,7 +83,11 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         }
 
         public void addHidden(E child) {
-            ((Set) this.get(HIDDEN)).add(child);
+            ((Set<E>)this.get(HIDDEN)).add(child);
+        }
+
+        public Set<E> getHidden() {
+            return (Set<E>)this.get(HIDDEN);
         }
 
         public void setReadable(boolean readable) {
