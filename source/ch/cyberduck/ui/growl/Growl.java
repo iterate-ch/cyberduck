@@ -44,7 +44,7 @@ public abstract class Growl {
                 }
                 else {
                     instance = new Growl() {
-                        public void register() {
+                        protected void register() {
                             ;
                         }
 
@@ -67,7 +67,7 @@ public abstract class Growl {
     /**
      * Register application
      */
-    public abstract void register();
+    protected abstract void register();
 
     public abstract void notify(String title, String description);
 
