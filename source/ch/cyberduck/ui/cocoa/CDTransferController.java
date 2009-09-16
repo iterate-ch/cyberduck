@@ -343,7 +343,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    private class TableColumnFactory extends HashMap<String,NSTableColumn> {
+    private static class TableColumnFactory extends HashMap<String,NSTableColumn> {
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -373,18 +373,22 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 deleteButtonClicked(sender);
             }
 
+            @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
                 ;
             }
 
+            @Override
             public void tableRowDoubleClicked(final ID sender) {
                 reloadButtonClicked(sender);
             }
 
+            @Override
             public void selectionIsChanging(NSNotification notification) {
                 updateHighlight();
             }
 
+            @Override
             public void selectionDidChange(NSNotification notification) {
                 updateHighlight();
                 updateSelection();
@@ -575,6 +579,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
             private TransferListener tl;
 
+            @Override
             public boolean prepare() {
                 transfer.addListener(tl = new TransferAdapter() {
                     @Override
@@ -623,6 +628,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 transfer.removeListener(tl);
             }
 
+            @Override
             public void cleanup() {
                 if(transfer.isComplete() && !transfer.isCanceled()) {
                     if(transfer.isReset()) {
@@ -642,6 +648,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 TransferCollection.instance().save();
             }
 
+            @Override
             public Session getSession() {
                 return transfer.getSession();
             }

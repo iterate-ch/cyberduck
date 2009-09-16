@@ -41,6 +41,7 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
                 + CDDateFormatter.getLongFormat(p.attributes.getModificationDate());
     }
 
+    @Override
     public Comparator<Path> getSortingComparator() {
         final boolean ascending = this.isSortedAscending();
         final String identifier = this.selectedColumnIdentifier();

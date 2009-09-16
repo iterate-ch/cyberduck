@@ -119,6 +119,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     this.diagnosticsButton.setHidden(hidden);
                 }
 
+                @Action
                 public void diagnosticsButtonClicked(final NSButton sender) {
                     exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
                 }
@@ -132,14 +133,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
 
                 private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-                class TableColumnFactory extends HashMap<String,NSTableColumn> {
-                    private NSTableColumn create(String identifier) {
-                        if(!this.containsKey(identifier)) {
-                            this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
-                        }
-                        return this.get(identifier);
-                    }
-                }
                 @Outlet
                 private NSTableView errorView;
                 private CDListDataSource model;
@@ -233,6 +226,15 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                 }
             };
             alert.beginSheet();
+        }
+    }
+
+    private static class TableColumnFactory extends HashMap<String,NSTableColumn> {
+        private NSTableColumn create(String identifier) {
+            if(!this.containsKey(identifier)) {
+                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
+            }
+            return this.get(identifier);
         }
     }
 }

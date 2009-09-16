@@ -165,7 +165,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     protected final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    protected class TableColumnFactory extends HashMap<String,NSTableColumn> {
+    protected static class TableColumnFactory extends HashMap<String,NSTableColumn> {
         protected NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));

@@ -50,6 +50,7 @@ public class ODBEditor extends Editor {
     /**
      * Open the file using the ODB external editor protocol
      */
+    @Override
     public void edit() {
         if(!ODBEditor.loadNative()) {
             return;

@@ -221,7 +221,6 @@ public class CDBookmarkController extends CDWindowController {
         this.webUrlImage.setTarget(this.id());
         this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
         this.webUrlImage.setImage(CDIconCache.iconNamed("site", 16));
-        this.updateFavicon();
     }
 
     private NSImage favicon;
@@ -545,6 +544,7 @@ public class CDBookmarkController extends CDWindowController {
         this.init();
         this.setState(this.toggleOptionsButton, Preferences.instance().getBoolean("bookmark.toggle.options"));
         this.reachable();
+        this.updateFavicon();
 
         super.awakeFromNib();
     }

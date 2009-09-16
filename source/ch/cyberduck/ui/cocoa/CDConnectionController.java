@@ -183,7 +183,7 @@ public class CDConnectionController extends CDSheetController {
                 this.hostField);
     }
 
-    private class HostFieldModel extends CDController implements NSComboBox.DataSource {
+    private static class HostFieldModel extends CDController implements NSComboBox.DataSource {
         public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
             return new NSInteger(HostCollection.defaultCollection().size());
         }
@@ -193,6 +193,7 @@ public class CDConnectionController extends CDSheetController {
         }
     }
 
+    @Action
     public void hostPopupSelectionDidChange(final NSControl sender) {
         String input = sender.stringValue();
         if(StringUtils.isBlank(input)) {
@@ -276,6 +277,7 @@ public class CDConnectionController extends CDSheetController {
         this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
     }
 
+    @Action
     public void launchNetworkAssistant(final NSButton sender) {
         Host.parse(urlLabel.stringValue()).diagnose();
     }
@@ -375,6 +377,7 @@ public class CDConnectionController extends CDSheetController {
         this.anonymousCheckbox.setState(NSCell.NSOffState);
     }
 
+    @Action
     public void anonymousCheckboxClicked(final NSButton sender) {
         if(sender.state() == NSCell.NSOnState) {
             this.usernameField.setEnabled(false);
@@ -404,6 +407,7 @@ public class CDConnectionController extends CDSheetController {
 
     private NSOpenPanel publicKeyPanel;
 
+    @Action
     public void pkCheckboxSelectionDidChange(final NSButton sender) {
         log.debug("pkCheckboxSelectionDidChange");
         if(sender.state() == NSCell.NSOnState) {

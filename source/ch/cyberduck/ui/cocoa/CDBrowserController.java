@@ -734,6 +734,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             return false;
         }
 
+        @Override
         public void tableRowDoubleClicked(final ID sender) {
             CDBrowserController.this.insideButtonClicked(sender);
         }
@@ -820,6 +821,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             CDBrowserController.this.deleteFileButtonClicked(sender);
         }
 
+        @Override
         public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
             List<Path> selected = CDBrowserController.this.getSelectedPaths();
             if(this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
@@ -839,6 +841,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             reloadData(selected);
         }
 
+        @Override
         public void selectionDidChange(NSNotification notification) {
             final Collection<Path> selected = getSelectedPaths();
             if(1 == selected.size()) {
@@ -1169,7 +1172,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     private final TableColumnFactory browserOutlineColumnsFactory = new TableColumnFactory();
     private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
 
-    private class TableColumnFactory extends HashMap<String, NSTableColumn> {
+    private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -1269,6 +1272,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 return bookmark.toURL();
             }
 
+            @Override
             public void tableRowDoubleClicked(final ID sender) {
                 CDBrowserController.this.connectBookmarkButtonClicked(sender);
             }
@@ -1283,10 +1287,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
+            @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
 
             }
 
+            @Override
             public void selectionDidChange(NSNotification notification) {
                 addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsAdd());
                 final int selected = bookmarkTable.numberOfSelectedRows().intValue();
@@ -1374,7 +1380,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.quickConnectWillPopUp(null);
     }
 
-    private class QuickConnectModel extends CDController implements NSComboBox.DataSource {
+    private static class QuickConnectModel extends CDController implements NSComboBox.DataSource {
         public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
             return new NSInteger(HostCollection.defaultCollection().size());
         }
@@ -2524,7 +2530,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     workdir.invalidate();
                     if(!transfer.isCanceled()) {
                         invoke(new WindowMainAction(CDBrowserController.this) {
-                            @Override
                             public void run() {
                                 reloadData(true);
                             }
@@ -3129,7 +3134,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     new CDHostKeyController(this));
         }
         this.session.setLoginController(new CDLoginController(this));
-        this.setWorkdir((Path) null);
+        this.setWorkdir(null);
         this.setEncoding(this.session.getEncoding());
         this.session.addProgressListener(new ProgressListener() {
             public void message(final String message) {

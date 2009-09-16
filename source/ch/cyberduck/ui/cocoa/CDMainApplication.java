@@ -48,6 +48,7 @@ public class CDMainApplication {
             root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
             log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
+            log.info("Encoding " + System.getProperty("file.encoding"));
 
             // This method also makes a connection to the window server and completes other initialization.
             // Your program should invoke this method as one of the first statements in main();
