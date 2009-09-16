@@ -4,8 +4,9 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.3b2
+3.3b3
 - [Feature] PPC support again available
+- [Bugfix] Some localizations broken [#3648]
 - [Bugfix] Various bugfixes
 
 3.3b2
