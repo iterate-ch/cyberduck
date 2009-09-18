@@ -206,8 +206,12 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow().intValue() == -1) {
-                    hideLocalDetails(true);
-                    hideRemoteDetails(true);
+                    remoteURLField.setStringValue("");
+                    remoteSizeField.setStringValue("");
+                    remoteModificationField.setStringValue("");
+                    localURLField.setStringValue("");
+                    localSizeField.setStringValue("");
+                    localModificationField.setStringValue("");
                 }
                 else {
                     final Path p = browserModel.lookup(browserView.itemAtRow(browserView.selectedRow()));
@@ -237,8 +241,8 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         localModificationField.setHidden(false);
                     }
                     else {
-                        localSizeField.setHidden(true);
-                        localModificationField.setHidden(true);
+                        localSizeField.setStringValue("");
+                        localModificationField.setStringValue("");
                     }
 
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -267,22 +271,10 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                         remoteModificationField.setHidden(false);
                     }
                     else {
-                        remoteSizeField.setHidden(true);
-                        remoteModificationField.setHidden(true);
+                        remoteSizeField.setStringValue("");
+                        remoteModificationField.setStringValue("");
                     }
                 }
-            }
-
-            private void hideRemoteDetails(boolean hidden) {
-                remoteURLField.setHidden(hidden);
-                remoteSizeField.setHidden(hidden);
-                remoteModificationField.setHidden(hidden);
-            }
-
-            private void hideLocalDetails(boolean hidden) {
-                localURLField.setHidden(hidden);
-                localSizeField.setHidden(hidden);
-                localModificationField.setHidden(hidden);
             }
 
             /**
