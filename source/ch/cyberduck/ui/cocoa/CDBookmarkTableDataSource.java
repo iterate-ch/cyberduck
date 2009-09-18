@@ -74,24 +74,17 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
             private Timer delayed = null;
 
             public void collectionItemAdded(Host item) {
-                controller.invoke(new WindowMainAction(controller) {
-                    public void run() {
-                        cache.clear();
-                        controller.reloadBookmarks();
-                    }
-                });
+                cache.clear();
+                controller.reloadBookmarks();
             }
 
             public void collectionItemRemoved(Host item) {
-                controller.invoke(new WindowMainAction(controller) {
-                    public void run() {
-                        cache.clear();
-                        controller.reloadBookmarks();
-                    }
-                });
+                cache.clear();
+                controller.reloadBookmarks();
             }
 
             public void collectionItemChanged(Host item) {
+                cache.clear();
                 controller.reloadBookmarks();
                 if(null != delayed) {
                     delayed.cancel();
@@ -194,9 +187,6 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         return filtered;
     }
 
-    /**
-     * @see NSTableView.DataSource
-     */
     public NSInteger numberOfRowsInTableView(NSTableView view) {
         return new NSInteger(this.getSource().size());
     }
