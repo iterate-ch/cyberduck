@@ -139,6 +139,8 @@
             <string>1.5+</string>
             <key>StartOnMainThread</key>
             <true/>
+            <key>VMOptions</key>
+            <string>-XX:+UseCompressedOops</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <string>YES</string>
