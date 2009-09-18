@@ -1,6 +1,7 @@
-#!/usr/local/bin/python
+#!/usr/local/bin/python2.5
 
 import cgi
+import cgitb; cgitb.enable() # Optional; for debugging only
 import os
 import smtplib
 import email
@@ -19,11 +20,14 @@ logging.basicConfig(level=logging.DEBUG,
 #create table crash(ip TEXT, crashlog TEXT);
 db = 'crash.sqlite'
 
-def mailreport(crashlog):
+def mailreport(crashlog, ip, revision):
 	mail = MIMEText(crashlog)
 	mail["To"] = "bugs@cyberduck.ch"
 	mail["From"] = "noreply@cyberduck.ch"
-	mail["Subject"] = "Cyberduck Crash Report from " + ip
+	if revision != None:
+		mail["Subject"] = "Cyberduck Crash Report from " + ip + " with revision " + revision
+	else:
+		mail["Subject"] = "Cyberduck Crash Report from " + ip
 	mail["Date"] = email.Utils.formatdate(localtime=1)
 	mail["Message-ID"] = email.Utils.make_msgid()
 	s = smtplib.SMTP()
@@ -62,7 +66,7 @@ if __name__=="__main__":
 				c.close()
 
 			#send mail
-			mailreport(crashlog)
+			mailreport(crashlog, ip, revision)
 	except:
 		logging.error("Unexpected error:".join(format_exception(*exc_info())))
 		cgi.print_exception()
