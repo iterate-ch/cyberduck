@@ -94,6 +94,9 @@ public class CDDotMacController extends CDController {
                         HostCollection.defaultCollection().add(bookmark);
                     }
                     if(choice == CDSheetCallback.OTHER_OPTION) {
+                        continue;
+                    }
+                    if(choice == CDSheetCallback.ALTERNATE_OPTION) {
                         return;
                     }
                 }
