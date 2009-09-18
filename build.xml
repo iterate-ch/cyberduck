@@ -227,11 +227,8 @@
             <replacefilter token="_REVISION_" value="${svn.revision}"/>
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
         </replace>
-        <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
-            <arg line="--force --sign 'Cyberduck Code Signing Certificate' ${app.bundle}"/>
-        </exec>
 
+        <antcall target="codesign"/>
         <antcall target="tar"/>
 
         <copy todir="${build}" overwrite="true">
@@ -250,6 +247,13 @@
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
             <replacefilter token="_MD5SUM_" value="${md5sum}"/>
         </replace>
+    </target>
+
+    <target name="codesign">
+        <echo message="Code signing application bundle..."/>
+        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
+            <arg line="--force --sign 'Cyberduck Code Signing Certificate' ${app.bundle}"/>
+        </exec>
     </target>
 
     <target name="tar">
