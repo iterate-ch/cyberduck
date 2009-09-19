@@ -218,7 +218,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     private Path parent;
 
-    public AbstractPath getParent() {
+    @Override
+    public Path getParent() {
         return this.getParent(true);
     }
 
@@ -226,7 +227,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param create Create if not cached. Otherwise may return null
      * @return My parent directory
      */
-    public AbstractPath getParent(final boolean create) {
+    public Path getParent(final boolean create) {
         if(null == parent) {
             if(create) {
                 if(this.isRoot()) {

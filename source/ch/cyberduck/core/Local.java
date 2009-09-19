@@ -180,10 +180,12 @@ public abstract class Local extends AbstractPath implements Attributes {
         FileWatcher.instance().watch(this, listener);
     }
 
+    @Override
     public boolean isReadable() {
         return _impl.canRead();
     }
 
+    @Override
     public boolean isWritable() {
         return _impl.canWrite();
     }
@@ -316,7 +318,8 @@ public abstract class Local extends AbstractPath implements Attributes {
         return _impl.getName();
     }
 
-    public AbstractPath getParent() {
+    @Override
+    public Local getParent() {
         return LocalFactory.createLocal(_impl.getParentFile());
     }
 
@@ -341,8 +344,6 @@ public abstract class Local extends AbstractPath implements Attributes {
             }
         }
     }
-
-    public abstract void writePermissions(Permission perm, boolean recursive);
 
     public void rename(AbstractPath renamed) {
         if(_impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()))) {
@@ -381,7 +382,7 @@ public abstract class Local extends AbstractPath implements Attributes {
             return false;
         }
         if(other instanceof Local) {
-            return this.getAbsolute().equalsIgnoreCase(((AbstractPath) other).getAbsolute());
+            return this.getAbsolute().equalsIgnoreCase(((Local) other).getAbsolute());
         }
         return false;
     }
@@ -391,6 +392,7 @@ public abstract class Local extends AbstractPath implements Attributes {
         return this.getAbsolute();
     }
 
+    @Override
     public String toURL() {
         try {
             return _impl.toURI().toURL().toString();
