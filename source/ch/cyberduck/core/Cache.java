@@ -128,7 +128,7 @@ public class Cache<E extends AbstractPath> {
         AttributedList<E> childs = _impl.get(path);
         if(null == childs) {
             log.warn("No cache for " + path);
-            return new AttributedList<E>();
+            return AttributedList.emptyList();
         }
         boolean needsSorting = !childs.attributes().get(AttributedList.COMPARATOR).equals(comparator);
         boolean needsFiltering = !childs.attributes().get(AttributedList.FILTER).equals(filter);

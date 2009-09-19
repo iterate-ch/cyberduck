@@ -56,6 +56,32 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         this.addAll(collection);
     }
 
+    private static final List EMPTY_LIST = new EmptyList();
+
+    public static <T extends AbstractPath> AttributedList<T> emptyList() {
+        return (AttributedList<T>) EMPTY_LIST;
+    }
+
+    private static class EmptyList extends AbstractList<Object> {
+
+        public int size() {
+            return 0;
+        }
+
+        public boolean contains(Object obj) {
+            return false;
+        }
+
+        public Object get(int index) {
+            throw new IndexOutOfBoundsException("Index: " + index);
+        }
+
+        // Preserves singleton property
+        private Object readResolve() {
+            return EMPTY_LIST;
+        }
+    }
+
     /**
      * Container for file listing attributes, such as a sorting comparator and filter
      *
@@ -83,11 +109,11 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
         }
 
         public void addHidden(E child) {
-            ((Set<E>)this.get(HIDDEN)).add(child);
+            ((Set<E>) this.get(HIDDEN)).add(child);
         }
 
         public Set<E> getHidden() {
-            return (Set<E>)this.get(HIDDEN);
+            return (Set<E>) this.get(HIDDEN);
         }
 
         public void setReadable(boolean readable) {
