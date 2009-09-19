@@ -24,7 +24,6 @@ import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -51,11 +50,6 @@ public class CDTransferTableDataSource extends CDListDataSource {
 
     public CDTransferTableDataSource() {
         TransferCollection.instance().addListener(new AbstractCollectionListener<Transfer>() {
-            @Override
-            public void collectionItemAdded(Transfer item) {
-                controllers.put(item, new CDProgressController(item));
-            }
-
             @Override
             public void collectionItemRemoved(Transfer item) {
                 final CDProgressController controller = controllers.remove(item);
@@ -205,7 +199,7 @@ public class CDTransferTableDataSource extends CDListDataSource {
      * @return
      */
     public CDProgressController getController(int row) {
-        return controllers.get(this.getSource().get(row));
+        return this.getController(this.getSource().get(row));
     }
 
     /**
@@ -213,6 +207,9 @@ public class CDTransferTableDataSource extends CDListDataSource {
      * @return
      */
     public CDProgressController getController(Transfer t) {
+        if(!controllers.containsKey(t)) {
+            controllers.put(t, new CDProgressController(t));
+        }
         return controllers.get(t);
     }
 
