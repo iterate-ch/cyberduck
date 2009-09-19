@@ -63,13 +63,8 @@ public class CDDotMacController extends CDController {
      * @return Member name of the MobileMe account configured in System Preferences
      */
     public String getAccountName() {
-        if(!loadNative()) {
-            return null;
-        }
-        return getAccountNameNative();
+        return Preferences.instance().getProperty("iToolsMember");
     }
-
-    protected native String getAccountNameNative();
 
     /**
      *
