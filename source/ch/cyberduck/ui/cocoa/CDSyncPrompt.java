@@ -39,7 +39,8 @@ public class CDSyncPrompt extends CDTransferPrompt {
 
     @Override
     public TransferAction prompt() {
-        this.browserModel = new CDSyncPromptModel(this, transfer);
+        browserModel = new CDSyncPromptModel(this, transfer);
+        action = TransferAction.ACTION_OVERWRITE;
         return super.prompt();
     }
 
