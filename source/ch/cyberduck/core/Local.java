@@ -22,7 +22,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -214,6 +213,10 @@ public abstract class Local extends AbstractPath implements Attributes {
      */
     public abstract void setIcon(int progress);
 
+    /**
+     * By default just move the file to the user trash
+     */
+    @Override
     public void delete() {
         this.delete(true);
     }
@@ -244,6 +247,12 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     private Cache<Local> cache;
 
+    /**
+     * Local directory listings are never cached
+     *
+     * @return Always empty cache.
+     */
+    @Override
     public Cache<Local> cache() {
         if(null == cache) {
             cache = new Cache<Local>();
@@ -251,6 +260,7 @@ public abstract class Local extends AbstractPath implements Attributes {
         return this.cache;
     }
 
+    @Override
     public AttributedList<Local> list() {
         final AttributedList<Local> childs = new AttributedList<Local>();
         File[] files = _impl.listFiles();
@@ -291,6 +301,7 @@ public abstract class Local extends AbstractPath implements Attributes {
         return null;
     }
 
+    @Override
     public String getAbsolute() {
         return _impl.getAbsolutePath();
     }
@@ -299,6 +310,11 @@ public abstract class Local extends AbstractPath implements Attributes {
         return this.getAbsolute();
     }
 
+    /**
+     * @param <T>
+     * @return Always null
+     */
+    @Override
     public <T> PathReference<T> getReference() {
         return null;
     }
@@ -314,6 +330,7 @@ public abstract class Local extends AbstractPath implements Attributes {
         }
     }
 
+    @Override
     public String getName() {
         return _impl.getName();
     }
@@ -323,15 +340,18 @@ public abstract class Local extends AbstractPath implements Attributes {
         return LocalFactory.createLocal(_impl.getParentFile());
     }
 
+    @Override
     public boolean exists() {
         return _impl.exists();
     }
 
+    @Override
     public void setPath(String name) {
         _impl = new File(Path.normalize(name));
         this.init();
     }
 
+    @Override
     public void mkdir(boolean recursive) {
         if(recursive) {
             if(_impl.mkdirs()) {
@@ -345,12 +365,14 @@ public abstract class Local extends AbstractPath implements Attributes {
         }
     }
 
+    @Override
     public void rename(AbstractPath renamed) {
         if(_impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()))) {
             this.setPath(this.getParent().getAbsolute(), renamed.getAbsolute());
         }
     }
 
+    @Override
     public void copy(AbstractPath copy) {
         if(copy.equals(this)) {
             return;

@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -561,7 +560,11 @@ public abstract class Session {
      */
     public Cache<Path> cache() {
         if(null == cache) {
-            cache = new Cache<Path>();
+            cache = new Cache<Path>() {
+                public String toString() {
+                    return "Cache for " + Session.this.toString();
+                }
+            };
         }
         return this.cache;
     }
@@ -580,5 +583,9 @@ public abstract class Session {
                     && this.getHost().getProtocol().equals(((Session) other).getHost().getProtocol());
         }
         return false;
+    }
+
+    public String toString() {
+        return "Session " + host.toURL();
     }
 }

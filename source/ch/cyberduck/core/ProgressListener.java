@@ -21,11 +21,10 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public abstract class ProgressListener {
+public interface ProgressListener {
 
     /**
-     *
      * @param message
      */
-    public abstract void message(final String message);
+    void message(final String message);
 }

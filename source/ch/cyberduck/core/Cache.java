@@ -168,6 +168,7 @@ public class Cache<E extends AbstractPath> {
     }
 
     public void clear() {
+        log.info("Clearing cache " + this.toString());
         _impl.clear();
     }
 }
