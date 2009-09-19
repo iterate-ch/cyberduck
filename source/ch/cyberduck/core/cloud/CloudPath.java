@@ -47,8 +47,8 @@ public abstract class CloudPath extends Path {
     }
 
     @Override
-    public AbstractPath getParent() {
-        final CloudPath parent = (CloudPath) super.getParent();
+    public Path getParent() {
+        final Path parent = super.getParent();
         if(parent.isRoot()) {
             parent.attributes.setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         }
@@ -71,7 +71,7 @@ public abstract class CloudPath extends Path {
         }
         CloudPath bucketname = this;
         while(!bucketname.isContainer()) {
-            bucketname = (CloudPath) bucketname.getParent();
+            bucketname = (CloudPath)bucketname.getParent();
         }
         return bucketname.getName();
     }

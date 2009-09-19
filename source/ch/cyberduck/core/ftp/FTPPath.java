@@ -409,7 +409,7 @@ public class FTPPath extends Path {
             session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
-            session.setWorkdir((Path) this.getParent());
+            session.setWorkdir(this.getParent());
             session.FTP.mkdir(this.getName());
         }
         catch(IOException e) {
@@ -425,7 +425,7 @@ public class FTPPath extends Path {
             session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
-            session.setWorkdir((Path) this.getParent());
+            session.setWorkdir(this.getParent());
             session.FTP.rename(this.getName(), renamed.getAbsolute());
             this.setPath(renamed.getAbsolute());
         }
@@ -532,7 +532,7 @@ public class FTPPath extends Path {
         try {
             session.check();
             if(attributes.isFile() || attributes.isSymbolicLink()) {
-                session.setWorkdir((Path) this.getParent());
+                session.setWorkdir(this.getParent());
                 session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
@@ -554,7 +554,7 @@ public class FTPPath extends Path {
                         file.delete();
                     }
                 }
-                session.setWorkdir((Path) this.getParent());
+                session.setWorkdir(this.getParent());
                 session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
@@ -579,18 +579,18 @@ public class FTPPath extends Path {
             session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                     this.getName(), owner));
 
-            session.setWorkdir((Path) this.getParent());
+            session.setWorkdir(this.getParent());
             if(attributes.isFile() && !attributes.isSymbolicLink()) {
                 session.FTP.site(command + " " + owner + " " + this.getName());
             }
             else if(attributes.isDirectory()) {
                 session.FTP.site(command + " " + owner + " " + this.getName());
                 if(recursive) {
-                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                    for(AbstractPath child : this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
-                        ((Path) iter.next()).writeOwner(owner, recursive);
+                        ((Path) child).writeOwner(owner, recursive);
                     }
                 }
             }
@@ -608,18 +608,18 @@ public class FTPPath extends Path {
             session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
                     this.getName(), group));
 
-            session.setWorkdir((Path) this.getParent());
+            session.setWorkdir(this.getParent());
             if(attributes.isFile() && !attributes.isSymbolicLink()) {
                 session.FTP.site(command + " " + group + " " + this.getName());
             }
             else if(attributes.isDirectory()) {
                 session.FTP.site(command + " " + group + " " + this.getName());
                 if(recursive) {
-                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                    for(AbstractPath child : this.childs()) {
                         if(!session.isConnected()) {
                             break;
                         }
-                        ((Path) iter.next()).writeGroup(group, recursive);
+                        ((Path) child).writeGroup(group, recursive);
                     }
                 }
             }
@@ -638,7 +638,7 @@ public class FTPPath extends Path {
             session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), perm.getOctalString()));
 
-            session.setWorkdir((Path) this.getParent());
+            session.setWorkdir(this.getParent());
             if(attributes.isFile() && !attributes.isSymbolicLink()) {
                 if(recursive) {
                     // Do not write executable bit for files if not already set when recursively updating directory.
@@ -685,7 +685,7 @@ public class FTPPath extends Path {
                 session.check();
             }
             if(attributes.isFile()) {
-                session.setWorkdir((Path) this.getParent());
+                session.setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.downloadASCII(throttle, listener);
@@ -788,7 +788,7 @@ public class FTPPath extends Path {
                 session.check();
             }
             if(attributes.isFile()) {
-                session.setWorkdir((Path) this.getParent());
+                session.setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.uploadASCII(throttle, listener);
