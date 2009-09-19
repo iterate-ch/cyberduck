@@ -138,7 +138,7 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public long getSize() {
         if(this.isDirectory()) {
-            return 0;
+            return -1;
         }
         return _impl.length();
     }
