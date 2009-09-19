@@ -54,7 +54,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
     protected AttributedList<Path> childs(final CDPathReference path) {
         final Path lookup = controller.lookup(path);
         if(null == lookup) {
-            return new AttributedList<Path>();
+            return AttributedList.emptyList();
         }
         return super.childs(lookup);
     }

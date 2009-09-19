@@ -1648,7 +1648,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public void upButtonClicked(final ID sender) {
         final Path previous = this.workdir();
-        this.setWorkdir((Path) previous.getParent(), previous);
+        this.setWorkdir(previous.getParent(), previous);
     }
 
     private Path workdir;
@@ -1678,7 +1678,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             Path p = workdir;
             while(!p.getParent().equals(p)) {
                 this.addPathToNavigation(p);
-                p = (Path) p.getParent();
+                p = p.getParent();
             }
             this.addPathToNavigation(p);
         }
@@ -2479,7 +2479,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 destination = workdir();
             }
             else if(!destination.attributes.isDirectory()) {
-                destination = (Path) destination.getParent();
+                destination = destination.getParent();
             }
             // selected files on the local filesystem
             NSArray selected = sheet.filenames();
@@ -2764,7 +2764,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 parent = selected;
             }
             else {
-                parent = (Path) selected.getParent();
+                parent = selected.getParent();
             }
         }
         for(final Path next : pasteboard.getFiles(this.getSession())) {

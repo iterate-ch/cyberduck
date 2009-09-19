@@ -72,7 +72,7 @@ public class CDFolderController extends CDFileController {
                                 false);
                     }
                 }
-                folder.cache().put(folder, new AttributedList<Path>());
+                folder.cache().put(folder, AttributedList.<Path>emptyList());
                 folder.getParent().invalidate();
             }
 

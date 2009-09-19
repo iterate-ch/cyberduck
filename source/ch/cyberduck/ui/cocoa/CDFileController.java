@@ -61,7 +61,7 @@ public abstract class CDFileController extends CDSheetController {
             if(selected.attributes.isDirectory()) {
                 return selected;
             }
-            return (Path) selected.getParent();
+            return selected.getParent();
         }
         return ((CDBrowserController) parent).workdir();
     }

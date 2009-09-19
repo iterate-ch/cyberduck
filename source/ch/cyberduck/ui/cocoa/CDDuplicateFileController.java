@@ -56,9 +56,9 @@ public class CDDuplicateFileController extends CDFileController {
         final Path selected = ((CDBrowserController) parent).getSelectedPath();
         StringBuffer proposal = new StringBuffer();
         proposal.append(FilenameUtils.getBaseName(selected.getName()));
-        proposal.append(" (" + CDDateFormatter.getShortFormat(System.currentTimeMillis()).replace('/', ':') + ")");
+        proposal.append(" (").append(CDDateFormatter.getShortFormat(System.currentTimeMillis()).replace('/', ':')).append(")");
         if(StringUtils.isNotEmpty(selected.getExtension())) {
-            proposal.append("." + selected.getExtension());
+            proposal.append(".").append(selected.getExtension());
         }
         this.filenameField.setStringValue(proposal.toString());
     }
@@ -75,7 +75,7 @@ public class CDDuplicateFileController extends CDFileController {
 
     @Override
     protected Path getWorkdir() {
-        return (Path) ((CDBrowserController) parent).getSelectedPath().getParent();
+        return ((CDBrowserController) parent).getSelectedPath().getParent();
     }
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {
