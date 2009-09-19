@@ -29,7 +29,7 @@ public class GrowlNative extends Growl {
         Native.load("Growl");
     }
 
-    protected native void register();
+    public native void register();
 
     public native void notify(String title, String description);
 
