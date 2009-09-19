@@ -143,10 +143,7 @@ public class CDErrorController extends CDBundleController {
                 buffer.append(cause.getMessage());
             }
             if(cause instanceof SFTPException) {
-                final SFTPException sftp = (SFTPException) cause;
-                if(StringUtils.isNotBlank(sftp.getServerErrorCodeVerbose())) {
-                    buffer.append(" ").append(sftp.getServerErrorCodeVerbose());
-                }
+                ;
             }
             if(cause instanceof S3ServiceException) {
                 final S3ServiceException s3 = (S3ServiceException) cause;
