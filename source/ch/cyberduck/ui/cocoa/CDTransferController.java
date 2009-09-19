@@ -137,15 +137,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
     }
 
     public void filterFieldTextDidChange(NSNotification notification) {
-        NSDictionary userInfo = notification.userInfo();
-        if(null != userInfo) {
-            Object o = userInfo.allValues().lastObject();
-            if(null != o) {
-                final String searchString = ((NSText) o).string();
-                transferModel.setFilter(searchString);
-                this.reloadData();
-            }
-        }
+        transferModel.setFilter(filterField.stringValue());
+        this.reloadData();
     }
 
     /**
