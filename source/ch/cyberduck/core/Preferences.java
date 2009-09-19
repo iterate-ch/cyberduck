@@ -557,27 +557,51 @@ public abstract class Preferences {
     }
 
     public String getProperty(String property) {
-        return this.getObject(property).toString();
+        final Object v = this.getObject(property);
+        if(null == v) {
+            return null;
+        }
+        return v.toString();
     }
 
     public int getInteger(String property) {
-        return Integer.parseInt(this.getObject(property).toString());
+        final Object v = this.getObject(property);
+        if(null == v) {
+            return -1;
+        }
+        return Integer.parseInt(v.toString());
     }
 
     public float getFloat(String property) {
-        return Float.parseFloat(this.getObject(property).toString());
+        final Object v = this.getObject(property);
+        if(null == v) {
+            return -1;
+        }
+        return Float.parseFloat(v.toString());
     }
 
     public long getLong(String property) {
-        return Long.parseLong(this.getObject(property).toString());
+        final Object v = this.getObject(property);
+        if(null == v) {
+            return -1;
+        }
+        return Long.parseLong(v.toString());
     }
 
     public double getDouble(String property) {
-        return Double.parseDouble(this.getObject(property).toString());
+        final Object v = this.getObject(property);
+        if(null == v) {
+            return -1;
+        }
+        return Double.parseDouble(v.toString());
     }
 
     public boolean getBoolean(String property) {
-        String value = this.getObject(property).toString();
+        final Object v = this.getObject(property);
+        if(null == v) {
+            return false;
+        }
+        String value = v.toString();
         if(value.equalsIgnoreCase(String.valueOf(true))) {
             return true;
         }
