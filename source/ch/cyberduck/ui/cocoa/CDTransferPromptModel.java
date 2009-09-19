@@ -52,7 +52,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     /**
      * The root nodes to be included in the prompt dialog
      */
-    private final List<Path> roots = new Collection<Path>();
+    protected final List<Path> roots = new Collection<Path>();
 
     /**
      *
@@ -70,6 +70,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
 
     @Override
     protected void invalidate() {
+        modelCache.clear();
         cache.clear();
         super.invalidate();
     }
@@ -78,22 +79,13 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         roots.add(p);
     }
 
-    protected abstract class PromptFilter implements PathFilter<Path> {
+    protected abstract static class PromptFilter implements PathFilter<Path> {
         public boolean accept(Path file) {
-            if(transfer.exists(file)) {
-                if(file.attributes.getSize() == -1) {
-                    file.readSize();
-                }
-                if(file.attributes.getModificationDate() == -1) {
-                    file.readTimestamp();
-                }
-            }
             return true;
         }
     }
 
     /**
-     *
      * @param reference
      * @return
      */
@@ -101,7 +93,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         if(roots.contains(reference)) {
             return roots.get(roots.indexOf(reference));
         }
-        return transfer.getSession().cache().lookup(new CDPathReference(reference));
+        return cache.lookup(new CDPathReference(reference));
     }
 
     protected static final String INCLUDE_COLUMN = "INCLUDE";
@@ -132,6 +124,11 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     protected abstract PathFilter<Path> filter();
 
     /**
+     * File listing cache for children of the root paths
+     */
+    private final Cache<Path> cache = new Cache<Path>();
+
+    /**
      * Container for all paths currently being listed in the background
      */
     private final List<Path> isLoadingListingInBackground = new Collection<Path>();
@@ -149,34 +146,35 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
             // Check first if it hasn't been already requested so we don't spawn
             // a multitude of unecessary threads
             if(!isLoadingListingInBackground.contains(path)) {
-                if(!transfer.isCached(path)) {
-                    log.warn("No cached listing for " + path.getName());
-                    isLoadingListingInBackground.add(path);
-                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                    // Delay until path is cached in the background
-                    controller.background(new AbstractBackgroundAction() {
-                        public void run() {
-                            transfer.childs(path);
-                        }
+                if(cache.containsKey(path)) {
+                    return cache.get(path, new NullComparator<Path>(), filter());
+                }
+                log.warn("No cached listing for " + path.getName());
+                isLoadingListingInBackground.add(path);
+                // Reloading a workdir that is not cached yet would cause the interface to freeze;
+                // Delay until path is cached in the background
+                controller.background(new AbstractBackgroundAction() {
+                    public void run() {
+                        cache.put(path, transfer.childs(path));
+                    }
 
-                        @Override
-                        public String getActivity() {
-                            return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                                    path.getName());
-                        }
+                    @Override
+                    public String getActivity() {
+                        return MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                                path.getName());
+                    }
 
-                        public void cleanup() {
-                            synchronized(isLoadingListingInBackground) {
-                                isLoadingListingInBackground.remove(path);
-                                if(transfer.isCached(path) && isLoadingListingInBackground.isEmpty()) {
-                                    ((CDTransferPrompt) controller).reloadData();
-                                }
+                    public void cleanup() {
+                        synchronized(isLoadingListingInBackground) {
+                            isLoadingListingInBackground.remove(path);
+                            if(isLoadingListingInBackground.isEmpty()) {
+                                ((CDTransferPrompt) controller).reloadData();
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
-            return transfer.getSession().cache().get(path, new NullComparator<Path>(), filter());
+            return cache.get(path, new NullComparator<Path>(), filter());
         }
     }
 
@@ -185,7 +183,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     /**
      * Second cache because it is expensive to create proxy instances
      */
-    protected AttributeCache<Path> cache = new AttributeCache<Path>(
+    protected AttributeCache<Path> modelCache = new AttributeCache<Path>(
             Preferences.instance().getInteger("browser.model.cache.size")
     );
 
@@ -195,7 +193,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
      * @return
      */
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = cache.get(item, identifier);
+        final NSObject cached = modelCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(INCLUDE_COLUMN)) {
                 // Not included if the particular path should be skipped or skip
@@ -206,11 +204,11 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                 return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
             }
             if(identifier.equals(FILENAME_COLUMN)) {
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
+                return modelCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
                         CDTableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return cache.put(item, identifier, NSString.stringWithString(item.getName()));
+                return modelCache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }

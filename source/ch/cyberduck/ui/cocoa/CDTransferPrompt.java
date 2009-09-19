@@ -196,14 +196,17 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 ;
             }
 
+            @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
                 ;
             }
 
+            @Override
             public void tableRowDoubleClicked(final ID sender) {
                 ;
             }
 
+            @Override
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow().intValue() == -1) {
                     remoteURLField.setStringValue("");
@@ -220,7 +223,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     localURLField.setHidden(false);
 
-                    if(transfer.exists(p.getLocal())) {
+                    if(p.getLocal().exists()) {
                         if(p.getLocal().attributes.getSize() == -1) {
                             localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
@@ -250,7 +253,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     remoteURLField.setHidden(false);
 
-                    if(transfer.exists(p)) {
+                    if(p.exists()) {
                         if(p.attributes.getSize() == -1) {
                             remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }

@@ -38,46 +38,43 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
      * Filtering what files are displayed. Used to
      * decide which files to include in the prompt dialog
      */
-    private PathFilter<Path> filter;
+    private PathFilter<Path> filter = new PromptFilter() {
+        @Override
+        public boolean accept(Path child) {
+            log.debug("accept:" + child);
+            if(child.getLocal().exists()) {
+                if(child.attributes.isFile()) {
+                    if(child.getLocal().attributes.getSize() == 0) {
+                        // Do not prompt for zero sized files
+                        return false;
+                    }
+                }
+                return super.accept(child);
+            }
+            return false;
+        }
+    };
 
     @Override
     protected PathFilter<Path> filter() {
-        if(null == filter) {
-            filter = new PromptFilter() {
-                @Override
-                public boolean accept(Path child) {
-                    log.debug("accept:" + child);
-                    if(transfer.exists(child.getLocal())) {
-                        if(child.attributes.isFile()) {
-                            if(child.getLocal().attributes.getSize() == 0) {
-                                // Do not prompt for zero sized files
-                                return false;
-                            }
-                        }
-                        return super.accept(child);
-                    }
-                    return false;
-                }
-            };
-        }
         return filter;
     }
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = cache.get(item, identifier);
+        final NSObject cached = modelCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
+                return modelCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
                 if(item.attributes.isFile()) {
                     if(item.attributes.getSize() == 0) {
-                        return cache.put(item, identifier, ALERT_ICON);
+                        return modelCache.put(item, identifier, ALERT_ICON);
                     }
                     if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
-                        return cache.put(item, identifier, ALERT_ICON);
+                        return modelCache.put(item, identifier, ALERT_ICON);
                     }
                 }
                 return null;

@@ -35,7 +35,7 @@ public class CDDownloadPrompt extends CDTransferPrompt {
 
     @Override
     public TransferAction prompt() {
-        this.browserModel = new CDDownloadPromptModel(this, transfer);
+        browserModel = new CDDownloadPromptModel(this, transfer);
         return super.prompt();
     }
 }

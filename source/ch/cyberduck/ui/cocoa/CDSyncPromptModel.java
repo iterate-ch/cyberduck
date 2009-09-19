@@ -62,42 +62,42 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = cache.get(item, identifier);
+        final NSObject cached = modelCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(SIZE_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
+                return modelCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
                         compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(SYNC_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
                 if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return cache.put(item, identifier, CDIconCache.iconNamed("arrowDown", 16));
+                    return modelCache.put(item, identifier, CDIconCache.iconNamed("arrowDown", 16));
                 }
                 if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return cache.put(item, identifier, CDIconCache.iconNamed("arrowUp", 16));
+                    return modelCache.put(item, identifier, CDIconCache.iconNamed("arrowUp", 16));
                 }
                 return null;
             }
             if(identifier.equals(WARNING_COLUMN)) {
                 if(item.attributes.isFile()) {
-                    if(transfer.exists(item)) {
+                    if(item.exists()) {
                         if(item.attributes.getSize() == 0) {
-                            return cache.put(item, identifier, ALERT_ICON);
+                            return modelCache.put(item, identifier, ALERT_ICON);
                         }
                     }
-                    if(transfer.exists(item.getLocal())) {
+                    if(item.getLocal().exists()) {
                         if(item.getLocal().attributes.getSize() == 0) {
-                            return cache.put(item, identifier, ALERT_ICON);
+                            return modelCache.put(item, identifier, ALERT_ICON);
                         }
                     }
                 }
                 return null;
             }
             if(identifier.equals(CREATE_COLUMN)) {
-                if(!(transfer.exists(item) && transfer.exists(item.getLocal()))) {
-                    return cache.put(item, identifier, CDIconCache.iconNamed("plus", 16));
+                if(!(item.exists() && item.getLocal().exists())) {
+                    return modelCache.put(item, identifier, CDIconCache.iconNamed("plus", 16));
                 }
                 return null;
             }
