@@ -44,8 +44,8 @@ public abstract class Growl {
                 }
                 else {
                     instance = new Growl() {
-                        protected void register() {
-                            ;
+                        public void register() {
+                            log.warn("Growl notifications disabled");
                         }
 
                         public void notify(String title, String description) {
@@ -57,8 +57,6 @@ public abstract class Growl {
                         }
                     };
                 }
-                // Make sure we register to Growl first
-                instance.register();
             }
         }
         return instance;
@@ -67,7 +65,7 @@ public abstract class Growl {
     /**
      * Register application
      */
-    protected abstract void register();
+    public abstract void register();
 
     public abstract void notify(String title, String description);
 

@@ -533,6 +533,9 @@ public class CDMainController extends CDBundleController implements NSApplicatio
         else if(Preferences.instance().getBoolean("browser.openUntitled")) {
             this.openDefaultBookmark(CDMainController.newDocument());
         }
+        if(Preferences.instance().getBoolean("queue.openByDefault")) {
+            this.showTransferQueueClicked(null);
+        }
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 HostCollection.defaultCollection().load();
@@ -551,9 +554,16 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 ;
             }
         });
-        if(Preferences.instance().getBoolean("queue.openByDefault")) {
-            this.showTransferQueueClicked(null);
-        }
+        this.background(new AbstractBackgroundAction() {
+            public void run() {
+                // Make sure we register to Growl first
+                Growl.instance().register();
+            }
+
+            public void cleanup() {
+                ;
+            }
+        });
         Rendezvous.instance().addListener(new RendezvousListener() {
             public void serviceResolved(final String identifier, final String hostname) {
                 if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
