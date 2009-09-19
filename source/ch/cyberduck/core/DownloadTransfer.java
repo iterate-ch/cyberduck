@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -170,31 +169,23 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        if(!this.exists(parent)) {
+        if(!parent.exists()) {
             // Cannot fetch file listing of non existant file
-            return new AttributedList<Path>();
+            return AttributedList.emptyList();
         }
-        AttributedList<Path> downloads = new AttributedList<Path>();
         final AttributedList<Path> list = parent.childs(new NullComparator<Path>(), childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
             download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
             download.getStatus().setSkipped(parent.getStatus().isSkipped());
-            downloads.add(download);
         }
-        downloads.attributes().setReadable(list.attributes().isReadable());
-        return downloads;
-    }
-
-    @Override
-    public boolean isCached(Path file) {
-        return file.isCached();
+        return list;
     }
 
     private final TransferFilter ACTION_OVERWRITE = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
             if(p.attributes.isDirectory()) {
-                return !DownloadTransfer.this.exists(p.getLocal());
+                return !p.getLocal().exists();
             }
             return true;
         }
@@ -216,7 +207,7 @@ public class DownloadTransfer extends Transfer {
                 return false;
             }
             if(p.attributes.isDirectory()) {
-                return !DownloadTransfer.this.exists(p.getLocal());
+                return !p.getLocal().exists();
             }
             return true;
         }
@@ -224,7 +215,7 @@ public class DownloadTransfer extends Transfer {
         @Override
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
-                final boolean resume = DownloadTransfer.this.exists(p.getLocal())
+                final boolean resume = p.getLocal().exists()
                         && p.getLocal().attributes.getSize() > 0;
                 p.getStatus().setResume(resume);
                 long skipped = p.getLocal().attributes.getSize();
@@ -244,7 +235,7 @@ public class DownloadTransfer extends Transfer {
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
             }
-            if(DownloadTransfer.this.exists(p.getLocal()) && p.getLocal().attributes.getSize() > 0) {
+            if(p.getLocal().exists() && p.getLocal().attributes.getSize() > 0) {
                 final String parent = p.getLocal().getParent().getAbsolute();
                 final String filename = p.getName();
                 int no = 0;
@@ -264,7 +255,7 @@ public class DownloadTransfer extends Transfer {
 
     private final DownloadTransferFilter ACTION_SKIP = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
-            return !DownloadTransfer.this.exists(p.getLocal());
+            return !p.getLocal().exists();
         }
     };
 
@@ -285,7 +276,7 @@ public class DownloadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path root : this.getRoots()) {
-                if(this.exists(root.getLocal())) {
+                if(root.getLocal().exists()) {
                     if(root.getLocal().attributes.isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {
                             // Do not prompt for existing empty directories

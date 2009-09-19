@@ -24,7 +24,10 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -200,22 +203,12 @@ public class SyncTransfer extends Transfer {
         return super.filter(action);
     }
 
-    private final Cache<Path> _cache = new Cache<Path>();
-
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        if(!_cache.containsKey(parent)) {
-            Set<Path> childs = new HashSet<Path>();
-            childs.addAll(_delegateDownload.childs(parent));
-            childs.addAll(_delegateUpload.childs(parent));
-            _cache.put(parent, new AttributedList<Path>(childs));
-        }
-        return _cache.get(parent);
-    }
-
-    @Override
-    public boolean isCached(Path file) {
-        return _cache.containsKey(file);
+        AttributedList<Path> childs = new AttributedList<Path>();
+        childs.addAll(_delegateDownload.childs(parent));
+        childs.addAll(_delegateUpload.childs(parent));
+        return childs;
     }
 
     @Override
@@ -250,24 +243,11 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public boolean exists(Path file) {
-        if(roots.contains(file)) {
-            return true;
-        }
-        else if(!this.exists((Path) file.getParent())) {
-            return false;
-        }
-        return super.exists(file);
-    }
-
-    @Override
     protected void clear(final TransferOptions options) {
         _comparisons.clear();
 
         _delegateDownload.clear(options);
         _delegateUpload.clear(options);
-
-        _cache.clear();
 
         super.clear(options);
     }
@@ -341,7 +321,7 @@ public class SyncTransfer extends Transfer {
         if(!_comparisons.containsKey(p)) {
             log.debug("compare:" + p);
             Comparison result = COMPARISON_EQUAL;
-            if(SyncTransfer.this.exists(p.getLocal()) && SyncTransfer.this.exists(p)) {
+            if(p.getLocal().exists() && p.exists()) {
                 if(p.attributes.isFile()) {
                     result = this.compareSize(p);
                     if(result.equals(COMPARISON_UNEQUAL)) {
@@ -357,11 +337,11 @@ public class SyncTransfer extends Transfer {
                     }
                 }
             }
-            else if(SyncTransfer.this.exists(p)) {
+            else if(p.exists()) {
                 // only the remote file exists
                 result = COMPARISON_REMOTE_NEWER;
             }
-            else if(SyncTransfer.this.exists(p.getLocal())) {
+            else if(p.getLocal().exists()) {
                 // only the local file exists
                 result = COMPARISON_LOCAL_NEWER;
             }

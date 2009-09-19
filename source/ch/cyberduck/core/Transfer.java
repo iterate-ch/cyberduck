@@ -344,48 +344,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     *
-     */
-    private Map<AbstractPath, Boolean> _existing = new HashMap<AbstractPath, Boolean>();
-
-    /**
-     * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
-     *
-     * @param file
-     * @return True if the file exists
-     * @see ch.cyberduck.core.AbstractPath#exists()
-     */
-    public boolean exists(Path file) {
-        if(!_existing.containsKey(file)) {
-            log.debug("exists:" + file);
-            final AbstractPath parent = file.getParent();
-            if(_existing.containsKey(parent) && !_existing.get(parent)) {
-                // Shortcut if parent file does not exist
-                _existing.put(file, false);
-            }
-            else {
-                _existing.put(file, file.exists());
-            }
-        }
-        return _existing.get(file);
-    }
-
-    /**
-     * Looks for the file in the parent directory listing. Returns cached version if possible for better performance
-     *
-     * @param file
-     * @return True if the file exists
-     * @see ch.cyberduck.core.AbstractPath#exists()
-     */
-    public boolean exists(Local file) {
-        if(!_existing.containsKey(file)) {
-            log.debug("exists:" + file);
-            _existing.put(file, file.exists());
-        }
-        return _existing.get(file);
-    }
-
-    /**
      * @param action
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
@@ -410,12 +368,6 @@ public abstract class Transfer implements Serializable {
      * @return A list of child items
      */
     public abstract AttributedList<Path> childs(final Path parent);
-
-    /**
-     * @param file
-     * @return True if its child items are cached
-     */
-    public abstract boolean isCached(Path file);
 
     /**
      * @param item
@@ -444,7 +396,7 @@ public abstract class Transfer implements Serializable {
     public void setSkipped(Path item, final boolean skipped) {
         item.getStatus().setSkipped(skipped);
         if(item.attributes.isDirectory()) {
-            if(this.isCached(item)) {
+            if(item.isCached()) {
                 for(Path child : this.childs(item)) {
                     this.setSkipped(child, skipped);
                 }
@@ -498,13 +450,6 @@ public abstract class Transfer implements Serializable {
                 p.getStatus().setComplete(true);
             }
         }
-
-        this.cleanup(p);
-    }
-
-    private void cleanup(final Path p) {
-        // Remove from the _existing hashmap
-        _existing.remove(p);
     }
 
     /**
@@ -624,7 +569,6 @@ public abstract class Transfer implements Serializable {
         if(options.closeSession) {
             session.cache().clear();
         }
-        _existing.clear();
     }
 
     /**

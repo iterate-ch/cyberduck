@@ -114,7 +114,7 @@ public class UploadTransfer extends Transfer {
      */
     private abstract class UploadTransferFilter extends TransferFilter {
         public boolean accept(final Path file) {
-            return UploadTransfer.this.exists(file.getLocal());
+            return file.getLocal().exists();
         }
 
         @Override
@@ -127,7 +127,7 @@ public class UploadTransfer extends Transfer {
                 }
             }
             if(p.attributes.isDirectory()) {
-                if(!UploadTransfer.this.exists(p)) {
+                if(!p.exists()) {
                     p.cache().put(p, new AttributedList<Path>());
                 }
             }
@@ -150,32 +150,25 @@ public class UploadTransfer extends Transfer {
         }
     };
 
-    private final Cache<Path> _cache = new Cache<Path>();
-
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        if(!this.exists(parent.getLocal())) {
+        if(!parent.getLocal().exists()) {
             // Cannot fetch file listing of non existant file
-            _cache.put(parent, new AttributedList<Path>());
+            return AttributedList.emptyList();
         }
-        if(!_cache.containsKey(parent)) {
-            AttributedList<Path> childs = new AttributedList<Path>();
-            for(AbstractPath local : parent.getLocal().childs(new NullComparator<Local>(),
-                    childFilter)) {
-                final Path child = PathFactory.createPath(parent.getSession(),
-                        parent.getAbsolute(),
-                        LocalFactory.createLocal(local.getAbsolute()));
-                child.getStatus().setSkipped(parent.getStatus().isSkipped());
-                childs.add(child);
+        final AttributedList<Path> childs = new AttributedList<Path>();
+        final Cache<Path> cache = this.getSession().cache();
+        for(AbstractPath local : parent.getLocal().childs(new NullComparator<Local>(), childFilter)) {
+            final Local download = LocalFactory.createLocal(local.getAbsolute());
+            Path upload = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), download);
+            if(upload.exists()) {
+                upload = cache.lookup(upload.getReference());
+                upload.setLocal(download);
             }
-            _cache.put(parent, childs);
+            upload.getStatus().setSkipped(parent.getStatus().isSkipped());
+            childs.add(upload);
         }
-        return _cache.get(parent);
-    }
-
-    @Override
-    public boolean isCached(Path file) {
-        return _cache.containsKey(file);
+        return childs;
     }
 
     @Override
@@ -192,7 +185,7 @@ public class UploadTransfer extends Transfer {
             if(super.accept(p)) {
                 if(p.attributes.isDirectory()) {
                     // Do not attempt to create a directory that already exists
-                    return !UploadTransfer.this.exists(p);
+                    return !p.exists();
                 }
                 return true;
             }
@@ -219,7 +212,7 @@ public class UploadTransfer extends Transfer {
                     return false;
                 }
                 if(p.attributes.isDirectory()) {
-                    return !UploadTransfer.this.exists(p);
+                    return !p.exists();
                 }
                 return true;
             }
@@ -228,7 +221,7 @@ public class UploadTransfer extends Transfer {
 
         @Override
         public void prepare(final Path p) {
-            if(UploadTransfer.this.exists(p)) {
+            if(p.exists()) {
                 if(p.attributes.getSize() == -1) {
                     p.readSize();
                 }
@@ -245,7 +238,7 @@ public class UploadTransfer extends Transfer {
             }
             if(p.attributes.isFile()) {
                 // Append to file if size is not zero
-                final boolean resume = UploadTransfer.this.exists(p)
+                final boolean resume = p.exists()
                         && p.attributes.getSize() > 0;
                 p.getStatus().setResume(resume);
                 if(p.getStatus().isResume()) {
@@ -265,7 +258,7 @@ public class UploadTransfer extends Transfer {
 
         @Override
         public void prepare(final Path p) {
-            if(UploadTransfer.this.exists(p)) {
+            if(p.exists()) {
                 final String parent = p.getParent().getAbsolute();
                 final String filename = p.getName();
                 int no = 0;
@@ -290,7 +283,7 @@ public class UploadTransfer extends Transfer {
         @Override
         public boolean accept(final Path p) {
             if(super.accept(p)) {
-                if(!UploadTransfer.this.exists(p)) {
+                if(!p.exists()) {
                     return true;
                 }
             }
@@ -315,9 +308,9 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path root : this.getRoots()) {
-                if(this.exists(root)) {
+                if(root.exists()) {
                     if(root.getLocal().attributes.isDirectory()) {
-                        if(0 == root.childs().size()) {
+                        if(0 == this.childs(root).size()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
@@ -331,12 +324,6 @@ public class UploadTransfer extends Transfer {
             return this.filter(TransferAction.ACTION_OVERWRITE);
         }
         return super.filter(action);
-    }
-
-    @Override
-    protected void clear(final TransferOptions options) {
-        _cache.clear();
-        super.clear(options);
     }
 
     @Override
