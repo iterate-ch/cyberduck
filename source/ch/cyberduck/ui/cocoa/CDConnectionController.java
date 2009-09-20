@@ -111,7 +111,7 @@ public class CDConnectionController extends CDSheetController {
             Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
                     Locale.localizedString("MobileMe Member Name", "IDisk")
             );
-            final String member = CDDotMacController.instance().getAccountName();
+            final String member = Preferences.instance().getProperty("iToolsMember");
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
                 usernameField.setStringValue(member);

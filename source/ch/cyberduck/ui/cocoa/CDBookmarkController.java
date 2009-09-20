@@ -72,7 +72,7 @@ public class CDBookmarkController extends CDWindowController {
             this.host.setWebURL(null);
         }
         if(selected.equals(Protocol.IDISK)) {
-            final String member = CDDotMacController.instance().getAccountName();
+            final String member = Preferences.instance().getProperty("iToolsMember");
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
                 this.host.getCredentials().setUsername(member);

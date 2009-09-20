@@ -16,8 +16,6 @@
 		4709E81B0F864B16005A06CE /* sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4709E81A0F864B16005A06CE /* sync.tiff */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4716D8B20877533B00938886 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
-		4716D9690877537C00938886 /* CDDotMacController.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DC8E9308699CF300B9DD7D /* CDDotMacController.h */; };
-		4716D96D0877538700938886 /* CDDotMacController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DC8E9408699CF300B9DD7D /* CDDotMacController.m */; };
 		4716D9A50877548600938886 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4717BE170F3096FD00BB4496 /* s3.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE100F3096FD00BB4496 /* s3.icns */; };
 		4717BE180F3096FD00BB4496 /* ftp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE110F3096FD00BB4496 /* ftp.icns */; };
@@ -220,8 +218,6 @@
 		47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D414940F0ECFF300BAF184 /* Security.framework */; };
 		47D5E5270FD132D30060AD43 /* CDBookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 47D5E5250FD132D30060AD43 /* CDBookmarkCell.m */; };
 		47D5E5280FD132D30060AD43 /* CDBookmarkCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 47D5E5260FD132D30060AD43 /* CDBookmarkCell.h */; };
-		47DA1218103A866D00766A76 /* DotMacKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47DA1217103A866D00766A76 /* DotMacKit.framework */; };
-		47DD85F4103A8774004281BF /* DotMacKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47DA1217103A866D00766A76 /* DotMacKit.framework */; };
 		47DF9A26102CE43B00DCAD41 /* Local.h in Headers */ = {isa = PBXBuildFile; fileRef = 47DF9A22102CE43B00DCAD41 /* Local.h */; };
 		47DF9A27102CE43B00DCAD41 /* Local.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DF9A23102CE43B00DCAD41 /* Local.m */; };
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
@@ -360,7 +356,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				47DD85F4103A8774004281BF /* DotMacKit.framework in CopyFiles */,
 				47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */,
 				472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */,
 			);
@@ -1369,9 +1364,6 @@
 		47D414940F0ECFF300BAF184 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47D5E5250FD132D30060AD43 /* CDBookmarkCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDBookmarkCell.m; sourceTree = "<group>"; };
 		47D5E5260FD132D30060AD43 /* CDBookmarkCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDBookmarkCell.h; sourceTree = "<group>"; };
-		47DA1217103A866D00766A76 /* DotMacKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DotMacKit.framework; path = lib/DotMacKit.framework; sourceTree = "<group>"; };
-		47DC8E9308699CF300B9DD7D /* CDDotMacController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDDotMacController.h; sourceTree = "<group>"; };
-		47DC8E9408699CF300B9DD7D /* CDDotMacController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDDotMacController.m; sourceTree = "<group>"; };
 		47DF9A22102CE43B00DCAD41 /* Local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
 		47DF9A23102CE43B00DCAD41 /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		47E0BB450746B1FA00C4A68E /* arrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowDown.tiff; sourceTree = "<group>"; };
@@ -1496,7 +1488,6 @@
 			files = (
 				4716D9A50877548600938886 /* Cocoa.framework in Frameworks */,
 				4716D8B20877533B00938886 /* JavaVM.framework in Frameworks */,
-				47DA1218103A866D00766A76 /* DotMacKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1648,7 +1639,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				47DA1217103A866D00766A76 /* DotMacKit.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
 				470671150FD8896D00EE3291 /* Sparkle.framework */,
 				4726277E0FD5743C001D5BA5 /* Growl.framework */,
@@ -1773,7 +1763,6 @@
 				473DFCBA0FD0B36D00E27A39 /* CDOutlineCell.m */,
 				47D5E5260FD132D30060AD43 /* CDBookmarkCell.h */,
 				47D5E5250FD132D30060AD43 /* CDBookmarkCell.m */,
-				47DC7F4F08694B6A00B9DD7D /* dotmac */,
 				4798434E072B0DAA00FA3CDB /* view */,
 				4741531F06C4F08A00AC0BD2 /* odb */,
 			);
@@ -2072,15 +2061,6 @@
 			name = proxy;
 			sourceTree = "<group>";
 		};
-		47DC7F4F08694B6A00B9DD7D /* dotmac */ = {
-			isa = PBXGroup;
-			children = (
-				47DC8E9308699CF300B9DD7D /* CDDotMacController.h */,
-				47DC8E9408699CF300B9DD7D /* CDDotMacController.m */,
-			);
-			name = dotmac;
-			sourceTree = "<group>";
-		};
 		47DF9A21102CE43B00DCAD41 /* model */ = {
 			isa = PBXGroup;
 			children = (
@@ -2097,7 +2077,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4716D9690877537C00938886 /* CDDotMacController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2815,7 +2794,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4716D96D0877538700938886 /* CDDotMacController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

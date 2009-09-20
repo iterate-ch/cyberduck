@@ -25,7 +25,6 @@ import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.CDMainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -37,7 +36,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        return new NSInteger(HostCollection.defaultCollection().size() + 10);
+        return new NSInteger(HostCollection.defaultCollection().size() + 9);
         //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
         // 6 is Bonjour with submenu, 7 is sepearator
     }
@@ -45,18 +44,14 @@ public class BookmarkMenuDelegate extends MenuDelegate {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(index.intValue() == 6) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.iconNamed("me-icon.png", 16));
+            item.setImage(CDIconCache.iconNamed("history", 16));
         }
         if(index.intValue() == 7) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.iconNamed("history", 16));
-        }
-        if(index.intValue() == 8) {
-            item.setEnabled(true);
             item.setImage(CDIconCache.iconNamed("rendezvous", 16));
         }
-        if(index.intValue() > 9) {
-            Host h = HostCollection.defaultCollection().get(index.intValue() - 10);
+        if(index.intValue() > 8) {
+            Host h = HostCollection.defaultCollection().get(index.intValue() - 9);
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
