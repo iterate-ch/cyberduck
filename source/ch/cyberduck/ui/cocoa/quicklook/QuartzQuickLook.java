@@ -19,15 +19,10 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.CDController;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -74,26 +69,6 @@ public class QuartzQuickLook extends AbstractQuickLook {
         ;
     }
 
-    private CDController windowListener = new CDController() {
-        public void windowWillClose(NSNotification notification) {
-            log.debug("windowWillClose:" + notification);
-            previews.clear();
-            QuartzQuickLook.super.didEndQuickLook();
-        }
-    };
-
-    @Override
-    public void select(final Collection<Local> files) {
-        log.debug("select");
-        super.select(files);
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
-        // The Preview Panel automatically updates its controller (by searching the responder
-        // chain) whenever the main or key window changes. Invoke updateController if
-        // the responder chain changes without explicit notice
-        panel.updateController();
-        panel.reloadData();
-    }
-
     public boolean isAvailable() {
         return null != QLPreviewPanel.sharedPreviewPanel();
     }
@@ -112,10 +87,6 @@ public class QuartzQuickLook extends AbstractQuickLook {
 
     public void open() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
-        NSNotificationCenter.defaultCenter().addObserver(windowListener.id(),
-                Foundation.selector("windowWillClose:"),
-                NSWindow.WindowWillCloseNotification,
-                panel);
         panel.makeKeyAndOrderFront(null);
     }
 
@@ -129,5 +100,7 @@ public class QuartzQuickLook extends AbstractQuickLook {
     public void didEndQuickLook() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.setDataSource(null);
+        previews.clear();
+        super.didEndQuickLook();
     }
 }
