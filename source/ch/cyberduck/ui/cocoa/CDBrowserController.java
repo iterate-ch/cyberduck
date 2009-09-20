@@ -770,30 +770,35 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 if(downloads.size() > 0) {
                     background(new BrowserBackgroundAction(CDBrowserController.this) {
+                        final Collection<Local> previews = new Collection<Local>() {
+                            @Override
+                            public void collectionItemRemoved(Local o) {
+                                super.collectionItemRemoved(o);
+                                (o).delete(false);
+                            }
+                        };
+
                         public void run() {
                             for(Path download : downloads) {
                                 if(this.isCanceled()) {
                                     break;
                                 }
-                                if(download.getLocal().attributes.getSize() != download.attributes.getSize()) {
+                                if(!download.getLocal().exists()) {
                                     download.download(true);
+                                    if(download.getStatus().isComplete()) {
+                                        previews.add(download.getLocal());
+                                    }
+                                    else {
+                                        download.getLocal().delete(false);
+                                    }
+                                }
+                                else {
+                                    previews.add(download.getLocal());
                                 }
                             }
                         }
 
                         public void cleanup() {
-                            final Collection<Local> previews = new Collection<Local>() {
-                                @Override
-                                public void collectionItemRemoved(Local o) {
-                                    super.collectionItemRemoved(o);
-                                    (o).delete(false);
-                                }
-                            };
-                            for(Path download : downloads) {
-                                if(download.getLocal().attributes.getSize() == download.attributes.getSize()) {
-                                    previews.add(download.getLocal());
-                                }
-                            }
                             if(previews.isEmpty()) {
                                 return;
                             }
