@@ -87,7 +87,7 @@ public class HistoryCollection extends HostCollection {
     @Override
     public void load() {
         log.info("Reloading " + file);
-        final AttributedList<Local> bookmarks = file.childs(new NullComparator<Local>(),
+        final AttributedList<Local> bookmarks = file.childs(
                 new PathFilter<Local>() {
                     public boolean accept(Local file) {
                         return file.getName().endsWith(".duck");

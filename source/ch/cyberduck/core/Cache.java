@@ -45,14 +45,7 @@ public class Cache<E extends AbstractPath> {
     });
 
     /**
-     *
-     */
-    public Cache() {
-        ;
-    }
-
-    /**
-     * @param path
+     * @param path Absolute path
      * @return
      */
     public E lookup(PathReference path) {
@@ -65,7 +58,7 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     * @param path
+     * @param path Absolute path
      * @return True if the directory listing for this path is cached
      */
     public boolean containsKey(E path) {
@@ -73,18 +66,18 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     * @param path
-     * @return
+     * @param path Absolute path
+     * @return True if the directory listing of this path is cached
      */
     public boolean containsKey(String path) {
         return _impl.containsKey(path);
     }
 
     /**
-     * Remotes the cached directory listing for this path
+     * Remove the cached directory listing for this path
      *
-     * @param path
-     * @return
+     * @param path Absolute path
+     * @return The previuosly cached directory listing
      */
     public AttributedList<E> remove(E path) {
         return _impl.remove(path.getAbsolute());
@@ -93,36 +86,40 @@ public class Cache<E extends AbstractPath> {
     /**
      * Get the childs of this path using the last sorting and filter used
      *
-     * @param path
-     * @return null if no cached file listing is available
+     * @param path Absolute path
+     * @return An empty list if no cached file listing is available
      */
     public AttributedList<E> get(E path) {
         return this.get(path.getAbsolute());
     }
 
     /**
-     * @param path
-     * @return
+     * @param path Absolute path
+     * @return An empty list if no cached file listing is available
      */
     public AttributedList<E> get(String path) {
-        return _impl.get(path);
+        return this.get(path, new NullComparator<E>(), new NullPathFilter<E>());
     }
 
     /**
-     * @param path
+     * @param path       Absolute path
      * @param comparator
      * @param filter
-     * @return null if no cached file listing is available
+     * @return An empty list if no cached file listing is available
      */
     public AttributedList<E> get(final E path, final Comparator<E> comparator, final PathFilter<E> filter) {
         return this.get(path.getAbsolute(), comparator, filter);
     }
 
     /**
-     * @param path
-     * @param comparator
-     * @param filter
-     * @return
+     * @param path       Absolute path
+     * @param comparator Sorting comparator to apply the the file listing
+     * @param filter     Path filter to apply. All files that don't match are moved to the
+     *                   hidden attribute of the attributed list.
+     * @return An empty list if no cached file listing is available
+     * @throws ConcurrentModificationException
+     *          If the caller is iterating of the cache himself
+     *          and requests a new filter here.
      */
     public AttributedList<E> get(final String path, final Comparator<E> comparator, final PathFilter<E> filter) {
         AttributedList<E> childs = _impl.get(path);
@@ -146,6 +143,8 @@ public class Cache<E extends AbstractPath> {
             childs.addAll(hidden);
             //clear the previously set of hidden files
             hidden.clear();
+            // This will throw a ConcurrentModificationException if the cache
+            // is currently iterated by the caller
             for(Iterator<E> i = childs.iterator(); i.hasNext();) {
                 E child = i.next();
                 if(!filter.accept(child)) {
@@ -163,10 +162,18 @@ public class Cache<E extends AbstractPath> {
         return childs;
     }
 
+    /**
+     * @param path   Absolute path
+     * @param childs
+     * @return
+     */
     public AttributedList<E> put(E path, AttributedList<E> childs) {
         return _impl.put(path.getAbsolute(), childs);
     }
 
+    /**
+     * Clear all cached directory listings
+     */
     public void clear() {
         log.info("Clearing cache " + this.toString());
         _impl.clear();

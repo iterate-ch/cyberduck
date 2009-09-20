@@ -158,7 +158,7 @@ public class UploadTransfer extends Transfer {
         }
         final AttributedList<Path> childs = new AttributedList<Path>();
         final Cache<Path> cache = this.getSession().cache();
-        for(AbstractPath local : parent.getLocal().childs(new NullComparator<Local>(), childFilter)) {
+        for(AbstractPath local : parent.getLocal().childs(childFilter)) {
             final Local download = LocalFactory.createLocal(local.getAbsolute());
             Path upload = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), download);
             if(upload.exists()) {

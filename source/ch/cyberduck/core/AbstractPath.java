@@ -18,14 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import com.ibm.icu.text.Normalizer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.Mimetypes;
 
 import java.util.Comparator;
-
-import com.ibm.icu.text.Normalizer;
 
 /**
  * @version $Id$
@@ -89,12 +88,27 @@ public abstract class AbstractPath {
     public abstract <T extends AbstractPath> AttributedList<T> list();
 
     /**
-     * Get the cached directory listing if any or return #list instead
+     * Get the cached directory listing if any or return #list instead.
+     * No sorting and filtering applied.
      *
-     * @return
+     * @return Cached directory listing as returned by the server
+     * @see #list()
      */
     public <T extends AbstractPath> AttributedList<T> childs() {
-        return this.childs(new NullComparator<T>(), new NullPathFilter<T>());
+        return this.childs(new NullPathFilter<T>());
+    }
+
+    /**
+     * Get the cached directory listing if any or return #list instead.
+     * No sorting applied.
+     *
+     * @param filter Filter to apply to directory listing
+     * @param <T>
+     * @return Cached directory listing as returned by the server filtered
+     * @see #list()
+     */
+    public <T extends AbstractPath> AttributedList<T> childs(PathFilter<T> filter) {
+        return this.childs(new NullComparator<T>(), filter);
     }
 
     /**
@@ -104,6 +118,7 @@ public abstract class AbstractPath {
      * @param comparator The comparator to sort the listing with
      * @param filter     The filter to exlude certain files
      * @return The children of this path or an empty list if it is not accessible for some reason
+     * @see #list()
      */
     public <T extends AbstractPath> AttributedList<T> childs(Comparator<T> comparator, PathFilter<T> filter) {
         if(!this.isCached()) {

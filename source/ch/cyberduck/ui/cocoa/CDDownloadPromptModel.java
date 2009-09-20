@@ -35,10 +35,14 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
     }
 
     /**
-     * Filtering what files are displayed. Used to
-     * decide which files to include in the prompt dialog
+     * Filtering what files are displayed. Used to decide which files to include in the prompt dialog
      */
     private PathFilter<Path> filter = new PromptFilter() {
+        /**
+         *
+         * @param child
+         * @return True for files that already exist in the download folder
+         */
         @Override
         public boolean accept(Path child) {
             log.debug("accept:" + child);

@@ -169,11 +169,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        if(!parent.exists()) {
-            // Cannot fetch file listing of non existant file
-            return AttributedList.emptyList();
-        }
-        final AttributedList<Path> list = parent.childs(new NullComparator<Path>(), childFilter);
+        final AttributedList<Path> list = parent.childs(childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
             download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
