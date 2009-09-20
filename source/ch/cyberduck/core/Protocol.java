@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
@@ -107,14 +106,17 @@ public abstract class Protocol {
     public abstract int getDefaultPort();
 
     public static final Protocol SFTP = new Protocol() {
+        @Override
         public String getDescription() {
             return Locale.localizedString("SFTP (SSH File Transfer Protocol)");
         }
 
+        @Override
         public int getDefaultPort() {
             return 22;
         }
 
+        @Override
         public String getScheme() {
             return "sftp";
         }
@@ -126,14 +128,17 @@ public abstract class Protocol {
     };
 
     public static final Protocol SCP = new Protocol() {
+        @Override
         public String getDescription() {
             return Locale.localizedString("SCP (Secure Copy)");
         }
 
+        @Override
         public int getDefaultPort() {
             return 22;
         }
 
+        @Override
         public String getScheme() {
             return "scp";
         }
@@ -145,14 +150,17 @@ public abstract class Protocol {
     };
 
     public static final Protocol FTP = new Protocol() {
+        @Override
         public String getDescription() {
             return Locale.localizedString("FTP (File Transfer Protocol)");
         }
 
+        @Override
         public int getDefaultPort() {
             return 21;
         }
 
+        @Override
         public String getScheme() {
             return "ftp";
         }
@@ -164,14 +172,17 @@ public abstract class Protocol {
             return "FTP-SSL";
         }
 
+        @Override
         public String getDescription() {
             return Locale.localizedString("FTP-SSL (Explicit AUTH TLS)");
         }
 
+        @Override
         public int getDefaultPort() {
             return 21;
         }
 
+        @Override
         public String getScheme() {
             return "ftps";
         }
@@ -198,6 +209,7 @@ public abstract class Protocol {
             return "S3";
         }
 
+        @Override
         public String getDescription() {
             return Locale.localizedString("S3 (Amazon Simple Storage Service)", "S3");
         }
@@ -207,10 +219,12 @@ public abstract class Protocol {
             return "s3";
         }
 
+        @Override
         public int getDefaultPort() {
             return 443;
         }
 
+        @Override
         public String getScheme() {
             return "https";
         }
@@ -247,6 +261,7 @@ public abstract class Protocol {
             return "Walrus";
         }
 
+        @Override
         public String getDescription() {
             return Locale.localizedString("Eucalyptus Walrus", "S3");
         }
@@ -256,10 +271,12 @@ public abstract class Protocol {
             return "ec";
         }
 
+        @Override
         public int getDefaultPort() {
             return 8773;
         }
 
+        @Override
         public String getScheme() {
             return "http";
         }
@@ -306,6 +323,7 @@ public abstract class Protocol {
             return "WebDAV (HTTP)";
         }
 
+        @Override
         public String getDescription() {
             return Locale.localizedString("WebDAV (Web-based Distributed Authoring and Versioning)");
         }
@@ -315,10 +333,12 @@ public abstract class Protocol {
             return "dav";
         }
 
+        @Override
         public int getDefaultPort() {
             return 80;
         }
 
+        @Override
         public String getScheme() {
             return "http";
         }
@@ -335,6 +355,7 @@ public abstract class Protocol {
             return "WebDAV (HTTPS)";
         }
 
+        @Override
         public String getDescription() {
             return Locale.localizedString("WebDAV (HTTP/SSL)");
         }
@@ -344,10 +365,12 @@ public abstract class Protocol {
             return "davs";
         }
 
+        @Override
         public int getDefaultPort() {
             return 443;
         }
 
+        @Override
         public String getScheme() {
             return "https";
         }
@@ -379,6 +402,7 @@ public abstract class Protocol {
             return "MobileMe";
         }
 
+        @Override
         public String getDescription() {
             return Locale.localizedString("MobileMe iDisk (WebDAV)");
         }
@@ -388,10 +412,12 @@ public abstract class Protocol {
             return "me";
         }
 
+        @Override
         public int getDefaultPort() {
             return 443;
         }
 
+        @Override
         public String getScheme() {
             return "https";
         }
@@ -428,6 +454,7 @@ public abstract class Protocol {
             return "Cloud Files";
         }
 
+        @Override
         public String getDescription() {
             return "Mosso Cloud Files";
         }
@@ -437,10 +464,12 @@ public abstract class Protocol {
             return "cf";
         }
 
+        @Override
         public int getDefaultPort() {
             return 443;
         }
 
+        @Override
         public String getScheme() {
             return "https";
         }
