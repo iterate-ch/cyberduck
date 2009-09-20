@@ -315,22 +315,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
         }
     }
 
-    @Action
-    public void downloadBookmarksFromDotMacClicked(final ID sender) {
-        final CDDotMacController controller = CDDotMacController.instance();
-        controller.downloadBookmarks();
-    }
-
-    @Action
-    public void uploadBookmarksToDotMacClicked(final ID sender) {
-        final CDDotMacController c = CDDotMacController.instance();
-        c.uploadBookmarks();
-    }
-
-    // ----------------------------------------------------------
-    // Application delegate methods
-    // ----------------------------------------------------------
-
     /**
      * @param app
      * @param filename
@@ -919,16 +903,5 @@ public class CDMainController extends CDBundleController implements NSApplicatio
     @Override
     protected String getBundleName() {
         return "Main";
-    }
-
-    public boolean validateMenuItem(NSMenuItem item) {
-        final Selector action = item.action();
-        if(action.equals(Foundation.selector("downloadBookmarksFromDotMacClicked:"))) {
-            return CDDotMacController.instance().isAvailable();
-        }
-        if(action.equals(Foundation.selector("uploadBookmarksToDotMacClicked:"))) {
-            return CDDotMacController.instance().isAvailable();
-        }
-        return true;
     }
 }
