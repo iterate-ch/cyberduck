@@ -21,19 +21,18 @@ package ch.cyberduck.ui.cocoa.quicklook;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.CDController;
-
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -41,7 +40,7 @@ import java.util.HashMap;
 public class QuartzQuickLook extends AbstractQuickLook {
     private static Logger log = Logger.getLogger(QuartzQuickLook.class);
 
-    private Map<Local,ID> previews = new HashMap<Local,ID>();
+    private Map<Local, QLPreviewItem> previews = new HashMap<Local, QLPreviewItem>();
 
     private QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
 
@@ -65,9 +64,9 @@ public class QuartzQuickLook extends AbstractQuickLook {
                         return preview.getName();
                     }
                 };
-                previews.put(preview, item.id());
+                previews.put(preview, item);
             }
-            return previews.get(preview);
+            return previews.get(preview).id();
         }
     };
 
