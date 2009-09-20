@@ -178,7 +178,6 @@ public class CDIconCache {
 //            }
             if(null == image) {
                 log.warn("No icon named " + name);
-                return null;
             }
             this.put(name, this.convert(image, width, height), width);
         }
