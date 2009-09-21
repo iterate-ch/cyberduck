@@ -50,11 +50,12 @@ public class Cache<E extends AbstractPath> {
      */
     public E lookup(PathReference path) {
         final AttributedList<E> childs = this.get(Path.getParent(path.toString()));
-        if(null == childs) {
+        final E found = childs.get(path);
+        if(null == found) {
             log.warn("Lookup failed for " + path + " in cache");
             return null;
         }
-        return childs.get(path);
+        return found;
     }
 
     /**
