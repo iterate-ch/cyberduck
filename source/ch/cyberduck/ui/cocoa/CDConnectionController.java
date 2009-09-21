@@ -508,6 +508,13 @@ public class CDConnectionController extends CDSheetController {
     }
 
     @Override
+    protected void invalidate() {
+        hostField.setDelegate(null);
+        hostField.setDataSource(null);
+        super.invalidate();
+    }
+
+    @Override
     public boolean isSingleton() {
         return true;
     }

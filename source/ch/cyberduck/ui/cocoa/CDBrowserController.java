@@ -4228,6 +4228,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         browserOutlineColumnsFactory.clear();
         bookmarkTableColumnFactory.clear();
 
+        quickConnectPopup.setDelegate(null);
+        quickConnectPopup.setDataSource(null);
+
         super.invalidate();
     }
 }

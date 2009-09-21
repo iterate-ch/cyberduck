@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -82,6 +81,13 @@ public class CDGotoController extends CDSheetController {
 
     public CDGotoController(final CDWindowController parent) {
         super(parent);
+    }
+
+    @Override
+    protected void invalidate() {
+        folderCombobox.setDelegate(null);
+        folderCombobox.setDataSource(null);
+        super.invalidate();
     }
 
     @Override
