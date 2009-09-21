@@ -88,6 +88,7 @@ public class QuartzQuickLook extends AbstractQuickLook {
     public void open() {
         final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.makeKeyAndOrderFront(null);
+        panel.reloadData();
     }
 
     public void close() {
