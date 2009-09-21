@@ -485,7 +485,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             iconView.setImage(CDIconCache.instance().iconForPath(transfer.getRoot().getLocal(), 32));
         }
         else {
-            iconView.setImage(CDIconCache.iconNamed("multipleDocuments", 32));
+            iconView.setImage(CDIconCache.iconNamed("NSMultipleDocuments", 32));
         }
     }
 
