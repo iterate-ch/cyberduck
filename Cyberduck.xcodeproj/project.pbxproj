@@ -193,7 +193,6 @@
 		479982820D26DA8200DB5353 /* executable.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479982810D26DA8200DB5353 /* executable.tiff */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
-		479F7D750EF5440F00B6FF8D /* multipleDocuments.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479F7D740EF5440F00B6FF8D /* multipleDocuments.tiff */; };
 		479F9E000C0E210100610A91 /* goto.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479F9DFF0C0E210100610A91 /* goto.tiff */; };
 		47A0C83E0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A0C83D0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns */; };
 		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
@@ -227,7 +226,6 @@
 		47EF997509006EF500D4B4FF /* IconFamily.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EF997109006EF500D4B4FF /* IconFamily.h */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
-		47F73AC90F93721B0054C930 /* me-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47F73AC30F93721B0054C930 /* me-icon.png */; };
 		47F73ACA0F93721B0054C930 /* ftp-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47F73AC40F93721B0054C930 /* ftp-icon.png */; };
 		47F73ACB0F93721B0054C930 /* dav-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47F73AC50F93721B0054C930 /* dav-icon.png */; };
 		47F73ACC0F93721B0054C930 /* cf-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47F73AC60F93721B0054C930 /* cf-icon.png */; };
@@ -1132,7 +1130,6 @@
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		479D64A50752257400FE6086 /* arrowUpBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUpBlack16.tiff; sourceTree = "<group>"; };
-		479F7D740EF5440F00B6FF8D /* multipleDocuments.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = multipleDocuments.tiff; sourceTree = "<group>"; };
 		479F9DFF0C0E210100610A91 /* goto.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = goto.tiff; sourceTree = "<group>"; };
 		47A0C83D0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AliasBadgeIcon.icns; sourceTree = "<group>"; };
 		47A61DC9076C854A00B535D6 /* generic-document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "generic-document.icns"; sourceTree = SOURCE_ROOT; };
@@ -1464,7 +1461,6 @@
 		47F0CB46087B237F00439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
 		47F0CB91087B23B600439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Growl.strings; sourceTree = "<group>"; };
-		47F73AC30F93721B0054C930 /* me-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "me-icon.png"; sourceTree = "<group>"; };
 		47F73AC40F93721B0054C930 /* ftp-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ftp-icon.png"; sourceTree = "<group>"; };
 		47F73AC50F93721B0054C930 /* dav-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dav-icon.png"; sourceTree = "<group>"; };
 		47F73AC60F93721B0054C930 /* cf-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cf-icon.png"; sourceTree = "<group>"; };
@@ -1852,7 +1848,6 @@
 				4717BE130F3096FD00BB4496 /* cf.icns */,
 				4717BE150F3096FD00BB4496 /* sftp.icns */,
 				47364F4E0F350E4F00A6618E /* me.icns */,
-				47F73AC30F93721B0054C930 /* me-icon.png */,
 				47F73AC40F93721B0054C930 /* ftp-icon.png */,
 				47F73AC50F93721B0054C930 /* dav-icon.png */,
 				47F73AC60F93721B0054C930 /* cf-icon.png */,
@@ -1912,7 +1907,6 @@
 				47D3F2F80CF227E400A78764 /* DropFolderBadgeIcon.icns */,
 				4741659A06C4FC4000AC0BD2 /* history.tiff */,
 				4741659B06C4FC4000AC0BD2 /* info.tiff */,
-				479F7D740EF5440F00B6FF8D /* multipleDocuments.tiff */,
 				4741659F06C4FC4000AC0BD2 /* notfound.tiff */,
 				474165A206C4FC4000AC0BD2 /* open.tiff */,
 				474165A306C4FC4000AC0BD2 /* pencil.tiff */,
@@ -2663,7 +2657,6 @@
 				4786CB700E253B800029848F /* Task.nib in Resources */,
 				470168310EED9EA8005E2CCF /* Archive.strings in Resources */,
 				470168500EED9EB7005E2CCF /* Mosso.strings in Resources */,
-				479F7D750EF5440F00B6FF8D /* multipleDocuments.tiff in Resources */,
 				47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */,
 				47D327C50F096E6C00619C38 /* site.tiff in Resources */,
 				4717BE170F3096FD00BB4496 /* s3.icns in Resources */,
@@ -2678,7 +2671,6 @@
 				4739D39C0F8268B700D2782A /* download.tiff in Resources */,
 				4739D39E0F8268D600D2782A /* delete.tiff in Resources */,
 				4709E81B0F864B16005A06CE /* sync.tiff in Resources */,
-				47F73AC90F93721B0054C930 /* me-icon.png in Resources */,
 				47F73ACA0F93721B0054C930 /* ftp-icon.png in Resources */,
 				47F73ACB0F93721B0054C930 /* dav-icon.png in Resources */,
 				47F73ACC0F93721B0054C930 /* cf-icon.png in Resources */,
