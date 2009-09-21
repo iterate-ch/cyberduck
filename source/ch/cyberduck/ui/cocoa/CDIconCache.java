@@ -74,7 +74,7 @@ public class CDIconCache {
      * @return Standard folder icon for this platform
      */
     public static NSImage folderIcon(Integer size) {
-        return CDIconCache.instance().iconForPath(FOLDER_PATH, size);
+        return CDIconCache.instance().iconForFolder(size);
     }
 
     private static CDIconCache instance = null;
@@ -134,6 +134,14 @@ public class CDIconCache {
             this.put(extension, this.convert(img, size), size);
         }
         return img;
+    }
+
+    public NSImage iconForFolder(Integer size) {
+        NSImage folder = this.iconForName("NSFolder", size);
+        if(null == folder) {
+            return this.iconForPath(FOLDER_PATH, size);
+        }
+        return folder;
     }
 
     /**
@@ -298,7 +306,7 @@ public class CDIconCache {
                     return this.convert(folder, size);
                 }
             }
-            return this.iconForPath(FOLDER_PATH, size);
+            return this.iconForFolder(size);
         }
         return this.iconForName("notfound.tiff", size);
     }
