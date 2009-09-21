@@ -3887,17 +3887,17 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setPaletteLabel(Locale.localizedString("View"));
             item.setToolTip(Locale.localizedString("Switch Browser View"));
             item.setView(browserSwitchView);
-            // Add a menu representation for text mode of toolbar
-            NSMenuItem viewMenu = NSMenuItem.itemWithTitle(Locale.localizedString("View"), null, "");
-            NSMenu viewSubmenu = NSMenu.menu();
-            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("List"),
-                    Foundation.selector("browserSwitchMenuClicked:"), "");
-            viewSubmenu.itemWithTitle(Locale.localizedString("List")).setTag(0);
-            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("Outline"),
-                    Foundation.selector("browserSwitchMenuClicked:"), "");
-            viewSubmenu.itemWithTitle(Locale.localizedString("Outline")).setTag(1);
-            viewMenu.setSubmenu(viewSubmenu);
-            item.setMenuFormRepresentation(viewMenu);
+//            // Add a menu representation for text mode of toolbar
+//            NSMenuItem viewMenu = NSMenuItem.itemWithTitle(Locale.localizedString("View"), null, "");
+//            NSMenu viewSubmenu = NSMenu.menu();
+//            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("List"),
+//                    Foundation.selector("browserSwitchMenuClicked:"), "");
+//            viewSubmenu.itemWithTitle(Locale.localizedString("List")).setTag(0);
+//            viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("Outline"),
+//                    Foundation.selector("browserSwitchMenuClicked:"), "");
+//            viewSubmenu.itemWithTitle(Locale.localizedString("Outline")).setTag(1);
+//            viewMenu.setSubmenu(viewSubmenu);
+//            item.setMenuFormRepresentation(viewMenu);
             item.setMinSize(this.browserSwitchView.frame().size);
             item.setMaxSize(this.browserSwitchView.frame().size);
             return item;
@@ -3924,17 +3924,16 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setPaletteLabel(Locale.localizedString("Action"));
             item.setView(this.actionPopupButton);
             // Add a menu representation for text mode of toolbar
-            NSMenuItem toolMenu = NSMenuItem.itemWithTitle("", null, "");
-            toolMenu.setTitle(Locale.localizedString("Action"));
-            NSMenu toolSubmenu = NSMenu.menu();
-            for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
-                NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(i);
-                toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
-                        template.action(),
-                        template.keyEquivalent()));
-            }
-            toolMenu.setSubmenu(toolSubmenu);
-            item.setMenuFormRepresentation(toolMenu);
+//            NSMenuItem toolMenu = NSMenuItem.itemWithTitle(Locale.localizedString("Action"), null, "");
+//            NSMenu toolSubmenu = NSMenu.menu();
+//            for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
+//                NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(i);
+//                toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
+//                        template.action(),
+//                        template.keyEquivalent()));
+//            }
+//            toolMenu.setSubmenu(toolSubmenu);
+//            item.setMenuFormRepresentation(toolMenu);
             item.setMinSize(this.actionPopupButton.frame().size);
             item.setMaxSize(this.actionPopupButton.frame().size);
             return item;
@@ -3954,16 +3953,16 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setToolTip(Locale.localizedString("Character Encoding"));
             item.setView(this.encodingPopup);
             // Add a menu representation for text mode of toolbar
-            NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_ENCODING),
-                    Foundation.selector("encodingMenuClicked:"),
-                    "");
-            String[] charsets = CDMainController.availableCharsets();
-            NSMenu charsetMenu = NSMenu.menu();
-            for(String charset : charsets) {
-                charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), "");
-            }
-            encodingMenu.setSubmenu(charsetMenu);
-            item.setMenuFormRepresentation(encodingMenu);
+//            NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_ENCODING),
+//                    Foundation.selector("encodingMenuClicked:"),
+//                    "");
+//            String[] charsets = CDMainController.availableCharsets();
+//            NSMenu charsetMenu = NSMenu.menu();
+//            for(String charset : charsets) {
+//                charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), "");
+//            }
+//            encodingMenu.setSubmenu(charsetMenu);
+//            item.setMenuFormRepresentation(encodingMenu);
             item.setMinSize(this.encodingPopup.frame().size);
             item.setMaxSize(this.encodingPopup.frame().size);
             return item;
@@ -4043,14 +4042,14 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setTarget(this.id());
             item.setAction(Foundation.selector("editButtonClicked:"));
             // Add a menu representation for text mode of toolbar
-            NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_EDIT),
-                    Foundation.selector("editMenuClicked:"),
-                    "");
-            NSMenu editMenu = NSMenu.menu();
-            editMenu.setAutoenablesItems(true);
-            editMenu.setDelegate(editMenuDelegate.id());
-            toolbarMenu.setSubmenu(editMenu);
-            item.setMenuFormRepresentation(toolbarMenu);
+//            NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_EDIT),
+//                    Foundation.selector("editMenuClicked:"),
+//                    "");
+//            NSMenu editMenu = NSMenu.menu();
+//            editMenu.setAutoenablesItems(true);
+//            editMenu.setDelegate(editMenuDelegate.id());
+//            toolbarMenu.setSubmenu(editMenu);
+//            item.setMenuFormRepresentation(toolbarMenu);
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_DELETE)) {
