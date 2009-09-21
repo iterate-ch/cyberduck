@@ -446,6 +446,11 @@ public abstract class Protocol {
         public boolean isWebUrlConfigurable() {
             return false;
         }
+
+        @Override
+        public String icon() {
+            return "NSDotMac";
+        }
     };
 
     public static final Protocol MOSSO = new Protocol() {

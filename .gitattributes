@@ -859,7 +859,6 @@ img/info.tiff -text svneol=unset#image/tiff
 img/list.tiff -text svneol=unset#image/tiff
 img/locked.tiff -text svneol=unset#image/tiff
 img/login.tiff -text svneol=unset#image/tiff
-img/me-icon.png -text svneol=unset#image/png
 img/me.icns -text
 img/newfolder.icns -text
 img/notfound.tiff -text svneol=unset#image/tiff
