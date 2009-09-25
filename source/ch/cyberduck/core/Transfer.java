@@ -415,6 +415,7 @@ public abstract class Transfer implements Serializable {
      */
     private void transfer(final Path p, final TransferFilter filter) {
         if(!this.isIncluded(p)) {
+            p.getStatus().setComplete(true);
             return;
         }
 

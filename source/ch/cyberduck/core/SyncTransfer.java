@@ -24,10 +24,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -205,10 +202,10 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        AttributedList<Path> childs = new AttributedList<Path>();
+        final Set<Path> childs = new HashSet<Path>();
         childs.addAll(_delegateDownload.childs(parent));
         childs.addAll(_delegateUpload.childs(parent));
-        return childs;
+        return new AttributedList<Path>(childs);
     }
 
     @Override
