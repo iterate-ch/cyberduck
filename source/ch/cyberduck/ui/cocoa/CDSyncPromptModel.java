@@ -62,21 +62,21 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = modelCache.get(item, identifier);
+        final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(SIZE_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-                return modelCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
                         compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(SYNC_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
                 if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return modelCache.put(item, identifier, CDIconCache.iconNamed("arrowDown", 16));
+                    return tableViewCache.put(item, identifier, CDIconCache.iconNamed("arrowDown", 16));
                 }
                 if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return modelCache.put(item, identifier, CDIconCache.iconNamed("arrowUp", 16));
+                    return tableViewCache.put(item, identifier, CDIconCache.iconNamed("arrowUp", 16));
                 }
                 return null;
             }
@@ -84,12 +84,12 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
                 if(item.attributes.isFile()) {
                     if(item.exists()) {
                         if(item.attributes.getSize() == 0) {
-                            return modelCache.put(item, identifier, ALERT_ICON);
+                            return tableViewCache.put(item, identifier, ALERT_ICON);
                         }
                     }
                     if(item.getLocal().exists()) {
                         if(item.getLocal().attributes.getSize() == 0) {
-                            return modelCache.put(item, identifier, ALERT_ICON);
+                            return tableViewCache.put(item, identifier, ALERT_ICON);
                         }
                     }
                 }
@@ -97,7 +97,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             }
             if(identifier.equals(CREATE_COLUMN)) {
                 if(!(item.exists() && item.getLocal().exists())) {
-                    return modelCache.put(item, identifier, CDIconCache.iconNamed("plus", 16));
+                    return tableViewCache.put(item, identifier, CDIconCache.iconNamed("plus", 16));
                 }
                 return null;
             }

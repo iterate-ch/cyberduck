@@ -70,7 +70,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
 
     @Override
     protected void invalidate() {
-        modelCache.clear();
+        tableViewCache.clear();
         cache.clear();
         super.invalidate();
     }
@@ -149,7 +149,6 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                 if(cache.containsKey(path)) {
                     return cache.get(path, new NullComparator<Path>(), filter());
                 }
-                log.warn("No cached listing for " + path.getName());
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
@@ -183,7 +182,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     /**
      * Second cache because it is expensive to create proxy instances
      */
-    protected AttributeCache<Path> modelCache = new AttributeCache<Path>(
+    protected AttributeCache<Path> tableViewCache = new AttributeCache<Path>(
             Preferences.instance().getInteger("browser.model.cache.size")
     );
 
@@ -193,7 +192,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
      * @return
      */
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = modelCache.get(item, identifier);
+        final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(INCLUDE_COLUMN)) {
                 // Not included if the particular path should be skipped or skip
@@ -204,11 +203,11 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                 return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
             }
             if(identifier.equals(FILENAME_COLUMN)) {
-                return modelCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
                         CDTableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return modelCache.put(item, identifier, NSString.stringWithString(item.getName()));
+                return tableViewCache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }

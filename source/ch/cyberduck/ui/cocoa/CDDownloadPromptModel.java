@@ -66,19 +66,19 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = modelCache.get(item, identifier);
+        final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
-                return modelCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(CDTransferPromptModel.WARNING_COLUMN)) {
                 if(item.attributes.isFile()) {
                     if(item.attributes.getSize() == 0) {
-                        return modelCache.put(item, identifier, ALERT_ICON);
+                        return tableViewCache.put(item, identifier, ALERT_ICON);
                     }
                     if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
-                        return modelCache.put(item, identifier, ALERT_ICON);
+                        return tableViewCache.put(item, identifier, ALERT_ICON);
                     }
                 }
                 return null;
