@@ -102,8 +102,6 @@
 				<string>id</string>
 				<key>donateMenuClicked</key>
 				<string>id</string>
-				<key>downloadBookmarksFromDotMacClicked</key>
-				<string>id</string>
 				<key>helpMenuClicked</key>
 				<string>id</string>
 				<key>historyMenuClicked</key>
@@ -115,8 +113,6 @@
 				<key>newDownloadMenuClicked</key>
 				<string>id</string>
 				<key>preferencesMenuClicked</key>
-				<string>id</string>
-				<key>uploadBookmarksToDotMacClicked</key>
 				<string>id</string>
 			</dict>
 			<key>CLASS</key>

@@ -6,14 +6,12 @@
         acknowledgmentsMenuClicked = id;
         bugreportMenuClicked = id;
         donateMenuClicked = id;
-        downloadBookmarksFromDotMacClicked = id;
         helpMenuClicked = id;
         historyMenuClicked = id;
         licenseMenuClicked = id;
         newBrowserMenuClicked = id;
         newDownloadMenuClicked = id;
         preferencesMenuClicked = id;
-        uploadBookmarksToDotMacClicked = id;
     };
     CLASS = CDMainController;
     LANGUAGE = ObjC;
