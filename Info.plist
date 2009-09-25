@@ -143,7 +143,7 @@
             <string>-XX:+UseCompressedOops</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
-        <string>YES</string>
+        <string>NO</string>
         <key>SUFeedURL</key>
         <string>_SPARKLEFEED_</string>
         <key>SUCheckAtStartup</key>
@@ -191,16 +191,5 @@
         </array>
         <key>LSMinimumSystemVersion</key>
         <string>10.5</string>
-        <key>LSMinimumSystemVersionByArchitecture</key>
-        <dict>
-            <key>ppc</key>
-            <string>10.5</string>
-            <key>ppc64</key>
-            <string>10.5</string>
-            <key>i386</key>
-            <string>10.5</string>
-            <key>x86_64</key>
-            <string>10.5</string>
-        </dict>
     </dict>
 </plist>
