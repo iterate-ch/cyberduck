@@ -1589,21 +1589,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     private NSSegmentedControl navigationButton;
 
-    private NSMenu backMenu;
-    private MenuDelegate backMenuDelegate;
-    private NSMenu forwardMenu;
-    private MenuDelegate forwardMenuDelegate;
-
     public void setNavigationButton(NSSegmentedControl navigationButton) {
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this.id());
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
-        this.backMenu = NSMenu.menu();
-        this.backMenu.setDelegate((backMenuDelegate = new BackPathHistoryMenuDelegate(this)).id());
-        this.navigationButton.setMenu_forSegment(backMenu, NAVIGATION_LEFT_SEGMENT_BUTTON);
-        this.forwardMenu = NSMenu.menu();
-        this.forwardMenu.setDelegate((forwardMenuDelegate = new ForwardPathHistoryMenuDelegate(this)).id());
-        this.navigationButton.setMenu_forSegment(forwardMenu, NAVIGATION_RIGHT_SEGMENT_BUTTON);
     }
 
     @Action
