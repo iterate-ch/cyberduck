@@ -70,9 +70,7 @@ public abstract class AbstractPath {
      */
     public void invalidate() {
         if(attributes.isDirectory()) {
-            if(this.isCached()) {
-                this.cache().get(this).attributes().setDirty(true);
-            }
+            this.cache().get(this).attributes().setDirty(true);
         }
     }
 
