@@ -99,7 +99,12 @@ public class Cache<E extends AbstractPath> {
      * @return An empty list if no cached file listing is available
      */
     public AttributedList<E> get(String path) {
-        return this.get(path, new NullComparator<E>(), new NullPathFilter<E>());
+        final AttributedList<E> childs = _impl.get(path);
+        if(null == childs) {
+            log.warn("No cache for " + path);
+            return AttributedList.emptyList();
+        }
+        return childs;
     }
 
     /**
