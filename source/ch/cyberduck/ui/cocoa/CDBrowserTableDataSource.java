@@ -78,7 +78,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
 
     @Override
     protected void invalidate() {
-        cache.clear();
+        tableViewCache.clear();
         super.invalidate();
     }
 
@@ -114,9 +114,9 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     public void cleanup() {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
-                            if(path.isCached() && isLoadingListingInBackground.isEmpty()) {
+                            if(isLoadingListingInBackground.isEmpty()) {
                                 if(controller.isConnected()) {
-                                    cache.clear();
+                                    tableViewCache.clear();
                                     controller.reloadData(true);
                                 }
                             }
@@ -124,7 +124,6 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     }
                 });
             }
-            log.warn("No cached listing for " + path.getName());
             return path.cache().get(path, controller.getComparator(), controller.getFileFilter());
         }
     }
@@ -155,7 +154,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
     /**
      * Second cache because it is expensive to create proxy instances
      */
-    private AttributeCache<Path> cache = new AttributeCache<Path>(
+    private AttributeCache<Path> tableViewCache = new AttributeCache<Path>(
             Preferences.instance().getInteger("browser.model.cache.size")
     );
 
@@ -163,51 +162,51 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
         if(log.isDebugEnabled()) {
             log.debug("objectValueForItem:"+item.getAbsolute());
         }
-        final NSObject cached = cache.get(item, identifier);
+        final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(ICON_COLUMN)) {
-                return cache.put(item, identifier, this.iconForPath(item));
+                return tableViewCache.put(item, identifier, this.iconForPath(item));
             }
             if(identifier.equals(FILENAME_COLUMN)) {
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
                         CDTableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(SIZE_COLUMN)) {
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
                         CDTableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
                 if(item.attributes.getModificationDate() != -1) {
-                    return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
+                    return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(CDDateFormatter.getShortFormat(item.attributes.getModificationDate()),
                             CDTableCellAttributes.browserFontLeftAlignment()));
                 }
-                return cache.put(item, identifier, UNKNOWN_STRING);
+                return tableViewCache.put(item, identifier, UNKNOWN_STRING);
             }
             if(identifier.equals(OWNER_COLUMN)) {
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
                         CDTableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(GROUP_COLUMN)) {
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
                         CDTableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {
                 Permission permission = item.attributes.getPermission();
                 if(null == permission) {
-                    return cache.put(item, identifier, UNKNOWN_STRING);
+                    return tableViewCache.put(item, identifier, UNKNOWN_STRING);
                 }
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(permission.toString(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(permission.toString(),
                         CDTableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(KIND_COLUMN)) {
-                return cache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.kind(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.kind(),
                         CDTableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return cache.put(item, identifier, NSString.stringWithString(item.getName()));
+                return tableViewCache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
             if(identifier.equals(LOCAL_COLUMN)) {
-                return cache.put(item, identifier, NSString.stringWithString(item.getLocal().getAbsolute()));
+                return tableViewCache.put(item, identifier, NSString.stringWithString(item.getLocal().getAbsolute()));
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
