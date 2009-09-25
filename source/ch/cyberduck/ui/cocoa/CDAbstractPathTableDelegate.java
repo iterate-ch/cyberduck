@@ -156,6 +156,9 @@ public abstract class CDAbstractPathTableDelegate extends CDAbstractTableDelegat
             if(-1 == d2) {
                 return 0;
             }
+            if(d1 == d2) {
+                return 0;
+            }
             if(ascending) {
                 return d1 > d2 ? 1 : -1;
             }
