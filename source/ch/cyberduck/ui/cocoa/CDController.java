@@ -118,7 +118,9 @@ public class CDController extends AbstractController {
      *                 the message is delivered and processed immediately.
      */
     public void invoke(final MainAction runnable, final boolean wait) {
-        log.debug("invoke:" + runnable);
+        if(log.isDebugEnabled()) {
+            log.debug("invoke:" + runnable);
+        }
         if(this.isMainThread()) {
             log.debug("Already on main thread. Invoke " + runnable + " directly.");
             runnable.run();

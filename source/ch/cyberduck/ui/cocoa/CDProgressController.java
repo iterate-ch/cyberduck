@@ -142,6 +142,7 @@ public class CDProgressController extends CDBundleController {
                 meter.reset();
                 progressTimer = new Timer();
                 progressTimer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
                     public void run() {
                         invoke(new DefaultMainAction() {
                             public void run() {
