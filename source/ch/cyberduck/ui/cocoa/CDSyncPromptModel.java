@@ -27,7 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
  */
 public class CDSyncPromptModel extends CDTransferPromptModel {
 
-    public CDSyncPromptModel(CDWindowController c, Transfer transfer) {
+    public CDSyncPromptModel(CDTransferPrompt c, Transfer transfer) {
         super(c, transfer);
     }
 

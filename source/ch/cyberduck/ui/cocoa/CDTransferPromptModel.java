@@ -57,13 +57,13 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
     /**
      *
      */
-    private CDWindowController controller;
+    private CDTransferPrompt controller;
 
     /**
      * @param c        The parent window to attach the prompt
      * @param transfer
      */
-    public CDTransferPromptModel(CDWindowController c, final Transfer transfer) {
+    public CDTransferPromptModel(CDTransferPrompt c, final Transfer transfer) {
         this.controller = c;
         this.transfer = transfer;
     }
@@ -167,7 +167,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
                             if(isLoadingListingInBackground.isEmpty()) {
-                                ((CDTransferPrompt) controller).reloadData();
+                                controller.reloadData();
                             }
                         }
                     }
@@ -199,7 +199,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                 // existing is selected as the default transfer action for duplicate
                 // files
                 final boolean skipped = !transfer.isIncluded(item)
-                        || ((CDTransferPrompt) controller).getAction().equals(TransferAction.ACTION_SKIP);
+                        || controller.getAction().equals(TransferAction.ACTION_SKIP);
                 return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
             }
             if(identifier.equals(FILENAME_COLUMN)) {

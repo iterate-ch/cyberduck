@@ -30,7 +30,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
  */
 public class CDDownloadPromptModel extends CDTransferPromptModel {
 
-    public CDDownloadPromptModel(CDWindowController c, Transfer transfer) {
+    public CDDownloadPromptModel(CDTransferPrompt c, Transfer transfer) {
         super(c, transfer);
     }
 
