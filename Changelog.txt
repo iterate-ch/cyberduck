@@ -4,6 +4,11 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.3b4
+- [Bugfix] Fails to launch with Japanese locale
+- [Bugfix] Duplicate files in browser listing when sorting by modification date [#3745]
+- [Bugfix] Wrong menu item font size [#3736]
+
 3.3b3
 - [Feature] PPC support again available
 - [Bugfix] Some localizations broken [#3648]
