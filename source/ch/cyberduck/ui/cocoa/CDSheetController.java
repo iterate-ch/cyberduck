@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.application.AppKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
@@ -71,7 +71,6 @@ public abstract class CDSheetController extends CDWindowController implements CD
     }
 
     /**
-     *
      * @return The controller of this sheet parent window
      */
     protected CDWindowController getParentController() {
@@ -90,7 +89,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
         if(sender.tag() == DEFAULT_OPTION
                 || sender.tag() == OTHER_OPTION) {
             if(!this.validateInput()) {
-//                NSApplication.beep();
+                AppKitFunctionsLibrary.beep();
                 return;
             }
         }
@@ -167,7 +166,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * deallocated as a weak reference before the callback from the runtime
      */
     @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
-    private static final List<CDSheetController> sheetRegistry
+    protected static final List<CDSheetController> sheetRegistry
             = new ArrayList<CDSheetController>();
 
     protected void beginSheetImpl() {
@@ -190,7 +189,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
      * @param returncode  Identifier for the button clicked by the user
      * @param contextInfo Not used
      */
-    public void sheetDidClose_returnCode_contextInfo(final NSPanel sheet, final int returncode, ID contextInfo) {
+    public void sheetDidClose_returnCode_contextInfo(final NSWindow sheet, final int returncode, ID contextInfo) {
         sheet.orderOut(null);
         this.callback(returncode, contextInfo);
         sheetRegistry.remove(this);
@@ -199,7 +198,7 @@ public abstract class CDSheetController extends CDWindowController implements CD
     /**
      * @return True if the class is a singleton and the object should
      *         not be invlidated upon the sheet is closed
-     * @see #sheetDidClose_returnCode_contextInfo(ch.cyberduck.ui.cocoa.application.NSPanel, int, org.rococoa.ID)
+     * @see #sheetDidClose_returnCode_contextInfo(ch.cyberduck.ui.cocoa.application.NSWindow, int, org.rococoa.ID)
      */
     @Override
     public boolean isSingleton() {
