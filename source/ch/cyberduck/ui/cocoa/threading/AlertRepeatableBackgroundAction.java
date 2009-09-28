@@ -31,16 +31,16 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.Rococoa;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 
 public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgroundAction {
     private static Logger log = Logger.getLogger(AlertRepeatableBackgroundAction.class);
@@ -71,16 +71,11 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     }
 
     /**
-     *
-     */
-    private CDSheetController alert;
-
-    /**
      * Display an alert dialog with a summary of all failed tasks
      */
     protected void alert() {
         if(controller.isVisible()) {
-            alert = new CDSheetController(controller) {
+            final CDSheetController alert = new CDSheetController(controller) {
 
                 @Override
                 protected String getBundleName() {
@@ -229,7 +224,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
         }
     }
 
-    private static class TableColumnFactory extends HashMap<String,NSTableColumn> {
+    private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
