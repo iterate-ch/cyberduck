@@ -258,12 +258,14 @@ public class CDConnectionController extends CDSheetController {
                 }
 
                 public void cleanup() {
-                    alertIcon.setHidden(reachable);
+                    alertIcon.setEnabled(!reachable);
+                    alertIcon.setImage(reachable ? null : CDIconCache.iconNamed("alert.tiff"));
                 }
             });
         }
         else {
-            alertIcon.setHidden(true);
+            alertIcon.setImage(CDIconCache.iconNamed("alert.tiff"));
+            alertIcon.setEnabled(false);
         }
     }
 
@@ -272,7 +274,6 @@ public class CDConnectionController extends CDSheetController {
 
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
-        this.alertIcon.setHidden(true);
         this.alertIcon.setTarget(this.id());
         this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
     }
