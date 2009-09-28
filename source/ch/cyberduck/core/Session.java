@@ -295,7 +295,27 @@ public abstract class Session {
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
      * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */
-    public abstract Path workdir() throws IOException;
+    public Path workdir() throws IOException {
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+        if(null == workdir) {
+            workdir = PathFactory.createPath(this, Path.DELIMITER, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        }
+        return workdir;
+    }
+
+    /**
+     *
+     * @param workdir
+     * @throws IOException
+     */
+    public void setWorkdir(Path workdir) throws IOException {
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+        this.workdir = workdir;
+    }
 
     /**
      * Send a 'no operation' command

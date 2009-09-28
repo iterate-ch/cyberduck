@@ -391,7 +391,8 @@ public class FTPSession extends Session {
         return workdir;
     }
 
-    protected void setWorkdir(Path workdir) throws IOException {
+    @Override
+    public void setWorkdir(Path workdir) throws IOException {
         if(workdir.equals(this.workdir)) {
             // Do not attempt to change the workdir if the same
             return;
@@ -401,7 +402,7 @@ public class FTPSession extends Session {
         }
         this.FTP.chdir(workdir.getAbsolute());
         // Workdir change succeeded
-        this.workdir = workdir;
+        super.setWorkdir(workdir);
     }
 
     @Override

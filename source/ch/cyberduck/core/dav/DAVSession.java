@@ -247,22 +247,13 @@ public class DAVSession extends HTTPSession {
         }
     }
 
-    public Path workdir() throws ConnectionCanceledException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        if(null == workdir) {
-            workdir = PathFactory.createPath(this, Path.DELIMITER, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        }
-        return workdir;
-    }
-
-    protected void setWorkdir(Path workdir) throws IOException {
+    @Override
+    public void setWorkdir(Path workdir) throws IOException {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
         DAV.setPath(workdir.isRoot() ? Path.DELIMITER : workdir.getAbsolute() + Path.DELIMITER);
-        this.workdir = workdir;
+        super.setWorkdir(workdir);
     }
 
     protected void noop() throws IOException {

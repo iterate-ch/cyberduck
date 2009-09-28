@@ -311,16 +311,6 @@ public class S3Session extends HTTPSession implements SSLSession {
         }
     }
 
-    public Path workdir() throws IOException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        if(null == workdir) {
-            workdir = PathFactory.createPath(this, Path.DELIMITER, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        }
-        return workdir;
-    }
-
     protected void noop() throws IOException {
         ;
     }
