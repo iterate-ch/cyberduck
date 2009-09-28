@@ -716,12 +716,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 if(controller.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
                     final Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
-                    try {
-                        serialized.setDefaultPath(controller.getSession().workdir().getAbsolute());
-                    }
-                    catch(IOException e) {
-                        log.warn(e.getMessage());
-                    }
+                    serialized.setDefaultPath(controller.workdir().getAbsolute());
                     sessions.add(serialized);
                 }
             }
