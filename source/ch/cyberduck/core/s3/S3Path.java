@@ -478,10 +478,9 @@ public class S3Path extends CloudPath {
      * @param grants
      * @return
      */
-    private Permission readPermissions(Set grants) throws IOException, S3ServiceException {
+    private Permission readPermissions(Set<GrantAndPermission> grants) throws IOException, S3ServiceException {
         boolean[][] p = new boolean[3][3];
-        for(Iterator iter = grants.iterator(); iter.hasNext();) {
-            GrantAndPermission grant = (GrantAndPermission) iter.next();
+        for(GrantAndPermission grant : grants) {
             final org.jets3t.service.acl.Permission access = grant.getPermission();
             if(grant.getGrantee().equals(GroupGrantee.ALL_USERS)) {
                 if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)
@@ -777,8 +776,10 @@ public class S3Path extends CloudPath {
                 }
                 while(priorLastKey != null && !getStatus().isCanceled());
             }
+            session.setWorkdir(this);
         }
         catch(S3ServiceException e) {
+            childs.attributes().setReadable(false);
             this.error(e.getS3ErrorMessage(), e);
         }
         catch(IOException e) {

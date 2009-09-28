@@ -304,6 +304,7 @@ public class CFPath extends CloudPath {
                     }
                 }
             }
+            session.setWorkdir(this);
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);

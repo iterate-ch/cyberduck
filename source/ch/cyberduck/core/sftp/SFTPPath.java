@@ -154,6 +154,7 @@ public class SFTPPath extends Path {
                     childs.add(p);
                 }
             }
+            session.setWorkdir(this);
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);
