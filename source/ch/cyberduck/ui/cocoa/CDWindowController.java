@@ -206,24 +206,18 @@ public abstract class CDWindowController extends CDBundleController implements N
     }
 
     /**
-     * Keep strong reference to currently displayed sheet
-     */
-    private CDSheetController sheet;
-
-    /**
      * Display alert as sheet to the window of this controller
      *
      * @param alert
      * @param callback
      */
     protected void alert(final NSAlert alert, final CDSheetCallback callback) {
-        this.sheet = new CDAlertController(this, alert) {
+        CDSheetController c = new CDAlertController(this, alert) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
-                CDWindowController.this.sheet = null;
             }
         };
-        this.sheet.beginSheet();
+        c.beginSheet();
     }
 
     /**
@@ -248,13 +242,12 @@ public abstract class CDWindowController extends CDBundleController implements N
      * @see ch.cyberduck.ui.cocoa.CDSheetController#beginSheet()
      */
     protected void alert(final NSWindow sheet, final CDSheetCallback callback) {
-        this.sheet = new CDSheetController(this, sheet) {
+        CDSheetController c = new CDSheetController(this, sheet) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
-                CDWindowController.this.sheet = null;
             }
         };
-        this.sheet.beginSheet();
+        c.beginSheet();
     }
 
     protected void updateField(final NSTextView f, final String value) {
