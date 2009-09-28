@@ -1668,6 +1668,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         }
         else {
             pathPopupButton.removeAllItems();
+            final Path workdir = this.workdir();
             this.addPathToNavigation(workdir);
             Path p = workdir;
             while(!p.getParent().equals(p)) {
@@ -2011,7 +2012,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
                 Path item = iter.next();
                 if(item.exists()) {
-                    alertText.append("\n" + Character.toString('\u2022') + " " + item.getName());
+                    alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
                     shouldWarn = true;
                 }
                 i++;
@@ -2837,7 +2838,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
         }
         if(null == workdir) {
-            workdir = this.workdir.getAbsolute();
+            workdir = this.workdir().getAbsolute();
         }
         final String command
                 = "tell application \"Terminal\"\n"
@@ -2999,7 +3000,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     // Update the working directory if listing is successful
                     workdir = directory;
                     // Update the current working directory
-                    addPathToHistory(workdir);
+                    addPathToHistory(workdir());
                 }
             }
 
@@ -3232,14 +3233,16 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 final Session session = init(host);
 
                 background(new BrowserBackgroundAction(CDBrowserController.this) {
+                    private Path mount;
+
                     public void run() {
                         // Mount this session
-                        workdir = session.mount();
+                        mount = session.mount();
                     }
 
                     public void cleanup() {
                         // Set the working directory
-                        setWorkdir(workdir);
+                        setWorkdir(mount);
                         if(!session.isConnected()) {
                             // Connection attempt failed
                             log.warn("Mount failed:" + host);
