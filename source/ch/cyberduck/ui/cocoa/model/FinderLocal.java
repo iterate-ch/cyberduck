@@ -57,6 +57,11 @@ public class FinderLocal extends Local {
 
     private static class Factory extends LocalFactory {
         @Override
+        protected Local create() {
+            return new FinderLocal(System.getProperty("user.home"));
+        }
+
+        @Override
         protected Local create(Local parent, String name) {
             return new FinderLocal(parent, name);
         }

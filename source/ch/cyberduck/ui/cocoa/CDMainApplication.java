@@ -18,12 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
-import ch.cyberduck.ui.cocoa.model.CDLocal;
+import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.serializer.*;
 
 import org.apache.log4j.Level;
@@ -77,8 +78,10 @@ public class CDMainApplication {
      * Register factory implementations.
      */
     private static void registerFactories() {
-        CDLocal.register();
-        CDPreferencesImpl.register();
+        FinderLocal.register();
+        UserDefaultsPreferences.register();
+
+        Keychain.register();
         BundleLocale.register();
 
         PlistDeserializer.register();
