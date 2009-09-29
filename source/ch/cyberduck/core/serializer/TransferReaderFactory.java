@@ -57,5 +57,6 @@ public abstract class TransferReaderFactory extends Factory {
         return instance;
     }
 
+    @Override
     protected abstract Reader<Transfer> create();
 }

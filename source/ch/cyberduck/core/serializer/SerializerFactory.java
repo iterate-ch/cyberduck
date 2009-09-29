@@ -51,5 +51,6 @@ public abstract class SerializerFactory extends Factory {
         return factories.get(NATIVE_PLATFORM).create();
     }
 
+    @Override
     protected abstract Serializer create();
 }
