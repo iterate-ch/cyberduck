@@ -803,6 +803,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             if(previews.isEmpty()) {
                                 return;
                             }
+                            if(!CDBrowserController.this.isVisible()) {
+                                return;
+                            }
                             // Change files in Quick Look
                             QuickLookFactory.instance().select(previews);
                             // Open Quick Look Preview Panel
@@ -1840,7 +1843,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 log.warn("No accepted certificates found");
                 return;
             }
-            Keychain.instance().displayCertificates(certificates);
+            KeychainFactory.instance().displayCertificates(certificates);
         }
     }
 
