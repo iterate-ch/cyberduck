@@ -3865,7 +3865,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     }
 
     /**
-     * Keep reference to weak toolbar items
+     * Keep reference to weak toolbar items. A toolbar may ask again for a kind of toolbar
+     * item already supplied to it, in which case this method may return the same toolbar
+     * item it returned before
      */
     private Map<String, NSToolbarItem> toolbarItems
             = new HashMap<String, NSToolbarItem>();
