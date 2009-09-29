@@ -54,5 +54,6 @@ public abstract class PreferencesFactory extends Factory<Preferences> {
         return l;
     }
 
+    @Override
     protected abstract Preferences create();
 }

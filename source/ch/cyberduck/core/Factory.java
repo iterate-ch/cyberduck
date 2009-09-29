@@ -23,7 +23,7 @@ package ch.cyberduck.core;
  */
 public abstract class Factory<T> {
 
-//    protected abstract T create();
+    protected abstract T create();
 
     public static abstract class Platform {
         public abstract String toString();
