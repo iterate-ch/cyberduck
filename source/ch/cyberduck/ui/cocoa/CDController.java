@@ -134,14 +134,12 @@ public class CDController extends AbstractController {
             }
 
             public void run() {
-                final NSAutoreleasePool pool = NSAutoreleasePool.push();
                 try {
                     runnable.run();
                 }
                 finally {
                     //Remove strong reference
                     registry.remove(this);
-                    pool.drain();
                 }
             }
         };
