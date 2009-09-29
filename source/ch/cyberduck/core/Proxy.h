@@ -26,20 +26,20 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_usePassiveFTP(JNIEnv *, jobject);
-    JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isHostExcluded(JNIEnv *, jobject, jstring);
+    JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePassiveFTP(JNIEnv *, jobject);
+    JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHostExcluded(JNIEnv *, jobject, jstring);
 
-	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isSOCKSProxyEnabled(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyHost(JNIEnv *, jobject);
-	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getSOCKSProxyPort(JNIEnv *, jobject);
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabled(JNIEnv *, jobject);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHost(JNIEnv *, jobject);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPort(JNIEnv *, jobject);
 
-	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isHTTPProxyEnabled(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPProxyHost(JNIEnv *, jobject);
-	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getHTTPProxyPort(JNIEnv *, jobject);
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabled(JNIEnv *, jobject);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHost(JNIEnv *, jobject);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPort(JNIEnv *, jobject);
 
-	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Proxy_isHTTPSProxyEnabled(JNIEnv *, jobject);
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyHost(JNIEnv *, jobject);
-	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_Proxy_getHTTPSProxyPort(JNIEnv *, jobject);
+	JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabled(JNIEnv *, jobject);
+	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHost(JNIEnv *, jobject);
+	JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPort(JNIEnv *, jobject);
 #ifdef __cplusplus
 }
 #endif

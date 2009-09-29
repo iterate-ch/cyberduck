@@ -440,7 +440,7 @@ public abstract class Session {
             listener.connectionWillOpen();
         }
         // Configuring proxy if any
-        Proxy.configure(this.host.getHostname());
+        ProxyFactory.instance().configure(this.host.getHostname());
         this.resolver = new Resolver(this.host.getHostname(true));
         this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                 host.getHostname()));

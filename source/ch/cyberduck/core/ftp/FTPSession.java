@@ -355,7 +355,7 @@ public class FTPSession extends Session {
      */
     protected FTPConnectMode getConnectMode() {
         if(null == this.host.getFTPConnectMode()) {
-            if(Proxy.usePassiveFTP()) {
+            if(ProxyFactory.instance().usePassiveFTP()) {
                 return FTPConnectMode.PASV;
             }
             return FTPConnectMode.ACTIVE;

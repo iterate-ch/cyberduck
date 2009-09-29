@@ -71,12 +71,14 @@ public class DAVSession extends HTTPSession {
         client.getHostConfiguration().getParams().setParameter(
                 "http.useragent", this.getUserAgent()
         );
-        if(Proxy.isHTTPProxyEnabled()) {
-            this.DAV.setProxy(Proxy.getHTTPProxyHost(), Proxy.getHTTPProxyPort());
+        final Proxy proxy = ProxyFactory.instance();
+        if(proxy.isHTTPProxyEnabled()) {
+            this.DAV.setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
         }
         this.DAV.setFollowRedirects(Preferences.instance().getBoolean("webdav.followRedirects"));
     }
 
+    @Override
     protected void connect() throws IOException, LoginCanceledException {
         if(this.isConnected()) {
             return;
@@ -142,6 +144,7 @@ public class DAVSession extends HTTPSession {
         };
     }
 
+    @Override
     protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
             final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
@@ -213,6 +216,7 @@ public class DAVSession extends HTTPSession {
         }
     }
 
+    @Override
     public void close() {
         try {
             if(this.isConnected()) {
@@ -256,14 +260,17 @@ public class DAVSession extends HTTPSession {
         super.setWorkdir(workdir);
     }
 
+    @Override
     protected void noop() throws IOException {
         ;
     }
 
+    @Override
     public void sendCommand(String command) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isConnected() {
         return DAV != null;
     }

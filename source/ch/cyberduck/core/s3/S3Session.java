@@ -115,16 +115,17 @@ public class S3Session extends HTTPSession implements SSLSession {
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
 
         configuration.setProperty("httpclient.proxy-autodetect", "false");
+        final Proxy proxy = ProxyFactory.instance();
         if(host.getProtocol().isSecure()) {
-            if(Proxy.isHTTPSProxyEnabled()) {
-                configuration.setProperty("httpclient.proxy-host", Proxy.getHTTPSProxyHost());
-                configuration.setProperty("httpclient.proxy-port", String.valueOf(Proxy.getHTTPSProxyPort()));
+            if(proxy.isHTTPSProxyEnabled()) {
+                configuration.setProperty("httpclient.proxy-host", proxy.getHTTPSProxyHost());
+                configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort()));
             }
         }
         else {
-            if(Proxy.isHTTPProxyEnabled()) {
-                configuration.setProperty("httpclient.proxy-host", Proxy.getHTTPProxyHost());
-                configuration.setProperty("httpclient.proxy-port", String.valueOf(Proxy.getHTTPProxyPort()));
+            if(proxy.isHTTPProxyEnabled()) {
+                configuration.setProperty("httpclient.proxy-host", proxy.getHTTPProxyHost());
+                configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort()));
             }
         }
         configuration.setProperty("httpclient.connection-timeout-ms", String.valueOf(this.timeout()));
@@ -206,6 +207,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         return buckets;
     }
 
+    @Override
     protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
         if(this.isConnected()) {
             return;
@@ -225,6 +227,7 @@ public class S3Session extends HTTPSession implements SSLSession {
         this.fireConnectionDidOpenEvent();
     }
 
+    @Override
     protected void login(final Credentials credentials) throws IOException {
         final HostConfiguration hostconfig = new StickyHostConfiguration();
         if(host.getProtocol().isSecure()) {
@@ -285,6 +288,7 @@ public class S3Session extends HTTPSession implements SSLSession {
                 || e.getS3ErrorCode().equals("SignatureDoesNotMatch"); // Invalid Secret Key
     }
 
+    @Override
     public void close() {
         try {
             if(this.isConnected()) {
@@ -311,14 +315,17 @@ public class S3Session extends HTTPSession implements SSLSession {
         }
     }
 
+    @Override
     protected void noop() throws IOException {
         ;
     }
 
+    @Override
     public void sendCommand(String command) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean isConnected() {
         return S3 != null;
     }

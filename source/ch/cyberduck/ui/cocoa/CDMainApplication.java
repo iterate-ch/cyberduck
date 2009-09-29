@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
@@ -96,5 +97,7 @@ public class CDMainApplication {
 
         DeprecatedQuickLook.register();
         QuartzQuickLook.register();
+
+        SystemConfigurationProxy.register();
     }
 }
