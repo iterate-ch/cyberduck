@@ -52,7 +52,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
 {
 	NSURL* url = [NSURL fileURLWithPath:convertToNSString(env, path)];
 	FSRef ref;
@@ -70,7 +70,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setQuarantine(JN
 	[attrs release];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
 {
 	// From mozilla/camino/src/download/nsDownloadListener.mm
 	typedef OSStatus (*MDItemSetAttribute_type)(MDItemRef, CFStringRef, CFTypeRef);
@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setWhereFrom(JNI
 	CFRelease(mdItem);
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_applicationForExtension(
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_applicationForExtension(
 										JNIEnv *env,
 										jobject this,
                                         jstring extension)
@@ -117,7 +117,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_applicationFo
 	return convertToJString(env, result);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setIconFromExtension(JNIEnv *env, jobject this, jstring path, jstring icon)
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setIconFromExtension(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
 	NSImage *image = [[NSWorkspace sharedWorkspace] iconForFileType:convertToNSString(env, icon)];
 	[image setScalesWhenResized:YES];
@@ -128,7 +128,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setIconFromExten
 	}
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setIconFromFile(JNIEnv *env, jobject this, jstring path, jstring icon)
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setIconFromFile(JNIEnv *env, jobject this, jstring path, jstring icon)
 {
 	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
 	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
@@ -136,12 +136,12 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_setIconFromFile(
 	}
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_removeCustomIcon(JNIEnv *env, jobject this, jstring path)
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_removeCustomIcon(JNIEnv *env, jobject this, jstring path)
 {
 	[IconFamily removeCustomIconFromFile:convertToNSString(env, path)];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_CDLocal_kind(JNIEnv *env, jobject this, jstring extension)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_kind(JNIEnv *env, jobject this, jstring extension)
 {
 	NSString *kind = nil;
 	LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator, 

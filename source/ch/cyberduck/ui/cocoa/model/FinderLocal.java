@@ -32,22 +32,22 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 /**
  * @version $Id$
  */
-public class CDLocal extends Local {
-    private static Logger log = Logger.getLogger(CDLocal.class);
+public class FinderLocal extends Local {
+    private static Logger log = Logger.getLogger(FinderLocal.class);
 
-    public CDLocal(ch.cyberduck.core.Local parent, String name) {
+    public FinderLocal(ch.cyberduck.core.Local parent, String name) {
         super(parent, name);
     }
 
-    public CDLocal(String parent, String name) {
+    public FinderLocal(String parent, String name) {
         super(parent, name);
     }
 
-    public CDLocal(String path) {
+    public FinderLocal(String path) {
         super(path);
     }
 
-    public CDLocal(java.io.File path) {
+    public FinderLocal(java.io.File path) {
         super(path);
     }
 
@@ -56,20 +56,24 @@ public class CDLocal extends Local {
     }
 
     private static class Factory extends LocalFactory {
+        @Override
         protected Local create(Local parent, String name) {
-            return new CDLocal(parent, name);
+            return new FinderLocal(parent, name);
         }
 
+        @Override
         protected Local create(String parent, String name) {
-            return new CDLocal(parent, name);
+            return new FinderLocal(parent, name);
         }
 
+        @Override
         protected Local create(String path) {
-            return new CDLocal(path);
+            return new FinderLocal(path);
         }
 
+        @Override
         protected Local create(java.io.File path) {
-            return new CDLocal(path);
+            return new FinderLocal(path);
         }
     }
 
