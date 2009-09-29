@@ -21,43 +21,57 @@ package ch.cyberduck.ui.cocoa.quicklook;
 
 import ch.cyberduck.core.Factory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @version $Id$
  */
-public abstract class QuickLookFactory extends Factory {
+public abstract class QuickLookFactory extends Factory<QuickLookInterface> {
 
-    private static QuickLookInterface instance = null;
+    /**
+     * Registered factories
+     */
+    protected static final Map<Platform, QuickLookFactory> factories = new HashMap<Platform, QuickLookFactory>();
 
-    protected static QuickLookInterface create() {
-        if(VERSION_PLATFORM.matches("10\\.6.*")) {
-            return new QuartzQuickLook();
-        }
-        return new DeprecatedQuickLook();
+    /**
+     * @param platform
+     * @param f
+     */
+    public static void addFactory(Platform platform, QuickLookFactory f) {
+        factories.put(platform, f);
     }
+
+    private static QuickLookInterface instance;
 
     public static QuickLookInterface instance() {
         if(null == instance) {
-            instance = create();
-        }
-        if(null == instance) {
-            return new AbstractQuickLook() {
-                public boolean isAvailable() {
-                    return false;
-                }
+            if(factories.containsKey(VERSION_PLATFORM)) {
+                instance = factories.get(VERSION_PLATFORM).create();
+            }
+            else {
+                instance = new AbstractQuickLook() {
+                    public boolean isAvailable() {
+                        return false;
+                    }
 
-                public boolean isOpen() {
-                    return false;
-                }
+                    public boolean isOpen() {
+                        return false;
+                    }
 
-                public void open() {
-                    throw new UnsupportedOperationException();
-                }
+                    public void open() {
+                        throw new UnsupportedOperationException();
+                    }
 
-                public void close() {
-                    throw new UnsupportedOperationException();
-                }
-            };
+                    public void close() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
         }
         return instance;
     }
+
+    @Override
+    protected abstract QuickLookInterface create();
 }

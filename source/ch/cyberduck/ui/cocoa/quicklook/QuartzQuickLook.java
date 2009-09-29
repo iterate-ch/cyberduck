@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
+
 import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -34,6 +35,19 @@ import java.util.Map;
  */
 public class QuartzQuickLook extends AbstractQuickLook {
     private static Logger log = Logger.getLogger(QuartzQuickLook.class);
+
+    public static void register() {
+        if(Factory.VERSION_PLATFORM.matches("10\\.6.*")) {
+            QuickLookFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
+        }
+    }
+
+    private static class Factory extends QuickLookFactory {
+        @Override
+        protected QuickLookInterface create() {
+            return new QuartzQuickLook();
+        }
+    }
 
     private Map<Local, QLPreviewItem> previews = new HashMap<Local, QLPreviewItem>();
 
@@ -65,7 +79,7 @@ public class QuartzQuickLook extends AbstractQuickLook {
         }
     };
 
-    protected QuartzQuickLook() {
+    private QuartzQuickLook() {
         ;
     }
 

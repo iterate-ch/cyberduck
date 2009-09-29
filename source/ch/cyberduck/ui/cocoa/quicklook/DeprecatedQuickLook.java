@@ -43,10 +43,23 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
         return JNI_LOADED;
     }
 
-    protected DeprecatedQuickLook() {
+    private DeprecatedQuickLook() {
         loadNative();
     }
 
+    public static void register() {
+        if(Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
+            QuickLookFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
+        }
+    }
+
+    private static class Factory extends QuickLookFactory {
+        @Override
+        protected QuickLookInterface create() {
+            return new DeprecatedQuickLook();
+        }
+    }
+    
     /**
      * @param files
      */

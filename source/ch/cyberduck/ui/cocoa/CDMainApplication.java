@@ -25,6 +25,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
+import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
+import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.serializer.*;
 
 import org.apache.log4j.Level;
@@ -91,5 +93,8 @@ public class CDMainApplication {
         TransferPlistReader.register();
 
         PlistWriter.register();
+
+        DeprecatedQuickLook.register();
+        QuartzQuickLook.register();
     }
 }
