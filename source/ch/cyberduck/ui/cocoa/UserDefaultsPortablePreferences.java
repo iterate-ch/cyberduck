@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -30,8 +29,8 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class CDPortablePreferencesImpl extends CDPreferencesImpl {
-    private static Logger log = Logger.getLogger(CDPortablePreferencesImpl.class);
+public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
+    private static Logger log = Logger.getLogger(UserDefaultsPortablePreferences.class);
 
     private NSMutableDictionary dict;
 

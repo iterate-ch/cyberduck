@@ -29,13 +29,12 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
- * Concrete subclass using the Cocoa Preferences classes.
- * Warning: User defaults are not thread safe.
+ * Concrete subclass using the Cocoa Preferences classes. The NSUserDefaults class is thread-safe.
  *
  * @version $Id$
  * @see ch.cyberduck.ui.cocoa.foundation.NSUserDefaults
  */
-public class CDPreferencesImpl extends Preferences {
+public class UserDefaultsPreferences extends Preferences {
     private static Logger log = Logger.getLogger(Preferences.class);
 
     public static void register() {
@@ -46,9 +45,9 @@ public class CDPreferencesImpl extends Preferences {
         @Override
         protected Preferences create() {
             if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path")) {
-                return new CDPreferencesImpl();
+                return new UserDefaultsPreferences();
             }
-            return new CDPortablePreferencesImpl();
+            return new UserDefaultsPortablePreferences();
         }
     }
 
