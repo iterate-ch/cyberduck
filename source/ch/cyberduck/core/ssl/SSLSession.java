@@ -23,6 +23,4 @@ package ch.cyberduck.core.ssl;
  */
 public interface SSLSession {
     AbstractX509TrustManager getTrustManager();
-
-    void setTrustManager(AbstractX509TrustManager trustManager);
 }

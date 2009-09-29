@@ -202,7 +202,7 @@ public class SFTPSession extends Session {
                 fr.close();
                 String passphrase = null;
                 if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                    passphrase = Keychain.instance().getPasswordFromKeychain("SSHKeychain", identity.toURL());
+                    passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
                         login.prompt(host,
                                 Locale.localizedString("Private key password protected", "Credentials"),
@@ -210,7 +210,7 @@ public class SFTPSession extends Session {
                                         + " (" + identity + ")");
                         passphrase = credentials.getPassword();
                         if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                            Keychain.instance().addPasswordToKeychain("SSHKeychain", identity.toURL(),
+                            KeychainFactory.instance().addPassword("SSHKeychain", identity.toURL(),
                                     passphrase);
                         }
                     }

@@ -81,7 +81,7 @@ public class DAVSSession extends DAVSession implements SSLSession {
      *
      * @param trustManager
      */
-    public void setTrustManager(AbstractX509TrustManager trustManager) {
+    private void setTrustManager(AbstractX509TrustManager trustManager) {
         this.trustManager = trustManager;
     }
 }
