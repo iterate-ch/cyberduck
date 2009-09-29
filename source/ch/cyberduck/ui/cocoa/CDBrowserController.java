@@ -255,6 +255,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         this.setSelectedPaths(selected);
+        this.updateStatusLabel();
     }
 
     /**
