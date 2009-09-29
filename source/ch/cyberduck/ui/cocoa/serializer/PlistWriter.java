@@ -38,12 +38,14 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     }
 
     private static class HostFactory extends HostWriterFactory {
+        @Override
         public Writer<Host> create() {
             return new PlistWriter<Host>();
         }
     }
 
     private static class TransferFactory extends TransferWriterFactory {
+        @Override
         public Writer<Transfer> create() {
             return new PlistWriter<Transfer>();
         }

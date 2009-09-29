@@ -39,6 +39,7 @@ public class TransferPlistReader extends PlistReader<Transfer> {
     }
 
     private static class Factory extends TransferReaderFactory {
+        @Override
         public Reader<Transfer> create() {
             return new TransferPlistReader();
         }
@@ -61,6 +62,7 @@ public class TransferPlistReader extends PlistReader<Transfer> {
         return null;
     }
 
+    @Override
     public Transfer deserialize(NSDictionary dict) {
         NSObject hostObj = dict.objectForKey("Host");
         if(hostObj != null) {

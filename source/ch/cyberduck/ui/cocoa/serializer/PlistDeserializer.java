@@ -20,10 +20,7 @@ package ch.cyberduck.ui.cocoa.serializer;
 
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
-import ch.cyberduck.core.PreferencesFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.CDPortablePreferencesImpl;
 
 import org.rococoa.Rococoa;
 
@@ -40,6 +37,12 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
     }
 
     private static class Factory extends DeserializerFactory<NSDictionary> {
+        @Override
+        protected Deserializer create() {
+            return new PlistDeserializer(NSMutableDictionary.dictionary());
+        }
+
+        @Override
         protected Deserializer create(NSDictionary dict) {
             return new PlistDeserializer(dict);
         }

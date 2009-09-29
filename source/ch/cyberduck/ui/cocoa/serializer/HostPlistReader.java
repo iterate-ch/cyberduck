@@ -33,11 +33,13 @@ public class HostPlistReader extends PlistReader<Host> {
     }
 
     private static class Factory extends HostReaderFactory {
+        @Override
         public Reader<Host> create() {
             return new HostPlistReader();
         }
     }
 
+    @Override
     public Host deserialize(NSDictionary dict) {
         return new Host(dict);
     }
