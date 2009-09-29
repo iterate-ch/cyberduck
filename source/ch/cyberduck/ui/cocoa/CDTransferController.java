@@ -620,6 +620,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 }
                 transfer.getSession().setLoginController(null);
                 transfer.removeListener(tl);
+                // Upon retry, use resume
+                reload = false;
+                resume = true;
             }
 
             public void cleanup() {
@@ -635,9 +638,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                         }
                     }
                 }
-                // Upon retry, use resume
-                reload = false;
-                resume = true;
                 TransferCollection.instance().save();
             }
 
