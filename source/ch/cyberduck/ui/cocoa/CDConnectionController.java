@@ -555,7 +555,7 @@ public class CDConnectionController extends CDSheetController {
                 return;
             }
             final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
-            this.updateField(this.passField, Keychain.instance().getInternetPasswordFromKeychain(protocol.getScheme(),
+            this.updateField(this.passField, KeychainFactory.instance().getPassword(protocol.getScheme(),
                     Integer.parseInt(portField.stringValue()),
                     hostField.stringValue(), usernameField.stringValue()));
         }

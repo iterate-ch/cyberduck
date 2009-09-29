@@ -118,7 +118,7 @@ public abstract class AbstractLoginController implements LoginController {
             log.warn("No username given");
             return null;
         }
-        final String p = Keychain.instance().getInternetPasswordFromKeychain(host.getProtocol().getScheme(), host.getPort(),
+        final String p = KeychainFactory.instance().getPassword(host.getProtocol().getScheme(), host.getPort(),
                 host.getHostname(), host.getCredentials().getUsername());
         if(null == p) {
             if(log.isInfoEnabled()) {
@@ -157,7 +157,7 @@ public abstract class AbstractLoginController implements LoginController {
         if(log.isInfoEnabled()) {
             log.info("Add Password to Keychain:" + host);
         }
-        Keychain.instance().addInternetPasswordToKeychain(host.getProtocol().getScheme(), host.getPort(),
+        KeychainFactory.instance().addPassword(host.getProtocol().getScheme(), host.getPort(),
                 host.getHostname(), host.getCredentials().getUsername(), host.getCredentials().getPassword());
     }
 

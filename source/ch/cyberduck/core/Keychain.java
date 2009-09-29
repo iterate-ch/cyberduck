@@ -26,23 +26,21 @@ import java.security.cert.X509Certificate;
 /**
  * @version $Id$
  */
-public class Keychain {
+public class Keychain extends AbstractKeychain {
     private static Logger log = Logger.getLogger(Keychain.class);
-
-    private static Keychain instance = null;
 
     static {
         Native.load("Keychain");
     }
 
-    private static final Object lock = new Object();
+    public static void register() {
+        KeychainFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
 
-    public static Keychain instance() {
-        synchronized(lock) {
-            if(null == instance) {
-                instance = new Keychain();
-            }
-            return instance;
+    private static class Factory extends KeychainFactory {
+        @Override
+        protected AbstractKeychain create() {
+            return new Keychain();
         }
     }
 
@@ -58,18 +56,14 @@ public class Keychain {
      * @param serviceName
      * @param user
      * @return
-     * @deprecated Use #getInternetPasswordFromKeychain
      */
-    @Deprecated
     public synchronized native String getPasswordFromKeychain(String serviceName, String user);
 
     /**
      * @param serviceName
      * @param user
      * @param password
-     * @deprecated Use #addInternetPasswordToKeychain
      */
-    @Deprecated
     public synchronized native void addPasswordToKeychain(String serviceName, String user, String password);
 
     /**
@@ -98,10 +92,31 @@ public class Keychain {
         return encoded;
     }
 
+    @Override
+    public String getPassword(String protocol, int port, String serviceName, String user) {
+        return this.getInternetPasswordFromKeychain(protocol, port, serviceName, user);
+    }
+
+    @Override
+    public String getPassword(String serviceName, String user) {
+        return this.getPasswordFromKeychain(serviceName, user);
+    }
+
+    @Override
+    public void addPassword(String serviceName, String user, String password) {
+        this.addPasswordToKeychain(serviceName, user, password);
+    }
+
+    @Override
+    public void addPassword(String protocol, int port, String serviceName, String user, String password) {
+        this.addInternetPasswordToKeychain(protocol, port, serviceName, user, password);
+    }
+
     /**
      * @param certs
      * @return
      */
+    @Override
     public synchronized boolean isTrusted(String hostname, X509Certificate[] certs) {
         return this.isTrusted(hostname, this.getEncoded(certs));
     }
@@ -116,6 +131,7 @@ public class Keychain {
      * @param certificates
      * @return
      */
+    @Override
     public synchronized boolean displayCertificates(X509Certificate[] certificates) {
         return this.displayCertificates(this.getEncoded(certificates));
     }
