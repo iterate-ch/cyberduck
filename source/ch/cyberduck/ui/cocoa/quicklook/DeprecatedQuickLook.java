@@ -34,19 +34,6 @@ import java.util.List;
 public class DeprecatedQuickLook extends AbstractQuickLook {
     private static Logger log = Logger.getLogger(DeprecatedQuickLook.class);
 
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("QuickLook");
-        }
-        return JNI_LOADED;
-    }
-
-    private DeprecatedQuickLook() {
-        loadNative();
-    }
-
     public static void register() {
         if(Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
             QuickLookFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
@@ -60,6 +47,10 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
         }
     }
     
+    private DeprecatedQuickLook() {
+        Native.load("QuickLook");
+    }
+
     /**
      * @param files
      */
@@ -72,12 +63,6 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
      */
     @Override
     public void select(Collection<Local> files) {
-        if(!loadNative()) {
-            return;
-        }
-        if(!DeprecatedQuickLook.loadNative()) {
-            return;
-        }
         final List<String> paths = new ArrayList<String>();
         for(Local file : files) {
             paths.add(file.getAbsolute());
@@ -86,27 +71,18 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
     }
 
     public boolean isAvailable() {
-        if(!loadNative()) {
-            return false;
-        }
         return this.isAvailableNative();
     }
 
     public native boolean isAvailableNative();
 
     public boolean isOpen() {
-        if(!loadNative()) {
-            return false;
-        }
         return this.isOpenNative();
     }
 
     public native boolean isOpenNative();
 
     public void open() {
-        if(!loadNative()) {
-            return;
-        }
         this.willBeginQuickLook();
         this.openNative();
     }
@@ -114,9 +90,6 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
     public native void openNative();
 
     public void close() {
-        if(!loadNative()) {
-            return;
-        }
         this.closeNative();
         this.didEndQuickLook();
     }

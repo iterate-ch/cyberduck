@@ -26,10 +26,6 @@ import org.apache.log4j.Logger;
 public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     private static Logger log = Logger.getLogger(SystemConfigurationProxy.class);
 
-    static {
-        Native.load("Proxy");
-    }
-
     public static void register() {
         ProxyFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
@@ -42,7 +38,7 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     }
 
     private SystemConfigurationProxy() {
-        ;
+        Native.load("Proxy");
     }
 
     /**

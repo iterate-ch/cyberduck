@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class ProxyFactory extends Factory<Proxy>{
+public abstract class ProxyFactory extends Factory<Proxy> {
 
     /**
      * Registered factories

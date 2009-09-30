@@ -29,10 +29,6 @@ import java.security.cert.X509Certificate;
 public class Keychain extends AbstractKeychain {
     private static Logger log = Logger.getLogger(Keychain.class);
 
-    static {
-        Native.load("Keychain");
-    }
-
     public static void register() {
         KeychainFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
@@ -42,6 +38,10 @@ public class Keychain extends AbstractKeychain {
         protected AbstractKeychain create() {
             return new Keychain();
         }
+    }
+
+    private Keychain() {
+        Native.load("Keychain");
     }
 
     /**

@@ -29,10 +29,13 @@ public class GrowlNative extends Growl {
         Native.load("Growl");
     }
 
+    @Override
     public native void register();
 
+    @Override
     public native void notify(String title, String description);
 
+    @Override
     public native void notifyWithImage(String title, String description, String image);
 
 }
