@@ -30,7 +30,7 @@ import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.model.CDPathReference;
+import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
@@ -373,7 +373,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             case SWITCH_OUTLINE_VIEW: {
                 if(row < this.browserOutlineView.numberOfRows().intValue()) {
-                    return this.lookup(new CDPathReference(this.browserOutlineView.itemAtRow(new NSInteger(row))));
+                    return this.lookup(new OutlinePathReference(this.browserOutlineView.itemAtRow(new NSInteger(row))));
                 }
                 break;
             }
@@ -979,7 +979,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell,
                                                                         NSTableColumn tableColumn, NSObject item) {
                 if(tableColumn.identifier().equals(CDBrowserTableDataSource.FILENAME_COLUMN)) {
-                    final Path path = lookup(new CDPathReference(item));
+                    final Path path = lookup(new OutlinePathReference(item));
                     if(null == path) {
                         return;
                     }
@@ -1876,7 +1876,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 case SWITCH_OUTLINE_VIEW: {
                     this.workdir().invalidate();
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
-                        final Path item = this.lookup(new CDPathReference(browserOutlineView.itemAtRow(new NSInteger(i))));
+                        final Path item = this.lookup(new OutlinePathReference(browserOutlineView.itemAtRow(new NSInteger(i))));
                         if(null == item) {
                             continue;
                         }
@@ -2942,7 +2942,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * @param path
      * @return Null if not mounted or lookup fails
      */
-    public Path lookup(CDPathReference path) {
+    public Path lookup(OutlinePathReference path) {
         if(this.isMounted()) {
             return this.getSession().cache().lookup(path);
         }

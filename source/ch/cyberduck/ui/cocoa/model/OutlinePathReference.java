@@ -29,18 +29,18 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
  *
  * @version $Id$
  */
-public class CDPathReference extends PathReference<NSObject> {
+public class OutlinePathReference extends PathReference<NSObject> {
 
     private NSObject reference;
 
     private int hashcode;
 
-    public CDPathReference(String absolute) {
+    public OutlinePathReference(String absolute) {
         this.reference = NSString.stringWithString(absolute);
         this.hashcode = absolute.hashCode();
     }
 
-    public CDPathReference(NSObject absolute) {
+    public OutlinePathReference(NSObject absolute) {
         this.reference = absolute;
         this.hashcode = absolute.toString().hashCode();
     }

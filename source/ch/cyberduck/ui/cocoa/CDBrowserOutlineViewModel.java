@@ -25,7 +25,7 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.model.CDPathReference;
+import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -51,7 +51,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         return this.indexOf(tableView, p) != -1;
     }
 
-    protected AttributedList<Path> childs(final CDPathReference path) {
+    protected AttributedList<Path> childs(final OutlinePathReference path) {
         final Path lookup = controller.lookup(path);
         if(null == lookup) {
             return AttributedList.emptyList();
@@ -69,7 +69,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
         if(null == item) {
             return false;
         }
-        final Path path = controller.lookup(new CDPathReference(item));
+        final Path path = controller.lookup(new OutlinePathReference(item));
         if(null == path) {
             return false;
         }
@@ -104,7 +104,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                     }
                 }
             }
-            return new NSInteger(this.childs(new CDPathReference(item)).size());
+            return new NSInteger(this.childs(new OutlinePathReference(item)).size());
         }
         return new NSInteger(0);
     }
@@ -121,7 +121,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
             path = controller.workdir();
         }
         else {
-            path = controller.lookup(new CDPathReference(item));
+            path = controller.lookup(new OutlinePathReference(item));
         }
         if(null == path) {
             return null;
@@ -136,21 +136,21 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
 
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
-        super.setObjectValueForItem(controller.lookup(new CDPathReference(item)), value, tableColumn.identifier());
+        super.setObjectValueForItem(controller.lookup(new OutlinePathReference(item)), value, tableColumn.identifier());
     }
 
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
         if(null == item) {
             return null;
         }
-        return super.objectValueForItem(controller.lookup(new CDPathReference(item)), tableColumn.identifier());
+        return super.objectValueForItem(controller.lookup(new OutlinePathReference(item)), tableColumn.identifier());
     }
 
     public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo draggingInfo, NSObject item, NSInteger row) {
         Path destination = null;
         if(controller.isMounted()) {
             if(null != item) {
-                destination = controller.lookup(new CDPathReference(item));
+                destination = controller.lookup(new OutlinePathReference(item));
             }
             if(!PathPasteboard.getPasteboard(controller.getSession().getHost()).isEmpty()
                     || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -187,7 +187,7 @@ public class CDBrowserOutlineViewModel extends CDBrowserTableDataSource implemen
                 destination = controller.workdir();
             }
             else {
-                destination = controller.lookup(new CDPathReference(item));
+                destination = controller.lookup(new OutlinePathReference(item));
             }
         }
         return super.acceptDrop(outlineView, destination, info);

@@ -27,7 +27,7 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
-import ch.cyberduck.ui.cocoa.model.CDPathReference;
+import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -332,7 +332,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     @Override
     public <T> PathReference<T> getReference() {
         if(null == reference) {
-            reference = new CDPathReference(this.getAbsolute());
+            reference = new OutlinePathReference(this.getAbsolute());
 //            reference = new PathReference() {
 //                @Override
 //                public Object unique() {

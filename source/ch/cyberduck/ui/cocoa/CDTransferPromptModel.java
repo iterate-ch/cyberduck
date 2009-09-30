@@ -29,7 +29,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.model.CDPathReference;
+import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -93,7 +93,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         if(roots.contains(reference)) {
             return roots.get(roots.indexOf(reference));
         }
-        return cache.lookup(new CDPathReference(reference));
+        return cache.lookup(new OutlinePathReference(reference));
     }
 
     protected static final String INCLUDE_COLUMN = "INCLUDE";

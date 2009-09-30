@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.model.CDPathReference;
+import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -395,7 +395,7 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                 final NSMutableArray fileTypes = NSMutableArray.array();
                 final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
                 for(int i = 0; i < items.count().intValue(); i++) {
-                    final Path path = controller.lookup(new CDPathReference(items.objectAtIndex(new NSUInteger(i))));
+                    final Path path = controller.lookup(new OutlinePathReference(items.objectAtIndex(new NSUInteger(i))));
                     if(null == path) {
                         continue;
                     }
