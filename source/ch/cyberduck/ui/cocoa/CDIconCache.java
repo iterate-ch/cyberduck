@@ -174,16 +174,6 @@ public class CDIconCache {
         NSImage image = this.get(name, width);
         if(null == image) {
             image = NSImage.imageNamed(name);
-//            if(null == image) {
-//                // Look for icon in system System Core Types Bundle
-//                Local l = LocalFactory.createLocal(NSBundle.bundleWithPath(
-//                        "/System/Library/CoreServices/CoreTypes.bundle").resourcePath(),
-//                        name);
-//                if(!l.exists()) {
-//                    return null;
-//                }
-//                image = NSImage.imageWithContentsOfFile(l.getAbsolute());
-//            }
             if(null == image) {
                 log.warn("No icon named " + name);
             }
