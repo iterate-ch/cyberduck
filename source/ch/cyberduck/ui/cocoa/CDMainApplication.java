@@ -46,8 +46,6 @@ public class CDMainApplication {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
         try {
-            registerFactories();
-
             final Logger root = Logger.getRootLogger();
             root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
@@ -80,11 +78,9 @@ public class CDMainApplication {
     /**
      * Register factory implementations.
      */
-    private static void registerFactories() {
+    static {
         FinderLocal.register();
         UserDefaultsPreferences.register();
-
-        Keychain.register();
         BundleLocale.register();
 
         PlistDeserializer.register();
@@ -95,9 +91,10 @@ public class CDMainApplication {
 
         PlistWriter.register();
 
+        Keychain.register();
+        SystemConfigurationProxy.register();
+
         DeprecatedQuickLook.register();
         QuartzQuickLook.register();
-
-        SystemConfigurationProxy.register();
     }
 }
