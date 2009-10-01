@@ -126,27 +126,10 @@ public class CDController extends AbstractController {
             runnable.run();
             return;
         }
-        final MainActionRegistry registry = MainActionRegistry.instance();
-        final MainAction main = new MainAction() {
-            @Override
-            public boolean isValid() {
-                return runnable.isValid();
-            }
-
-            public void run() {
-                try {
-                    runnable.run();
-                }
-                finally {
-                    //Remove strong reference
-                    registry.remove(this);
-                }
-            }
-        };
-        //Make sure to keep a strong reference
-        registry.add(main);
+        //final OperationBatcher autorelease = this.getBatcher();
         //Defer to main thread
-        Foundation.runOnMainThread(main, wait);
+        Foundation.runOnMainThread(runnable, wait);
+        //autorelease.operate();
     }
 
     /**
