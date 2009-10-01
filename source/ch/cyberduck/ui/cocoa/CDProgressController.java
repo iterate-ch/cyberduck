@@ -100,8 +100,8 @@ public class CDProgressController extends CDBundleController {
              */
             private Timer progressTimer;
 
-            final long delay = 0;
-            final long period = 500; //in milliseconds
+            final static long delay = 0;
+            final static long period = 500; //in milliseconds
 
             @Override
             public void transferWillStart() {
