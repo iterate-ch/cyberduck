@@ -32,7 +32,7 @@ public class TransferCollection extends Collection<Transfer> {
     private static TransferCollection instance;
 
     private TransferCollection() {
-        ;
+        this.load();
     }
 
     private static final Object lock = new Object();

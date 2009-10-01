@@ -220,6 +220,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             return menu.numberOfItems();
         }
 
+        @Override
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean shouldCancel) {
             final int selected = transferTable.numberOfSelectedRows().intValue();
             final int tag = item.tag();
@@ -266,16 +267,8 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
     private CDTransferController() {
         this.loadBundle();
-        this.background(new AbstractBackgroundAction() {
-            public void run() {
-                TransferCollection.instance().load();
-            }
-
-            public void cleanup() {
-                transferTable.reloadData();
-            }
-        });
     }
+    
     public static CDTransferController instance() {
         synchronized(NSApplication.sharedApplication()) {
             if(null == instance) {
