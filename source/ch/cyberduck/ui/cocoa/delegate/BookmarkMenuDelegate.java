@@ -41,6 +41,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
         // 6 is Bonjour with submenu, 7 is sepearator
     }
 
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(index.intValue() == 6) {
             item.setEnabled(true);
