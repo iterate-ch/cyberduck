@@ -55,7 +55,6 @@ public class HistoryCollection extends HostCollection {
     }
 
     /**
-     * 
      * @param bookmark
      * @return
      */
@@ -64,7 +63,7 @@ public class HistoryCollection extends HostCollection {
     }
 
     @Override
-    public synchronized void add(int row, Host bookmark) {
+    public void add(int row, Host bookmark) {
         HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
         if(!this.contains(bookmark)) {
             super.add(row, bookmark);
@@ -79,7 +78,7 @@ public class HistoryCollection extends HostCollection {
      * @return the element that was removed from the list.
      */
     @Override
-    public synchronized Host remove(int row) {
+    public Host remove(int row) {
         this.getFile(this.get(row)).delete(false);
         return super.remove(row);
     }
@@ -118,7 +117,7 @@ public class HistoryCollection extends HostCollection {
     }
 
     @Override
-    public synchronized void clear() {
+    public void clear() {
         log.debug("Removing all bookmarks from " + file);
         for(Host next : this) {
             this.getFile(next).delete(false);

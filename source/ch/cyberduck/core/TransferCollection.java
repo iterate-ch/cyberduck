@@ -54,7 +54,7 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     @Override
-    public synchronized boolean add(Transfer o) {
+    public  boolean add(Transfer o) {
         boolean r = super.add(o);
         this.save();
         return r;
@@ -68,7 +68,7 @@ public class TransferCollection extends Collection<Transfer> {
      * @see #save()
      */
     @Override
-    public synchronized void add(int row, Transfer o) {
+    public  void add(int row, Transfer o) {
         super.add(row, o);
         this.save();
     }
@@ -81,7 +81,7 @@ public class TransferCollection extends Collection<Transfer> {
      * @see #save()
      */
     @Override
-    public synchronized Transfer remove(int row) {
+    public  Transfer remove(int row) {
         return super.remove(row);
     }
 
@@ -89,7 +89,7 @@ public class TransferCollection extends Collection<Transfer> {
         this.save(QUEUE_FILE);
     }
 
-    private synchronized void save(Local f) {
+    private  void save(Local f) {
         log.debug("save");
         if(Preferences.instance().getBoolean("queue.save")) {
             TransferWriterFactory.instance().write(this, f);
@@ -100,18 +100,18 @@ public class TransferCollection extends Collection<Transfer> {
         this.load(QUEUE_FILE);
     }
 
-    private synchronized void load(Local f) {
+    private  void load(Local f) {
         log.debug("load");
         if(f.exists()) {
             log.info("Found Queue file: " + f.toString());
-            super.addAll(TransferReaderFactory.instance().readCollection(f));
+            this.addAll(TransferReaderFactory.instance().readCollection(f));
         }
     }
 
     /**
      * @return
      */
-    public synchronized int numberOfRunningTransfers() {
+    public  int numberOfRunningTransfers() {
         int running = 0;
         // Count the number of running transfers
         for(Transfer t : this) {
@@ -129,7 +129,7 @@ public class TransferCollection extends Collection<Transfer> {
     /**
      * @return
      */
-    public synchronized int numberOfQueuedTransfers() {
+    public  int numberOfQueuedTransfers() {
         int queued = 0;
         // Count the number of queued transfers
         for(Transfer t : this) {
