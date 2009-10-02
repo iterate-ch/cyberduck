@@ -1056,7 +1056,9 @@ public class S3Path extends CloudPath {
      * @return
      */
     public String createTorrentUrl() {
-        return S3Service.createTorrentUrl(this.getContainerName(), this.getKey());
+        return "http://" + S3Service.generateS3HostnameForBucket(this.getContainerName(), false) + "/"
+                + (S3Service.isBucketNameValidDNSName(this.getContainerName()) ? "" : this.getContainerName() + "/")
+                + this.getKey() + "?torrent";
     }
 
     /**
