@@ -575,7 +575,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         b.setImagePosition(NSCell.NSImageLeft);
         b.setFont(NSFont.boldSystemFontOfSize(11f));
         b.setShowsBorderOnlyWhileMouseInside(true);
-        b.sizeToFit();
     }
 
     private void updateBookmarkSource() {
