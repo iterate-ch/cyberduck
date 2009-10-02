@@ -608,6 +608,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     public void setBookmarkSwitchView(NSSegmentedControl bookmarkSwitchView) {
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(1);
+        this.bookmarkSwitchView.setToolTip(Locale.localizedString("Bookmarks"));
         final NSImage image = CDIconCache.iconNamed("bookmarks.tiff");
         this.bookmarkSwitchView.setImage_forSegment(image, SWITCH_BOOKMARK_VIEW);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
