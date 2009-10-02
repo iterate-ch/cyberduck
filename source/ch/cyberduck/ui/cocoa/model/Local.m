@@ -117,30 +117,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_applicati
 	return convertToJString(env, result);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setIconFromExtension(JNIEnv *env, jobject this, jstring path, jstring icon)
-{
-	NSImage *image = [[NSWorkspace sharedWorkspace] iconForFileType:convertToNSString(env, icon)];
-	[image setScalesWhenResized:YES];
-	[image setSize:NSMakeSize(128.0, 128.0)];
-	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
-		[workspace setIcon:image forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
-	}
-}
-
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setIconFromFile(JNIEnv *env, jobject this, jstring path, jstring icon)
-{
-	NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
-	if([workspace respondsToSelector:@selector(setIcon:forFile:options:)]) {
-		[workspace setIcon:[NSImage imageNamed:convertToNSString(env, icon)] forFile:convertToNSString(env, path) options:NSExcludeQuickDrawElementsIconCreationOption];
-	}
-}
-
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_removeCustomIcon(JNIEnv *env, jobject this, jstring path)
-{
-	[IconFamily removeCustomIconFromFile:convertToNSString(env, path)];
-}
-
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_kind(JNIEnv *env, jobject this, jstring extension)
 {
 	NSString *kind = nil;
@@ -154,4 +130,38 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_kind(JNIE
 		[kind release];
 	}
 	return result;
+}
+
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_resolveAlias(JNIEnv *env, jobject this, jstring absolute)
+{
+    NSString *path = convertToNSString(env, absolute);
+    NSString *resolvedPath = nil;
+
+    CFURLRef url = CFURLCreateWithFileSystemPath
+                       (kCFAllocatorDefault, (CFStringRef)path, kCFURLPOSIXPathStyle, NO);
+    if (url != NULL)
+    {
+        FSRef fsRef;
+        if (CFURLGetFSRef(url, &fsRef))
+        {
+            Boolean targetIsFolder, wasAliased;
+            OSErr err = FSResolveAliasFile (&fsRef, true, &targetIsFolder, &wasAliased);
+            if ((err == noErr) && wasAliased)
+            {
+                CFURLRef resolvedUrl = CFURLCreateFromFSRef(kCFAllocatorDefault, &fsRef);
+                if (resolvedUrl != NULL)
+                {
+                    resolvedPath = (NSString*) CFURLCopyFileSystemPath(resolvedUrl, kCFURLPOSIXPathStyle);
+                    CFRelease(resolvedUrl);
+                }
+            }
+        }
+        CFRelease(url);
+    }
+
+    if (resolvedPath == nil)
+    {
+        resolvedPath = [NSString stringWithString:path];
+    }
+	return convertToJString(env, resolvedPath);
 }

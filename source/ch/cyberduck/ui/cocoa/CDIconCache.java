@@ -77,6 +77,14 @@ public class CDIconCache {
         return CDIconCache.instance().iconForFolder(size);
     }
 
+    public static NSImage documentIcon(String extension) {
+        return CDIconCache.instance().iconForExtension(extension, null);
+    }
+
+    public static NSImage documentIcon(String extension, Integer size) {
+        return CDIconCache.instance().iconForExtension(extension, size);
+    }
+
     private static CDIconCache instance = null;
 
     private static final Object lock = new Object();

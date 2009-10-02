@@ -1787,7 +1787,6 @@ source/ch/cyberduck/core/davs/DAVSPath.java -text
 source/ch/cyberduck/core/davs/DAVSSession.java -text
 source/ch/cyberduck/core/ec/ECPath.java -text
 source/ch/cyberduck/core/ec/ECSession.java -text
-source/ch/cyberduck/core/forker/NSString+CarbonFSRefCreation.m -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/LaxUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParser.java -text

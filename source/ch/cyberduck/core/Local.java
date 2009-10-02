@@ -35,6 +35,10 @@ import java.net.MalformedURLException;
 public abstract class Local extends AbstractPath implements Attributes {
     private static Logger log = Logger.getLogger(Local.class);
 
+    {
+        attributes = this;
+    }
+
     public Permission getPermission() {
         return null;
     }
@@ -162,13 +166,6 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public Local(File path) {
         this.setPath(path.getAbsolutePath());
-    }
-
-    /**
-     *
-     */
-    protected void init() {
-        attributes = this;
     }
 
     /**
@@ -348,7 +345,6 @@ public abstract class Local extends AbstractPath implements Attributes {
     @Override
     public void setPath(String name) {
         _impl = new File(Path.normalize(name));
-        this.init();
     }
 
     @Override

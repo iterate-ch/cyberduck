@@ -41,28 +41,20 @@ extern "C" {
 	
 	/*
 	 * Class:     ch_cyberduck_ui_cocoa_model_FinderLocal
-	 * Method:    setIconFromFile
-	 * Signature: (Ljava/lang/String;Ljava/lang/String;)V
-	 */
-	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setIconFromFile
-	(JNIEnv *, jobject, jstring, jstring);
-	
-	/*
-	 * Class:     ch_cyberduck_ui_cocoa_model_FinderLocal
-	 * Method:    removeCustomIcon
-	 * Signature: (Ljava/lang/String;)V
-	 */
-	JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_removeCustomIcon
-	(JNIEnv *, jobject, jstring);
-	
-	/*
-	 * Class:     ch_cyberduck_ui_cocoa_model_FinderLocal
 	 * Method:    applicationForExtension
 	 * Signature: (Ljava/lang/String;)Ljava/lang/String;
 	 */
 	JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_applicationForExtension
 	(JNIEnv *, jobject, jstring);
 	
+	/*
+	 * Class:     ch_cyberduck_ui_cocoa_model_FinderLocal
+	 * Method:    resolveAlias
+	 * Signature: (Ljava/lang/String;)Ljava/lang/String;
+	 */
+    JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_resolveAlias
+    (JNIEnv *, jobject, jstring);
+    
 #ifdef __cplusplus
 }
 #endif

@@ -84,25 +84,13 @@ public class FinderLocal extends Local {
 
     @Override
     public void setPath(String name) {
-        super.setPath(stringByExpandingTildeInPath(name));
-    }
-
-    @Override
-    protected void init() {
-        if(!loadNative()) {
-            return;
+        final String absolute = stringByExpandingTildeInPath(name);
+        if(loadNative()) {
+            super.setPath(this.resolveAlias(absolute));
         }
-//        FileForker forker = new MacOSXForker();
-//        forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
-//        if(forker.isAlias()) {
-//            try {
-//                this.setPath(forker.makeResolved().getPath());
-//            }
-//            catch(IOException e) {
-//                log.error("Error resolving alias:" + e.getMessage());
-//            }
-//        }
-        super.init();
+        else {
+            super.setPath(absolute);
+        }
     }
 
     /**
@@ -121,6 +109,8 @@ public class FinderLocal extends Local {
         }
         return JNI_LOADED;
     }
+
+    private native String resolveAlias(String absolute);
 
     @Override
     protected native String kind(String extension);
@@ -304,7 +294,8 @@ public class FinderLocal extends Local {
             new CDController().invoke(new DefaultMainAction() {
                 public void run() {
                     if(-1 == progress) {
-                        removeResourceFork();
+                        NSWorkspace.sharedWorkspace().setIcon_forFile_options(
+                                CDIconCache.documentIcon(getExtension()), getAbsolute(), new NSUInteger(0));
                     }
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
@@ -315,27 +306,6 @@ public class FinderLocal extends Local {
             });
         }
     }
-
-    /**
-     * Removes the resource fork from the file alltogether
-     */
-    private void removeResourceFork() {
-        this.removeCustomIcon();
-//        try {
-//            FileForker forker = new MacOSXForker();
-//            forker.usePathname(new Pathname(_impl.getAbsoluteFile()));
-//            forker.makeForkOutputStream(true, false).close();
-//        }
-//        catch(IOException e) {
-//            log.error("Failed to remove resource fork from file:" + e.getMessage());
-//        }
-    }
-
-    private void removeCustomIcon() {
-        this.removeCustomIcon(this.getAbsolute());
-    }
-
-    private native void removeCustomIcon(String path);
 
     private static String stringByAbbreviatingWithTildeInPath(String string) {
         return NSString.stringByAbbreviatingWithTildeInPath(string);
