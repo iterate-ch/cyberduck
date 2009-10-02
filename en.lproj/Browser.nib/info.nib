@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>IBFramework Version</key>
-	<string>677</string>
+	<string>680</string>
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBOpenObjects</key>
 	<array/>
 	<key>IBSystem Version</key>
-	<string>10A432</string>
+	<string>10B504</string>
 	<key>targetFramework</key>
 	<string>IBCocoaFramework</string>
 </dict>
