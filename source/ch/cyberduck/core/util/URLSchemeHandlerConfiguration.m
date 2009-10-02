@@ -18,7 +18,7 @@
  */
 
 #import "URLSchemeHandlerConfiguration.h"
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "ApplicationServices/ApplicationServices.h"
 
 // Simple utility to convert java strings to NSStrings
@@ -50,21 +50,17 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_setDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme, jstring bundleIdentifier)
 {
-    if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_3) {
-        LSSetDefaultHandlerForURLScheme(
-            (CFStringRef)convertToNSString(env, scheme), 
-            (CFStringRef)convertToNSString(env, bundleIdentifier)
-        );
-    }
+	LSSetDefaultHandlerForURLScheme(
+		(CFStringRef)convertToNSString(env, scheme), 
+		(CFStringRef)convertToNSString(env, bundleIdentifier)
+	);
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_getDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSString *bundleIdentifier = nil;
-    if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_3) {
-        bundleIdentifier = (NSString *)LSCopyDefaultHandlerForURLScheme((CFStringRef)convertToNSString(env, scheme));
-    }
+	bundleIdentifier = (NSString *)LSCopyDefaultHandlerForURLScheme((CFStringRef)convertToNSString(env, scheme));
     if(nil == bundleIdentifier) {
         return NULL;
     }
@@ -79,11 +75,9 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfi
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSArray *handlers = nil;
-    if(floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_3) {
-        handlers = (NSArray *)LSCopyAllHandlersForURLScheme(
-            (CFStringRef)convertToNSString(env, scheme)
-        );
-    }
+	handlers = (NSArray *)LSCopyAllHandlersForURLScheme(
+		(CFStringRef)convertToNSString(env, scheme)
+	);
     if(nil == handlers) {
         handlers = [NSArray array];
     }

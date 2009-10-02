@@ -19,11 +19,8 @@
 #include <stdio.h>
 
 #import <Local.h>
-#import <Carbon/Carbon.h>
 #import <ApplicationServices/ApplicationServices.h>
-#import <CoreServices/CoreServices.h>
-#import <Cocoa/Cocoa.h>
-#import <IconFamily.h>
+#import <Foundation/Foundation.h>
 
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
