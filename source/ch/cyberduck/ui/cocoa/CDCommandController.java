@@ -121,6 +121,7 @@ public class CDCommandController extends CDSheetController implements Transcript
                     }
                 }
 
+                @Override
                 public void cleanup() {
                     progress.stopAnimation(null);
                     sender.setEnabled(true);

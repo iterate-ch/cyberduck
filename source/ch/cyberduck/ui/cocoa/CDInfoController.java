@@ -281,6 +281,7 @@ public class CDInfoController extends CDWindowController {
                     }
                 }
 
+                @Override
                 public void cleanup() {
                     toggleS3Settings(true);
                 }
@@ -296,6 +297,7 @@ public class CDInfoController extends CDWindowController {
                     }
                 }
 
+                @Override
                 public void cleanup() {
                     toggleS3Settings(true);
                 }
@@ -643,6 +645,7 @@ public class CDInfoController extends CDWindowController {
                     url = files.get(0).toHttpURL();
                 }
 
+                @Override
                 public void cleanup() {
                     webUrlField.setAttributedStringValue(
                             HyperlinkAttributedStringFactory.create(
@@ -676,6 +679,7 @@ public class CDInfoController extends CDWindowController {
                 }
             }
 
+            @Override
             public void cleanup() {
                 Permission permission = null;
                 for(Path next : files) {
@@ -819,6 +823,7 @@ public class CDInfoController extends CDWindowController {
                 }
             }
 
+            @Override
             public void cleanup() {
                 sizeField.setAttributedStringValue(
                         NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(size) + " (" + size + " bytes)",
@@ -897,6 +902,7 @@ public class CDInfoController extends CDWindowController {
                     metadata = s3.getMetadata();
                 }
 
+                @Override
                 public void cleanup() {
                     bucketLoggingButton.setState(logging ? NSCell.NSOnState : NSCell.NSOffState);
                     if(StringUtils.isNotBlank(location)) {
@@ -928,6 +934,7 @@ public class CDInfoController extends CDWindowController {
                 }
             }
 
+            @Override
             public void cleanup() {
                 toggleS3Settings(true);
             }
@@ -1021,6 +1028,7 @@ public class CDInfoController extends CDWindowController {
                 }
             }
 
+            @Override
             public void cleanup() {
                 controller.reloadData(true);
                 togglePermissionSettings(true);
@@ -1101,6 +1109,7 @@ public class CDInfoController extends CDWindowController {
                 }
             }
 
+            @Override
             public void cleanup() {
                 // Refresh the current distribution status
                 distributionStatusButtonClicked(sender);
@@ -1122,6 +1131,7 @@ public class CDInfoController extends CDWindowController {
                 }
             }
 
+            @Override
             public void cleanup() {
                 toggleDistributionSettings(true, !distribution.isInprogress());
 
@@ -1187,6 +1197,7 @@ public class CDInfoController extends CDWindowController {
                 }
             }
 
+            @Override
             public void cleanup() {
                 controller.reloadData(true);
                 initSize();

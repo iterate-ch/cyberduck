@@ -163,6 +163,7 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                                 path.getName());
                     }
 
+                    @Override
                     public void cleanup() {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);

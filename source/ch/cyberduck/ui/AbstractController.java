@@ -76,9 +76,7 @@ public abstract class AbstractController implements Controller {
                         // Invoke the cleanup on the main thread to let the action synchronize the user interface
                         invoke(new DefaultMainAction() {
                             public void run() {
-                                if(!runnable.isCanceled()) {
-                                    runnable.cleanup();
-                                }
+                                runnable.cleanup();
                             }
                         });
                         if(log.isDebugEnabled()) {

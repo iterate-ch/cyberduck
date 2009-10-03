@@ -28,7 +28,8 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.delegate.*;
+import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
@@ -52,12 +53,12 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import com.sun.jna.ptr.PointerByReference;
+
 import java.io.File;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.*;
-
-import com.sun.jna.ptr.PointerByReference;
 
 /**
  * @version $Id$
@@ -799,8 +800,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             }
                         }
 
+                        @Override
                         public void cleanup() {
                             if(previews.isEmpty()) {
+                                return;
+                            }
+                            if(this.isCanceled()) {
                                 return;
                             }
                             // Change files in Quick Look
@@ -872,6 +877,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                                 }
                             }
 
+                            @Override
                             public void cleanup() {
                                 if(inspector != null) {
                                     inspector.setFiles(selected);
@@ -1747,6 +1753,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     unmountImpl();
                 }
 
+                @Override
                 public void cleanup() {
                     session.getHost().setEncoding(encoding);
                     reloadButtonClicked(null);
@@ -1943,6 +1950,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
+            @Override
             public void cleanup() {
                 for(Path duplicate : normalized.values()) {
                     if(edit) {
@@ -1992,6 +2000,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
+            @Override
             public void cleanup() {
                 reloadData(new ArrayList<Path>(normalized.values()));
             }
@@ -2206,6 +2215,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), "");
             }
 
+            @Override
             public void cleanup() {
                 reloadData(false);
             }
@@ -2622,6 +2632,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     super.cancel();
                 }
 
+                @Override
                 public void cleanup() {
                     updateStatusLabel();
                 }
@@ -2884,6 +2895,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 session.archive(archive, selected);
             }
 
+            @Override
             public void cleanup() {
                 // Update Selection
                 reloadData(Collections.singletonList(archive.getArchive(selected)));
@@ -2909,6 +2921,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     session.unarchive(archive, selected);
                 }
 
+                @Override
                 public void cleanup() {
                     expanded.addAll(archive.getExpanded(Collections.singletonList(selected)));
                     // Update Selection
@@ -3005,6 +3018,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
 
+            @Override
             public void cleanup() {
                 // Remove any custom file filter
                 setPathFilter(null);
@@ -3241,6 +3255,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                         mount = session.mount();
                     }
 
+                    @Override
                     public void cleanup() {
                         // Set the working directory
                         setWorkdir(mount);
@@ -3326,6 +3341,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 unmountImpl();
             }
 
+            @Override
             public void cleanup() {
                 inspector = null;
 
@@ -3377,6 +3393,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     }
                 }
 
+                @Override
                 public void cleanup() {
                     ;
                 }
@@ -3412,6 +3429,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 unmountImpl();
             }
 
+            @Override
             public void cleanup() {
                 if(Preferences.instance().getBoolean("browser.disconnect.showBookmarks")) {
                     CDBrowserController.this.toggleBookmarks(true);

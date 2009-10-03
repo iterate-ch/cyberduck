@@ -92,6 +92,7 @@ public abstract class Editor {
                         edited.getName());
             }
 
+            @Override
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
                     final Permission permissions = edited.getLocal().attributes.getPermission();
@@ -179,6 +180,7 @@ public abstract class Editor {
                         edited.getName());
             }
 
+            @Override
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
                     if(Editor.this.isDeferredDelete()) {

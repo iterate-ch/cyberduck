@@ -82,6 +82,10 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
         }
     }
 
+    public void cleanup() {
+        ;
+    }
+
     private Set<BackgroundActionListener> listeners
             = Collections.synchronizedSet(new HashSet<BackgroundActionListener>());
 

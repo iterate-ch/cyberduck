@@ -82,6 +82,7 @@ public class CDFolderController extends CDFileController {
                         folder.getName());
             }
 
+            @Override
             public void cleanup() {
                 if(filename.charAt(0) == '.') {
                     c.setShowHiddenFiles(true);

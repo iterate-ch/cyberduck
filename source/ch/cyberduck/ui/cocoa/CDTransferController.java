@@ -814,10 +814,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                     public void run() {
                         transfer.cancel();
                     }
-
-                    public void cleanup() {
-                        ;
-                    }
                 });
             }
         }
@@ -831,10 +827,6 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 this.background(new AbstractBackgroundAction() {
                     public void run() {
                         transfer.cancel();
-                    }
-
-                    public void cleanup() {
-                        ;
                     }
                 });
             }

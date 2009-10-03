@@ -241,6 +241,7 @@ public class CDBookmarkController extends CDWindowController {
                     favicon = CDIconCache.instance().convert(NSImage.imageWithData(data), 16);
                 }
 
+                @Override
                 public void cleanup() {
                     if(null == favicon) {
                         return;
@@ -623,6 +624,7 @@ public class CDBookmarkController extends CDWindowController {
                     reachable = host.isReachable();
                 }
 
+                @Override
                 public void cleanup() {
                     alertIcon.setEnabled(!reachable);
                     alertIcon.setImage(reachable ? null : CDIconCache.iconNamed("alert.tiff"));

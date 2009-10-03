@@ -500,6 +500,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                     sessions.load();
                 }
 
+                @Override
                 public void cleanup() {
                     if(sessions.isEmpty()) {
                         // Open empty browser if no saved sessions
@@ -524,28 +525,16 @@ public class CDMainController extends CDBundleController implements NSApplicatio
             public void run() {
                 HostCollection.defaultCollection().load();
             }
-
-            public void cleanup() {
-                ;
-            }
         });
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 HistoryCollection.defaultCollection().load();
-            }
-
-            public void cleanup() {
-                ;
             }
         });
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 // Make sure we register to Growl first
                 Growl.instance().register();
-            }
-
-            public void cleanup() {
-                ;
             }
         });
         Rendezvous.instance().addListener(new RendezvousListener() {
@@ -614,10 +603,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
             this.background(new AbstractBackgroundAction() {
                 public void run() {
                     Rendezvous.instance().init();
-                }
-
-                public void cleanup() {
-                    ;
                 }
             });
         }

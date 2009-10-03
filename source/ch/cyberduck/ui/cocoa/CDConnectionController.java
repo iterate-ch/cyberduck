@@ -257,6 +257,7 @@ public class CDConnectionController extends CDSheetController {
                     reachable = new Host(hostname).isReachable();
                 }
 
+                @Override
                 public void cleanup() {
                     alertIcon.setEnabled(!reachable);
                     alertIcon.setImage(reachable ? null : CDIconCache.iconNamed("alert.tiff"));
