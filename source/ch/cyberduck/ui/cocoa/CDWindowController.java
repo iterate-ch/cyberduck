@@ -141,7 +141,7 @@ public abstract class CDWindowController extends CDBundleController implements N
      */
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
-        for(CDWindowListener listener : listeners) {
+        for(CDWindowListener listener : listeners.toArray(new CDWindowListener[listeners.size()])) {
             listener.windowWillClose();
         }
         if(!this.isSingleton()) {
