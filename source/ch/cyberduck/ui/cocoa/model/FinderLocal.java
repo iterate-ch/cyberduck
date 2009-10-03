@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -294,8 +295,12 @@ public class FinderLocal extends Local {
             new CDController().invoke(new DefaultMainAction() {
                 public void run() {
                     if(-1 == progress) {
+                        String extension = getExtension();
+                        if(StringUtils.isEmpty(extension)) {
+                            extension = "";
+                        }
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                CDIconCache.documentIcon(getExtension()), getAbsolute(), new NSUInteger(0));
+                                CDIconCache.documentIcon(extension), getAbsolute(), new NSUInteger(0));
                     }
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
