@@ -730,11 +730,7 @@ static void resolveHSV(CGFloat *color1, CGFloat *color2);
 	//Calls to CoreGraphics
 	CGContextRef currentContext = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	CGContextSaveGState(currentContext);
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-#else
-	CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-#endif
 	CGShadingRef myCGShading = CGShadingCreateRadial(colorspace, startPoint, startRadius, endPoint, endRadius, gradientFunction, true, true);
 	
 	CGContextClipToRect  (currentContext, *(CGRect *)&rect);

@@ -167,10 +167,7 @@
 		currPage = [tabView tabViewItemAtIndex:0];
 	[[tabView window] setTitle: [baseWindowName stringByAppendingString: [currPage label]]];
 	
-	#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_3
-	if( [toolbar respondsToSelector: @selector(setSelectedItemIdentifier:)] )
-		[toolbar setSelectedItemIdentifier: [currPage identifier]];
-	#endif
+    [toolbar setSelectedItemIdentifier: [currPage identifier]];
 }
 
 
@@ -270,12 +267,10 @@
 		automagically select the appropriate item when it is clicked.
    -------------------------------------------------------------------------- */
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_3
 -(NSArray*) toolbarSelectableItemIdentifiers: (NSToolbar*)toolbar
 {
 	return [itemsList allKeys];
 }
-#endif
 
 
 /* -----------------------------------------------------------------------------
