@@ -86,11 +86,6 @@
     CLASS = NSSegmentedControl;
     LANGUAGE = ObjC;
     SUPERCLASS = NSControl;
-},
-        {
-    CLASS = SKWSegmentedControl;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSSegmentedControl;
 }
     );
     IBVersion = 1;
