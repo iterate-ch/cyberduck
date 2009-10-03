@@ -490,8 +490,6 @@ public class CDInfoController extends CDWindowController {
 
         this.setState(s3Toggle, amazon && Preferences.instance().getBoolean("info.toggle.s3"));
         s3Toggle.setEnabled(amazon);
-        this.setState(this.s3Toggle, (this.files.get(0) instanceof S3Path)
-                && Preferences.instance().getBoolean("info.toggle.s3"));
     }
 
     @Override
@@ -500,6 +498,7 @@ public class CDInfoController extends CDWindowController {
         super.invalidate();
     }
 
+    @Override
     protected String getBundleName() {
         return "Info";
     }
