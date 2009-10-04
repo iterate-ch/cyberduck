@@ -32,19 +32,19 @@ public abstract class NSToolbar implements NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSToolbar", _Class.class);
 
     /// <i>native declaration : :12</i>
-    public static final int NSToolbarDisplayModeDefault = 0;
+    public static final NSUInteger NSToolbarDisplayModeDefault = new NSUInteger(0);
     /// <i>native declaration : :12</i>
-    public static final int NSToolbarDisplayModeIconAndLabel = 1;
+    public static final NSUInteger NSToolbarDisplayModeIconAndLabel = new NSUInteger(1);
     /// <i>native declaration : :12</i>
-    public static final int NSToolbarDisplayModeIconOnly = 2;
+    public static final NSUInteger NSToolbarDisplayModeIconOnly = new NSUInteger(2);
     /// <i>native declaration : :12</i>
-    public static final int NSToolbarDisplayModeLabelOnly = 3;
+    public static final NSUInteger NSToolbarDisplayModeLabelOnly = new NSUInteger(3);
     /// <i>native declaration : :15</i>
-    public static final int NSToolbarSizeModeDefault = 0;
+    public static final NSUInteger NSToolbarSizeModeDefault = new NSUInteger(0);
     /// <i>native declaration : :15</i>
-    public static final int NSToolbarSizeModeRegular = 1;
+    public static final NSUInteger NSToolbarSizeModeRegular = new NSUInteger(1);
     /// <i>native declaration : :15</i>
-    public static final int NSToolbarSizeModeSmall = 2;
+    public static final NSUInteger NSToolbarSizeModeSmall = new NSUInteger(2);
 
     public static NSToolbar toolbarWithIdentifier(String identifier) {
         return CLASS.alloc().initWithIdentifier(identifier);

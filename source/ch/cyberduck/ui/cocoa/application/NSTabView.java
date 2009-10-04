@@ -23,7 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
-import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :23</i>
@@ -34,7 +33,7 @@ public abstract class NSTabView extends NSView {
     }
 
     public static interface Delegate {
-        void tabView_didSelectTabViewItem(NSTabView  tabView, NSTabViewItem tabViewItem);
+        void tabView_didSelectTabViewItem(NSTabView tabView, NSTabViewItem tabViewItem);
     }
 
     /**
@@ -106,7 +105,7 @@ public abstract class NSTabView extends NSView {
      * Original signature : <code>NSTabViewType tabViewType()</code><br>
      * <i>native declaration : :90</i>
      */
-    public abstract int tabViewType();
+    public abstract NSUInteger tabViewType();
 
     /**
      * Original signature : <code>NSArray* tabViewItems()</code><br>
@@ -156,7 +155,7 @@ public abstract class NSTabView extends NSView {
      * Original signature : <code>void setTabViewType(NSTabViewType)</code><br>
      * <i>native declaration : :101</i>
      */
-    public abstract void setTabViewType(int tabViewType);
+    public abstract void setTabViewType(NSUInteger tabViewType);
 
     /**
      * Original signature : <code>void setAllowsTruncatedLabels(BOOL)</code><br>
@@ -236,19 +235,19 @@ public abstract class NSTabView extends NSView {
      * NSNotFound if not found<br>
      * <i>native declaration : :129</i>
      */
-    public abstract NSInteger indexOfTabViewItem(NSTabViewItem tabViewItem);
+    public abstract int indexOfTabViewItem(NSTabViewItem tabViewItem);
 
     /**
      * Original signature : <code>NSTabViewItem* tabViewItemAtIndex(NSInteger)</code><br>
      * May raise an NSRangeException<br>
      * <i>native declaration : :130</i>
      */
-    public abstract NSTabViewItem tabViewItemAtIndex(NSInteger index);
+    public abstract NSTabViewItem tabViewItemAtIndex(int index);
 
     /**
      * Original signature : <code>NSInteger indexOfTabViewItemWithIdentifier(id)</code><br>
      * NSNotFound if not found<br>
      * <i>native declaration : :131</i>
      */
-    public abstract NSInteger indexOfTabViewItemWithIdentifier(String identifier);
+    public abstract int indexOfTabViewItemWithIdentifier(String identifier);
 }

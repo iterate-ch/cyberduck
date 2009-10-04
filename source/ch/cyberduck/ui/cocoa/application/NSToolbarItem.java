@@ -123,7 +123,7 @@ public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedU
      * Original signature : <code>void setTag(NSInteger)</code><br>
      * <i>native declaration : :87</i>
      */
-    public abstract void setTag(NSInteger tag);
+    public abstract void setTag(int tag);
 
     /**
      * Original signature : <code>void setTarget(id)</code><br>

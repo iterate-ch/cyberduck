@@ -286,12 +286,6 @@ public abstract class NSTableView extends NSControl {
     public abstract void tile();
 
     /**
-     * Original signature : <code>void sizeToFit()</code><br>
-     * <i>native declaration : :161</i>
-     */
-    public abstract void sizeToFit();
-
-    /**
      * Original signature : <code>void sizeLastColumnToFit()</code><br>
      * <i>native declaration : :162</i>
      */
