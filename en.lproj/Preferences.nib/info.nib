@@ -2,38 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>IBDocumentLocation</key>
-	<string>142 193 396 352 0 0 1280 778 </string>
-	<key>IBEditorPositions</key>
-	<dict>
-		<key>1032</key>
-		<string>376 204 527 524 0 0 1280 778 </string>
-		<key>1034</key>
-		<string>376 388 527 279 0 0 1280 778 </string>
-		<key>1035</key>
-		<string>696 744 527 212 0 0 1920 1178 </string>
-		<key>1374</key>
-		<string>376 442 527 207 0 0 1280 778 </string>
-		<key>1664</key>
-		<string>376 429 527 225 0 0 1280 778 </string>
-		<key>1803</key>
-		<string>376 466 527 175 0 0 1280 778 </string>
-		<key>848</key>
-		<string>696 477 527 560 0 0 1920 1178 </string>
-		<key>874</key>
-		<string>376 162 527 579 0 0 1280 778 </string>
-		<key>906</key>
-		<string>376 282 527 420 0 0 1280 778 </string>
-	</dict>
 	<key>IBFramework Version</key>
-	<string>489.0</string>
-	<key>IBLockedTabItems</key>
-	<array>
-		<integer>668</integer>
-	</array>
+	<string>680</string>
 	<key>IBOldestOS</key>
 	<integer>3</integer>
+	<key>IBOpenObjects</key>
+	<array/>
 	<key>IBSystem Version</key>
-	<string>9J61</string>
+	<string>10B504</string>
+	<key>targetFramework</key>
+	<string>IBCocoaFramework</string>
 </dict>
 </plist>

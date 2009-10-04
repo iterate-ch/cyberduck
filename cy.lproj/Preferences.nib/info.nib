@@ -2,37 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>IBDocumentLocation</key>
-	<string>142 193 396 352 0 0 1280 778 </string>
-	<key>IBEditorPositions</key>
-	<dict>
-		<key>1032</key>
-		<string>376 204 527 524 0 0 1280 778 </string>
-		<key>1034</key>
-		<string>376 388 527 279 0 0 1280 778 </string>
-		<key>1035</key>
-		<string>696 744 527 212 0 0 1920 1178 </string>
-		<key>1374</key>
-		<string>376 442 527 207 0 0 1280 778 </string>
-		<key>1664</key>
-		<string>376 429 527 225 0 0 1280 778 </string>
-		<key>1803</key>
-		<string>376 466 527 175 0 0 1280 778 </string>
-		<key>848</key>
-		<string>696 477 527 560 0 0 1920 1178 </string>
-		<key>874</key>
-		<string>376 162 527 579 0 0 1280 778 </string>
-		<key>906</key>
-		<string>376 282 527 420 0 0 1280 778 </string>
-	</dict>
 	<key>IBFramework Version</key>
 	<string>489.0</string>
 	<key>IBGroupedObjects</key>
 	<dict>
 		<key>10</key>
 		<array>
-			<string>1302</string>
 			<string>1300</string>
+			<string>1302</string>
 		</array>
 		<key>11</key>
 		<array>
@@ -41,20 +18,20 @@
 		</array>
 		<key>12</key>
 		<array>
-			<string>1306</string>
 			<string>1308</string>
+			<string>1306</string>
 		</array>
 		<key>13</key>
 		<array>
-			<string>1311</string>
 			<string>1309</string>
+			<string>1311</string>
 		</array>
 		<key>14</key>
 		<array>
-			<string>1393</string>
-			<string>1392</string>
-			<string>1391</string>
 			<string>1389</string>
+			<string>1392</string>
+			<string>1393</string>
+			<string>1391</string>
 		</array>
 		<key>4</key>
 		<array>
@@ -63,43 +40,43 @@
 		</array>
 		<key>5</key>
 		<array>
-			<string>1256</string>
+			<string>1245</string>
+			<string>1253</string>
+			<string>1262</string>
+			<string>1255</string>
+			<string>1260</string>
+			<string>1263</string>
+			<string>1252</string>
 			<string>1242</string>
 			<string>1267</string>
-			<string>1246</string>
 			<string>1244</string>
-			<string>1255</string>
-			<string>1245</string>
-			<string>1252</string>
-			<string>1260</string>
-			<string>1253</string>
-			<string>1263</string>
-			<string>1262</string>
+			<string>1256</string>
+			<string>1246</string>
 		</array>
 		<key>6</key>
 		<array>
-			<string>1254</string>
 			<string>1265</string>
+			<string>1254</string>
 		</array>
 		<key>7</key>
 		<array>
-			<string>1243</string>
-			<string>1251</string>
-			<string>1250</string>
 			<string>1248</string>
-			<string>1249</string>
-			<string>1269</string>
-			<string>1261</string>
-			<string>1266</string>
-			<string>1241</string>
-			<string>1258</string>
-			<string>1268</string>
 			<string>1257</string>
+			<string>1268</string>
+			<string>1243</string>
+			<string>1241</string>
+			<string>1261</string>
+			<string>1250</string>
+			<string>1249</string>
+			<string>1251</string>
+			<string>1258</string>
+			<string>1266</string>
+			<string>1269</string>
 		</array>
 		<key>8</key>
 		<array>
-			<string>1277</string>
 			<string>1280</string>
+			<string>1277</string>
 		</array>
 		<key>9</key>
 		<array>
@@ -109,13 +86,11 @@
 	</dict>
 	<key>IBLastGroupID</key>
 	<string>0</string>
-	<key>IBLockedTabItems</key>
-	<array>
-		<integer>668</integer>
-	</array>
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>9J61</string>
+	<string>10B504</string>
+	<key>targetFramework</key>
+	<string>IBCocoaFramework</string>
 </dict>
 </plist>

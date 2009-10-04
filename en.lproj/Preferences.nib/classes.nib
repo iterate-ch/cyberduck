@@ -1,131 +1,220 @@
-{
-    IBClasses =     (
-                {
-            CLASS = CDPreferencesController;
-            LANGUAGE = ObjC;
-            OUTLETS =             {
-                alternatingRowBackgroundCheckbox = NSButton;
-                anonymousField = NSTextField;
-                bookmarkSizePopup = NSPopUpButton;
-                bringQueueToBackCheckbox = NSButton;
-                bringQueueToFrontCheckbox = NSButton;
-                browserSerializeCheckbox = NSButton;
-                chmodDownloadCheckbox = NSButton;
-                chmodDownloadCustomCheckbox = NSButton;
-                chmodDownloadDefaultCheckbox = NSButton;
-                chmodDownloadTypePopup = NSPopUpButton;
-                chmodUploadCheckbox = NSButton;
-                chmodUploadCustomCheckbox = NSButton;
-                chmodUploadDefaultCheckbox = NSButton;
-                chmodUploadTypePopup = NSPopUpButton;
-                confirmDisconnectCheckbox = NSButton;
-                defaultBookmarkCombobox = NSPopUpButton;
-                defaultBucketLocation = NSPopUpButton;
-                defaultDownloadThrottleCombobox = NSPopUpButton;
-                defaultFTPHandlerCombobox = NSPopUpButton;
-                defaultSFTPHandlerCombobox = NSPopUpButton;
-                defaultUploadThrottleCombobox = NSPopUpButton;
-                dgroupr = NSButton;
-                dgroupw = NSButton;
-                dgroupx = NSButton;
-                dotherr = NSButton;
-                dotherw = NSButton;
-                dotherx = NSButton;
-                doubleClickCheckbox = NSButton;
-                downerr = NSButton;
-                downerw = NSButton;
-                downerx = NSButton;
-                downloadPathPopup = NSPopUpButton;
-                downloadSkipButton = NSButton;
-                downloadSkipRegexDefaultButton = NSButton;
-                downloadSkipRegexField = NSTextView;
-                duplicateDownloadCombobox = NSPopUpButton;
-                duplicateDownloadOverwriteButton = NSButton;
-                duplicateUploadCombobox = NSPopUpButton;
-                duplicateUploadOverwriteButton = NSButton;
-                editorCombobox = NSPopUpButton;
-                encodingCombobox = NSPopUpButton;
-                failInsecureDataChannelCheckbox = NSButton;
-                horizontalLinesCheckbox = NSButton;
-                infoWindowAsInspectorCheckbox = NSButton;
-                keychainCheckbox = NSButton;
-                lineEndingCombobox = NSPopUpButton;
-                loginField = NSTextField;
-                openAfterDownloadCheckbox = NSButton;
-                openUntitledBrowserCheckbox = NSButton;
-                panelAdvanced = NSView;
-                panelBandwidth = NSView;
-                panelFTP = NSView;
-                panelGeneral = NSView;
-                panelInterface = NSView;
-                panelS3 = NSView;
-                panelSFTP = NSView;
-                panelTransfer = NSView;
-                panelUpdate = NSView;
-                preserveModificationDownloadCheckbox = NSButton;
-                preserveModificationUploadCheckbox = NSButton;
-                protocolCombobox = NSPopUpButton;
-                removeFromQueueCheckbox = NSButton;
-                returnKeyCheckbox = NSButton;
-                secureDataChannelCheckbox = NSButton;
-                showHiddenCheckbox = NSButton;
-                sshTransfersCombobox = NSPopUpButton;
-                tabView = NSTabView;
-                textFileTypeRegexField = NSTextField;
-                transferPopup = NSPopUpButton;
-                transfermodeCombobox = NSPopUpButton;
-                ugroupr = NSButton;
-                ugroupw = NSButton;
-                ugroupx = NSButton;
-                uotherr = NSButton;
-                uotherw = NSButton;
-                uotherx = NSButton;
-                uownerr = NSButton;
-                uownerw = NSButton;
-                uownerx = NSButton;
-                updateCheckbox = NSButton;
-                uploadSkipButton = NSButton;
-                uploadSkipRegexDefaultButton = NSButton;
-                uploadSkipRegexField = NSTextView;
-                verticalLinesCheckbox = NSButton;
-                window = NSWindow;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                "" = id;
-                help = id;
-            };
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = NSLevelIndicator;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSControl;
-        },
-                {
-            ACTIONS =             {
-                checkForUpdates = id;
-            };
-            CLASS = SUUpdater;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                changePanes = id;
-                orderFrontPrefsPanel = id;
-            };
-            CLASS = UKPrefsPanel;
-            LANGUAGE = ObjC;
-            OUTLETS =             {
-                tabView = NSTabView;
-            };
-            SUPERCLASS = NSObject;
-        }
-    );
-    IBVersion = 1;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key></key>
+				<string>id</string>
+				<key>help</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>checkForUpdates</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>SUUpdater</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>CDPreferencesController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>alternatingRowBackgroundCheckbox</key>
+				<string>NSButton</string>
+				<key>anonymousField</key>
+				<string>NSTextField</string>
+				<key>bookmarkSizePopup</key>
+				<string>NSPopUpButton</string>
+				<key>bringQueueToBackCheckbox</key>
+				<string>NSButton</string>
+				<key>bringQueueToFrontCheckbox</key>
+				<string>NSButton</string>
+				<key>browserSerializeCheckbox</key>
+				<string>NSButton</string>
+				<key>chmodDownloadCheckbox</key>
+				<string>NSButton</string>
+				<key>chmodDownloadCustomCheckbox</key>
+				<string>NSButton</string>
+				<key>chmodDownloadDefaultCheckbox</key>
+				<string>NSButton</string>
+				<key>chmodDownloadTypePopup</key>
+				<string>NSPopUpButton</string>
+				<key>chmodUploadCheckbox</key>
+				<string>NSButton</string>
+				<key>chmodUploadCustomCheckbox</key>
+				<string>NSButton</string>
+				<key>chmodUploadDefaultCheckbox</key>
+				<string>NSButton</string>
+				<key>chmodUploadTypePopup</key>
+				<string>NSPopUpButton</string>
+				<key>confirmDisconnectCheckbox</key>
+				<string>NSButton</string>
+				<key>defaultBookmarkCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>defaultBucketLocation</key>
+				<string>NSPopUpButton</string>
+				<key>defaultDownloadThrottleCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>defaultFTPHandlerCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>defaultSFTPHandlerCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>defaultUploadThrottleCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>dgroupr</key>
+				<string>NSButton</string>
+				<key>dgroupw</key>
+				<string>NSButton</string>
+				<key>dgroupx</key>
+				<string>NSButton</string>
+				<key>dotherr</key>
+				<string>NSButton</string>
+				<key>dotherw</key>
+				<string>NSButton</string>
+				<key>dotherx</key>
+				<string>NSButton</string>
+				<key>doubleClickCheckbox</key>
+				<string>NSButton</string>
+				<key>downerr</key>
+				<string>NSButton</string>
+				<key>downerw</key>
+				<string>NSButton</string>
+				<key>downerx</key>
+				<string>NSButton</string>
+				<key>downloadPathPopup</key>
+				<string>NSPopUpButton</string>
+				<key>downloadSkipButton</key>
+				<string>NSButton</string>
+				<key>downloadSkipRegexDefaultButton</key>
+				<string>NSButton</string>
+				<key>downloadSkipRegexField</key>
+				<string>NSTextView</string>
+				<key>duplicateDownloadCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>duplicateDownloadOverwriteButton</key>
+				<string>NSButton</string>
+				<key>duplicateUploadCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>duplicateUploadOverwriteButton</key>
+				<string>NSButton</string>
+				<key>editorCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>encodingCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>failInsecureDataChannelCheckbox</key>
+				<string>NSButton</string>
+				<key>horizontalLinesCheckbox</key>
+				<string>NSButton</string>
+				<key>infoWindowAsInspectorCheckbox</key>
+				<string>NSButton</string>
+				<key>keychainCheckbox</key>
+				<string>NSButton</string>
+				<key>lineEndingCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>loginField</key>
+				<string>NSTextField</string>
+				<key>openAfterDownloadCheckbox</key>
+				<string>NSButton</string>
+				<key>openUntitledBrowserCheckbox</key>
+				<string>NSButton</string>
+				<key>panelAdvanced</key>
+				<string>NSView</string>
+				<key>panelBandwidth</key>
+				<string>NSView</string>
+				<key>panelFTP</key>
+				<string>NSView</string>
+				<key>panelGeneral</key>
+				<string>NSView</string>
+				<key>panelInterface</key>
+				<string>NSView</string>
+				<key>panelS3</key>
+				<string>NSView</string>
+				<key>panelSFTP</key>
+				<string>NSView</string>
+				<key>panelTransfer</key>
+				<string>NSView</string>
+				<key>panelUpdate</key>
+				<string>NSView</string>
+				<key>preserveModificationDownloadCheckbox</key>
+				<string>NSButton</string>
+				<key>preserveModificationUploadCheckbox</key>
+				<string>NSButton</string>
+				<key>protocolCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>removeFromQueueCheckbox</key>
+				<string>NSButton</string>
+				<key>returnKeyCheckbox</key>
+				<string>NSButton</string>
+				<key>secureDataChannelCheckbox</key>
+				<string>NSButton</string>
+				<key>showHiddenCheckbox</key>
+				<string>NSButton</string>
+				<key>sshTransfersCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>tabView</key>
+				<string>NSTabView</string>
+				<key>textFileTypeRegexField</key>
+				<string>NSTextField</string>
+				<key>transferPopup</key>
+				<string>NSPopUpButton</string>
+				<key>transfermodeCombobox</key>
+				<string>NSPopUpButton</string>
+				<key>ugroupr</key>
+				<string>NSButton</string>
+				<key>ugroupw</key>
+				<string>NSButton</string>
+				<key>ugroupx</key>
+				<string>NSButton</string>
+				<key>uotherr</key>
+				<string>NSButton</string>
+				<key>uotherw</key>
+				<string>NSButton</string>
+				<key>uotherx</key>
+				<string>NSButton</string>
+				<key>uownerr</key>
+				<string>NSButton</string>
+				<key>uownerw</key>
+				<string>NSButton</string>
+				<key>uownerx</key>
+				<string>NSButton</string>
+				<key>updateCheckbox</key>
+				<string>NSButton</string>
+				<key>uploadSkipButton</key>
+				<string>NSButton</string>
+				<key>uploadSkipRegexDefaultButton</key>
+				<string>NSButton</string>
+				<key>uploadSkipRegexField</key>
+				<string>NSTextView</string>
+				<key>verticalLinesCheckbox</key>
+				<string>NSButton</string>
+				<key>window</key>
+				<string>NSWindow</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

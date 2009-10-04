@@ -102,28 +102,11 @@
     SUPERCLASS = NSObject;
 },
         {
-    CLASS = NSLevelIndicator;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSControl;
-},
-        {
     ACTIONS =     {
         checkForUpdates = id;
     };
     CLASS = SUUpdater;
     LANGUAGE = ObjC;
-    SUPERCLASS = NSObject;
-},
-        {
-    ACTIONS =     {
-        changePanes = id;
-        orderFrontPrefsPanel = id;
-    };
-    CLASS = UKPrefsPanel;
-    LANGUAGE = ObjC;
-    OUTLETS =     {
-        tabView = NSTabView;
-    };
     SUPERCLASS = NSObject;
 }
     );
