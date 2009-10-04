@@ -34,6 +34,8 @@ import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -42,7 +44,7 @@ import com.enterprisedt.net.ftp.FTPTransferType;
 /**
  * @version $Id$
  */
-public class CDPreferencesController extends CDWindowController {
+public class CDPreferencesController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(CDPreferencesController.class);
 
     private static CDPreferencesController instance = null;
@@ -63,12 +65,6 @@ public class CDPreferencesController extends CDWindowController {
     @Override
     protected String getBundleName() {
         return "Preferences";
-    }
-
-    private NSTabView tabView;
-
-    public void setTabView(NSTabView tabView) {
-        this.tabView = tabView;
     }
 
     @Outlet
@@ -127,6 +123,12 @@ public class CDPreferencesController extends CDWindowController {
     }
 
     @Override
+    protected List<NSView> getPanels() {
+        return Arrays.asList(panelGeneral, panelInterface, panelTransfer, panelFTP, panelSFTP, panelS3,
+                panelBandwidth, panelAdvanced, panelUpdate);
+    }
+
+    @Override
     protected void invalidate() {
         HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
@@ -136,7 +138,6 @@ public class CDPreferencesController extends CDWindowController {
     @Override
     public void setWindow(NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
-        window.setShowsToolbarButton(false);
         super.setWindow(window);
     }
 
@@ -212,17 +213,6 @@ public class CDPreferencesController extends CDWindowController {
         this.uotherx.setTarget(this.id());
         this.uotherx.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
 
-        int i = -1;
-        tabView.tabViewItemAtIndex(++i).setView(panelGeneral);
-        tabView.tabViewItemAtIndex(++i).setView(panelInterface);
-        tabView.tabViewItemAtIndex(++i).setView(panelTransfer);
-        tabView.tabViewItemAtIndex(++i).setView(panelFTP);
-        tabView.tabViewItemAtIndex(++i).setView(panelSFTP);
-        tabView.tabViewItemAtIndex(++i).setView(panelS3);
-        tabView.tabViewItemAtIndex(++i).setView(panelBandwidth);
-        tabView.tabViewItemAtIndex(++i).setView(panelAdvanced);
-        tabView.tabViewItemAtIndex(++i).setView(panelUpdate);
-
         super.awakeFromNib();
     }
 
@@ -283,6 +273,9 @@ public class CDPreferencesController extends CDWindowController {
         this.bookmarkSizePopup.setTarget(this.id());
         this.bookmarkSizePopup.setAction(Foundation.selector("bookmarkSizePopupClicked:"));
         final int size = Preferences.instance().getInteger("bookmark.icon.size");
+//        this.bookmarkSizePopup.itemAtIndex(0).setImage(CDIconCache.iconNamed("ftp", CDBookmarkCell.SMALL_BOOKMARK_SIZE));
+//        this.bookmarkSizePopup.itemAtIndex(1).setImage(CDIconCache.iconNamed("ftp", CDBookmarkCell.MEDIUM_BOOKMARK_SIZE));
+//        this.bookmarkSizePopup.itemAtIndex(2).setImage(CDIconCache.iconNamed("ftp", CDBookmarkCell.LARGE_BOOKMARK_SIZE));
         for(int i = 0; i < this.bookmarkSizePopup.numberOfItems(); i++) {
             this.bookmarkSizePopup.itemAtIndex(i).setState(NSCell.NSOffState);
         }
