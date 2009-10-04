@@ -35,23 +35,18 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @version $Id$
  */
-public class CDInfoController extends CDWindowController {
+public class CDInfoController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(CDInfoController.class);
 
-    private List<Path> files;
-
-    // ----------------------------------------------------------
-    // Outlets
-    // ----------------------------------------------------------
+    private List<Path> files = Collections.emptyList();
 
     @Outlet
     private NSTextField filenameField;
@@ -113,13 +108,6 @@ public class CDInfoController extends CDWindowController {
         this.webUrlField = webUrlField;
         this.webUrlField.setAllowsEditingTextAttributes(true);
         this.webUrlField.setSelectable(true);
-    }
-
-    @Outlet
-    private NSTextField permissionsBox;
-
-    public void setPermissionsBox(NSTextField t) {
-        this.permissionsBox = t;
     }
 
     @Outlet
@@ -398,35 +386,18 @@ public class CDInfoController extends CDWindowController {
         this.iconImageView = iconImageView;
     }
 
-    @Outlet
-    private NSButton distributionToggle;
+    private String title;
 
-    public void setDistributionToggle(NSButton b) {
-        this.distributionToggle = b;
-    }
-
-    @Outlet
-    private NSButton permissionToggle;
-
-    public void setPermissionToggle(NSButton t) {
-        this.permissionToggle = t;
-    }
-
-    @Outlet
-    private NSButton s3Toggle;
-
-    public void setS3Toggle(NSButton s3Toggle) {
-        this.s3Toggle = s3Toggle;
+    @Override
+    public void setWindow(NSWindow window) {
+        title = window.title();
+        window.setShowsResizeIndicator(true);
+        super.setWindow(window);
     }
 
     @Override
     public void windowWillClose(NSNotification notification) {
         this.window().endEditingFor(null);
-
-        Preferences.instance().setProperty("info.toggle.permission", permissionToggle.state());
-        Preferences.instance().setProperty("info.toggle.distribution", distributionToggle.state());
-        Preferences.instance().setProperty("info.toggle.s3", s3Toggle.state());
-
         super.windowWillClose(notification);
     }
 
@@ -434,10 +405,6 @@ public class CDInfoController extends CDWindowController {
     public boolean isSingleton() {
         return Preferences.instance().getBoolean("browser.info.isInspector");
     }
-
-    // ----------------------------------------------------------
-    // Constructors
-    // ----------------------------------------------------------
 
     public static class Factory {
         private static Map<List<Path>, CDInfoController> open = new HashMap<List<Path>, CDInfoController>();
@@ -478,20 +445,56 @@ public class CDInfoController extends CDWindowController {
         this.controller.addListener(browserWindowListener);
         this.loadBundle();
         this.setFiles(files);
+    }
 
-        this.setState(permissionToggle, Preferences.instance().getBoolean("info.toggle.permission"));
+    @Override
+    public boolean validateToolbarItem(final NSToolbarItem item) {
+        final String itemIdentifier = item.itemIdentifier();
+        log.debug("validateToolbarItem:" + itemIdentifier);
+        if(itemIdentifier.equals("cloud")) {
+            item.setImage(CDIconCache.iconNamed(controller.getSession().getHost().getProtocol().disk(), 32));
+            for(Path path : files) {
+                return path instanceof CloudPath && !controller.getSession().getHost().getCredentials().isAnonymousLogin();
+            }
+            return false;
+        }
+        if(itemIdentifier.equals("s3")) {
+            for(Path path : files) {
+                return path instanceof S3Path && !controller.getSession().getHost().getCredentials().isAnonymousLogin();
+            }
+            return false;
+        }
+        return super.validateToolbarItem(item);
+    }
 
-        final Credentials credentials = controller.getSession().getHost().getCredentials();
+    @Override
+    public String getTitle(NSTabViewItem item) {
+        return item.label() + " – " + this.getName();
+    }
 
-        final Path path = files.get(0);
-        boolean cloud = path instanceof CloudPath && !credentials.isAnonymousLogin();
-        boolean amazon = path instanceof S3Path && !credentials.isAnonymousLogin();
+    @Outlet
+    private NSView panelGeneral;
+    @Outlet
+    private NSView panelPermissions;
+    @Outlet
+    private NSView panelDistribution;
+    @Outlet
+    private NSView panelAmazon;
 
-        this.setState(distributionToggle, cloud && Preferences.instance().getBoolean("info.toggle.distribution"));
-        distributionToggle.setEnabled(cloud);
+    public void setPanelAmazon(NSView panelAmazon) {
+        this.panelAmazon = panelAmazon;
+    }
 
-        this.setState(s3Toggle, amazon && Preferences.instance().getBoolean("info.toggle.s3"));
-        s3Toggle.setEnabled(amazon);
+    public void setPanelDistribution(NSView panelDistribution) {
+        this.panelDistribution = panelDistribution;
+    }
+
+    public void setPanelPermissions(NSView panelPermissions) {
+        this.panelPermissions = panelPermissions;
+    }
+
+    public void setPanelGeneral(NSView panelGeneral) {
+        this.panelGeneral = panelGeneral;
     }
 
     @Override
@@ -559,62 +562,88 @@ public class CDInfoController extends CDWindowController {
         super.awakeFromNib();
     }
 
+    @Override
+    protected List<NSView> getPanels() {
+        return Arrays.asList(panelGeneral, panelPermissions, panelDistribution, panelAmazon);
+    }
+
+    private String getName() {
+        final int count = this.numberOfFiles();
+        if(count > 0) {
+            Path file = this.files.get(0);
+            if(count > 1) {
+                return "(" + Locale.localizedString("Multiple files") + ")";
+            }
+            for(Path next : files) {
+                return next.getName();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected NSUInteger getToolbarSize() {
+        return NSToolbar.NSToolbarSizeModeSmall;
+    }
+
     private void init() {
         final int count = this.numberOfFiles();
         if(count > 0) {
             Path file = this.files.get(0);
-            this.filenameField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    file.getName());
-            this.filenameField.setEnabled(1 == count && file.isRenameSupported());
+            final String filename = this.getName();
+            filenameField.setStringValue(filename);
+            this.window().setTitle(title + " – " + filename);
+            filenameField.setEnabled(1 == count && file.isRenameSupported());
+            String path;
             if(file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
-                this.pathField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.getSymbolicLinkPath(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                path = file.getSymbolicLinkPath();
             }
             else {
-                this.pathField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.getParent().getAbsolute(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                path = file.getParent().getAbsolute();
             }
-            this.groupField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
+            pathField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(path, TRUNCATE_MIDDLE_ATTRIBUTES));
+            pathField.setToolTip(path);
+            groupField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
                     file.attributes.getGroup());
             if(count > 1) {
-                this.kindField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                kindField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
-                this.kindField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.kind(),
+                kindField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.kind(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
             if(count > 1) {
-                this.modifiedField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                modifiedField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
                 if(-1 == file.attributes.getModificationDate()) {
-                    this.modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                    modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             Locale.localizedString("Unknown"),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
 
                 }
                 else {
-                    this.modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                    modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             CDDateFormatter.getLongFormat(file.attributes.getModificationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                 }
             }
-            this.ownerField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
+            ownerField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
                     file.attributes.getOwner());
 
-            this.recursiveCheckbox.setEnabled(true);
+            recursiveCheckbox.setEnabled(true);
             for(Path next : files) {
                 if(next.attributes.isFile()) {
-                    this.recursiveCheckbox.setState(NSCell.NSOffState);
-                    this.recursiveCheckbox.setEnabled(false);
-                    this.sizeButton.setEnabled(false);
+                    recursiveCheckbox.setState(NSCell.NSOffState);
+                    recursiveCheckbox.setEnabled(false);
+                    sizeButton.setEnabled(false);
                     break;
                 }
             }
-            this.sizeButton.setEnabled(false);
+            sizeButton.setEnabled(false);
             for(Path next : files) {
                 if(next.attributes.isDirectory()) {
-                    this.sizeButton.setEnabled(true);
+                    sizeButton.setEnabled(true);
                     break;
                 }
             }
@@ -635,14 +664,17 @@ public class CDInfoController extends CDWindowController {
 
     private void initWebUrl() {
         if(this.numberOfFiles() > 1) {
-            this.webUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+            webUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+            webUrlField.setToolTip("");
         }
         else {
             controller.background(new BrowserBackgroundAction(controller) {
                 String url;
 
                 public void run() {
-                    url = files.get(0).toHttpURL();
+                    for(Path next : files) {
+                        url = next.toHttpURL();
+                    }
                 }
 
                 @Override
@@ -651,6 +683,7 @@ public class CDInfoController extends CDWindowController {
                             HyperlinkAttributedStringFactory.create(
                                     NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
                     );
+                    webUrlField.setToolTip(url);
                 }
             });
         }
@@ -708,14 +741,7 @@ public class CDInfoController extends CDWindowController {
                         updateCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
                     }
                 }
-                if(numberOfFiles() > 1) {
-                    permissionsBox.setStringValue(Locale.localizedString("Permissions")
-                            + " | " + "(" + Locale.localizedString("Multiple files") + ")");
-                }
-                else {
-                    permissionsBox.setStringValue(Locale.localizedString("Permissions")
-                            + " | " + (null == permission ? Locale.localizedString("Unknown") : permission.toString()));
-                }
+                togglePermissionSettings(true);
                 togglePermissionSettings(true);
             }
         });
@@ -825,9 +851,10 @@ public class CDInfoController extends CDWindowController {
 
             @Override
             public void cleanup() {
-                sizeField.setAttributedStringValue(
-                        NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(size) + " (" + size + " bytes)",
-                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                final String sizeString = Status.getSizeAsString(size) + " (" + size + " bytes)";
+                sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(sizeString,
+                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                sizeField.setToolTip(sizeString);
                 sizeProgress.stopAnimation(null);
             }
         });
@@ -869,7 +896,9 @@ public class CDInfoController extends CDWindowController {
             if(file.attributes.isFile()) {
                 if(this.numberOfFiles() > 1) {
                     s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                    s3PublicUrlField.setToolTip("");
                     s3torrentUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                    s3torrentUrlField.setToolTip("");
                 }
                 else {
                     final String signedUrl = s3.createSignedUrl();
@@ -877,11 +906,13 @@ public class CDInfoController extends CDWindowController {
                             HyperlinkAttributedStringFactory.create(
                                     NSMutableAttributedString.create(signedUrl, TRUNCATE_MIDDLE_ATTRIBUTES), signedUrl)
                     );
+                    s3PublicUrlField.setToolTip(signedUrl);
                     final String torrent = s3.createTorrentUrl();
                     s3torrentUrlField.setAttributedStringValue(
                             HyperlinkAttributedStringFactory.create(
                                     NSMutableAttributedString.create(torrent, TRUNCATE_MIDDLE_ATTRIBUTES), torrent)
                     );
+                    s3torrentUrlField.setToolTip(torrent);
                 }
             }
             bucketLoggingButton.setToolTip(
@@ -1001,8 +1032,6 @@ public class CDInfoController extends CDWindowController {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
         }
-        final Permission permission = this.getPermissionFromSelection();
-        permissionsBox.setStringValue(Locale.localizedString("Permissions") + " | " + permission.toString());
     }
 
     /**
@@ -1148,6 +1177,7 @@ public class CDInfoController extends CDWindowController {
                 final String key = file.isContainer() ? "" : file.encode(file.getKey());
                 if(numberOfFiles() > 1) {
                     distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                    distributionUrlField.setToolTip("");
                     distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                 }
                 else {
@@ -1158,12 +1188,14 @@ public class CDInfoController extends CDWindowController {
                         final String url = distribution.getUrl() + key;
                         distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                 NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
+                        distributionUrlField.setToolTip(url);
                     }
                 }
                 final String[] cnames = distribution.getCNAMEs();
                 if(0 == cnames.length) {
                     distributionCnameField.setStringValue("");
                     distributionCnameUrlField.setStringValue("");
+                    distributionCnameUrlField.setToolTip("");
                 }
                 else {
                     distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
@@ -1173,6 +1205,7 @@ public class CDInfoController extends CDWindowController {
                                 HyperlinkAttributedStringFactory.create(
                                         NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
                         );
+                        distributionCnameUrlField.setToolTip(url);
                         // We only support one CNAME URL
                         break;
                     }
