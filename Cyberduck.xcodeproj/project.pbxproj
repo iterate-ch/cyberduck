@@ -150,7 +150,6 @@
 		477A11050FD08E8E00BAD4AD /* CDOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47494C3D07EC6B4200B34D53 /* CDOutlineView.h */; };
 		477A11060FD08E8E00BAD4AD /* CDListView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47494C3F07EC6B4200B34D53 /* CDListView.h */; };
 		477A11070FD08E8E00BAD4AD /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47457F8C09980270002C93C3 /* UKCrashReporter.h */; };
-		477A11080FD08E8E00BAD4AD /* UKPrefsPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 475E53F509AD1B48007CFC2B /* UKPrefsPanel.h */; };
 		477A11090FD08E8E00BAD4AD /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 477B1B7C0AF384350023BA7F /* SNDisclosableView.h */; };
 		477A110C0FD08E8E00BAD4AD /* CTGradient.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AC356B0DA1025000CC1426 /* CTGradient.h */; };
 		477A110D0FD08E8E00BAD4AD /* CTGradientView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AC356D0DA1025000CC1426 /* CTGradientView.h */; };
@@ -159,7 +158,6 @@
 		477A11100FD08EAB00BAD4AD /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3C07EC6B4200B34D53 /* CDOutlineView.m */; };
 		477A11110FD08EAB00BAD4AD /* CDListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47494C3E07EC6B4200B34D53 /* CDListView.m */; };
 		477A11120FD08EAB00BAD4AD /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47457F8D09980270002C93C3 /* UKCrashReporter.m */; };
-		477A11130FD08EAB00BAD4AD /* UKPrefsPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 475E53F609AD1B48007CFC2B /* UKPrefsPanel.m */; };
 		477A11140FD08EAB00BAD4AD /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B1B7D0AF384350023BA7F /* SNDisclosableView.m */; };
 		477A11170FD08EAB00BAD4AD /* CTGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356C0DA1025000CC1426 /* CTGradient.m */; };
 		477A11180FD08EAB00BAD4AD /* CTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AC356E0DA1025000CC1426 /* CTGradientView.m */; };
@@ -935,8 +933,6 @@
 		475D17B70805D54C00166B8A /* download1.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download1.icns; sourceTree = "<group>"; };
 		475D17B80805D54C00166B8A /* download4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download4.icns; sourceTree = "<group>"; };
 		475D461C0D9953CD009450C4 /* SecurityInterface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityInterface.framework; path = System/Library/Frameworks/SecurityInterface.framework; sourceTree = SDKROOT; };
-		475E53F509AD1B48007CFC2B /* UKPrefsPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKPrefsPanel.h; sourceTree = "<group>"; };
-		475E53F609AD1B48007CFC2B /* UKPrefsPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKPrefsPanel.m; sourceTree = "<group>"; };
 		4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDiagnostics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4762DB8309FC47380034C662 /* Host.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Host.m; sourceTree = "<group>"; };
 		4762DB8409FC47380034C662 /* Host.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Host.h; sourceTree = "<group>"; };
@@ -1885,8 +1881,6 @@
 			children = (
 				477FA9590E9A7826009E7857 /* UKSystemInfo.h */,
 				477FA95A0E9A7826009E7857 /* UKSystemInfo.m */,
-				475E53F509AD1B48007CFC2B /* UKPrefsPanel.h */,
-				475E53F609AD1B48007CFC2B /* UKPrefsPanel.m */,
 				47457F8C09980270002C93C3 /* UKCrashReporter.h */,
 				47457F8D09980270002C93C3 /* UKCrashReporter.m */,
 			);
@@ -2071,7 +2065,6 @@
 				477A11050FD08E8E00BAD4AD /* CDOutlineView.h in Headers */,
 				477A11060FD08E8E00BAD4AD /* CDListView.h in Headers */,
 				477A11070FD08E8E00BAD4AD /* UKCrashReporter.h in Headers */,
-				477A11080FD08E8E00BAD4AD /* UKPrefsPanel.h in Headers */,
 				477A11090FD08E8E00BAD4AD /* SNDisclosableView.h in Headers */,
 				477A110C0FD08E8E00BAD4AD /* CTGradient.h in Headers */,
 				477A110D0FD08E8E00BAD4AD /* CTGradientView.h in Headers */,
@@ -2746,7 +2739,6 @@
 				477A11100FD08EAB00BAD4AD /* CDOutlineView.m in Sources */,
 				477A11110FD08EAB00BAD4AD /* CDListView.m in Sources */,
 				477A11120FD08EAB00BAD4AD /* UKCrashReporter.m in Sources */,
-				477A11130FD08EAB00BAD4AD /* UKPrefsPanel.m in Sources */,
 				477A11140FD08EAB00BAD4AD /* SNDisclosableView.m in Sources */,
 				477A11170FD08EAB00BAD4AD /* CTGradient.m in Sources */,
 				477A11180FD08EAB00BAD4AD /* CTGradientView.m in Sources */,
