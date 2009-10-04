@@ -81,6 +81,13 @@ public class CDInfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSTextField permissionsField;
+
+    public void setPermissionsField(NSTextField permissionsField) {
+        this.permissionsField = permissionsField;
+    }
+
+    @Outlet
     private NSTextField ownerField;
 
     public void setOwnerField(NSTextField ownerField) {
@@ -741,6 +748,12 @@ public class CDInfoController extends ToolbarWindowController {
                         updateCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
                     }
                 }
+                if(numberOfFiles() > 1) {
+                    permissionsField.setStringValue(Locale.localizedString("Multiple files"));
+                }
+                else {
+                    permissionsField.setStringValue((null == permission ? Locale.localizedString("Unknown") : permission.toString()));
+                }
                 togglePermissionSettings(true);
                 togglePermissionSettings(true);
             }
@@ -1032,6 +1045,8 @@ public class CDInfoController extends ToolbarWindowController {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
         }
+        final Permission permission = this.getPermissionFromSelection();
+        permissionsField.setStringValue(permission.toString());
     }
 
     /**

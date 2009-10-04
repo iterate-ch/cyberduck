@@ -17,7 +17,6 @@
         distributionProgress = id;
         distributionStatusButton = id;
         distributionStatusField = id;
-        distributionToggle = id;
         distributionUrlField = id;
         filenameField = id;
         groupField = id;
@@ -34,20 +33,23 @@
         ownerr = id;
         ownerw = id;
         ownerx = id;
+        panelAmazon = NSView;
+        panelDistribution = NSView;
+        panelGeneral = NSView;
+        panelPermissions = NSView;
         pathField = id;
         permissionApplyButton = id;
         permissionProgress = id;
-        permissionToggle = id;
-        permissionsBox = id;
+        permissionsField = id;
         recursiveCheckbox = id;
         s3CachePopup = id;
         s3Progress = id;
         s3PublicUrlField = id;
-        s3Toggle = id;
         s3torrentUrlField = id;
         sizeButton = id;
         sizeField = id;
         sizeProgress = id;
+        tabView = id;
         webUrlField = id;
         window = id;
     };
@@ -57,21 +59,6 @@
     CLASS = FirstResponder;
     LANGUAGE = ObjC;
     SUPERCLASS = NSObject;
-},
-        {
-    CLASS = NSDatePicker;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSControl;
-},
-        {
-    ACTIONS =     {
-        hide = id;
-        show = id;
-        toggleDisclosure = id;
-    };
-    CLASS = SNDisclosableView;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSView;
 }
     );
     IBVersion = 1;
