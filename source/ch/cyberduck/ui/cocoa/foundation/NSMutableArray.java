@@ -57,6 +57,8 @@ public abstract class NSMutableArray extends NSArray {
      */
     public abstract void insertObject_atIndex(NSObject anObject, NSUInteger index);
 
+    public abstract void insertObject_atIndex(String anObject, NSUInteger index);
+
     /**
      * Original signature : <code>void removeLastObject()</code><br>
      * <i>native declaration : :84</i>
