@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 /// <i>native declaration : :83</i>
-public interface NSPanel extends NSWindow {
+public abstract class NSPanel extends NSWindow {
 
     public interface _Class extends org.rococoa.NSClass {
         NSPanel alloc();

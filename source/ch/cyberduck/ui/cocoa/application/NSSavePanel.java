@@ -26,7 +26,7 @@ import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:30</i>
-public abstract class NSSavePanel implements NSPanel {
+public abstract class NSSavePanel extends NSPanel {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSavePanel", _Class.class);
 
     public static NSSavePanel savePanel() {

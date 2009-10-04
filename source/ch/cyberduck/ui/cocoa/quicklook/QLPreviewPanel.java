@@ -33,7 +33,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
  * a tool written by <a href="http://ochafik.free.fr/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a>, <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public abstract class QLPreviewPanel implements NSPanel {
+public abstract class QLPreviewPanel extends NSPanel {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("QLPreviewPanel", _Class.class);
 
     public interface _Class extends org.rococoa.NSClass {

@@ -55,6 +55,8 @@ public abstract class NSToolbar implements NSObject {
     }
 
     public static interface Delegate {
+        boolean validateToolbarItem(final NSToolbarItem item);
+
         /**
          * Original signature : <code>NSToolbarItem* toolbar(NSToolbar*, NSString*, BOOL)</code><br>
          * <i>native declaration : :149</i>
