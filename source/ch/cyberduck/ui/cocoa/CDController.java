@@ -19,12 +19,10 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.threading.MainActionRegistry;
 import ch.cyberduck.ui.AbstractController;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSThread;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -126,10 +124,10 @@ public class CDController extends AbstractController {
             runnable.run();
             return;
         }
-        //final OperationBatcher autorelease = this.getBatcher();
+        final OperationBatcher autorelease = this.getBatcher();
         //Defer to main thread
         Foundation.runOnMainThread(runnable, wait);
-        //autorelease.operate();
+        autorelease.operate();
     }
 
     /**
