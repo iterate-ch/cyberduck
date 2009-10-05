@@ -240,11 +240,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean isHostnameConfigurable() {
-            return false;
-        }
-
-        @Override
         public String getDefaultHostname() {
             return Constants.S3_HOSTNAME;
         }
@@ -565,7 +560,7 @@ public abstract class Protocol {
 
     public static Protocol[] getKnownProtocols() {
         return new Protocol[]{
-                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, IDISK, S3, MOSSO, EUCALYPTUS};
+                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, IDISK, S3, MOSSO};
     }
 
     /**
