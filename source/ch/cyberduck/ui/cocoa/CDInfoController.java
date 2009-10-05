@@ -727,10 +727,6 @@ public class CDInfoController extends ToolbarWindowController {
                     if(null == permission) {
                         // Clear all rwx checkboxes
                         initPermissionsCheckboxes();
-
-                        togglePermissionSettings(false);
-                        permissionProgress.stopAnimation(null);
-                        return;
                     }
                     else {
                         updateCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
@@ -754,8 +750,8 @@ public class CDInfoController extends ToolbarWindowController {
                 else {
                     permissionsField.setStringValue((null == permission ? Locale.localizedString("Unknown") : permission.toString()));
                 }
-                togglePermissionSettings(true);
-                togglePermissionSettings(true);
+                togglePermissionSettings(null == permission ? false: true);
+                permissionProgress.stopAnimation(null);
             }
         });
     }

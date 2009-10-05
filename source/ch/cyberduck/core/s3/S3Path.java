@@ -458,9 +458,6 @@ public class S3Path extends CloudPath {
                 if(attributes.isDirectory()) {
                     attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
                 }
-                else {
-                    attributes.setPermission(Permission.EMPTY);
-                }
             }
             else {
                 attributes.setPermission(this.readPermissions(acl.getGrants()));

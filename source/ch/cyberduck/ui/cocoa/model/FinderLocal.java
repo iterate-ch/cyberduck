@@ -135,7 +135,8 @@ public class FinderLocal extends Local {
             return new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
         }
         catch(NumberFormatException e) {
-            return Permission.EMPTY;
+            log.error(e.getMessage());
+            return null;
         }
     }
 
