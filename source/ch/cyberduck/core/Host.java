@@ -714,51 +714,13 @@ public class Host implements Serializable {
         return false;
     }
 
-    private static boolean JNI_LOADED = false;
-
-    /**
-     * Load native library extensions
-     *
-     * @return
-     */
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("Diagnostics");
-        }
-        return JNI_LOADED;
-    }
-
-    /**
-     * @return True if the host is reachable. Returns false if there is a
-     *         network configuration error, no such host is known or the server does
-     *         not listing at any such port
-     * @see #toURL
-     */
     public boolean isReachable() {
-        if(!Host.loadNative()) {
-            return false;
-        }
-        if(!Preferences.instance().getBoolean("connection.hostname.check")) {
-            return true;
-        }
-        return this.isReachable(this.toURL());
+        return ReachabilityFactory.instance().isReachable(this);
     }
 
-    private native boolean isReachable(String url);
-
-    /**
-     * Opens the network configuration assistant for the URL denoting this host
-     *
-     * @see #toURL
-     */
     public void diagnose() {
-        if(!Host.loadNative()) {
-            return;
-        }
-        this.diagnose(this.toURL());
+        ReachabilityFactory.instance().diagnose(this);
     }
-
-    private native void diagnose(String url);
 
     /**
      *
