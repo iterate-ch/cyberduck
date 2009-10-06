@@ -16,7 +16,7 @@
  *  dkocher@cyberduck.ch
  */
 
-#import "Proxy.h"
+#import "SystemConfigurationProxy.h"
 
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
@@ -45,57 +45,57 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePassiveFTP(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePassiveFTPNative(JNIEnv *env, jobject this)
 {
 	return [Proxy usePassiveFTP];
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHostExcluded(JNIEnv *env, jobject this, jstring hostname)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHostExcludedNative(JNIEnv *env, jobject this, jstring hostname)
 {
 	return [Proxy isHostExcluded:convertToNSString(env, hostname)];
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabled(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabledNative(JNIEnv *env, jobject this)
 {
 	return [Proxy isSOCKSProxyEnabled];
 }
 
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPort(JNIEnv *env,  jobject this)
+JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyPortNative(JNIEnv *env,  jobject this)
 {
 	return [[Proxy getSOCKSProxyPort] intValue];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHost(JNIEnv *env, jobject this)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getSOCKSProxyHostNative(JNIEnv *env, jobject this)
 {
 	return convertToJString(env, [Proxy getSOCKSProxyHost]);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabled(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPProxyEnabledNative(JNIEnv *env, jobject this)
 {
 	return [Proxy isHTTPProxyEnabled];
 }
 
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPort(JNIEnv *env, jobject this)
+JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyPortNative(JNIEnv *env, jobject this)
 {
 	return [[Proxy getHTTPProxyPort] intValue];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHost(JNIEnv *env, jobject this)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPProxyHostNative(JNIEnv *env, jobject this)
 {
 	return convertToJString(env, [Proxy getHTTPProxyHost]);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabled(JNIEnv *env, jobject this)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHTTPSProxyEnabledNative(JNIEnv *env, jobject this)
 {
 	return [Proxy isHTTPSProxyEnabled];
 }
 
-JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPort(JNIEnv *env, jobject this)
+JNIEXPORT jint JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyPortNative(JNIEnv *env, jobject this)
 {
 	return [[Proxy getHTTPSProxyPort] intValue];
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHost(JNIEnv *env, jobject this)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTTPSProxyHostNative(JNIEnv *env, jobject this)
 {
 	return convertToJString(env, [Proxy getHTTPSProxyHost]);
 }

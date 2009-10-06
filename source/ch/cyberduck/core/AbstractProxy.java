@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import java.util.Properties;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractProxy implements Proxy {
     private static Logger log = Logger.getLogger(AbstractProxy.class);
@@ -84,6 +84,9 @@ public abstract class AbstractProxy implements Proxy {
      * @param host SOCKS proxy hostname
      */
     private void initSOCKS(int port, String host) {
+        if(-1 == port) {
+            return;
+        }
         Properties props = System.getProperties();
         // Indicates the name of the SOCKS proxy server and the port number
         // that will be used by the SOCKS protocol layer. If socksProxyHost
