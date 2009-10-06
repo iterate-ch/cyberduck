@@ -75,6 +75,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new LaxUnixFTPEntryParser() {
+                            @Override
                             protected FTPClientConfig getDefaultConfiguration() {
                                 final FTPClientConfig config = super.getDefaultConfiguration();
                                 config.setServerTimeZoneId(timezone.getID());
@@ -83,6 +84,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
                         },
                         new EPLFFTPEntryParser(),
                         new RumpusFTPEntryParser() {
+                            @Override
                             protected FTPClientConfig getDefaultConfiguration() {
                                 final FTPClientConfig config = super.getDefaultConfiguration();
                                 config.setServerTimeZoneId(timezone.getID());
@@ -90,6 +92,15 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
                             }
                         },
                         new TrellixFTPEntryParser() {
+                            @Override
+                            protected FTPClientConfig getDefaultConfiguration() {
+                                final FTPClientConfig config = super.getDefaultConfiguration();
+                                config.setServerTimeZoneId(timezone.getID());
+                                return config;
+                            }
+                        },
+                        new UnitreeFTPEntryParser() {
+                            @Override
                             protected FTPClientConfig getDefaultConfiguration() {
                                 final FTPClientConfig config = super.getDefaultConfiguration();
                                 config.setServerTimeZoneId(timezone.getID());
@@ -103,6 +114,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new NetwareFTPEntryParser() {
+                            @Override
                             protected FTPClientConfig getDefaultConfiguration() {
                                 final FTPClientConfig config = super.getDefaultConfiguration();
                                 config.setServerTimeZoneId(timezone.getID());
@@ -117,6 +129,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new NTFTPEntryParser() {
+                            @Override
                             public FTPClientConfig getDefaultConfiguration() {
                                 final FTPClientConfig config = super.getDefaultConfiguration();
                                 config.setServerTimeZoneId(timezone.getID());
@@ -129,6 +142,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
 
     private FTPFileEntryParser createOS2FTPEntryParser(final TimeZone timezone) {
         return new OS2FTPEntryParser() {
+            @Override
             protected FTPClientConfig getDefaultConfiguration() {
                 final FTPClientConfig config = super.getDefaultConfiguration();
                 config.setServerTimeZoneId(timezone.getID());
@@ -141,6 +155,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
         return new CompositeFileEntryParser(new FTPFileEntryParser[]
                 {
                         new OS400FTPEntryParser() {
+                            @Override
                             protected FTPClientConfig getDefaultConfiguration() {
                                 final FTPClientConfig config = super.getDefaultConfiguration();
                                 config.setServerTimeZoneId(timezone.getID());
@@ -153,6 +168,7 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
 
     private FTPFileEntryParser createMVSEntryParser(final TimeZone timezone) {
         return new MVSFTPEntryParser() {
+            @Override
             protected FTPClientConfig getDefaultConfiguration() {
                 final FTPClientConfig config = super.getDefaultConfiguration();
                 config.setServerTimeZoneId(timezone.getID());
