@@ -12,24 +12,24 @@ extern "C" {
  * Method:    setDefaultHandlerForURLScheme
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_setDefaultHandlerForURLScheme
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_setDefaultHandlerForURLScheme
   (JNIEnv *, jobject, jstring, jstring);
 
 /*
- * Class:     ch_cyberduck_core_util_URLSchemeHandlerConfiguration
+ * Class:     ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration
  * Method:    getDefaultHandlerForURLScheme
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_getDefaultHandlerForURLScheme
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_getDefaultHandlerForURLScheme
   (JNIEnv *, jobject, jstring);
 
 /*
- * Class:     ch_cyberduck_core_util_URLSchemeHandlerConfiguration
+ * Class:     ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration
  * Method:    getAllHandlersForURLScheme
  * Signature: (Ljava/lang/String;)[Ljava/lang/String;
  */
  /*
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_getAllHandlersForURLScheme
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_getAllHandlersForURLScheme
   (JNIEnv *, jobject, jstring);
 */
 #ifdef __cplusplus

@@ -47,7 +47,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
     return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_setDefaultHandlerForURLScheme
+JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_setDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme, jstring bundleIdentifier)
 {
 	LSSetDefaultHandlerForURLScheme(
@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration
 	);
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_getDefaultHandlerForURLScheme
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_getDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSString *bundleIdentifier = nil;
@@ -71,7 +71,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfigurat
     return result;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_util_URLSchemeHandlerConfiguration_getAllHandlersForURLScheme
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_getAllHandlersForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSArray *handlers = nil;

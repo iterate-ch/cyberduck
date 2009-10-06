@@ -1,4 +1,4 @@
-package ch.cyberduck.core.util;
+package ch.cyberduck.ui.cocoa.urlhandler;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
