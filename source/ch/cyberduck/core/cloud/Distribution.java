@@ -51,6 +51,17 @@ public class Distribution {
     }
 
     /**
+     *
+     * @param enabled
+     * @param url
+     * @param status
+     * @param logging
+     */
+    public Distribution(boolean enabled, String url, String status, boolean logging) {
+        this(enabled, false, url, status, new String[]{}, logging);
+    }
+
+    /**
      * @param enabled    Deployment Enabled
      * @param url        Where to find this distribution
      * @param status     Status Message about Deployment Status

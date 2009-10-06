@@ -42,12 +42,13 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 
-import com.mosso.client.cloudfiles.FilesCDNContainer;
-import com.mosso.client.cloudfiles.FilesContainerInfo;
-import com.mosso.client.cloudfiles.FilesObject;
+import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
+import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
+import com.rackspacecloud.client.cloudfiles.FilesException;
+import com.rackspacecloud.client.cloudfiles.FilesObject;
 
 /**
- * Mosso Cloud Files Implementation
+ * Rackspace Cloud Files Implementation
  *
  * @version $Id$
  */
@@ -121,27 +122,14 @@ public class CFPath extends CloudPath {
             trust.setHostname(URI.create(session.CF.getCdnManagementURL()).getHost());
             if(enabled) {
                 session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                        Locale.localizedString("Mosso Cloud Files", "Mosso")));
+                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
             }
             else {
                 session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
-                        Locale.localizedString("Mosso Cloud Files", "Mosso")));
+                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
             }
-            if(enabled) {
-                final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
-                if(null == info) {
-                    // Not found.
-                    session.CF.cdnEnableContainer(container);
-                }
-                else {
-                    // Enable content distribution for the container without changing the TTL expiration
-                    session.CF.cdnUpdateContainer(container, -1, true);
-                }
-            }
-            else {
-                // Disable content distribution for the container
-                session.CF.cdnUpdateContainer(container, -1, false);
-            }
+            // Toggle content distribution for the container without changing the TTL expiration
+            session.CF.cdnUpdateContainer(container, -1, enabled, logging);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
@@ -159,13 +147,16 @@ public class CFPath extends CloudPath {
             try {
                 session.check();
                 trust.setHostname(URI.create(session.CF.getCdnManagementURL()).getHost());
-                final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
-                if(null == info) {
+                try {
+                    final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
+                    return new Distribution(info.isEnabled(), info.getCdnURL(),
+                            info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"), info.getRetainLogs());
+                }
+                catch(FilesException e) {
+                    log.warn(e.getMessage());
                     // Not found.
                     return new Distribution(false, null, Locale.localizedString("CDN Disabled", "Mosso"));
                 }
-                return new Distribution(info.isEnabled(), info.getCdnURL(),
-                        info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"));
             }
             catch(IOException e) {
                 this.error(e.getMessage(), e);
