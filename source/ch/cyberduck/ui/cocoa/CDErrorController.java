@@ -37,7 +37,7 @@ import java.net.UnknownHostException;
 
 import ch.ethz.ssh2.sftp.SFTPException;
 import com.enterprisedt.net.ftp.FTPException;
-import com.mosso.client.cloudfiles.FilesException;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * @version $Id:$
