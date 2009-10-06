@@ -41,7 +41,21 @@ public class Keychain extends AbstractKeychain {
     }
 
     private Keychain() {
-        Native.load("Keychain");
+        ;
+    }
+
+    private static boolean JNI_LOADED = false;
+
+    /**
+     * Load native library extensions
+     *
+     * @return
+     */
+    private static boolean loadNative() {
+        if(!JNI_LOADED) {
+            JNI_LOADED = Native.load("Keychain");
+        }
+        return JNI_LOADED;
     }
 
     /**
@@ -94,21 +108,33 @@ public class Keychain extends AbstractKeychain {
 
     @Override
     public String getPassword(String protocol, int port, String serviceName, String user) {
+        if(!loadNative()) {
+            return null;
+        }
         return this.getInternetPasswordFromKeychain(protocol, port, serviceName, user);
     }
 
     @Override
     public String getPassword(String serviceName, String user) {
+        if(!loadNative()) {
+            return null;
+        }
         return this.getPasswordFromKeychain(serviceName, user);
     }
 
     @Override
     public void addPassword(String serviceName, String user, String password) {
+        if(!loadNative()) {
+            return;
+        }
         this.addPasswordToKeychain(serviceName, user, password);
     }
 
     @Override
     public void addPassword(String protocol, int port, String serviceName, String user, String password) {
+        if(!loadNative()) {
+            return;
+        }
         this.addInternetPasswordToKeychain(protocol, port, serviceName, user, password);
     }
 
@@ -118,6 +144,9 @@ public class Keychain extends AbstractKeychain {
      */
     @Override
     public synchronized boolean isTrusted(String hostname, X509Certificate[] certs) {
+        if(!loadNative()) {
+            return false;
+        }
         return this.isTrusted(hostname, this.getEncoded(certs));
     }
 
@@ -133,6 +162,9 @@ public class Keychain extends AbstractKeychain {
      */
     @Override
     public synchronized boolean displayCertificates(X509Certificate[] certificates) {
+        if(!loadNative()) {
+            return false;
+        }
         return this.displayCertificates(this.getEncoded(certificates));
     }
 
