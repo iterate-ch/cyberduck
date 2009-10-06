@@ -20,6 +20,12 @@
 		4717BE190F3096FD00BB4496 /* dav.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE120F3096FD00BB4496 /* dav.icns */; };
 		4717BE1A0F3096FD00BB4496 /* cf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE130F3096FD00BB4496 /* cf.icns */; };
 		4717BE1C0F3096FD00BB4496 /* sftp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE150F3096FD00BB4496 /* sftp.icns */; };
+		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
+		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
+		4718C202107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1FF107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h */; };
+		4718C204107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C201107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m */; };
+		4718C207107AA445006FDEFA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */; };
+		4718C208107AA445006FDEFA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */; };
 		4719A59E0BD95D2C0068CCFD /* bandwidth.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4719A59D0BD95D2C0068CCFD /* bandwidth.tiff */; };
 		4719A6040BD964780068CCFD /* connection.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4719A6030BD964780068CCFD /* connection.tiff */; };
 		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
@@ -53,8 +59,6 @@
 		4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4739EF9D0856990000405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		4739EFA50856990900405FD3 /* Proxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 474152F106C4F08A00AC0BD2 /* Proxy.h */; };
-		4739EFA70856990900405FD3 /* Proxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 474152F306C4F08A00AC0BD2 /* Proxy.m */; };
 		4739EFA90856990900405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		4739EFBB0856991200405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
@@ -131,8 +135,6 @@
 		475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475D461C0D9953CD009450C4 /* SecurityInterface.framework */; };
 		4762DABE09FC42EC0034C662 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
-		4762DB8509FC47380034C662 /* Host.m in Sources */ = {isa = PBXBuildFile; fileRef = 4762DB8309FC47380034C662 /* Host.m */; };
-		4762DB8609FC47380034C662 /* Host.h in Headers */ = {isa = PBXBuildFile; fileRef = 4762DB8409FC47380034C662 /* Host.h */; };
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
 		47742E080BECF13600EC4DEA /* Transfer.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47742E060BECF13600EC4DEA /* Transfer.nib */; };
@@ -193,8 +195,6 @@
 		47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470671150FD8896D00EE3291 /* Sparkle.framework */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BEDAFC0B92960400141EB4 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
-		47BEDB120B92968400141EB4 /* URLSchemeHandlerConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BEDB0D0B92967600141EB4 /* URLSchemeHandlerConfiguration.h */; };
-		47BEDB130B92968E00141EB4 /* URLSchemeHandlerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		47C4E87710584D710001F618 /* bookmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C4E87610584D710001F618 /* bookmark.png */; };
 		47CD32A10751163400B82A2B /* plus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CD32A00751163400B82A2B /* plus.tiff */; };
@@ -509,6 +509,12 @@
 		47181E9D0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Status.strings; sourceTree = "<group>"; };
 		47181E9E0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47181E9F0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text; name = el; path = el.lproj/License.txt; sourceTree = "<group>"; };
+		4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemConfigurationReachability.h; sourceTree = "<group>"; };
+		4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemConfigurationReachability.m; sourceTree = "<group>"; };
+		4718C1FF107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLSchemeHandlerConfiguration.h; sourceTree = "<group>"; };
+		4718C201107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLSchemeHandlerConfiguration.m; sourceTree = "<group>"; };
+		4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemConfigurationProxy.h; sourceTree = "<group>"; };
+		4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemConfigurationProxy.m; sourceTree = "<group>"; };
 		4719A59D0BD95D2C0068CCFD /* bandwidth.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = bandwidth.tiff; sourceTree = "<group>"; };
 		4719A6030BD964780068CCFD /* connection.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = connection.tiff; sourceTree = "<group>"; };
 		471B4905102C66600059687D /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
@@ -579,8 +585,6 @@
 		473DFC620FD0AA3900E27A39 /* CDControllerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDControllerCell.m; sourceTree = "<group>"; };
 		473DFCB90FD0B36D00E27A39 /* CDOutlineCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDOutlineCell.h; sourceTree = "<group>"; };
 		473DFCBA0FD0B36D00E27A39 /* CDOutlineCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDOutlineCell.m; sourceTree = "<group>"; };
-		474152F106C4F08A00AC0BD2 /* Proxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Proxy.h; sourceTree = "<group>"; };
-		474152F306C4F08A00AC0BD2 /* Proxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Proxy.m; sourceTree = "<group>"; };
 		4741532006C4F08A00AC0BD2 /* Editor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Editor.h; sourceTree = "<group>"; };
 		4741532206C4F08A00AC0BD2 /* Editor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Editor.m; sourceTree = "<group>"; };
 		4741532306C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAppleEventDescriptor-Extensions.h"; sourceTree = "<group>"; };
@@ -934,8 +938,6 @@
 		475D17B80805D54C00166B8A /* download4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download4.icns; sourceTree = "<group>"; };
 		475D461C0D9953CD009450C4 /* SecurityInterface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityInterface.framework; path = System/Library/Frameworks/SecurityInterface.framework; sourceTree = SDKROOT; };
 		4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDiagnostics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4762DB8309FC47380034C662 /* Host.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Host.m; sourceTree = "<group>"; };
-		4762DB8409FC47380034C662 /* Host.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Host.h; sourceTree = "<group>"; };
 		476565160981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Login.nib; sourceTree = "<group>"; };
 		476565170981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Preferences.nib; sourceTree = "<group>"; };
 		476565180981349C00633FD8 /* th */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = th; path = th.lproj/Download.nib; sourceTree = "<group>"; };
@@ -1280,8 +1282,6 @@
 		47B607480DA420880068282C /* es */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47B607490DA420880068282C /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libURLSchemeHandlerConfiguration.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		47BEDB0D0B92967600141EB4 /* URLSchemeHandlerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLSchemeHandlerConfiguration.h; sourceTree = "<group>"; };
-		47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLSchemeHandlerConfiguration.m; sourceTree = "<group>"; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1619,6 +1619,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4718C1FE107AA41F006FDEFA /* urlhandler */ = {
+			isa = PBXGroup;
+			children = (
+				4718C1FF107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h */,
+				4718C201107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m */,
+			);
+			path = urlhandler;
+			sourceTree = "<group>";
+		};
 		471B4904102C66600059687D /* growl */ = {
 			isa = PBXGroup;
 			children = (
@@ -1670,11 +1679,11 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */,
+				4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */,
+				4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */,
+				4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */,
 				4729389B0F9DBC420086605D /* aquaticprime */,
-				47BEDB0C0B92967500141EB4 /* util */,
-				47CD997C0738DEC700E9379E /* proxy */,
-				4762DB8409FC47380034C662 /* Host.h */,
-				4762DB8309FC47380034C662 /* Host.m */,
 				47983749072AD67800FA3CDB /* Keychain.h */,
 				4798373F072AD66D00FA3CDB /* Keychain.m */,
 			);
@@ -1693,6 +1702,7 @@
 		4741530206C4F08A00AC0BD2 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				4718C1FE107AA41F006FDEFA /* urlhandler */,
 				47DF9A21102CE43B00DCAD41 /* model */,
 				473DFC610FD0AA3900E27A39 /* CDControllerCell.h */,
 				473DFC620FD0AA3900E27A39 /* CDControllerCell.m */,
@@ -1975,24 +1985,6 @@
 			path = oofn;
 			sourceTree = "<group>";
 		};
-		47BEDB0C0B92967500141EB4 /* util */ = {
-			isa = PBXGroup;
-			children = (
-				47BEDB0D0B92967600141EB4 /* URLSchemeHandlerConfiguration.h */,
-				47BEDB0F0B92967600141EB4 /* URLSchemeHandlerConfiguration.m */,
-			);
-			path = util;
-			sourceTree = "<group>";
-		};
-		47CD997C0738DEC700E9379E /* proxy */ = {
-			isa = PBXGroup;
-			children = (
-				474152F306C4F08A00AC0BD2 /* Proxy.m */,
-				474152F106C4F08A00AC0BD2 /* Proxy.h */,
-			);
-			name = proxy;
-			sourceTree = "<group>";
-		};
 		47DF9A21102CE43B00DCAD41 /* model */ = {
 			isa = PBXGroup;
 			children = (
@@ -2038,7 +2030,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4739EFA50856990900405FD3 /* Proxy.h in Headers */,
+				4718C207107AA445006FDEFA /* SystemConfigurationProxy.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2054,7 +2046,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4762DB8609FC47380034C662 /* Host.h in Headers */,
+				4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2100,7 +2092,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47BEDB120B92968400141EB4 /* URLSchemeHandlerConfiguration.h in Headers */,
+				4718C202107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2712,7 +2704,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4739EFA70856990900405FD3 /* Proxy.m in Sources */,
+				4718C208107AA445006FDEFA /* SystemConfigurationProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2728,7 +2720,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4762DB8509FC47380034C662 /* Host.m in Sources */,
+				4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2771,7 +2763,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47BEDB130B92968E00141EB4 /* URLSchemeHandlerConfiguration.m in Sources */,
+				4718C204107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4159,7 +4151,7 @@
 					"$(SRCROOT)/build",
 				);
 				GCC_DEBUGGING_SYMBOLS = default;
-				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = 4.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
@@ -4467,7 +4459,7 @@
 					"$(SRCROOT)/build",
 				);
 				GCC_DEBUGGING_SYMBOLS = default;
-				GCC_ENABLE_OBJC_GC = supported;
+				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = 4.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
