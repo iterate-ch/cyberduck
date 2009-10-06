@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class TransferWriterFactory extends Factory {
+public abstract class TransferWriterFactory extends Factory<Writer<Transfer>> {
 
     /**
      * Registered factories

@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class HostWriterFactory extends Factory {
+public abstract class HostWriterFactory extends Factory<Writer<Host>> {
 
     /**
      * Registered factories
