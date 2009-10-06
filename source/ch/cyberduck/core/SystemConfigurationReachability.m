@@ -17,7 +17,7 @@
  *  dkocher@cyberduck.ch
  */
 
-#import "Host.h"
+#import "SystemConfigurationReachability.h"
 
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
@@ -37,13 +37,13 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     return converted;
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Host_isReachable
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationReachability_isReachable
   (JNIEnv *env, jobject this, jstring urlString)
 {
 	return [Host isReachable:convertToNSString(env, urlString)];
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Host_diagnose
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_SystemConfigurationReachability_diagnose
   (JNIEnv *env, jobject this, jstring urlString)
 {
 	[Host diagnose:convertToNSString(env, urlString)];

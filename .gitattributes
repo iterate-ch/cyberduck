@@ -1769,12 +1769,12 @@ sk.lproj/Transfer.strings -text svneol=unset#text/utf-16
 source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/HistoryCollection.java -text
-source/ch/cyberduck/core/Host.m -text
 source/ch/cyberduck/core/NaturalOrderComparator.java -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/RendezvousCollection.java -text
 source/ch/cyberduck/core/Serializable.java -text
 source/ch/cyberduck/core/Speedometer.java -text
+source/ch/cyberduck/core/SystemConfigurationReachability.m -text
 source/ch/cyberduck/core/cf/CFPath.java -text
 source/ch/cyberduck/core/cf/CFSession.java -text
 source/ch/cyberduck/core/cloud/CloudPath.java -text
