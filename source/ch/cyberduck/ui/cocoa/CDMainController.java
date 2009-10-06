@@ -25,21 +25,19 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.util.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -537,31 +535,36 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 Growl.instance().register();
             }
         });
-        Rendezvous.instance().addListener(new RendezvousListener() {
-            public void serviceResolved(final String identifier, final String hostname) {
-                if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
-                    try {
-                        if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
-                            log.info("Supressed Rendezvous notification for " + hostname);
-                            return;
+        this.background(new AbstractBackgroundAction() {
+            public void run() {
+                Rendezvous.instance().addListener(new RendezvousListener() {
+                    public void serviceResolved(final String identifier, final String hostname) {
+                        if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
+                            try {
+                                if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
+                                    log.info("Supressed Rendezvous notification for " + hostname);
+                                    return;
+                                }
+                            }
+                            catch(UnknownHostException e) {
+                                ; //Ignore
+                            }
                         }
+                        invoke(new DefaultMainAction() {
+                            public void run() {
+                                Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
+                            }
+                        });
                     }
-                    catch(UnknownHostException e) {
-                        ; //Ignore
-                    }
-                }
-                invoke(new DefaultMainAction() {
-                    public void run() {
-                        Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
+
+                    public void serviceLost(String servicename) {
+                        ;
                     }
                 });
             }
-
-            public void serviceLost(String servicename) {
-                ;
-            }
         });
-        if(Preferences.instance().getBoolean("defaulthandler.reminder")) {
+        if(Preferences.instance().getBoolean("defaulthandler.reminder")
+                && Preferences.instance().getInteger("uses") > 0) {
             if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
                     new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()})) {
                 final NSAlert alert = NSAlert.alert(
