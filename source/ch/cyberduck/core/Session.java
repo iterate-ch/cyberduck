@@ -128,7 +128,7 @@ public abstract class Session {
         }
         catch(IOException e) {
             this.interrupt();
-            this.error(null, "Connection failed", e);
+            this.error("Connection failed", e);
             throw e;
         }
     }
@@ -371,7 +371,7 @@ public abstract class Session {
             }
         }
         catch(IOException e) {
-            this.error(null, "Cannot create archive", e);
+            this.error("Cannot create archive", e);
         }
     }
 
@@ -397,7 +397,7 @@ public abstract class Session {
             file.getParent().invalidate();
         }
         catch(IOException e) {
-            this.error(null, "Cannot expand archive", e);
+            this.error("Cannot expand archive", e);
         }
     }
 
@@ -553,6 +553,10 @@ public abstract class Session {
 
     public void removeErrorListener(ErrorListener listener) {
         errorListeners.remove(listener);
+    }
+
+    public void error(String message, Throwable e) {
+        this.error(null, message, e);
     }
 
     /**
