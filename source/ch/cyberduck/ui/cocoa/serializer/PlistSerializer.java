@@ -20,8 +20,6 @@ package ch.cyberduck.ui.cocoa.serializer;
 
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.serializer.DeserializerFactory;
-import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
@@ -39,6 +37,7 @@ public class PlistSerializer implements Serializer {
     }
 
     private static class Factory extends SerializerFactory {
+        @Override
         protected Serializer create() {
             return new PlistSerializer();
         }
