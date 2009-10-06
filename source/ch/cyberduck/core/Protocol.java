@@ -456,7 +456,7 @@ public abstract class Protocol {
 
         @Override
         public String getDescription() {
-            return "Mosso Cloud Files";
+            return "Rackspace Cloud Files";
         }
 
         @Override
