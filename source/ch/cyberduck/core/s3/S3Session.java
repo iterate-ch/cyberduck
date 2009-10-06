@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
@@ -54,7 +55,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class S3Session extends HTTPSession implements SSLSession {
+public class S3Session extends HTTPSession implements SSLSession, CloudSession {
     private static Logger log = Logger.getLogger(S3Session.class);
 
     static {
@@ -437,5 +438,80 @@ public class S3Session extends HTTPSession implements SSLSession {
                     hostconfig);
         }
         return cloudfront;
+    }
+
+
+    /**
+     * @return
+     */
+    public ch.cyberduck.core.cloud.Distribution readDistribution(String container) {
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            return new ch.cyberduck.core.cloud.Distribution(false, null, null);
+        }
+        try {
+            this.check();
+            for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container)) {
+                // Retrieve distribution's configuration to access current logging status settings.
+                final DistributionConfig distributionConfig = this.getDistributionConfig(d);
+                // We currently only support one distribution per bucket
+                return new ch.cyberduck.core.cloud.Distribution(d.isEnabled(), d.getStatus().equals("InProgress"),
+                        "http://" + d.getDomainName(), Locale.localizedString(d.getStatus(), "S3"), d.getCNAMEs(),
+                        distributionConfig.isLoggingEnabled());
+            }
+        }
+        catch(CloudFrontServiceException e) {
+            if(e.getResponseCode() == 403) {
+                log.warn("Invalid CloudFront account:" + e.getMessage());
+                return new ch.cyberduck.core.cloud.Distribution(false, null, null);
+            }
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return new ch.cyberduck.core.cloud.Distribution(false, null, null);
+    }
+
+    /**
+     * Amazon CloudFront Extension
+     *
+     * @param enabled
+     * @param cnames
+     * @param logging
+     */
+    public void writeDistribution(String container, final boolean enabled, final String[] cnames, boolean logging) {
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            return;
+        }
+        try {
+            LoggingStatus l = null;
+            if(logging) {
+                l = new LoggingStatus(
+                        this.getHostnameForBucket(container),
+                        Preferences.instance().getProperty("cloudfront.logging.prefix"));
+            }
+            this.check();
+            if(enabled) {
+                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                        Locale.localizedString("Amazon CloudFront", "S3")));
+            }
+            else {
+                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
+                        Locale.localizedString("Amazon CloudFront", "S3")));
+            }
+            for(org.jets3t.service.model.cloudfront.Distribution distribution : this.listDistributions(container)) {
+                this.updateDistribution(enabled, distribution, cnames, l);
+                // We currently only support one distribution per bucket
+                return;
+            }
+            // Create new configuration
+            this.createDistribution(enabled, container, cnames, l);
+        }
+        catch(CloudFrontServiceException e) {
+            this.error("Cannot write file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot write file attributes", e);
+        }
     }
 }

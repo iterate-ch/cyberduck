@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cf.CFPath;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
@@ -750,7 +751,7 @@ public class CDInfoController extends ToolbarWindowController {
                 else {
                     permissionsField.setStringValue((null == permission ? Locale.localizedString("Unknown") : permission.toString()));
                 }
-                togglePermissionSettings(null == permission ? false: true);
+                togglePermissionSettings(null == permission ? false : true);
                 permissionProgress.stopAnimation(null);
             }
         });
@@ -820,7 +821,7 @@ public class CDInfoController extends ToolbarWindowController {
         distributionCnameField.setStringValue(Locale.localizedString("Unknown"));
         distributionCnameField.setEnabled(amazon);
 
-        distributionLoggingButton.setEnabled(amazon);
+        distributionLoggingButton.setEnabled(cloud);
 
         String servicename = "";
         if(amazon) {
@@ -829,7 +830,7 @@ public class CDInfoController extends ToolbarWindowController {
         // Mosso only
         final boolean mosso = file instanceof CFPath;
         if(mosso) {
-            servicename = Locale.localizedString("Mosso Cloud Files", "Mosso");
+            servicename = Locale.localizedString("Limelight Content", "Mosso");
         }
         distributionEnableButton.setEnabled(cloud);
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
@@ -1136,13 +1137,16 @@ public class CDInfoController extends ToolbarWindowController {
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 for(Path next : files) {
+                    CloudPath cloud = (CloudPath) next;
+                    CloudSession session = (CloudSession) cloud.getSession();
+                    String container = cloud.getContainerName();
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
-                        ((CloudPath) next).writeDistribution(distributionEnableButton.state() == NSCell.NSOnState,
+                        session.writeDistribution(container, distributionEnableButton.state() == NSCell.NSOnState,
                                 StringUtils.split(distributionCnameField.stringValue()),
                                 distributionLoggingButton.state() == NSCell.NSOnState);
                     }
                     else {
-                        ((CloudPath) next).writeDistribution(distributionEnableButton.state() == NSCell.NSOnState,
+                        session.writeDistribution(container, distributionEnableButton.state() == NSCell.NSOnState,
                                 new String[]{}, distributionLoggingButton.state() == NSCell.NSOnState);
                     }
                     break;
@@ -1165,8 +1169,10 @@ public class CDInfoController extends ToolbarWindowController {
 
             public void run() {
                 for(Path next : files) {
+                    CloudPath cloud = (CloudPath) next;
+                    CloudSession session = (CloudSession) cloud.getSession();
                     // We only support one distribution per bucket for the sake of simplicity
-                    distribution = ((CloudPath) next).readDistribution();
+                    distribution = session.readDistribution(cloud.getContainerName());
                     break;
                 }
             }
@@ -1178,12 +1184,8 @@ public class CDInfoController extends ToolbarWindowController {
                 distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                 distributionStatusField.setStringValue(distribution.getStatus());
                 distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
-//                distributionLoggingButton.setToolTip(
-//                        s3.getContainerName() + "/" + Preferences.instance().getProperty("cloudfront.logging.prefix")
-//                );
 
                 final CloudPath file = ((CloudPath) files.get(0));
-                distributionLoggingButton.setEnabled(file instanceof S3Path);
                 // Concatenate URLs
                 final String key = file.isContainer() ? "" : file.encode(file.getKey());
                 if(numberOfFiles() > 1) {

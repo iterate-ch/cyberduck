@@ -18,8 +18,19 @@ package ch.cyberduck.core.cloud;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface CloudSession {
 
+    /**
+     * @param enabled
+     * @param cnames
+     * @param logging
+     */
+    public abstract void writeDistribution(String container, final boolean enabled, final String[] cnames, boolean logging);
+
+    /**
+     * @return
+     */
+    public abstract Distribution readDistribution(String container);
 }

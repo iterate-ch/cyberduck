@@ -18,7 +18,6 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 
@@ -88,16 +87,4 @@ public abstract class CloudPath extends Path {
         }
         return null;
     }
-
-    /**
-     * @param enabled
-     * @param cnames
-     * @param logging
-     */
-    public abstract void writeDistribution(final boolean enabled, final String[] cnames, boolean logging);
-
-    /**
-     * @return
-     */
-    public abstract Distribution readDistribution();
 }

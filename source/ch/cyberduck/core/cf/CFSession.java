@@ -19,6 +19,8 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cloud.CloudSession;
+import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
@@ -32,14 +34,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 
-import com.mosso.client.cloudfiles.FilesClient;
+import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
+import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
- * Mosso Cloud Files Implementation
+ * Rackspace Cloud Files Implementation
  *
  * @version $Id$
  */
-public class CFSession extends HTTPSession implements SSLSession {
+public class CFSession extends HTTPSession implements SSLSession, CloudSession {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     static {
@@ -168,5 +172,61 @@ public class CFSession extends HTTPSession implements SSLSession {
     @Override
     public boolean isConnected() {
         return CF != null;
+    }
+
+    /**
+     * @param enabled Enable content distribution for the container
+     * @param cnames  Currently ignored
+     * @param logging
+     */
+    public void writeDistribution(String container, boolean enabled, String[] cnames, boolean logging) {
+        final AbstractX509TrustManager trust = this.getTrustManager();
+        try {
+            this.check();
+            trust.setHostname(URI.create(this.CF.getCdnManagementURL()).getHost());
+            if(enabled) {
+                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
+            }
+            else {
+                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
+                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
+            }
+            // Toggle content distribution for the container without changing the TTL expiration
+            this.CF.cdnUpdateContainer(container, -1, enabled, logging);
+        }
+        catch(IOException e) {
+            this.error("Cannot change permissions", e);
+        }
+        finally {
+            trust.setHostname(URI.create(this.CF.getStorageURL()).getHost());
+        }
+    }
+
+    public Distribution readDistribution(String container) {
+        if(null != container) {
+            final AbstractX509TrustManager trust = this.getTrustManager();
+            try {
+                this.check();
+                trust.setHostname(URI.create(this.CF.getCdnManagementURL()).getHost());
+                try {
+                    final FilesCDNContainer info = this.CF.getCDNContainerInfo(container);
+                    return new Distribution(info.isEnabled(), info.getCdnURL(),
+                            info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"), info.getRetainLogs());
+                }
+                catch(FilesException e) {
+                    log.warn(e.getMessage());
+                    // Not found.
+                    return new Distribution(false, null, Locale.localizedString("CDN Disabled", "Mosso"));
+                }
+            }
+            catch(IOException e) {
+                this.error(e.getMessage(), e);
+            }
+            finally {
+                trust.setHostname(URI.create(this.CF.getStorageURL()).getHost());
+            }
+        }
+        return new Distribution(false, null, null);
     }
 }

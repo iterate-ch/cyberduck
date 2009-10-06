@@ -23,7 +23,6 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
@@ -32,20 +31,17 @@ import org.jets3t.service.utils.ServiceUtils;
 import org.w3c.util.DateParser;
 import org.w3c.util.InvalidDateException;
 
+import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
+import com.rackspacecloud.client.cloudfiles.FilesObject;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
-
-import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
-import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-import com.rackspacecloud.client.cloudfiles.FilesObject;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -106,66 +102,6 @@ public class CFPath extends CloudPath {
     @Override
     public Session getSession() {
         return this.session;
-    }
-
-    /**
-     * @param enabled Enable content distribution for the container
-     * @param cnames  Currently ignored
-     * @param logging
-     */
-    @Override
-    public void writeDistribution(boolean enabled, String[] cnames, boolean logging) {
-        final String container = this.getContainerName();
-        final AbstractX509TrustManager trust = session.getTrustManager();
-        try {
-            session.check();
-            trust.setHostname(URI.create(session.CF.getCdnManagementURL()).getHost());
-            if(enabled) {
-                session.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
-            }
-            else {
-                session.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
-                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
-            }
-            // Toggle content distribution for the container without changing the TTL expiration
-            session.CF.cdnUpdateContainer(container, -1, enabled, logging);
-        }
-        catch(IOException e) {
-            this.error("Cannot change permissions", e);
-        }
-        finally {
-            trust.setHostname(URI.create(session.CF.getStorageURL()).getHost());
-        }
-    }
-
-    @Override
-    public Distribution readDistribution() {
-        final String container = this.getContainerName();
-        if(null != container) {
-            final AbstractX509TrustManager trust = session.getTrustManager();
-            try {
-                session.check();
-                trust.setHostname(URI.create(session.CF.getCdnManagementURL()).getHost());
-                try {
-                    final FilesCDNContainer info = session.CF.getCDNContainerInfo(container);
-                    return new Distribution(info.isEnabled(), info.getCdnURL(),
-                            info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"), info.getRetainLogs());
-                }
-                catch(FilesException e) {
-                    log.warn(e.getMessage());
-                    // Not found.
-                    return new Distribution(false, null, Locale.localizedString("CDN Disabled", "Mosso"));
-                }
-            }
-            catch(IOException e) {
-                this.error(e.getMessage(), e);
-            }
-            finally {
-                trust.setHostname(URI.create(session.CF.getStorageURL()).getHost());
-            }
-        }
-        return new Distribution(false, null, null);
     }
 
     @Override
@@ -472,7 +408,7 @@ public class CFPath extends CloudPath {
      */
     @Override
     public String toHttpURL() {
-        final Distribution distribution = this.readDistribution();
+        final Distribution distribution = session.readDistribution(this.getContainerName());
         if(null == distribution.getUrl()) {
             return super.toHttpURL();
         }
