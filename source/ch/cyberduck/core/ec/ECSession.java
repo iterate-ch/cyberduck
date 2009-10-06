@@ -68,4 +68,25 @@ public class ECSession extends S3Session {
     public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
         return new Distribution[]{};
     }
+
+
+    /**
+     * @return
+     */
+    @Override
+    public ch.cyberduck.core.cloud.Distribution readDistribution(String container) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Amazon CloudFront Extension
+     *
+     * @param enabled
+     * @param cnames
+     * @param logging
+     */
+    @Override
+    public void writeDistribution(String container, final boolean enabled, final String[] cnames, boolean logging) {
+        throw new UnsupportedOperationException();
+    }
 }

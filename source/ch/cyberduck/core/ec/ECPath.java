@@ -71,24 +71,4 @@ public class ECPath extends S3Path {
     protected <T> ECPath(ECSession s, T dict) {
         super(s, dict);
     }
-
-    /**
-     * @return
-     */
-    @Override
-    public Distribution readDistribution() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Amazon CloudFront Extension
-     *
-     * @param enabled
-     * @param cnames
-     * @param logging
-     */
-    @Override
-    public void writeDistribution(final boolean enabled, final String[] cnames, boolean logging) {
-        throw new UnsupportedOperationException();
-    }
 }
