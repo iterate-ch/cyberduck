@@ -130,7 +130,7 @@
         <key>Java</key>
         <dict>
             <key>ClassPath</key>
-            <string>core.jar:cocoa.jar:log4j-1.2.15.jar:icu4j-3.6.1.jar:jdom-1.1.jar:jakarta-oro-2.0.8.jar:commons-net-1.5.0-dev.jar:commons-collections-3.2.1.jar:commons-logging-1.1.1.jar:commons-httpclient-3.1.jar:commons-codec-1.3.jar:jets3t-0.7.2.jar:jakarta-slide-webdavlib-2.2-dev.jar:cloudfiles-1.3.1.jar:commons-lang-2.4.jar:commons-io-1.4.jar:java-xmlbuilder-1.jar:jna-3.2.2.jar:asm-3.1.jar:cglib-2.2.jar:slf4j-log4j12-1.5.6.jar:slf4j-api-1.5.6.jar:dns_sd.jar</string>
+            <string>core.jar:cocoa.jar:log4j-1.2.15.jar:icu4j-3.6.1.jar:jdom-1.1.jar:jakarta-oro-2.0.8.jar:commons-net-1.5.0-dev.jar:commons-collections-3.2.1.jar:commons-logging-1.1.1.jar:commons-httpclient-3.1.jar:commons-codec-1.3.jar:jets3t-0.7.2.jar:jakarta-slide-webdavlib-2.2-dev.jar:cloudfiles-1.4.1.jar:commons-lang-2.4.jar:commons-io-1.4.jar:java-xmlbuilder-1.jar:jna-3.2.2.jar:asm-3.1.jar:cglib-2.2.jar:slf4j-log4j12-1.5.6.jar:slf4j-api-1.5.6.jar:dns_sd.jar</string>
             <key>MainClass</key>
             <string>ch.cyberduck.ui.cocoa.CDMainApplication</string>
             <key>WorkingDirectory</key>
