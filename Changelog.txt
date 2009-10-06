@@ -8,6 +8,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Fails to launch with Japanese locale
 - [Bugfix] Duplicate files in browser listing when sorting by modification date [#3745]
 - [Bugfix] Wrong menu item font size [#3736]
+- [Bugfix] Various bugfixes
+- [Feature] CDN Log Retention (Rackspace Cloud Files)
 
 3.3b3
 - [Feature] PPC support again available
@@ -21,7 +23,6 @@ Changelog. Last modified: $Date$
 3.3b1
 - [Bugfix] Incompatibility with Mac OS X 10.6 (Snow Leopard) [#3039]
 - [Feature] New application icon (Thanks to Dietmar Kerschner)
-- [Feature] Eucalyptus Walrus protocol support
 
 3.2.1
 - [Feature] Create placeholder objects for virtual directory (S3)
