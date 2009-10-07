@@ -172,7 +172,7 @@ public class SFTPSession extends Session {
                 return;
             }
         }
-        if(this.loginUsingPasswordAuthentication(credentials)
+        else if(this.loginUsingPasswordAuthentication(credentials)
                 || this.loginUsingKBIAuthentication(credentials)) {
             this.message(Locale.localizedString("Login successful", "Credentials"));
             return;
