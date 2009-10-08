@@ -1044,12 +1044,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             c.setWidth(new CGFloat(250));
             c.setMaxWidth(new CGFloat(1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
-            final NSTextFieldCell cell = outlineCellPrototype;
-            {
-                cell.setTarget(browserOutlineView.target());
-                cell.setAction(browserOutlineView.action());
-            }
-            c.setDataCell(cell);
+            c.setDataCell(outlineCellPrototype);
             this.browserOutlineView.addTableColumn(c);
             this.browserOutlineView.setOutlineTableColumn(c);
         }
@@ -1130,13 +1125,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             c.setWidth((250));
             c.setMaxWidth((1000));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
-            NSTextFieldCell cell = filenameCellPrototype;
-            {
-                cell.setEditable(true); //to enable inline renaming of files
-                cell.setTarget(view.target());
-                cell.setAction(view.action());
-            }
-            c.setDataCell(cell);
+            c.setDataCell(filenameCellPrototype);
             this.browserListView.addTableColumn(c);
         }
     }
