@@ -477,7 +477,7 @@ public abstract class Preferences {
         defaults.put("connection.retry", String.valueOf(1));
         defaults.put("connection.retry.delay", String.valueOf(10));
 
-        defaults.put("connection.hostname.default", "localhost");
+        defaults.put("connection.hostname.default", "");
         /**
          * Try to resolve the hostname when entered in connection dialog
          */
