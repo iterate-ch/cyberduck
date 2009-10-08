@@ -1,7 +1,7 @@
-#!/usr/local/bin/python2.5
+#!/usr/bin/env python2.6
+# -*- coding: utf-8 -*-
 
 import cgi
-import cgitb; cgitb.enable() # Optional; for debugging only
 import os
 import smtplib
 import email
@@ -24,8 +24,8 @@ def mailreport(crashlog, ip, revision):
 	mail = MIMEText(crashlog)
 	mail["To"] = "bugs@cyberduck.ch"
 	mail["From"] = "noreply@cyberduck.ch"
-	if revision != None:
-		mail["Subject"] = "Cyberduck Crash Report from " + ip + " with revision " + revision
+	if revision:
+		mail["Subject"] = "Cyberduck Crash Report (r" + revision + ") from " + ip
 	else:
 		mail["Subject"] = "Cyberduck Crash Report from " + ip
 	mail["Date"] = email.Utils.formatdate(localtime=1)
@@ -41,13 +41,13 @@ if __name__=="__main__":
 	print
 	try:
 		form = cgi.FieldStorage()
+		revision = None
+		if form.has_key("revision"):
+			revision = form["revision"].value
+		ip = cgi.escape(os.environ["REMOTE_ADDR"])
 		if form.has_key("crashlog"):
-			crashlog = form["crashlog"].value
-			revision = None
-			if form.has_key("revision"):
-				revision = form["revision"].value
-			ip = cgi.escape(os.environ["REMOTE_ADDR"])
 			logging.info("Crash Report from %s for revision %s", ip, revision)
+			crashlog = form["crashlog"].value
 
 			#add database entry
 			conn = sqlite3.connect(db)
@@ -66,7 +66,8 @@ if __name__=="__main__":
 				c.close()
 
 			#send mail
-			mailreport(crashlog, ip, revision)
+			if revision:
+				mailreport(crashlog, ip, revision)
 	except:
 		logging.error("Unexpected error:".join(format_exception(*exc_info())))
 		cgi.print_exception()
