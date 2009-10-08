@@ -176,7 +176,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
             @Action
             public void pkCheckboxSelectionChanged(final NSButton sender) {
                 log.debug("pkCheckboxSelectionChanged");
-                if(this.pkLabel.stringValue().equals(Locale.localizedString("No Private Key selected"))) {
+                if(sender.state() == NSCell.NSOnState) {
                     publicKeyPanel = NSOpenPanel.openPanel();
                     publicKeyPanel.setCanChooseDirectories(false);
                     publicKeyPanel.setCanChooseFiles(true);
@@ -186,8 +186,7 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                             Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
                 }
                 else {
-                    credentials.setIdentity(null);
-                    this.update();
+                    this.pkSelectionPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
                 }
             }
 
@@ -204,7 +203,6 @@ public class CDLoginController extends AbstractLoginController implements LoginC
                 if(returncode == NSPanel.NSCancelButton) {
                     credentials.setIdentity(null);
                 }
-                publicKeyPanel = null;
                 update();
             }
 

@@ -75,7 +75,7 @@ public class Host implements Serializable {
     /**
      * The credentials to authenticate with
      */
-    private Credentials credentials = new KnownHostsCredentials();
+    private Credentials credentials = new Credentials();
     /**
      * The character encoding to use for file listings
      */
@@ -412,7 +412,23 @@ public class Host implements Serializable {
         this.protocol = protocol != null ? protocol :
                 Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
 
-        if(!this.protocol.equals(Protocol.SFTP)) {
+        this.readOpenSshConfiguration();
+    }
+
+    /**
+     * Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
+     */
+    private void readOpenSshConfiguration() {
+        if(this.protocol.equals(Protocol.SFTP)) {
+            final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(this.getHostname());
+            if(null != entry.getIdentityFile()) {
+                this.getCredentials().setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
+            }
+            if(StringUtils.isNotBlank(entry.getUser())) {
+                this.getCredentials().setUsername(entry.getUser());
+            }
+        }
+        else {
             this.getCredentials().setIdentity(null);
         }
     }
@@ -433,17 +449,20 @@ public class Host implements Serializable {
      * @return The user-given name of this bookmark
      */
     public String getNickname() {
-        if(null == this.nickname) {
+        if(StringUtils.isEmpty(nickname)) {
             return this.getDefaultNickname();
         }
-        return this.nickname;
+        return nickname;
     }
 
     /**
      * @return The default given name of this bookmark
      */
     private String getDefaultNickname() {
-        return this.getHostname() + " \u2013 " + this.getProtocol().getName();
+        if(StringUtils.isNotEmpty(this.getHostname())) {
+            return this.getHostname() + " \u2013 " + this.getProtocol().getName();
+        }
+        return "";
     }
 
     /**
@@ -502,6 +521,7 @@ public class Host implements Serializable {
         log.debug("setHostname:" + hostname);
         this.hostname = hostname.trim();
         this.punycode = null;
+        this.readOpenSshConfiguration();
     }
 
     /**
@@ -720,58 +740,5 @@ public class Host implements Serializable {
 
     public void diagnose() {
         ReachabilityFactory.instance().diagnose(this);
-    }
-
-    /**
-     *
-     */
-    private static OpenSshConfig config;
-
-    private static OpenSshConfig getOpenSshConfig() {
-        if(null == config) {
-            config = OpenSshConfig.create();
-        }
-        return config;
-    }
-
-    /**
-     *
-     */
-    private class KnownHostsCredentials extends Credentials {
-
-        /**
-         * @return
-         */
-        @Override
-        public String getUsername() {
-            final String user = super.getUsername();
-            if(StringUtils.isBlank(user)) {
-                if(!Protocol.SFTP.equals(Host.this.getProtocol())) {
-                    return null;
-                }
-                final OpenSshConfig.Host entry = getOpenSshConfig().lookup(Host.this.getHostname());
-                if(StringUtils.isNotBlank(entry.getUser())) {
-                    return entry.getUser();
-                }
-            }
-            return user;
-        }
-
-        /**
-         * @return
-         */
-        @Override
-        public Local getIdentity() {
-            if(!Protocol.SFTP.equals(Host.this.getProtocol())) {
-                return null;
-            }
-            if(null == super.getIdentity()) {
-                final OpenSshConfig.Host entry = getOpenSshConfig().lookup(Host.this.getHostname());
-                if(null != entry.getIdentityFile()) {
-                    return LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath());
-                }
-            }
-            return super.getIdentity();
-        }
     }
 }

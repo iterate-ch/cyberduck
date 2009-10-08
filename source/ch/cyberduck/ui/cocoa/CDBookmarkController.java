@@ -571,7 +571,7 @@ public class CDBookmarkController extends CDWindowController {
     @Action
     public void pkCheckboxSelectionChanged(final NSButton sender) {
         log.debug("pkCheckboxSelectionChanged");
-        if(this.pkLabel.stringValue().equals(Locale.localizedString("No Private Key selected"))) {
+        if(sender.state() == NSCell.NSOnState) {
             publicKeyPanel = NSOpenPanel.openPanel();
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
@@ -580,8 +580,7 @@ public class CDBookmarkController extends CDWindowController {
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            this.host.getCredentials().setIdentity(null);
-            this.itemChanged();
+            this.pkSelectionPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
         }
     }
 
@@ -598,7 +597,7 @@ public class CDBookmarkController extends CDWindowController {
         if(returncode == NSPanel.NSCancelButton) {
             host.getCredentials().setIdentity(null);
         }
-        publicKeyPanel = null;
+        this.init();
         this.itemChanged();
     }
 
