@@ -73,6 +73,7 @@ public abstract class QLPreviewPanel extends NSPanel {
     }
 
     public abstract void setDataSource(org.rococoa.ID dataSource);
+    public abstract org.rococoa.ID dataSource();
 
     /**
      * @abstract Asks the Preview Panel to update its current controller.<br>

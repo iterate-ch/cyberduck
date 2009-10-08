@@ -79,41 +79,42 @@ public class QuartzQuickLook extends AbstractQuickLook {
         }
     };
 
+    final QLPreviewPanel panel;
+
     private QuartzQuickLook() {
-        ;
+        panel = QLPreviewPanel.sharedPreviewPanel();
     }
 
     public boolean isAvailable() {
-        return null != QLPreviewPanel.sharedPreviewPanel();
+        return null != panel;
     }
 
     public boolean isOpen() {
-        return QLPreviewPanel.sharedPreviewPanelExists()
-                && QLPreviewPanel.sharedPreviewPanel().isVisible();
+        return QLPreviewPanel.sharedPreviewPanelExists() && panel.isVisible();
     }
 
     @Override
     public void willBeginQuickLook() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.setDataSource(this.model.id());
         super.willBeginQuickLook();
     }
 
     public void open() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.makeKeyAndOrderFront(null);
+        if(null == panel.dataSource()) {
+            // Do not reload data yet because datasource is not yet setup.
+            // Focus has probably changed to another application since
+            return;
+        }
         panel.reloadData();
     }
 
     public void close() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
-        NSNotificationCenter.defaultCenter().removeObserver(panel.id());
         panel.orderOut(null);
     }
 
     @Override
     public void didEndQuickLook() {
-        final QLPreviewPanel panel = QLPreviewPanel.sharedPreviewPanel();
         panel.setDataSource(null);
         previews.clear();
         super.didEndQuickLook();
