@@ -183,7 +183,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         final AbstractX509TrustManager trust = this.getTrustManager();
         try {
             this.check();
-            trust.setHostname(URI.create(this.CF.getCdnManagementURL()).getHost());
+            trust.setHostname(URI.create(CF.getCdnManagementURL()).getHost());
             if(enabled) {
                 this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                         Locale.localizedString("Rackspace Cloud Files", "Mosso")));
@@ -192,14 +192,24 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
                 this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
                         Locale.localizedString("Rackspace Cloud Files", "Mosso")));
             }
+            if(enabled) {
+                try {
+                    final FilesCDNContainer info = CF.getCDNContainerInfo(container);
+                }
+                catch(FilesException e) {
+                    log.warn(e.getMessage());
+                    // Not found.
+                    CF.cdnEnableContainer(container);
+                }
+            }
             // Toggle content distribution for the container without changing the TTL expiration
-            this.CF.cdnUpdateContainer(container, -1, enabled, logging);
+            CF.cdnUpdateContainer(container, -1, enabled, logging);
         }
         catch(IOException e) {
-            this.error("Cannot change permissions", e);
+            this.error("Cannot write file attributes", e);
         }
         finally {
-            trust.setHostname(URI.create(this.CF.getStorageURL()).getHost());
+            trust.setHostname(URI.create(CF.getStorageURL()).getHost());
         }
     }
 
@@ -208,9 +218,9 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
             final AbstractX509TrustManager trust = this.getTrustManager();
             try {
                 this.check();
-                trust.setHostname(URI.create(this.CF.getCdnManagementURL()).getHost());
+                trust.setHostname(URI.create(CF.getCdnManagementURL()).getHost());
                 try {
-                    final FilesCDNContainer info = this.CF.getCDNContainerInfo(container);
+                    final FilesCDNContainer info = CF.getCDNContainerInfo(container);
                     return new Distribution(info.isEnabled(), info.getCdnURL(),
                             info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"), info.getRetainLogs());
                 }
@@ -221,10 +231,10 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
                 }
             }
             catch(IOException e) {
-                this.error(e.getMessage(), e);
+                this.error("Cannot read file attributes", e);
             }
             finally {
-                trust.setHostname(URI.create(this.CF.getStorageURL()).getHost());
+                trust.setHostname(URI.create(CF.getStorageURL()).getHost());
             }
         }
         return new Distribution(false, null, null);
