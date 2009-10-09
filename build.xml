@@ -430,6 +430,8 @@
                 srcdir="${source}"
                 source="1.5"
                 target="1.5"
+                deprecation="on"
+                listfiles="on"
                 destdir="${build.classes}">
             <classpath refid="build.classpath"/>
         </javac>
