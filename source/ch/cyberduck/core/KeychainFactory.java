@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class KeychainFactory extends Factory<AbstractKeychain> {
 
@@ -54,7 +54,4 @@ public abstract class KeychainFactory extends Factory<AbstractKeychain> {
         }
         return keychain;
     }
-
-    @Override
-    protected abstract AbstractKeychain create();
 }

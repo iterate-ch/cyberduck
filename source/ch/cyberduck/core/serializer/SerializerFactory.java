@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class SerializerFactory extends Factory {
+public abstract class SerializerFactory extends Factory<Serializer> {
 
     /**
      * Registered factories
@@ -50,7 +50,4 @@ public abstract class SerializerFactory extends Factory {
         }
         return factories.get(NATIVE_PLATFORM).create();
     }
-
-    @Override
-    protected abstract Serializer create();
 }

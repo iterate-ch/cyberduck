@@ -53,7 +53,4 @@ public abstract class TransferWriterFactory extends Factory<Writer<Transfer>> {
         }
         return instance;
     }
-
-    @Override
-    protected abstract Writer<Transfer> create();
 }

@@ -54,7 +54,4 @@ public abstract class ProxyFactory extends Factory<Proxy> {
         }
         return proxy;
     }
-
-    @Override
-    protected abstract Proxy create();
 }

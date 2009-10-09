@@ -23,6 +23,11 @@ package ch.cyberduck.core;
  */
 public abstract class Factory<T> {
 
+    /**
+     *
+     * @return A new instance of the type of objects this
+     * factory creates
+     */
     protected abstract T create();
 
     public static abstract class Platform {

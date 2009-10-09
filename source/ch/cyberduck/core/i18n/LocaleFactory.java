@@ -55,6 +55,4 @@ public abstract class LocaleFactory extends Factory<Locale> {
         }
         return l;
     }
-
-    protected abstract Locale create();
 }

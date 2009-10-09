@@ -56,7 +56,4 @@ public abstract class HostReaderFactory extends Factory<Reader<Host>> {
         }
         return instance;
     }
-
-    @Override
-    protected abstract Reader<Host> create();
 }

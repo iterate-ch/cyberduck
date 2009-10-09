@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ReachabilityFactory extends Factory<Reachability> {
 
@@ -54,7 +54,4 @@ public abstract class ReachabilityFactory extends Factory<Reachability> {
         }
         return diagnostics;
     }
-
-    @Override
-    protected abstract Reachability create();
 }

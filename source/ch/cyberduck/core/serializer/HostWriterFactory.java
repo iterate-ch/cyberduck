@@ -53,7 +53,4 @@ public abstract class HostWriterFactory extends Factory<Writer<Host>> {
         }
         return instance;
     }
-
-    @Override
-    protected abstract Writer<Host> create();
 }
