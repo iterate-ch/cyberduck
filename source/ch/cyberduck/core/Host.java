@@ -25,17 +25,16 @@ import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.spearce.jgit.transport.OpenSshConfig;
+
+import com.enterprisedt.net.ftp.FTPConnectMode;
+import com.ibm.icu.text.IDNA;
+import com.ibm.icu.text.StringPrepParseException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.TimeZone;
-
-import com.enterprisedt.net.ftp.FTPConnectMode;
-import com.ibm.icu.text.IDNA;
-import com.ibm.icu.text.StringPrepParseException;
 
 /**
  * @version $Id$
@@ -411,26 +410,6 @@ public class Host implements Serializable {
         log.debug("setProtocol:" + protocol);
         this.protocol = protocol != null ? protocol :
                 Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
-
-        this.readOpenSshConfiguration();
-    }
-
-    /**
-     * Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
-     */
-    private void readOpenSshConfiguration() {
-        if(this.protocol.equals(Protocol.SFTP)) {
-            final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(this.getHostname());
-            if(null != entry.getIdentityFile()) {
-                this.getCredentials().setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
-            }
-            if(StringUtils.isNotBlank(entry.getUser())) {
-                this.getCredentials().setUsername(entry.getUser());
-            }
-        }
-        else {
-            this.getCredentials().setIdentity(null);
-        }
     }
 
     /**
@@ -521,7 +500,6 @@ public class Host implements Serializable {
         log.debug("setHostname:" + hostname);
         this.hostname = hostname.trim();
         this.punycode = null;
-        this.readOpenSshConfiguration();
     }
 
     /**

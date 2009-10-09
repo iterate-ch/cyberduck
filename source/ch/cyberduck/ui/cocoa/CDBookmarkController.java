@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.*;
 
@@ -64,26 +65,45 @@ public class CDBookmarkController extends CDWindowController {
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
         final Protocol selected = Protocol.forName(protocolPopup.selectedItem().representedObject());
-        this.host.setPort(selected.getDefaultPort());
-        if(this.host.getProtocol().getDefaultHostname().equals(this.host.getHostname())) {
-            this.host.setHostname(selected.getDefaultHostname());
+        host.setPort(selected.getDefaultPort());
+        if(host.getProtocol().getDefaultHostname().equals(host.getHostname())) {
+            host.setHostname(selected.getDefaultHostname());
         }
         if(!selected.isWebUrlConfigurable()) {
-            this.host.setWebURL(null);
+            host.setWebURL(null);
         }
         if(selected.equals(Protocol.IDISK)) {
             final String member = Preferences.instance().getProperty("iToolsMember");
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
-                this.host.getCredentials().setUsername(member);
-                this.host.setDefaultPath(Path.DELIMITER + member);
+                host.getCredentials().setUsername(member);
+                host.setDefaultPath(Path.DELIMITER + member);
             }
         }
-        this.host.setProtocol(selected);
+        host.setProtocol(selected);
+        this.readOpenSshConfiguration();
         this.itemChanged();
         this.init();
         this.reachable();
     }
+    
+    /**
+     * Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
+     */
+    private void readOpenSshConfiguration() {
+        if(host.getProtocol().equals(Protocol.SFTP)) {
+            final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(host.getHostname());
+            if(null != entry.getIdentityFile()) {
+                host.getCredentials().setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
+            }
+            if(StringUtils.isNotBlank(entry.getUser())) {
+                host.getCredentials().setUsername(entry.getUser());
+            }
+        }
+        else {
+            host.getCredentials().setIdentity(null);
+        }
+    }    
 
     @Outlet
     private NSPopUpButton encodingPopup;
@@ -95,11 +115,11 @@ public class CDBookmarkController extends CDWindowController {
         this.encodingPopup.addItemWithTitle(DEFAULT);
         this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
         this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(CDMainController.availableCharsets()));
-        if(null == this.host.getEncoding()) {
+        if(null == host.getEncoding()) {
             this.encodingPopup.selectItemWithTitle(DEFAULT);
         }
         else {
-            this.encodingPopup.selectItemWithTitle(this.host.getEncoding());
+            this.encodingPopup.selectItemWithTitle(host.getEncoding());
         }
         this.encodingPopup.setTarget(this.id());
         final Selector action = Foundation.selector("encodingSelectionChanged:");
@@ -110,10 +130,10 @@ public class CDBookmarkController extends CDWindowController {
     public void encodingSelectionChanged(final NSPopUpButton sender) {
         log.debug("encodingSelectionChanged:" + sender);
         if(sender.selectedItem().title().equals(DEFAULT)) {
-            this.host.setEncoding(null);
+            host.setEncoding(null);
         }
         else {
-            this.host.setEncoding(sender.selectedItem().title());
+            host.setEncoding(sender.selectedItem().title());
         }
         this.itemChanged();
     }
@@ -137,7 +157,7 @@ public class CDBookmarkController extends CDWindowController {
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("hostFieldDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-                this.hostField);
+                hostField);
     }
 
     @Outlet
@@ -153,7 +173,7 @@ public class CDBookmarkController extends CDWindowController {
 
     @Action
     public void launchNetworkAssistant(final NSButton sender) {
-        this.host.diagnose();
+        host.diagnose();
     }
 
     @Outlet
@@ -308,14 +328,14 @@ public class CDBookmarkController extends CDWindowController {
     public void timezonePopupClicked(NSPopUpButton sender) {
         String selected = sender.selectedItem().title();
         if(selected.equals(AUTO)) {
-            this.host.setTimezone(null);
+            host.setTimezone(null);
         }
         else {
             String[] ids = TimeZone.getAvailableIDs();
             for(String id : ids) {
                 TimeZone tz;
                 if((tz = TimeZone.getTimeZone(id)).getID().equals(selected)) {
-                    this.host.setTimezone(tz);
+                    host.setTimezone(tz);
                     break;
                 }
             }
@@ -343,13 +363,13 @@ public class CDBookmarkController extends CDWindowController {
     @Action
     public void connectmodePopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(DEFAULT)) {
-            this.host.setFTPConnectMode(null);
+            host.setFTPConnectMode(null);
         }
         else if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-            this.host.setFTPConnectMode(FTPConnectMode.ACTIVE);
+            host.setFTPConnectMode(FTPConnectMode.ACTIVE);
         }
         else if(sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
-            this.host.setFTPConnectMode(FTPConnectMode.PASV);
+            host.setFTPConnectMode(FTPConnectMode.PASV);
         }
         this.itemChanged();
     }
@@ -374,13 +394,13 @@ public class CDBookmarkController extends CDWindowController {
     @Action
     public void transferPopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(DEFAULT)) {
-            this.host.setMaxConnections(null);
+            host.setMaxConnections(null);
         }
         else if(sender.selectedItem().title().equals(TRANSFER_BROWSERCONNECTION)) {
-            this.host.setMaxConnections(1);
+            host.setMaxConnections(1);
         }
         else if(sender.selectedItem().title().equals(TRANSFER_NEWCONNECTION)) {
-            this.host.setMaxConnections(-1);
+            host.setMaxConnections(-1);
         }
         this.itemChanged();
     }
@@ -604,11 +624,12 @@ public class CDBookmarkController extends CDWindowController {
     public void hostFieldDidChange(final NSNotification sender) {
         String input = hostField.stringValue();
         if(Protocol.isURL(input)) {
-            this.host.init(Host.parse(input).<NSDictionary>getAsDictionary());
+            host.init(Host.parse(input).<NSDictionary>getAsDictionary());
         }
         else {
-            this.host.setHostname(input);
+            host.setHostname(input);
         }
+        this.readOpenSshConfiguration();
         this.itemChanged();
         this.init();
         this.reachable();
@@ -638,39 +659,39 @@ public class CDBookmarkController extends CDWindowController {
 
     public void portInputDidEndEditing(final NSNotification sender) {
         try {
-            this.host.setPort(Integer.parseInt(portField.stringValue()));
+            host.setPort(Integer.parseInt(portField.stringValue()));
         }
         catch(NumberFormatException e) {
-            this.host.setPort(-1);
+            host.setPort(-1);
         }
         this.itemChanged();
         this.init();
     }
 
     public void pathInputDidChange(final NSNotification sender) {
-        this.host.setDefaultPath(pathField.stringValue());
+        host.setDefaultPath(pathField.stringValue());
         this.itemChanged();
         this.init();
     }
 
     public void nicknameInputDidChange(final NSNotification sender) {
-        this.host.setNickname(nicknameField.stringValue());
+        host.setNickname(nicknameField.stringValue());
         this.itemChanged();
     }
 
     public void usernameInputDidChange(final NSNotification sender) {
-        this.host.getCredentials().setUsername(usernameField.stringValue());
+        host.getCredentials().setUsername(usernameField.stringValue());
         this.itemChanged();
     }
 
     public void webURLInputDidChange(final NSNotification sender) {
-        this.host.setWebURL(webURLField.stringValue());
+        host.setWebURL(webURLField.stringValue());
         this.updateFavicon();
         this.itemChanged();
     }
 
     public void commentInputDidChange(final NSNotification sender) {
-        this.host.setComment(commentField.textStorage().string());
+        host.setComment(commentField.textStorage().string());
         this.itemChanged();
     }
 
@@ -747,10 +768,10 @@ public class CDBookmarkController extends CDWindowController {
         webUrlImage.setToolTip(host.getWebURL());
         this.updateField(webURLField, host.getWebURL());
         this.updateField(commentField, host.getComment());
-        final boolean tzEnabled = this.host.getProtocol().equals(Protocol.FTP)
-                || this.host.getProtocol().equals(Protocol.FTP_TLS);
+        final boolean tzEnabled = host.getProtocol().equals(Protocol.FTP)
+                || host.getProtocol().equals(Protocol.FTP_TLS);
         this.timezonePopup.setEnabled(tzEnabled);
-        if(null == this.host.getTimezone()) {
+        if(null == host.getTimezone()) {
             if(tzEnabled) {
                 if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
                     this.timezonePopup.setTitle(AUTO);
@@ -766,7 +787,7 @@ public class CDBookmarkController extends CDWindowController {
             }
         }
         else {
-            this.timezonePopup.setTitle(this.host.getTimezone().getID());
+            this.timezonePopup.setTitle(host.getTimezone().getID());
         }
     }
 }
