@@ -136,6 +136,7 @@ public class HostCollection extends BookmarkCollection {
     @Override
     public void save() {
         if(Preferences.instance().getBoolean("favorites.save")) {
+            log.info("Saving Bookmarks file: " + file.getAbsolute());
             HostWriterFactory.instance().write(this, file);
         }
     }

@@ -99,7 +99,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                             }
                         });
                     }
-                }, 5000); // Delay to 5 seconds. When typing changes we don't have to save every iteration.
+                }, 1000); // Delay to 1 second. When typing changes we don't have to save every iteration.
             }
         });
         this.setFilter(null);
