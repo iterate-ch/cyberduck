@@ -288,6 +288,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
         toolbar.setDelegate(null);
         toolbarItems.clear();
         transferModel.invalidate();
+        bandwidthPopup.menu().setDelegate(null);
         super.invalidate();
     }
 
