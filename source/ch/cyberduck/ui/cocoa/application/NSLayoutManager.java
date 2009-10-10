@@ -70,6 +70,12 @@ public abstract class NSLayoutManager implements NSObject {
     /// <i>native declaration : :64</i>
     public static final int NSTypesetterBehavior_10_4 = 4;
 
+    public static interface Delegate {
+        void layoutManager_didCompleteLayoutForTextContainer_atEnd(NSLayoutManager layoutManager,
+                                                                   NSObject textContainer,
+                                                                   boolean finished);
+    }
+
     public interface _Class extends org.rococoa.NSClass {
         NSLayoutManager alloc();
     }

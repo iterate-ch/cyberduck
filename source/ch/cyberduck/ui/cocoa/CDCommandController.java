@@ -39,7 +39,7 @@ import com.enterprisedt.net.ftp.FTPException;
 /**
  * @version $Id$
  */
-public class CDCommandController extends CDSheetController implements TranscriptListener {
+public class CDCommandController extends CDSheetController implements TranscriptListener, NSLayoutManager.Delegate {
     private static Logger log = Logger.getLogger(CDCommandController.class);
 
     @Outlet
@@ -75,11 +75,13 @@ public class CDCommandController extends CDSheetController implements Transcript
         this.image.setImage(CDIconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
     }
 
-    public void layoutManagerDidCompleteLayoutForTextContainer(NSLayoutManager layoutManager,
-                                                               NSObject textContainer,
-                                                               boolean finished) {
+    public void layoutManager_didCompleteLayoutForTextContainer_atEnd(NSLayoutManager layoutManager,
+                                                                      NSObject textContainer,
+                                                                      boolean finished) {
         if(finished && this.responseField.window().isVisible()) {
-            this.responseField.scrollRangeToVisible(NSRange.NSMakeRange(this.responseField.textStorage().length(), new NSUInteger(0)));
+            this.responseField.scrollRangeToVisible(
+                    NSRange.NSMakeRange(this.responseField.textStorage().length(), new NSUInteger(0))
+            );
         }
     }
 
