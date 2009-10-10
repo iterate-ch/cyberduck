@@ -4238,6 +4238,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         quickConnectPopup.setDelegate(null);
         quickConnectPopup.setDataSource(null);
 
+        archiveMenu.setDelegate(null);
+        editMenu.setDelegate(null);
+
         super.invalidate();
     }
 }
