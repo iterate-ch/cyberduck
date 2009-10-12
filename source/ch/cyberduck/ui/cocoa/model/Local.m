@@ -53,18 +53,18 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setQuarantin
 {
 	NSURL* url = [NSURL fileURLWithPath:convertToNSString(env, path)];
 	FSRef ref;
-	CFURLGetFSRef((CFURLRef) url, &ref);
+	if(CFURLGetFSRef((CFURLRef) url, &ref)) {
+        NSMutableDictionary* attrs = [[NSMutableDictionary alloc] init];
+        // Write quarantine attributes
+        [attrs setValue:(NSString*)kLSQuarantineTypeOtherDownload forKey:(NSString*)kLSQuarantineTypeKey];
+        [attrs setValue:convertToNSString(env, originUrl) forKey:(NSString*)kLSQuarantineOriginURLKey];
+        [attrs setValue:convertToNSString(env, dataUrl) forKey:(NSString*)kLSQuarantineDataURLKey];
 
-	NSMutableDictionary* attrs = [[NSMutableDictionary alloc] init];
-	// Write quarantine attributes
-	[attrs setValue:(NSString*)kLSQuarantineTypeOtherDownload forKey:(NSString*)kLSQuarantineTypeKey];
-	[attrs setValue:convertToNSString(env, originUrl) forKey:(NSString*)kLSQuarantineOriginURLKey];
-	[attrs setValue:convertToNSString(env, dataUrl) forKey:(NSString*)kLSQuarantineDataURLKey];
-		
-	if(LSSetItemAttribute(&ref, kLSRolesAll, kLSItemQuarantineProperties, (CFDictionaryRef*) attrs) != noErr) {
-		NSLog(@"Error writing quarantine attribute");
+        if(LSSetItemAttribute(&ref, kLSRolesAll, kLSItemQuarantineProperties, (CFDictionaryRef*) attrs) != noErr) {
+            NSLog(@"Error writing quarantine attribute");
+        }
+        [attrs release];
 	}
-	[attrs release];
 }
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
