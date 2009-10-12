@@ -422,6 +422,15 @@ public class CDMainController extends CDBundleController implements NSApplicatio
         }
         for(Host bookmark : HostCollection.defaultCollection()) {
             if(bookmark.getNickname().equals(defaultBookmark)) {
+                for(CDBrowserController browser : getBrowsers()) {
+                    if(browser.hasSession()) {
+                        if(browser.getSession().getHost().equals(bookmark)) {
+                            log.debug("Default bookmark already mounted");
+                            return;
+                        }
+                    }
+                }
+                log.debug("Mounting default bookmark " + bookmark);
                 controller.mount(bookmark);
                 return;
             }
@@ -492,6 +501,12 @@ public class CDMainController extends CDBundleController implements NSApplicatio
         if(log.isInfoEnabled()) {
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
         }
+        if(Preferences.instance().getBoolean("browser.openUntitled")) {
+            CDMainController.newDocument();
+        }
+        if(Preferences.instance().getBoolean("queue.openByDefault")) {
+            this.showTransferQueueClicked(null);
+        }
         if(Preferences.instance().getBoolean("browser.serialize")) {
             this.background(new AbstractBackgroundAction() {
                 public void run() {
@@ -500,12 +515,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
 
                 @Override
                 public void cleanup() {
-                    if(sessions.isEmpty()) {
-                        // Open empty browser if no saved sessions
-                        if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                            openDefaultBookmark(CDMainController.newDocument());
-                        }
-                    }
                     for(Host host : sessions) {
                         CDMainController.newDocument(true).mount(host);
                     }
@@ -513,15 +522,16 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 }
             });
         }
-        else if(Preferences.instance().getBoolean("browser.openUntitled")) {
-            this.openDefaultBookmark(CDMainController.newDocument());
-        }
-        if(Preferences.instance().getBoolean("queue.openByDefault")) {
-            this.showTransferQueueClicked(null);
-        }
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 HostCollection.defaultCollection().load();
+            }
+
+            @Override
+            public void cleanup() {
+                if(Preferences.instance().getBoolean("browser.openUntitled")) {
+                    openDefaultBookmark(CDMainController.newDocument());
+                }
             }
         });
         this.background(new AbstractBackgroundAction() {
@@ -633,8 +643,60 @@ public class CDMainController extends CDBundleController implements NSApplicatio
      * @param app
      * @return Return true to allow the application to terminate.
      */
-    public NSUInteger applicationShouldTerminate(NSApplication app) {
+    public NSUInteger applicationShouldTerminate(final NSApplication app) {
         log.debug("applicationShouldTerminate");
+        // Determine if there are any running transfers
+        NSUInteger result = CDTransferController.applicationShouldTerminate(app);
+        if(!result.equals(NSApplication.NSTerminateNow)) {
+            return result;
+        }
+        // Determine if there are any open connections
+        for(CDBrowserController controller : CDMainController.browsers) {
+            if(Preferences.instance().getBoolean("browser.serialize")) {
+                if(controller.isMounted()) {
+                    // The workspace should be saved. Serialize all open browser sessions
+                    final Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
+                    serialized.setDefaultPath(controller.workdir().getAbsolute());
+                    sessions.add(serialized);
+                }
+            }
+            if(controller.isConnected()) {
+                if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
+                    final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit"),
+                            Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
+                            Locale.localizedString("Quit Anyway"), //default
+                            Locale.localizedString("Cancel"), //other
+                            Locale.localizedString("Review..."));
+                    alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
+                    int choice = alert.runModal(); //alternate
+                    if(choice == CDSheetCallback.OTHER_OPTION) {
+                        // Review if at least one window reqested to terminate later, we shall wait
+                        result = CDBrowserController.applicationShouldTerminate(app);
+                        if(NSApplication.NSTerminateNow.equals(result)) {
+                            return this.applicationShouldTerminateAfterDonationPrompt(app);
+                        }
+                        return result;
+                    }
+                    if(choice == CDSheetCallback.ALTERNATE_OPTION) {
+                        // Cancel. Quit has been interrupted. Delete any saved sessions so far.
+                        sessions.clear();
+                        return NSApplication.NSTerminateCancel;
+                    }
+                    if(choice == CDSheetCallback.DEFAULT_OPTION) {
+                        // Quit immediatly
+                        return this.applicationShouldTerminateAfterDonationPrompt(app);
+                    }
+                }
+                else {
+                    controller.unmount();
+                }
+            }
+        }
+        return this.applicationShouldTerminateAfterDonationPrompt(app);
+    }
+
+    public NSUInteger applicationShouldTerminateAfterDonationPrompt(final NSApplication app) {
+        log.debug("applicationShouldTerminateAfterDonationPrompt");
         if(donationPrompt) {
             try {
                 final License l = License.find();
@@ -684,12 +746,12 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                                 // Remeber this reminder date
                                 Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
                                 // Quit again
-                                NSApplication.sharedApplication().terminate(null);
+                                app.replyToApplicationShouldTerminate(true);
                             }
                         };
                         donationController.loadBundle();
                         // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
-                        return NSApplication.NSTerminateCancel;
+                        return NSApplication.NSTerminateLater;
                     }
                 }
             }
@@ -698,49 +760,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 donationPrompt = false;
             }
         }
-        // Determine if there are any open connections
-        for(CDBrowserController controller : CDMainController.browsers) {
-            if(Preferences.instance().getBoolean("browser.serialize")) {
-                if(controller.isMounted()) {
-                    // The workspace should be saved. Serialize all open browser sessions
-                    final Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
-                    serialized.setDefaultPath(controller.workdir().getAbsolute());
-                    sessions.add(serialized);
-                }
-            }
-            if(controller.isConnected()) {
-                if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
-                    final NSAlert alert = NSAlert.alert(Locale.localizedString("Quit"),
-                            Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
-                            Locale.localizedString("Quit Anyway"), //default
-                            Locale.localizedString("Cancel"), //other
-                            Locale.localizedString("Review..."));
-                    alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-                    int choice = alert.runModal(); //alternate
-                    if(choice == CDSheetCallback.OTHER_OPTION) {
-                        // Review if at least one window reqested to terminate later, we shall wait
-                        final NSUInteger result = CDBrowserController.applicationShouldTerminate(app);
-                        if(NSApplication.NSTerminateNow.equals(result)) {
-                            return CDTransferController.applicationShouldTerminate(app);
-                        }
-                        return result;
-                    }
-                    if(choice == CDSheetCallback.ALTERNATE_OPTION) {
-                        // Cancel. Quit has been interrupted. Delete any saved sessions so far.
-                        sessions.clear();
-                        return NSApplication.NSTerminateCancel;
-                    }
-                    if(choice == CDSheetCallback.DEFAULT_OPTION) {
-                        // Quit
-                        return CDTransferController.applicationShouldTerminate(app);
-                    }
-                }
-                else {
-                    controller.unmount();
-                }
-            }
-        }
-        return CDTransferController.applicationShouldTerminate(app);
+        return NSApplication.NSTerminateNow;
     }
 
     /**
