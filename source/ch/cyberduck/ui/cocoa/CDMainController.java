@@ -612,6 +612,10 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 Foundation.selector("workspaceWillSleep:"),
                 NSWorkspace.WorkspaceWillSleepNotification,
                 null);
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("applicationWillRestartAfterUpdate:"),
+                "SUUpdaterWillRestartNotificationName",
+                null);
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             this.background(new AbstractBackgroundAction() {
                 public void run() {
@@ -778,6 +782,11 @@ public class CDMainController extends CDBundleController implements NSApplicatio
         //Writing usage info
         Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
         Preferences.instance().save();
+    }
+
+    public void applicationWillRestartAfterUpdate(ID updater) {
+        // Disable donation prompt after udpate install
+        donationPrompt = false;
     }
 
     /**
