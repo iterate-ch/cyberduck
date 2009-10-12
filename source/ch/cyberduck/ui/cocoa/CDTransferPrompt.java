@@ -155,7 +155,6 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 browserModel.add(next);
             }
         }
-        parent.window().makeKeyAndOrderFront(null);
         this.beginSheet();
         return action;
     }

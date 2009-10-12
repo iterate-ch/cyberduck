@@ -171,8 +171,8 @@ public abstract class CDSheetController extends CDWindowController implements CD
 
     protected void beginSheetImpl() {
         this.loadBundle();
-        final NSApplication app = NSApplication.sharedApplication();
-        app.beginSheet(this.window(), //window
+        parent.window().makeKeyAndOrderFront(null);
+        NSApplication.sharedApplication().beginSheet(this.window(), //window
                 parent.window(), // modalForWindow
                 this.id(), // modalDelegate
                 Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
