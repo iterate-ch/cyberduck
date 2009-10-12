@@ -69,13 +69,20 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         return this.usePassiveFTPNative();
     }
 
+    public boolean isHostExcluded(String hostname) {
+        if(!loadNative()) {
+            return false;
+        }
+        return this.isHostExcludedNative(hostname);
+    }
+       
     /**
      * Check to see if the hostname is excluded from proxy settings
      *
      * @param hostname
      * @return True if excluded
      */
-    public native boolean isHostExcluded(String hostname);
+    public native boolean isHostExcludedNative(String hostname);
 
     public boolean isSOCKSProxyEnabled() {
         if(!loadNative()) {
