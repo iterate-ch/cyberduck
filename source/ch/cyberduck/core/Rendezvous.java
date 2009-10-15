@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import org.apache.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @version $Id$
@@ -60,8 +61,8 @@ public class Rendezvous implements BrowseListener, ResolveListener {
 
     private Rendezvous() {
         log.debug("Rendezvous");
-        this.services = Collections.synchronizedMap(new HashMap<String, Host>());
-        this.browsers = Collections.synchronizedMap(new HashMap<String, DNSSDService>());
+        this.services = new ConcurrentHashMap<String, Host>();
+        this.browsers = new ConcurrentHashMap<String, DNSSDService>();
     }
 
     /**
