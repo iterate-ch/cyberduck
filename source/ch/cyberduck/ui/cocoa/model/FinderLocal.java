@@ -235,6 +235,14 @@ public class FinderLocal extends Local {
         if(!loadNative()) {
             return;
         }
+        if(StringUtils.isEmpty(originUrl)) {
+            log.warn("No origin url given for quarantine");
+            return;
+        }
+        if(StringUtils.isEmpty(dataUrl)) {
+            log.warn("No data url given for quarantine");
+            return;
+        }
         new CDController().invoke(new DefaultMainAction() {
             public void run() {
                 setQuarantine(getAbsolute(), originUrl, dataUrl);
@@ -259,6 +267,10 @@ public class FinderLocal extends Local {
     @Override
     public void setWhereFrom(final String dataUrl) {
         if(!loadNative()) {
+            return;
+        }
+        if(StringUtils.isEmpty(dataUrl)) {
+            log.warn("No data url given for quarantine");
             return;
         }
         new CDController().invoke(new DefaultMainAction() {
