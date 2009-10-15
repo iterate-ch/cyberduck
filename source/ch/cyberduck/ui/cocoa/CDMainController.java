@@ -516,7 +516,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 @Override
                 public void cleanup() {
                     for(Host host : sessions) {
-                        CDMainController.newDocument(true).mount(host);
+                        CDMainController.newDocument().mount(host);
                     }
                     sessions.clear();
                 }
@@ -674,7 +674,8 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     int choice = alert.runModal(); //alternate
                     if(choice == CDSheetCallback.OTHER_OPTION) {
-                        // Review if at least one window reqested to terminate later, we shall wait
+                        // Review if at least one window reqested to terminate later, we shall wait.
+                        // This will iterate over all mounted browsers.
                         result = CDBrowserController.applicationShouldTerminate(app);
                         if(NSApplication.NSTerminateNow.equals(result)) {
                             return this.applicationShouldTerminateAfterDonationPrompt(app);
@@ -754,7 +755,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                             }
                         };
                         donationController.loadBundle();
-                        // Cancel application termination. Dismissing the donation dialog will attempt to quit again.
+                        // Delay application termination. Dismissing the donation dialog will reply to quit.
                         return NSApplication.NSTerminateLater;
                     }
                 }
