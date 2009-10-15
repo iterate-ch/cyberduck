@@ -985,8 +985,8 @@ public class CDPreferencesController extends ToolbarWindowController {
                 Preferences.instance().getInteger("connection.host.max") == 1 ? USE_BROWSER_SESSION_INDEX : USE_QUEUE_SESSION_INDEX);
     }
 
-    private final int USE_QUEUE_SESSION_INDEX = 0;
-    private final int USE_BROWSER_SESSION_INDEX = 1;
+    private static final int USE_QUEUE_SESSION_INDEX = 0;
+    private static final int USE_BROWSER_SESSION_INDEX = 1;
 
     public void transferPopupClicked(final NSPopUpButton sender) {
         if(sender.indexOfSelectedItem() == USE_BROWSER_SESSION_INDEX) {
