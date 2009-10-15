@@ -25,11 +25,19 @@ import ch.cyberduck.core.threading.MainAction;
 import org.apache.log4j.Logger;
 import org.rococoa.internal.OperationBatcher;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * @version $Id$
  */
 public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
+
+    /**
+     * Thread pool
+     */
+    private static final ExecutorService pool = Executors.newCachedThreadPool();
 
     /**
      *
@@ -54,8 +62,7 @@ public abstract class AbstractController implements Controller {
         }
         runnable.init();
         // Start background task
-        new Thread("Background") {
-            @Override
+        Runnable command = new Runnable() {
             public void run() {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
@@ -86,8 +93,9 @@ public abstract class AbstractController implements Controller {
                     }
                 }
             }
-        }.start();
-        log.info("Started background runnable:" + runnable);
+        };
+        pool.execute(command);
+        log.info("Scheduled background runnable for execution:" + runnable);
     }
 
     /**
