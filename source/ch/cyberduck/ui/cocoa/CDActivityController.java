@@ -193,7 +193,8 @@ public class CDActivityController extends CDWindowController {
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final Collection<CDTaskController> values = tasks.values();
-                Rococoa.cast(cell, CDControllerCell.class).setView(values.toArray(new CDTaskController[values.size()])[row.intValue()].view());
+                int size = values.size();
+                Rococoa.cast(cell, CDControllerCell.class).setView(values.toArray(new CDTaskController[size])[size - 1 - row.intValue()].view());
             }
         }).id());
         {
