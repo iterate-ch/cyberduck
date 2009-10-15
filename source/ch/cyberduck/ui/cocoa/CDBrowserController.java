@@ -3463,16 +3463,13 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                             app.terminate(null);
                         }
                     }
-                    if(returncode == ALTERNATE_OPTION) { //Cancel
-                        app.replyToApplicationShouldTerminate(false);
-                    }
                 }
             }, new Runnable() {
                 public void run() {
                     ;
                 }
             })) {
-                return NSApplication.NSTerminateLater;
+                return NSApplication.NSTerminateCancel;
             }
         }
         return NSApplication.NSTerminateNow;
