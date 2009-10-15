@@ -476,9 +476,6 @@ public class CDBookmarkController extends CDWindowController {
                 host.setDownloadFolder(selected.lastObject().toString());
             }
         }
-        else {
-            host.setDownloadFolder(null);
-        }
         downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(
                 host.getDownloadFolder().getAbsolute()));
         downloadPathPopup.itemAtIndex(0).setRepresentedObject(
