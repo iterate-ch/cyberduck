@@ -167,10 +167,8 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                     public void cleanup() {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
-                            if(isLoadingListingInBackground.isEmpty()) {
-                                controller.reloadData();
-                            }
                         }
+                        controller.reloadData();
                     }
                 });
             }
