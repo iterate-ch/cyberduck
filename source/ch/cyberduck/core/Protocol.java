@@ -71,14 +71,14 @@ public abstract class Protocol {
      * @return A mounted disk icon to display
      */
     public String disk() {
-        return this.getIdentifier() + ".icns";
+        return this.getIdentifier();
     }
 
     /**
      * @return A small icon to display
      */
     public String icon() {
-        return this.getIdentifier() + "-icon.png";
+        return this.getIdentifier() + "-icon";
     }
 
     /**
@@ -308,7 +308,7 @@ public abstract class Protocol {
 
         @Override
         public String icon() {
-            return "eucalyptus-icon.png";
+            return "eucalyptus-icon";
         }
     };
 
