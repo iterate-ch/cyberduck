@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -32,7 +31,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
@@ -41,8 +39,10 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.*;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -67,11 +67,17 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
 
     private CollectionListener<Host> listener;
 
+    /**
+     *
+     */
+    private static final ScheduledExecutorService timerPool
+            = Executors.newScheduledThreadPool(1);
+
     public void setSource(final BookmarkCollection source) {
         this.source.removeListener(listener); //Remove previous listener
         this.source = source;
         this.source.addListener(listener = new CollectionListener<Host>() {
-            private Timer delayed = null;
+            private ScheduledFuture<?> delayed = null;
 
             public void collectionItemAdded(Host item) {
                 cache.clear();
@@ -87,11 +93,10 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                 cache.clear();
                 controller.reloadBookmarks();
                 if(null != delayed) {
-                    delayed.cancel();
+                    delayed.cancel(false);
                 }
-                delayed = new Timer();
-                delayed.schedule(new TimerTask() {
-                    @Override
+                // Delay to 1 second. When typing changes we don't have to save every iteration.
+                delayed = timerPool.schedule(new Runnable() {
                     public void run() {
                         controller.invoke(new DefaultMainAction() {
                             public void run() {
@@ -99,7 +104,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                             }
                         });
                     }
-                }, 1000); // Delay to 1 second. When typing changes we don't have to save every iteration.
+                }, 1, TimeUnit.SECONDS);
             }
         });
         this.setFilter(null);
