@@ -20,10 +20,11 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
+
+import com.enterprisedt.net.ftp.FTPNullReplyException;
 
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -32,8 +33,8 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import com.enterprisedt.net.ftp.FTPNullReplyException;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  * @version $Id$
@@ -104,7 +105,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     protected abstract Session getSession();
 
     /**
-     * 
+     *
      */
     private final int repeatAttempts = Preferences.instance().getInteger("connection.retry");
 
@@ -176,57 +177,56 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * Idle this action for some time. Blocks the caller.
      */
     public void pause() {
+        if(0 == Preferences.instance().getInteger("connection.retry.delay")) {
+            log.info("No pause between retry");
+            return;
+        }
         final Timer wakeup = new Timer();
+        final CyclicBarrier wait = new CyclicBarrier(2);
         wakeup.scheduleAtFixedRate(new TimerTask() {
             /**
              * The delay to wait before execution of the action in seconds
              */
             private int delay = (int) Preferences.instance().getDouble("connection.retry.delay");
 
+            private final String pattern = Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status");
+
             @Override
             public void run() {
-                final NSAutoreleasePool pool = NSAutoreleasePool.push();
-                try {
-                    if(0 == delay || RepeatableBackgroundAction.this.isCanceled()) {
-                        // Cancel the timer repetition
-                        this.cancel();
-                        return;
-                    }
-                    final Session session = getSession();
-                    if(session != null) {
-                        session.message(MessageFormat.format(
-                                Locale.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
-                                String.valueOf(delay), String.valueOf(retry())));
-                    }
-                    delay--;
+                if(0 == delay || RepeatableBackgroundAction.this.isCanceled()) {
+                    // Cancel the timer repetition
+                    this.cancel();
+                    return;
                 }
-                finally {
-                    pool.drain();
+                final Session session = getSession();
+                if(session != null) {
+                    session.message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
                 }
             }
 
             @Override
             public boolean cancel() {
-                final Object lock = lock();
-                if(lock != null) {
-                    synchronized(lock) {
-                        // Notifiy to return to caller from #pause()
-                        lock.notify();
-                    }
+                try {
+                    // Notifiy to return to caller from #pause()
+                    wait.await();
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+                catch(BrokenBarrierException e) {
+                    log.error(e.getMessage());
                 }
                 return super.cancel();
             }
         }, 0, 1000); // Schedule for immediate execusion with an interval of 1s
         try {
-            final Object lock = lock();
-            if(lock != null) {
-                synchronized(lock) {
-                    // Wait for notify from wakeup timer
-                    lock.wait();
-                }
-            }
+            // Wait for notify from wakeup timer
+            wait.await();
         }
         catch(InterruptedException e) {
+            log.error(e.getMessage());
+        }
+        catch(BrokenBarrierException e) {
             log.error(e.getMessage());
         }
     }
