@@ -39,8 +39,6 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.*;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -67,12 +65,6 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
 
     private CollectionListener<Host> listener;
 
-    /**
-     *
-     */
-    private static final ScheduledExecutorService timerPool
-            = Executors.newScheduledThreadPool(1);
-
     public void setSource(final BookmarkCollection source) {
         this.source.removeListener(listener); //Remove previous listener
         this.source = source;
@@ -96,7 +88,7 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     delayed.cancel(false);
                 }
                 // Delay to 1 second. When typing changes we don't have to save every iteration.
-                delayed = timerPool.schedule(new Runnable() {
+                delayed = getTimerPool().schedule(new Runnable() {
                     public void run() {
                         controller.invoke(new DefaultMainAction() {
                             public void run() {

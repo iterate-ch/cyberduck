@@ -26,7 +26,6 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
@@ -39,6 +38,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +59,8 @@ import java.io.File;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -2575,13 +2577,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 /**
                  * Timer to update the progress indicator
                  */
-                private Timer progressTimer;
+                private ScheduledFuture<?> progressTimer;
 
                 @Override
                 public void willTransferPath(Path path) {
                     meter.reset();
-                    progressTimer = new Timer();
-                    progressTimer.scheduleAtFixedRate(new TimerTask() {
+                    progressTimer = getTimerPool().scheduleAtFixedRate(new Runnable() {
                         public void run() {
                             invoke(new WindowMainAction(CDBrowserController.this) {
                                 public void run() {
@@ -2589,12 +2590,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                                 }
                             });
                         }
-                    }, delay, period);
+                    }, delay, period, TimeUnit.MILLISECONDS);
                 }
 
                 @Override
                 public void didTransferPath(Path path) {
-                    progressTimer.cancel();
+                    progressTimer.cancel(false);
                     meter.reset();
                 }
 

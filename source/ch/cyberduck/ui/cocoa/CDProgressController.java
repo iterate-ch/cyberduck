@@ -33,8 +33,8 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -98,7 +98,7 @@ public class CDProgressController extends CDBundleController {
             /**
              * Timer to update the progress indicator
              */
-            private Timer progressTimer;
+            private ScheduledFuture progressTimer;
 
             final static long delay = 0;
             final static long period = 500; //in milliseconds
@@ -140,9 +140,7 @@ public class CDProgressController extends CDBundleController {
             @Override
             public void willTransferPath(final Path path) {
                 meter.reset();
-                progressTimer = new Timer();
-                progressTimer.scheduleAtFixedRate(new TimerTask() {
-                    @Override
+                progressTimer = getTimerPool().scheduleAtFixedRate(new Runnable() {
                     public void run() {
                         invoke(new DefaultMainAction() {
                             public void run() {
@@ -156,12 +154,12 @@ public class CDProgressController extends CDBundleController {
                             }
                         });
                     }
-                }, delay, period);
+                }, delay, period, TimeUnit.MILLISECONDS);
             }
 
             @Override
             public void didTransferPath(final Path path) {
-                progressTimer.cancel();
+                progressTimer.cancel(false);
                 meter.reset();
             }
 

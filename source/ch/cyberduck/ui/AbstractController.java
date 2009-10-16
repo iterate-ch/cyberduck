@@ -27,6 +27,7 @@ import org.rococoa.internal.OperationBatcher;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @version $Id$
@@ -96,6 +97,20 @@ public abstract class AbstractController implements Controller {
         };
         pool.execute(command);
         log.info("Scheduled background runnable for execution:" + runnable);
+    }
+
+    /**
+     *
+     */
+    private static final ScheduledExecutorService timerPool
+            = Executors.newScheduledThreadPool(1);
+
+    /**
+     *
+     * @return
+     */
+    protected ScheduledExecutorService getTimerPool() {
+        return timerPool;
     }
 
     /**
