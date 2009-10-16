@@ -30,6 +30,8 @@ import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.io.File;
+
 /**
  * @version $Id$
  */
@@ -48,7 +50,7 @@ public class FinderLocal extends Local {
         super(path);
     }
 
-    public FinderLocal(java.io.File path) {
+    public FinderLocal(File path) {
         super(path);
     }
 
@@ -308,12 +310,8 @@ public class FinderLocal extends Local {
             new CDController().invoke(new DefaultMainAction() {
                 public void run() {
                     if(-1 == progress) {
-                        String extension = getExtension();
-                        if(StringUtils.isEmpty(extension)) {
-                            extension = "";
-                        }
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                CDIconCache.documentIcon(extension), getAbsolute(), new NSUInteger(0));
+                                null, getAbsolute(), new NSUInteger(0));
                     }
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
