@@ -359,7 +359,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 }
                 return true;
             }
-            for(CDBrowserController controller : browsers) {
+            for(CDBrowserController controller : CDMainController.getBrowsers()) {
                 if(controller.isMounted()) {
                     final Path workdir = controller.workdir();
                     final Session session = controller.getTransferSession();
@@ -466,11 +466,11 @@ public class CDMainController extends CDBundleController implements NSApplicatio
         // be expanded and made active. If no documents are open, the application should
         // open a new window. (If your application is not document-based, display the
         // application’s main window.)
-        if(browsers.size() == 0 && !CDTransferController.instance().isVisible()) {
+        if(CDMainController.getBrowsers().isEmpty() && !CDTransferController.instance().isVisible()) {
             this.openDefaultBookmark(CDMainController.newDocument());
         }
         NSWindow miniaturized = null;
-        for(CDBrowserController controller : browsers) {
+        for(CDBrowserController controller : CDMainController.getBrowsers()) {
             if(!controller.window().isMiniaturized()) {
                 return false;
             }
@@ -530,7 +530,9 @@ public class CDMainController extends CDBundleController implements NSApplicatio
             @Override
             public void cleanup() {
                 if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                    openDefaultBookmark(CDMainController.newDocument());
+                    if(CDMainController.getBrowsers().isEmpty()) {
+                        openDefaultBookmark(CDMainController.newDocument());
+                    }
                 }
             }
         });
@@ -655,7 +657,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
             return result;
         }
         // Determine if there are any open connections
-        for(CDBrowserController controller : CDMainController.browsers) {
+        for(CDBrowserController controller : CDMainController.getBrowsers()) {
             if(Preferences.instance().getBoolean("browser.serialize")) {
                 if(controller.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
@@ -845,6 +847,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
      */
     public static CDBrowserController newDocument(boolean force) {
         log.debug("newDocument");
+        final List<CDBrowserController> browsers = CDMainController.getBrowsers();
         if(!force) {
             for(CDBrowserController controller : browsers) {
                 if(!controller.hasSession()) {
@@ -859,7 +862,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
                 browsers.remove(controller);
             }
         });
-        if(browsers.size() > 0) {
+        if(!browsers.isEmpty()) {
             controller.cascade();
         }
         controller.window().makeKeyAndOrderFront(null);
@@ -883,7 +886,7 @@ public class CDMainController extends CDBundleController implements NSApplicatio
     @Applescript
     public NSArray orderedBrowsers() {
         NSMutableArray orderedDocs = NSMutableArray.array();
-        for(CDBrowserController browser : browsers) {
+        for(CDBrowserController browser : CDMainController.getBrowsers()) {
             orderedDocs.addObject(browser.proxy());
         }
         return orderedDocs;
