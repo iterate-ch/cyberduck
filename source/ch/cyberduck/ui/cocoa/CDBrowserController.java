@@ -24,6 +24,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -3325,7 +3326,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             this.interrupt();
         }
         final Session session = this.getSession();
-        this.background(new BrowserBackgroundAction(this) {
+        this.background(new AbstractBackgroundAction() {
             public void run() {
                 unmountImpl();
             }
