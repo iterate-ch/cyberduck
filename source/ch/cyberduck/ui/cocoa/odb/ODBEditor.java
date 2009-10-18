@@ -79,7 +79,6 @@ public class ODBEditor extends Editor {
         }
     }
 
-
     /**
      * called by the native editor when the file has been saved
      */

@@ -19,9 +19,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.FileWatcher;
-import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -166,14 +165,6 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public Local(File path) {
         this.setPath(path.getAbsolutePath());
-    }
-
-    /**
-     * @param listener
-     * @throws java.io.IOException
-     */
-    public void watch(FileWatcherListener listener) throws IOException {
-        FileWatcher.instance().watch(this, listener);
     }
 
     @Override

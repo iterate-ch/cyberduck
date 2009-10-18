@@ -156,9 +156,9 @@ public abstract class Editor {
      */
     protected void save() {
         log.debug("save");
-        edited.getStatus().reset();
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
+                edited.getStatus().reset();
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer upload = new UploadTransfer(edited) {

@@ -2219,6 +2219,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      */
     private boolean isEditable(final Path selected) {
         if(selected.attributes.isFile()) {
+            if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
+                return true;
+            }
             return !selected.getBinaryFiletypePattern().matcher(selected.getName()).matches();
         }
         return false;

@@ -20,22 +20,23 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.io.AbstractFileWatcherListener;
+import ch.cyberduck.core.io.FileWatcher;
+import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 import org.rococoa.NSObject;
+import org.rococoa.Rococoa;
 
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class WatchEditor extends Editor {
+public class WatchEditor extends Editor implements FileWatcherListener {
     private static Logger log = Logger.getLogger(WatchEditor.class);
 
     /**
@@ -58,31 +59,38 @@ public class WatchEditor extends Editor {
      */
     @Override
     public void edit() {
-        try {
-            edited.getLocal().watch(new AbstractFileWatcherListener() {
-                @Override
-                public void fileWritten(Local file) {
-                    log.debug("fileWritten:" + file);
-                    save();
-                    if(!isOpen()) {
-                        delete();
-                    }
-                }
-            });
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
-            return;
-        }
+        watch(edited.getLocal());
         if(null == bundleIdentifier) {
             NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
         }
         else {
-            NSWorkspace.sharedWorkspace().openFile(
-                    edited.getLocal().getAbsolute(),
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier)
-            );
+            NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
         }
+    }
+
+    private void watch(Local f) {
+        try {
+            FileWatcher.instance().watch(f, this);
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void unwatch(Local f) {
+        try {
+            FileWatcher.instance().unwatch(f);
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Override
+    protected void delete() {
+        this.unwatch(edited.getLocal());
+        super.delete();
     }
 
     @Override
@@ -100,5 +108,30 @@ public class WatchEditor extends Editor {
             return false;
         }
         return super.isOpen();
+    }
+
+    @Override
+    protected void setDeferredDelete(boolean deferredDelete) {
+        if(!this.isOpen()) {
+            this.delete();
+        }
+        super.setDeferredDelete(deferredDelete);
+    }
+
+    public void fileWritten(Local file) {
+        log.debug("fileWritten:" + file);
+        this.save();
+    }
+
+    public void fileRenamed(Local file) {
+        log.debug("fileRenamed:" + file);
+    }
+
+    public void fileDeleted(Local file) {
+        log.debug("fileDeleted:" + file);
+        if(file.exists()) {
+            this.save();
+            this.watch(edited.getLocal());
+        }
     }
 }

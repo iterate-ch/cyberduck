@@ -1,7 +1,7 @@
 package ch.cyberduck.core.io;
 
 /*
- *  Copyright (c) 2006 David Kocher. All rights reserved.
+ *  Copyright (c) 2009 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,20 +19,27 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class FileWatcher {
+/**
+ * @version $Id$
+ */
+public class FileWatcher implements FileMonitor.FileListener {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
-//    private FileMonitor monitor = FileMonitor.getInstance();
+    private FileMonitor monitor = FileMonitor.getInstance();
 
     private static FileWatcher instance = null;
 
     private FileWatcher() {
-        //
+        monitor.addFileListener(this);
     }
 
     private static final Object lock = new Object();
@@ -46,23 +53,34 @@ public class FileWatcher {
         }
     }
 
+    private Map<File, FileWatcherListener> listeners = new HashMap<File, FileWatcherListener>();
+
     public void watch(final Local file, final FileWatcherListener listener) throws IOException {
-//        monitor.addWatch(new File(file.getAbsolute()));
-//        monitor.addFileListener(new FileMonitor.FileListener() {
-//
-//            @Override
-//            public void fileChanged(FileMonitor.FileEvent e) {
-//                if(e.getType() == FileMonitor.FILE_MODIFIED) {
-//                    listener.fileWritten(LocalFactory.createLocalLocal(e.getFile()));
-//                }
-//                if(e.getType() == FileMonitor.FILE_DELETED) {
-//                    listener.fileDeleted(LocalFactory.createLocalLocal(e.getFile()));
-//                    monitor.unwatch(e.getFile());
-//                }
-//                if(e.getType() == FileMonitor.FILE_RENAMED) {
-//                    listener.fileRenamed(LocalFactory.createLocalLocal(e.getFile()));
-//                }
-//            }
-//        });
+        final File f = new File(file.getAbsolute());
+        monitor.addWatch(f);
+        listeners.put(f, listener);
+    }
+
+    public void unwatch(final Local file) throws IOException {
+        final File f = new File(file.getAbsolute());
+        monitor.removeWatch(f);
+        listeners.remove(f);
+    }
+
+    public void fileChanged(FileMonitor.FileEvent e) {
+        final FileWatcherListener listener = listeners.get(e.getFile());
+        if(null == listener) {
+            log.error("No listener for " + e);
+            return;
+        }
+        if(e.getType() == FileMonitor.FILE_MODIFIED || e.getType() == FileMonitor.FILE_SIZE_CHANGED) {
+            listener.fileWritten(LocalFactory.createLocal(e.getFile()));
+        }
+        if(e.getType() == FileMonitor.FILE_DELETED) {
+            listener.fileDeleted(LocalFactory.createLocal(e.getFile()));
+        }
+        if(e.getType() == FileMonitor.FILE_RENAMED) {
+            listener.fileRenamed(LocalFactory.createLocal(e.getFile()));
+        }
     }
 }
