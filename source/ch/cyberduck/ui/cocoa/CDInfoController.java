@@ -39,6 +39,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 /**
@@ -861,7 +862,7 @@ public class CDInfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                final String sizeString = Status.getSizeAsString(size) + " (" + size + " bytes)";
+                final String sizeString = Status.getSizeAsString(size) + " (" + NumberFormat.getInstance().format(size) + " bytes)";
                 sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(sizeString,
                         TRUNCATE_MIDDLE_ATTRIBUTES));
                 sizeField.setToolTip(sizeString);
