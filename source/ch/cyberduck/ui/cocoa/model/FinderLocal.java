@@ -96,6 +96,11 @@ public class FinderLocal extends Local {
         }
     }
 
+    @Override
+    public String getName() {
+        return NSFileManager.defaultManager().displayNameAtPath(super.getName());
+    }
+
     /**
      * @return Path relative to the home directory denoted with a tilde.
      */
@@ -358,5 +363,20 @@ public class FinderLocal extends Local {
     @Override
     public String toURL() {
         return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
+    }
+
+    @Override
+    public boolean isExecutable() {
+        return NSFileManager.defaultManager().isExecutableFileAtPath(this.getAbsolute());
+    }
+
+    @Override
+    public boolean isReadable() {
+        return NSFileManager.defaultManager().isReadableFileAtPath(this.getAbsolute());
+    }
+
+    @Override
+    public boolean isWritable() {
+        return NSFileManager.defaultManager().isWritableFileAtPath(this.getAbsolute());
     }
 }

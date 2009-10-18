@@ -255,7 +255,7 @@ public abstract class NSWorkspace implements NSObject {
      * Original signature : <code>BOOL getFileSystemInfoForPath(NSString*, BOOL*, BOOL*, BOOL*, NSString**, NSString**)</code><br>
      * <i>native declaration : :92</i>
      */
-    public abstract boolean getFileSystemInfoForPath_isRemovable_isWritable_isUnmountable_description_type(com.sun.jna.Pointer fullPath1, boolean removableFlag2, boolean writableFlag3, boolean unmountableFlag4, com.sun.jna.ptr.PointerByReference description5, com.sun.jna.ptr.PointerByReference fileSystemType6);
+    public abstract boolean getFileSystemInfoForPath_isRemovable_isWritable_isUnmountable_description_type(String fullPath1, boolean removableFlag2, boolean writableFlag3, boolean unmountableFlag4, com.sun.jna.ptr.PointerByReference description5, com.sun.jna.ptr.PointerByReference fileSystemType6);
 
     /**
      * Original signature : <code>BOOL performFileOperation(NSString*, NSString*, NSString*, NSArray*, NSInteger*)</code><br>
@@ -323,13 +323,13 @@ public abstract class NSWorkspace implements NSObject {
      * Original signature : <code>BOOL launchAppWithBundleIdentifier(NSString*, NSWorkspaceLaunchOptions, NSAppleEventDescriptor*, NSNumber**)</code><br>
      * <i>native declaration : :111</i>
      */
-    public abstract boolean launchAppWithBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifier(com.sun.jna.Pointer bundleIdentifier1, int options2, com.sun.jna.Pointer descriptor3, com.sun.jna.ptr.PointerByReference identifier4);
+    public abstract boolean launchAppWithBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifier(String bundleIdentifier1, int options2, com.sun.jna.Pointer descriptor3, com.sun.jna.ptr.PointerByReference identifier4);
 
     /**
      * Original signature : <code>BOOL openURLs(NSArray*, NSString*, NSWorkspaceLaunchOptions, NSAppleEventDescriptor*, NSArray**)</code><br>
      * <i>native declaration : :112</i>
      */
-    public abstract boolean openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers(com.sun.jna.Pointer urls1, com.sun.jna.Pointer bundleIdentifier2, int options3, com.sun.jna.Pointer descriptor4, com.sun.jna.ptr.PointerByReference identifiers5);
+    public abstract boolean openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers(NSArray urls1, String bundleIdentifier2, int options3, com.sun.jna.Pointer descriptor4, com.sun.jna.ptr.PointerByReference identifiers5);
 
     /**
      * Original signature : <code>NSArray* launchedApplications)</code><br>
@@ -351,7 +351,7 @@ public abstract class NSWorkspace implements NSObject {
      * Original signature : <code>NSString* typeOfFile(NSString*, NSError**)</code><br>
      * <i>native declaration : :138</i>
      */
-    public abstract String typeOfFile_error(com.sun.jna.Pointer absoluteFilePath1, com.sun.jna.ptr.PointerByReference outError2);
+    public abstract String typeOfFile_error(String absoluteFilePath1, com.sun.jna.ptr.PointerByReference outError2);
 
     /**
      * Given a UTI, return a string that describes the document type and is fit to present to the user, or nil for failure.<br>

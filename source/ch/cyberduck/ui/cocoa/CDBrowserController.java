@@ -2088,7 +2088,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
      * Prunes the map of selected files. Files which are a child of an already included directory
      * are removed from the returned map.
      */
-    private Map<Path, Path> checkHierarchy(final Map<Path, Path> selected) {
+    protected Map<Path, Path> checkHierarchy(final Map<Path, Path> selected) {
         final Map<Path, Path> normalized = new HashMap<Path, Path>();
         Iterator<Path> sourcesIter = selected.keySet().iterator();
         Iterator<Path> destinationsIter = selected.values().iterator();
@@ -2192,9 +2192,8 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                     if(this.isCanceled()) {
                         break;
                     }
-                    final Path f = file;
-                    f.delete();
-                    f.getParent().invalidate();
+                    file.delete();
+                    file.getParent().invalidate();
                     if(!isConnected()) {
                         break;
                     }
@@ -3834,7 +3833,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 );
             }
         }
-        if(identifier.equals(TOOLBAR_DISCONNECT)) {
+        else if(identifier.equals(TOOLBAR_DISCONNECT)) {
             if(isActivityRunning()) {
                 item.setLabel(Locale.localizedString("Stop"));
                 item.setPaletteLabel(Locale.localizedString("Stop"));
@@ -3848,7 +3847,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 item.setImage(CDIconCache.iconNamed("eject.tiff"));
             }
         }
-        if(identifier.equals(TOOLBAR_ARCHIVE)) {
+        else if(identifier.equals(TOOLBAR_ARCHIVE)) {
             final Path selected = getSelectedPath();
             if(null != selected) {
                 if(Archive.isArchive(selected.getName())) {
@@ -3863,7 +3862,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
             }
         }
-        if(identifier.equals(TOOLBAR_QUICKLOOK)) {
+        else if(identifier.equals(TOOLBAR_QUICKLOOK)) {
             // Not called because custom view is set
         }
         return validateItem(item.action());

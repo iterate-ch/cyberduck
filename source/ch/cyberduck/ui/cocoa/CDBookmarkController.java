@@ -224,9 +224,7 @@ public class CDBookmarkController extends CDWindowController {
     public void setWebURLField(NSTextField webURLField) {
         this.webURLField = webURLField;
         final NSTextFieldCell cell = this.webURLField.cell();
-        cell.setPlaceholderString(
-                host.getDefaultWebURL()
-        );
+        cell.setPlaceholderString(host.getDefaultWebURL());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("webURLInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
@@ -436,8 +434,7 @@ public class CDBookmarkController extends CDWindowController {
 
     private void addDownloadPath(Selector action, Local f) {
         if(f.exists()) {
-            this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(NSFileManager.defaultManager().displayNameAtPath(
-                    f.getAbsolute()), action, "");
+            this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getName(), action, "");
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
                     CDIconCache.instance().iconForPath(f, 16)
@@ -476,12 +473,9 @@ public class CDBookmarkController extends CDWindowController {
                 host.setDownloadFolder(selected.lastObject().toString());
             }
         }
-        downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(
-                host.getDownloadFolder().getAbsolute()));
-        downloadPathPopup.itemAtIndex(0).setRepresentedObject(
-                host.getDownloadFolder().getAbsolute());
-        downloadPathPopup.itemAtIndex(0).setImage(
-                CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
+        downloadPathPopup.itemAtIndex(0).setTitle(host.getDownloadFolder().getName());
+        downloadPathPopup.itemAtIndex(0).setRepresentedObject(host.getDownloadFolder().getAbsolute());
+        downloadPathPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForPath(host.getDownloadFolder(), 16));
         downloadPathPopup.selectItemAtIndex(0);
         downloadPathPanel = null;
         this.itemChanged();

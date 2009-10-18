@@ -925,8 +925,7 @@ public class CDPreferencesController extends ToolbarWindowController {
 
     private void addDownloadPath(Selector action, Local f) {
         if(f.exists()) {
-            this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(NSFileManager.defaultManager().displayNameAtPath(
-                    f.getAbsolute()), action, "");
+            this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getName(), action, "");
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
             this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
                     CDIconCache.instance().iconForPath(f, 16)
@@ -967,7 +966,7 @@ public class CDPreferencesController extends ToolbarWindowController {
             }
         }
         Local custom = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
-        downloadPathPopup.itemAtIndex(0).setTitle(NSFileManager.defaultManager().displayNameAtPath(custom.getAbsolute()));
+        downloadPathPopup.itemAtIndex(0).setTitle(custom.getName());
         downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom.getAbsolute());
         downloadPathPopup.itemAtIndex(0).setImage(CDIconCache.instance().iconForPath(custom, 16));
         downloadPathPopup.selectItemAtIndex(0);
