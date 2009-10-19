@@ -183,7 +183,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(parsed.getGroup(), "205");
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 17);
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2007);
+        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR));
         assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 14);
         assertTrue(parsed.getTimestamp().get(Calendar.MINUTE) == 40);
 
