@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -44,7 +45,7 @@ import java.util.Set;
 public abstract class CDWindowController extends CDBundleController implements NSWindow.Delegate {
     private static Logger log = Logger.getLogger(CDWindowController.class);
 
-    protected static final String DEFAULT = "Default";
+    protected static final String DEFAULT = Locale.localizedString("Default");
 
     public CDWindowController() {
         super();
