@@ -426,6 +426,10 @@ public abstract class Transfer implements Serializable {
         if(filter.accept(p)) {
             this.fireWillTransferPath(p);
             _current = p;
+            if(!roots.contains(p)) {
+                // Root objects are already prepared in advance
+                filter.prepare(_current);
+            }
             _current.getStatus().reset();
             _transferImpl(_current);
             this.fireDidTransferPath(_current);
@@ -450,6 +454,7 @@ public abstract class Transfer implements Serializable {
             if(!failure) {
                 p.getStatus().setComplete(true);
             }
+            session.cache().remove(p);
         }
     }
 
@@ -501,7 +506,7 @@ public abstract class Transfer implements Serializable {
             // Reset the cached size of the transfer and progress value
             this.reset();
 
-            // Calculate some information about the files in advance to give some progress information
+            // Calculate some information about the root files in advance to give some progress information
             for(Path next : roots) {
                 this.prepare(next, filter);
             }
@@ -538,13 +543,6 @@ public abstract class Transfer implements Serializable {
         // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
             filter.prepare(p);
-        }
-
-        if(p.attributes.isDirectory()) {
-            // Call recursively for all childs
-            for(Path child : this.childs(p)) {
-                this.prepare(child, filter);
-            }
         }
     }
 
