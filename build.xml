@@ -505,7 +505,7 @@
         </manifest>
     </target>
 
-    <target name="junit" depends="compile" description="Runs all test cases and generate report">
+    <target name="test" depends="compile" description="Runs all test cases and generate report">
         <javac
                 debug="${debug}"
                 encoding="utf-8"
