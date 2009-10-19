@@ -69,7 +69,12 @@ public class Speedometer {
         b.append(Status.getSizeAsString(transfer.getSize()));
         if(transfer.isRunning()) {
             b.append(" (");
-            b.append((int)(transfer.getTransferred()/transfer.getSize()*100));
+            if(0 == transfer.getSize()) {
+                b.append(0);
+            }
+            else {
+                b.append((int)(transfer.getTransferred()/transfer.getSize()*100));
+            }
             b.append("%");
             float speed = this.getSpeed();
             if(speed > 0) {
