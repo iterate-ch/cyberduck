@@ -714,14 +714,7 @@ public class CDBookmarkController extends CDWindowController {
         this.updateField(pathField, host.getDefaultPath());
         this.updateField(usernameField, host.getCredentials().getUsername());
         final NSTextFieldCell usernameCell = usernameField.cell();
-        if(host.getProtocol().equals(Protocol.S3)) {
-            usernameCell.setPlaceholderString(
-                    Locale.localizedString("Access Key ID", "S3")
-            );
-        }
-        else {
-            usernameCell.setPlaceholderString("");
-        }
+        usernameCell.setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
         protocolPopup.selectItemWithTitle(host.getProtocol().getDescription());
         if(null == host.getMaxConnections()) {
             transferPopup.selectItemWithTitle(DEFAULT);
@@ -730,12 +723,9 @@ public class CDBookmarkController extends CDWindowController {
             transferPopup.selectItemWithTitle(
                     host.getMaxConnections() == 1 ? TRANSFER_BROWSERCONNECTION : TRANSFER_NEWCONNECTION);
         }
-        connectmodePopup.setEnabled(host.getProtocol().equals(Protocol.FTP)
-                || host.getProtocol().equals(Protocol.FTP_TLS));
-        encodingPopup.setEnabled(host.getProtocol().equals(Protocol.FTP)
-                || host.getProtocol().equals(Protocol.FTP_TLS) || host.getProtocol().equals(Protocol.SFTP));
-        if(host.getProtocol().equals(Protocol.FTP)
-                || host.getProtocol().equals(Protocol.FTP_TLS)) {
+        encodingPopup.setEnabled(host.getProtocol().isEncodingConfigurable());
+        connectmodePopup.setEnabled(host.getProtocol().isConnectModeConfigurable());
+        if(host.getProtocol().isConnectModeConfigurable()) {
             if(null == host.getFTPConnectMode()) {
                 connectmodePopup.selectItemWithTitle(DEFAULT);
             }
@@ -759,11 +749,12 @@ public class CDBookmarkController extends CDWindowController {
         webUrlImage.setToolTip(host.getWebURL());
         this.updateField(webURLField, host.getWebURL());
         this.updateField(commentField, host.getComment());
-        final boolean tzEnabled = host.getProtocol().equals(Protocol.FTP)
-                || host.getProtocol().equals(Protocol.FTP_TLS);
-        this.timezonePopup.setEnabled(tzEnabled);
+        this.timezonePopup.setEnabled(!host.getProtocol().isUTCTimezone());
         if(null == host.getTimezone()) {
-            if(tzEnabled) {
+            if(host.getProtocol().isUTCTimezone()) {
+                this.timezonePopup.setTitle(UTC.getID());
+            }
+            else {
                 if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
                     this.timezonePopup.setTitle(AUTO);
                 }
@@ -772,9 +763,6 @@ public class CDBookmarkController extends CDWindowController {
                             TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getID()
                     );
                 }
-            }
-            else {
-                this.timezonePopup.setTitle(UTC.getID());
             }
         }
         else {

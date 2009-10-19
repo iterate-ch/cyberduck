@@ -96,6 +96,22 @@ public abstract class Protocol {
         return true;
     }
 
+    public boolean isEncodingConfigurable() {
+        return false;
+    }
+
+    public boolean isConnectModeConfigurable() {
+        return false;
+    }
+
+    public boolean isUTCTimezone() {
+        return true;
+    }
+
+    public String getUsernamePlaceholder() {
+        return "";
+    }
+
     public String getDefaultHostname() {
         return Preferences.instance().getProperty("connection.hostname.default");
     }
@@ -123,6 +139,11 @@ public abstract class Protocol {
 
         @Override
         public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public boolean isEncodingConfigurable() {
             return true;
         }
     };
@@ -164,6 +185,21 @@ public abstract class Protocol {
         public String getScheme() {
             return "ftp";
         }
+
+        @Override
+        public boolean isUTCTimezone() {
+            return false;
+        }
+
+        @Override
+        public boolean isEncodingConfigurable() {
+            return true;
+        }
+
+        @Override
+        public boolean isConnectModeConfigurable() {
+            return true;
+        }
     };
 
     public static final Protocol FTP_TLS = new Protocol() {
@@ -200,6 +236,21 @@ public abstract class Protocol {
         @Override
         public String icon() {
             return SFTP.icon();
+        }
+
+        @Override
+        public boolean isUTCTimezone() {
+            return false;
+        }
+
+        @Override
+        public boolean isEncodingConfigurable() {
+            return true;
+        }
+
+        @Override
+        public boolean isConnectModeConfigurable() {
+            return true;
         }
     };
 
@@ -247,6 +298,11 @@ public abstract class Protocol {
         @Override
         public boolean isWebUrlConfigurable() {
             return false;
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("Access Key ID", "S3");
         }
     };
 
