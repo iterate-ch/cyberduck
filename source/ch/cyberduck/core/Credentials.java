@@ -167,6 +167,6 @@ public class Credentials {
      * @return
      */
     public boolean isValid() {
-        return StringUtils.isNotEmpty(this.getUsername()) && StringUtils.isNotEmpty(this.getPassword());
+        return StringUtils.isNotEmpty(this.getUsername()) && this.getPassword() != null;
     }
 }
