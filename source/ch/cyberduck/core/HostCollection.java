@@ -125,6 +125,13 @@ public class HostCollection extends BookmarkCollection {
         return previous;
     }
 
+    @Override
+    public boolean remove(Object host) {
+        final boolean found = super.remove(host);
+        this.save();
+        return found;
+    }
+
     protected void sort() {
         //
     }
