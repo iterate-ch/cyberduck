@@ -20,20 +20,21 @@ package ch.cyberduck.core;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.framework.TestCase;
 
-public class AttributesTest extends TestCase {
+public class AttributesTest extends AbstractTestCase {
     public AttributesTest(String name) {
         super(name);
     }
 
     private PathAttributes attributes;
 
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
         super.setUp();
         this.attributes = new PathAttributes();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         this.attributes = null;

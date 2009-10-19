@@ -20,17 +20,18 @@ package ch.cyberduck.core;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.framework.TestCase;
 
-public class StatusTest extends TestCase {
+public class StatusTest extends AbstractTestCase {
     public StatusTest(String name) {
         super(name);
     }
 
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
         super.setUp();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

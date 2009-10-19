@@ -16,20 +16,18 @@
 package ch.cyberduck.core.ftp.parser;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Calendar;
+import java.util.Locale;
 
-public class NTFTPEntryParserTest extends TestCase
-{
+public class NTFTPEntryParserTest extends AbstractTestCase {
 
     private static final String[] samples =
             {
@@ -61,40 +59,38 @@ public class NTFTPEntryParserTest extends TestCase
                     "07-10-07  07:32PM       <DIR>          style",
                     "07-15-07  02:40PM       <DIR>          temp",
                     "07-10-07  07:32PM       <DIR>          vacatures"
-    };
+            };
 
     /**
      * @see junit.framework.TestCase#TestCase(String)
      */
-    public NTFTPEntryParserTest (String name)
-    {
+    public NTFTPEntryParserTest(String name) {
         super(name);
     }
 
     private FTPFileEntryParser parser;
     private SimpleDateFormat df;
 
-    public void setUp() throws Exception
-    {
+    @Override
+    public void setUp() {
+        super.setUp();
         this.parser = new FTPParserFactory().createFileEntryParser("WINDOWS");
         this.df = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.US);
     }
 
-    public void testParse() throws Exception
-    {
-        for(int i = 0; i < samples.length; i++) {
-            assertNotNull(samples[i], parser.parseFTPEntry(samples[i]));
+    public void testParse() throws Exception {
+        for(String sample : samples) {
+            assertNotNull(sample, parser.parseFTPEntry(sample));
         }
     }
 
-    public void testParseFieldsOnDirectory() throws Exception
-    {
+    public void testParseFieldsOnDirectory() throws Exception {
         FTPFile parsed = parser.parseFTPEntry("12-05-96  05:03PM       <DIR>          absoft2");
         assertNotNull("Could not parse entry.", parsed);
         assertEquals("Thu Dec 05 17:03:00 1996",
-                     df.format(parsed.getTimestamp().getTime()));
+                df.format(parsed.getTimestamp().getTime()));
         assertTrue("Should have been a directory.",
-                   parsed.isDirectory());
+                parsed.isDirectory());
         assertEquals("absoft2", parsed.getName());
 //        assertEquals(-1, (int)parsed.getSize());
 
@@ -107,28 +103,25 @@ public class NTFTPEntryParserTest extends TestCase
 //        assertEquals(-1, (int)parsed.getSize());
     }
 
-    public void testParseFieldsOnFile() throws Exception
-    {
+    public void testParseFieldsOnFile() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
                 "05-22-97  12:08AM                  5000000000 AUTOEXEC.BAK");
         assertNotNull("Could not parse entry.", parsed);
         assertEquals("Thu May 22 00:08:00 1997",
                 df.format(parsed.getTimestamp().getTime()));
         assertTrue("Should have been a file.",
-                   parsed.isFile());
+                parsed.isFile());
         assertEquals("AUTOEXEC.BAK", parsed.getName());
         assertEquals(5000000000l, parsed.getSize());
     }
 
-    public void testDirectoryBeginningWithNumber() throws Exception
-    {
+    public void testDirectoryBeginningWithNumber() throws Exception {
         FTPFile parsed = parser.parseFTPEntry("12-03-96  06:38AM       <DIR>          123xyz");
         assertNotNull(parsed);
         assertEquals("name", "123xyz", parsed.getName());
     }
 
-    public void testDirectoryBeginningWithNumberFollowedBySpaces() throws Exception
-    {
+    public void testDirectoryBeginningWithNumberFollowedBySpaces() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
                 "12-03-96  06:38AM       <DIR>          123 xyz");
         assertNotNull(parsed);
@@ -139,8 +132,7 @@ public class NTFTPEntryParserTest extends TestCase
         assertEquals("name", "123 abc xyz", parsed.getName());
     }
 
-    public void testElectic() throws Exception
-    {
+    public void testElectic() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
                 "09-04-06  11:28AM                  149 gearkommandon with spaces.txt");
         assertNotNull(parsed);
@@ -151,8 +143,7 @@ public class NTFTPEntryParserTest extends TestCase
         assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2006);
     }
 
-    public static Test suite()
-    {
+    public static Test suite() {
         return new TestSuite(NTFTPEntryParserTest.class);
     }
 }

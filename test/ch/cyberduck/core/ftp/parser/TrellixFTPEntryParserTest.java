@@ -18,19 +18,20 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ftp.FTPParserFactory;
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.ftp.FTPParserFactory;
+
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.util.Calendar;
 
 /**
- * @version $Id: TrellixFTPEntryParserTest.java 2042 2006-04-23 01:39:32Z dkocher $
+ * @version $Id$
  */
-public class TrellixFTPEntryParserTest extends TestCase {
+public class TrellixFTPEntryParserTest extends AbstractTestCase {
 
     public TrellixFTPEntryParserTest(String name) {
         super(name);
@@ -39,10 +40,13 @@ public class TrellixFTPEntryParserTest extends TestCase {
     private FTPFileEntryParser parser;
 
 
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
+        super.setUp();
         this.parser = new FTPParserFactory().createFileEntryParser("Trellix FTP Server 1.0 (Linux|Unix|Windows)");
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

@@ -19,18 +19,19 @@ package ch.cyberduck.core;
  */
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class PathTest extends TestCase {
+public class PathTest extends AbstractTestCase {
     public PathTest(String name) {
         super(name);
     }
 
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
         super.setUp();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

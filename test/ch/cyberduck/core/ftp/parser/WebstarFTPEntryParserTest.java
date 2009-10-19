@@ -18,6 +18,9 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -25,14 +28,10 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.util.Calendar;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 /**
- * @version $Id: TrellixFTPEntryParserTest.java 2042 2006-04-23 01:39:32Z dkocher $
+ * @version $Id$
  */
-public class WebstarFTPEntryParserTest extends TestCase {
+public class WebstarFTPEntryParserTest extends AbstractTestCase {
 
     public WebstarFTPEntryParserTest(String name) {
         super(name);
@@ -41,10 +40,13 @@ public class WebstarFTPEntryParserTest extends TestCase {
     private FTPFileEntryParser parser;
 
 
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
+        super.setUp();
         this.parser = new FTPParserFactory().createFileEntryParser("MACOS WebSTAR FTP");
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

@@ -18,21 +18,20 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ftp.FTPParserFactory;
-
-import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.net.ftp.FTPFile;
-
-import java.util.Calendar;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import junit.framework.TestCase;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.ftp.FTPParserFactory;
+
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+
+import java.util.Calendar;
 
 /**
  * @version $Id:$
  */
-public class NetwareFTPEntryParserTest extends TestCase {
+public class NetwareFTPEntryParserTest extends AbstractTestCase {
 
     public NetwareFTPEntryParserTest(String name) {
         super(name);
@@ -41,16 +40,20 @@ public class NetwareFTPEntryParserTest extends TestCase {
     private FTPFileEntryParser parser;
 
 
-    public void setUp() throws Exception {
+    @Override
+    public void setUp() {
+        super.setUp();
         this.parser = new FTPParserFactory().createFileEntryParser("NETWARE");
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     /**
      * http://trac.cyberduck.ch/ticket/1996
+     *
      * @throws Exception
      */
     public void testParse() throws Exception {

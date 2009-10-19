@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import junit.framework.TestCase;
-
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -24,7 +22,7 @@ import junit.framework.TestCase;
 /**
  * @version $Id$
  */
-public class PermissionTest extends TestCase {
+public class PermissionTest extends AbstractTestCase {
 
     public PermissionTest(String name) {
         super(name);

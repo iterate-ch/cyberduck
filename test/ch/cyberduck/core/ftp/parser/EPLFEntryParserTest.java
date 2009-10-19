@@ -3,25 +3,28 @@
 
 package ch.cyberduck.core.ftp.parser;
 
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
-import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
 
-public class EPLFEntryParserTest extends junit.framework.TestCase {
+public class EPLFEntryParserTest extends AbstractTestCase {
 
     static {
-		org.apache.log4j.BasicConfigurator.configure();
-	}
-    
+        org.apache.log4j.BasicConfigurator.configure();
+    }
+
     public EPLFEntryParserTest(String name) {
         super(name);
     }
-    
-	private FTPFileEntryParser parser;
 
+    private FTPFileEntryParser parser;
+
+    @Override
     public void setUp() {
-		this.parser = new FTPParserFactory().createFileEntryParser("UNIX");
+        super.setUp();
+        this.parser = new FTPParserFactory().createFileEntryParser("UNIX");
     }
 
     public void testStandardBinls() {
@@ -43,7 +46,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
 
 //        assertEquals("rwxrwxr-x (775)", parsed.getPermission().toString());
     }
-    
+
     public void testReadonlyFile() {
         FTPFile parsed = parser.parseFTPEntry("+m825718503,r,s280,\tdjb.html\r\n");
 
@@ -51,7 +54,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertFalse("is dir", parsed.isDirectory());
 
         assertEquals(280, parsed.getSize(), 0);
-        
+
         long millis = 825718503;
         millis = millis * 1000;
         assertEquals("timestamp", millis, parsed.getTimestamp().getTimeInMillis());
@@ -64,15 +67,15 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
 
 //        assertEquals("permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
     }
-    
+
     public void testReadonlyDirectory() {
         FTPFile parsed = parser.parseFTPEntry("+m825718503,/,\t514");
-        
+
         assertEquals("name", "514", parsed.getName());
         assertTrue("is dir", parsed.isDirectory());
 
 //        assertEquals("size", -1, parsed.getSize(), 0);
-        
+
         long millis = 825718503;
         millis = millis * 1000;
         assertEquals("timestamp", millis, parsed.getTimestamp().getTimeInMillis());
@@ -85,7 +88,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
 
 //        assertEquals("permissions", "r-xr-xr-x (555)", parsed.getPermission().toString());
     }
-    
+
     public void testSpecifiedPermissionsOverrideStandardDirPermissions() {
         FTPFile parsed = parser.parseFTPEntry("+up153,/,\t514");
         assertTrue("is dir", parsed.isDirectory());
@@ -93,7 +96,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertTrue("attr is dir", parsed.isDirectory());
 //        assertEquals("--xr-x-wx (153)", parsed.getPermission().toString());
     }
-    
+
     public void testSpecifiedPermissionsDoesntRemoveDirTag() {
         FTPFile parsed = parser.parseFTPEntry("+/,up153,\t514");
         assertTrue("is dir", parsed.isDirectory());
@@ -101,7 +104,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertTrue("attr is dir", parsed.isDirectory());
 //        assertEquals("--xr-x-wx (153)", parsed.getPermission().toString());
     }
-    
+
     public void testSpecifiedPermissionsOverrideStandardFilePermissions() {
         FTPFile parsed = parser.parseFTPEntry("+up153,r,\tmyfile");
         assertFalse("is dir", parsed.isDirectory());
@@ -109,7 +112,7 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         assertTrue("attr is file", parsed.isFile());
 //        assertEquals("--xr-x-wx (153)", parsed.getPermission().toString());
     }
-    
+
     public void testHideUnreadableFilesAndDirs() {
         // Missing both 'r' (may be RETRed) and '/' (may be CWDed) fact.
         assertNull(parser.parseFTPEntry("+m825718503,\tuseless"));
@@ -120,21 +123,21 @@ public class EPLFEntryParserTest extends junit.framework.TestCase {
         long millis = 825718503;
         millis = millis * 1000;
         FTPFile parsed = null;
-        
+
         parsed = parser.parseFTPEntry("+,m825718503,r,s280,\tdjb.html\r\n");
         assertEquals("name", "djb.html", parsed.getName());
         assertFalse("is dir", parsed.isDirectory());
         assertEquals("size", 280, parsed.getSize(), 0);
         assertEquals("timestamp", millis, parsed.getTimestamp().getTimeInMillis());
 //        assertEquals("permissions", "--------- (000)", parsed.getPermission().toString());
-        
+
         parsed = parser.parseFTPEntry("+m825718503,,r,s280,\tdjb.html\r\n");
         assertEquals("X name", "djb.html", parsed.getName());
         assertFalse("X is dir", parsed.isDirectory());
         assertEquals("X size", 280, parsed.getSize(), 0);
         assertEquals("timestamp", millis, parsed.getTimestamp().getTimeInMillis());
 //        assertEquals("permissions", "--------- (000)", parsed.getPermission().toString());
-        
+
         parsed = parser.parseFTPEntry("+m825718503,r,s280,,\tdjb.html\r\n");
         assertEquals("XX name", "djb.html", parsed.getName());
         assertFalse("XX is dir", parsed.isDirectory());

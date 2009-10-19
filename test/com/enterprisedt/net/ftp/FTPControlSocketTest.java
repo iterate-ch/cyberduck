@@ -3,6 +3,7 @@ package com.enterprisedt.net.ftp;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.framework.TestCase;
+import ch.cyberduck.core.AbstractTestCase;
 
 /**
  * FTPControlSocket Tester.
@@ -11,16 +12,16 @@ import junit.framework.TestCase;
  * @since <pre>01/19/2007</pre>
  * @version 1.0
  */
-public class FTPControlSocketTest extends TestCase {
+public class FTPControlSocketTest extends AbstractTestCase {
     public FTPControlSocketTest(String name) {
         super(name);
     }
 
-    public void setUp() throws Exception {
+    @Override public void setUp() {
         super.setUp();
     }
 
-    public void tearDown() throws Exception {
+    @Override public void tearDown() throws Exception {
         super.tearDown();
     }
 

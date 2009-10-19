@@ -18,6 +18,9 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
@@ -25,24 +28,22 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.util.Calendar;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 /**
  * @version $Id$
  */
-public class UnixFTPEntryParserTest extends TestCase {
+public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     public UnixFTPEntryParserTest(String name) {
         super(name);
     }
 
 
-    public void setUp() throws Exception {
-
+    @Override
+    public void setUp() {
+        super.setUp();
     }
 
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }
@@ -137,7 +138,7 @@ public class UnixFTPEntryParserTest extends TestCase {
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Cyberduck-2.7.3.dmg");
-        assertTrue(parsed.getSize() == (long)(9.0 * 1048576));
+        assertTrue(parsed.getSize() == (long) (9.0 * 1048576));
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
@@ -147,7 +148,7 @@ public class UnixFTPEntryParserTest extends TestCase {
                 "-rw-rw-rw- 1 ftp operator 61.8M Mar 7 18:42 GC Wayfinding pics.zip "
         );
         assertNotNull(parsed);
-        assertTrue(parsed.getSize() == (long)(61.8 * 1048576));
+        assertTrue(parsed.getSize() == (long) (61.8 * 1048576));
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
@@ -157,7 +158,7 @@ public class UnixFTPEntryParserTest extends TestCase {
                 "-rw-rw-rw- 1 ftp operator 172.4k Mar 7 16:01 HEALY071.TXT "
         );
         assertNotNull(parsed);
-        assertTrue(parsed.getSize() == (long)(172.4 * 1024));
+        assertTrue(parsed.getSize() == (long) (172.4 * 1024));
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
@@ -166,6 +167,7 @@ public class UnixFTPEntryParserTest extends TestCase {
 
     /**
      * http://trac.cyberduck.ch/ticket/143
+     *
      * @throws Exception
      */
     public void testLeadingWhitespace() throws Exception {

@@ -18,12 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.TestCase;
-
 /**
  * @version $Id$
  */
-public class HostTest extends TestCase {
+public class HostTest extends AbstractTestCase {
 
     public HostTest(String name) {
         super(name);
