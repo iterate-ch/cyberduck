@@ -30,31 +30,6 @@ public abstract class AbstractProxy implements Proxy {
     private static Logger log = Logger.getLogger(AbstractProxy.class);
 
     public void configure(final String hostname) {
-//        ProxySelector.setDefault(new ProxySelector() {
-//            public List select(URI uri) {
-//                log.debug("select:"+uri);
-//                final List proxies = new ArrayList();
-//                if(!Proxy.isHostExcluded(uri.getHost())) {
-//                    if(Proxy.isSOCKSProxyEnabled()) {
-//                        proxies.add(new java.net.Proxy(java.net.Proxy.Type.SOCKS,
-//                                new InetSocketAddress(Proxy.getSOCKSProxyHost(), Proxy.getSOCKSProxyPort())));
-//                }
-//                if(proxies.isEmpty()) {
-//                    proxies.add(java.net.Proxy.NO_PROXY);
-//                }
-//                if(log.isInfoEnabled()) {
-//                    log.info("Proxy configuration for "+uri.toString());
-//                    for(Iterator iter = proxies.iterator(); iter.hasNext(); ) {
-//                        log.info(iter.next());
-//                    }
-//                }
-//                return proxies;
-//            }
-//
-//            public void connectFailed(URI uri, SocketAddress socketAddress, IOException e) {
-//                log.error("Connect to proxy "+socketAddress.toString()+" failed:"+e.getMessage());
-//            }
-//        });
         if(this.isSOCKSProxyEnabled() && !this.isHostExcluded(hostname)) {
             log.info("Using SOCKS Proxy");
             this.initSOCKS(this.getSOCKSProxyPort(), this.getSOCKSProxyHost());
