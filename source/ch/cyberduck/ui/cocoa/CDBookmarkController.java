@@ -657,6 +657,7 @@ public class CDBookmarkController extends CDWindowController {
         }
         this.itemChanged();
         this.init();
+        this.reachable();
     }
 
     public void pathInputDidChange(final NSNotification sender) {

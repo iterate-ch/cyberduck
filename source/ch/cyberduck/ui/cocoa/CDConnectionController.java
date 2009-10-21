@@ -320,6 +320,7 @@ public class CDConnectionController extends CDSheetController {
             this.portField.setStringValue(String.valueOf(protocol.getDefaultPort()));
         }
         this.updateURLLabel();
+        this.reachable();
     }
 
     @Outlet
