@@ -23,10 +23,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSError;
 
 /// <i>native declaration : :20</i>
-public abstract class NSAlert implements NSObject {
+public abstract class NSAlert extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSAlert", _Class.class);
 
     public static final int NSAlertDefaultReturn = 1;
@@ -59,7 +60,7 @@ public abstract class NSAlert implements NSObject {
                 title, defaultButton, alternateButton, otherButton, message);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Given an NSError, create an NSAlert that can be used to present the error to the user. The error's localized description, recovery suggestion, and recovery options will be used to set the alert's message text, informative text, and button titles, respectively.<br>
          * Original signature : <code>NSAlert* alertWithError(NSError*)</code><br>

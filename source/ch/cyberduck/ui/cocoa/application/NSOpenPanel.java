@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.Selector;
 
 /// <i>native declaration : :14</i>
@@ -33,7 +34,7 @@ public abstract class NSOpenPanel extends NSSavePanel {
         return CLASS.openPanel();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSOpenPanel* openPanel()</code><br>
          * <i>native declaration : :19</i>

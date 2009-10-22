@@ -19,11 +19,12 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:9</i>
-public abstract class  NSAttributedString implements NSObject {
+public abstract class NSAttributedString extends NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
 
     public static NSAttributedString attributedString(String str) {
@@ -34,7 +35,7 @@ public abstract class  NSAttributedString implements NSObject {
         return CLASS.alloc().initWithString_attributes(str, attrs);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Methods to determine what types can be loaded as NSAttributedStrings.<br>
          * Original signature : <code>NSArray* textTypes()</code><br>

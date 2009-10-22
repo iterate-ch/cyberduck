@@ -23,12 +23,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :10</i>
-public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedUserInterfaceItem {
+public abstract class NSToolbarItem extends NSObject implements NSCopying, NSValidatedUserInterfaceItem {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSToolbarItem", _Class.class);
 
     public static final String NSToolbarFlexibleItemIdentifier = "NSToolbarFlexibleSpaceItem";
@@ -49,7 +49,7 @@ public abstract class NSToolbarItem implements NSObject, NSCopying, NSValidatedU
         return CLASS.alloc().initWithItemIdentifier(itemIdentifier);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSToolbarItem alloc();
     }
 

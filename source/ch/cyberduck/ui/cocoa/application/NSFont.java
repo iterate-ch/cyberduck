@@ -21,14 +21,15 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :45</i>
-public abstract class NSFont implements NSObject, NSCopying {
+public abstract class NSFont extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFont", _Class.class);
 
     /**
@@ -81,7 +82,7 @@ public abstract class NSFont implements NSObject, NSCopying {
         return CLASS.labelFontSize().doubleValue();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Factory ********<br>
          * Original signature : <code>NSFont* fontWithName(NSString*, CGFloat)</code><br>

@@ -19,13 +19,14 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :62</i>
 public abstract class NSMutableDictionary extends NSDictionary {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableDictionary", _Class.class);
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>id dictionaryWithCapacity(NSUInteger)</code><br>
          * <i>from NSMutableDictionaryCreation native declaration : :80</i>

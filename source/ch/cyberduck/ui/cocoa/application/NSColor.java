@@ -23,10 +23,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :35</i>
-public abstract class NSColor implements NSObject, NSCopying {
+public abstract class NSColor extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSColor", _Class.class);
 
     public static NSColor whiteColor() {
@@ -324,7 +325,7 @@ public abstract class NSColor implements NSObject, NSCopying {
         return CLASS.alternateSelectedControlTextColor();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Create NSCalibratedWhiteColorSpace colors.<br>
          * Original signature : <code>NSColor* colorWithCalibratedWhite(CGFloat, CGFloat)</code><br>

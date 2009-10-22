@@ -19,10 +19,11 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSNumber;
 
 /// <i>native declaration : :15</i>
-public abstract class NSURL implements NSObject {
+public abstract class NSURL extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSURL", _Class.class);
 
     public static NSURL URLWithString(String URLString) {
@@ -33,7 +34,7 @@ public abstract class NSURL implements NSObject {
         return CLASS.fileURLWithPath(URLString);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>fileURLWithPath(NSString*, BOOL)</code><br>
          * <i>native declaration : :28</i>

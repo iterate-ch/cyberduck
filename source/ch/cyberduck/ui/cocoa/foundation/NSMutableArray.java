@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :80</i>
@@ -33,7 +34,7 @@ public abstract class NSMutableArray extends NSArray {
         return CLASS.arrayWithCapacity(numItems);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>id arrayWithCapacity(NSUInteger)</code><br>
          * <i>from NSMutableArrayCreation native declaration : :118</i>

@@ -19,7 +19,9 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:37</i>
@@ -34,7 +36,7 @@ public abstract class NSNumber extends NSValue {
         return CLASS.numberWithDouble(value);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSNumber* numberWithChar(char)</code><br>
          * <i>from NSNumberCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:87</i>

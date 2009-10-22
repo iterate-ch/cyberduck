@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -33,7 +34,7 @@ public abstract class NSMutableAttributedString extends NSAttributedString {
         return Rococoa.cast(CLASS.alloc().initWithString_attributes(str, attrs), NSMutableAttributedString.class);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSMutableAttributedString alloc();
     }
 

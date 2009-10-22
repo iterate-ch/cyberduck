@@ -25,10 +25,14 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
-public abstract class NSView implements NSResponder {
+public abstract class NSView extends NSResponder {
 
     public static final int NSViewNotSizable = 0;
     public static final int NSViewMinXMargin = 1;
@@ -38,7 +42,7 @@ public abstract class NSView implements NSResponder {
     public static final int NSViewHeightSizable = 16;
     public static final int NSViewMaxYMargin = 32;
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSView* focusView()</code><br>
          * <i>native declaration : :213</i>

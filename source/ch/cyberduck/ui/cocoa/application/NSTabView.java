@@ -28,10 +28,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 /// <i>native declaration : :23</i>
 public abstract class NSTabView extends NSView {
 
-    public interface _Class extends org.rococoa.NSClass {
-        NSTabView alloc();
-    }
-
     public static interface Delegate {
         void tabView_didSelectTabViewItem(NSTabView tabView, NSTabViewItem tabViewItem);
     }

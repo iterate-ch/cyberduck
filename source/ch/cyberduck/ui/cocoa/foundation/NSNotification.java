@@ -19,11 +19,13 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
+
 /// <i>native declaration : :12</i>
-public abstract class NSNotification implements NSObject, NSCopying {
+public abstract class NSNotification extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSNotification", _Class.class);
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * <i>from NSNotificationCreation native declaration : :22</i><br>
          * Conversion Error : /// Original signature : <code>notificationWithName(NSString*, null)</code><br>

@@ -19,10 +19,12 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-public abstract class NSFormatter implements NSObject {
+import org.rococoa.ObjCClass;
+
+public abstract class NSFormatter extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFormatter", _Class.class);
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSFormatter alloc();
     }
 

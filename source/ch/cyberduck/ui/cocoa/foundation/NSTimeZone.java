@@ -19,9 +19,10 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-public abstract class NSTimeZone implements NSObject {
+public abstract class NSTimeZone extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTimeZone", _Class.class);
 
     public static NSTimeZone defaultTimeZone() {
@@ -32,7 +33,7 @@ public abstract class NSTimeZone implements NSObject {
         return CLASS.systemTimeZone();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSTimeZone* systemTimeZone()</code><br>
          * <i>from NSExtendedTimeZone native declaration : :22</i>

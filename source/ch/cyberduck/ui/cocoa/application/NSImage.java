@@ -21,13 +21,14 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 
 /// <i>native declaration : :41</i>
-public abstract class NSImage implements NSObject, NSCopying {
+public abstract class NSImage extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSImage", _Class.class);
 
     /// <i>native declaration : :13</i>
@@ -77,7 +78,7 @@ public abstract class NSImage implements NSObject, NSCopying {
         return CLASS.alloc().initWithContentsOfFile(filename);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>id imageNamed(NSString*)</code><br>
          * If this finds & creates the image, only name is saved when archived<br>

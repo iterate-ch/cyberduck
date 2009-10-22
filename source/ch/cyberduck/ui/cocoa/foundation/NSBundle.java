@@ -19,8 +19,10 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
+
 /// <i>native declaration : :12</i>
-public abstract class NSBundle implements NSObject {
+public abstract class NSBundle extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSBundle", _Class.class);
 
     /**
@@ -72,7 +74,7 @@ public abstract class NSBundle implements NSObject {
     }
 
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSBundle* mainBundle)</code><br>
          * <i>native declaration : :24</i>
@@ -84,12 +86,6 @@ public abstract class NSBundle implements NSObject {
          * <i>native declaration : :25</i>
          */
         NSBundle bundleWithPath(String path1);
-
-        /**
-         * Original signature : <code>NSBundle* bundleForClass(Class)</code><br>
-         * <i>native declaration : :28</i>
-         */
-        NSBundle bundleForClass(org.rococoa.NSClass aClass1);
 
         /**
          * Original signature : <code>NSBundle* bundleWithIdentifier(String*)</code><br>
@@ -228,18 +224,6 @@ public abstract class NSBundle implements NSObject {
      * <i>native declaration : :55</i>
      */
     public abstract String bundleIdentifier();
-
-    /**
-     * Original signature : <code>Class classNamed(String*)</code><br>
-     * <i>native declaration : :57</i>
-     */
-    public abstract org.rococoa.NSClass classNamed(String className1);
-
-    /**
-     * Original signature : <code>Class principalClass)</code><br>
-     * <i>native declaration : :59</i>
-     */
-    public abstract org.rococoa.NSClass principalClass();
 
     /**
      * Original signature : <code>String* pathForResource(String*, String*)</code><br>

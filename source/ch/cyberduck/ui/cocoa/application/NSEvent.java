@@ -19,14 +19,15 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
 
-import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSPoint;
 
-public interface NSEvent extends NSObject, NSCopying {
+public abstract class NSEvent extends NSObject implements NSCopying {
 
     /// <i>native declaration : :12</i>
     public static final int NSLeftMouseDown = 1;
@@ -297,7 +298,7 @@ public interface NSEvent extends NSObject, NSCopying {
     public static final int NSHelpKeyMask = 1 << 22;
     public static final int NSFunctionKeyMask = 1 << 23;
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * +eventWithEventRef: returns an autoreleased NSEvent corresponding to the EventRef.  The EventRef is retained by the NSEvent and will be released when the NSEvent is freed.  If there is no NSEvent corresponding to the EventRef, +eventWithEventRef will return nil.<br>
          * Original signature : <code>NSEvent* eventWithEventRef(const void*)</code><br>

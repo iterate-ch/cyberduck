@@ -19,18 +19,14 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-/// <i>native declaration : :10</i>
-public interface NSActionCell extends NSCell {
+import org.rococoa.ObjCClass;
 
-    public interface _Class extends org.rococoa.NSClass {
+/// <i>native declaration : :10</i>
+public abstract class NSActionCell extends NSCell {
+
+    public interface _Class extends ObjCClass {
         NSActionCell alloc();
     }
-
-    /**
-     * Original signature : <code>void setImage(NSImage*)</code><br>
-     * <i>native declaration : :29</i>
-     */
-    public abstract void setImage(NSImage image);
 
     /**
      * Original signature : <code>id target()</code><br>

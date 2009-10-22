@@ -23,10 +23,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :71</i>
-public abstract class NSLayoutManager implements NSObject {
+public abstract class NSLayoutManager extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSLayoutManager", _Class.class);
 
     public static NSLayoutManager layoutManager() {
@@ -76,7 +77,7 @@ public abstract class NSLayoutManager implements NSObject {
                                                                    boolean finished);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSLayoutManager alloc();
     }
 

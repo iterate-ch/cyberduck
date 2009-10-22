@@ -24,13 +24,14 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import com.sun.jna.NativeLong;
 
 /// <i>native declaration : :43</i>
-public abstract class NSWorkspace implements NSObject {
+public abstract class NSWorkspace extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWorkspace", _Class.class);
 
     public static final String WorkspaceDidLaunchApplicationNotification = "NSWorkspaceDidLaunchApplicationNotification";
@@ -45,7 +46,7 @@ public abstract class NSWorkspace implements NSObject {
     public static final String WorkspaceWillUnmountNotification = "NSWorkspaceWillUnmountNotification";
     public static final String WorkspaceSessionDidBecomeActiveNotification = "NSWorkspaceSessionDidBecomeActiveNotification";
     public static final String WorkspaceSessionDidResignActiveNotification = "NSWorkspaceSessionDidResignActiveNotification";
-    
+
     /// <i>native declaration : :13</i>
     public static final int NSWorkspaceLaunchAndPrint = 2;
     /// <i>native declaration : :14</i>
@@ -95,7 +96,7 @@ public abstract class NSWorkspace implements NSObject {
     public static final String RecycleOperation = "recycle";
     public static final String DuplicateOperation = "duplicate";
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSWorkspace* sharedWorkspace)</code><br>
          * <i>native declaration : :54</i>

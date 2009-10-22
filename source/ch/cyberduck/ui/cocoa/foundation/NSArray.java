@@ -19,11 +19,12 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :14</i>
-public abstract class NSArray implements NSObject {
+public abstract class NSArray extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSArray", _Class.class);
 
     public static NSArray array() {
@@ -54,7 +55,7 @@ public abstract class NSArray implements NSObject {
         return CLASS.arrayWithObjects(arrayWithObjects);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         public NSArray alloc();
 
         /**

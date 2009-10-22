@@ -19,17 +19,19 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class NSThread implements NSObject {
+public abstract class NSThread extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSThread", _Class.class);
 
     public static boolean isMainThread() {
         return CLASS.isMainThread();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
 
         /**
          * Returns a Boolean value that indicates whether the current thread is the main thread.

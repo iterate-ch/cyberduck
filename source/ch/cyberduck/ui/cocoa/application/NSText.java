@@ -113,10 +113,6 @@ public abstract class NSText extends NSView {
     public static final String TextDidEndEditingNotification = "NSTextDidEndEditingNotification";
     public static final String TextDidChangeNotification = "NSTextDidChangeNotification";
 
-    public interface _Class extends org.rococoa.NSClass {
-        NSText alloc();
-    }
-
     /**
      * Original signature : <code>NSString* string()</code><br>
      * <i>native declaration : /Users/dkocher/null:70</i>
@@ -175,7 +171,7 @@ public abstract class NSText extends NSView {
      * Original signature : <code>void setDelegate(id)</code><br>
      * <i>native declaration : /Users/dkocher/null:84</i>
      */
-    public abstract void setDelegate(org.rococoa.NSObject anObject);
+    public abstract void setDelegate(org.rococoa.ID anObject);
 
     /**
      * Original signature : <code>BOOL isEditable()</code><br>

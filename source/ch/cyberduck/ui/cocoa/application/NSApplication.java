@@ -22,7 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.ID;
-import org.rococoa.NSClass;
+import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -31,7 +31,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 /**
  * @version $Id$
  */
-public abstract class NSApplication implements NSObject {
+public abstract class NSApplication extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSApplication", _Class.class); //$NON-NLS-1$
 
     public interface Delegate {
@@ -58,7 +58,7 @@ public abstract class NSApplication implements NSObject {
     public static final NSUInteger NSTerminateNow = new NSUInteger(1);
     public static final NSUInteger NSTerminateLater = new NSUInteger(2);
 
-    public interface _Class extends NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * This method also makes a connection to the window server and completes other initialization.
          * Your program should invoke this method as one of the first statements in main();

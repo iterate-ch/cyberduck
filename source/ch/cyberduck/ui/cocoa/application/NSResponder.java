@@ -25,11 +25,7 @@ import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSError;
 
 /// <i>native declaration : :11</i>
-public interface NSResponder extends NSObject {
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSResponder alloc();
-    }
+public abstract class NSResponder extends NSObject {
 
     /**
      * Original signature : <code>NSResponder* nextResponder()</code><br>

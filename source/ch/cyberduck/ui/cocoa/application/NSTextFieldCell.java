@@ -22,15 +22,17 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
+import org.rococoa.ObjCClass;
+
 /// <i>native declaration : :21</i>
-public abstract class NSTextFieldCell implements NSActionCell {
+public abstract class NSTextFieldCell extends NSActionCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextFieldCell", _Class.class);
 
     public static NSTextFieldCell textFieldCell() {
         return CLASS.alloc().init();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSTextFieldCell alloc();
     }
 

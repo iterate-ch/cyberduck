@@ -22,14 +22,15 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
-import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSSize;
 
 
 /// <i>native declaration : :31</i>
-public interface NSDrawer extends NSObject {
+public abstract class NSDrawer extends NSObject {
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSDrawer alloc();
     }
     /**

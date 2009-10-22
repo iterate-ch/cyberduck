@@ -23,10 +23,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :52</i>
-public abstract class NSPasteboard implements NSObject {
+public abstract class NSPasteboard extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPasteboard", _Class.class);
 
     public static NSPasteboard generalPasteboard() {
@@ -37,8 +38,7 @@ public abstract class NSPasteboard implements NSObject {
         return CLASS.pasteboardWithName(name);
     }
 
-
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSPasteboard* generalPasteboard()</code><br>
          * <i>native declaration : :65</i>

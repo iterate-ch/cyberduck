@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 import org.rococoa.ID;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :42</i>
 public abstract class NSProgressIndicator extends NSView {
@@ -37,10 +36,6 @@ public abstract class NSProgressIndicator extends NSView {
     public static final int NSProgressIndicatorBarStyle = 0;
     /// <i>native declaration : :33</i>
     public static final int NSProgressIndicatorSpinningStyle = 1;
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSProgressIndicator alloc();
-    }
 
     /**
      * Original signature : <code>BOOL isIndeterminate()</code><br>

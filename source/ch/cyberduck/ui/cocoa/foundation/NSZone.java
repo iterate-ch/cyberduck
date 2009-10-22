@@ -1,7 +1,5 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-import com.sun.jna.Structure;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -20,6 +18,8 @@ import com.sun.jna.Structure;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import com.sun.jna.Structure;
 
 /**
  * @version $Id$

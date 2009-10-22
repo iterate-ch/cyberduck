@@ -22,17 +22,18 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-public abstract class NSButtonCell implements NSActionCell {
+public abstract class NSButtonCell extends NSActionCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSButtonCell", _Class.class);
 
     public static NSButtonCell buttonCell() {
         return CLASS.alloc().init();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSButtonCell alloc();
     }
 

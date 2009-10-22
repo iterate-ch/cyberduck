@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :15</i>
 public abstract class NSButton extends NSControl {
@@ -57,7 +57,7 @@ public abstract class NSButton extends NSControl {
     public static final int NSRecessedBezelStyle = 13;
     public static final int NSRoundedDisclosureBezelStyle = 14;
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSButton alloc();
     }
 

@@ -19,10 +19,11 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :10</i>
-public abstract class NSDictionary implements NSObject {
+public abstract class NSDictionary extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDictionary", _Class.class);
 
     public static NSDictionary dictionaryWithObjectsForKeys(NSArray objects, NSArray keys) {
@@ -37,7 +38,7 @@ public abstract class NSDictionary implements NSObject {
         return CLASS.dictionaryWithContentsOfFile(path);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>id dictionary()</code><br>
          * <i>from NSDictionaryCreation native declaration : :40</i>

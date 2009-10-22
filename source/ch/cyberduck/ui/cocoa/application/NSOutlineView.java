@@ -64,10 +64,6 @@ public abstract class NSOutlineView extends NSTableView {
         void outlineViewItemDidCollapse(NSNotification notification);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
-        NSOutlineView alloc();
-    }
-
     /**
      * The 'outlineTableColumn' is the column that displays data in a hierarchical fashion, indented one identationlevel per level, decorated with indentation marker (disclosure triangle) on rows that are expandable. On MacOS 10.5, this value is saved in encodeWithCoder: and restored in initWithCoder:;<br>
      * Original signature : <code>void setOutlineTableColumn(NSTableColumn*)</code><br>

@@ -51,10 +51,6 @@ public abstract class NSTableView extends NSControl {
     public static final NSUInteger NSTableViewLastColumnOnlyAutoresizingStyle = new NSUInteger(4);
     public static final NSUInteger NSTableViewFirstColumnOnlyAutoresizingStyle = new NSUInteger(5);
 
-    public interface _Class extends org.rococoa.NSClass {
-        NSTableView alloc();
-    }
-
     public static interface DataSource {
         NSInteger numberOfRowsInTableView(NSTableView view);
 

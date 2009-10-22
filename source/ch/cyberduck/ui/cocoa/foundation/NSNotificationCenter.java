@@ -20,13 +20,15 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :29</i>
-public abstract class NSNotificationCenter implements NSObject {
+public abstract class NSNotificationCenter extends NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSNotificationCenter", _Class.class);
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>defaultCenter()</code><br>
          * <i>native declaration : :36</i>

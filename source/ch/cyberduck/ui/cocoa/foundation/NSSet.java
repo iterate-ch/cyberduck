@@ -19,12 +19,13 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:13</i>
-public abstract class NSSet implements NSObject {
+public abstract class NSSet extends NSObject {
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>set()</code><br>
          * <i>from NSSetCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSSet.h:43</i>

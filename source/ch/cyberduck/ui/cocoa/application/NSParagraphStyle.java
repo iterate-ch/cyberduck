@@ -22,11 +22,12 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 
 
 /// <i>native declaration : :74</i>
-public abstract class NSParagraphStyle implements NSObject, NSCopying {
+public abstract class NSParagraphStyle extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSParagraphStyle", _Class.class);
 
     /// <i>native declaration : :12</i>
@@ -72,7 +73,7 @@ public abstract class NSParagraphStyle implements NSObject, NSCopying {
         return CLASS.defaultParagraphStyle();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSParagraphStyle* defaultParagraphStyle()</code><br>
          * <i>native declaration : :100</i>

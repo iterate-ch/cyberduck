@@ -19,16 +19,17 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
-public abstract class NSGarbageCollector implements NSObject {
+public abstract class NSGarbageCollector extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSGarbageCollector", _Class.class);
 
     public static NSGarbageCollector alloc() {
         return CLASS.alloc();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Returns nil if this process is not running with garbage collection<br>
          * Original signature : <code>+(id)defaultCollector</code><br>

@@ -19,11 +19,13 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
+
 /// <i>native declaration : :27</i>
 public abstract class NSDistributedNotificationCenter extends NSNotificationCenter {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDistributedNotificationCenter", _Class.class);
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSDistributedNotificationCenter* notificationCenterForType(NSString*)</code><br>
          * <i>native declaration : :29</i>

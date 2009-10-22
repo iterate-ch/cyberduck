@@ -21,11 +21,12 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :17</i>
-public abstract class NSTableColumn implements NSObject {
+public abstract class NSTableColumn extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTableColumn", _Class.class);
 
     public static final int NSTableColumnNoResizing = 0; // Disallow any kind of resizing.
@@ -36,7 +37,7 @@ public abstract class NSTableColumn implements NSObject {
         return CLASS.alloc().initWithIdentifier(identifier);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSTableColumn alloc();
     }
 

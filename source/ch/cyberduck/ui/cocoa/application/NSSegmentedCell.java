@@ -22,11 +22,7 @@ package ch.cyberduck.ui.cocoa.application;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :20</i>
-public interface NSSegmentedCell extends NSActionCell {
-
-    public interface _Class extends org.rococoa.NSClass {
-        NSSegmentedCell alloc();
-    }
+public abstract class NSSegmentedCell extends NSActionCell {
 
     /**
      * only one button can be selected<br>

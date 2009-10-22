@@ -19,13 +19,14 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import com.sun.jna.Native;
 
 /// <i>native declaration : :28</i>
-public abstract class NSIndexSet implements NSObject {
+public abstract class NSIndexSet extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSIndexSet", _Class.class);
 
     public static NSIndexSet indexSetWithIndex(NSInteger value) {
@@ -41,7 +42,7 @@ public abstract class NSIndexSet implements NSObject {
      */
     public static final NSUInteger NSNotFound = new NSUInteger(Native.LONG_SIZE == 4 ? Integer.MAX_VALUE : Long.MAX_VALUE);
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>indexSet()</code><br>
          * <i>native declaration : :30</i>

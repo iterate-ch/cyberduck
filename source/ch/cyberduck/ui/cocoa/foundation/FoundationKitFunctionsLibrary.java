@@ -1,7 +1,5 @@
 package ch.cyberduck.ui.cocoa.foundation;
 
-import org.rococoa.cocoa.foundation.NSRect;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -21,8 +19,10 @@ import org.rococoa.cocoa.foundation.NSRect;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.cocoa.foundation.NSRect;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FoundationKitFunctionsLibrary {
 

@@ -19,17 +19,18 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :27</i>
-public abstract class NSData implements NSObject {
+public abstract class NSData extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSData", _Class.class);
 
     public static NSData dataWithContentsOfURL(NSURL url) {
         return CLASS.dataWithContentsOfURL(url);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>data()</code><br>
          * <i>from NSDataCreation native declaration : :53</i>

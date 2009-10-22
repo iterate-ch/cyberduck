@@ -19,10 +19,11 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :12</i>
-public abstract class NSFileManager implements NSObject {
+public abstract class NSFileManager extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFileManager", _Class.class);
 
     public static NSFileManager defaultManager() {
@@ -59,7 +60,7 @@ public abstract class NSFileManager implements NSObject {
     public static final String NSFileSystemNodes = "NSFileSystemNodes";
     public static final String NSFileSystemFreeNodes = "NSFileSystemFreeNodes";
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Returns the default singleton CLASS.<br>
          * Original signature : <code>NSFileManager* defaultManager()</code><br>
@@ -355,7 +356,7 @@ public abstract class NSFileManager implements NSObject {
      */
     public abstract String stringWithFileSystemRepresentation_length(java.lang.String str, NSUInteger len);
 
-    public abstract class NSDirectoryEnumerator implements NSObject {
+    public abstract class NSDirectoryEnumerator extends NSObject {
         /**
          * Original signature : <code>NSDictionary* fileAttributes()</code><br>
          * <i>native declaration : :211</i>

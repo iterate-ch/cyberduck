@@ -19,7 +19,9 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-public abstract class NSDate implements NSObject {
+import org.rococoa.ObjCClass;
+
+public abstract class NSDate extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDate", _Class.class);
 
     public static NSDate date() {
@@ -47,7 +49,7 @@ public abstract class NSDate implements NSObject {
     }
 
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>date()</code><br>
          * <i>from NSDateCreation native declaration : :41</i>

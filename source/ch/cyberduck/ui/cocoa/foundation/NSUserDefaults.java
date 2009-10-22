@@ -19,11 +19,12 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSData;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :14</i>
-public abstract class NSUserDefaults implements NSObject {
+public abstract class NSUserDefaults extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSUserDefaults", _Class.class);
 
     public static NSUserDefaults standardUserDefaults() {
@@ -34,7 +35,7 @@ public abstract class NSUserDefaults implements NSObject {
         CLASS.resetStandardUserDefaults();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSUserDefaults* standardUserDefaults()</code><br>
          * <i>native declaration : :20</i>

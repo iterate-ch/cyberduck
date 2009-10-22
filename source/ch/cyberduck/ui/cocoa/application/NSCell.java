@@ -25,12 +25,13 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-public interface NSCell extends NSObject, NSCopying {
+public abstract class NSCell extends NSObject implements NSCopying {
 
     /// <i>native declaration : :11</i>
     public static final int NSAnyType = 0;
@@ -209,7 +210,7 @@ public interface NSCell extends NSObject, NSCopying {
      */
     public static final int NSBackgroundStyleLowered = 3;
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>BOOL prefersTrackingUntilMouseUp()</code><br>
          * <i>native declaration : :175</i>

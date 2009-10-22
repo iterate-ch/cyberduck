@@ -19,152 +19,159 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSDate;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.*;
 
 /// <i>native declaration : :119</i>
-public abstract class NSWindow implements NSResponder {
+public abstract class NSWindow extends NSResponder {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWindow", _Class.class);
 
-	/// <i>native declaration : line 22</i>
-	public static final int NSBorderlessWindowMask = 0;
-	/// <i>native declaration : line 23</i>
-	public static final int NSTitledWindowMask = 1 << 0;
-	/// <i>native declaration : line 24</i>
-	public static final int NSClosableWindowMask = 1 << 1;
-	/// <i>native declaration : line 25</i>
-	public static final int NSMiniaturizableWindowMask = 1 << 2;
-	/// <i>native declaration : line 26</i>
-	public static final int NSResizableWindowMask = 1 << 3;
-	/**
-	 * Specifies a window with textured background (eg. metal)<br>
-	 * <i>native declaration : line 34</i>
-	 */
-	public static final int NSTexturedBackgroundWindowMask = 1 << 8;
-	/**
-	 * Specifies a window that ignores the userSpaceScaleFactor of the NSScreen on which it is created.  Currently restricted to borderless windows (NSBorderlessWindowMask)<br>
-	 * <i>native declaration : line 42</i>
-	 */
-	public static final int NSUnscaledWindowMask = 1 << 11;
-	/**
-	 * Specifies a window whose titlebar and toolbar have a unified look - that is, a continuous background<br>
-	 * <i>native declaration : line 48</i>
-	 */
-	public static final int NSUnifiedTitleAndToolbarWindowMask = 1 << 12;
-	/**
-	 * used with NSRunLoop's performSelector:target:argument:order:modes:<br>
-	 * <i>native declaration : line 55</i>
-	 */
-	public static final int NSDisplayWindowRunLoopOrdering = 600000;
-	/**
-	 * used with NSRunLoop's performSelector:target:argument:order:modes:<br>
-	 * <i>native declaration : line 56</i>
-	 */
-	public static final int NSResetCursorRectsRunLoopOrdering = 700000;
-	/**
-	 * Window contents may not be read by another process<br>
-	 * <i>native declaration : line 62</i>
-	 */
-	public static final int NSWindowSharingNone = 0;
-	/**
-	 * Window contents may be read but not modified by another process<br>
-	 * <i>native declaration : line 63</i>
-	 */
-	public static final int NSWindowSharingReadOnly = 1;
-	/**
-	 * Window contents may be read or modified by another process<br>
-	 * <i>native declaration : line 64</i>
-	 */
-	public static final int NSWindowSharingReadWrite = 2;
-	/**
-	 * System determines if window backing store is in VRAM or main memory<br>
-	 * <i>native declaration : line 70</i>
-	 */
-	public static final int NSWindowBackingLocationDefault = 0;
-	/**
-	 * Window backing store is in VRAM<br>
-	 * <i>native declaration : line 71</i>
-	 */
-	public static final int NSWindowBackingLocationVideoMemory = 1;
-	/**
-	 * Window backing store is in main memory<br>
-	 * <i>native declaration : line 72</i>
-	 */
-	public static final int NSWindowBackingLocationMainMemory = 2;
-	/// <i>native declaration : line 78</i>
-	public static final int NSWindowCollectionBehaviorDefault = 0;
-	/// <i>native declaration : line 79</i>
-	public static final int NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0;
-	/// <i>native declaration : line 80</i>
-	public static final int NSWindowCollectionBehaviorMoveToActiveSpace = 1 << 1;
-	/**
-	 * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
-	 * participates in spaces, expos\u00e9.  Default behavior if windowLevel == NSNormalWindowLevel<br>
-	 * <i>native declaration : line 86</i>
-	 */
-	public static final int NSWindowCollectionBehaviorManaged = 1 << 2;
-	/**
-	 * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
-	 * floats in spaces, hidden by expos\u00e9.  Default behavior if windowLevel != NSNormalWindowLevel<br>
-	 * <i>native declaration : line 87</i>
-	 */
-	public static final int NSWindowCollectionBehaviorTransient = 1 << 3;
-	/**
-	 * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
-	 * unaffected by expos\u00e9.  Stays visible and stationary, like desktop window<br>
-	 * <i>native declaration : line 88</i>
-	 */
-	public static final int NSWindowCollectionBehaviorStationary = 1 << 4;
-	/**
-	 * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its window level<br>
-	 * default behavior if windowLevel == NSNormalWindowLevel<br>
-	 * <i>native declaration : line 93</i>
-	 */
-	public static final int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5;
-	/**
-	 * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its window level<br>
-	 * default behavior if windowLevel != NSNormalWindowLevel<br>
-	 * <i>native declaration : line 94</i>
-	 */
-	public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
-	/// enum values
-	public static interface NSWindowCollectionBehavior {
-		public static final int NSWindowNumberListAllApplications = 1 << 0;
-		public static final int NSWindowNumberListAllSpaces = 1 << 4;
-	}
-	/// enum values
-	public static interface NSSelectionDirection {
-		public static final int NSDirectSelection = 0;
-		public static final int NSSelectingNext = 1;
-		public static final int NSSelectingPrevious = 2;
-	}
-	/// enum values
-	public static interface NSWindowButton {
-		public static final int NSWindowCloseButton = 0;
-		public static final int NSWindowMiniaturizeButton = 1;
-		public static final int NSWindowZoomButton = 2;
-		public static final int NSWindowToolbarButton = 3;
-		public static final int NSWindowDocumentIconButton = 4;
+    /// <i>native declaration : line 22</i>
+    public static final int NSBorderlessWindowMask = 0;
+    /// <i>native declaration : line 23</i>
+    public static final int NSTitledWindowMask = 1 << 0;
+    /// <i>native declaration : line 24</i>
+    public static final int NSClosableWindowMask = 1 << 1;
+    /// <i>native declaration : line 25</i>
+    public static final int NSMiniaturizableWindowMask = 1 << 2;
+    /// <i>native declaration : line 26</i>
+    public static final int NSResizableWindowMask = 1 << 3;
+    /**
+     * Specifies a window with textured background (eg. metal)<br>
+     * <i>native declaration : line 34</i>
+     */
+    public static final int NSTexturedBackgroundWindowMask = 1 << 8;
+    /**
+     * Specifies a window that ignores the userSpaceScaleFactor of the NSScreen on which it is created.  Currently restricted to borderless windows (NSBorderlessWindowMask)<br>
+     * <i>native declaration : line 42</i>
+     */
+    public static final int NSUnscaledWindowMask = 1 << 11;
+    /**
+     * Specifies a window whose titlebar and toolbar have a unified look - that is, a continuous background<br>
+     * <i>native declaration : line 48</i>
+     */
+    public static final int NSUnifiedTitleAndToolbarWindowMask = 1 << 12;
+    /**
+     * used with NSRunLoop's performSelector:target:argument:order:modes:<br>
+     * <i>native declaration : line 55</i>
+     */
+    public static final int NSDisplayWindowRunLoopOrdering = 600000;
+    /**
+     * used with NSRunLoop's performSelector:target:argument:order:modes:<br>
+     * <i>native declaration : line 56</i>
+     */
+    public static final int NSResetCursorRectsRunLoopOrdering = 700000;
+    /**
+     * Window contents may not be read by another process<br>
+     * <i>native declaration : line 62</i>
+     */
+    public static final int NSWindowSharingNone = 0;
+    /**
+     * Window contents may be read but not modified by another process<br>
+     * <i>native declaration : line 63</i>
+     */
+    public static final int NSWindowSharingReadOnly = 1;
+    /**
+     * Window contents may be read or modified by another process<br>
+     * <i>native declaration : line 64</i>
+     */
+    public static final int NSWindowSharingReadWrite = 2;
+    /**
+     * System determines if window backing store is in VRAM or main memory<br>
+     * <i>native declaration : line 70</i>
+     */
+    public static final int NSWindowBackingLocationDefault = 0;
+    /**
+     * Window backing store is in VRAM<br>
+     * <i>native declaration : line 71</i>
+     */
+    public static final int NSWindowBackingLocationVideoMemory = 1;
+    /**
+     * Window backing store is in main memory<br>
+     * <i>native declaration : line 72</i>
+     */
+    public static final int NSWindowBackingLocationMainMemory = 2;
+    /// <i>native declaration : line 78</i>
+    public static final int NSWindowCollectionBehaviorDefault = 0;
+    /// <i>native declaration : line 79</i>
+    public static final int NSWindowCollectionBehaviorCanJoinAllSpaces = 1 << 0;
+    /// <i>native declaration : line 80</i>
+    public static final int NSWindowCollectionBehaviorMoveToActiveSpace = 1 << 1;
+    /**
+     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
+     * participates in spaces, expos\u00e9.  Default behavior if windowLevel == NSNormalWindowLevel<br>
+     * <i>native declaration : line 86</i>
+     */
+    public static final int NSWindowCollectionBehaviorManaged = 1 << 2;
+    /**
+     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
+     * floats in spaces, hidden by expos\u00e9.  Default behavior if windowLevel != NSNormalWindowLevel<br>
+     * <i>native declaration : line 87</i>
+     */
+    public static final int NSWindowCollectionBehaviorTransient = 1 << 3;
+    /**
+     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
+     * unaffected by expos\u00e9.  Stays visible and stationary, like desktop window<br>
+     * <i>native declaration : line 88</i>
+     */
+    public static final int NSWindowCollectionBehaviorStationary = 1 << 4;
+    /**
+     * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its window level<br>
+     * default behavior if windowLevel == NSNormalWindowLevel<br>
+     * <i>native declaration : line 93</i>
+     */
+    public static final int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5;
+    /**
+     * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its window level<br>
+     * default behavior if windowLevel != NSNormalWindowLevel<br>
+     * <i>native declaration : line 94</i>
+     */
+    public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
+
+    /// enum values
+    public static interface NSWindowCollectionBehavior {
+        public static final int NSWindowNumberListAllApplications = 1 << 0;
+        public static final int NSWindowNumberListAllSpaces = 1 << 4;
     }
-        
-    public interface _Class extends org.rococoa.NSClass {
+
+    /// enum values
+    public static interface NSSelectionDirection {
+        public static final int NSDirectSelection = 0;
+        public static final int NSSelectingNext = 1;
+        public static final int NSSelectingPrevious = 2;
+    }
+
+    /// enum values
+    public static interface NSWindowButton {
+        public static final int NSWindowCloseButton = 0;
+        public static final int NSWindowMiniaturizeButton = 1;
+        public static final int NSWindowZoomButton = 2;
+        public static final int NSWindowToolbarButton = 3;
+        public static final int NSWindowDocumentIconButton = 4;
+    }
+
+    public interface _Class extends ObjCClass {
         /**
          * <i>native declaration : :217</i><br>
          * Conversion Error : NSRect
          */
         NSRect contentRectForFrameRect_styleMask(NSRect windowFrame, NSUInteger windowStyle);
+
         /**
          * <i>native declaration : :218</i><br>
          * Conversion Error : NSRect
          */
         NSRect frameRectForContentRect_styleMask(NSRect cRect, NSUInteger aStyle);
+
         /**
          * Original signature : <code>CGFloat minFrameWidthWithTitle(NSString*, NSUInteger)</code><br>
          * <i>native declaration : :219</i>
@@ -248,18 +255,19 @@ public abstract class NSWindow implements NSResponder {
     public static CGFloat minFrameWidthWithTitle_styleMask(String aTitle, org.rococoa.cocoa.foundation.NSUInteger aStyle) {
         return CLASS.minFrameWidthWithTitle_styleMask(aTitle, aStyle);
     }
-	/**
-	 * Original signature : <code>+(CGFloat)minFrameWidthWithTitle:(NSString*) styleMask:(NSUInteger)</code><br>
-	 * <i>native declaration : line 248</i>
-	 */
+
+    /**
+     * Original signature : <code>+(CGFloat)minFrameWidthWithTitle:(NSString*) styleMask:(NSUInteger)</code><br>
+     * <i>native declaration : line 248</i>
+     */
     public static NSRect contentRectForFrameRect_styleMask(NSRect windowFrame, NSUInteger windowStyle) {
         return CLASS.contentRectForFrameRect_styleMask(windowFrame, windowStyle);
     }
 
     /**
-    * <i>native declaration : :224</i><br>
-    * Conversion Error : NSRect
-    */
+     * <i>native declaration : :224</i><br>
+     * Conversion Error : NSRect
+     */
     public static NSRect frameRectForContentRect_styleMask(NSRect cRect, NSUInteger aStyle) {
         return CLASS.frameRectForContentRect_styleMask(cRect, aStyle);
     }
@@ -414,6 +422,7 @@ public abstract class NSWindow implements NSResponder {
      * Conversion Error : NSRect
      */
     public abstract NSRect frame();
+
     /**
      * <i>native declaration : :265</i><br>
      * Conversion Error : NSRect

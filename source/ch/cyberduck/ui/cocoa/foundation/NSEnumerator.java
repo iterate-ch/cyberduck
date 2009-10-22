@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSEnumerator.h:33</i>
-public abstract class NSEnumerator implements NSObject {
+public abstract class NSEnumerator extends NSObject {
 
     /**
      * Original signature : <code>id nextObject()</code><br>

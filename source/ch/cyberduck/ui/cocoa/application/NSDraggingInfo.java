@@ -27,7 +27,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :32</i>
-public abstract class NSDraggingInfo implements NSObject {
+public abstract class NSDraggingInfo extends NSObject {
 
     /// <i>native declaration : line 15</i>
     public static final NSUInteger NSDragOperationNone = new NSUInteger(0);

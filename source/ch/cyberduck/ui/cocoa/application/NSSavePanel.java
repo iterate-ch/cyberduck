@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:30</i>
@@ -33,7 +34,7 @@ public abstract class NSSavePanel extends NSPanel {
         return CLASS.savePanel();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSSavePanel* savePanel()</code><br>
          * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:67</i>
@@ -193,18 +194,6 @@ public abstract class NSSavePanel extends NSPanel {
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:119</i>
      */
     public abstract void setPrompt(String prompt);
-
-    /**
-     * Original signature : <code>NSString* title()</code><br>
-     * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:121</i>
-     */
-    public abstract String title();
-
-    /**
-     * Original signature : <code>void setTitle(NSString*)</code><br>
-     * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:122</i>
-     */
-    public abstract void setTitle(String title);
 
     /**
      * Original signature : <code>NSString* nameFieldLabel()</code><br>

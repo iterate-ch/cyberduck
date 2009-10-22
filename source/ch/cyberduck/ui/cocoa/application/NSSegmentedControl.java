@@ -1,8 +1,5 @@
 package ch.cyberduck.ui.cocoa.application;
 
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.CGFloat;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -21,6 +18,9 @@ import org.rococoa.cocoa.CGFloat;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import org.rococoa.cocoa.CGFloat;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :26</i>
 public abstract class NSSegmentedControl extends NSControl {

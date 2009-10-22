@@ -23,12 +23,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 
 /// <i>native declaration : :14</i>
-public abstract class NSMenuItem implements NSObject, NSCopying, NSValidatedUserInterfaceItem {
+public abstract class NSMenuItem extends NSObject implements NSCopying, NSValidatedUserInterfaceItem {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMenuItem", _Class.class);
 
     public static NSMenuItem separatorItem() {
@@ -39,7 +39,7 @@ public abstract class NSMenuItem implements NSObject, NSCopying, NSValidatedUser
         return CLASS.alloc().initWithTitle_action_keyEquivalent(title, selector, charCode);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>void setUsesUserKeyEquivalents(BOOL)</code><br>
          * <i>native declaration : :44</i>

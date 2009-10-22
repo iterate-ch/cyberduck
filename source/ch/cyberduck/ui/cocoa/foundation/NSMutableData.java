@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :81</i>
@@ -33,7 +34,7 @@ public abstract class NSMutableData extends NSData {
         return CLASS.dataWithLength(length);
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>dataWithCapacity(NSUInteger)</code><br>
          * <i>from NSMutableDataCreation native declaration : :104</i>

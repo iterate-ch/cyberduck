@@ -22,10 +22,6 @@ package ch.cyberduck.ui.cocoa.application;
 /// <i>native declaration : :10</i>
 public abstract class NSStepper extends NSControl {
 
-    public interface _Class extends org.rococoa.NSClass {
-        NSStepper alloc();
-    }
-
     /**
      * Original signature : <code>double minValue()</code><br>
      * <i>native declaration : :18</i>

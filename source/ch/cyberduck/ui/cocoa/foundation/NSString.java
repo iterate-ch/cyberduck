@@ -20,11 +20,12 @@ package ch.cyberduck.ui.cocoa.foundation;
  */
 
 import org.rococoa.Foundation;
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :85</i>
-public abstract class NSString implements NSObject, NSCopying {
+public abstract class NSString extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSString", _Class.class);
 
     public static NSString stringWithString(String string) {
@@ -59,8 +60,8 @@ public abstract class NSString implements NSObject, NSCopying {
     public String toString() {
         return Foundation.toString(this.id());
     }
-    
-    public interface _Class extends org.rococoa.NSClass {
+
+    public interface _Class extends ObjCClass {
         NSString alloc();
 
         /**
@@ -448,7 +449,7 @@ public abstract class NSString implements NSObject, NSCopying {
      * If two objects are equal (as determined by the isEqual: method), they must have the same hash value. This
      * last point is particularly important if you define hash in a subclass and intend to put
      * instances of that subclass into a collection.
-     *
+     * <p/>
      * If a mutable object is added to a collection that uses hash values to determine the object’s
      * position in the collection, the value returned by the hash method of the object must not change
      * while the object is in the collection. Therefore, either the hash method must not rely on any of
@@ -456,7 +457,7 @@ public abstract class NSString implements NSObject, NSCopying {
      * does not change while the object is in the collection. Thus, for example, a mutable dictionary can be
      * put in a hash table but you must not change it while it is in there. (Note that it can be difficult to
      * know whether or not a given object is in a collection.)
-     * 
+     * <p/>
      * Original signature : <code>NSUInteger hash()</code><br>
      * <i>from NSStringExtensionMethods native declaration : :176</i>
      *

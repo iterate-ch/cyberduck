@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
@@ -42,7 +43,7 @@ public abstract class NSDateFormatter extends NSFormatter {
         return CLASS.alloc().init();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         NSDateFormatter alloc();
     }
 
@@ -88,11 +89,12 @@ public abstract class NSDateFormatter extends NSFormatter {
      * <i>native declaration : :44</i>
      */
     public abstract NSUInteger timeStyle();
+
     /**
      * <i>native declaration : :45</i><br>
      * Conversion Error : /// Original signature : <code>void setTimeStyle(null)</code><br>
      */
-     public abstract void setTimeStyle(NSUInteger style);
+    public abstract void setTimeStyle(NSUInteger style);
 
     /**
      * Original signature : <code>NSLocale* locale()</code><br>
@@ -123,6 +125,7 @@ public abstract class NSDateFormatter extends NSFormatter {
      * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:55</i>
      */
     public abstract NSTimeZone timeZone();
+
     /**
      * Original signature : <code>-(void)setTimeZone:(NSTimeZone*)</code><br>
      * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:56</i>
@@ -134,6 +137,7 @@ public abstract class NSDateFormatter extends NSFormatter {
      * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:61</i>
      */
     public abstract boolean isLenient();
+
     /**
      * Original signature : <code>-(void)setLenient:(BOOL)</code><br>
      * <i>native declaration : /System/Library/Frameworks/CoreFoundation.framework/Headers/CFDateFormatter.h:62</i>
