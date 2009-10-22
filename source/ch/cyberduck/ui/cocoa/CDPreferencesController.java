@@ -421,11 +421,10 @@ public class CDPreferencesController extends ToolbarWindowController {
         this.chmodUploadTypePopup = chmodUploadTypePopup;
         this.chmodUploadTypePopup.selectItemAtIndex(0);
         this.chmodUploadTypePopup.setTarget(this.id());
-        final Selector action = Foundation.selector("chmodUploadTypePopupChanged:");
-        this.chmodUploadTypePopup.setAction(action);
+        this.chmodUploadTypePopup.setAction(Foundation.selector("chmodUploadTypePopupChanged:"));
     }
 
-    private void chmodUploadTypePopupChanged(NSPopUpButton sender) {
+    public void chmodUploadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
             p = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
@@ -461,11 +460,10 @@ public class CDPreferencesController extends ToolbarWindowController {
         this.chmodDownloadTypePopup = chmodDownloadTypePopup;
         this.chmodDownloadTypePopup.selectItemAtIndex(0);
         this.chmodDownloadTypePopup.setTarget(this.id());
-        final Selector action = Foundation.selector("chmodDownloadTypePopupChanged:");
-        this.chmodDownloadTypePopup.setAction(action);
+        this.chmodDownloadTypePopup.setAction(Foundation.selector("chmodDownloadTypePopupChanged:"));
     }
 
-    private void chmodDownloadTypePopupChanged(NSPopUpButton sender) {
+    public void chmodDownloadTypePopupChanged(NSPopUpButton sender) {
         Permission p = null;
         if(sender.selectedItem().tag() == 0) {
             p = new Permission(Preferences.instance().getInteger("queue.download.permissions.file.default"));
