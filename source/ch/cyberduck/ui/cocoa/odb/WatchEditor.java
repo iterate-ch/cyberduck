@@ -26,9 +26,9 @@ import ch.cyberduck.ui.cocoa.CDBrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
-import org.rococoa.NSObject;
 import org.rococoa.Rococoa;
 
 import java.io.IOException;

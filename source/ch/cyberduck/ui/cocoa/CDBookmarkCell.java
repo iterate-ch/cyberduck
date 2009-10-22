@@ -20,10 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.ui.cocoa.application.NSCell;
 
+import org.rococoa.ObjCClass;
+
 /**
  * @version $Id$
  */
-public abstract class CDBookmarkCell implements NSCell {
+public abstract class CDBookmarkCell extends NSCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
 
     /// <i>native declaration : :22</i>
@@ -37,7 +39,7 @@ public abstract class CDBookmarkCell implements NSCell {
         return CLASS.alloc().init();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         CDBookmarkCell alloc();
     }
 

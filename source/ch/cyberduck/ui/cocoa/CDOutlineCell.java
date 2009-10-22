@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
 
+import org.rococoa.ObjCClass;
+
 /**
  * @version $Id$
  */
@@ -31,7 +33,7 @@ public abstract class CDOutlineCell extends NSTextFieldCell {
         return CLASS.alloc().init();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         CDOutlineCell alloc();
     }
 

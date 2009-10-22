@@ -23,6 +23,8 @@ import ch.cyberduck.ui.cocoa.application.NSPanel;
 import ch.cyberduck.ui.cocoa.application.NSScreen;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
+import org.rococoa.ObjCClass;
+
 /**
  * @version $Id$
  * @abstract The QLPreviewPanel class implements the Preview Panel - a user interface object that displays the preview of a list of items.<br>
@@ -36,7 +38,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 public abstract class QLPreviewPanel extends NSPanel {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("QLPreviewPanel", _Class.class);
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         /**
          * @abstract Returns the QLPreviewPanel instance, creating it if it doesn\u00d5t exist yet.<br>
          * Original signature : <code>+(QLPreviewPanel*)sharedPreviewPanel</code><br>

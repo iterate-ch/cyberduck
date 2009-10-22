@@ -29,7 +29,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +41,7 @@ import java.util.Map;
 /**
  * A window controller with a toolbar populated from a tabbed view.
  *
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ToolbarWindowController extends CDWindowController implements NSToolbar.Delegate, NSTabView.Delegate {
     private static Logger log = Logger.getLogger(ToolbarWindowController.class);

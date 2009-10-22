@@ -36,7 +36,11 @@ import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;

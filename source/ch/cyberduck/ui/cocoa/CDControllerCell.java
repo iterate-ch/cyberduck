@@ -19,20 +19,21 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSView;
+
+import org.rococoa.ObjCClass;
 
 /**
  * @version $Id$
  */
-public abstract class CDControllerCell implements NSCell {
+public abstract class CDControllerCell extends NSCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDControllerCell", _Class.class);
 
     public static CDControllerCell controllerCell() {
         return CLASS.alloc().init();
     }
 
-    public interface _Class extends org.rococoa.NSClass {
+    public interface _Class extends ObjCClass {
         CDControllerCell alloc();
     }
 
