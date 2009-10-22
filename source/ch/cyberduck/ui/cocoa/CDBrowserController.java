@@ -2338,8 +2338,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         downloadToPanel.setCanCreateDirectories(true);
         downloadToPanel.setCanChooseFiles(false);
         downloadToPanel.setAllowsMultipleSelection(false);
-        downloadToPanel.setPrompt(Locale.localizedString("Download To"));
-        downloadToPanel.setTitle(Locale.localizedString("Download To"));
+        downloadToPanel.setPrompt(Locale.localizedString("Choose"));
         downloadToPanel.beginSheetForDirectory(
                 lastSelectedDownloadDirectory, //trying to be smart
                 null, this.window, this.id(),
@@ -2372,7 +2371,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to..."));
         downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:"));
         downloadAsPanel.setPrompt(Locale.localizedString("Download"));
-        downloadAsPanel.setTitle(Locale.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);
         downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getLocal().getName(), this.window, this.id(),
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
@@ -2413,7 +2411,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 + " " + selection.getName() + " "
                 + Locale.localizedString("with"));
         syncPanel.setPrompt(Locale.localizedString("Choose"));
-        syncPanel.setTitle(Locale.localizedString("Synchronize"));
         syncPanel.beginSheetForDirectory(null, null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
@@ -2463,7 +2460,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         uploadPanel.setCanChooseFiles(true);
         uploadPanel.setAllowsMultipleSelection(true);
         uploadPanel.setPrompt(Locale.localizedString("Upload"));
-        uploadPanel.setTitle(Locale.localizedString("Upload"));
         uploadPanel.beginSheetForDirectory(lastSelectedUploadDirectory, //trying to be smart
                 null, this.window,
                 this.id(),
