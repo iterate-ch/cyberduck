@@ -5,8 +5,9 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 3.3b5
-- [Bugfix] SOCKS proxy support [#3803]
+- [Bugfix] SOCKS proxy support broken [#3803]
 - [Bugfix] Connect to default bookmark for new browser window [#3798]
+- [Bugfix] Various bugfixes
 
 3.3b4
 - [Bugfix] Fails to launch with Japanese locale
