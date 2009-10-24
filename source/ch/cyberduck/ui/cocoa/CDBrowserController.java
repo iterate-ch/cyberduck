@@ -92,7 +92,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     public static void updateBrowserTableAttributes() {
         for(CDBrowserController controller : CDMainController.getBrowsers()) {
-            controller._updateBrowserAttributes(controller.bookmarkTable);
             controller._updateBrowserAttributes(controller.browserListView);
             controller._updateBrowserAttributes(controller.browserOutlineView);
         }
