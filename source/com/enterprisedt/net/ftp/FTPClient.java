@@ -33,7 +33,8 @@ import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Supports client-side FTP. Most common
@@ -44,16 +45,6 @@ import java.util.*;
  */
 public class FTPClient {
     protected static Logger log = Logger.getLogger(FTPClient.class);
-
-    /**
-     * SOCKS port property name
-     */
-    final private static String SOCKS_PORT = "socksProxyPort";
-
-    /**
-     * SOCKS host property name
-     */
-    final private static String SOCKS_HOST = "socksProxyHost";
 
     /**
      * Socket responsible for controlling
@@ -265,49 +256,6 @@ public class FTPClient {
         FTPReply reply = control.sendCommand("REIN");
         String[] validCodes = {"120", "220"};
         lastValidReply = control.validateReply(reply, validCodes);
-    }
-
-    /**
-     * Set up SOCKS v4/v5 proxy settings. This can be used if there
-     * is a SOCKS proxy server in place that must be connected thru.
-     * Note that setting these properties directs <b>all</b> TCP
-     * sockets in this JVM to the SOCKS proxy
-     *
-     * @param port SOCKS proxy port
-     * @param host SOCKS proxy hostname
-     */
-    public static void initSOCKS(int port, String host) {
-        Properties props = System.getProperties();
-        props.put(SOCKS_PORT, "" + port);
-        props.put(SOCKS_HOST, host);
-        System.setProperties(props);
-    }
-
-    /**
-     * Set up SOCKS username and password for SOCKS username/password
-     * authentication. Often, no authentication will be required
-     * but the SOCKS server may be configured to request these.
-     *
-     * @param username the SOCKS username
-     * @param password the SOCKS password
-     */
-    public static void initSOCKSAuthentication(String username,
-                                               String password) {
-        Properties props = System.getProperties();
-        props.put("java.net.socks.username", username);
-        props.put("java.net.socks.password", password);
-        System.setProperties(props);
-    }
-
-    /**
-     * Clear SOCKS settings. Note that setting these properties affects
-     * <b>all</b> TCP sockets in this JVM
-     */
-    public static void clearSOCKS() {
-        Properties prop = System.getProperties();
-        prop.remove(SOCKS_HOST);
-        prop.remove(SOCKS_PORT);
-        System.setProperties(prop);
     }
 
     /**
@@ -807,8 +755,8 @@ public class FTPClient {
     }
 
     protected boolean isMDTMSupported() throws IOException {
-        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-            if("MDTM".equals(((String) iter.next()).trim())) {
+        for(String feature : this.features()) {
+            if("MDTM".equals(feature.trim())) {
                 return true;
             }
         }
@@ -971,8 +919,8 @@ public class FTPClient {
     }
 
     public boolean isFeatureSupported(final String feature) throws IOException {
-        for(Iterator iter = Arrays.asList(this.features()).iterator(); iter.hasNext();) {
-            if(feature.equals(((String) iter.next()).trim())) {
+        for(String item : this.features()) {
+            if(feature.equals(item.trim())) {
                 return true;
             }
         }
@@ -1054,7 +1002,7 @@ public class FTPClient {
     }
 
     /**
-     * @param path
+     * @param encoding
      * @return Null if feature is not supported
      * @throws IOException
      */
