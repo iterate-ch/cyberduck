@@ -74,6 +74,11 @@ public class DAVSession extends HTTPSession {
         final Proxy proxy = ProxyFactory.instance();
         if(proxy.isHTTPProxyEnabled()) {
             this.DAV.setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+            //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
+        }
+        else {
+            this.DAV.setProxy(null, -1);
+            this.DAV.setProxyCredentials(null);
         }
         this.DAV.setFollowRedirects(Preferences.instance().getBoolean("webdav.followRedirects"));
     }

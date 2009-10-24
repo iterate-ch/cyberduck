@@ -100,12 +100,16 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
                 host.getProtocol().getName(), host.getHostname()));
 
         this.CF.setConnectionTimeOut(this.timeout());
-        final HostConfiguration hostConfiguration = new StickyHostConfiguration();
-        hostConfiguration.setHost(host.getHostname(), host.getPort(),
+        final HostConfiguration config = new StickyHostConfiguration();
+        config.setHost(host.getHostname(), host.getPort(),
                 new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
                         (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
         );
-        this.CF.setHostConfiguration(hostConfiguration);
+        final Proxy proxy = ProxyFactory.instance();
+        if(proxy.isHTTPSProxyEnabled()) {
+            config.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+        }
+        this.CF.setHostConfiguration(config);
         this.CF.setUserAgent(this.getUserAgent());
 
         // Prompt the login credentials first

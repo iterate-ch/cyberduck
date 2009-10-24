@@ -20,18 +20,16 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Proxy {
 
     /**
-     *
-     * @param hostname
+     * @param host
      */
-    public void configure(final String hostname);
+    public void configure(final Host host);
 
     /**
-     *
      * @return True if PASV should be used by default
      */
     boolean usePassiveFTP();

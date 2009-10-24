@@ -29,16 +29,6 @@ import java.util.Properties;
 public abstract class AbstractProxy implements Proxy {
     private static Logger log = Logger.getLogger(AbstractProxy.class);
 
-    public void configure(final String hostname) {
-        if(this.isSOCKSProxyEnabled() && !this.isHostExcluded(hostname)) {
-            log.info("Using SOCKS Proxy");
-            this.initSOCKS(this.getSOCKSProxyPort(), this.getSOCKSProxyHost());
-        }
-        else {
-            this.clearSOCKS();
-        }
-    }
-
     /**
      * SOCKS port property name
      */
@@ -54,34 +44,27 @@ public abstract class AbstractProxy implements Proxy {
      * is a SOCKS proxy server in place that must be connected through.
      * Note that setting these properties directs <b>all</b> TCP
      * sockets in this JVM to the SOCKS proxy
-     *
-     * @param port SOCKS proxy port
-     * @param host SOCKS proxy hostname
      */
-    private void initSOCKS(int port, String host) {
-        if(-1 == port) {
-            return;
+    public void configure(final Host host) {
+        Properties properties = System.getProperties();
+        if(this.isSOCKSProxyEnabled() && !this.isHostExcluded(host.getHostname())) {
+            log.info("Using SOCKS Proxy");
+            if(-1 == host.getPort()) {
+                return;
+            }
+            // Indicates the name of the SOCKS proxy server and the port number
+            // that will be used by the SOCKS protocol layer. If socksProxyHost
+            // is specified then all TCP sockets will use the SOCKS proxy server
+            // to establish a connection or accept one. The SOCKS proxy server
+            // can either be a SOCKS v4 or v5 server and it has to allow for
+            // unauthenticated connections.
+            properties.put(SOCKS_PORT, Integer.toString(host.getPort()));
+            properties.put(SOCKS_HOST, host);
         }
-        Properties props = System.getProperties();
-        // Indicates the name of the SOCKS proxy server and the port number
-        // that will be used by the SOCKS protocol layer. If socksProxyHost
-        // is specified then all TCP sockets will use the SOCKS proxy server
-        // to establish a connection or accept one. The SOCKS proxy server
-        // can either be a SOCKS v4 or v5 server and it has to allow for
-        // unauthenticated connections.
-        props.put(SOCKS_PORT, Integer.toString(port));
-        props.put(SOCKS_HOST, host);
-        System.setProperties(props);
-    }
-
-    /**
-     * Clear SOCKS settings. Note that setting these properties affects
-     * <b>all</b> TCP sockets in this JVM
-     */
-    private void clearSOCKS() {
-        Properties prop = System.getProperties();
-        prop.remove(SOCKS_HOST);
-        prop.remove(SOCKS_PORT);
-        System.setProperties(prop);
+        else {
+            properties.remove(SOCKS_HOST);
+            properties.remove(SOCKS_PORT);
+        }
+        System.setProperties(properties);
     }
 }

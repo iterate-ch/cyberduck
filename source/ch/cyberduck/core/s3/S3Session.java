@@ -121,12 +121,16 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
             if(proxy.isHTTPSProxyEnabled()) {
                 configuration.setProperty("httpclient.proxy-host", proxy.getHTTPSProxyHost());
                 configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort()));
+                configuration.setProperty("httpclient.proxy-user", null);
+                configuration.setProperty("httpclient.proxy-password", null);
             }
         }
         else {
             if(proxy.isHTTPProxyEnabled()) {
                 configuration.setProperty("httpclient.proxy-host", proxy.getHTTPProxyHost());
                 configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort()));
+                configuration.setProperty("httpclient.proxy-user", null);
+                configuration.setProperty("httpclient.proxy-password", null);
             }
         }
         configuration.setProperty("httpclient.connection-timeout-ms", String.valueOf(this.timeout()));

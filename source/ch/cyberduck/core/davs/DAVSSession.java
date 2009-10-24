@@ -23,6 +23,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
 import java.io.IOException;
@@ -57,6 +58,11 @@ public class DAVSSession extends DAVSession implements SSLSession {
         final Proxy proxy = ProxyFactory.instance();
         if(proxy.isHTTPSProxyEnabled()) {
             this.DAV.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+            //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
+        }
+        else {
+            this.DAV.setProxy(null, -1);
+            this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
         }
     }
 
