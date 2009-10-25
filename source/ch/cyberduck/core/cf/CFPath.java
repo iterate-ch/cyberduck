@@ -185,7 +185,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void writePermissions(Permission perm, boolean recursive) {
-        throw new UnsupportedOperationException();
+        ;
     }
 
     @Override
