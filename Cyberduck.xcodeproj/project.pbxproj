@@ -189,7 +189,6 @@
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
 		479F9E000C0E210100610A91 /* goto.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479F9DFF0C0E210100610A91 /* goto.tiff */; };
 		47A0C83E0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A0C83D0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns */; };
-		47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47A61DC9076C854A00B535D6 /* generic-document.icns */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
 		47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470671150FD8896D00EE3291 /* Sparkle.framework */; };
@@ -1108,7 +1107,6 @@
 		479D64A50752257400FE6086 /* arrowUpBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUpBlack16.tiff; sourceTree = "<group>"; };
 		479F9DFF0C0E210100610A91 /* goto.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = goto.tiff; sourceTree = "<group>"; };
 		47A0C83D0CFF6C9F00AA8DB2 /* AliasBadgeIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AliasBadgeIcon.icns; sourceTree = "<group>"; };
-		47A61DC9076C854A00B535D6 /* generic-document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "generic-document.icns"; sourceTree = SOURCE_ROOT; };
 		47A88FBA0B931D9C00DB9D87 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47A88FC00B931E6800DB9D87 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Configuration.strings; sourceTree = "<group>"; };
 		47A88FC10B931E6800DB9D87 /* ru */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Configuration.strings; sourceTree = "<group>"; };
@@ -1834,7 +1832,6 @@
 				4749576507EDED4E00B34D53 /* list.tiff */,
 				4749575E07EDED4600B34D53 /* outline.tiff */,
 				4784DAAA07AEFB5900A8FC38 /* transparent.tiff */,
-				47A61DC9076C854A00B535D6 /* generic-document.icns */,
 				47CD32A00751163400B82A2B /* plus.tiff */,
 				47E0BB450746B1FA00C4A68E /* arrowDown.tiff */,
 				47E0BB490746B1FA00C4A68E /* arrowUp.tiff */,
@@ -2490,7 +2487,6 @@
 				47E0BB4F0746B1FA00C4A68E /* arrowUp.tiff in Resources */,
 				47CD32A10751163400B82A2B /* plus.tiff in Resources */,
 				479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */,
-				47A61DCA076C854A00B535D6 /* generic-document.icns in Resources */,
 				479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */,
 				4784DAAB07AEFB5900A8FC38 /* transparent.tiff in Resources */,
 				47494C8507EC6C3C00B34D53 /* Duplicate.nib in Resources */,
