@@ -1955,6 +1955,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                 }
                 reloadData(new ArrayList<Path>(normalized.values()));
             }
+
+            @Override
+            public String getActivity() {
+                return MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                        normalized.keySet().iterator().next().getName(), normalized.values().iterator().next().getName());
+            }
         });
     }
 
@@ -1995,6 +2001,12 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             @Override
             public void cleanup() {
                 reloadData(new ArrayList<Path>(normalized.values()));
+            }
+
+            @Override
+            public String getActivity() {
+                return MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                        normalized.keySet().iterator().next().getName(), normalized.values().iterator().next().getName());
             }
         });
     }
@@ -2568,11 +2580,10 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 
     protected void transfer(final Transfer transfer, final boolean useBrowserConnection, final TransferPrompt prompt) {
         if(useBrowserConnection) {
-            final Speedometer meter = new Speedometer(transfer);
             final TransferListener l;
-            final long delay = 0;
-            final long period = 500; //in milliseconds
             transfer.addListener(l = new TransferAdapter() {
+                private Speedometer meter = new Speedometer(transfer);
+
                 /**
                  * Timer to update the progress indicator
                  */
@@ -2589,7 +2600,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
                                 }
                             });
                         }
-                    }, delay, period, TimeUnit.MILLISECONDS);
+                    }, 0, 500, TimeUnit.MILLISECONDS);
                 }
 
                 @Override
