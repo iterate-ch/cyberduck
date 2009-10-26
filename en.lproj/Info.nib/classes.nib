@@ -20,8 +20,6 @@
 				<string>id</string>
 				<key>bucketLoggingButton</key>
 				<string>id</string>
-				<key>distributionApplyButton</key>
-				<string>id</string>
 				<key>distributionCnameField</key>
 				<string>id</string>
 				<key>distributionCnameUrlField</key>
@@ -31,8 +29,6 @@
 				<key>distributionLoggingButton</key>
 				<string>id</string>
 				<key>distributionProgress</key>
-				<string>id</string>
-				<key>distributionStatusButton</key>
 				<string>id</string>
 				<key>distributionStatusField</key>
 				<string>id</string>
@@ -77,8 +73,6 @@
 				<key>panelPermissions</key>
 				<string>NSView</string>
 				<key>pathField</key>
-				<string>id</string>
-				<key>permissionApplyButton</key>
 				<string>id</string>
 				<key>permissionProgress</key>
 				<string>id</string>

@@ -9,13 +9,11 @@
     OUTLETS =     {
         bucketLocationField = id;
         bucketLoggingButton = id;
-        distributionApplyButton = id;
         distributionCnameField = id;
         distributionCnameUrlField = id;
         distributionEnableButton = id;
         distributionLoggingButton = id;
         distributionProgress = id;
-        distributionStatusButton = id;
         distributionStatusField = id;
         distributionUrlField = id;
         filenameField = id;
@@ -38,7 +36,6 @@
         panelGeneral = NSView;
         panelPermissions = NSView;
         pathField = id;
-        permissionApplyButton = id;
         permissionProgress = id;
         permissionsField = id;
         recursiveCheckbox = id;

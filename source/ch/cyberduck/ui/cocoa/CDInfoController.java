@@ -128,33 +128,6 @@ public class CDInfoController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSButton permissionApplyButton;
-
-    public void setPermissionApplyButton(NSButton b) {
-        this.permissionApplyButton = b;
-        this.permissionApplyButton.setTarget(this.id());
-        this.permissionApplyButton.setAction(Foundation.selector("permissionApplyButtonClicked:"));
-    }
-
-    @Outlet
-    private NSButton distributionApplyButton;
-
-    public void setDistributionApplyButton(NSButton b) {
-        this.distributionApplyButton = b;
-        this.distributionApplyButton.setTarget(this.id());
-        this.distributionApplyButton.setAction(Foundation.selector("distributionApplyButtonClicked:"));
-    }
-
-    @Outlet
-    private NSButton distributionStatusButton;
-
-    public void setDistributionStatusButton(NSButton b) {
-        this.distributionStatusButton = b;
-        this.distributionStatusButton.setTarget(this.id());
-        this.distributionStatusButton.setAction(Foundation.selector("distributionStatusButtonClicked:"));
-    }
-
-    @Outlet
     private NSButton sizeButton;
 
     public void setSizeButton(NSButton b) {
@@ -204,6 +177,8 @@ public class CDInfoController extends ToolbarWindowController {
 
     public void setDistributionEnableButton(NSButton b) {
         this.distributionEnableButton = b;
+        this.distributionEnableButton.setTarget(this.id());
+        this.distributionEnableButton.setAction(Foundation.selector("distributionApplyButtonClicked:"));
     }
 
     @Outlet
@@ -429,6 +404,13 @@ public class CDInfoController extends ToolbarWindowController {
                     super.windowWillClose(notification);
                 }
             };
+            controller.getSession().addConnectionListener(new ConnectionAdapter() {
+                @Override
+                public void connectionDidClose() {
+                    c.window().close();
+                    controller.getSession().removeConnectionListener(this);
+                }
+            });
             open.put(files, c);
             return c;
         }
@@ -747,7 +729,7 @@ public class CDInfoController extends ToolbarWindowController {
                     }
                 }
                 if(numberOfFiles() > 1) {
-                    permissionsField.setStringValue(Locale.localizedString("Multiple files"));
+                    permissionsField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                 }
                 else {
                     permissionsField.setStringValue((null == permission ? Locale.localizedString("Unknown") : permission.toString()));
@@ -806,9 +788,6 @@ public class CDInfoController extends ToolbarWindowController {
 
         this.distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
         Rococoa.cast(this.distributionCnameField.cell(), NSTextFieldCell.class).setPlaceholderString(Locale.localizedString("Unknown"));
-
-        distributionStatusButton.setEnabled(cloud);
-        distributionApplyButton.setEnabled(cloud);
 
         distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
         distributionUrlField.setEnabled(cloud);
@@ -1044,19 +1023,10 @@ public class CDInfoController extends ToolbarWindowController {
             sender.setState(NSCell.NSOnState);
         }
         final Permission permission = this.getPermissionFromSelection();
-        permissionsField.setStringValue(permission.toString());
-    }
 
-    /**
-     * Write altered permissions to the server
-     *
-     * @param sender
-     */
-    @Action
-    public void permissionApplyButtonClicked(final ID sender) {
+        // Write altered permissions to the server
         this.togglePermissionSettings(false);
         permissionProgress.startAnimation(null);
-        final Permission permission = this.getPermissionFromSelection();
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
@@ -1072,7 +1042,7 @@ public class CDInfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                controller.reloadData(true);
+                permissionsField.setStringValue(permission.toString());
                 togglePermissionSettings(true);
                 permissionProgress.stopAnimation(null);
             }
@@ -1086,6 +1056,7 @@ public class CDInfoController extends ToolbarWindowController {
     }
 
     /**
+     * Toggle settings before and after update
      * @param enabled
      */
     private void togglePermissionSettings(boolean enabled) {
@@ -1094,7 +1065,6 @@ public class CDInfoController extends ToolbarWindowController {
                 enabled = false;
             }
         }
-        permissionApplyButton.setEnabled(enabled);
         recursiveCheckbox.setEnabled(enabled);
         ownerr.setEnabled(enabled);
         ownerw.setEnabled(enabled);
@@ -1115,16 +1085,14 @@ public class CDInfoController extends ToolbarWindowController {
 
     /**
      * Toggle settings before and after update
+     * @param enabled
      *
-     * @param statusEnabled
      */
-    private void toggleDistributionSettings(boolean statusEnabled, boolean applyEnabled) {
-        distributionStatusButton.setEnabled(statusEnabled);
-        distributionEnableButton.setEnabled(applyEnabled);
-        distributionLoggingButton.setEnabled(applyEnabled && statusEnabled);
-        distributionApplyButton.setEnabled(applyEnabled);
-        distributionLoggingButton.setEnabled(statusEnabled);
-        if(statusEnabled) {
+    private void toggleDistributionSettings(boolean enabled) {
+        distributionEnableButton.setEnabled(enabled);
+        distributionLoggingButton.setEnabled(enabled);
+        distributionLoggingButton.setEnabled(enabled);
+        if(enabled) {
             distributionProgress.stopAnimation(null);
         }
         else {
@@ -1134,7 +1102,7 @@ public class CDInfoController extends ToolbarWindowController {
 
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
-        this.toggleDistributionSettings(false, false);
+        this.toggleDistributionSettings(false);
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 for(Path next : files) {
@@ -1164,7 +1132,7 @@ public class CDInfoController extends ToolbarWindowController {
 
     @Action
     public void distributionStatusButtonClicked(final ID sender) {
-        this.toggleDistributionSettings(false, false);
+        this.toggleDistributionSettings(false);
         controller.background(new BrowserBackgroundAction(controller) {
             Distribution distribution;
 
@@ -1180,7 +1148,7 @@ public class CDInfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                toggleDistributionSettings(true, !distribution.isInprogress());
+                toggleDistributionSettings(true);
 
                 distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                 distributionStatusField.setStringValue(distribution.getStatus());
