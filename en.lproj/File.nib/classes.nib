@@ -28,6 +28,8 @@
 				<string>NSButton</string>
 				<key>filenameField</key>
 				<string>NSTextField</string>
+				<key>iconView</key>
+				<string>id</string>
 				<key>window</key>
 				<string>NSWindow</string>
 			</dict>
