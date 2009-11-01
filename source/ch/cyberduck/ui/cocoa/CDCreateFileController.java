@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -37,6 +38,12 @@ public class CDCreateFileController extends CDFileController {
 
     public CDCreateFileController(final CDWindowController parent) {
         super(parent);
+    }
+
+    @Override
+    public void setIconView(NSImageView iconView) {
+        iconView.setImage(CDIconCache.documentIcon(null, 128));
+        super.setIconView(iconView);
     }
 
     @Override

@@ -31,18 +31,16 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CDDuplicateFileController extends CDFileController {
 
-    @Outlet
-    private NSImageView iconView;
-
-    public void setIconView(NSImageView iconView) {
-        this.iconView = iconView;
-        this.iconView.setImage(
-                CDIconCache.instance().iconForExtension(((CDBrowserController) parent).getSelectedPath().getExtension(), 64)
-        );
-    }
-
     public CDDuplicateFileController(final CDWindowController parent) {
         super(parent);
+    }
+
+    @Override
+    public void setIconView(NSImageView iconView) {
+        iconView.setImage(
+                CDIconCache.instance().iconForExtension(((CDBrowserController) parent).getSelectedPath().getExtension(), 64)
+        );
+        super.setIconView(iconView);
     }
 
     @Override

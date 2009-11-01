@@ -34,16 +34,14 @@ import java.util.Collections;
 public class CDFolderController extends CDFileController {
     private static Logger log = Logger.getLogger(CDFolderController.class);
 
-    @Outlet
-    protected NSImageView iconView;
-
-    public void setIconView(NSImageView iconView) {
-        this.iconView = iconView;
-        this.iconView.setImage(CDIconCache.iconNamed("newfolder.icns", 128));
-    }
-
     public CDFolderController(final CDWindowController parent) {
         super(parent);
+    }
+
+    @Override
+    public void setIconView(NSImageView iconView) {
+        iconView.setImage(CDIconCache.iconNamed("newfolder.icns", 128));
+        super.setIconView(iconView);
     }
 
     @Override

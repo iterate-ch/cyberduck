@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
@@ -32,6 +33,13 @@ import org.apache.log4j.Logger;
  */
 public abstract class CDFileController extends CDSheetController {
     protected static Logger log = Logger.getLogger(CDFileController.class);
+
+    @Outlet
+    protected NSImageView iconView;
+
+    public void setIconView(NSImageView iconView) {
+        this.iconView = iconView;
+    }
 
     @Outlet
     protected NSTextField filenameField;
