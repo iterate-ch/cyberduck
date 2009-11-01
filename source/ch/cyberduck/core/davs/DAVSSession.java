@@ -62,7 +62,7 @@ public class DAVSSession extends DAVSession implements SSLSession {
         }
         else {
             this.DAV.setProxy(null, -1);
-            this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
+            //this.DAV.setProxyCredentials(null);
         }
     }
 
