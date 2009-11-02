@@ -456,6 +456,7 @@
                 <include name="ch/ethz/ssh2/**/*.class"/>
                 <include name="org/spearce/jgit/**/*.class"/>
                 <include name="com/enterprisedt/**/*.class"/>
+                <include name="com/barbarysoftware/**/*.class"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="cloudfiles.properties"/>

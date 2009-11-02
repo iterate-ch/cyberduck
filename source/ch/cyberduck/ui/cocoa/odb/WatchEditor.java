@@ -61,7 +61,6 @@ public class WatchEditor extends Editor implements FileWatcherListener {
      */
     @Override
     public void edit() {
-        this.watch();
         if(null == bundleIdentifier) {
             NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
         }
@@ -69,6 +68,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
             NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
                     NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
         }
+        this.watch();
     }
 
     private void watch() {
@@ -122,19 +122,16 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     }
 
     public void fileWritten(Local file) {
-        log.debug("fileWritten:" + file);
+        log.info("fileWritten:" + file);
         this.save();
     }
 
     public void fileRenamed(Local file) {
-        log.debug("fileRenamed:" + file);
+        log.info("fileRenamed:" + file);
     }
 
     public void fileDeleted(Local file) {
-        log.debug("fileDeleted:" + file);
-        if(file.exists()) {
-            this.save();
-            this.watch();
-        }
+        log.info("fileDeleted:" + file);
+        this.unwatch();
     }
 }

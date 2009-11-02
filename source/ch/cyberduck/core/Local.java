@@ -391,7 +391,8 @@ public abstract class Local extends AbstractPath implements Attributes {
             return false;
         }
         if(other instanceof Local) {
-            return this.getAbsolute().equalsIgnoreCase(((Local) other).getAbsolute());
+            // Compare the resolved absolute path
+            return this.getSymbolicLinkPath().equalsIgnoreCase(((Local) other).getSymbolicLinkPath());
         }
         return false;
     }

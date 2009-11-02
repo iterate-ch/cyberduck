@@ -46,13 +46,13 @@ public class FileWatcher {
     }
 
     public void watch(final FileWatcherListener listener) throws IOException {
+        log.debug("watch:" + file);
         final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         final Thread consumer = new Thread(new Runnable() {
             public void run() {
                 while(true) {
                     final NSAutoreleasePool pool = NSAutoreleasePool.push();
-
                     try {
                         // wait for key to be signaled
                         WatchKey key;
@@ -68,20 +68,23 @@ public class FileWatcher {
                         }
                         for(WatchEvent<?> event : key.pollEvents()) {
                             WatchEvent.Kind<?> kind = event.kind();
+                            log.info("Detected file system event: " + kind);
                             if(kind == OVERFLOW) {
                                 continue;
                             }
                             // The filename is the context of the event.
                             WatchEvent<File> ev = (WatchEvent<File>) event;
-                            log.debug("Detected file system event: " + ev.context() + " " + kind);
-                            if(ENTRY_CREATE == kind) {
-                                listener.fileWritten(LocalFactory.createLocal(ev.context()));
+                            Local f = LocalFactory.createLocal(ev.context());
+                            if(f.equals(file)) {
+                                if(ENTRY_MODIFY == kind) {
+                                    listener.fileWritten(f);
+                                }
+                                if(ENTRY_DELETE == kind) {
+                                    listener.fileDeleted(f);
+                                }
                             }
-                            if(ENTRY_MODIFY == kind) {
-                                listener.fileWritten(LocalFactory.createLocal(ev.context()));
-                            }
-                            if(ENTRY_DELETE == kind) {
-                                listener.fileWritten(LocalFactory.createLocal(ev.context()));
+                            else {
+                                log.debug("Ignored file system event for " + f);
                             }
                         }
                         // Reset the key -- this step is critical to receive further watch events.
@@ -101,6 +104,7 @@ public class FileWatcher {
     }
 
     public void unwatch() throws IOException {
+        log.debug("unwatch:" + file);
         monitor.close();
     }
 }
