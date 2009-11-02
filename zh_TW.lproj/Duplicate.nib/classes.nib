@@ -1,24 +1,24 @@
 {
     IBClasses =     (
-                {
-            ACTIONS =             {
-                closeSheet = id;
-            };
-            CLASS = CDFileController;
-            LANGUAGE = ObjC;
-            OUTLETS =             {
-                editButton = NSButton;
-                filenameField = NSTextField;
-                iconView = NSImageView;
-                window = NSWindow;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        }
+        {
+    ACTIONS =     {
+        closeSheet = id;
+    };
+    CLASS = CDFileController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        editButton = NSButton;
+        filenameField = NSTextField;
+        iconView = NSImageView;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
     );
     IBVersion = 1;
 }
