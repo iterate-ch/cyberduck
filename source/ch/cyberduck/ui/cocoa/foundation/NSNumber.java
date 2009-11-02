@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa.foundation;
 
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:37</i>

@@ -22,7 +22,6 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :29</i>
 public abstract class NSNotificationCenter extends NSObject {
