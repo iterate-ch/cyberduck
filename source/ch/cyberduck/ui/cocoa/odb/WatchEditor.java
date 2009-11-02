@@ -39,6 +39,8 @@ import java.io.IOException;
 public class WatchEditor extends Editor implements FileWatcherListener {
     private static Logger log = Logger.getLogger(WatchEditor.class);
 
+    private FileWatcher monitor;
+
     /**
      * @param c
      */
@@ -59,7 +61,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
      */
     @Override
     public void edit() {
-        watch(edited.getLocal());
+        this.watch();
         if(null == bundleIdentifier) {
             NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
         }
@@ -69,18 +71,19 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         }
     }
 
-    private void watch(Local f) {
+    private void watch() {
+        monitor = new FileWatcher(edited.getLocal());
         try {
-            FileWatcher.instance().watch(f, this);
+            monitor.watch(this);
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
     }
 
-    private void unwatch(Local f) {
+    private void unwatch() {
         try {
-            FileWatcher.instance().unwatch(f);
+            monitor.unwatch();
         }
         catch(IOException e) {
             log.error(e.getMessage());
@@ -89,7 +92,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
 
     @Override
     protected void delete() {
-        this.unwatch(edited.getLocal());
+        this.unwatch();
         super.delete();
     }
 
@@ -131,7 +134,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         log.debug("fileDeleted:" + file);
         if(file.exists()) {
             this.save();
-            this.watch(edited.getLocal());
+            this.watch();
         }
     }
 }

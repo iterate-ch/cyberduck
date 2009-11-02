@@ -20,67 +20,87 @@ package ch.cyberduck.core.io;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
+import com.barbarysoftware.watchservice.*;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
+import static com.barbarysoftware.watchservice.StandardWatchEventKind.*;
 
 /**
  * @version $Id$
  */
-public class FileWatcher implements FileMonitor.FileListener {
+public class FileWatcher {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
-    private FileMonitor monitor = FileMonitor.getInstance();
+    private WatchService monitor;
+    private Local file;
 
-    private static FileWatcher instance = null;
-
-    private FileWatcher() {
-        monitor.addFileListener(this);
+    public FileWatcher(Local file) {
+        this.file = file;
+        this.monitor = WatchService.newWatchService();
     }
 
-    private static final Object lock = new Object();
+    public void watch(final FileWatcherListener listener) throws IOException {
+        final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
+        watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        final Thread consumer = new Thread(new Runnable() {
+            public void run() {
+                while(true) {
+                    final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
-    public static FileWatcher instance() {
-        synchronized(lock) {
-            if(null == instance) {
-                instance = new FileWatcher();
+                    try {
+                        // wait for key to be signaled
+                        WatchKey key;
+                        try {
+                            key = monitor.take();
+                        }
+                        catch(ClosedWatchServiceException e) {
+                            // If this watch service is closed
+                            return;
+                        }
+                        catch(InterruptedException e) {
+                            return;
+                        }
+                        for(WatchEvent<?> event : key.pollEvents()) {
+                            WatchEvent.Kind<?> kind = event.kind();
+                            if(kind == OVERFLOW) {
+                                continue;
+                            }
+                            // The filename is the context of the event.
+                            WatchEvent<File> ev = (WatchEvent<File>) event;
+                            log.debug("Detected file system event: " + ev.context() + " " + kind);
+                            if(ENTRY_CREATE == kind) {
+                                listener.fileWritten(LocalFactory.createLocal(ev.context()));
+                            }
+                            if(ENTRY_MODIFY == kind) {
+                                listener.fileWritten(LocalFactory.createLocal(ev.context()));
+                            }
+                            if(ENTRY_DELETE == kind) {
+                                listener.fileWritten(LocalFactory.createLocal(ev.context()));
+                            }
+                        }
+                        // Reset the key -- this step is critical to receive further watch events.
+                        boolean valid = key.reset();
+                        if(!valid) {
+                            // The key is no longer valid and the loop can exit.
+                            break;
+                        }
+                    }
+                    finally {
+                        pool.release();
+                    }
+                }
             }
-            return instance;
-        }
+        });
+        consumer.start();
     }
 
-    private Map<File, FileWatcherListener> listeners = new HashMap<File, FileWatcherListener>();
-
-    public void watch(final Local file, final FileWatcherListener listener) throws IOException {
-        final File f = new File(file.getAbsolute());
-        monitor.addWatch(f);
-        listeners.put(f, listener);
-    }
-
-    public void unwatch(final Local file) throws IOException {
-        final File f = new File(file.getAbsolute());
-        monitor.removeWatch(f);
-        listeners.remove(f);
-    }
-
-    public void fileChanged(FileMonitor.FileEvent e) {
-        final FileWatcherListener listener = listeners.get(e.getFile());
-        if(null == listener) {
-            log.error("No listener for " + e);
-            return;
-        }
-        if(e.getType() == FileMonitor.FILE_MODIFIED || e.getType() == FileMonitor.FILE_SIZE_CHANGED) {
-            listener.fileWritten(LocalFactory.createLocal(e.getFile()));
-        }
-        if(e.getType() == FileMonitor.FILE_DELETED) {
-            listener.fileDeleted(LocalFactory.createLocal(e.getFile()));
-        }
-        if(e.getType() == FileMonitor.FILE_RENAMED) {
-            listener.fileRenamed(LocalFactory.createLocal(e.getFile()));
-        }
+    public void unwatch() throws IOException {
+        monitor.close();
     }
 }
