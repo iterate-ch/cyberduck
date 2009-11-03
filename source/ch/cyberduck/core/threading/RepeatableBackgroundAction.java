@@ -55,7 +55,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             return;
         }
         final String description = null == exception.getPath() ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
-        Growl.instance().notify(exception.getMessage(), description);
+        if(exceptions.size() < Preferences.instance().getInteger("growl.limit")) {
+            Growl.instance().notify(exception.getMessage(), description);
+        }
         exceptions.add(exception);
     }
 

@@ -152,6 +152,7 @@ public abstract class Preferences {
         defaults.put("rendezvous.loopback.supress", String.valueOf(true));
 
         defaults.put("growl.enable", String.valueOf(true));
+        defaults.put("growl.limit", String.valueOf(10));
 
         /**
          * Normalize path names
