@@ -80,7 +80,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
 
     @Override
     public boolean isCanceled() {
-        if(!controller.isVisible()) {
+        if(null == this.getSession()) {
             return true;
         }
         return super.isCanceled();
