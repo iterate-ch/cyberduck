@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 
 /**
- * Encapsulating unix file permissions.
+ * Encapsulating UNIX file permissions.
  *
  * @version $Id$
  */

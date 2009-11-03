@@ -50,6 +50,8 @@
 				<string>id</string>
 				<key>modifiedField</key>
 				<string>id</string>
+				<key>octalField</key>
+				<string>id</string>
 				<key>otherr</key>
 				<string>id</string>
 				<key>otherw</key>

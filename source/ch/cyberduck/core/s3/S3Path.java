@@ -881,7 +881,7 @@ public class S3Path extends CloudPath {
                     }
                 }
             }
-            this.getParent().invalidate();
+            attributes.setPermission(perm);
         }
         catch(S3ServiceException e) {
             this.error(e.getS3ErrorMessage(), e);

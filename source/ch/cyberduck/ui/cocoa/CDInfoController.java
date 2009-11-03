@@ -90,6 +90,17 @@ public class CDInfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSTextField octalField;
+
+    public void setOctalField(NSTextField octalField) {
+        this.octalField = octalField;
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("octalPermissionsInputDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                octalField);
+    }
+
+    @Outlet
     private NSTextField ownerField;
 
     public void setOwnerField(NSTextField ownerField) {
@@ -648,6 +659,18 @@ public class CDInfoController extends ToolbarWindowController {
             this.initS3(file);
             // Read HTTP URL
             this.initWebUrl();
+
+            // Clear all rwx checkboxes
+            ownerr.setState(NSCell.NSOffState);
+            ownerw.setState(NSCell.NSOffState);
+            ownerx.setState(NSCell.NSOffState);
+            groupr.setState(NSCell.NSOffState);
+            groupw.setState(NSCell.NSOffState);
+            groupx.setState(NSCell.NSOffState);
+            otherr.setState(NSCell.NSOffState);
+            otherw.setState(NSCell.NSOffState);
+            otherx.setState(NSCell.NSOffState);
+
             // Read permissions
             this.initPermissions();
         }
@@ -684,9 +707,6 @@ public class CDInfoController extends ToolbarWindowController {
      *
      */
     private void initPermissions() {
-        // Clear all rwx checkboxes
-        this.initPermissionsCheckboxes();
-
         // Disable Apply button and start progress indicator
         this.togglePermissionSettings(false);
 
@@ -708,34 +728,29 @@ public class CDInfoController extends ToolbarWindowController {
                 Permission permission = null;
                 for(Path next : files) {
                     permission = next.attributes.getPermission();
-                    if(null == permission) {
-                        // Clear all rwx checkboxes
-                        initPermissionsCheckboxes();
-                    }
-                    else {
+                    if(null != permission) {
                         updateCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
                         updateCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
                         updateCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
 
-                        if(!(next instanceof CloudPath)) {
-                            updateCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
-                            updateCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
-                            updateCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
-                        }
+                        updateCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
+                        updateCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
+                        updateCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
 
                         updateCheckbox(otherr, permission.getOtherPermissions()[Permission.READ]);
                         updateCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
                         updateCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
                     }
                 }
-                if(numberOfFiles() > 1) {
+                octalField.setStringValue(null == permission ? Locale.localizedString("Unknown") : permission.getOctalString());
+                final int count = numberOfFiles();
+                if(count > 1) {
                     permissionsField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                 }
                 else {
-                    permissionsField.setStringValue((null == permission ? Locale.localizedString("Unknown") : permission.toString()));
+                    permissionsField.setStringValue(null == permission ? Locale.localizedString("Unknown") : permission.toString());
                 }
-                togglePermissionSettings(null == permission ? false : true);
-                permissionProgress.stopAnimation(null);
+                togglePermissionSettings(true);
             }
         });
     }
@@ -757,18 +772,6 @@ public class CDInfoController extends ToolbarWindowController {
             checkbox.setState(NSCell.NSMixedState);
         }
         checkbox.setEnabled(true);
-    }
-
-    private void initPermissionsCheckboxes() {
-        ownerr.setState(NSCell.NSOffState);
-        ownerw.setState(NSCell.NSOffState);
-        ownerx.setState(NSCell.NSOffState);
-        groupr.setState(NSCell.NSOffState);
-        groupw.setState(NSCell.NSOffState);
-        groupx.setState(NSCell.NSOffState);
-        otherr.setState(NSCell.NSOffState);
-        otherw.setState(NSCell.NSOffState);
-        otherx.setState(NSCell.NSOffState);
     }
 
     private void initIcon() {
@@ -970,36 +973,68 @@ public class CDInfoController extends ToolbarWindowController {
         return null == files ? 0 : files.size();
     }
 
+    @Action
     public void filenameInputDidEndEditing(NSNotification sender) {
         if(this.numberOfFiles() == 1) {
             final Path current = files.get(0);
             if(!filenameField.stringValue().equals(current.getName())) {
-                if(filenameField.stringValue().indexOf('/') == -1) {
-                    final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
-                            current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes.getType());
-                    controller.renamePath(current, renamed);
+                if(StringUtils.contains(filenameField.stringValue(), Path.DELIMITER)) {
+                    AppKitFunctionsLibrary.beep();
+                    return;
                 }
-                else if(StringUtils.isBlank(filenameField.stringValue())) {
+                if(StringUtils.isBlank(filenameField.stringValue())) {
                     filenameField.setStringValue(current.getName());
                     this.initWebUrl();
                 }
                 else {
-                    this.alert(NSAlert.alert(
-                            Locale.localizedString("Error"),
-                            Locale.localizedString("Invalid character in filename."), // message
-                            Locale.localizedString("OK"), // defaultbutton
-                            null, //alternative button
-                            null //other button
-                    ));
+                    final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                            current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes.getType());
+                    controller.renamePath(current, renamed);
                 }
             }
         }
     }
 
-    /**
-     * @return
-     */
-    private Permission getPermissionFromSelection() {
+    @Action
+    public void octalPermissionsInputDidEndEditing(NSNotification sender) {
+        Permission permission = this.getPermissionFromOctalField();
+        if(null == permission) {
+            AppKitFunctionsLibrary.beep();
+            this.initPermissions();
+        }
+        else {
+            boolean change = false;
+            for(Path file : files) {
+                if(!file.attributes.getPermission().equals(permission)) {
+                    change = true;
+                }
+            }
+            if(change) {
+                this.changePermissions(permission);
+            }
+        }
+    }
+
+    private Permission getPermissionFromOctalField() {
+        if(StringUtils.isNotBlank(octalField.stringValue())) {
+            if(StringUtils.length(octalField.stringValue()) == 3) {
+                if(StringUtils.isNumeric(octalField.stringValue())) {
+                    return new Permission(Integer.valueOf(octalField.stringValue()).intValue());
+                }
+            }
+        }
+        return null;
+    }
+
+    @Action
+    public void permissionSelectionChanged(final NSButton sender) {
+        if(sender.state() == NSCell.NSMixedState) {
+            sender.setState(NSCell.NSOnState);
+        }
+        this.changePermissions(this.getPermissionFromCheckboxes());
+    }
+
+    private Permission getPermissionFromCheckboxes() {
         boolean[][] p = new boolean[3][3];
 
         p[Permission.OWNER][Permission.READ] = (ownerr.state() == NSCell.NSOnState);
@@ -1017,34 +1052,29 @@ public class CDInfoController extends ToolbarWindowController {
         return new Permission(p);
     }
 
-    @Action
-    public void permissionSelectionChanged(final NSButton sender) {
-        if(sender.state() == NSCell.NSMixedState) {
-            sender.setState(NSCell.NSOnState);
-        }
-        final Permission permission = this.getPermissionFromSelection();
-
+    /**
+     * @param permission
+     */
+    private void changePermissions(final Permission permission) {
         // Write altered permissions to the server
         this.togglePermissionSettings(false);
-        permissionProgress.startAnimation(null);
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 for(Path next : files) {
-                    next.writePermissions(permission,
-                            recursiveCheckbox.state() == NSCell.NSOnState);
+                    if(!next.attributes.getPermission().equals(permission)) {
+                        next.writePermissions(permission, recursiveCheckbox.state() == NSCell.NSOnState);
+                    }
                     if(!controller.isConnected()) {
                         break;
                     }
-                    next.getParent().invalidate();
                 }
             }
 
             @Override
             public void cleanup() {
-                permissionsField.setStringValue(permission.toString());
                 togglePermissionSettings(true);
-                permissionProgress.stopAnimation(null);
+                initPermissions();
             }
 
             @Override
@@ -1057,36 +1087,42 @@ public class CDInfoController extends ToolbarWindowController {
 
     /**
      * Toggle settings before and after update
+     *
      * @param enabled
      */
     private void togglePermissionSettings(boolean enabled) {
-        for(Path next : files) {
-            if(!next.isWritePermissionsSupported()) {
-                enabled = false;
-            }
-        }
-        recursiveCheckbox.setEnabled(enabled);
-        ownerr.setEnabled(enabled);
-        ownerw.setEnabled(enabled);
-        ownerx.setEnabled(enabled);
-        groupr.setEnabled(enabled);
-        groupw.setEnabled(enabled);
-        groupx.setEnabled(enabled);
-        otherr.setEnabled(enabled);
-        otherw.setEnabled(enabled);
-        otherx.setEnabled(enabled);
         if(enabled) {
             permissionProgress.stopAnimation(null);
         }
         else {
             permissionProgress.startAnimation(null);
         }
+        boolean cloud = false;
+        for(Path next : files) {
+            if(!next.isWritePermissionsSupported()) {
+                enabled = false;
+            }
+            if(next instanceof CloudPath) {
+                cloud = true;
+            }
+        }
+        recursiveCheckbox.setEnabled(enabled);
+        octalField.setEnabled(enabled);
+        ownerr.setEnabled(enabled);
+        ownerw.setEnabled(enabled);
+        ownerx.setEnabled(enabled);
+        groupr.setEnabled(!cloud && enabled);
+        groupw.setEnabled(!cloud && enabled);
+        groupx.setEnabled(!cloud && enabled);
+        otherr.setEnabled(enabled);
+        otherw.setEnabled(enabled);
+        otherx.setEnabled(enabled);
     }
 
     /**
      * Toggle settings before and after update
-     * @param enabled
      *
+     * @param enabled
      */
     private void toggleDistributionSettings(boolean enabled) {
         distributionEnableButton.setEnabled(enabled);
@@ -1199,8 +1235,7 @@ public class CDInfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         log.debug("calculateSizeButtonClicked");
-        sizeButton.setEnabled(false);
-        sizeProgress.startAnimation(null);
+        this.toggleSizeSettings(false);
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
@@ -1214,10 +1249,7 @@ public class CDInfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                controller.reloadData(true);
-                initSize();
-                sizeButton.setEnabled(true);
-                sizeProgress.stopAnimation(null);
+                toggleSizeSettings(true);
             }
 
             /**
@@ -1244,6 +1276,17 @@ public class CDInfoController extends ToolbarWindowController {
             }
         });
     }
+
+    private void toggleSizeSettings(boolean enabled) {
+        if(enabled) {
+            sizeProgress.stopAnimation(null);
+        }
+        else {
+            sizeProgress.startAnimation(null);
+        }
+        sizeButton.setEnabled(enabled);
+    }
+
 
     @Override
     @Action

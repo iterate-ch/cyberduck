@@ -24,6 +24,7 @@
         iconImageView = id;
         kindField = id;
         modifiedField = id;
+        octalField = id;
         otherr = id;
         otherw = id;
         otherx = id;

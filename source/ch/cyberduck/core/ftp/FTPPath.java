@@ -644,13 +644,13 @@ public class FTPPath extends Path {
                     // Do not write executable bit for files if not already set when recursively updating directory.
                     // See #1787
                     Permission modified = new Permission(perm);
-                    if(!this.attributes.getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                    if(!attributes.getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
                         modified.getOwnerPermissions()[Permission.EXECUTE] = false;
                     }
-                    if(!this.attributes.getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                    if(!attributes.getPermission().getGroupPermissions()[Permission.EXECUTE]) {
                         modified.getGroupPermissions()[Permission.EXECUTE] = false;
                     }
-                    if(!this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                    if(!attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
                         modified.getOtherPermissions()[Permission.EXECUTE] = false;
                     }
                     session.FTP.site(command + " " + modified.getOctalString() + " " + this.getName());
@@ -658,7 +658,7 @@ public class FTPPath extends Path {
                 else {
                     session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
                 }
-                this.getParent().invalidate();
+                attributes.setPermission(perm);
             }
             else if(attributes.isDirectory()) {
                 session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
@@ -670,6 +670,7 @@ public class FTPPath extends Path {
                         child.writePermissions(perm, recursive);
                     }
                 }
+                attributes.setPermission(perm);
             }
         }
         catch(IOException e) {

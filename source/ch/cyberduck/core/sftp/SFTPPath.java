@@ -408,17 +408,17 @@ public class SFTPPath extends Path {
                     this.getName(), perm.getOctalString()));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            if(recursive && this.attributes.isFile()) {
+            if(recursive && attributes.isFile()) {
                 // Do not write executable bit for files if not already set when recursively updating directory.
                 // See #1787
                 Permission modified = new Permission(perm);
-                if(!this.attributes.getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                if(!attributes.getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
                     modified.getOwnerPermissions()[Permission.EXECUTE] = false;
                 }
-                if(!this.attributes.getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                if(!attributes.getPermission().getGroupPermissions()[Permission.EXECUTE]) {
                     modified.getGroupPermissions()[Permission.EXECUTE] = false;
                 }
-                if(!this.attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                if(!attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
                     modified.getOtherPermissions()[Permission.EXECUTE] = false;
                 }
                 attr.permissions = modified.getOctalNumber();
@@ -426,8 +426,9 @@ public class SFTPPath extends Path {
             else {
                 attr.permissions = perm.getOctalNumber();
             }
-            session.sftp().setstat(this.getAbsolute(), attr);
-            if(this.attributes.isDirectory()) {
+            session.sftp().setstat(getAbsolute(), attr);
+            attributes.setPermission(perm);
+            if(attributes.isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
                         if(!session.isConnected()) {
@@ -437,7 +438,6 @@ public class SFTPPath extends Path {
                     }
                 }
             }
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
@@ -453,7 +453,7 @@ public class SFTPPath extends Path {
             if(check) {
                 session.check();
             }
-            if(this.attributes.isFile()) {
+            if(attributes.isFile()) {
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
                     in = new SFTPInputStream(handle);
