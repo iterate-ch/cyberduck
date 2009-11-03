@@ -194,6 +194,13 @@ public class UploadTransfer extends Transfer {
 
         @Override
         public void prepare(final Path p) {
+            if(p.exists()) {
+                if(p.attributes.getPermission() == null) {
+                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                        p.readPermission();
+                    }
+                }
+            }
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
             }
