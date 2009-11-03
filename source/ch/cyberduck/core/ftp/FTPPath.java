@@ -658,6 +658,7 @@ public class FTPPath extends Path {
                 else {
                     session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
                 }
+                this.getParent().invalidate();
             }
             else if(attributes.isDirectory()) {
                 session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
@@ -668,7 +669,6 @@ public class FTPPath extends Path {
                         }
                         child.writePermissions(perm, recursive);
                     }
-                    this.invalidate();
                 }
             }
         }

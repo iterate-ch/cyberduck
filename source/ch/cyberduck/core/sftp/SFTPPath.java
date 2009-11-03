@@ -435,9 +435,9 @@ public class SFTPPath extends Path {
                         }
                         child.writePermissions(perm, recursive);
                     }
-                    this.invalidate();
                 }
             }
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);

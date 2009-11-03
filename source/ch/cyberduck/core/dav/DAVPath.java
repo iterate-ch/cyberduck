@@ -223,6 +223,11 @@ public class DAVPath extends Path {
     }
 
     @Override
+    public boolean isWritePermissionsSupported() {
+        return false;
+    }
+
+    @Override
     public void writePermissions(Permission perm, boolean recursive) {
 //            log.debug("changePermissions:" + perm);
 //            try {
