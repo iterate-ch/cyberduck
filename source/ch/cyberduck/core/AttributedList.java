@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import java.util.*;
-import java.util.Collection;
 
 /**
  * @version $Id$
@@ -160,7 +159,7 @@ public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends E> c) {
+    public boolean addAll(java.util.Collection<? extends E> c) {
         for(E item : c) {
             references.put(item.getReference(), item);
         }
