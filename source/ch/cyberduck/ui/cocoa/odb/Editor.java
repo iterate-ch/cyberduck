@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
+import java.io.File;
 import java.text.MessageFormat;
 
 /**
@@ -59,7 +60,8 @@ public abstract class Editor {
         this.bundleIdentifier = bundleIdentifier;
         this.edited = path;
         final Local folder = LocalFactory.createLocal(
-                Preferences.instance().getProperty("editor.tmp.directory"), edited.getParent().getAbsolute());
+                new File(Preferences.instance().getProperty("editor.tmp.directory"),
+                        edited.getParent().getAbsolute()));
         this.edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
     }
 
