@@ -140,7 +140,7 @@
             <key>StartOnMainThread</key>
             <true/>
             <key>VMOptions</key>
-            <string>-XX:+UseCompressedOops -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</string>
+            <string>-XX:+UseParallelGC -XX:+UseCompressedOops -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <string>NO</string>
