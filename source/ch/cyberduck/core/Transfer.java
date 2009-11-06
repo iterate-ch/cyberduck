@@ -426,13 +426,9 @@ public abstract class Transfer implements Serializable {
         if(filter.accept(p)) {
             this.fireWillTransferPath(p);
             _current = p;
-            if(!roots.contains(p)) {
-                // Root objects are already prepared in advance
-                filter.prepare(_current);
-            }
-            _current.getStatus().reset();
-            _transferImpl(_current);
-            this.fireDidTransferPath(_current);
+            p.getStatus().reset();
+            _transferImpl(p);
+            this.fireDidTransferPath(p);
         }
 
         if(!this.check()) {
@@ -544,6 +540,13 @@ public abstract class Transfer implements Serializable {
         if(filter.accept(p)) {
             filter.prepare(p);
         }
+
+        if(p.attributes.isDirectory()) {
+            // Call recursively for all childs
+            for(Path child : this.childs(p)) {
+                this.prepare(child, filter);
+            }
+        }
     }
 
     /**
@@ -601,6 +604,7 @@ public abstract class Transfer implements Serializable {
             this.transfer(options);
         }
         finally {
+            this.prompt = null;
             this.fireTransferDidEnd();
         }
     }
