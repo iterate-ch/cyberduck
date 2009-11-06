@@ -469,8 +469,6 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     public void upload(BandwidthThrottle throttle, StreamListener listener, Permission p) {
         this.upload(throttle, listener, p, false);
-        // Mark parent directory listing as invalid
-        this.getParent().invalidate();
     }
 
     /**
