@@ -213,13 +213,13 @@ public class UploadTransfer extends Transfer {
         @Override
         public boolean accept(final Path p) {
             if(super.accept(p)) {
+                if(p.attributes.isDirectory()) {
+                    return !p.exists();
+                }
                 if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
                     // No need to resume completed transfers
                     p.getStatus().setComplete(true);
                     return false;
-                }
-                if(p.attributes.isDirectory()) {
-                    return !p.exists();
                 }
                 return true;
             }
