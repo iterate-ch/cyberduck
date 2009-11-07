@@ -85,9 +85,4 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
         }
         return super.isCanceled();
     }
-
-    @Override
-    public Object lock() {
-        return controller.getSession();
-    }
 }

@@ -56,11 +56,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     }
 
     @Override
-    public Object lock() {
-        return controller;
-    }
-
-    @Override
     public void finish() {
         super.finish();
         // If there was any failure, display the summary now

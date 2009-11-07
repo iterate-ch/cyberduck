@@ -234,6 +234,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     @Override
+    public Object lock() {
+        return this.getSession();
+    }
+
+    @Override
     public String toString() {
         final Session session = this.getSession();
         if(session != null) {
