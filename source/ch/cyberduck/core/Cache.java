@@ -18,8 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
+
+import com.reardencommerce.kernel.collections.shared.evictable.ConcurrentLinkedHashMap;
 
 import java.util.*;
 
@@ -31,18 +32,15 @@ import java.util.*;
 public class Cache<E extends AbstractPath> {
     protected static Logger log = Logger.getLogger(Cache.class);
 
-    /**
-     *
-     */
-    private Map<String, AttributedList<E>> _impl = Collections.<String, AttributedList<E>>synchronizedMap(new LRUMap(
-            Preferences.instance().getInteger("browser.cache.size")
-    ) {
-        @Override
-        protected boolean removeLRU(LinkEntry entry) {
-            log.debug("Removing from cache:" + entry);
-            return true;
-        }
-    });
+    private Map<String, AttributedList<E>> _impl = ConcurrentLinkedHashMap.create(
+            ConcurrentLinkedHashMap.EvictionPolicy.SECOND_CHANCE,
+            Preferences.instance().getInteger("browser.cache.size"),
+            new ConcurrentLinkedHashMap.EvictionListener<String, AttributedList<E>>() {
+                public void onEviction(String s, AttributedList<E> entry) {
+                    log.info("Removing from cache:" + entry);
+                }
+            }
+    );
 
     /**
      * @param path Absolute path
