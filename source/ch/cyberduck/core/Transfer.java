@@ -436,6 +436,7 @@ public abstract class Transfer implements Serializable {
         }
 
         if(p.attributes.isDirectory()) {
+            p.getStatus().reset();
             boolean failure = false;
             final AttributedList<Path> childs = this.childs(p);
             if(!childs.attributes().isReadable()) {
