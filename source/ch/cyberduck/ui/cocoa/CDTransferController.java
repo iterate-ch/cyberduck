@@ -616,6 +616,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
                 resume = true;
             }
 
+            @Override
             public void cleanup() {
                 if(transfer.isComplete() && !transfer.isCanceled()) {
                     if(transfer.isReset()) {

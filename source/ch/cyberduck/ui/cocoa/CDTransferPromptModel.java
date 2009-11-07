@@ -178,6 +178,11 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                         }
                         controller.reloadData();
                     }
+
+                    @Override
+                    public Object lock() {
+                        return transfer.getSession();
+                    }
                 });
             }
             return cache.get(path, new NullComparator<Path>(), filter());
