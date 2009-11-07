@@ -172,7 +172,7 @@ public class DownloadTransfer extends Transfer {
         final AttributedList<Path> list = parent.childs(childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
-            download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getName()));
+            download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getLocal().getName()));
             download.getStatus().setSkipped(parent.getStatus().isSkipped());
         }
         return list;
@@ -243,7 +243,7 @@ public class DownloadTransfer extends Transfer {
                     }
                     p.setLocal(LocalFactory.createLocal(parent, proposal));
                 }
-                log.info("Changed local name to:" + p.getName());
+                log.info("Changed local name to:" + p.getLocal().getName());
             }
             super.prepare(p);
         }
