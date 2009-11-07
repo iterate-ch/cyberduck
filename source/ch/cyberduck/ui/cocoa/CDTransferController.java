@@ -444,10 +444,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
             final Transfer transfer = transferModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
             final String url = transfer.getRoot().toURL();
-            urlField.setAttributedStringValue(
-                    HyperlinkAttributedStringFactory.create(
-                            NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
-            );
+            urlField.setStringValue(url);
             if(transfer.numberOfRoots() == 1) {
                 localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(transfer.getRoot().getLocal().getAbsolute(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));

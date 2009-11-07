@@ -571,9 +571,7 @@ public class CDConnectionController extends CDSheetController {
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue());
-            urlLabel.setAttributedStringValue(
-                    HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
-            );
+            urlLabel.setStringValue(url);
         }
         else {
             urlLabel.setStringValue(hostField.stringValue());
