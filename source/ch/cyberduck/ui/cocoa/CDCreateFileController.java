@@ -86,6 +86,7 @@ public class CDCreateFileController extends CDFileController {
                             return TransferAction.ACTION_OVERWRITE;
                         }
                     }, options);
+                    file.getParent().invalidate();
                 }
                 finally {
                     file.getLocal().delete(false);
