@@ -197,6 +197,8 @@ public class CDInfoController extends ToolbarWindowController {
 
     public void setDistributionLoggingButton(NSButton b) {
         this.distributionLoggingButton = b;
+        this.distributionLoggingButton.setTarget(this.id());
+        this.distributionLoggingButton.setAction(Foundation.selector("distributionApplyButtonClicked:"));
     }
 
     @Outlet
@@ -948,7 +950,7 @@ public class CDInfoController extends ToolbarWindowController {
     }
 
     @Action
-    public void bucketLoggingButtonClicked(Object sender) {
+    public void bucketLoggingButtonClicked(final NSButton sender) {
         this.toggleS3Settings(false);
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
@@ -964,7 +966,6 @@ public class CDInfoController extends ToolbarWindowController {
             }
         });
     }
-
 
     /**
      * @return
@@ -1188,6 +1189,7 @@ public class CDInfoController extends ToolbarWindowController {
 
                 distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                 distributionStatusField.setStringValue(distribution.getStatus());
+                distributionLoggingButton.setEnabled(distribution.isEnabled());
                 distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
 
                 final CloudPath file = ((CloudPath) files.get(0));
