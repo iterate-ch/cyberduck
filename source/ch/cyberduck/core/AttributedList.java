@@ -19,11 +19,12 @@ package ch.cyberduck.core;
  */
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @version $Id$
  */
-public class AttributedList<E extends AbstractPath> extends ArrayList<E> {
+public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList<E> {
 
     //primary attributes
     protected static final String FILTER = "FILTER";

@@ -18,9 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
-
-import com.reardencommerce.kernel.collections.shared.evictable.ConcurrentLinkedHashMap;
 
 import java.util.*;
 
@@ -32,15 +31,18 @@ import java.util.*;
 public class Cache<E extends AbstractPath> {
     protected static Logger log = Logger.getLogger(Cache.class);
 
-    private Map<String, AttributedList<E>> _impl = ConcurrentLinkedHashMap.create(
-            ConcurrentLinkedHashMap.EvictionPolicy.SECOND_CHANCE,
-            Preferences.instance().getInteger("browser.cache.size"),
-            new ConcurrentLinkedHashMap.EvictionListener<String, AttributedList<E>>() {
-                public void onEviction(String s, AttributedList<E> entry) {
-                    log.info("Removing from cache:" + entry);
-                }
-            }
-    );
+    /**
+     *
+     */
+    private Map<String, AttributedList<E>> _impl = Collections.<String, AttributedList<E>>synchronizedMap(new LRUMap(
+            Preferences.instance().getInteger("browser.cache.size")
+    ) {
+        @Override
+        protected boolean removeLRU(LinkEntry entry) {
+            log.debug("Removing from cache:" + entry);
+            return true;
+        }
+    });
 
     /**
      * @param path Absolute path
@@ -134,36 +136,51 @@ public class Cache<E extends AbstractPath> {
         boolean needsSorting = !childs.attributes().get(AttributedList.COMPARATOR).equals(comparator);
         boolean needsFiltering = !childs.attributes().get(AttributedList.FILTER).equals(filter);
         if(needsSorting) {
-            //do not sort when the list has not been filtered yet
+            // Do not sort when the list has not been filtered yet
             if(!needsFiltering) {
-                Collections.sort(childs, comparator);
+                this.sort(childs, comparator);
             }
-            //saving last sorting comparator
+            // Saving last sorting comparator
             childs.attributes().put(AttributedList.COMPARATOR, comparator);
         }
         if(needsFiltering) {
-            //add previously hidden files to childs
+            // Add previously hidden files to childs
             final Set<E> hidden = childs.attributes().getHidden();
             childs.addAll(hidden);
-            //clear the previously set of hidden files
+            // Clear the previously set of hidden files
             hidden.clear();
-            // This will throw a ConcurrentModificationException if the cache
-            // is currently iterated by the caller
-            for(Iterator<E> i = childs.iterator(); i.hasNext();) {
-                E child = i.next();
+            for(E child : childs) {
                 if(!filter.accept(child)) {
                     //child not accepted by filter; add to cached hidden files
                     childs.attributes().addHidden(child);
                     //remove hidden file from current file listing
-                    i.remove();
+                    childs.remove(child);
                 }
             }
-            //saving last filter
+            // Saving last filter
             childs.attributes().put(AttributedList.FILTER, filter);
-            //sort again because the list has changed
-            Collections.sort(childs, comparator);
+            // Sort again because the list has changed
+            this.sort(childs, comparator);
         }
         return childs;
+    }
+
+    /**
+     * The CopyOnWriteArrayList iterator does not support remove but the sort implementation
+     * makes use of it. Provide our own implementation here to circumvent.
+     *
+     * @param childs
+     * @param comparator
+     * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
+     * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
+     */
+    private void sort(AttributedList<E> childs, Comparator comparator) {
+        // Because AttributedList is a CopyOnWriteArrayList we can not use Collections.sort
+        AbstractPath[] sorted = childs.toArray(new AbstractPath[childs.size()]);
+        Arrays.sort(sorted, (Comparator<AbstractPath>) comparator);
+        for(int j = 0; j < sorted.length; j++) {
+            childs.set(j, (E) sorted[j]);
+        }
     }
 
     /**
