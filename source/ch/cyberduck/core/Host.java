@@ -58,7 +58,8 @@ public class Host implements Serializable {
     /**
      * The fully qualified hostname
      */
-    private String hostname;
+    private String hostname
+            = Preferences.instance().getProperty("connection.hostname.default");
     /**
      * IDN normalized hostname
      */
@@ -705,11 +706,12 @@ public class Host implements Serializable {
             Host o = (Host) other;
             return this.getNickname().equals(o.getNickname());
         }
-        if(other instanceof String) {
-            //hack to allow comparision in CDBrowserController#handleMountScriptCommand
-            return this.getNickname().equals(other);
-        }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.toURL().hashCode();
     }
 
     public boolean isReachable() {
