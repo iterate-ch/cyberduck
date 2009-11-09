@@ -288,6 +288,7 @@ public abstract class NSText extends NSView {
      * Conversion Error : /// Original signature : <code>void setSelectedRange(null)</code><br>
      * - (void)setSelectedRange:(null)range; (Argument range cannot be converted)
      */
+    public abstract void setSelectedRange(NSRange range);
     /**
      * <i>native declaration : /Users/dkocher/null:108</i><br>
      * Conversion Error : /// Original signature : <code>void scrollRangeToVisible(null)</code><br>

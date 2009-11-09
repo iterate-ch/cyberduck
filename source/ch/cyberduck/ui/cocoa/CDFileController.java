@@ -23,10 +23,13 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
@@ -58,6 +61,15 @@ public abstract class CDFileController extends CDSheetController {
 
     public CDFileController(final CDWindowController parent) {
         super(parent);
+    }
+
+    @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        filenameField.selectText(null);
+        this.window().fieldEditor_forObject(true, filenameField).setSelectedRange(NSRange.NSMakeRange(
+                new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(filenameField.stringValue()).length())
+        ));
     }
 
     /**
