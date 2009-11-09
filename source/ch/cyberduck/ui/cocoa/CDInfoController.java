@@ -831,9 +831,9 @@ public class CDInfoController extends ToolbarWindowController {
      * rading the cached size value in the attributes of the path
      */
     private void initSize() {
-        sizeProgress.startAnimation(null);
+        this.toggleSizeSettings(false);
         controller.background(new BrowserBackgroundAction(controller) {
-            long size = 0;
+            double size = 0;
 
             public void run() {
                 for(Path next : files) {
@@ -846,11 +846,10 @@ public class CDInfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                final String sizeString = Status.getSizeAsString(size) + " (" + NumberFormat.getInstance().format(size) + " bytes)";
-                sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(sizeString,
+                toggleSizeSettings(true);
+                sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                        Status.getSizeAsString(size) + " (" + NumberFormat.getInstance().format(size) + " bytes)",
                         TRUNCATE_MIDDLE_ATTRIBUTES));
-                sizeField.setToolTip(sizeString);
-                sizeProgress.stopAnimation(null);
             }
         });
     }
@@ -1252,6 +1251,7 @@ public class CDInfoController extends ToolbarWindowController {
             @Override
             public void cleanup() {
                 toggleSizeSettings(true);
+                initSize();
             }
 
             /**
