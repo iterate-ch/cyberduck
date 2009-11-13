@@ -418,6 +418,7 @@ public class CDBookmarkController extends CDWindowController {
         // Default download folder
         this.addDownloadPath(action, host.getDownloadFolder());
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.addDownloadPath(action, LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder")));
         // Shortcut to the Desktop
         this.addDownloadPath(action, LocalFactory.createLocal("~/Desktop"));
         // Shortcut to user home
@@ -434,15 +435,17 @@ public class CDBookmarkController extends CDWindowController {
 
     private void addDownloadPath(Selector action, Local f) {
         if(f.exists()) {
-            this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getName(), action, "");
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
-                    CDIconCache.instance().iconForPath(f, 16)
-            );
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
-                    f.getAbsolute());
-            if(host.getDownloadFolder().equals(f)) {
-                this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems() - 1);
+            if(downloadPathPopup.menu().itemWithTitle(f.getName()) == null) {
+                downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getName(), action, "");
+                downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
+                downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setImage(
+                        CDIconCache.instance().iconForPath(f, 16)
+                );
+                downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
+                        f.getAbsolute());
+                if(host.getDownloadFolder().equals(f)) {
+                    downloadPathPopup.selectItemAtIndex(downloadPathPopup.numberOfItems() - 1);
+                }
             }
         }
     }
