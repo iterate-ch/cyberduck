@@ -4,12 +4,12 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.3 [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
+3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
 - [Feature] Octal input field for permissions [#13]
 - [Bugfix] SOCKS proxy support broken [#3803]
 - [Bugfix] Connect to default bookmark for new browser window [#3798]
 - [Bugfix] Excessive Growl notifications [#2388]
-- [Bugfix] Various bugfixes
+- [Bugfix] Icon set explicitly for every downloaded file [#3824]
 
 3.3b4 (Oct-09-2009)
 - [Bugfix] Fails to launch with Japanese locale
