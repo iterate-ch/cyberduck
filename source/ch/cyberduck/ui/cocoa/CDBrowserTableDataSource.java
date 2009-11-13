@@ -120,9 +120,11 @@ public abstract class CDBrowserTableDataSource extends CDController implements N
                     public void cleanup() {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
+                            if(isLoadingListingInBackground.isEmpty()) {
+                                tableViewCache.clear();
+                                controller.reloadData(true);
+                            }
                         }
-                        tableViewCache.clear();
-                        controller.reloadData(true);
                     }
                 });
             }
