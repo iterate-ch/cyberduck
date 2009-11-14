@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.io.IOUtils;
@@ -116,7 +117,8 @@ public class FTPPath extends Path {
             session.setWorkdir(this);
             // Cached file parser determined from SYST response with the timezone set from the bookmark
             final FTPFileEntryParser parser = session.getFileParser();
-            boolean success = this.parse(childs, parser, session.FTP.stat(this.getAbsolute()));
+            boolean success = this.parse(childs, parser, session.FTP.stat(
+                    StringUtils.isNotEmpty(this.getSymlinkTarget()) ? this.getSymlinkTarget() : this.getAbsolute()));
             if(!success || childs.isEmpty()) {
                 // STAT listing failed or empty
                 // Set transfer type for traditional data socket file listings
@@ -150,21 +152,16 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            boolean dirChanged = false;
             for(Path child : childs) {
                 if(child.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
                     try {
                         session.setWorkdir(child);
                         child.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                        dirChanged = true;
                     }
                     catch(FTPException e) {
                         child.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     }
                 }
-            }
-            if(dirChanged) {
-                session.setWorkdir(this);
             }
         }
         catch(IOException e) {

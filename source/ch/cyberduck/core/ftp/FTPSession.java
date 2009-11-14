@@ -24,6 +24,7 @@ import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.Configurable;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
@@ -31,11 +32,11 @@ import org.apache.commons.net.ftp.parser.ParserInitializationException;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
+import com.enterprisedt.net.ftp.*;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.*;
-
-import com.enterprisedt.net.ftp.*;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -400,7 +401,12 @@ public class FTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        this.FTP.chdir(workdir.getAbsolute());
+        if(StringUtils.isNotEmpty(workdir.getSymlinkTarget())) {
+            this.FTP.chdir(workdir.getSymlinkTarget());
+        }
+        else {
+            this.FTP.chdir(workdir.getAbsolute());
+        }
         // Workdir change succeeded
         super.setWorkdir(workdir);
     }
