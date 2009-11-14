@@ -118,7 +118,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         String symlinkObj = dict.stringForKey("Symlink");
         if(symlinkObj != null) {
-            this.setSymbolicLinkPath(symlinkObj);
+            this.setSymlinkTarget(symlinkObj);
         }
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
@@ -138,8 +138,8 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(local != null) {
             dict.setStringForKey(local.toString(), "Local");
         }
-        if(StringUtils.isNotBlank(this.getSymbolicLinkPath())) {
-            dict.setStringForKey(this.getSymbolicLinkPath(), "Symlink");
+        if(StringUtils.isNotBlank(this.getSymlinkTarget())) {
+            dict.setStringForKey(this.getSymlinkTarget(), "Symlink");
         }
         dict.setObjectForKey((PathAttributes) attributes, "Attributes");
         if(this.getStatus().isComplete()) {
@@ -351,7 +351,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     public void setLocal(Local file) {
         if(null != file) {
             if(file.attributes.isSymbolicLink()) {
-                if(null != file.getSymbolicLinkPath()) {
+                if(null != file.getSymlinkTarget()) {
                     /**
                      * A canonical pathname is both absolute and unique.  The precise
                      * definition of canonical form is system-dependent.  This method first
@@ -361,7 +361,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                      * such as <tt>"."</tt> and <tt>".."</tt> from the pathname, resolving
                      * symbolic links
                      */
-                    this.local = LocalFactory.createLocal(file.getSymbolicLinkPath());
+                    this.local = LocalFactory.createLocal(file.getSymlinkTarget());
                     return;
                 }
             }

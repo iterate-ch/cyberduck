@@ -133,7 +133,7 @@ public class SFTPPath extends Path {
                             if(!target.startsWith("/")) {
                                 target = Path.normalize(this.getAbsolute() + Path.DELIMITER + target);
                             }
-                            p.setSymbolicLinkPath(target);
+                            p.setSymlinkTarget(target);
                             SFTPv3FileAttributes attr = session.sftp().stat(target);
                             if(attr.isDirectory()) {
                                 p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);

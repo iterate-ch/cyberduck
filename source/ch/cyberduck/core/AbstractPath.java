@@ -300,14 +300,14 @@ public abstract class AbstractPath {
     public void setSymbolicLinkPath(String parent, String name) {
         if(name.startsWith(DELIMITER)) {
             // Symbolic link target may be an absolute path
-            this.setSymbolicLinkPath(name);
+            this.setSymlinkTarget(name);
         }
         else {
             if(parent.endsWith(DELIMITER)) {
-                this.setSymbolicLinkPath(parent + name);
+                this.setSymlinkTarget(parent + name);
             }
             else {
-                this.setSymbolicLinkPath(parent + DELIMITER + name);
+                this.setSymlinkTarget(parent + DELIMITER + name);
             }
         }
     }
@@ -317,7 +317,7 @@ public abstract class AbstractPath {
      */
     private String symbolic = null;
 
-    public void setSymbolicLinkPath(String p) {
+    public void setSymlinkTarget(String p) {
         this.symbolic = AbstractPath.normalize(p);
     }
 
@@ -325,7 +325,7 @@ public abstract class AbstractPath {
      * @return The target of the symbolic link if this path denotes a symbolic link
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
-    public String getSymbolicLinkPath() {
+    public String getSymlinkTarget() {
         if(this.attributes.isSymbolicLink()) {
             return this.symbolic;
         }

@@ -599,8 +599,8 @@ public class CDInfoController extends ToolbarWindowController {
             this.window().setTitle(title + " – " + filename);
             filenameField.setEnabled(1 == count && file.isRenameSupported());
             String path;
-            if(file.attributes.isSymbolicLink() && file.getSymbolicLinkPath() != null) {
-                path = file.getSymbolicLinkPath();
+            if(file.attributes.isSymbolicLink() && file.getSymlinkTarget() != null) {
+                path = file.getSymlinkTarget();
             }
             else {
                 path = file.getParent().getAbsolute();

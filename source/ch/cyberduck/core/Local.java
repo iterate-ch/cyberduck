@@ -308,7 +308,7 @@ public abstract class Local extends AbstractPath implements Attributes {
     }
 
     @Override
-    public String getSymbolicLinkPath() {
+    public String getSymlinkTarget() {
         try {
             return _impl.getCanonicalPath();
         }
@@ -392,7 +392,7 @@ public abstract class Local extends AbstractPath implements Attributes {
         }
         if(other instanceof Local) {
             // Compare the resolved absolute path
-            return this.getSymbolicLinkPath().equalsIgnoreCase(((Local) other).getSymbolicLinkPath());
+            return this.getSymlinkTarget().equalsIgnoreCase(((Local) other).getSymlinkTarget());
         }
         return false;
     }
