@@ -238,6 +238,9 @@
         </copy>
         <echo message="_ARCHIVE_=${url.archive}"/>
         <echo message="_CHANGELOG_=${url.changelog}"/>
+        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
+                  algorithm="md5" property="md5sum"/>
+        <echo message="_MD5SUM_=${md5sum}"/>
         <replace dir="${build}" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
             <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
@@ -263,11 +266,7 @@
         </exec>
         <echo message="Calculating MD5 sum..."/>
         <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
-                  algorithm="md5" property="md5sum"/>
-        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
                   algorithm="md5"/>
-        <property name="md5sum" value="${md5sum}"/>
-        <echo message="_MD5SUM_=${md5sum}"/>
     </target>
 
     <target name="mirror.beta" depends="revision">
