@@ -19,7 +19,7 @@ You need to install the Java Developer Tools from http://connect.apple.com (Free
 	Copy <CYBERDUCK_HOME>/lib/junit.jar to <ANT_HOME>/lib/junit.jar
 
 - xcodebuild and make
-	Included with the developer tools. You need XCode 2.3 or later and the Universal SDK.
+	Included with the developer tools. You need XCode 3.0 or later and the 10.5 SDK.
 
 ----------
 Compiling:
