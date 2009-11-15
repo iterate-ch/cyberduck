@@ -7,7 +7,7 @@
         <link>http://cyberduck.ch/changelog.php</link>
         <description>Cyberduck Changelog.</description>
         <language>en-us</language>
-        <copyright>Copyright 2006, David V. Kocher</copyright>
+        <copyright>Copyright 2001-2009 David V. Kocher</copyright>
         <item>
             <title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
             <pubDate>_TIMESTAMP_</pubDate>
