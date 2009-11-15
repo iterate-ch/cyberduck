@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" 
-		xmlns:content="http://purl.org/rss/1.0/modules/content/" 
-		xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
-	<channel>
-		<title>Cyberduck Changelog</title>
-		<link>http://cyberduck.ch/changelog.php</link>
-		<description>Cyberduck Changelog.</description>
-		<language>en-us</language>
-		<copyright>Copyright 2006, David V. Kocher</copyright>
-		<item>
-			<title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
-			<pubDate>_TIMESTAMP_</pubDate>
-			<enclosure sparkle:version="_REVISION_" sparkle:md5Hash="_MD5SUM_" 
-				sparkle:minimumSystemVersion="10.5.0"
-				url="_ARCHIVE_" 
-				type="application/octet-stream"/>
-			<sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
-		</item>
-	</channel>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>Cyberduck Changelog</title>
+        <link>http://cyberduck.ch/changelog.php</link>
+        <description>Cyberduck Changelog.</description>
+        <language>en-us</language>
+        <copyright>Copyright 2006, David V. Kocher</copyright>
+        <item>
+            <title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
+            <pubDate>_TIMESTAMP_</pubDate>
+            <enclosure sparkle:version="_REVISION_"
+                       sparkle:shortVersionString="_VERSION_"
+                       sparkle:md5Sum="_MD5SUM_"
+                       sparkle:minimumSystemVersion="10.5.0"
+                       url="_ARCHIVE_"
+                       type="application/octet-stream"/>
+            <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
+        </item>
+    </channel>
 </rss>
