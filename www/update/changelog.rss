@@ -13,7 +13,6 @@
             <pubDate>_TIMESTAMP_</pubDate>
             <enclosure sparkle:version="_REVISION_"
                        sparkle:shortVersionString="_VERSION_"
-                       sparkle:md5Sum="_MD5SUM_"
                        url="_ARCHIVE_"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
