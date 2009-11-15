@@ -3597,7 +3597,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         if(action.equals(Foundation.selector("cut:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals(Foundation.selector("pasteFromFinder:"))) {
+        else if(action.equals(Foundation.selector("pasteFromFinder:"))) {
             if(this.isMounted()) {
                 NSPasteboard pboard = NSPasteboard.generalPasteboard();
                 if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -3609,28 +3609,28 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("paste:"))) {
+        else if(action.equals(Foundation.selector("paste:"))) {
             if(this.isMounted()) {
                 return !PathPasteboard.getPasteboard(this.getSession().getHost()).isEmpty();
             }
             return false;
         }
-        if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
+        else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             return !isActivityRunning();
         }
-        if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
             return bookmarkTable.numberOfSelectedRows().intValue() == 1;
         }
-        if(action.equals(Foundation.selector("addBookmarkButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("addBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsAdd();
         }
-        if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow().intValue() != -1;
         }
-        if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
         }
-        if(action.equals(Foundation.selector("editButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 String editor = EditorFactory.getSelectedEditor();
                 if(null == editor) {
@@ -3645,7 +3645,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("editMenuClicked:"))) {
+        else if(action.equals(Foundation.selector("editMenuClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 for(Path selected : this.getSelectedPaths()) {
                     if(!this.isEditable(selected)) {
@@ -3656,31 +3656,31 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("searchButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("searchButtonClicked:"))) {
             return this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
         }
-        if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
             return QuickLookFactory.instance().isAvailable() && this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
+        else if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
             return this.isMounted() && this.getSession().isSendCommandSupported();
         }
-        if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("infoButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("infoButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
             return this.isMounted() && this.workdir().isMkdirSupported();
         }
-        if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -3690,7 +3690,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -3700,22 +3700,22 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("deleteFileButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("deleteFileButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("newBrowserButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("newBrowserButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("syncButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("syncButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("downloadAsButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("downloadAsButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -3725,7 +3725,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("downloadToButtonClicked:")) || action.equals(Foundation.selector("downloadButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("downloadToButtonClicked:")) || action.equals(Foundation.selector("downloadButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
@@ -3735,40 +3735,40 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("insideButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("insideButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        if(action.equals(Foundation.selector("upButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("upButtonClicked:"))) {
             return this.isMounted() && !this.workdir().isRoot();
         }
-        if(action.equals(Foundation.selector("backButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("backButtonClicked:"))) {
             return this.isMounted() && this.getBackHistory().size() > 1;
         }
-        if(action.equals(Foundation.selector("forwardButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("forwardButtonClicked:"))) {
             return this.isMounted() && this.getForwardHistory().size() > 0;
         }
-        if(action.equals(Foundation.selector("copyURLButtonClicked:")) || action.equals(Foundation.selector("copyWebURLButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("copyURLButtonClicked:")) || action.equals(Foundation.selector("copyWebURLButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("printDocument:"))) {
+        else if(action.equals(Foundation.selector("printDocument:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("disconnectButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("disconnectButtonClicked:"))) {
             if(!this.isConnected()) {
                 return this.isActivityRunning();
             }
             return this.isConnected();
         }
-        if(action.equals(Foundation.selector("interruptButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("interruptButtonClicked:"))) {
             return this.isActivityRunning();
         }
-        if(action.equals(Foundation.selector("gotofolderButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("gotofolderButtonClicked:"))) {
             return this.isMounted();
         }
-        if(action.equals(Foundation.selector("openTerminalButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("openTerminalButtonClicked:"))) {
             return this.isMounted() && this.getSession() instanceof SFTPSession;
         }
-        if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
+        else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isMounted()) {
                 if(!this.getSession().isArchiveSupported()) {
                     return false;
@@ -3785,7 +3785,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             }
             return false;
         }
-        if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
+        else if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
             if(this.isMounted()) {
                 if(!this.getSession().isUnarchiveSupported()) {
                     return false;
@@ -3888,6 +3888,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             = new HashMap<String, NSToolbarItem>();
 
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
+        log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar");
         if(!toolbarItems.containsKey(itemIdentifier)) {
             toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
         }
@@ -3912,7 +3913,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setMaxSize(this.browserSwitchView.frame().size);
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_NEW_CONNECTION)) {
+        else if(itemIdentifier.equals(TOOLBAR_NEW_CONNECTION)) {
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
             item.setToolTip(Locale.localizedString("Connect to server"));
@@ -3921,7 +3922,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("connectButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_TRANSFERS)) {
+        else if(itemIdentifier.equals(TOOLBAR_TRANSFERS)) {
             item.setLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
             item.setToolTip(Locale.localizedString("Show Transfers window"));
@@ -3929,7 +3930,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("showTransferQueueClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_TOOLS)) {
+        else if(itemIdentifier.equals(TOOLBAR_TOOLS)) {
             item.setLabel(Locale.localizedString("Action"));
             item.setPaletteLabel(Locale.localizedString("Action"));
             item.setView(this.actionPopupButton);
@@ -3948,7 +3949,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setMaxSize(this.actionPopupButton.frame().size);
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
+        else if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
             item.setLabel(Locale.localizedString(TOOLBAR_QUICK_CONNECT));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_QUICK_CONNECT));
             item.setToolTip(Locale.localizedString("Connect to server"));
@@ -3957,7 +3958,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setMaxSize(this.quickConnectPopup.frame().size);
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
+        else if(itemIdentifier.equals(TOOLBAR_ENCODING)) {
             item.setLabel(Locale.localizedString(TOOLBAR_ENCODING));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_ENCODING));
             item.setToolTip(Locale.localizedString("Character Encoding"));
@@ -3977,7 +3978,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setMaxSize(this.encodingPopup.frame().size);
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_REFRESH)) {
+        else if(itemIdentifier.equals(TOOLBAR_REFRESH)) {
             item.setLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setToolTip(Locale.localizedString("Refresh directory listing"));
@@ -3986,7 +3987,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_DOWNLOAD)) {
+        else if(itemIdentifier.equals(TOOLBAR_DOWNLOAD)) {
             item.setLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
             item.setToolTip(Locale.localizedString("Download file"));
@@ -3995,7 +3996,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("downloadButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_UPLOAD)) {
+        else if(itemIdentifier.equals(TOOLBAR_UPLOAD)) {
             item.setLabel(Locale.localizedString(TOOLBAR_UPLOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_UPLOAD));
             item.setToolTip(Locale.localizedString("Upload local file to the remote host"));
@@ -4004,7 +4005,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("uploadButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_SYNCHRONIZE)) {
+        else if(itemIdentifier.equals(TOOLBAR_SYNCHRONIZE)) {
             item.setLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
             item.setToolTip(Locale.localizedString("Synchronize files"));
@@ -4013,7 +4014,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("syncButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_GET_INFO)) {
+        else if(itemIdentifier.equals(TOOLBAR_GET_INFO)) {
             item.setLabel(Locale.localizedString(TOOLBAR_GET_INFO));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_GET_INFO));
             item.setToolTip(Locale.localizedString("Show file attributes"));
@@ -4022,7 +4023,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("infoButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_WEBVIEW)) {
+        else if(itemIdentifier.equals(TOOLBAR_WEBVIEW)) {
             item.setLabel(Locale.localizedString(TOOLBAR_WEBVIEW));
             item.setPaletteLabel(Locale.localizedString("Open in Web Browser"));
             item.setToolTip(Locale.localizedString("Open in Web Browser"));
@@ -4044,7 +4045,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("openBrowserButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_EDIT)) {
+        else if(itemIdentifier.equals(TOOLBAR_EDIT)) {
             item.setLabel(Locale.localizedString(TOOLBAR_EDIT));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_EDIT));
             item.setToolTip(Locale.localizedString("Edit file in external editor"));
@@ -4062,7 +4063,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
 //            item.setMenuFormRepresentation(toolbarMenu);
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_DELETE)) {
+        else if(itemIdentifier.equals(TOOLBAR_DELETE)) {
             item.setLabel(Locale.localizedString(TOOLBAR_DELETE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DELETE));
             item.setToolTip(Locale.localizedString("Delete file"));
@@ -4071,7 +4072,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("deleteFileButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_NEW_FOLDER)) {
+        else if(itemIdentifier.equals(TOOLBAR_NEW_FOLDER)) {
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
             item.setToolTip(Locale.localizedString("Create New Folder"));
@@ -4080,7 +4081,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("createFolderButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_NEW_BOOKMARK)) {
+        else if(itemIdentifier.equals(TOOLBAR_NEW_BOOKMARK)) {
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_BOOKMARK));
             item.setToolTip(Locale.localizedString("New Bookmark"));
@@ -4089,7 +4090,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("addBookmarkButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_DISCONNECT)) {
+        else if(itemIdentifier.equals(TOOLBAR_DISCONNECT)) {
             item.setLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
             item.setToolTip(Locale.localizedString("Disconnect from server"));
@@ -4099,7 +4100,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("disconnectButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_GO_TO_FOLDER)) {
+        else if(itemIdentifier.equals(TOOLBAR_GO_TO_FOLDER)) {
             item.setLabel(Locale.localizedString(TOOLBAR_GO_TO_FOLDER));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_GO_TO_FOLDER));
             item.setToolTip(Locale.localizedString("Go to Folder"));
@@ -4108,7 +4109,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("gotoButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
+        else if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
             final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
             item.setLabel(NSFileManager.defaultManager().displayNameAtPath(t));
             item.setPaletteLabel(NSFileManager.defaultManager().displayNameAtPath(t));
@@ -4117,7 +4118,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("openTerminalButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_ARCHIVE)) {
+        else if(itemIdentifier.equals(TOOLBAR_ARCHIVE)) {
             final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.archiveutility");
             item.setLabel(Locale.localizedString("Archive", "Archive"));
             item.setPaletteLabel(Locale.localizedString("Archive", "Archive"));
@@ -4126,7 +4127,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setAction(Foundation.selector("archiveButtonClicked:"));
             return item;
         }
-        if(itemIdentifier.equals(TOOLBAR_QUICKLOOK)) {
+        else if(itemIdentifier.equals(TOOLBAR_QUICKLOOK)) {
             item.setLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_QUICKLOOK));
             if(QuickLookFactory.instance().isAvailable()) {
