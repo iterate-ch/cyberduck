@@ -14,10 +14,30 @@
             <enclosure sparkle:version="_REVISION_"
                        sparkle:shortVersionString="_VERSION_"
                        sparkle:md5Sum="_MD5SUM_"
-                       sparkle:minimumSystemVersion="10.5.0"
                        url="_ARCHIVE_"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
+            <sparkle:minimumSystemVersion>10.5.0</sparkle:minimumSystemVersion>
+        </item>
+        <item>
+            <title>Cyberduck 3.2.1 (Revision 4923)</title>
+            <pubDate>14/07/2009 20:11 PM</pubDate>
+            <enclosure sparkle:version="4923"
+                       sparkle:shortVersionString="3.2.1"
+                       url="http://update.cyberduck.ch/Cyberduck-4923.tar.gz"
+                       type="application/octet-stream"/>
+            <sparkle:releaseNotesLink>http://version.cyberduck.ch/3.2.1/changelog.html</sparkle:releaseNotesLink>
+            <sparkle:minimumSystemVersion>10.4.0</sparkle:minimumSystemVersion>
+        </item>
+        <item>
+            <title>Cyberduck 2.8.5 (Revision 3611)</title>
+            <pubDate>06/04/2008 21:04 PM</pubDate>
+            <enclosure sparkle:version="3611"
+                       sparkle:shortVersionString="2.8.5"
+                       url="http://update.cyberduck.ch/Cyberduck-3611.tar.gz"
+                       type="application/octet-stream"/>
+            <sparkle:releaseNotesLink>http://version.cyberduck.ch/2.8.5/changelog.html</sparkle:releaseNotesLink>
+            <sparkle:minimumSystemVersion>10.3.9</sparkle:minimumSystemVersion>
         </item>
     </channel>
 </rss>
