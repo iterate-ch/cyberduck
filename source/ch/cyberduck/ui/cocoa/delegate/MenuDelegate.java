@@ -22,12 +22,14 @@ import ch.cyberduck.ui.cocoa.CDController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
+import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
  * @version $Id$
  */
 public abstract class MenuDelegate extends CDController implements NSMenu.Delegate {
+    private static Logger log = Logger.getLogger(MenuDelegate.class);
 
     /**
      * Called to let you update a menu item before it is displayed. If your
@@ -42,4 +44,32 @@ public abstract class MenuDelegate extends CDController implements NSMenu.Delega
     }
 
     public abstract boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel);
+
+    public boolean isValidationNeeded(NSMenu menu, int index) {
+        if(!open) {
+            if(log.isDebugEnabled()) {
+                log.debug("Interrupt menu item validation for:" + this);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean open;
+
+    public void menuWillOpen(NSMenu menu) {
+        if(log.isDebugEnabled()) {
+            log.debug("menuWillOpen:" + menu);
+        }
+        open = true;
+        // Force validation
+        menu.update();
+    }
+
+    public void menuDidClose(NSMenu menu) {
+        if(log.isDebugEnabled()) {
+            log.debug("menuDidClose:" + menu);
+        }
+        open = true;
+    }
 }

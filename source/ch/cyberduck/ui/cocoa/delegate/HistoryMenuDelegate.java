@@ -47,7 +47,14 @@ public class HistoryMenuDelegate extends MenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, NSInteger index, boolean shouldCancel) {
-        if(HistoryCollection.defaultCollection().size() == 0) {
+        if(shouldCancel) {
+            return false;
+        }
+        if(super.isValidationNeeded(menu, index.intValue())) {
+            return false;
+        }
+        final int size = HistoryCollection.defaultCollection().size();
+        if(size == 0) {
             sender.setTitle(Locale.localizedString("No recently connected servers available"));
             sender.setTarget(null);
             sender.setAction(null);
@@ -55,30 +62,26 @@ public class HistoryMenuDelegate extends MenuDelegate {
             sender.setEnabled(false);
             return false;
         }
-        if(index.intValue() < HistoryCollection.defaultCollection().size()) {
+        if(index.intValue() < size) {
             Host h = HistoryCollection.defaultCollection().get(index.intValue());
-            // This is a hack. We insert a new NSMenuItem as NSMenu has
-            // a bug caching old entries since we introduced the separator item below
-            menu.removeItemAtIndex(index);
-            NSMenuItem bookmark = menu.insertItemWithTitle_action_keyEquivalent_atIndex(
-                    h.getNickname(), Foundation.selector("historyMenuItemClicked:"), "", index);
-            bookmark.setRepresentedObject(h.getNickname());
-            bookmark.setTarget(this.id());
-            bookmark.setEnabled(true);
-            bookmark.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
+            sender.setTitle(h.getNickname());
+            sender.setAction(Foundation.selector("historyMenuItemClicked:"));
+            sender.setRepresentedObject(h.getNickname());
+            sender.setTarget(this.id());
+            sender.setEnabled(true);
+            sender.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
             return !shouldCancel;
         }
-        if(index.intValue() == HistoryCollection.defaultCollection().size()) {
+        if(index.intValue() == size) {
             menu.removeItemAtIndex(index);
             menu.insertItem_atIndex(NSMenuItem.separatorItem(), index);
             return !shouldCancel;
         }
-        if(index.intValue() == HistoryCollection.defaultCollection().size() + 1) {
-            menu.removeItemAtIndex(index);
-            NSMenuItem clear = menu.insertItemWithTitle_action_keyEquivalent_atIndex(Locale.localizedString("Clear Menu"),
-                    Foundation.selector("clearMenuItemClicked:"), "", index);
-            clear.setTarget(this.id());
-            clear.setEnabled(true);
+        if(index.intValue() == size + 1) {
+            sender.setTitle(Locale.localizedString("Clear Menu"));
+            sender.setAction(Foundation.selector("clearMenuItemClicked:"));
+            sender.setTarget(this.id());
+            sender.setEnabled(true);
             return !shouldCancel;
         }
         return true;

@@ -47,6 +47,12 @@ public class RendezvousMenuDelegate extends MenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+        if(shouldCancel) {
+            return false;
+        }
+        if(super.isValidationNeeded(menu, index.intValue())) {
+            return false;
+        }
         if(Rendezvous.instance().numberOfServices() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
             item.setEnabled(false);

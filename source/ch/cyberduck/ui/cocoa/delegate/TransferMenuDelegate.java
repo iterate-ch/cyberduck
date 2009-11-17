@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
@@ -54,6 +54,12 @@ public class TransferMenuDelegate extends MenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+        if(shouldCancel) {
+            return false;
+        }
+        if(super.isValidationNeeded(menu, index.intValue())) {
+            return false;
+        }
         final Path path = roots.get(index.intValue());
         item.setTitle(path.getName());
         if(path.getLocal().exists()) {

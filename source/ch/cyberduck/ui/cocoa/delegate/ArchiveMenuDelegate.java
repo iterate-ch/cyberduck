@@ -36,6 +36,12 @@ public class ArchiveMenuDelegate extends MenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+        if(shouldCancel) {
+            return false;
+        }
+        if(super.isValidationNeeded(menu, index.intValue())) {
+            return false;
+        }
         final Archive archive = Archive.getKnownArchives()[index.intValue()];
         item.setRepresentedObject(archive.getIdentifier());
         item.setTitle(archive.getIdentifier());

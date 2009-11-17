@@ -45,6 +45,12 @@ public class EditMenuDelegate extends MenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+        if(shouldCancel) {
+            return false;
+        }
+        if(super.isValidationNeeded(menu, index.intValue())) {
+            return false;
+        }
         if(EditorFactory.getInstalledOdbEditors().size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
