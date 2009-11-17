@@ -152,6 +152,24 @@ public class CDIconCache {
         return folder;
     }
 
+    private NSImage iconForFolder(String badge, Integer size) {
+        final String name = "BadgedFolder" + badge;
+        NSImage folder = this.iconForName(name, size);
+        if(null == folder) {
+            folder = NSImage.imageWithSize(new NSSize(size, size));
+            folder.lockFocus();
+            NSImage f = FOLDER_ICON;
+            f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                    NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+            NSImage o = this.iconForName(badge);
+            o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
+                    NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+            folder.unlockFocus();
+            this.put(name, this.convert(folder, size), size);
+        }
+        return folder;
+    }
+
     /**
      * @param name
      * @return
@@ -266,42 +284,15 @@ public class CDIconCache {
             if(overlayFolderImage && null != item.attributes.getPermission()) {
                 if(!item.isExecutable()
                         || (item.isCached() && !item.cache().get(item).attributes().isReadable())) {
-                    NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
-                    folder.lockFocus();
-                    NSImage f = FOLDER_ICON;
-                    f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                    NSImage o = this.iconForName("PrivateFolderBadgeIcon.icns");
-                    o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                    folder.unlockFocus();
-                    return this.convert(folder, size);
+                    return this.iconForFolder("PrivateFolderBadgeIcon.icns", size);
                 }
                 if(!item.isReadable()) {
                     if(item.isWritable()) {
-                        NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
-                        folder.lockFocus();
-                        NSImage f = FOLDER_ICON;
-                        f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                        NSImage o = this.iconForName("DropFolderBadgeIcon.icns");
-                        o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                        folder.unlockFocus();
-                        return this.convert(folder, size);
+                        return this.iconForFolder("DropFolderBadgeIcon.icns", size);
                     }
                 }
                 if(!item.isWritable()) {
-                    NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
-                    folder.lockFocus();
-                    NSImage f = FOLDER_ICON;
-                    f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                    NSImage o = this.iconForName("ReadOnlyFolderBadgeIcon.icns");
-                    o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                    folder.unlockFocus();
-                    return this.convert(folder, size);
+                    return this.iconForFolder("ReadOnlyFolderBadgeIcon.icns", size);
                 }
             }
             return this.iconForFolder(size);
