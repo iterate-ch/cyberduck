@@ -27,7 +27,6 @@ import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -222,6 +221,9 @@ public class CDTransferController extends CDWindowController implements NSToolba
 
         @Override
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean shouldCancel) {
+            if(super.isValidationNeeded(menu, i.intValue())) {
+                return false;
+            }
             final int selected = transferTable.numberOfSelectedRows().intValue();
             final int tag = item.tag();
             NSIndexSet iterator = transferTable.selectedRowIndexes();
