@@ -35,7 +35,6 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -356,7 +355,7 @@ public class FTPPath extends Path {
             parsed.setParent(this);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
-                    parsed.setSymbolicLinkPath(this.getAbsolute(), f.getLink());
+                    parsed.setSymlinkTarget(this.getAbsolute(), f.getLink());
                     parsed.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
                     break;
                 case FTPFile.DIRECTORY_TYPE:

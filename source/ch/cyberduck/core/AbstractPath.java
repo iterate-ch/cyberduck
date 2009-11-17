@@ -297,7 +297,7 @@ public abstract class AbstractPath {
      * @param parent Absolute path to the symbolic link
      * @param name   Target of the symbolic link name. Absolute or relative pathname
      */
-    public void setSymbolicLinkPath(String parent, String name) {
+    public void setSymlinkTarget(String parent, String name) {
         if(name.startsWith(DELIMITER)) {
             // Symbolic link target may be an absolute path
             this.setSymlinkTarget(name);
