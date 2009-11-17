@@ -107,6 +107,7 @@ public class CDProgressController extends CDBundleController {
             public void transferWillStart() {
                 invoke(new DefaultMainAction() {
                     public void run() {
+                        progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
                         statusIconView.setImage(YELLOW_ICON);
@@ -122,6 +123,7 @@ public class CDProgressController extends CDBundleController {
                     public void run() {
                         progressBar.stopAnimation(null);
                         progressBar.setIndeterminate(true);
+                        progressBar.setHidden(true);
                         messageText = null;
                         // Do not display any progress text when transfer is stopped
                         final Date timestamp = transfer.getTimestamp();
