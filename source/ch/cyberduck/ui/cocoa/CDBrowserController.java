@@ -4095,7 +4095,6 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
             item.setToolTip(Locale.localizedString("Disconnect from server"));
             item.setImage(CDIconCache.iconNamed("eject.tiff"));
-            item.setAutovalidates(true);
             item.setTarget(this.id());
             item.setAction(Foundation.selector("disconnectButtonClicked:"));
             return item;
