@@ -151,11 +151,11 @@ public class FinderLocal extends Local {
     public void writePermissions(final Permission perm, final boolean recursive) {
         new CDController().invoke(new DefaultMainAction() {
             public void run() {
-                boolean success = NSFileManager.defaultManager().changeFileAttributes(
+                boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
                                 NSArray.arrayWithObject(NSNumber.numberWithInt(perm.getOctalNumber())),
                                 NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                        _impl.getAbsolutePath());
+                        _impl.getAbsolutePath(), null);
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
@@ -172,11 +172,11 @@ public class FinderLocal extends Local {
     public void writeModificationDate(final long millis) {
         new CDController().invoke(new DefaultMainAction() {
             public void run() {
-                boolean success = NSFileManager.defaultManager().changeFileAttributes(
+                boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
                                 NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(millis / 1000)),
                                 NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
-                        _impl.getAbsolutePath());
+                        _impl.getAbsolutePath(), null);
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
