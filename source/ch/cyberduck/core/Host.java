@@ -706,6 +706,10 @@ public class Host implements Serializable {
             Host o = (Host) other;
             return this.getNickname().equals(o.getNickname());
         }
+        if(other instanceof String) {
+            //hack to allow comparision in BookmarkMenuDelegate
+            return this.getNickname().equals(other);
+        }
         return false;
     }
 
