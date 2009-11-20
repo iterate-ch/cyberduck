@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.model;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
@@ -149,7 +149,7 @@ public class FinderLocal extends Local {
 
     @Override
     public void writePermissions(final Permission perm, final boolean recursive) {
-        new CDController().invoke(new DefaultMainAction() {
+        new ProxyController().invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
@@ -170,7 +170,7 @@ public class FinderLocal extends Local {
 
     @Override
     public void writeModificationDate(final long millis) {
-        new CDController().invoke(new DefaultMainAction() {
+        new ProxyController().invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
@@ -210,7 +210,7 @@ public class FinderLocal extends Local {
     public void trash() {
         if(this.exists()) {
             final Local file = this;
-            new CDController().invoke(new DefaultMainAction() {
+            new ProxyController().invoke(new DefaultMainAction() {
                 public void run() {
                     log.debug("Move " + file + " to Trash");
                     if(!NSWorkspace.sharedWorkspace().performFileOperation(
@@ -222,6 +222,21 @@ public class FinderLocal extends Local {
                 }
             });
         }
+    }
+
+    /**
+     * Create a new symbolic link from this
+     * path if <code>local.symboliclink.resolve</code is true
+     */
+    @Override
+    public boolean touch() {
+        if(!Preferences.instance().getBoolean("local.symboliclink.resolve")) {
+            if(StringUtils.isNotEmpty(this.getSymlinkTarget())) {
+                return NSFileManager.defaultManager().createSymbolicLinkAtPath_withDestinationPath_error(this.getAbsolute(),
+                        this.getSymlinkTarget(), null);
+            }
+        }
+        return super.touch();
     }
 
     /**
@@ -250,7 +265,7 @@ public class FinderLocal extends Local {
             log.warn("No data url given for quarantine");
             return;
         }
-        new CDController().invoke(new DefaultMainAction() {
+        new ProxyController().invoke(new DefaultMainAction() {
             public void run() {
                 setQuarantine(getAbsolute(), originUrl, dataUrl);
             }
@@ -280,7 +295,7 @@ public class FinderLocal extends Local {
             log.warn("No data url given for quarantine");
             return;
         }
-        new CDController().invoke(new DefaultMainAction() {
+        new ProxyController().invoke(new DefaultMainAction() {
             public void run() {
                 setWhereFrom(getAbsolute(), dataUrl);
             }
@@ -312,7 +327,7 @@ public class FinderLocal extends Local {
                 return;
             }
             final String path = this.getAbsolute();
-            new CDController().invoke(new DefaultMainAction() {
+            new ProxyController().invoke(new DefaultMainAction() {
                 public void run() {
                     if(-1 == progress) {
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(

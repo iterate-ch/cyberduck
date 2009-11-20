@@ -160,6 +160,8 @@ public abstract class Preferences {
         defaults.put("path.normalize", String.valueOf(true));
         defaults.put("path.normalize.unicode", String.valueOf(false));
 
+        defaults.put("local.symboliclink.resolve", String.valueOf(true));
+
         /**
          * Maximum number of directory listings to cache using a most recently used implementation
          */
