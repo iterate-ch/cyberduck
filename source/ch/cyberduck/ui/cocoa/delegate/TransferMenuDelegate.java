@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class TransferMenuDelegate extends MenuDelegate {
+public class TransferMenuDelegate extends AbstractMenuDelegate {
     private static Logger log = Logger.getLogger(TransferMenuDelegate.class);
 
     /**
@@ -57,7 +57,7 @@ public class TransferMenuDelegate extends MenuDelegate {
         if(shouldCancel) {
             return false;
         }
-        if(super.isValidationNeeded(menu, index.intValue())) {
+        if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
         final Path path = roots.get(index.intValue());

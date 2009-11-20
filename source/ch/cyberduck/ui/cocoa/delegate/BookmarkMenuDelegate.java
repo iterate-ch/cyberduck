@@ -33,8 +33,12 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public class BookmarkMenuDelegate extends MenuDelegate {
+public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
+
+    public BookmarkMenuDelegate() {
+        super(HostCollection.defaultCollection());
+    }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         return new NSInteger(HostCollection.defaultCollection().size() + 9);
@@ -42,24 +46,26 @@ public class BookmarkMenuDelegate extends MenuDelegate {
         // 6 is Bonjour with submenu, 7 is sepearator
     }
 
+    private static final int BOOKMARKS_INDEX = 6;
+
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(shouldCancel) {
             return false;
         }
-        if(super.isValidationNeeded(menu, index.intValue())) {
+        if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
-        if(index.intValue() == 6) {
+        if(index.intValue() == BOOKMARKS_INDEX) {
             item.setEnabled(true);
             item.setImage(CDIconCache.iconNamed("history", 16));
         }
-        if(index.intValue() == 7) {
+        if(index.intValue() == BOOKMARKS_INDEX + 1) {
             item.setEnabled(true);
             item.setImage(CDIconCache.iconNamed("rendezvous", 16));
         }
-        if(index.intValue() > 8) {
-            Host h = HostCollection.defaultCollection().get(index.intValue() - 9);
+        if(index.intValue() > BOOKMARKS_INDEX + 2) {
+            Host h = HostCollection.defaultCollection().get(index.intValue() - (BOOKMARKS_INDEX + 3));
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
@@ -72,8 +78,7 @@ public class BookmarkMenuDelegate extends MenuDelegate {
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
         CDBrowserController controller = CDMainController.newDocument();
-        controller.mount(HostCollection.defaultCollection().get(
-                HostCollection.defaultCollection().indexOf(sender.representedObject())
-        ));
+        final int row = HostCollection.defaultCollection().indexOf(sender.representedObject());
+        controller.mount(HostCollection.defaultCollection().get(row));
     }
 }

@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
@@ -28,8 +28,17 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public abstract class MenuDelegate extends CDController implements NSMenu.Delegate {
-    private static Logger log = Logger.getLogger(MenuDelegate.class);
+public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate {
+    private static Logger log = Logger.getLogger(AbstractMenuDelegate.class);
+
+    /**
+     * Menu needs revalidation
+     */
+    private boolean update;
+
+    public AbstractMenuDelegate() {
+        this.setNeedsUpdate();
+    }
 
     /**
      * Called to let you update a menu item before it is displayed. If your
@@ -45,10 +54,29 @@ public abstract class MenuDelegate extends CDController implements NSMenu.Delega
 
     public abstract boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel);
 
-    public boolean isValidationNeeded(NSMenu menu, int index) {
+    /**
+     * Menu needs revalidation before being displayed the next time
+     */
+    protected void setNeedsUpdate() {
+        update = true;
+    }
+
+    /**
+     * @param menu  The menu
+     * @param index The index of the item in the menu to be displayed
+     * @return True if menu validation can be skipped
+     */
+    public boolean shouldSkipValidation(NSMenu menu, int index) {
+        if(update) {
+            if(menu.numberOfItems().intValue() - 1 == index) {
+                update = false;
+            }
+            log.debug("Update menu item index:" + index);
+            return false;
+        }
         if(!open) {
             if(log.isDebugEnabled()) {
-                log.debug("Interrupt menu item validation for:" + this);
+                log.debug("Interrupt menu item validation for:" + menu);
             }
             return true;
         }
@@ -58,18 +86,12 @@ public abstract class MenuDelegate extends CDController implements NSMenu.Delega
     private boolean open;
 
     public void menuWillOpen(NSMenu menu) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuWillOpen:" + menu);
-        }
         open = true;
         // Force validation
         menu.update();
     }
 
     public void menuDidClose(NSMenu menu) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuDidClose:" + menu);
-        }
         open = true;
     }
 }

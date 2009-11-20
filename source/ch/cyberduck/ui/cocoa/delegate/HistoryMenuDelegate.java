@@ -34,8 +34,12 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public class HistoryMenuDelegate extends MenuDelegate {
+public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
+
+    public HistoryMenuDelegate() {
+        super(HistoryCollection.defaultCollection());
+    }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         if(HistoryCollection.defaultCollection().size() > 0) {
@@ -50,7 +54,7 @@ public class HistoryMenuDelegate extends MenuDelegate {
         if(shouldCancel) {
             return false;
         }
-        if(super.isValidationNeeded(menu, index.intValue())) {
+        if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
         final int size = HistoryCollection.defaultCollection().size();

@@ -32,7 +32,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public class EditMenuDelegate extends MenuDelegate {
+public class EditMenuDelegate extends AbstractMenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
@@ -48,7 +48,7 @@ public class EditMenuDelegate extends MenuDelegate {
         if(shouldCancel) {
             return false;
         }
-        if(super.isValidationNeeded(menu, index.intValue())) {
+        if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
         if(EditorFactory.getInstalledOdbEditors().size() == 0) {

@@ -28,7 +28,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public class ArchiveMenuDelegate extends MenuDelegate {
+public class ArchiveMenuDelegate extends AbstractMenuDelegate {
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         return new NSInteger(Archive.getKnownArchives().length);
@@ -39,7 +39,7 @@ public class ArchiveMenuDelegate extends MenuDelegate {
         if(shouldCancel) {
             return false;
         }
-        if(super.isValidationNeeded(menu, index.intValue())) {
+        if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
         final Archive archive = Archive.getKnownArchives()[index.intValue()];
