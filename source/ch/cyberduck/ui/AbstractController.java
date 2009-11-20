@@ -21,11 +21,11 @@ package ch.cyberduck.ui;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 import org.rococoa.internal.OperationBatcher;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -34,11 +34,6 @@ import java.util.concurrent.ScheduledExecutorService;
  */
 public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
-
-    /**
-     * Thread pool
-     */
-    private static final ExecutorService pool = Executors.newCachedThreadPool();
 
     /**
      *
@@ -95,7 +90,7 @@ public abstract class AbstractController implements Controller {
                 }
             }
         };
-        pool.execute(command);
+        ThreadPool.instance().execute(command);
         log.info("Scheduled background runnable for execution:" + runnable);
     }
 
