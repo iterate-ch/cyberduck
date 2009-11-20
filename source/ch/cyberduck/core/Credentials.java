@@ -37,7 +37,9 @@ public class Credentials {
     /**
      * The login password
      */
-    private transient String pass;
+    private transient String password;
+
+    private boolean passwordEncrypted;
 
     /**
      * If not null, use public key authentication if SSH is the protocol
@@ -59,20 +61,20 @@ public class Credentials {
 
     /**
      * @param user Login with this username
-     * @param pass Passphrase
+     * @param password Passphrase
      */
-    public Credentials(String user, String pass) {
-        this(user, pass, Preferences.instance().getBoolean("connection.login.useKeychain"));
+    public Credentials(String user, String password) {
+        this(user, password, Preferences.instance().getBoolean("connection.login.useKeychain"));
     }
 
     /**
      * @param user                    Login with this username
-     * @param pass                    Passphrase
+     * @param password                    Passphrase
      * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
      */
-    public Credentials(String user, String pass, boolean shouldBeAddedToKeychain) {
+    public Credentials(String user, String password, boolean shouldBeAddedToKeychain) {
         this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
-        this.init(user, pass);
+        this.init(user, password);
     }
 
     /**
@@ -81,7 +83,7 @@ public class Credentials {
      */
     private void init(String username, String password) {
         this.user = username;
-        this.pass = password;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -93,16 +95,21 @@ public class Credentials {
     }
 
     public String getPassword() {
-        if(StringUtils.isEmpty(pass)) {
+        if(StringUtils.isEmpty(password)) {
             if(this.isAnonymousLogin()) {
                 return Preferences.instance().getProperty("connection.login.anon.pass");
             }
         }
-        return pass;
+        return password;
     }
 
     public void setPassword(String pass) {
-        this.pass = pass;
+        this.setPassword(pass, false);
+    }
+
+    public void setPassword(String pass, boolean encrypted) {
+        this.password = pass;
+        this.passwordEncrypted = encrypted;
     }
 
     /**
@@ -147,6 +154,10 @@ public class Credentials {
         return this.getIdentity().exists();
     }
 
+    public boolean isPasswordEncrypted() {
+        return passwordEncrypted;
+    }
+
     /**
      * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
      *
@@ -167,6 +178,6 @@ public class Credentials {
      * @return
      */
     public boolean isValid() {
-        return StringUtils.isNotEmpty(this.getUsername()) && this.getPassword() != null;
+        return StringUtils.isNotEmpty(this.getUsername()) && this.getPassword() != null && !this.isPasswordEncrypted();
     }
 }
