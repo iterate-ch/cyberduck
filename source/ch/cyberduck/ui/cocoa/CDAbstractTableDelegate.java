@@ -34,7 +34,7 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public abstract class CDAbstractTableDelegate<E> extends CDController implements CDTableDelegate<E> {
+public abstract class CDAbstractTableDelegate<E> extends ProxyController implements CDTableDelegate<E> {
     private static Logger log = Logger.getLogger(CDAbstractTableDelegate.class);
 
     private NSTableColumn selectedColumn;

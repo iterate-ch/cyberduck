@@ -23,7 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -273,7 +273,7 @@ public class CDProgressController extends CDBundleController {
     @Outlet
     private NSPopUpButton filesPopup;
 
-    private MenuDelegate filesPopupMenuDelegate;
+    private AbstractMenuDelegate filesPopupMenuDelegate;
 
     public void setFilesPopup(NSPopUpButton filesPopup) {
         this.filesPopup = filesPopup;

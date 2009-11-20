@@ -34,8 +34,8 @@ import org.rococoa.internal.OperationBatcher;
 /**
  * @version $Id$
  */
-public class CDController extends AbstractController {
-    private static Logger log = Logger.getLogger(CDController.class);
+public class ProxyController extends AbstractController {
+    private static Logger log = Logger.getLogger(ProxyController.class);
 
     /**
      * You need to keep a reference to the returned value for as long as it is

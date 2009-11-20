@@ -31,7 +31,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 /**
  * @version $Id$
  */
-public abstract class CDOutlineDataSource extends CDController implements NSOutlineView.DataSource, NSDraggingSource {
+public abstract class CDOutlineDataSource extends ProxyController implements NSOutlineView.DataSource, NSDraggingSource {
     private static Logger log = Logger.getLogger(CDOutlineDataSource.class);
 
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,

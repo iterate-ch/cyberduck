@@ -32,7 +32,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 /**
  * @version $Id$
  */
-public abstract class CDListDataSource extends CDController implements NSTableView.DataSource, NSDraggingSource {
+public abstract class CDListDataSource extends ProxyController implements NSTableView.DataSource, NSDraggingSource {
     private static Logger log = Logger.getLogger(CDListDataSource.class);
 
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {

@@ -23,7 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.delegate.MenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
@@ -202,7 +202,7 @@ public class CDTransferController extends CDWindowController implements NSToolba
     @Outlet
     private NSPopUpButton bandwidthPopup;
 
-    private MenuDelegate bandwidthPopupDelegate;
+    private AbstractMenuDelegate bandwidthPopupDelegate;
 
     public void setBandwidthPopup(NSPopUpButton bandwidthPopup) {
         this.bandwidthPopup = bandwidthPopup;
@@ -214,14 +214,14 @@ public class CDTransferController extends CDWindowController implements NSToolba
         this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthDelegate()).id());
     }
 
-    private class BandwidthDelegate extends MenuDelegate {
+    private class BandwidthDelegate extends AbstractMenuDelegate {
         public NSInteger numberOfItemsInMenu(NSMenu menu) {
             return menu.numberOfItems();
         }
 
         @Override
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean shouldCancel) {
-            if(super.isValidationNeeded(menu, i.intValue())) {
+            if(super.shouldSkipValidation(menu, i.intValue())) {
                 return false;
             }
             final int selected = transferTable.numberOfSelectedRows().intValue();

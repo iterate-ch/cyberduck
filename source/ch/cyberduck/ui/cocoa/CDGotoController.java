@@ -47,7 +47,7 @@ public class CDGotoController extends CDSheetController {
 
     @Outlet
     private NSComboBox folderCombobox;
-    private CDController folderComboboxModel = new FolderComboboxModel();
+    private ProxyController folderComboboxModel = new FolderComboboxModel();
 
     public void setFolderCombobox(NSComboBox folderCombobox) {
         this.folderCombobox = folderCombobox;
@@ -57,7 +57,7 @@ public class CDGotoController extends CDSheetController {
         this.folderCombobox.setStringValue(((CDBrowserController) this.parent).workdir().getAbsolute());
     }
 
-    private class FolderComboboxModel extends CDController implements NSComboBox.DataSource {
+    private class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
 
         private final Comparator<Path> comparator = new NullComparator<Path>();
 

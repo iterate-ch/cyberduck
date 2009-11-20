@@ -36,7 +36,7 @@ import ch.ethz.ssh2.ServerHostKeyVerifier;
 /**
  * @version $Id$
  */
-public class CDHostKeyController extends CDController implements ServerHostKeyVerifier {
+public class CDHostKeyController extends ProxyController implements ServerHostKeyVerifier {
     protected static Logger log = Logger.getLogger(CDHostKeyController.class);
 
     private CDWindowController parent;

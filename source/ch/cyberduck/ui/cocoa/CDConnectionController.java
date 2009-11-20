@@ -23,7 +23,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -169,7 +168,7 @@ public class CDConnectionController extends CDSheetController {
     }
 
     private NSComboBox hostField;
-    private CDController hostFieldModel = new HostFieldModel();
+    private ProxyController hostFieldModel = new HostFieldModel();
 
     public void setHostPopup(NSComboBox hostPopup) {
         this.hostField = hostPopup;
@@ -183,7 +182,7 @@ public class CDConnectionController extends CDSheetController {
                 this.hostField);
     }
 
-    private static class HostFieldModel extends CDController implements NSComboBox.DataSource {
+    private static class HostFieldModel extends ProxyController implements NSComboBox.DataSource {
         public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
             return new NSInteger(HostCollection.defaultCollection().size());
         }

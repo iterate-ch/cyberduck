@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public abstract class CDBundleController extends CDController {
+public abstract class CDBundleController extends ProxyController {
     private static Logger log = Logger.getLogger(CDBundleController.class);
 
     protected static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(

@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.ProxyController;
 
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -31,7 +31,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
  * a tool written by <a href="http://ochafik.free.fr/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a>, <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public abstract class QLPreviewPanelDataSource extends CDController {
+public abstract class QLPreviewPanelDataSource extends ProxyController {
     /**
      * @param panel The Preview Panel.<br>
      * @abstract Returns the number of items that the preview panel should preview.<br>

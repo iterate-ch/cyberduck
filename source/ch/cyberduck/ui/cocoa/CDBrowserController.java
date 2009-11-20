@@ -1368,7 +1368,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     @Outlet
     private NSComboBox quickConnectPopup;
 
-    private CDController quickConnectPopupModel = new QuickConnectModel();
+    private ProxyController quickConnectPopupModel = new QuickConnectModel();
 
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
@@ -1384,7 +1384,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         this.quickConnectWillPopUp(null);
     }
 
-    private static class QuickConnectModel extends CDController implements NSComboBox.DataSource {
+    private static class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
         public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
             return new NSInteger(HostCollection.defaultCollection().size());
         }

@@ -49,7 +49,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class CDBrowserTableDataSource extends CDController implements NSDraggingSource {
+public abstract class CDBrowserTableDataSource extends ProxyController implements NSDraggingSource {
     protected static Logger log = Logger.getLogger(CDBrowserTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";

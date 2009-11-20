@@ -19,13 +19,13 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.CDController;
+import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class QLPreviewItem extends CDController {
+public abstract class QLPreviewItem extends ProxyController {
 
     public abstract NSURL previewItemURL();
 
