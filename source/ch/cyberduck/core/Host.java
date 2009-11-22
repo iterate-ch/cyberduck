@@ -699,9 +699,9 @@ public class Host implements Serializable {
      */
     public String toURL() {
         if(this.getPort() == this.getProtocol().getDefaultPort()) {
-            return this.getProtocol().getScheme() + "://" + this.getHostname(true);
+            return this.getProtocol().getScheme() + "://" + this.getCredentials().getUsername() + "@" + this.getHostname(true);
         }
-        return this.getProtocol().getScheme() + "://" + this.getHostname(true) + ":" + this.getPort();
+        return this.getProtocol().getScheme() + "://" + this.getCredentials().getUsername() + "@" + this.getHostname(true) + ":" + this.getPort();
     }
 
     @Override

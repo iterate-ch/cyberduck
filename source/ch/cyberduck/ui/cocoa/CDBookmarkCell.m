@@ -126,9 +126,9 @@
     if(SMALL_BOOKMARK_SIZE == size) {
         return;
     }
-	NSString *username = [bookmark objectForKey:@"Username"];
-	if(username) {
-		[username drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight, cellFrame.size.width - 5,
+	NSString *hostname = [bookmark objectForKey:@"Hostname"];
+	if(hostname) {
+		[hostname drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight, cellFrame.size.width - 5,
 		                                cellFrame.size.height) withAttributes:detailsFont];
     }
 	NSString *url = [bookmark objectForKey:@"URL"];
