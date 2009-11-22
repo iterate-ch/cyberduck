@@ -78,7 +78,7 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
                 if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
                     return tableViewCache.put(item, identifier, CDIconCache.iconNamed("arrowUp", 16));
                 }
-                return null;
+                return tableViewCache.put(item, identifier, null);
             }
             if(identifier.equals(WARNING_COLUMN)) {
                 if(item.attributes.isFile()) {
@@ -93,13 +93,13 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
                         }
                     }
                 }
-                return null;
+                return tableViewCache.put(item, identifier, null);
             }
             if(identifier.equals(CREATE_COLUMN)) {
                 if(!(item.exists() && item.getLocal().exists())) {
                     return tableViewCache.put(item, identifier, CDIconCache.iconNamed("plus", 16));
                 }
-                return null;
+                return tableViewCache.put(item, identifier, null);
             }
         }
         return super.objectValueForItem(item, identifier);

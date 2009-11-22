@@ -67,7 +67,7 @@ public class CDUploadPromptModel extends CDTransferPromptModel {
                         return tableViewCache.put(item, identifier, ALERT_ICON);
                     }
                 }
-                return null;
+                return tableViewCache.put(item, identifier, null);
             }
             if(identifier.equals(CDTransferPromptModel.SIZE_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),

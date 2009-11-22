@@ -81,7 +81,7 @@ public class CDDownloadPromptModel extends CDTransferPromptModel {
                         return tableViewCache.put(item, identifier, ALERT_ICON);
                     }
                 }
-                return null;
+                return tableViewCache.put(item, identifier, null);
             }
         }
         return super.objectValueForItem(item, identifier);
