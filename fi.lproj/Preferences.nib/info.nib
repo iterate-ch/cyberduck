@@ -23,15 +23,15 @@
 		</array>
 		<key>13</key>
 		<array>
-			<string>1309</string>
 			<string>1311</string>
+			<string>1309</string>
 		</array>
 		<key>14</key>
 		<array>
-			<string>1393</string>
+			<string>1389</string>
 			<string>1391</string>
 			<string>1392</string>
-			<string>1389</string>
+			<string>1393</string>
 		</array>
 		<key>4</key>
 		<array>
@@ -40,38 +40,38 @@
 		</array>
 		<key>5</key>
 		<array>
-			<string>1242</string>
-			<string>1255</string>
-			<string>1260</string>
-			<string>1253</string>
 			<string>1267</string>
-			<string>1263</string>
 			<string>1256</string>
-			<string>1244</string>
-			<string>1246</string>
 			<string>1262</string>
+			<string>1246</string>
 			<string>1245</string>
+			<string>1253</string>
+			<string>1263</string>
 			<string>1252</string>
+			<string>1244</string>
+			<string>1242</string>
+			<string>1260</string>
+			<string>1255</string>
 		</array>
 		<key>6</key>
 		<array>
-			<string>1265</string>
 			<string>1254</string>
+			<string>1265</string>
 		</array>
 		<key>7</key>
 		<array>
-			<string>1248</string>
-			<string>1257</string>
-			<string>1268</string>
-			<string>1243</string>
 			<string>1250</string>
 			<string>1258</string>
-			<string>1261</string>
 			<string>1241</string>
 			<string>1249</string>
 			<string>1251</string>
 			<string>1266</string>
+			<string>1261</string>
 			<string>1269</string>
+			<string>1248</string>
+			<string>1257</string>
+			<string>1268</string>
+			<string>1243</string>
 		</array>
 		<key>8</key>
 		<array>
@@ -89,7 +89,7 @@
 	<key>IBOldestOS</key>
 	<integer>3</integer>
 	<key>IBSystem Version</key>
-	<string>10B504</string>
+	<string>10C540</string>
 	<key>targetFramework</key>
 	<string>IBCocoaFramework</string>
 </dict>
