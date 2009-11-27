@@ -871,7 +871,6 @@ img/removePressed.tiff -text svneol=unset#image/tiff
 img/rendezvous.tiff -text
 img/resume.tiff -text svneol=unset#image/tiff
 img/reveal.tiff -text svneol=unset#image/tiff
-img/run.tiff -text svneol=unset#image/tiff
 img/s3-icon.png -text svneol=unset#image/png
 img/s3.icns -text
 img/sftp-icon.png -text svneol=unset#image/png
