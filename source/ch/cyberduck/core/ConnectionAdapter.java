@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class ConnectionAdapter implements ConnectionListener {
+public abstract class ConnectionAdapter implements ConnectionListener {
 
     public void connectionWillOpen() {
     }
