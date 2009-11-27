@@ -42,6 +42,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -208,28 +209,36 @@ public class CFPath extends CloudPath {
                 }
             }
             else {
-                for(FilesObject object : session.CF.listObjects(this.getContainerName(), this.getKey())) {
-                    final Path file = PathFactory.createPath(session, this.getContainerName(), object.getName(),
-                            "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    if(file.getParent().equals(this)) {
-                        file.setParent(this);
-                        if(file.attributes.getType() == Path.FILE_TYPE) {
-                            file.attributes.setSize(object.getSize());
-                        }
-                        try {
-                            final Date modified = DateParser.parse(object.getLastModified());
-                            if(null != modified) {
-                                file.attributes.setModificationDate(modified.getTime());
+                final int limit = Preferences.instance().getInteger("cf.list.limit");
+                List<FilesObject> list;
+                String marker = null;
+                do {
+                    list = session.CF.listObjects(this.getContainerName(), this.getKey(), limit, marker);
+                    for(FilesObject object : list) {
+                        final Path file = PathFactory.createPath(session, this.getContainerName(), object.getName(),
+                                "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        if(file.getParent().equals(this)) {
+                            file.setParent(this);
+                            if(file.attributes.getType() == Path.FILE_TYPE) {
+                                file.attributes.setSize(object.getSize());
                             }
-                        }
-                        catch(InvalidDateException e) {
-                            log.warn("Not ISO 8601 format:" + e.getMessage());
-                        }
-                        file.attributes.setOwner(this.attributes.getOwner());
+                            try {
+                                final Date modified = DateParser.parse(object.getLastModified());
+                                if(null != modified) {
+                                    file.attributes.setModificationDate(modified.getTime());
+                                }
+                            }
+                            catch(InvalidDateException e) {
+                                log.warn("Not ISO 8601 format:" + e.getMessage());
+                            }
+                            file.attributes.setOwner(this.attributes.getOwner());
 
-                        childs.add(file);
+                            childs.add(file);
+                        }
+                        marker = object.getName();
                     }
                 }
+                while(list.size() == limit);
             }
             session.setWorkdir(this);
         }

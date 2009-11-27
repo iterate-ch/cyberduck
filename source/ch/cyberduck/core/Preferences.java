@@ -444,6 +444,7 @@ public abstract class Preferences {
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
 
         defaults.put("cf.tls.acceptAnyCertificate", String.valueOf(false));
+        defaults.put("cf.list.limit", String.valueOf(10000));
 
         /**
          * NTLM Windows Domain
