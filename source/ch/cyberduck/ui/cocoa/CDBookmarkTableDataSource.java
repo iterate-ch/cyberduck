@@ -192,9 +192,6 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
         return new NSInteger(this.getSource().size());
     }
 
-    private static final NSImage STATUS_GREEN = CDIconCache.iconNamed("statusGreen.tiff");
-    private static final NSImage STATUS_YELLOW = CDIconCache.iconNamed("statusYellow.tiff");
-
     /**
      * Second cache because it is expensive to create proxy instances
      */
@@ -224,10 +221,10 @@ public class CDBookmarkTableDataSource extends CDListDataSource {
                     final Session session = controller.getSession();
                     if(host.equals(session.getHost())) {
                         if(session.isConnected()) {
-                            return STATUS_GREEN;
+                            return CDIconCache.iconNamed("statusGreen.tiff", 16);
                         }
                         if(session.isOpening()) {
-                            return STATUS_YELLOW;
+                            return CDIconCache.iconNamed("statusYellow.tiff", 16);
                         }
                     }
                 }
