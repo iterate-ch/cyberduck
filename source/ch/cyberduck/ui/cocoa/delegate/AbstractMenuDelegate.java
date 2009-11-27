@@ -74,13 +74,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
             log.debug("Update menu item index:" + index);
             return false;
         }
-        if(!open) {
-            if(log.isDebugEnabled()) {
-                log.debug("Interrupt menu item validation for:" + menu);
-            }
-            return true;
-        }
-        return false;
+        return !open;
     }
 
     private boolean open;
