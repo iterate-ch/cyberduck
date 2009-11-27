@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.LocalFactory;
@@ -99,6 +100,9 @@ public class CDHostKeyController extends ProxyController implements ServerHostKe
                     }
                 };
                 c.beginSheet();
+                if(c.returnCode() == CDSheetCallback.ALTERNATE_OPTION) {
+                    throw new ConnectionCanceledException();
+                }
                 return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
                         || c.returnCode() == CDSheetCallback.OTHER_OPTION;
             }
@@ -106,8 +110,9 @@ public class CDHostKeyController extends ProxyController implements ServerHostKe
                 NSAlert alert = NSAlert.alert(Locale.localizedString("Host key mismatch:") + " " + hostname, //title
                         Locale.localizedString("The host key supplied is") + ": "
                                 + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
-//                            + "\n" + Locale.localizedString("The current allowed key for this host is") + " : "
-//                            + allowedHostKey.getFingerprint() + "\n"
+//                                + "\n" + Locale.localizedString("The current allowed key for this host is") + " : "
+//                                + allowedHostKey.getFingerprint()
+                                + "\n"
                                 + Locale.localizedString("Do you want to allow the host access?"),
                         Locale.localizedString("Allow"), // defaultbutton
                         Locale.localizedString("Deny"), //alternative button
@@ -127,6 +132,9 @@ public class CDHostKeyController extends ProxyController implements ServerHostKe
                     }
                 };
                 c.beginSheet();
+                if(c.returnCode() == CDSheetCallback.ALTERNATE_OPTION) {
+                    throw new ConnectionCanceledException();
+                }
                 return c.returnCode() == CDSheetCallback.DEFAULT_OPTION
                         || c.returnCode() == CDSheetCallback.OTHER_OPTION;
             }
