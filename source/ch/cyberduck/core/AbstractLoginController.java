@@ -30,11 +30,6 @@ public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
     /**
-     * Password already found in keychain
-     */
-    private boolean persisted;
-
-    /**
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
      *
@@ -73,8 +68,8 @@ public abstract class AbstractLoginController implements LoginController {
                         this.prompt(host, title, reason.toString());
                     }
                     else {
-                        persisted = true;
                         credentials.setPassword(passFromKeychain);
+                        credentials.setUseKeychain(false);
                     }
                 }
                 else {
@@ -90,15 +85,10 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     public void success(final Host host) {
-        if(persisted) {
-            log.info("Password already persisted in Keychain");
-            return;
-        }
         this.save(host);
     }
 
     public void fail(final Host host, final String reason) throws LoginCanceledException {
-        persisted = false;
         this.prompt(host, Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
@@ -160,5 +150,4 @@ public abstract class AbstractLoginController implements LoginController {
         KeychainFactory.instance().addPassword(host.getProtocol().getScheme(), host.getPort(),
                 host.getHostname(), host.getCredentials().getUsername(), host.getCredentials().getPassword());
     }
-
 }

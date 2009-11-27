@@ -1152,16 +1152,16 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
     protected void _updateBookmarkCell() {
         final int size = Preferences.instance().getInteger("bookmark.icon.size");
         if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
-            this.bookmarkTable.setRowHeight(new CGFloat(18));
+            bookmarkTable.setRowHeight(new CGFloat(18));
         }
         if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
-            this.bookmarkTable.setRowHeight(new CGFloat(45));
+            bookmarkTable.setRowHeight(new CGFloat(45));
         }
         if(CDBookmarkCell.LARGE_BOOKMARK_SIZE == size) {
-            this.bookmarkTable.setRowHeight(new CGFloat(70));
+            bookmarkTable.setRowHeight(new CGFloat(70));
         }
         final double width = size * 1.5;
-        final NSTableColumn c = this.bookmarkTable.tableColumnWithIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
+        final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(CDBookmarkTableDataSource.ICON_COLUMN);
         c.setMinWidth(width);
         c.setMaxWidth(width);
         c.setWidth(width);
@@ -1331,9 +1331,9 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(CDBookmarkTableDataSource.STATUS_COLUMN);
             c.headerCell().setStringValue("");
-            c.setMinWidth(20);
-            c.setWidth(20);
-            c.setMaxWidth(20);
+            c.setMinWidth(40);
+            c.setWidth(40);
+            c.setMaxWidth(40);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
             c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
@@ -2520,6 +2520,7 @@ public class CDBrowserController extends CDWindowController implements NSToolbar
         final Host h = new Host(this.session.getHost().<NSDictionary>getAsDictionary());
         // Copy credentials of the browser
         h.getCredentials().setPassword(this.session.getHost().getCredentials().getPassword());
+        h.getCredentials().setUseKeychain(false);
         return SessionFactory.createSession(h);
     }
 
