@@ -39,8 +39,6 @@ public class Credentials {
      */
     private transient String password;
 
-    private boolean passwordEncrypted;
-
     /**
      * If not null, use public key authentication if SSH is the protocol
      */
@@ -60,7 +58,7 @@ public class Credentials {
     }
 
     /**
-     * @param user Login with this username
+     * @param user     Login with this username
      * @param password Passphrase
      */
     public Credentials(String user, String password) {
@@ -69,7 +67,7 @@ public class Credentials {
 
     /**
      * @param user                    Login with this username
-     * @param password                    Passphrase
+     * @param password                Passphrase
      * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
      */
     public Credentials(String user, String password, boolean shouldBeAddedToKeychain) {
@@ -104,12 +102,7 @@ public class Credentials {
     }
 
     public void setPassword(String pass) {
-        this.setPassword(pass, false);
-    }
-
-    public void setPassword(String pass, boolean encrypted) {
         this.password = pass;
-        this.passwordEncrypted = encrypted;
     }
 
     /**
@@ -154,10 +147,6 @@ public class Credentials {
         return this.getIdentity().exists();
     }
 
-    public boolean isPasswordEncrypted() {
-        return passwordEncrypted;
-    }
-
     /**
      * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
      *
@@ -178,6 +167,7 @@ public class Credentials {
      * @return
      */
     public boolean isValid() {
-        return StringUtils.isNotEmpty(this.getUsername()) && this.getPassword() != null && !this.isPasswordEncrypted();
+        return StringUtils.isNotEmpty(this.getUsername())
+                && this.getPassword() != null;
     }
 }

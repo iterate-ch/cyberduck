@@ -181,7 +181,7 @@ public class Host implements Serializable {
         }
         Object passwordObj = dict.stringForKey("Password");
         if(passwordObj != null) {
-            credentials.setPassword(passwordObj.toString(), true);
+            credentials.setPassword(passwordObj.toString());
         }
         Object keyObj = dict.stringForKey("Private Key File");
         if(keyObj != null) {
@@ -244,9 +244,6 @@ public class Host implements Serializable {
         dict.setStringForKey(String.valueOf(this.getPort()), "Port");
         if(StringUtils.isNotBlank(this.getCredentials().getUsername())) {
             dict.setStringForKey(this.getCredentials().getUsername(), "Username");
-        }
-        if(StringUtils.isNotBlank(this.getCredentials().getPassword()) && this.getCredentials().isPasswordEncrypted()) {
-            dict.setStringForKey(this.getCredentials().getPassword(), "Password");
         }
         if(StringUtils.isNotBlank(this.getDefaultPath())) {
             dict.setStringForKey(this.getDefaultPath(), "Path");
