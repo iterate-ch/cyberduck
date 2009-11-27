@@ -50,7 +50,11 @@ public class BackgroundException extends Exception {
      */
     @Override
     public Throwable getCause() {
-        return super.getCause();
+        Throwable cause = super.getCause();
+        while(cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        return cause;
     }
 
     /**
