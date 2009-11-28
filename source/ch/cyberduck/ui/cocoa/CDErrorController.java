@@ -176,7 +176,7 @@ public class CDErrorController extends CDBundleController {
             }
         }
         String message = buffer.toString();
-        if(!message.endsWith(".")) {
+        if(!StringUtils.isEmpty(message) && !message.endsWith(".")) {
             message = message + ".";
         }
         return Locale.localizedString(message, "Error");
