@@ -167,7 +167,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
-        this.editMenu.setAutoenablesItems(false);
         this.editMenuDelegate = new EditMenuDelegate();
         this.editMenu.setDelegate(editMenuDelegate.id());
     }
@@ -178,7 +177,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
 
     public void setArchiveMenu(NSMenu archiveMenu) {
         this.archiveMenu = archiveMenu;
-        this.archiveMenu.setAutoenablesItems(false);
         this.archiveMenuDelegate = new ArchiveMenuDelegate();
         this.archiveMenu.setDelegate(archiveMenuDelegate.id());
     }
@@ -189,7 +187,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
-        this.bookmarkMenu.setAutoenablesItems(false);
         this.bookmarkMenuDelegate = new BookmarkMenuDelegate();
         this.bookmarkMenu.setDelegate(bookmarkMenuDelegate.id());
     }
@@ -200,7 +197,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
 
     public void setHistoryMenu(NSMenu historyMenu) {
         this.historyMenu = historyMenu;
-        this.historyMenu.setAutoenablesItems(false);
         this.historyMenuDelegate = new HistoryMenuDelegate();
         this.historyMenu.setDelegate(historyMenuDelegate.id());
     }
@@ -211,7 +207,6 @@ public class CDMainController extends CDBundleController implements NSApplicatio
 
     public void setRendezvousMenu(NSMenu rendezvousMenu) {
         this.rendezvousMenu = rendezvousMenu;
-        this.rendezvousMenu.setAutoenablesItems(false);
         this.rendezvousMenuDelegate = new RendezvousMenuDelegate();
         this.rendezvousMenu.setDelegate(rendezvousMenuDelegate.id());
     }
