@@ -140,7 +140,7 @@
             <key>StartOnMainThread</key>
             <true/>
             <key>VMOptions</key>
-            <string>-XX:+UseParallelGC -XX:+UseCompressedOops</string>
+            <string>-Dfile.encoding=utf-8 -XX:+UseParallelGC -XX:+UseCompressedOops</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <string>NO</string>
