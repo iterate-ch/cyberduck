@@ -72,8 +72,8 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
             item.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(Foundation.selector("rendezvousMenuClicked:"));
             item.setRepresentedObject(h.getNickname());
-            return !shouldCancel;
         }
+        return !shouldCancel;
     }
 
     public void rendezvousMenuClicked(NSMenuItem sender) {
