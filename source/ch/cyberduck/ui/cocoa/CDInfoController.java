@@ -136,6 +136,8 @@ public class CDInfoController extends ToolbarWindowController {
     public void setRecursiveCheckbox(NSButton b) {
         this.recursiveCheckbox = b;
         this.recursiveCheckbox.setState(NSCell.NSOffState);
+        this.recursiveCheckbox.setTarget(this.id());
+        this.recursiveCheckbox.setAction(Foundation.selector("permissionSelectionChanged:"));
     }
 
     @Outlet
@@ -1058,12 +1060,13 @@ public class CDInfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission) {
         // Write altered permissions to the server
         this.togglePermissionSettings(false);
+        final boolean recursive = recursiveCheckbox.state() == NSCell.NSOnState;
         // send the changes to the remote host
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 for(Path next : files) {
-                    if(!next.attributes.getPermission().equals(permission)) {
-                        next.writePermissions(permission, recursiveCheckbox.state() == NSCell.NSOnState);
+                    if(recursive || !next.attributes.getPermission().equals(permission)) {
+                        next.writePermissions(permission, recursive);
                     }
                     if(!controller.isConnected()) {
                         break;
