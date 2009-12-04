@@ -24,6 +24,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -65,10 +66,15 @@ public class UserDefaultsPreferences extends Preferences {
     @Override
     public void setProperty(final String property, final String value) {
         log.info("setProperty:" + property + "," + value);
-        // Sets the value of the default identified by defaultName in the standard application domain.
-        // Setting a default has no effect on the value returned by the objectForKey method if
-        // the same key exists in a domain that precedes the application domain in the search list.
-        this.props.setObjectForKey(NSString.stringWithString(value), property);
+        if(StringUtils.isNotEmpty(value)) {
+            // Sets the value of the default identified by defaultName in the standard application domain.
+            // Setting a default has no effect on the value returned by the objectForKey method if
+            // the same key exists in a domain that precedes the application domain in the search list.
+            this.props.setObjectForKey(NSString.stringWithString(value), property);
+        }
+        else {
+            this.props.setObjectForKey(null, property);
+        }
         this.save();
     }
 
