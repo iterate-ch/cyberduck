@@ -1839,14 +1839,18 @@ public class CDPreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = defaultBucketLocation;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        this.defaultBucketLocation.addItemWithTitle("US");
-        this.defaultBucketLocation.addItemWithTitle(S3Bucket.LOCATION_EUROPE);
+        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString("US", "S3"));
+        this.defaultBucketLocation.itemAtIndex(0).setRepresentedObject(S3Bucket.LOCATION_US);
+        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(S3Bucket.LOCATION_EUROPE, "S3"));
+        this.defaultBucketLocation.itemAtIndex(1).setRepresentedObject(S3Bucket.LOCATION_EUROPE);
+        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(S3Bucket.LOCATION_US_WEST, "S3"));
+        this.defaultBucketLocation.itemAtIndex(2).setRepresentedObject(S3Bucket.LOCATION_US_WEST);
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
-        this.defaultBucketLocation.selectItemWithTitle(Preferences.instance().getProperty("s3.location"));
+        this.defaultBucketLocation.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.location"), "S3"));
     }
 
     public void defaultBucketLocationClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("s3.location", sender.titleOfSelectedItem());
+        Preferences.instance().setProperty("s3.location", sender.selectedItem().representedObject());
     }
 }

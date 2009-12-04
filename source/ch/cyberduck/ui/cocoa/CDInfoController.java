@@ -933,7 +933,7 @@ public class CDInfoController extends ToolbarWindowController {
                 public void cleanup() {
                     bucketLoggingButton.setState(logging ? NSCell.NSOnState : NSCell.NSOffState);
                     if(StringUtils.isNotBlank(location)) {
-                        bucketLocationField.setStringValue(location);
+                        bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                     }
                     if(metadata.containsKey(S3Path.METADATA_HEADER_CACHE_CONTROL)) {
                         String cache = (String) metadata.get(S3Path.METADATA_HEADER_CACHE_CONTROL);
