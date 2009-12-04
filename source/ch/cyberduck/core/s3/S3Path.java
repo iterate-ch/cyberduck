@@ -930,6 +930,11 @@ public class S3Path extends CloudPath {
         }
     }
 
+    public boolean isRenameSupported() {
+        // Renaming buckets is not currently supported by S3
+        return !attributes.isVolume();
+    }
+
     @Override
     public void rename(AbstractPath renamed) {
         try {
@@ -944,6 +949,9 @@ public class S3Path extends CloudPath {
                 if(!this.getContainerName().equals(((S3Path) renamed).getContainerName())) {
                     _bucket = null;
                 }
+            }
+            else if(attributes.isVolume()) {
+                // Renaming buckets is not currently supported by S3
             }
             else if(attributes.isDirectory()) {
                 for(AbstractPath i : this.childs()) {
