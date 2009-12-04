@@ -806,6 +806,7 @@ public class S3Path extends CloudPath {
                     return;
                 }
                 session.S3.createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
+                session.getBuckets(true);
             }
             else {
                 final S3Bucket bucket = this.getBucket();
