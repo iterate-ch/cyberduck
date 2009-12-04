@@ -695,10 +695,16 @@ public class Host implements Serializable {
      * @return The URL of the remote host including user login hostname and port
      */
     public String toURL() {
-        if(this.getPort() == this.getProtocol().getDefaultPort()) {
-            return this.getProtocol().getScheme() + "://" + this.getCredentials().getUsername() + "@" + this.getHostname(true);
+        StringBuilder url = new StringBuilder(this.getProtocol().getScheme());
+        url.append("://");
+        if(StringUtils.isNotEmpty(this.getCredentials().getUsername())) {
+            url.append(this.getCredentials().getUsername()).append("@");
         }
-        return this.getProtocol().getScheme() + "://" + this.getCredentials().getUsername() + "@" + this.getHostname(true) + ":" + this.getPort();
+        url.append(this.getHostname(true));
+        if(this.getPort() != this.getProtocol().getDefaultPort()) {
+            url.append(":").append(this.getPort());
+        }
+        return url.toString();
     }
 
     @Override
