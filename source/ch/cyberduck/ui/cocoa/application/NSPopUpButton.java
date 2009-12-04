@@ -25,23 +25,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :10</i>
 public abstract class NSPopUpButton extends NSButton {
-    /**
-     * <i>native declaration : :22</i><br>
-     * Conversion Error : /// Original signature : <code>initWithFrame(null, BOOL)</code><br>
-     * - (null)initWithFrame:(null)buttonFrame pullsDown:(BOOL)flag; (Argument buttonFrame cannot be converted)
-     */
-    /**
-     * Overrides behavior of NSView.  This is the menu for the popup, not a context menu.  PopUpButtons do not have context menus.<br>
-     * Original signature : <code>void setMenu(NSMenu*)</code><br>
-     * <i>native declaration : :25</i>
-     */
-    public abstract void setMenu(NSMenu menu);
 
-    /**
-     * Original signature : <code>NSMenu* menu()</code><br>
-     * <i>native declaration : :26</i>
-     */
-    public abstract NSMenu menu();
+    public static final String PopUpButtonWillPopUpNotification = "NSPopUpButtonWillPopUpNotification";
 
     /**
      * Behavior settings<br>
