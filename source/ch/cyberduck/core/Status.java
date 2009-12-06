@@ -63,6 +63,7 @@ public class Status {
      * Rounding mode to round towards "nearest neighbor" unless both
      * neighbors are equidistant, in which case round up.
      *
+     * @param size Number of bytes
      * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
      */
     public static String getSizeAsString(double size) {
@@ -88,8 +89,8 @@ public class Status {
     }
 
     /**
-     * @param remaining
-     * @return
+     * @param remaining Seconds
+     * @return Humean readable string for seconds in hours, minutes or seconds remaining
      */
     public static String getRemainingAsString(double remaining) {
         StringBuffer b = new StringBuffer();
@@ -113,54 +114,97 @@ public class Status {
 
     public void setComplete(boolean complete) {
         this.complete = complete;
-        log.info("------------------- Complete:" + this.getCurrent());
+        log.info("Complete:" + this.getCurrent());
     }
 
     public boolean isComplete() {
         return this.complete;
     }
 
+    /**
+     * If this path is currently transferred, interrupt it as soon as possible
+     */
     public void setCanceled() {
         canceled = true;
     }
 
+    /**
+     * @return True if marked for interrupt
+     */
     public boolean isCanceled() {
         return canceled;
     }
 
+    /**
+     * @return Number of bytes transferred
+     */
     public long getCurrent() {
         return this.current;
     }
 
     /**
-     * @param current The currently transfered bytes
+     * @param current The already transfered bytes
      */
     public void setCurrent(long current) {
         this.current = current;
     }
 
     /**
-     * A state variable to mark this path if it should not be considered for file transfers
+     * A state variable to mark this path if it should not be
+     * considered for file transfers
      */
-    private boolean skip = false;
+    private boolean skip;
 
     /**
-     * @param ignore
+     * File transfer inclusion
+     *
+     * @param ignore Ignore for file transfers
      */
-    public void setSkipped(boolean ignore) {
+    public void setSkipped(Boolean ignore) {
         log.debug("setSkipped:" + ignore);
         this.skip = ignore;
     }
 
     /**
-     * @return true if this path should not be added to any queue
+     * File transfer inclusion
+     *
+     * @return true if this path should not be included for file transfers
      */
     public boolean isSkipped() {
         return this.skip;
     }
 
     /**
-     * @param resume
+     * A state variable to mark this path if the path is explicitly selected
+     * for inclusion in the transfer prompt
+     */
+    private boolean selected = true;
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    /**
+     * Mark for inclusion from transfer prompt
+     *
+     * @param selected True if selected
+     */
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
+    }
+
+    /**
+     * @return True if selected for inclusion in transfer prompt
+     */
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    /**
+     * Mark this path with an append flag when transfered
+     *
+     * @param resume If false, the current status is cleared
+     * @see #setCurrent(long)
      */
     public void setResume(boolean resume) {
         if(!resume) {
@@ -174,10 +218,10 @@ public class Status {
     }
 
     /**
-     *
+     * Reset completion status.
      */
     public void reset() {
-        this.complete = false;
-        this.canceled = false;
+        complete = false;
+        canceled = false;
     }
 }

@@ -75,7 +75,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
 
     @Override
     public void awakeFromNib() {
-        this.transfer.getSession().addProgressListener(l);
+        transfer.getSession().addProgressListener(l);
         this.reloadData();
         if(browserView.numberOfRows().intValue() > 0) {
             browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
@@ -141,6 +141,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
     public void reloadData() {
         log.debug("reloadData");
         statusIndicator.startAnimation(null);
+        browserModel.clearCache();
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -288,7 +289,7 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
                 final String identifier = tableColumn.identifier();
                 final Path path = browserModel.lookup(item);
                 if(identifier.equals(CDTransferPromptModel.INCLUDE_COLUMN)) {
-                    cell.setEnabled(transfer.isSelectable(path));
+                    cell.setEnabled(!path.getStatus().isSkipped());
                 }
                 if(identifier.equals(CDTransferPromptModel.FILENAME_COLUMN)) {
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(CDIconCache.instance().iconForPath(path, 16));
@@ -479,16 +480,17 @@ public abstract class CDTransferPrompt extends CDSheetController implements Tran
         this.actionPopup.setAction(Foundation.selector("actionPopupClicked:"));
     }
 
+    @Action
     public void actionPopupClicked(NSPopUpButton sender) {
         final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
 
-        if(this.action.equals(selected)) {
+        if(action.equals(selected)) {
             return;
         }
 
         Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
 
-        this.action = selected;
-        this.browserView.reloadData();
+        action = selected;
+        this.reloadData();
     }
 }

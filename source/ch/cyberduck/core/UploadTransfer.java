@@ -165,7 +165,6 @@ public class UploadTransfer extends Transfer {
                 upload = cache.lookup(upload.getReference());
                 upload.setLocal(download);
             }
-            upload.getStatus().setSkipped(parent.getStatus().isSkipped());
             childs.add(upload);
         }
         return childs;

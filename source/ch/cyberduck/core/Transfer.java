@@ -374,7 +374,7 @@ public abstract class Transfer implements Serializable {
      * @return True if the path is not skipped when transferring
      */
     public boolean isIncluded(Path item) {
-        return !item.getStatus().isSkipped() && this.isSelectable(item);
+        return item.getStatus().isSelected() && !item.getStatus().isSkipped();
     }
 
     /**
@@ -384,21 +384,15 @@ public abstract class Transfer implements Serializable {
      * @return True if selectable
      */
     public boolean isSelectable(Path item) {
-        return true;
+        return !item.getStatus().isSkipped();
     }
 
-    /**
-     * Recursively update the status of all cached child items
-     *
-     * @param item
-     * @param skipped True if skipped
-     */
-    public void setSkipped(Path item, final boolean skipped) {
-        item.getStatus().setSkipped(skipped);
+    public void setSelected(Path item, final boolean selected) {
+        item.getStatus().setSelected(selected);
         if(item.attributes.isDirectory()) {
             if(item.isCached()) {
                 for(Path child : this.childs(item)) {
-                    this.setSkipped(child, skipped);
+                    this.setSelected(child, selected);
                 }
             }
         }
@@ -444,7 +438,7 @@ public abstract class Transfer implements Serializable {
             }
             for(Path child : childs) {
                 this.transfer(child, filter);
-                if(!child.getStatus().isComplete()) {
+                if(child.attributes.isFile() && !child.getStatus().isComplete()) {
                     failure = true;
                 }
             }

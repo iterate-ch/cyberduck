@@ -73,10 +73,10 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
             if(identifier.equals(SYNC_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
                 if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return tableViewCache.put(item, identifier, CDIconCache.iconNamed("arrowDown", 16));
+                    return CDIconCache.iconNamed("arrowDown", 16);
                 }
                 if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return tableViewCache.put(item, identifier, CDIconCache.iconNamed("arrowUp", 16));
+                    return CDIconCache.iconNamed("arrowUp", 16);
                 }
                 return tableViewCache.put(item, identifier, null);
             }
@@ -84,22 +84,22 @@ public class CDSyncPromptModel extends CDTransferPromptModel {
                 if(item.attributes.isFile()) {
                     if(item.exists()) {
                         if(item.attributes.getSize() == 0) {
-                            return tableViewCache.put(item, identifier, ALERT_ICON);
+                            return ALERT_ICON;
                         }
                     }
                     if(item.getLocal().exists()) {
                         if(item.getLocal().attributes.getSize() == 0) {
-                            return tableViewCache.put(item, identifier, ALERT_ICON);
+                            return ALERT_ICON;
                         }
                     }
                 }
-                return tableViewCache.put(item, identifier, null);
+                return null;
             }
             if(identifier.equals(CREATE_COLUMN)) {
                 if(!(item.exists() && item.getLocal().exists())) {
-                    return tableViewCache.put(item, identifier, CDIconCache.iconNamed("plus", 16));
+                    return CDIconCache.iconNamed("plus", 16);
                 }
-                return tableViewCache.put(item, identifier, null);
+                return null;
             }
         }
         return super.objectValueForItem(item, identifier);

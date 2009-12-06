@@ -117,7 +117,8 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
         String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
             final Path path = this.lookup(item);
-            transfer.setSkipped(path, Rococoa.cast(value, NSNumber.class).intValue() == NSCell.NSOffState);
+            final int state = Rococoa.cast(value, NSNumber.class).intValue();
+            transfer.setSelected(path, state == NSCell.NSOnState);
             if(path.attributes.isDirectory()) {
                 outlineView.setNeedsDisplay(true);
             }
@@ -130,6 +131,10 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
      * @return
      */
     protected abstract PathFilter<Path> filter();
+
+    public void clearCache() {
+        tableViewCache.clear();
+    }
 
     /**
      * File listing cache for children of the root paths
@@ -176,7 +181,6 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                         synchronized(isLoadingListingInBackground) {
                             isLoadingListingInBackground.remove(path);
                             if(isLoadingListingInBackground.isEmpty()) {
-                                tableViewCache.clear();
                                 controller.reloadData();
                             }
                         }
@@ -213,9 +217,8 @@ public abstract class CDTransferPromptModel extends CDOutlineDataSource {
                 // Not included if the particular path should be skipped or skip
                 // existing is selected as the default transfer action for duplicate
                 // files
-                final boolean skipped = !transfer.isIncluded(item)
-                        || controller.getAction().equals(TransferAction.ACTION_SKIP);
-                return NSNumber.numberWithInt(skipped ? NSCell.NSOffState : NSCell.NSOnState);
+                final boolean included = transfer.isIncluded(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
+                return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
             }
             if(identifier.equals(FILENAME_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),

@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -173,7 +174,6 @@ public class DownloadTransfer extends Transfer {
         for(Path download : list) {
             // Change download path relative to parent local folder
             download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getLocal().getName()));
-            download.getStatus().setSkipped(parent.getStatus().isSkipped());
         }
         return list;
     }

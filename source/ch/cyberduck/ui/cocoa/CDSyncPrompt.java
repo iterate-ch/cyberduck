@@ -113,6 +113,7 @@ public class CDSyncPrompt extends CDTransferPrompt {
     }
 
     @Override
+    @Action
     public void actionPopupClicked(NSPopUpButton sender) {
         final TransferAction current = ((SyncTransfer) transfer).getAction();
         final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
@@ -124,6 +125,6 @@ public class CDSyncPrompt extends CDTransferPrompt {
         Preferences.instance().setProperty("queue.sync.action.default", selected.toString());
         ((SyncTransfer) transfer).setTransferAction(selected);
 
-        this.browserView.reloadData();
+        this.reloadData();
     }
 }
