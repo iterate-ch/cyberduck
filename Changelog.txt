@@ -4,9 +4,16 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.3.1 () [http://trac.cyberduck.ch/query?status=closed&milestone=3.4]
+- [Feature] Support for new US West Location (S3)
+- [Bugfix] Bookmark menu [#3924]
+- [Bugfix] SOCKS proxy support broken [#3803]
+- [Bugfix] Container listing limited to 10000 files (Rackspace Cloud Files) [#3950]
+- [Bugfix] Synchronisation does not transfer files with equal size (#3100)
+- [Bugfix] Selection in synchronize prompt (#3901)
+
 3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
 - [Feature] Octal input field for permissions [#13]
-- [Bugfix] SOCKS proxy support broken [#3803]
 - [Bugfix] Connect to default bookmark for new browser window [#3798]
 - [Bugfix] Excessive Growl notifications [#2388]
 - [Bugfix] Icon set explicitly for every downloaded file [#3824]
