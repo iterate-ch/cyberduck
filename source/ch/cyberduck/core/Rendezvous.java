@@ -18,14 +18,17 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.apple.dnssd.*;
-
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import com.apple.dnssd.*;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -34,13 +37,43 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Rendezvous implements BrowseListener, ResolveListener {
     private static Logger log = Logger.getLogger(Rendezvous.class);
 
-    private static final String SERVICE_TYPE_SFTP = "_sftp._tcp.";
-    private static final String SERVICE_TYPE_SSH = "_ssh._tcp.";
+    /**
+     * sftp-ssh
+     * Secure File Transfer Protocol over SSH
+     * Bryan Cole <bryan.cole at teraview.com>
+     * Protocol description: draft-ietf-secsh-filexfer-13.txt
+     * Defined TXT keys: u=<username> p=<password> path=<path>
+     */
+    private static final String SERVICE_TYPE_SFTP = "_sftp-ssh._tcp.";
+    /**
+     * ftp
+     * File Transfer
+     * Service name originally allocated for Jon Postel <postel at isi.edu>
+     * Now advertised and browsed-for by numerous independent
+     * server and client implementations.
+     * Protocol description: RFC 959
+     * Defined TXT keys: u=<username> p=<password> path=<path>
+     */
     private static final String SERVICE_TYPE_FTP = "_ftp._tcp.";
+    /**
+     * webdav
+     * World Wide Web Distributed Authoring and Versioning (WebDAV)
+     * Y. Y. Goland <yarong at microsoft.com>
+     * Protocol description: RFC 2518
+     * Defined TXT keys: u=<username> p=<password> path=<path>
+     */
     private static final String SERVICE_TYPE_WEBDAV = "_webdav._tcp";
+    /**
+     * webdavs
+     * WebDAV over SSL/TLS
+     * Y. Y. Goland <yarong at microsoft.com>
+     * Protocol description: RFC 2518
+     * Defined TXT keys: u=<username> p=<password> path=<path>
+     */
+    private static final String SERVICE_TYPE_WEBDAV_TLS = "_webdavs._tcp";
 
     private static final String[] serviceTypes = new String[]{
-            SERVICE_TYPE_SFTP, SERVICE_TYPE_SSH, SERVICE_TYPE_FTP, SERVICE_TYPE_WEBDAV
+            SERVICE_TYPE_SFTP, SERVICE_TYPE_FTP, SERVICE_TYPE_WEBDAV, SERVICE_TYPE_WEBDAV_TLS
     };
 
     private Map<String, Host> services;
@@ -227,6 +260,7 @@ public class Rendezvous implements BrowseListener, ResolveListener {
     public void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName,
                             String regType, String domain) {
         log.debug("serviceLost:" + serviceName);
+        final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             String identifier = DNSSD.constructFullName(serviceName, regType, domain);
             if(null == this.services.remove(identifier)) {
@@ -236,6 +270,9 @@ public class Rendezvous implements BrowseListener, ResolveListener {
         }
         catch(DNSSDException e) {
             log.error(e.getMessage());
+        }
+        finally {
+            pool.drain();
         }
     }
 
@@ -262,8 +299,25 @@ public class Rendezvous implements BrowseListener, ResolveListener {
         log.debug("serviceResolved:" + hostname);
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
-            final Host host = new Host(this.getProtocol(fullname, port), hostname, port);
-            host.getCredentials().setUsername(null);
+            final Protocol protocol = this.getProtocol(fullname, port);
+            if(null == protocol) {
+                log.warn("Unknown service type:" + fullname);
+                return;
+            }
+            final Host host = new Host(protocol, hostname, port);
+            log.debug("TXT Record:" + txtRecord);
+            if(txtRecord.contains("u")) {
+                host.getCredentials().setUsername(txtRecord.getValueAsString("u"));
+            }
+            else {
+                host.getCredentials().setUsername(null);
+            }
+            if(txtRecord.contains("p")) {
+                host.getCredentials().setPassword(txtRecord.getValueAsString("p"));
+            }
+            if(txtRecord.contains("path")) {
+                host.setDefaultPath(Path.normalize(txtRecord.getValueAsString("path")));
+            }
             if(null == this.services.put(fullname, host)) {
                 this.notifier.serviceResolved(fullname, hostname);
             }
@@ -282,18 +336,18 @@ public class Rendezvous implements BrowseListener, ResolveListener {
      * @see "http://developer.apple.com/qa/qa2001/qa1312.html"
      */
     public Protocol getProtocol(final String serviceType, final int port) {
-        if(serviceType.contains(SERVICE_TYPE_SFTP) || serviceType.contains(SERVICE_TYPE_SSH)) {
+        if(serviceType.contains(SERVICE_TYPE_SFTP)) {
             return Protocol.SFTP;
         }
         if(serviceType.contains(SERVICE_TYPE_FTP)) {
             return Protocol.FTP;
         }
         if(serviceType.contains(SERVICE_TYPE_WEBDAV)) {
-            if(Protocol.WEBDAV_SSL.getDefaultPort() == port) {
-                return Protocol.WEBDAV_SSL;
-            }
             return Protocol.WEBDAV;
         }
-        return Protocol.getDefaultProtocol(port);
+        if(serviceType.contains(SERVICE_TYPE_WEBDAV_TLS)) {
+            return Protocol.WEBDAV_SSL;
+        }
+        return null;
     }
 }
