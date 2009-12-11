@@ -700,68 +700,71 @@ public class CDMainController extends CDBundleController implements NSApplicatio
 
     public NSUInteger applicationShouldTerminateAfterDonationPrompt(final NSApplication app) {
         log.debug("applicationShouldTerminateAfterDonationPrompt");
-        if(donationPrompt) {
-            try {
-                final License l = License.find();
-                if(!l.verify()) {
-                    final Calendar lastreminder = Calendar.getInstance();
-                    lastreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
-                    // Display donationPrompt every n days
-                    lastreminder.roll(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("donate.reminder.interval"));
-                    // Display after upgrade
-                    final String lastversion = Preferences.instance().getProperty("donate.reminder");
-                    if(lastreminder.getTime().before(new Date(System.currentTimeMillis())) ||
-                            !NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
-                        final int uses = Preferences.instance().getInteger("uses");
-                        donationController = new CDWindowController() {
-                            @Override
-                            protected String getBundleName() {
-                                return "Donate";
-                            }
-
-                            @Outlet
-                            private NSButton neverShowDonationCheckbox;
-
-                            public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
-                                this.neverShowDonationCheckbox = neverShowDonationCheckbox;
-                                this.neverShowDonationCheckbox.setTarget(this.id());
-                                this.neverShowDonationCheckbox.setState(NSCell.NSOffState);
-                            }
-
-                            @Override
-                            public void awakeFromNib() {
-                                this.window().setTitle(this.window().title() + " (" + uses + ")");
-                                this.window().center();
-                                this.window().makeKeyAndOrderFront(null);
-
-                                super.awakeFromNib();
-                            }
-
-                            public void closeDonationSheet(final NSButton sender) {
-                                if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
-                                    Preferences.instance().setProperty("donate.reminder",
-                                            NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
-                                }
-                                if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
-                                    NSWorkspace.sharedWorkspace().openURL(
-                                            NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
-                                }
-                                // Remeber this reminder date
-                                Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
-                                // Quit again
-                                app.replyToApplicationShouldTerminate(true);
-                            }
-                        };
-                        donationController.loadBundle();
-                        // Delay application termination. Dismissing the donation dialog will reply to quit.
-                        return NSApplication.NSTerminateLater;
-                    }
+        if(!donationPrompt) {
+            // Already displayed
+            return NSApplication.NSTerminateNow;
+        }
+        final License l = License.find();
+        if(!l.verify()) {
+            final Calendar nextreminder = Calendar.getInstance();
+            nextreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
+            // Display donationPrompt every n days
+            nextreminder.roll(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("donate.reminder.interval"));
+            log.debug("Next reminder:" + nextreminder.getTime().toString());
+            // Display after upgrade
+            if(nextreminder.getTime().before(new Date(System.currentTimeMillis()))) {
+                // Do not display if shown in the reminder interval
+                return NSApplication.NSTerminateNow;
+            }
+//            final String lastversion = Preferences.instance().getProperty("donate.reminder");
+//            if(NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
+//                // Do not display if same version is installed
+//                return NSApplication.NSTerminateNow;
+//            }
+            final int uses = Preferences.instance().getInteger("uses");
+            donationController = new CDWindowController() {
+                @Override
+                protected String getBundleName() {
+                    return "Donate";
                 }
-            }
-            finally {
-                // Disable until next launch
-                donationPrompt = false;
-            }
+
+                @Outlet
+                private NSButton neverShowDonationCheckbox;
+
+                public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
+                    this.neverShowDonationCheckbox = neverShowDonationCheckbox;
+                    this.neverShowDonationCheckbox.setTarget(this.id());
+                    this.neverShowDonationCheckbox.setState(NSCell.NSOffState);
+                }
+
+                @Override
+                public void awakeFromNib() {
+                    this.window().setTitle(this.window().title() + " (" + uses + ")");
+                    this.window().center();
+                    this.window().makeKeyAndOrderFront(null);
+
+                    super.awakeFromNib();
+                }
+
+                public void closeDonationSheet(final NSButton sender) {
+                    if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
+                        Preferences.instance().setProperty("donate.reminder",
+                                NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
+                    }
+                    if(sender.tag() == CDSheetCallback.DEFAULT_OPTION) {
+                        NSWorkspace.sharedWorkspace().openURL(
+                                NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
+                    }
+                    // Remeber this reminder date
+                    Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
+                    donationPrompt = false;
+                    // Quit again
+                    app.replyToApplicationShouldTerminate(true);
+                }
+            };
+            donationController.loadBundle();
+            // Delay application termination. Dismissing the donation dialog will reply to quit.
+            return NSApplication.NSTerminateLater;
         }
         return NSApplication.NSTerminateNow;
     }
