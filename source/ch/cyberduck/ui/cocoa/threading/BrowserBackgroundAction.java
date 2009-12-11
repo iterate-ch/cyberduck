@@ -20,21 +20,21 @@ package ch.cyberduck.ui.cocoa.threading;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.BrowserController;
 
 /**
  * @version $Id$
  */
 public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundAction {
     
-    private CDBrowserController controller;
+    private BrowserController controller;
 
-    public BrowserBackgroundAction(CDBrowserController controller) {
+    public BrowserBackgroundAction(BrowserController controller) {
         super(controller);
         this.controller = controller;
     }
 
-    public CDBrowserController getController() {
+    public BrowserController getController() {
         return controller;
     }
 

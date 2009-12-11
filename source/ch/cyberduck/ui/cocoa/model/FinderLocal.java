@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.model;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.CDIconCache;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
@@ -336,7 +336,7 @@ public class FinderLocal extends Local {
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                CDIconCache.iconNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
+                                IconCache.iconNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
                     }
                 }
             });

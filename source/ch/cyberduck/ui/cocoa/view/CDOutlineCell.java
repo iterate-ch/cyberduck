@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.ui.cocoa.view;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,25 +18,28 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
+
+import org.rococoa.ObjCClass;
 
 /**
  * @version $Id$
  */
-public abstract class WindowMainAction extends DefaultMainAction {
+public abstract class CDOutlineCell extends NSTextFieldCell {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDOutlineCell", _Class.class);
 
-    private WindowController controller;
-
-    public WindowMainAction(WindowController c) {
-        this.controller = c;
+    public static CDOutlineCell outlineCell() {
+        return CLASS.alloc().init();
     }
 
-    /**
-     * @return True if hte window is still on screen
-     */
+    public interface _Class extends ObjCClass {
+        CDOutlineCell alloc();
+    }
+
     @Override
-    public boolean isValid() {
-        return controller.isVisible();
-    }
+    public abstract CDOutlineCell init();
+
+    public abstract void setIcon(NSImage aImage);
+
 }

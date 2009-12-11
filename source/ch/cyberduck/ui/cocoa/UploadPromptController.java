@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,25 +18,24 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAction;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
-public abstract class WindowMainAction extends DefaultMainAction {
+public class UploadPromptController extends TransferPromptController {
+    private static Logger log = Logger.getLogger(UploadPromptController.class);
 
-    private WindowController controller;
-
-    public WindowMainAction(WindowController c) {
-        this.controller = c;
+    public UploadPromptController(final WindowController parent, final Transfer transfer) {
+        super(parent, transfer);
     }
 
-    /**
-     * @return True if hte window is still on screen
-     */
     @Override
-    public boolean isValid() {
-        return controller.isVisible();
+    public TransferAction prompt() {
+        browserModel = new UploadPromptModel(this, transfer);
+        return super.prompt();
     }
 }

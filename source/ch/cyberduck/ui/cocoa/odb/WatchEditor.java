@@ -22,7 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
@@ -31,9 +31,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
-import java.io.IOException;
-
 /**
+ * An editor listing for file system notifications on a particular folder
+ *
  * @version $Id$
  */
 public class WatchEditor extends Editor implements FileWatcherListener {
@@ -44,7 +44,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     /**
      * @param c
      */
-    public WatchEditor(CDBrowserController c, Path path) {
+    public WatchEditor(BrowserController c, Path path) {
         this(c, null, path);
     }
 
@@ -52,9 +52,14 @@ public class WatchEditor extends Editor implements FileWatcherListener {
      * @param c
      * @param bundleIdentifier
      */
-    public WatchEditor(CDBrowserController c, String bundleIdentifier, Path path) {
+    public WatchEditor(BrowserController c, String bundleIdentifier, Path path) {
         super(c, bundleIdentifier, path);
     }
+
+//    @Override
+//    protected TransferAction getAction() {
+//        return TransferAction.ACTION_OVERWRITE;
+//    }
 
     /**
      * Edit and watch the file for changes
@@ -68,31 +73,13 @@ public class WatchEditor extends Editor implements FileWatcherListener {
             NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
                     NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
         }
-        this.watch();
-    }
-
-    private void watch() {
-        monitor = new FileWatcher(edited.getLocal());
-        try {
-            monitor.watch(this);
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    private void unwatch() {
-        try {
-            monitor.unwatch();
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
-        }
+        monitor = FileWatcher.create(edited.getLocal());
+        monitor.addListener(this);
     }
 
     @Override
     protected void delete() {
-        this.unwatch();
+        monitor.removeListener(this);
         super.delete();
     }
 
@@ -132,6 +119,6 @@ public class WatchEditor extends Editor implements FileWatcherListener {
 
     public void fileDeleted(Local file) {
         log.info("fileDeleted:" + file);
-        this.unwatch();
+        monitor.removeListener(this);
     }
 }

@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.view.CDControllerCell;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -48,9 +49,9 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     /**
      *
      */
-    private CDWindowController controller;
+    private WindowController controller;
 
-    public AlertRepeatableBackgroundAction(CDWindowController controller) {
+    public AlertRepeatableBackgroundAction(WindowController controller) {
         this.controller = controller;
         this.exceptions = new Collection<BackgroundException>();
     }
@@ -70,7 +71,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
      */
     protected void alert() {
         if(controller.isVisible()) {
-            final CDSheetController alert = new CDSheetController(controller) {
+            final SheetController alert = new SheetController(controller) {
 
                 @Override
                 protected String getBundleName() {
@@ -125,18 +126,18 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
 
                 @Outlet
                 private NSTableView errorView;
-                private CDListDataSource model;
-                private CDAbstractTableDelegate<CDErrorController> delegate;
+                private ListDataSource model;
+                private AbstractTableDelegate<ErrorController> delegate;
 
-                private List<CDErrorController> errors;
+                private List<ErrorController> errors;
 
                 public void setErrorView(NSTableView errorView) {
                     this.errorView = errorView;
-                    this.errors = new ArrayList<CDErrorController>();
+                    this.errors = new ArrayList<ErrorController>();
                     for(BackgroundException e : exceptions) {
-                        errors.add(new CDErrorController(e));
+                        errors.add(new ErrorController(e));
                     }
-                    this.errorView.setDataSource((model = new CDListDataSource() {
+                    this.errorView.setDataSource((model = new ListDataSource() {
                         public NSInteger numberOfRowsInTableView(NSTableView view) {
                             return new NSInteger(errors.size());
                         }
@@ -145,7 +146,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                             return null;
                         }
                     }).id());
-                    this.errorView.setDelegate((delegate = new CDAbstractTableDelegate<CDErrorController>() {
+                    this.errorView.setDelegate((delegate = new AbstractTableDelegate<ErrorController>() {
                         @Override
                         public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
                         }
@@ -169,7 +170,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         public void deleteKeyPressed(final ID sender) {
                         }
 
-                        public String tooltip(CDErrorController e) {
+                        public String tooltip(ErrorController e) {
                             return e.getTooltip();
                         }
 

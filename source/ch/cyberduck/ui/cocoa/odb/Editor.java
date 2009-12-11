@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
@@ -39,7 +39,7 @@ import java.text.MessageFormat;
 public abstract class Editor {
     private static Logger log = Logger.getLogger(Editor.class);
 
-    private CDBrowserController controller;
+    private BrowserController controller;
 
     /**
      * The edited path
@@ -55,7 +55,7 @@ public abstract class Editor {
      * @param controller
      * @param bundleIdentifier
      */
-    public Editor(CDBrowserController controller, String bundleIdentifier, Path path) {
+    public Editor(BrowserController controller, String bundleIdentifier, Path path) {
         this.controller = controller;
         this.bundleIdentifier = bundleIdentifier;
         this.edited = path;
@@ -63,6 +63,14 @@ public abstract class Editor {
                 new File(Preferences.instance().getProperty("editor.tmp.directory"),
                         edited.getParent().getAbsolute()));
         this.edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
+    }
+
+    /**
+     *
+     * @return The transfer action for edited file
+     */
+    protected TransferAction getAction() {
+        return TransferAction.ACTION_RENAME;
     }
 
     public void open() {
@@ -73,7 +81,7 @@ public abstract class Editor {
                 Transfer download = new DownloadTransfer(edited) {
                     @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-                        return TransferAction.ACTION_RENAME;
+                        return getAction();
                     }
 
                     @Override

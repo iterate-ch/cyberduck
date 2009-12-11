@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.CDIconCache;
+import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
@@ -73,7 +73,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         }
         item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
         item.setRepresentedObject(path.getLocal().getAbsolute());
-        item.setImage(CDIconCache.instance().iconForPath(path, 16));
+        item.setImage(IconCache.instance().iconForPath(path, 16));
         return !shouldCancel;
     }
 

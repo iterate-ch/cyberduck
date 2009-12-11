@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.BrowserController;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +34,7 @@ public class ODBEditor extends Editor {
      * @param c
      * @param bundleIdentifier
      */
-    public ODBEditor(CDBrowserController c, String bundleIdentifier, final Path path) {
+    public ODBEditor(BrowserController c, String bundleIdentifier, final Path path) {
         super(c, bundleIdentifier, path);
     }
 

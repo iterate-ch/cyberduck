@@ -43,7 +43,7 @@ import java.util.Map;
  *
  * @version $Id$
  */
-public abstract class ToolbarWindowController extends CDWindowController implements NSToolbar.Delegate, NSTabView.Delegate {
+public abstract class ToolbarWindowController extends WindowController implements NSToolbar.Delegate, NSTabView.Delegate {
     private static Logger log = Logger.getLogger(ToolbarWindowController.class);
 
     private NSTabView tabView;
@@ -161,7 +161,7 @@ public abstract class ToolbarWindowController extends CDWindowController impleme
 
         // Set up a reasonable tooltip, and image   Note, these aren't localized, but you will likely want to localize many of the item's properties
         toolbarItem.setToolTip(tab.label());
-        toolbarItem.setImage(CDIconCache.iconNamed(itemIdentifier, 32));
+        toolbarItem.setImage(IconCache.iconNamed(itemIdentifier, 32));
         toolbarItem.setTarget(this.id());
         toolbarItem.setAction(Foundation.selector("select:"));
 

@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,25 +18,21 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.WindowController;
+import org.rococoa.ID;
+
+import java.util.Comparator;
 
 /**
  * @version $Id$
  */
-public abstract class WindowMainAction extends DefaultMainAction {
+public interface TableDelegate<E> {
+    abstract void enterKeyPressed(final ID sender);
 
-    private WindowController controller;
+    abstract void deleteKeyPressed(final ID sender);
 
-    public WindowMainAction(WindowController c) {
-        this.controller = c;
-    }
+    abstract boolean isSortedAscending();
 
-    /**
-     * @return True if hte window is still on screen
-     */
-    @Override
-    public boolean isValid() {
-        return controller.isVisible();
-    }
+    abstract Comparator<E> getSortingComparator();
+
+    public String tooltip(E object);
 }

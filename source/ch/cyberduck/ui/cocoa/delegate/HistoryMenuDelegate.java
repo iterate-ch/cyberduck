@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDIconCache;
-import ch.cyberduck.ui.cocoa.CDMainController;
+import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.cocoa.IconCache;
+import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
@@ -73,7 +73,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             sender.setRepresentedObject(h.getNickname());
             sender.setTarget(this.id());
             sender.setEnabled(true);
-            sender.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
+            sender.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
             return !shouldCancel;
         }
         if(index.intValue() == size) {
@@ -93,7 +93,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
 
     public void historyMenuItemClicked(NSMenuItem sender) {
         log.debug("historyMenuItemClicked:" + sender);
-        CDBrowserController controller = CDMainController.newDocument();
+        BrowserController controller = MainController.newDocument();
         controller.mount(HistoryCollection.defaultCollection().get(
                 HistoryCollection.defaultCollection().indexOf(sender.representedObject())
         ));

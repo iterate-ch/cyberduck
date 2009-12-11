@@ -20,9 +20,9 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostCollection;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDIconCache;
-import ch.cyberduck.ui.cocoa.CDMainController;
+import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.cocoa.IconCache;
+import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
@@ -58,17 +58,17 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         if(index.intValue() == BOOKMARKS_INDEX) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.iconNamed("history", 16));
+            item.setImage(IconCache.iconNamed("history", 16));
         }
         if(index.intValue() == BOOKMARKS_INDEX + 1) {
             item.setEnabled(true);
-            item.setImage(CDIconCache.iconNamed("rendezvous", 16));
+            item.setImage(IconCache.iconNamed("rendezvous", 16));
         }
         if(index.intValue() > BOOKMARKS_INDEX + 2) {
             Host h = HostCollection.defaultCollection().get(index.intValue() - (BOOKMARKS_INDEX + 3));
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
-            item.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
+            item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(Foundation.selector("bookmarkMenuItemClicked:"));
             item.setRepresentedObject(h.getNickname());
         }
@@ -77,7 +77,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
-        CDBrowserController controller = CDMainController.newDocument();
+        BrowserController controller = MainController.newDocument();
         final int row = HostCollection.defaultCollection().indexOf(sender.representedObject());
         controller.mount(HostCollection.defaultCollection().get(row));
     }

@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
+import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
@@ -118,7 +118,7 @@ public class EditorFactory {
      * @param path
      * @return
      */
-    public static Editor createEditor(CDBrowserController c, final Path path) {
+    public static Editor createEditor(BrowserController c, final Path path) {
         return createEditor(c, editorBundleIdentifierForFile(path.getLocal()), path);
     }
 
@@ -128,7 +128,7 @@ public class EditorFactory {
      * @param path
      * @return
      */
-    public static Editor createEditor(CDBrowserController c, String bundleIdentifier, final Path path) {
+    public static Editor createEditor(BrowserController c, String bundleIdentifier, final Path path) {
         if(getInstalledOdbEditors().containsValue(bundleIdentifier)) {
             return new ODBEditor(c, bundleIdentifier, path);
         }

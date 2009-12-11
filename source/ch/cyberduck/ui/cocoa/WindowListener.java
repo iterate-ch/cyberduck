@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa.threading;
+package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2005 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,25 +18,13 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.WindowController;
-
 /**
  * @version $Id$
  */
-public abstract class WindowMainAction extends DefaultMainAction {
-
-    private WindowController controller;
-
-    public WindowMainAction(WindowController c) {
-        this.controller = c;
-    }
+public interface WindowListener {
 
     /**
-     * @return True if hte window is still on screen
+     * Sent after NSWindow.WindowWillCloseNotification is fired for this window
      */
-    @Override
-    public boolean isValid() {
-        return controller.isVisible();
-    }
+    abstract void windowWillClose();
 }

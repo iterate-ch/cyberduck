@@ -22,9 +22,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Rendezvous;
 import ch.cyberduck.core.RendezvousListener;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.CDBrowserController;
-import ch.cyberduck.ui.cocoa.CDIconCache;
-import ch.cyberduck.ui.cocoa.CDMainController;
+import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.cocoa.IconCache;
+import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
@@ -69,7 +69,7 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
             item.setTitle(title);
             item.setTarget(this.id());
             item.setEnabled(true);
-            item.setImage(CDIconCache.iconNamed(h.getProtocol().icon(), 16));
+            item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(Foundation.selector("rendezvousMenuClicked:"));
             item.setRepresentedObject(h.getNickname());
         }
@@ -78,7 +78,7 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
 
     public void rendezvousMenuClicked(NSMenuItem sender) {
         log.debug("rendezvousMenuClicked:" + sender);
-        CDBrowserController controller = CDMainController.newDocument();
+        BrowserController controller = MainController.newDocument();
         controller.mount(Rendezvous.instance().getServiceWithDisplayedName(sender.representedObject()));
     }
 
