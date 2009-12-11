@@ -28,6 +28,8 @@ import com.barbarysoftware.watchservice.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.barbarysoftware.watchservice.StandardWatchEventKind.*;
 
@@ -40,16 +42,32 @@ public class FileWatcher {
     private WatchService monitor;
     private Local file;
 
-    public FileWatcher(Local file) {
-        this.file = file;
-        this.monitor = WatchService.newWatchService();
+    private static final Map<Local, FileWatcher> instances
+            = new HashMap<Local, FileWatcher>();
+
+    /**
+     * @param file
+     * @return
+     */
+    public static FileWatcher create(Local file) {
+        if(!instances.containsKey(file)) {
+            instances.put(file, new FileWatcher(file));
+        }
+        return instances.get(file);
     }
 
-    public void watch(final FileWatcherListener listener) throws IOException {
+    private FileWatcher(final Local file) {
+        this.file = file;
+        this.monitor = WatchService.newWatchService();
         log.debug("watch:" + file);
         final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
-        watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-        final Thread consumer = new Thread(new Runnable() {
+        try {
+            watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
+        }
+        final AtomicReference<Thread> consumer = new AtomicReference<Thread>(new Thread(new Runnable() {
             public void run() {
                 while(true) {
                     final NSAutoreleasePool pool = NSAutoreleasePool.push();
@@ -77,10 +95,14 @@ public class FileWatcher {
                             Local f = LocalFactory.createLocal(ev.context());
                             if(f.equals(file)) {
                                 if(ENTRY_MODIFY == kind) {
-                                    listener.fileWritten(f);
+                                    for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
+                                        l.fileWritten(f);
+                                    }
                                 }
                                 if(ENTRY_DELETE == kind) {
-                                    listener.fileDeleted(f);
+                                    for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
+                                        l.fileDeleted(f);
+                                    }
                                 }
                             }
                             else {
@@ -99,12 +121,30 @@ public class FileWatcher {
                     }
                 }
             }
-        });
-        consumer.start();
+        }));
+        consumer.get().start();
     }
 
-    public void unwatch() throws IOException {
-        log.debug("unwatch:" + file);
-        monitor.close();
+    private Set<FileWatcherListener> listeners
+            = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
+
+    /**
+     * @param listener
+     * @throws IOException
+     */
+    public void addListener(final FileWatcherListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(final FileWatcherListener listener) {
+        if(listeners.isEmpty()) {
+            log.debug("unwatch:" + file);
+            try {
+                monitor.close();
+            }
+            catch(IOException e) {
+                log.error(e.getMessage());
+            }
+        }
     }
 }
