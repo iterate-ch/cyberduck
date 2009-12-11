@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.CDBrowserTableDataSource;
+import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 
 import org.apache.log4j.Logger;
 
@@ -215,7 +215,7 @@ public abstract class Preferences {
         defaults.put("browser.columnGroup", String.valueOf(false));
         defaults.put("browser.columnPermissions", String.valueOf(false));
 
-        defaults.put("browser.sort.column", CDBrowserTableDataSource.FILENAME_COLUMN);
+        defaults.put("browser.sort.column", BrowserTableDataSource.FILENAME_COLUMN);
         defaults.put("browser.sort.ascending", String.valueOf(true));
 
         defaults.put("browser.alternatingRows", String.valueOf(false));
