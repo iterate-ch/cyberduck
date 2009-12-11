@@ -324,7 +324,7 @@ public abstract class Local extends AbstractPath implements Attributes {
     }
 
     @Override
-    public Local getParent() {
+    public AbstractPath getParent() {
         return LocalFactory.createLocal(_impl.getParentFile());
     }
 
