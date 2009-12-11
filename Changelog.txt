@@ -11,6 +11,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Container listing limited to 10000 files (Rackspace Cloud Files) [#3950]
 - [Bugfix] Synchronisation does not transfer files with equal size (#3100)
 - [Bugfix] Selection in synchronize prompt (#3901)
+- [Bugfix] Bonjour bookmarks ignore TXT record with path and credentials attributes (#3984)
 
 3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
 - [Feature] Octal input field for permissions [#13]
