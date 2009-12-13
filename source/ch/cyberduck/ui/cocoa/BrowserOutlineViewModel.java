@@ -81,7 +81,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      */
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(log.isDebugEnabled()) {
-            log.debug("outlineView_numberOfChildrenOfItem:");
+            log.debug("outlineView_numberOfChildrenOfItem:" + item);
         }
         if(controller.isMounted()) {
             if(null == item) {
@@ -116,6 +116,9 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      *      return the appropriate child item of the root object
      */
     public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, NSInteger index, NSObject item) {
+        if(log.isDebugEnabled()) {
+            log.debug("outlineView_child_ofItem:" + item);
+        }
         final Path path;
         if(null == item) {
             path = controller.workdir();
@@ -139,7 +142,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         super.setObjectValueForItem(controller.lookup(new OutlinePathReference(item)), value, tableColumn.identifier());
     }
 
-    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView outlineView, final NSTableColumn tableColumn, NSObject item) {
+    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, NSObject item) {
         if(null == item) {
             return null;
         }

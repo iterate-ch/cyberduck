@@ -54,9 +54,6 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     }
 
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
-        if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
-            return null;
-        }
         if(controller.isMounted()) {
             final List<Path> childs = this.childs(this.controller.workdir());
             if(row.intValue() < childs.size()) {
