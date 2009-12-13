@@ -41,13 +41,14 @@ public class Native {
      */
     public static boolean load(String library) {
         synchronized(lock) {
+            final long l = System.currentTimeMillis();
             final String path = Native.getPath(library);
             try {
                 // Load using absolute path. Otherwise we may load
                 // a libray in java.library.path that was not intended
                 // because of a naming conflict.
                 System.load(path);
-                log.info("Loaded " + path);
+                log.info("Loaded " + path + " in " + (System.currentTimeMillis() - l) + "ms");
                 return true;
             }
             catch(UnsatisfiedLinkError e) {
