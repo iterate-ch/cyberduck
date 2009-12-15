@@ -56,23 +56,20 @@ public class UploadPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = tableViewCache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
-                if(item.attributes.isFile()) {
-                    if(item.getLocal().attributes.getSize() == 0) {
-                        return tableViewCache.put(item, identifier, ALERT_ICON);
-                    }
-                    if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
-                        return tableViewCache.put(item, identifier, ALERT_ICON);
-                    }
+        if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
+            if(item.attributes.isFile()) {
+                if(item.getLocal().attributes.getSize() == 0) {
+                    return ALERT_ICON;
                 }
-                return tableViewCache.put(item, identifier, null);
+                if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
+                    return ALERT_ICON;
+                }
             }
-            if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
-                        TableCellAttributes.browserFontRightAlignment()));
-            }
+            return null;
+        }
+        if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
+            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
         }
         return super.objectValueForItem(item, identifier);
     }

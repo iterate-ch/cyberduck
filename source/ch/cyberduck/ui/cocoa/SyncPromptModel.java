@@ -62,45 +62,42 @@ public class SyncPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        final NSObject cached = tableViewCache.get(item, identifier);
-        if(null == cached) {
-            if(identifier.equals(SIZE_COLUMN)) {
-                SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
-                        compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
-                        TableCellAttributes.browserFontRightAlignment()));
+        if(identifier.equals(SIZE_COLUMN)) {
+            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
+                    compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().attributes.getSize()),
+                    TableCellAttributes.browserFontRightAlignment());
+        }
+        if(identifier.equals(SYNC_COLUMN)) {
+            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+            if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
+                return IconCache.iconNamed("arrowDown", 16);
             }
-            if(identifier.equals(SYNC_COLUMN)) {
-                SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-                if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return IconCache.iconNamed("arrowDown", 16);
-                }
-                if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return IconCache.iconNamed("arrowUp", 16);
-                }
-                return tableViewCache.put(item, identifier, null);
+            if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
+                return IconCache.iconNamed("arrowUp", 16);
             }
-            if(identifier.equals(WARNING_COLUMN)) {
-                if(item.attributes.isFile()) {
-                    if(item.exists()) {
-                        if(item.attributes.getSize() == 0) {
-                            return ALERT_ICON;
-                        }
-                    }
-                    if(item.getLocal().exists()) {
-                        if(item.getLocal().attributes.getSize() == 0) {
-                            return ALERT_ICON;
-                        }
+            return null;
+        }
+        if(identifier.equals(WARNING_COLUMN)) {
+            if(item.attributes.isFile()) {
+                if(item.exists()) {
+                    if(item.attributes.getSize() == 0) {
+                        return ALERT_ICON;
                     }
                 }
-                return null;
-            }
-            if(identifier.equals(CREATE_COLUMN)) {
-                if(!(item.exists() && item.getLocal().exists())) {
-                    return IconCache.iconNamed("plus", 16);
+                if(item.getLocal().exists()) {
+                    if(item.getLocal().attributes.getSize() == 0) {
+                        return ALERT_ICON;
+                    }
                 }
-                return null;
             }
+            return null;
+        }
+        if(identifier.equals(CREATE_COLUMN)) {
+            if(!(item.exists() && item.getLocal().exists())) {
+                return IconCache.iconNamed("plus", 16);
+            }
+            return null;
         }
         return super.objectValueForItem(item, identifier);
     }
