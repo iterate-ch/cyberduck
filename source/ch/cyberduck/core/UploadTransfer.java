@@ -150,24 +150,48 @@ public class UploadTransfer extends Transfer {
         }
     };
 
+    /**
+     * File listing cache for children of the root paths not part of the session cache because
+     * they only exist on the local file system.
+     */
+    private final Cache<Path> cache = new Cache<Path>();
+
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        if(!parent.getLocal().exists()) {
-            // Cannot fetch file listing of non existant file
-            return AttributedList.emptyList();
-        }
-        final AttributedList<Path> childs = new AttributedList<Path>();
-        final Cache<Path> cache = this.getSession().cache();
-        for(AbstractPath local : parent.getLocal().childs(childFilter)) {
-            final Local download = LocalFactory.createLocal(local.getAbsolute());
-            Path upload = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), download);
-            if(upload.exists()) {
-                upload = cache.lookup(upload.getReference());
-                upload.setLocal(download);
+        if(!cache.containsKey(parent)) {
+            if(!parent.getLocal().exists()) {
+                // Cannot fetch file listing of non existant file
+                return AttributedList.emptyList();
             }
-            childs.add(upload);
+            final AttributedList<Path> childs = new AttributedList<Path>();
+            for(AbstractPath child : parent.getLocal().childs(childFilter)) {
+                final Local local = LocalFactory.createLocal(child.getAbsolute());
+                Path upload = PathFactory.createPath(parent.getSession(), parent.getAbsolute(), local);
+                if(upload.exists()) {
+                    upload = this.getSession().cache().lookup(upload.getReference());
+                    upload.setLocal(local);
+                }
+                childs.add(upload);
+            }
+            cache.put(parent, childs);
         }
-        return childs;
+        return cache.get(parent);
+    }
+
+    @Override
+    public Path lookup(PathReference r) {
+        return cache.lookup(r);
+    }
+
+    @Override
+    protected void clear(final TransferOptions options) {
+        cache.clear();
+        super.clear(options);
+    }
+
+    @Override
+    public Cache<Path> cache() {
+        return cache;
     }
 
     @Override

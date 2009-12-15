@@ -207,6 +207,23 @@ public class SyncTransfer extends Transfer {
         final Set<Path> childs = new HashSet<Path>();
         childs.addAll(_delegateDownload.childs(parent));
         childs.addAll(_delegateUpload.childs(parent));
+        for(Path child: childs) {
+            boolean skipped = false;
+            final Comparison comparison = this.compare(child);
+            // Updating default skip settings for actual transfer
+            if(COMPARISON_EQUAL.equals(comparison)) {
+                skipped = child.attributes.isFile();
+            }
+            else if(child.attributes.isFile()) {
+                if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
+                    skipped = this.getAction().equals(ACTION_UPLOAD);
+                }
+                else if(comparison.equals(COMPARISON_LOCAL_NEWER)) {
+                    skipped = this.getAction().equals(ACTION_DOWNLOAD);
+                }
+            }
+            child.getStatus().setSkipped(skipped);
+        }
         return new AttributedList<Path>(childs);
     }
 
@@ -230,7 +247,6 @@ public class SyncTransfer extends Transfer {
         else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
             _delegateUpload._transferImpl(p);
         }
-        log.error("Should not reach here. Path " + p + " has equal comparison");
     }
 
     @Override
@@ -311,7 +327,9 @@ public class SyncTransfer extends Transfer {
         log.debug("compare:" + p);
         Comparison result = COMPARISON_EQUAL;
         if(p.getLocal().exists() && p.exists()) {
-            result = this.compareTimestamp(p);
+            if(p.attributes.isFile()) {
+                result = this.compareTimestamp(p);
+            }
         }
         else if(p.exists()) {
             // only the remote file exists
@@ -321,22 +339,6 @@ public class SyncTransfer extends Transfer {
             // only the local file exists
             result = COMPARISON_LOCAL_NEWER;
         }
-
-        boolean skipped = false;
-        // Updating default skip settings for actual transfer
-        if(COMPARISON_EQUAL.equals(result)) {
-            skipped = true;
-        }
-        else if(p.attributes.isFile()) {
-            if(result.equals(COMPARISON_REMOTE_NEWER)) {
-                skipped = this.getAction().equals(ACTION_UPLOAD);
-            }
-            else if(result.equals(COMPARISON_LOCAL_NEWER)) {
-                skipped = this.getAction().equals(ACTION_DOWNLOAD);
-            }
-        }
-        p.getStatus().setSkipped(skipped);
-
         return result;
     }
 

@@ -142,7 +142,6 @@ public abstract class TransferPromptController extends SheetController implement
     public void reloadData() {
         log.debug("reloadData");
         statusIndicator.startAnimation(null);
-        browserModel.clearCache();
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -492,6 +491,7 @@ public abstract class TransferPromptController extends SheetController implement
         Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
 
         action = selected;
+        transfer.cache().clear();
         this.reloadData();
     }
 }

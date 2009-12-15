@@ -124,7 +124,7 @@ public class SyncPromptController extends TransferPromptController {
 
         Preferences.instance().setProperty("queue.sync.action.default", selected.toString());
         ((SyncTransfer) transfer).setTransferAction(selected);
-
+        transfer.cache().clear();
         this.reloadData();
     }
 }

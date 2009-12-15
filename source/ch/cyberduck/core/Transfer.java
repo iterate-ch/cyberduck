@@ -361,6 +361,10 @@ public abstract class Transfer implements Serializable {
      */
     public abstract TransferAction action(final boolean resumeRequested, final boolean reloadRequested);
 
+    public Path lookup(PathReference r) {
+        return session.cache().lookup(r);
+    }
+    
     /**
      * Returns the childs of this path filtering it with the default regex filter
      *
@@ -566,6 +570,10 @@ public abstract class Transfer implements Serializable {
         if(options.closeSession) {
             session.cache().clear();
         }
+    }
+
+    public Cache<Path> cache() {
+        return session.cache();
     }
 
     /**
