@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -66,7 +67,9 @@ public abstract class Session {
     }
 
     private final String ua = Preferences.instance().getProperty("application") + "/"
-            + Preferences.instance().getProperty("version");
+            + Preferences.instance().getProperty("version")
+            + " (" + System.getProperty("os.name") + "/" + System.getProperty("os.version") + ")"
+            + " (" + System.getProperty("os.arch") + ")";
 
     public String getUserAgent() {
         return ua;
@@ -306,7 +309,6 @@ public abstract class Session {
     }
 
     /**
-     *
      * @param workdir
      * @throws IOException
      */
