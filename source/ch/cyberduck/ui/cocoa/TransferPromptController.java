@@ -462,8 +462,7 @@ public abstract class TransferPromptController extends SheetController implement
         final TransferAction[] actions = new TransferAction[]{
                 transfer.isResumable() ? TransferAction.ACTION_RESUME : null,
                 TransferAction.ACTION_OVERWRITE,
-                TransferAction.ACTION_RENAME,
-                TransferAction.ACTION_SKIP};
+                TransferAction.ACTION_RENAME};
 
         for(TransferAction action : actions) {
             if(null == action) {
