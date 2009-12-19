@@ -195,7 +195,7 @@ public class DateParser {
     public static String getIsoDate(Date date) {
         Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         calendar.setTime(date);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(calendar.get(Calendar.YEAR));
         buffer.append("-");
         buffer.append(twoDigit(calendar.get(Calendar.MONTH) + 1));
@@ -222,7 +222,7 @@ public class DateParser {
     public static String getIsoDateNoMillis(Date date) {
         Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         calendar.setTime(date);
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(calendar.get(Calendar.YEAR));
         buffer.append("-");
         buffer.append(twoDigit(calendar.get(Calendar.MONTH) + 1));

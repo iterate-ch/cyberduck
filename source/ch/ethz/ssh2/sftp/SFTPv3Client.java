@@ -827,7 +827,7 @@ public class SFTPv3Client
 
 	private final String expandString(byte[] b, int off, int len)
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < len; i++)
 		{

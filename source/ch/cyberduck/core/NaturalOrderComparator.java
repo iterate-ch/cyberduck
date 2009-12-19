@@ -32,7 +32,7 @@ import java.util.Locale;
  * This is an updated version with enhancements made by Daniel Migowski,
  * Andre Bogus, and David Koelle
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class NaturalOrderComparator implements Comparator<String> {
 
@@ -46,7 +46,7 @@ public class NaturalOrderComparator implements Comparator<String> {
      * Length of string is passed in for improved efficiency (only need to calculate it once) *
      */
     private String getChunk(String s, int slength, int marker) {
-        final StringBuffer chunk = new StringBuffer();
+        final StringBuilder chunk = new StringBuilder();
         char c = s.charAt(marker);
         chunk.append(c);
         marker++;

@@ -185,7 +185,7 @@ public class ProgressController extends BundleController {
     }
 
     private void setMessageText() {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         if(messageText != null) {
             b.append(messageText);
         }
@@ -197,7 +197,7 @@ public class ProgressController extends BundleController {
     }
 
     private void setStatusText() {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         if(!transfer.isRunning()) {
             if(transfer instanceof DownloadTransfer) {
                 b.append(transfer.isComplete() ? Locale.localizedString("Download complete", "Growl") :

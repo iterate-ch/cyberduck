@@ -421,7 +421,7 @@ public class CFPath extends CloudPath {
         if(null == distribution.getUrl()) {
             return super.toHttpURL();
         }
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         b.append(distribution.getUrl());
         if(!this.isContainer()) {
             b.append(this.encode(this.getKey()));

@@ -741,7 +741,7 @@ public class KnownHosts
 	{
 		final char[] alpha = "0123456789abcdef".toCharArray();
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < fingerprint.length; i++)
 		{
@@ -765,7 +765,7 @@ public class KnownHosts
 		final char[] v = "aeiouy".toCharArray();
 		final char[] c = "bcdfghklmnprstvzx".toCharArray();
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		int seed = 1;
 

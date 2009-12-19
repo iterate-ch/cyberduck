@@ -354,7 +354,7 @@ public class TransportManager
 
 			/* OK, now tell the proxy where we actually want to connect to */
 
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 
 			sb.append("CONNECT ");
 			sb.append(hostname);
@@ -680,7 +680,7 @@ public class TransportManager
 					TypesReader tr = new TypesReader(msg, 0, msglen);
 					tr.readByte();
 					tr.readBoolean();
-					StringBuffer debugMessageBuffer = new StringBuffer();
+					StringBuilder debugMessageBuffer = new StringBuilder();
 					debugMessageBuffer.append(tr.readString("UTF-8"));
 
 					for (int i = 0; i < debugMessageBuffer.length(); i++)
@@ -707,7 +707,7 @@ public class TransportManager
 				TypesReader tr = new TypesReader(msg, 0, msglen);
 				tr.readByte();
 				int reason_code = tr.readUINT32();
-				StringBuffer reasonBuffer = new StringBuffer();
+				StringBuilder reasonBuffer = new StringBuilder();
 				reasonBuffer.append(tr.readString("UTF-8"));
 
 				/*

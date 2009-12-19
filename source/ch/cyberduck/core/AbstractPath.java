@@ -205,7 +205,7 @@ public abstract class AbstractPath {
                 normalized = normalized.substring(0, normalized.lastIndexOf('/', index - 1)) +
                         normalized.substring(index + 3);
             }
-            StringBuffer n = new StringBuffer();
+            StringBuilder n = new StringBuilder();
             if(normalized.startsWith("//")) {
                 // see #972. Omit leading delimiter
                 n.append(DELIMITER);

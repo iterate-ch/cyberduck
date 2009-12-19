@@ -330,7 +330,7 @@ public class FTPControlSocket {
         byte[] portBytes = toByteArray(port);
 
         // assemble the PORT command
-        String cmd = new StringBuffer("PORT ")
+        String cmd = new StringBuilder("PORT ")
                 .append(toUnsignedShort(hostBytes[0])).append(",")
                 .append(toUnsignedShort(hostBytes[1])).append(",")
                 .append(toUnsignedShort(hostBytes[2])).append(",")
@@ -438,7 +438,7 @@ public class FTPControlSocket {
 
         int len = ipData.length();
         int partCount = 0;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         // loop thru and examine each char
         for(int i = 0; i < len && partCount <= 6; i++) {
@@ -552,7 +552,7 @@ public class FTPControlSocket {
             throw new IOException("Short reply received");
 
         String replyCode = line.substring(0, 3);
-        StringBuffer reply = new StringBuffer("");
+        StringBuilder reply = new StringBuilder("");
         if(line.length() > 3)
             reply.append(line.substring(4));
 

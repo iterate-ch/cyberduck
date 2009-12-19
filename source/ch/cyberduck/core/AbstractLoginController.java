@@ -50,7 +50,7 @@ public abstract class AbstractLoginController implements LoginController {
     public void check(final Host host, String message)
             throws LoginCanceledException {
 
-        StringBuffer reason = new StringBuffer();
+        StringBuilder reason = new StringBuilder();
         if(StringUtils.isNotBlank(message)) {
             reason.append(message).append(". ");
         }

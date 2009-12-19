@@ -170,7 +170,7 @@ public class DAVSession extends HTTPSession {
                         return null;
                     }
                     try {
-                        final StringBuffer realm = new StringBuffer(hostname);
+                        final StringBuilder realm = new StringBuilder(hostname);
                         realm.append(":").append(port).append(".");
                         if(StringUtils.isNotBlank(authscheme.getRealm())) {
                             realm.append(" ").append(authscheme.getRealm());

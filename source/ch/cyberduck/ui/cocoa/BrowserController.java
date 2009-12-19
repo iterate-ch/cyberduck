@@ -2020,7 +2020,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private void checkOverwrite(final java.util.Collection<Path> selected, final BackgroundAction action) {
         if(selected.size() > 0) {
-            StringBuffer alertText = new StringBuffer(
+            StringBuilder alertText = new StringBuilder(
                     Locale.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
             int i = 0;
             Iterator<Path> iter = null;
@@ -2066,7 +2066,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void checkMove(final java.util.Collection<Path> selected, final BackgroundAction action) {
         if(selected.size() > 0) {
             if(Preferences.instance().getBoolean("browser.confirmMove")) {
-                StringBuffer alertText = new StringBuffer(
+                StringBuilder alertText = new StringBuilder(
                         Locale.localizedString("Do you want to move the selected files?"));
                 int i = 0;
                 Iterator<Path> iter = null;
@@ -2174,8 +2174,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(normalized.isEmpty()) {
             return;
         }
-        StringBuffer alertText =
-                new StringBuffer(Locale.localizedString("Really delete the following files? This cannot be undone."));
+        StringBuilder alertText =
+                new StringBuilder(Locale.localizedString("Really delete the following files? This cannot be undone."));
         int i = 0;
         Iterator<Path> iter = null;
         for(iter = normalized.iterator(); i < 10 && iter.hasNext();) {
@@ -2814,7 +2814,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void copyURLButtonClicked(final ID sender) {
-        final StringBuffer url = new StringBuffer();
+        final StringBuilder url = new StringBuilder();
         if(this.getSelectionCount() > 0) {
             for(Iterator<Path> iter = this.getSelectedPaths().iterator(); iter.hasNext();) {
                 url.append(iter.next().toURL());

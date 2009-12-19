@@ -61,7 +61,7 @@ public class Speedometer {
     }
 
     public String getProgress() {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         b.append(Status.getSizeAsString(transfer.getTransferred()));
         b.append(" ");
         b.append(Locale.localizedString("of", "1.2MB of 3.4MB"));

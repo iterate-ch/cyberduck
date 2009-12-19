@@ -192,7 +192,7 @@ public class PEMDecoder
 			/* Ignore line */
 		}
 
-		StringBuffer keyData = new StringBuffer();
+		StringBuilder keyData = new StringBuilder();
 
 		while (true)
 		{

@@ -1440,7 +1440,7 @@ public class ChannelManager implements MessageHandler
 			reasonCodeSymbolicName = "UNKNOWN REASON CODE (" + reasonCode + ")";
 		}
 
-		StringBuffer descriptionBuffer = new StringBuffer();
+		StringBuilder descriptionBuffer = new StringBuilder();
 		descriptionBuffer.append(description);
 
 		for (int i = 0; i < descriptionBuffer.length(); i++)

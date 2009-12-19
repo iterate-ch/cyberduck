@@ -66,7 +66,7 @@ public class SFTPSession extends Session {
 
     @Override
     public String getIdentification() {
-        StringBuffer info = new StringBuffer(super.getIdentification() + "\n");
+        StringBuilder info = new StringBuilder(super.getIdentification() + "\n");
         if(SFTP != null) {
             info.append("SFTP Protocol version: ").append(SFTP.getProtocolVersion()).append("\n");
         }

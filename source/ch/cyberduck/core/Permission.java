@@ -159,7 +159,7 @@ public class Permission implements Serializable {
      */
     public Permission(int octal) {
         String octalString = String.valueOf(octal);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int leadingZeros = 3 - octalString.length();
         while(leadingZeros > 0) {
             sb.append('0');

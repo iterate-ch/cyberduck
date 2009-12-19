@@ -188,7 +188,7 @@ public class Session
 
 			/* Generate also hex representation of fake cookie */
 
-			StringBuffer tmp = new StringBuffer(32);
+			StringBuilder tmp = new StringBuilder(32);
 			for (int i = 0; i < fakeCookie.length; i++)
 			{
 				String digit2 = Integer.toHexString(fakeCookie[i] & 0xff);

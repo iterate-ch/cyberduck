@@ -130,7 +130,7 @@ public class RemoteX11AcceptThread extends Thread
 			if (authProtocolDataLength != 16)
 				throw new IOException("Wrong data length for X11 authorization data!");
 
-			StringBuffer tmp = new StringBuffer(32);
+			StringBuilder tmp = new StringBuilder(32);
 			for (int i = 0; i < authProtocolData.length; i++)
 			{
 				String digit2 = Integer.toHexString(authProtocolData[i] & 0xff);

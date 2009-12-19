@@ -102,7 +102,7 @@ public class SCPClient
 
 	public String receiveLine(InputStream is) throws IOException
 	{
-		StringBuffer sb = new StringBuffer(30);
+		StringBuilder sb = new StringBuilder(30);
 
 		while (true)
 		{

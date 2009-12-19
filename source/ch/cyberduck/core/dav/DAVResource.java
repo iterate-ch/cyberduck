@@ -90,7 +90,7 @@ public class DAVResource extends WebdavResource {
     protected void setStatusCode(int statusCode, String message) {
         latestStatusCode = statusCode;
         final String statusText = WebdavStatus.getStatusText(statusCode);
-        StringBuffer text = new StringBuffer();
+        StringBuilder text = new StringBuilder();
         text.append(statusCode).append(" ").append(StringUtils.isNotBlank(statusText) ? statusText : "").
                 append(" ").append(StringUtils.isNotBlank(message) ? message : "");
         latestStatusMessage = text.toString();

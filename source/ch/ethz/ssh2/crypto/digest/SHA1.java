@@ -597,7 +597,7 @@ public final class SHA1 implements Digest
 	{
 		final String hexChar = "0123456789ABCDEF";
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < b.length; i++)
 		{
 			sb.append(hexChar.charAt((b[i] >> 4) & 0x0f));

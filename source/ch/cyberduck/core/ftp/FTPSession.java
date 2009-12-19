@@ -227,7 +227,7 @@ public class FTPSession extends Session {
 
     @Override
     public String getIdentification() {
-        StringBuffer info = new StringBuffer(super.getIdentification() + "\n");
+        StringBuilder info = new StringBuilder(super.getIdentification() + "\n");
         try {
             info.append(this.FTP.system()).append("\n");
         }

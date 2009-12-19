@@ -128,7 +128,7 @@ public class SFTPv3FileAttributes
 
 		String res = Integer.toString(permissions.intValue() & 0177777, 8);
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 
 		int leadingZeros = 7 - res.length();
 

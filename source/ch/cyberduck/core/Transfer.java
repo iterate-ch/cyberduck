@@ -391,6 +391,11 @@ public abstract class Transfer implements Serializable {
         return !item.getStatus().isSkipped();
     }
 
+    /**
+     * Select the path to be included in the transfer
+     * @param item
+     * @param selected
+     */
     public void setSelected(Path item, final boolean selected) {
         item.getStatus().setSelected(selected);
         if(item.attributes.isDirectory()) {

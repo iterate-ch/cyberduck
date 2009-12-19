@@ -64,7 +64,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     /**
      * Contains the transcript of the session while this action was running
      */
-    protected StringBuffer transcript;
+    protected StringBuilder transcript;
 
     /**
      * Maximum transcript buffer
@@ -78,7 +78,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     public void log(boolean request, String message) {
         if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
-            transcript = new StringBuffer();
+            transcript = new StringBuilder();
         }
         transcript.append(message).append("\n");
     }
@@ -95,7 +95,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             session.addTranscriptListener(this);
         }
         // Clear the transcript and exceptions
-        transcript = new StringBuffer();
+        transcript = new StringBuilder();
         return super.prepare();
     }
 

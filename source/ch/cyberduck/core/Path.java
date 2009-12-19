@@ -675,7 +675,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public String encode(final String p) {
         try {
-            StringBuffer b = new StringBuffer();
+            StringBuilder b = new StringBuilder();
             StringTokenizer t = new StringTokenizer(p, "/");
             while(t.hasMoreTokens()) {
                 b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));

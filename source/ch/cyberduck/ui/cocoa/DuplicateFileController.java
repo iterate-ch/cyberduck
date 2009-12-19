@@ -52,7 +52,7 @@ public class DuplicateFileController extends FileController {
     public void setFilenameField(NSTextField field) {
         super.setFilenameField(field);
         final Path selected = ((BrowserController) parent).getSelectedPath();
-        StringBuffer proposal = new StringBuffer();
+        StringBuilder proposal = new StringBuilder();
         proposal.append(FilenameUtils.getBaseName(selected.getName()));
         proposal.append(" (").append(DateFormatter.getShortFormat(System.currentTimeMillis()).replace('/', ':')).append(")");
         if(StringUtils.isNotEmpty(selected.getExtension())) {

@@ -93,7 +93,7 @@ public class Status {
      * @return Humean readable string for seconds in hours, minutes or seconds remaining
      */
     public static String getRemainingAsString(double remaining) {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         if(remaining > 7200) { // More than two hours
             b.append(MessageFormat.format(Locale.localizedString("{0} hours remaining", "Status"),
                     new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString())
