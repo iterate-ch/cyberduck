@@ -58,8 +58,6 @@ public class SFTPInputStream extends InputStream
     public int read(byte[] buffer, int offset, int len)
             throws IOException
     {
-//        int read = handle.getClient().download(handle,
-//                readOffset, buffer, offset, len);
         int read = handle.getClient().read(handle,
                 readOffset, buffer, offset, len);
         if(read > 0)
@@ -88,8 +86,6 @@ public class SFTPInputStream extends InputStream
             throws IOException
     {
         byte[] buffer = new byte[1];
-//        int read = handle.getClient().download(handle,
-//                readOffset, buffer, 0, 1);
         int read = handle.getClient().read(handle,
                 readOffset, buffer, 0, 1);
         if(read > 0)
