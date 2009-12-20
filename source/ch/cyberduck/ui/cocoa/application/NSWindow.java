@@ -383,7 +383,7 @@ public abstract class NSWindow extends NSResponder {
      * Original signature : <code>void endEditingFor(id)</code><br>
      * <i>native declaration : :252</i>
      */
-    public abstract void endEditingFor(ID anObject);
+    public abstract void endEditingFor(NSObject anObject);
     /**
      * <i>native declaration : :254</i><br>
      * Conversion Error : NSRect
