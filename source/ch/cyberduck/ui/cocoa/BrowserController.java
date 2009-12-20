@@ -2999,6 +2999,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.reloadData(false);
             return;
         }
+        final NSTableView browser = this.getSelectedBrowserView();
+        window.endEditingFor(browser);
         this.background(new BrowserBackgroundAction(this) {
             @Override
             public String getActivity() {
