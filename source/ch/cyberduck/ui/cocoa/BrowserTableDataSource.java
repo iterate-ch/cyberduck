@@ -140,7 +140,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         return this.childs(controller.workdir()).contains(p);
     }
 
-    public void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
+    protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
         log.debug("setObjectValueForItem:" + item);
         if(identifier.equals(FILENAME_COLUMN)) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
