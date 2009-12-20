@@ -40,7 +40,6 @@ public class Channel
 	public static final int STATE_OPEN = 2;
 	public static final int STATE_CLOSED = 4;
 
-//	static final int CHANNEL_BUFFER_SIZE = 30000;
     static final int CHANNEL_BUFFER_SIZE = 30000;
 
 	/*
