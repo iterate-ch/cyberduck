@@ -12,6 +12,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Synchronisation does not transfer files with equal size (#3100)
 - [Bugfix] Selection in synchronize prompt (#3901)
 - [Bugfix] Bonjour bookmarks ignore TXT record with path and credentials attributes (#3984)
+- [Bugfix] Donation prompt cannot be supressed (#3937)
 
 3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
 - [Feature] Octal input field for permissions [#13]
