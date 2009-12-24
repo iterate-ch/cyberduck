@@ -7,7 +7,7 @@
         <link>http://cyberduck.ch/changelog.php</link>
         <description>Cyberduck Changelog.</description>
         <language>en-us</language>
-        <copyright>Copyright 2001-2009 David V. Kocher</copyright>
+        <copyright>Copyright 2001-2010 David V. Kocher</copyright>
         <item>
             <title>Cyberduck _VERSION_ (Revision _REVISION_)</title>
             <pubDate>_TIMESTAMP_</pubDate>
@@ -16,7 +16,7 @@
                        url="_ARCHIVE_"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>
-            <sparkle:minimumSystemVersion>10.5.0</sparkle:minimumSystemVersion>
+            <!--<sparkle:minimumSystemVersion>10.5.0</sparkle:minimumSystemVersion>-->
         </item>
         <item>
             <title>Cyberduck 3.2.1 (Revision 4923)</title>
@@ -26,7 +26,7 @@
                        url="http://update.cyberduck.ch/Cyberduck-4923.tar.gz"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>http://version.cyberduck.ch/3.2.1/changelog.html</sparkle:releaseNotesLink>
-            <sparkle:minimumSystemVersion>10.4.0</sparkle:minimumSystemVersion>
+            <!--<sparkle:minimumSystemVersion>10.4.0</sparkle:minimumSystemVersion>-->
         </item>
         <item>
             <title>Cyberduck 2.8.5 (Revision 3611)</title>
@@ -36,7 +36,7 @@
                        url="http://update.cyberduck.ch/Cyberduck-3611.tar.gz"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>http://version.cyberduck.ch/2.8.5/changelog.html</sparkle:releaseNotesLink>
-            <sparkle:minimumSystemVersion>10.3.9</sparkle:minimumSystemVersion>
+            <!--<sparkle:minimumSystemVersion>10.3.9</sparkle:minimumSystemVersion>-->
         </item>
     </channel>
 </rss>
