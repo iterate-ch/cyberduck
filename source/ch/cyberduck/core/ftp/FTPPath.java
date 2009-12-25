@@ -324,7 +324,7 @@ public class FTPPath extends Path {
      * @return An empty list if no parsable lines are found
      * @throws IOException
      */
-    private boolean parse(final AttributedList<Path> childs, FTPFileEntryParser parser, BufferedReader reader)
+    protected boolean parse(final AttributedList<Path> childs, FTPFileEntryParser parser, BufferedReader reader)
             throws IOException {
         if(null == reader) {
             // This is an empty directory

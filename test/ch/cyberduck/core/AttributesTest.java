@@ -42,7 +42,6 @@ public class AttributesTest extends AbstractTestCase {
 
     public void testClone() throws Exception {
         PathAttributes clone = new PathAttributes(attributes.getAsDictionary());
-        assertNotSame(clone, attributes);
 
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());

@@ -29,7 +29,7 @@ public class HostTest extends AbstractTestCase {
 
     public void testParseURLEmpty() {
         Host h = Host.parse("");
-        assertTrue(h.getHostname().equals("localhost"));
+        assertTrue(h.getHostname().equals(Preferences.instance().getProperty("connection.hostname.default")));
     }
 
     public void testParseURLFull() {

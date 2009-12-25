@@ -29,7 +29,13 @@ public class PermissionTest extends AbstractTestCase {
     }
 
     public void testClone() {
-        Permission p = new Permission("rwxrwxrwx");
-        assertEquals(p, new Permission(p.getAsDictionary()));
+        {
+            Permission p = new Permission("rwxrwxrwx");
+            assertEquals(p, new Permission(p.getAsDictionary()));
+        }
+        {
+            Permission p = new Permission("rwx------");
+            assertEquals(p, new Permission(p.getAsDictionary()));
+        }
     }
 }

@@ -297,9 +297,9 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
                 "drwxr--r--   1 user     group          0 Feb 29 18:14 Downloads"
         );
         assertNotNull(parsed);
+        assertNotNull(parsed.getTimestamp());
         assertEquals(parsed.getTimestamp().get(Calendar.MONTH), Calendar.FEBRUARY);
         assertEquals(parsed.getTimestamp().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.YEAR));
-
     }
 
     public static Test suite() {

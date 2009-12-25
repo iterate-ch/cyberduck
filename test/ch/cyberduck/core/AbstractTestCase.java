@@ -20,14 +20,17 @@ package ch.cyberduck.core;
  */
 
 import junit.framework.TestCase;
-
 import ch.cyberduck.core.i18n.LocaleFactory;
+import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.serializer.SerializerFactory;
 
 import java.io.File;
-import java.util.Locale;
+import java.util.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AbstractTestCase extends TestCase {
 
@@ -77,7 +80,7 @@ public class AbstractTestCase extends TestCase {
         PreferencesFactory.addFactory(Factory.NATIVE_PLATFORM, new PreferencesFactory() {
             @Override
             protected Preferences create() {
-                final Preferences preferences = new Preferences() {
+                return new Preferences() {
 
                     @Override
                     public void setProperty(String property, String value) {
@@ -104,7 +107,57 @@ public class AbstractTestCase extends TestCase {
                         return Locale.getDefault().toString();
                     }
                 };
-                return preferences;
+            }
+        });
+        SerializerFactory.addFactory(Factory.NATIVE_PLATFORM, new SerializerFactory() {
+            @Override
+            protected Serializer create() {
+                return new Serializer() {
+                    private Map<String, Object> impl = new HashMap<String, Object>();
+
+                    public void setStringForKey(String value, String key) {
+                        impl.put(key, value);
+                    }
+
+                    public void setObjectForKey(Serializable value, String key) {
+                        impl.put(key, value.<Map>getAsDictionary());
+                    }
+
+                    public <T extends Serializable> void setListForKey(List<T> value, String key) {
+                        List<Map> list = new ArrayList<Map>();
+                        for(Serializable serializable : value) {
+                            list.add(serializable.<Map>getAsDictionary());
+                        }
+                        impl.put(key, list);
+                    }
+
+                    public Map<String, Object> getSerialized() {
+                        return impl;
+                    }
+                };
+            }
+        });
+        DeserializerFactory.addFactory(Factory.NATIVE_PLATFORM, new DeserializerFactory<Map<String, Object>>() {
+            @Override
+            protected Object create() {
+                return this.create(Collections.<String, Object>emptyMap());
+            }
+
+            @Override
+            protected Deserializer create(final Map<String, Object> dict) {
+                return new Deserializer() {
+                    public String stringForKey(String key) {
+                        return (String)dict.get(key);
+                    }
+
+                    public Object objectForKey(String key) {
+                        return dict.get(key);
+                    }
+
+                    public List listForKey(String key) {
+                        return (List) dict.get(key);
+                    }
+                };
             }
         });
     }
