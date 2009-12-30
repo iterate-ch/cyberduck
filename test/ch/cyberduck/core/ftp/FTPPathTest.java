@@ -30,7 +30,7 @@ import java.io.StringReader;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPPathTest extends AbstractTestCase {
 
@@ -58,10 +58,12 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals("SunnyD", path.getName());
         assertEquals("/SunnyD", path.getAbsolute());
 
-        final boolean success = path.parse(AttributedList.<Path>emptyList(), parser,
+        final AttributedList<Path> list = AttributedList.emptyList();
+        final boolean success = path.parse(list, parser,
                 new BufferedReader(new StringReader(" drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD")));
 
         assertFalse(success);
+        assertTrue(list.isEmpty());
     }
 
     public static Test suite() {
