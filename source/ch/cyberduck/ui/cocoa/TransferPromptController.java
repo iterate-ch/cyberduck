@@ -286,6 +286,9 @@ public abstract class TransferPromptController extends SheetController implement
              */
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
                                                                         NSTableColumn tableColumn, NSObject item) {
+                if(null == item) {
+                    return;
+                }
                 final String identifier = tableColumn.identifier();
                 final Path path = browserModel.lookup(item);
                 if(identifier.equals(TransferPromptModel.INCLUDE_COLUMN)) {

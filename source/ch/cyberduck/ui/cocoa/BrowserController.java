@@ -989,6 +989,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              */
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell,
                                                                         NSTableColumn tableColumn, NSObject item) {
+                if(null == item) {
+                    return;
+                }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
                     final Path path = lookup(new OutlinePathReference(item));
                     if(null == path) {
