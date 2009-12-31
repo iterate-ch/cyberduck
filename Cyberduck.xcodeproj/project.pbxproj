@@ -144,8 +144,6 @@
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
 		47742E080BECF13600EC4DEA /* Transfer.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47742E060BECF13600EC4DEA /* Transfer.nib */; };
-		47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */ = {isa = PBXBuildFile; fileRef = 4774897F085825460030AED1 /* Cyberduck.scriptTerminology */; };
-		47748982085825460030AED1 /* Cyberduck.scriptSuite in Resources */ = {isa = PBXBuildFile; fileRef = 47748980085825460030AED1 /* Cyberduck.scriptSuite */; };
 		477839340BA1BE8E0037E145 /* statusGreen.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839310BA1BE8E0037E145 /* statusGreen.tiff */; };
 		477839350BA1BE8E0037E145 /* statusRed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839320BA1BE8E0037E145 /* statusRed.tiff */; };
 		477839360BA1BE8E0037E145 /* statusYellow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839330BA1BE8E0037E145 /* statusYellow.tiff */; };
@@ -1009,8 +1007,6 @@
 		47742E330BECF3C900EC4DEA /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Transfer.nib; sourceTree = "<group>"; };
 		47742E350BECF3D100EC4DEA /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_BR; path = pt_BR.lproj/Transfer.nib; sourceTree = "<group>"; };
 		47742E360BECF3D500EC4DEA /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_PT; path = pt_PT.lproj/Transfer.nib; sourceTree = "<group>"; };
-		4774897F085825460030AED1 /* Cyberduck.scriptTerminology */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cyberduck.scriptTerminology; sourceTree = "<group>"; };
-		47748980085825460030AED1 /* Cyberduck.scriptSuite */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = Cyberduck.scriptSuite; sourceTree = "<group>"; };
 		477839310BA1BE8E0037E145 /* statusGreen.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusGreen.tiff; sourceTree = "<group>"; };
 		477839320BA1BE8E0037E145 /* statusRed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusRed.tiff; sourceTree = "<group>"; };
 		477839330BA1BE8E0037E145 /* statusYellow.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusYellow.tiff; sourceTree = "<group>"; };
@@ -1582,8 +1578,6 @@
 				47CF9D3E0431CF5200A801C6 /* build.xml */,
 				47497C1D073F9618009BF63D /* Changelog.txt */,
 				47CF9D400431CF6D00A801C6 /* build.properties */,
-				4774897F085825460030AED1 /* Cyberduck.scriptTerminology */,
-				47748980085825460030AED1 /* Cyberduck.scriptSuite */,
 				474152D706C4F08A00AC0BD2 /* source */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -2508,8 +2502,6 @@
 				475D17C10805D54C00166B8A /* download1.icns in Resources */,
 				475D17C20805D54C00166B8A /* download4.icns in Resources */,
 				4781AF410828423100B3E0FA /* download0.icns in Resources */,
-				47748981085825460030AED1 /* Cyberduck.scriptTerminology in Resources */,
-				47748982085825460030AED1 /* Cyberduck.scriptSuite in Resources */,
 				4716C5F50872BA9900938886 /* Command.nib in Resources */,
 				47F0B701087ACD0B00439978 /* Growl.strings in Resources */,
 				47F0B7D3087AD1B100439978 /* Status.strings in Resources */,
