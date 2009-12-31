@@ -70,7 +70,7 @@ public abstract class Editor {
      * @return The transfer action for edited file
      */
     protected TransferAction getAction() {
-        return TransferAction.ACTION_RENAME;
+        return TransferAction.ACTION_SKIP;
     }
 
     public void open() {
