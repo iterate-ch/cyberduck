@@ -70,7 +70,7 @@ public class QuartzQuickLook extends AbstractQuickLook {
 
                     @Override
                     public String previewItemTitle() {
-                        return preview.getName();
+                        return preview.getDisplayName();
                     }
                 };
                 previews.put(preview, item);

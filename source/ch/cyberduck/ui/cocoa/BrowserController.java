@@ -2389,7 +2389,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:"));
         downloadAsPanel.setPrompt(Locale.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);
-        downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getLocal().getName(), this.window, this.id(),
+        downloadAsPanel.beginSheetForDirectory(null, this.getSelectedPath().getLocal().getDisplayName(), this.window, this.id(),
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"),
                 null);
     }

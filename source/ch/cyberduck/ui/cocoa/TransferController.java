@@ -869,7 +869,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     if(transfer.isComplete()) {
                         this.alert(NSAlert.alert(Locale.localizedString("Could not open the file"), //title
                                 Locale.localizedString("Could not open the file") + " \""
-                                        + l.getName()
+                                        + l.getDisplayName()
                                         + "\". " + Locale.localizedString("It moved since you downloaded it."), // message
                                 Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button
@@ -879,7 +879,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     else {
                         this.alert(NSAlert.alert(Locale.localizedString("Could not open the file"), //title
                                 Locale.localizedString("Could not open the file") + " \""
-                                        + l.getName()
+                                        + l.getDisplayName()
                                         + "\". " + Locale.localizedString("The file has not yet been downloaded."), // message
                                 Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button
@@ -903,7 +903,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     if(transfer.isComplete()) {
                         this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder"), //title
                                 Locale.localizedString("Could not show the file") + " \""
-                                        + l.getName()
+                                        + l.getDisplayName()
                                         + "\". " + Locale.localizedString("It moved since you downloaded it."), // message
                                 Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button
@@ -913,7 +913,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     else {
                         this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder"), //title
                                 Locale.localizedString("Could not show the file") + " \""
-                                        + l.getName()
+                                        + l.getDisplayName()
                                         + "\". " + Locale.localizedString("The file has not yet been downloaded."), // message
                                 Locale.localizedString("OK"), // defaultbutton
                                 null, //alternative button

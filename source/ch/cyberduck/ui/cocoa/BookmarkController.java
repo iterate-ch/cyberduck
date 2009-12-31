@@ -434,18 +434,16 @@ public class BookmarkController extends WindowController {
     }
 
     private void addDownloadPath(Selector action, Local f) {
-        if(f.exists()) {
-            if(downloadPathPopup.menu().itemWithTitle(f.getName()) == null) {
-                downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getName(), action, "");
-                downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
-                downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setImage(
-                        IconCache.instance().iconForPath(f, 16)
-                );
-                downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
-                        f.getAbsolute());
-                if(host.getDownloadFolder().equals(f)) {
-                    downloadPathPopup.selectItemAtIndex(downloadPathPopup.numberOfItems() - 1);
-                }
+        if(downloadPathPopup.menu().itemWithTitle(f.getDisplayName()) == null) {
+            downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, "");
+            downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
+            downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setImage(
+                    IconCache.instance().iconForPath(f, 16)
+            );
+            downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
+                    f.getAbsolute());
+            if(host.getDownloadFolder().equals(f)) {
+                downloadPathPopup.selectItemAtIndex(downloadPathPopup.numberOfItems() - 1);
             }
         }
     }
@@ -476,7 +474,7 @@ public class BookmarkController extends WindowController {
                 host.setDownloadFolder(selected.lastObject().toString());
             }
         }
-        downloadPathPopup.itemAtIndex(0).setTitle(host.getDownloadFolder().getName());
+        downloadPathPopup.itemAtIndex(0).setTitle(host.getDownloadFolder().getDisplayName());
         downloadPathPopup.itemAtIndex(0).setRepresentedObject(host.getDownloadFolder().getAbsolute());
         downloadPathPopup.itemAtIndex(0).setImage(IconCache.instance().iconForPath(host.getDownloadFolder(), 16));
         downloadPathPopup.selectItemAtIndex(0);

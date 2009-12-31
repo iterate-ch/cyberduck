@@ -18,11 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import com.ibm.icu.text.Normalizer;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.Mimetypes;
+
+import com.ibm.icu.text.Normalizer;
 
 import java.util.Comparator;
 
@@ -150,6 +151,13 @@ public abstract class AbstractPath {
     public abstract String getAbsolute();
 
     public abstract String getName();
+
+    /**
+     * Subclasses may override to return a user friendly representation of the name denoting this path.
+     */
+    public String getDisplayName() {
+        return this.getName();
+    }
 
     public abstract AbstractPath getParent();
 

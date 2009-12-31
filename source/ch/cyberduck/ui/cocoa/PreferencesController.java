@@ -923,17 +923,15 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     private void addDownloadPath(Selector action, Local f) {
-        if(f.exists()) {
-            this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getName(), action, "");
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
-                    IconCache.instance().iconForPath(f, 16)
-            );
-            this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
-                    f.getAbsolute());
-            if(DEFAULT_DOWNLOAD_FOLDER.equals(f)) {
-                this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems() - 1);
-            }
+        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, "");
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setImage(
+                IconCache.instance().iconForPath(f, 16)
+        );
+        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
+                f.getAbsolute());
+        if(DEFAULT_DOWNLOAD_FOLDER.equals(f)) {
+            this.downloadPathPopup.selectItemAtIndex(this.downloadPathPopup.numberOfItems() - 1);
         }
     }
 
@@ -965,7 +963,7 @@ public class PreferencesController extends ToolbarWindowController {
             }
         }
         Local custom = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
-        downloadPathPopup.itemAtIndex(0).setTitle(custom.getName());
+        downloadPathPopup.itemAtIndex(0).setTitle(custom.getDisplayName());
         downloadPathPopup.itemAtIndex(0).setRepresentedObject(custom.getAbsolute());
         downloadPathPopup.itemAtIndex(0).setImage(IconCache.instance().iconForPath(custom, 16));
         downloadPathPopup.selectItemAtIndex(0);

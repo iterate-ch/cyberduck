@@ -96,8 +96,11 @@ public class FinderLocal extends Local {
         }
     }
 
+    /**
+     * @return Name of the file as displayed in the Finder. E.g. a ':' is replaced with '/'.
+     */
     @Override
-    public String getName() {
+    public String getDisplayName() {
         return NSFileManager.defaultManager().displayNameAtPath(super.getName());
     }
 
