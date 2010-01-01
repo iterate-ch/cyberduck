@@ -4,7 +4,7 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.3.1 () [http://trac.cyberduck.ch/query?status=closed&milestone=3.4]
+3.3.1 (Jan-01-2010) [http://trac.cyberduck.ch/query?status=closed&milestone=3.4]
 - [Feature] Support for new US West Location (S3)
 - [Bugfix] Bookmark menu [#3924]
 - [Bugfix] SOCKS proxy support broken [#3803]
@@ -13,6 +13,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Selection in synchronize prompt (#3901)
 - [Bugfix] Bonjour bookmarks ignore TXT record with path and credentials attributes (#3984)
 - [Bugfix] Donation prompt cannot be supressed (#3937)
+- [Bugfix] Donation prompt cannot be supressed (#3937)
+- [Bugfix] Error when uploading file with different display name from real filename (#4041)
 
 3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
 - [Feature] Octal input field for permissions [#13]
