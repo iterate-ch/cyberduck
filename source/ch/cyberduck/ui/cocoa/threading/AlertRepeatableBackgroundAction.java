@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.net.SocketException;
@@ -164,6 +163,11 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         public void selectionDidChange(NSNotification notification) {
                         }
 
+                        @Override
+                        public int rowHeightForRow(int row) {
+                            return 77;
+                        }
+
                         public void enterKeyPressed(final ID sender) {
                         }
 
@@ -186,7 +190,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         c.setDataCell(prototype);
                         this.errorView.addTableColumn(c);
                     }
-                    this.errorView.setRowHeight(new CGFloat(77f));
                 }
 
                 private final NSCell prototype = CDControllerCell.controllerCell();

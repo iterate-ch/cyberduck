@@ -34,7 +34,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
-import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -380,6 +379,11 @@ public class TransferController extends WindowController implements NSToolbar.De
             }
 
             @Override
+            public int rowHeightForRow(int row) {
+                return 82;
+            }
+
+            @Override
             public void selectionDidChange(NSNotification notification) {
                 updateHighlight();
                 updateSelection();
@@ -406,7 +410,6 @@ public class TransferController extends WindowController implements NSToolbar.De
             this.transferTable.addTableColumn(c);
         }
         this.transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
-        this.transferTable.setRowHeight(new CGFloat(82));
         //selection properties
         this.transferTable.setAllowsMultipleSelection(true);
         this.transferTable.setAllowsEmptySelection(true);

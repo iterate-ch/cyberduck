@@ -32,7 +32,6 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -166,7 +165,7 @@ public abstract class TransferPromptController extends SheetController implement
 
     protected final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    protected static class TableColumnFactory extends HashMap<String,NSTableColumn> {
+    protected static class TableColumnFactory extends HashMap<String, NSTableColumn> {
         protected NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -281,6 +280,12 @@ public abstract class TransferPromptController extends SheetController implement
                 }
             }
 
+            @Override
+            public int rowHeightForRow(int row) {
+                return NSLayoutManager.layoutManager().defaultLineHeightForFont(
+                        NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2;
+            }
+
             /**
              * @see NSOutlineView.Delegate
              */
@@ -307,8 +312,6 @@ public abstract class TransferPromptController extends SheetController implement
                 }
             }
         }).id());
-        this.browserView.setRowHeight(new CGFloat(NSLayoutManager.layoutManager().defaultLineHeightForFont(
-                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         // selection properties
         this.browserView.setAllowsMultipleSelection(true);
         this.browserView.setAllowsEmptySelection(true);

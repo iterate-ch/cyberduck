@@ -28,9 +28,18 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -51,10 +60,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.*;
 
 import com.sun.jna.ptr.PointerByReference;
 
@@ -707,13 +713,27 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
             implements NSOutlineView.Delegate {
+
+        public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView outlineView, NSCell cell,
+                                                                                     ID rect, NSTableColumn tc,
+                                                                                     NSObject item, NSPoint mouseLocation) {
+            return this.tooltip(lookup(new OutlinePathReference(item)));
+        }
     }
 
     private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate<E>
             implements NSTableView.Delegate {
+
+        public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView aTableView, NSCell aCell,
+                                                                                  ID rect, NSTableColumn aTableColumn,
+                                                                                  NSInteger row, NSPoint mouseLocation) {
+            return this.tooltip(browserListModel.childs(workdir()).get(row.intValue()));
+        }
     }
 
     private abstract class AbstractBrowserTableDelegate<E> extends AbstractPathTableDelegate {
+        // setting appearance attributes
+        final NSLayoutManager l = NSLayoutManager.layoutManager();
 
         public AbstractBrowserTableDelegate() {
             BrowserController.this.addListener(new WindowListener() {
@@ -725,6 +745,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                 }
             });
+        }
+
+        @Override
+        public int rowHeightForRow(int row) {
+            return l.defaultLineHeightForFont(
+                    NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2;
         }
 
         @Override
@@ -958,9 +984,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         ));
 
         // setting appearance attributes
-        final NSLayoutManager l = NSLayoutManager.layoutManager();
-        browserOutlineView.setRowHeight(new CGFloat(l.defaultLineHeightForFont(
-                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         this._updateBrowserAttributes(browserOutlineView);
         // selection properties
         browserOutlineView.setAllowsMultipleSelection(true);
@@ -1073,9 +1096,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         ));
 
         // setting appearance attributes
-        final NSLayoutManager l = NSLayoutManager.layoutManager();
-        browserListView.setRowHeight(new CGFloat(l.defaultLineHeightForFont(
-                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         this._updateBrowserAttributes(browserListView);
         // selection properties
         browserListView.setAllowsMultipleSelection(true);
@@ -1156,20 +1176,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     protected void _updateBookmarkCell() {
         final int size = Preferences.instance().getInteger("bookmark.icon.size");
-        if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
-            bookmarkTable.setRowHeight(new CGFloat(18));
-        }
-        if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
-            bookmarkTable.setRowHeight(new CGFloat(45));
-        }
-        if(CDBookmarkCell.LARGE_BOOKMARK_SIZE == size) {
-            bookmarkTable.setRowHeight(new CGFloat(70));
-        }
         final double width = size * 1.5;
         final NSTableColumn c = bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.ICON_COLUMN);
         c.setMinWidth(width);
         c.setMaxWidth(width);
         c.setWidth(width);
+
+        bookmarkTable.noteHeightOfRowsWithIndexesChanged(
+                NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
 
     private final NSTextFieldCell outlineCellPrototype = CDOutlineCell.outlineCell();
@@ -1307,6 +1321,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final int selected = bookmarkTable.numberOfSelectedRows().intValue();
                 editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit() && selected == 1);
                 deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete() && selected > 0);
+            }
+
+            @Override
+            public int rowHeightForRow(int row) {
+                final int size = Preferences.instance().getInteger("bookmark.icon.size");
+                if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
+                    return 18;
+                }
+                if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
+                    return 45;
+                }
+                return 70;
+            }
+
+            public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
+                                                                       NSTableColumn tableColumn,
+                                                                       NSInteger row) {
+                return bookmarkModel.getSource().get(row.intValue()).getNickname();
             }
         }).id());
         // receive drag events from types

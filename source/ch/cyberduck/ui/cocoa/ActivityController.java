@@ -192,6 +192,11 @@ public class ActivityController extends WindowController {
             public void selectionDidChange(NSNotification notification) {
             }
 
+            @Override
+            public int rowHeightForRow(int row) {
+                return 42;
+            }
+
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final Collection<TaskController> values = tasks.values();
                 int size = values.size();
