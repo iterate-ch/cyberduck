@@ -28,7 +28,9 @@ import com.barbarysoftware.watchservice.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.barbarysoftware.watchservice.StandardWatchEventKind.*;
@@ -42,24 +44,16 @@ public class FileWatcher {
     private WatchService monitor;
     private Local file;
 
-    private static final Map<Local, FileWatcher> instances
-            = new HashMap<Local, FileWatcher>();
-
-    /**
-     * @param file
-     * @return
-     */
-    public static FileWatcher create(Local file) {
-        if(!instances.containsKey(file)) {
-            instances.put(file, new FileWatcher(file));
-        }
-        return instances.get(file);
+    public FileWatcher(final Local file) {
+        this.file = file;
     }
 
-    private FileWatcher(final Local file) {
-        this.file = file;
-        this.monitor = WatchService.newWatchService();
-        log.debug("watch:" + file);
+    /**
+     *
+     */
+    public void register() {
+        log.debug("register:" + file);
+        monitor = WatchService.newWatchService();
         final WatchableFile watchable = new WatchableFile(new File(file.getParent().getAbsolute()));
         try {
             watchable.register(monitor, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);

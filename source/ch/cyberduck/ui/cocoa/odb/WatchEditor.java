@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.odb;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TransferAction;
 import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.BrowserController;
@@ -56,10 +57,10 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         super(c, bundleIdentifier, path);
     }
 
-//    @Override
-//    protected TransferAction getAction() {
-//        return TransferAction.ACTION_OVERWRITE;
-//    }
+    @Override
+    protected TransferAction getAction() {
+        return TransferAction.ACTION_RENAME;
+    }
 
     /**
      * Edit and watch the file for changes
@@ -73,7 +74,8 @@ public class WatchEditor extends Editor implements FileWatcherListener {
             NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
                     NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
         }
-        monitor = FileWatcher.create(edited.getLocal());
+        monitor = new FileWatcher(edited.getLocal());
+        monitor.register();
         monitor.addListener(this);
     }
 
