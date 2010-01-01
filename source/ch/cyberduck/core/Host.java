@@ -239,8 +239,8 @@ public class Host implements Serializable {
             this.setWebURL(urlObj.toString());
         }
         Object accessObj = dict.stringForKey("Access Timestamp");
-        if(urlObj != null) {
-            this.setTimestamp(new Date(Long.parseLong(urlObj.toString())));
+        if(accessObj != null) {
+            this.setTimestamp(new Date(Long.parseLong(accessObj.toString())));
         }
     }
 
