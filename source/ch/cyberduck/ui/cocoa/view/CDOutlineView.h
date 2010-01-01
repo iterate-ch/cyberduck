@@ -27,8 +27,6 @@
 	int mBrowserEditingColumn;
 	int mBrowserEditingRow;
 
-	NSMutableString *select_string;
-	NSTimer *select_timer;
 	NSTimer *autoexpand_timer;
 }
 
