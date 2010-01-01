@@ -483,12 +483,6 @@ public abstract class NSTableView extends NSControl {
     public abstract boolean allowsColumnSelection();
 
     /**
-     * Original signature : <code>void selectAll(id)</code><br>
-     * <i>native declaration : :232</i>
-     */
-    public abstract void selectAll(final ID sender);
-
-    /**
      * Original signature : <code>void deselectAll(id)</code><br>
      * <i>native declaration : :233</i>
      */
