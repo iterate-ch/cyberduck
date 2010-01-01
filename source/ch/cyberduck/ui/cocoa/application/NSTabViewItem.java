@@ -23,7 +23,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 /// <i>native declaration : :18</i>
 public abstract class NSTabViewItem extends NSObject {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTabViewItem", _Class.class);
 
     /**
      * Original signature : <code>id initWithIdentifier(id)</code><br>
