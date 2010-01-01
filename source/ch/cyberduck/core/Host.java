@@ -34,6 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -104,6 +105,11 @@ public class Host implements Serializable {
     private String comment;
 
     private String webURL;
+
+    /**
+     * Last accessed timestamp
+     */
+    private Date timestamp;
 
     /**
      * New host with the default protocol
@@ -232,6 +238,10 @@ public class Host implements Serializable {
         if(urlObj != null) {
             this.setWebURL(urlObj.toString());
         }
+        Object accessObj = dict.stringForKey("Access Timestamp");
+        if(urlObj != null) {
+            this.setTimestamp(new Date(Long.parseLong(urlObj.toString())));
+        }
     }
 
     public <T> T getAsDictionary() {
@@ -278,6 +288,9 @@ public class Host implements Serializable {
         }
         if(!this.isDefaultWebURL()) {
             dict.setStringForKey(this.getWebURL(), "Web URL");
+        }
+        if(null != this.getTimestamp()) {
+            dict.setStringForKey(String.valueOf(this.getTimestamp().getTime()), "Access Timestamp");
         }
         return dict.<T>getSerialized();
     }
@@ -665,6 +678,14 @@ public class Host implements Serializable {
 
     public void setWebURL(String webURL) {
         this.webURL = webURL;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
     /**

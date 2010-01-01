@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -128,6 +125,7 @@ public abstract class Session {
                 // Most probably caused by user dismissing ceritifcate. No trusted certificate found.
                 throw new ConnectionCanceledException(e.getMessage());
             }
+            host.setTimestamp(new Date());
         }
         catch(IOException e) {
             this.interrupt();
