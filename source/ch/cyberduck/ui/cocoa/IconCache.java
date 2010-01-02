@@ -105,7 +105,9 @@ public class IconCache {
             Preferences.instance().getInteger("icon.cache.size")) {
         @Override
         protected boolean removeLRU(LinkEntry entry) {
-            log.debug("Removing from cache:" + entry);
+            if(log.isDebugEnabled()) {
+                log.debug("Removing from cache:" + entry);
+            }
             return true;
         }
     };
