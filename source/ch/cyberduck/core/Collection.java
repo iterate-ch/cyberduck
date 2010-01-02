@@ -67,9 +67,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public boolean addAll(java.util.Collection<? extends E> es) {
         super.addAll(es);
-        for(E item : es) {
-            this.collectionItemAdded(item);
-        }
+        this.collectionItemAdded(null);
         return true;
     }
 

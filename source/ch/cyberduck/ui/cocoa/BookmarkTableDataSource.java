@@ -77,17 +77,29 @@ public class BookmarkTableDataSource extends ListDataSource {
 
             public void collectionItemAdded(Host item) {
                 cache.clear();
-                controller.reloadBookmarks();
+                invoke(new DefaultMainAction() {
+                    public void run() {
+                        controller.reloadBookmarks();
+                    }
+                });
             }
 
             public void collectionItemRemoved(Host item) {
                 cache.clear();
-                controller.reloadBookmarks();
+                invoke(new DefaultMainAction() {
+                    public void run() {
+                        controller.reloadBookmarks();
+                    }
+                });
             }
 
             public void collectionItemChanged(Host item) {
                 cache.clear();
-                controller.reloadBookmarks();
+                invoke(new DefaultMainAction() {
+                    public void run() {
+                        controller.reloadBookmarks();
+                    }
+                });
                 if(null != delayed) {
                     delayed.cancel(false);
                 }
