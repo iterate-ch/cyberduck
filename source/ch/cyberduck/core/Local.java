@@ -421,17 +421,8 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public abstract void bounce();
 
-    /**
-     * The default application for this file as set by the launch services
-     *
-     * @return Full path to the application bundle. Null if unknown
-     */
     public String getDefaultEditor() {
-        final String extension = this.getExtension();
-        if(StringUtils.isEmpty(extension)) {
-            return null;
-        }
-        return this.applicationForExtension(extension);
+        return this.applicationForExtension(this.getExtension());
     }
 
     protected abstract String applicationForExtension(String extension);

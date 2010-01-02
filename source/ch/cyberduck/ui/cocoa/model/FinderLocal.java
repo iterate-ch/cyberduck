@@ -354,6 +354,20 @@ public class FinderLocal extends Local {
         return NSString.stringByExpandingTildeInPath(string);
     }
 
+    /**
+     * The default application for this file as set by the launch services
+     *
+     * @return The bundle identifier of the default application to open the file of this type or null if unknown
+     */
+    @Override
+    public String getDefaultEditor() {
+        final String path = this.applicationForExtension(this.getExtension());
+        if(StringUtils.isEmpty(path)) {
+            return null;
+        }
+        return NSBundle.bundleWithPath(path).bundleIdentifier();
+    }
+
     @Override
     protected native String applicationForExtension(String extension);
 
