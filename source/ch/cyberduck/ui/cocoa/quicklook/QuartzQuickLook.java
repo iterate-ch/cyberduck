@@ -19,16 +19,16 @@ package ch.cyberduck.ui.cocoa.quicklook;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -49,33 +49,36 @@ public class QuartzQuickLook extends AbstractQuickLook {
         }
     }
 
-    private Map<Local, QLPreviewItem> previews = new HashMap<Local, QLPreviewItem>();
+    private List<QLPreviewItem> previews = new ArrayList<QLPreviewItem>();
+
+    @Override
+    public void select(final Collection<Local> files) {
+        previews.clear();
+        for(final Local selected : files) {
+            previews.add(new QLPreviewItem() {
+                @Override
+                public NSURL previewItemURL() {
+                    return NSURL.fileURLWithPath(selected.getAbsolute());
+                }
+
+                @Override
+                public String previewItemTitle() {
+                    return selected.getDisplayName();
+                }
+            });
+        }
+        super.select(files);
+    }
 
     private QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
-
         @Override
         public NSInteger numberOfPreviewItemsInPreviewPanel(QLPreviewPanel panel) {
-            return new NSInteger(selected.size());
+            return new NSInteger(previews.size());
         }
 
         @Override
         public ID previewPanel_previewItemAtIndex(QLPreviewPanel panel, final int index) {
-            final Local preview = selected.get(index);
-            if(!previews.containsKey(preview)) {
-                final QLPreviewItem item = new QLPreviewItem() {
-                    @Override
-                    public NSURL previewItemURL() {
-                        return NSURL.fileURLWithPath(preview.getAbsolute());
-                    }
-
-                    @Override
-                    public String previewItemTitle() {
-                        return preview.getDisplayName();
-                    }
-                };
-                previews.put(preview, item);
-            }
-            return previews.get(preview).id();
+            return previews.get(index).id();
         }
     };
 
@@ -116,7 +119,6 @@ public class QuartzQuickLook extends AbstractQuickLook {
     @Override
     public void didEndQuickLook() {
         panel.setDataSource(null);
-        previews.clear();
         super.didEndQuickLook();
     }
 }
