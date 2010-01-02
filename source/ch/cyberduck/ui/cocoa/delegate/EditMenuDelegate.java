@@ -21,27 +21,47 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.IconCache;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSEvent;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.util.Map;
+
 /**
  * @version $Id$
  */
-public class EditMenuDelegate extends AbstractMenuDelegate {
+public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
+    private Map<String, String> getEditors() {
+        final Map<String, String> editors = EditorFactory.getInstalledOdbEditors();
+        final String selected = this.getSelectedEditor();
+        if(StringUtils.isNotEmpty(selected)) {
+            final String editor = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(selected);
+            if(StringUtils.isNotEmpty(editor)) {
+                editors.put(FilenameUtils.removeExtension(LocalFactory.createLocal(editor).getDisplayName()), selected);
+            }
+        }
+        return editors;
+    }
+
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        int n = EditorFactory.getInstalledOdbEditors().size();
+        final int n = this.getEditors().size();
         if(0 == n) {
             return new NSInteger(1);
         }
         return new NSInteger(n);
     }
+
+    protected abstract String getSelectedEditor();
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
@@ -51,17 +71,17 @@ public class EditMenuDelegate extends AbstractMenuDelegate {
         if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
-        if(EditorFactory.getInstalledOdbEditors().size() == 0) {
+        final Map<String, String> editors = this.getEditors();
+        if(editors.size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
-        String identifier = EditorFactory.getInstalledOdbEditors().values().toArray(
-                new String[EditorFactory.getInstalledOdbEditors().size()])[index.intValue()];
+
+        String identifier = editors.values().toArray(new String[editors.size()])[index.intValue()];
         item.setRepresentedObject(identifier);
-        String editor = EditorFactory.getInstalledOdbEditors().keySet().toArray(
-                new String[EditorFactory.getInstalledOdbEditors().size()])[index.intValue()];
+        String editor = editors.keySet().toArray(new String[editors.size()])[index.intValue()];
         item.setTitle(editor);
-        if(identifier.equals(EditorFactory.getSelectedEditor())) {
+        if(identifier.equals(this.getSelectedEditor())) {
             item.setKeyEquivalent("k");
             item.setKeyEquivalentModifierMask(NSEvent.NSCommandKeyMask);
         }

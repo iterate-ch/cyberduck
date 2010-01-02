@@ -72,6 +72,10 @@ public class EditorFactory {
         }
     }
 
+    /**
+     * @return The bundle identifier of the default editor configured in
+     *         Preferences or null if not installed.
+     */
     public static String defaultEditor() {
         if(null == NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                 Preferences.instance().getProperty("editor.bundleIdentifier")
@@ -84,17 +88,17 @@ public class EditorFactory {
 
     /**
      * @param file
-     * @return The bundle identifier of the editor for this file.
-     *         Null if no suitable and installed editor is found.
+     * @return The bundle identifier of the editor for this file or null if no
+     *         suitable and installed editor is found.
      */
-    public static String editorBundleIdentifierForFile(final Local file) {
+    public static String editorForFile(final Local file) {
         final String defaultApplication = file.getDefaultEditor();
         if(null == defaultApplication) {
             // Use default editor
             return defaultEditor();
         }
         if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
-            return NSBundle.bundleWithPath(defaultApplication).bundleIdentifier();
+            return defaultApplication;
         }
         for(final String identifier : INSTALLED_ODB_EDITORS.values()) {
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
@@ -119,7 +123,7 @@ public class EditorFactory {
      * @return
      */
     public static Editor createEditor(BrowserController c, final Path path) {
-        return createEditor(c, editorBundleIdentifierForFile(path.getLocal()), path);
+        return createEditor(c, editorForFile(path.getLocal()), path);
     }
 
     /**
@@ -137,22 +141,6 @@ public class EditorFactory {
             return null;
         }
         return new WatchEditor(c, bundleIdentifier, path);
-    }
-
-    private static String SELECTED_EDITOR = null;
-
-    static {
-        if(getInstalledOdbEditors().containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
-            SELECTED_EDITOR = Preferences.instance().getProperty("editor.bundleIdentifier");
-        }
-    }
-
-    public static void setSelectedEditor(String editorBundleIdentifier) {
-        SELECTED_EDITOR = editorBundleIdentifier;
-    }
-
-    public static String getSelectedEditor() {
-        return SELECTED_EDITOR;
     }
 
     public static Map<String, String> getSupportedOdbEditors() {

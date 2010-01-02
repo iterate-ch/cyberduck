@@ -518,7 +518,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
-        this.editMenuDelegate = new EditMenuDelegate();
+        this.editMenuDelegate = new EditMenuDelegate() {
+            @Override
+            protected String getSelectedEditor() {
+                final Path selected = getSelectedPath();
+                if(null == selected) {
+                    return null;
+                }
+                return selected.getLocal().getDefaultEditor();
+            }
+        };
         this.editMenu.setDelegate(editMenuDelegate.id());
     }
 
@@ -886,13 +895,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         @Override
         public void selectionDidChange(NSNotification notification) {
             final Collection<Path> selected = getSelectedPaths();
-            if(1 == selected.size()) {
-                final Path p = selected.get(0);
-                if(p.attributes.isFile()) {
-                    EditorFactory.setSelectedEditor(EditorFactory.editorBundleIdentifierForFile(
-                            p.getLocal()));
-                }
-            }
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
                 if(inspector != null && inspector.isVisible()) {
                     if(selected.size() > 0) {
@@ -1181,7 +1183,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         c.setMinWidth(width);
         c.setMaxWidth(width);
         c.setWidth(width);
-
+        // Notify the table about the changed row height.
         bookmarkTable.noteHeightOfRowsWithIndexesChanged(
                 NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
@@ -2317,11 +2319,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void editMenuClicked(final NSMenuItem sender) {
         for(Path selected : this.getSelectedPaths()) {
-            String identifier = EditorFactory.getSupportedOdbEditors().get(sender.title());
-            if(identifier != null) {
-                Editor editor = EditorFactory.createEditor(this, identifier, selected);
-                editor.open();
-            }
+            Editor editor = EditorFactory.createEditor(this, sender.representedObject(), selected);
+            editor.open();
         }
     }
 
@@ -3672,12 +3671,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() > 0) {
-                String editor = EditorFactory.getSelectedEditor();
-                if(null == editor) {
-                    return false;
-                }
                 for(Path selected : this.getSelectedPaths()) {
                     if(!this.isEditable(selected)) {
+                        return false;
+                    }
+                    // Choose editor for selected file
+                    if(null == EditorFactory.editorForFile(selected.getLocal())) {
                         return false;
                     }
                 }
@@ -3874,13 +3873,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         if(identifier.equals(TOOLBAR_EDIT)) {
-            final String selectedEditor = EditorFactory.getSelectedEditor();
-            if(null == selectedEditor) {
+            String editor = EditorFactory.defaultEditor();
+            final Path selected = this.getSelectedPath();
+            if(null != selected) {
+                // Choose editor for selected file
+                editor = EditorFactory.editorForFile(selected.getLocal());
+            }
+            if(null == editor) {
+                // No editor found
                 item.setImage(IconCache.iconNamed("pencil.tiff"));
             }
             else {
                 item.setImage(NSWorkspace.sharedWorkspace().iconForFile(
-                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(selectedEditor))
+                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(editor))
                 );
             }
         }

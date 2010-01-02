@@ -25,12 +25,8 @@ import ch.cyberduck.core.io.FileWatcher;
 import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 
 /**
  * An editor listing for file system notifications on a particular folder
@@ -41,13 +37,6 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     private static Logger log = Logger.getLogger(WatchEditor.class);
 
     private FileWatcher monitor;
-
-    /**
-     * @param c
-     */
-    public WatchEditor(BrowserController c, Path path) {
-        this(c, null, path);
-    }
 
     /**
      * @param c
@@ -67,13 +56,8 @@ public class WatchEditor extends Editor implements FileWatcherListener {
      */
     @Override
     public void edit() {
-        if(null == bundleIdentifier) {
-            NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute());
-        }
-        else {
-            NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
-                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
-        }
+        NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
+                NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
         monitor = new FileWatcher(edited.getLocal());
         monitor.register();
         monitor.addListener(this);
@@ -83,23 +67,6 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     protected void delete() {
         monitor.removeListener(this);
         super.delete();
-    }
-
-    @Override
-    public boolean isOpen() {
-        if(null == bundleIdentifier) {
-            final String fullpath = edited.getLocal().getDefaultEditor();
-            final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
-            NSObject next;
-            while(((next = apps.nextObject()) != null)) {
-                NSDictionary app = Rococoa.cast(next, NSDictionary.class);
-                if(fullpath.equals(app.objectForKey("NSApplicationPath").toString())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return super.isOpen();
     }
 
     @Override

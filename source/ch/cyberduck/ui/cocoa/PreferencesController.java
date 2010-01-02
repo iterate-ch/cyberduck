@@ -262,7 +262,6 @@ public class PreferencesController extends ToolbarWindowController {
         Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
         final String selected = EditorFactory.getSupportedOdbEditors().get(sender.titleOfSelectedItem());
         Preferences.instance().setProperty("editor.bundleIdentifier", selected);
-        EditorFactory.setSelectedEditor(selected);
         BrowserController.validateToolbarItems();
     }
 
@@ -274,9 +273,9 @@ public class PreferencesController extends ToolbarWindowController {
         this.bookmarkSizePopup.setTarget(this.id());
         this.bookmarkSizePopup.setAction(Foundation.selector("bookmarkSizePopupClicked:"));
         final int size = Preferences.instance().getInteger("bookmark.icon.size");
-//        this.bookmarkSizePopup.itemAtIndex(0).setImage(CDIconCache.iconNamed("ftp", CDBookmarkCell.SMALL_BOOKMARK_SIZE));
-//        this.bookmarkSizePopup.itemAtIndex(1).setImage(CDIconCache.iconNamed("ftp", CDBookmarkCell.MEDIUM_BOOKMARK_SIZE));
-//        this.bookmarkSizePopup.itemAtIndex(2).setImage(CDIconCache.iconNamed("ftp", CDBookmarkCell.LARGE_BOOKMARK_SIZE));
+//        this.bookmarkSizePopup.itemAtIndex(0).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.SMALL_BOOKMARK_SIZE));
+//        this.bookmarkSizePopup.itemAtIndex(1).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.MEDIUM_BOOKMARK_SIZE));
+//        this.bookmarkSizePopup.itemAtIndex(2).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.LARGE_BOOKMARK_SIZE));
         for(int i = 0; i < this.bookmarkSizePopup.numberOfItems(); i++) {
             this.bookmarkSizePopup.itemAtIndex(i).setState(NSCell.NSOffState);
         }

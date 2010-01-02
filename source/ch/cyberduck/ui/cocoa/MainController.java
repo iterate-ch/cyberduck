@@ -167,7 +167,22 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
-        this.editMenuDelegate = new EditMenuDelegate();
+        this.editMenuDelegate = new EditMenuDelegate() {
+            @Override
+            protected String getSelectedEditor() {
+                final List<BrowserController> browsers = MainController.getBrowsers();
+                for(BrowserController controller : browsers) {
+                    if(controller.window().isKeyWindow()) {
+                        final Path selected = controller.getSelectedPath();
+                        if(null == selected) {
+                            return null;
+                        }
+                        return selected.getLocal().getDefaultEditor();
+                    }
+                }
+                return null;
+            }
+        };
         this.editMenu.setDelegate(editMenuDelegate.id());
     }
 
