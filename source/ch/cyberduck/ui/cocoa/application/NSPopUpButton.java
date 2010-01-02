@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :10</i>
+
 public abstract class NSPopUpButton extends NSButton {
 
     public static final String PopUpButtonWillPopUpNotification = "NSPopUpButtonWillPopUpNotification";
@@ -219,4 +220,6 @@ public abstract class NSPopUpButton extends NSButton {
      * <i>native declaration : :80</i>
      */
     public abstract String titleOfSelectedItem();
+
+    public abstract NSPopUpButtonCell cell();
 }

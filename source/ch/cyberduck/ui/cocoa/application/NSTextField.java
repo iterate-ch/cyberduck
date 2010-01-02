@@ -201,4 +201,6 @@ public abstract class NSTextField extends NSControl {
      * <i>from NSTextFieldAttributedStringMethods native declaration : :53</i>
      */
     public abstract void setImportsGraphics(boolean flag);
+
+    public abstract NSTextFieldCell cell();   
 }
