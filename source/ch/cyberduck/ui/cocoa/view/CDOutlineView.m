@@ -63,7 +63,9 @@ static NSTableColumn *localSelectionColumn;
 		}
 	}
 	if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
-		[super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:object];
+		[super _scheduleAutoExpandTimerForItem:object];
+   		// Does not call super on < 10.5
+		// [super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:object];
 	}
 }
 
@@ -74,7 +76,9 @@ static NSTableColumn *localSelectionColumn;
 		if(previousRow == [self rowAtPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil]]) {
 			// Still dragging onto the same row; finally expand the item
 			if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
-				[super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:[self itemAtRow:previousRow]];
+				[super _scheduleAutoExpandTimerForItem:[self itemAtRow:previousRow]];
+        		// Does not call super on < 10.5
+				// [super performSelector:@selector(_scheduleAutoExpandTimerForItem:) withObject:[self itemAtRow:previousRow]];
 			}
 		}
 	}
