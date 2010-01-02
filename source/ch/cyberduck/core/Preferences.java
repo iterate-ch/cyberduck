@@ -282,7 +282,7 @@ public abstract class Preferences {
                         ".*\\.hqx|.*\\.sea|.*\\.dmg|.*\\.zip|.*\\.sit|.*\\.tar|.*\\.gz|.*\\.tgz|.*\\.bz2|" +
                         ".*\\.avi|.*\\.qtl|.*\\.bom|.*\\.pax|.*\\.pgp|.*\\.mpg|.*\\.mpeg|.*\\.mp3|.*\\.m4p|" +
                         ".*\\.m4a|.*\\.mov|.*\\.avi|.*\\.qt|.*\\.ram|.*\\.aiff|.*\\.aif|.*\\.wav|.*\\.wma|" +
-                        ".*\\.doc|.*\\.xls|.*\\.ppt");
+                        ".*\\.doc|.*\\.iso|.*\\.xls|.*\\.ppt");
 
         /**
          * Save bookmarks in ~/Library
