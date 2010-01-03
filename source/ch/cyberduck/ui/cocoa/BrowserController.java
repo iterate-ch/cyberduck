@@ -1429,6 +1429,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.quickConnectPopup.setTarget(this.id());
         this.quickConnectPopup.setCompletes(true);
         this.quickConnectPopup.setAction(Foundation.selector("quickConnectSelectionChanged:"));
+        this.quickConnectPopup.cell().setSendsActionOnEndEditing(true);
         this.quickConnectPopup.setUsesDataSource(true);
         this.quickConnectPopup.setDataSource(quickConnectPopupModel.id());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
