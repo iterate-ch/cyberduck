@@ -28,6 +28,10 @@ import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * An editor listing for file system notifications on a particular folder
  *
@@ -35,6 +39,37 @@ import org.apache.log4j.Logger;
  */
 public class WatchEditor extends Editor implements FileWatcherListener {
     private static Logger log = Logger.getLogger(WatchEditor.class);
+
+    private static final Map<String, String> SUPPORTED_KQUEUE_EDITORS = new HashMap<String, String>();
+    private static final Map<String, String> INSTALLED_KQUEUE_EDITORS = new HashMap<String, String>();
+
+    static {
+        SUPPORTED_KQUEUE_EDITORS.put("TextEdit", "com.apple.TextEdit");
+        SUPPORTED_KQUEUE_EDITORS.put("Xcode", "com.apple.Xcode");
+
+        Iterator<String> editorNames = SUPPORTED_KQUEUE_EDITORS.keySet().iterator();
+        Iterator<String> editorIdentifiers = SUPPORTED_KQUEUE_EDITORS.values().iterator();
+        while(editorNames.hasNext()) {
+            String editor = editorNames.next();
+            String identifier = editorIdentifiers.next();
+            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
+                addInstalledEditor(editor, identifier);
+            }
+        }
+    }
+
+    public static void addInstalledEditor(String name, String identifier) {
+        SUPPORTED_KQUEUE_EDITORS.put(name, identifier);
+        INSTALLED_KQUEUE_EDITORS.put(name, identifier);
+    }
+
+    public static Map<String, String> getSupportedEditors() {
+        return SUPPORTED_KQUEUE_EDITORS;
+    }
+
+    public static Map<String, String> getInstalledEditors() {
+        return INSTALLED_KQUEUE_EDITORS;
+    }
 
     private FileWatcher monitor;
 

@@ -525,7 +525,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == selected) {
                     return null;
                 }
-                return selected.getLocal().getDefaultEditor();
+                return EditorFactory.editorForFile(selected.getLocal());
             }
         };
         this.editMenu.setDelegate(editMenuDelegate.id());

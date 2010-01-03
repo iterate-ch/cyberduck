@@ -23,12 +23,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -36,41 +34,6 @@ import java.util.Map;
  */
 public class EditorFactory {
     private static Logger log = Logger.getLogger(EditorFactory.class);
-
-    private static final Map<String, String> SUPPORTED_ODB_EDITORS = new HashMap<String, String>();
-    private static final Map<String, String> INSTALLED_ODB_EDITORS = new HashMap<String, String>();
-
-    static {
-        SUPPORTED_ODB_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
-        SUPPORTED_ODB_EDITORS.put("BBEdit", "com.barebones.bbedit");
-        SUPPORTED_ODB_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
-        SUPPORTED_ODB_EDITORS.put("TextMate", "com.macromates.textmate");
-        SUPPORTED_ODB_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
-        SUPPORTED_ODB_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
-        SUPPORTED_ODB_EDITORS.put("mi", "mi");
-        SUPPORTED_ODB_EDITORS.put("Smultron", "org.smultron.Smultron");
-        SUPPORTED_ODB_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
-        SUPPORTED_ODB_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
-        SUPPORTED_ODB_EDITORS.put("Tag", "com.talacia.Tag");
-        SUPPORTED_ODB_EDITORS.put("skEdit", "org.skti.skEdit");
-        SUPPORTED_ODB_EDITORS.put("JarInspector", "com.cgerdes.ji");
-        SUPPORTED_ODB_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
-        SUPPORTED_ODB_EDITORS.put("WriteRoom", "com.hogbaysoftware.WriteRoom");
-        SUPPORTED_ODB_EDITORS.put("MacVim", "org.vim.MacVim");
-        SUPPORTED_ODB_EDITORS.put("ForgEdit", "com.forgedit.ForgEdit");
-        SUPPORTED_ODB_EDITORS.put("Taco HTML Edit", "com.tacosw.TacoHTMLEdit");
-        SUPPORTED_ODB_EDITORS.put("Espresso", "com.macrabbit.Espresso");
-
-        Iterator<String> editorNames = SUPPORTED_ODB_EDITORS.keySet().iterator();
-        Iterator<String> editorIdentifiers = SUPPORTED_ODB_EDITORS.values().iterator();
-        while(editorNames.hasNext()) {
-            String editor = editorNames.next();
-            String identifier = editorIdentifiers.next();
-            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
-                INSTALLED_ODB_EDITORS.put(editor, identifier);
-            }
-        }
-    }
 
     /**
      * @return The bundle identifier of the default editor configured in
@@ -85,22 +48,24 @@ public class EditorFactory {
         return Preferences.instance().getProperty("editor.bundleIdentifier");
     }
 
-
     /**
      * @param file
      * @return The bundle identifier of the editor for this file or null if no
      *         suitable and installed editor is found.
      */
     public static String editorForFile(final Local file) {
-        final String defaultApplication = file.getDefaultEditor();
-        if(null == defaultApplication) {
-            // Use default editor
+        if(Preferences.instance().getBoolean("editor.alwaysUseDefault")) {
             return defaultEditor();
         }
-        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
-            return defaultApplication;
+        // The default application set by launch services to open files of
+        // the given type
+        final String defaultApplication = file.getDefaultApplication();
+        if(null == defaultApplication) {
+            // Use default editor if not applicable application found which handles this file type
+            return defaultEditor();
         }
-        for(final String identifier : INSTALLED_ODB_EDITORS.values()) {
+        // Find matching ODB editor if any
+        for(final String identifier : ODBEditor.getInstalledEditors().values()) {
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
             if(null == path) {
                 continue;
@@ -109,7 +74,11 @@ public class EditorFactory {
                 return identifier;
             }
         }
-        if(INSTALLED_ODB_EDITORS.containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
+            // Use application determined by launch services using file system notifications
+            return defaultApplication;
+        }
+        if(ODBEditor.getInstalledEditors().containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
             // Use default editor
             return defaultEditor();
         }
@@ -128,26 +97,32 @@ public class EditorFactory {
 
     /**
      * @param c
-     * @param bundleIdentifier
+     * @param bundleIdentifier The application bundle identifier of the editor to use
      * @param path
      * @return
      */
     public static Editor createEditor(BrowserController c, String bundleIdentifier, final Path path) {
-        if(getInstalledOdbEditors().containsValue(bundleIdentifier)) {
+        if(ODBEditor.getInstalledEditors().containsValue(bundleIdentifier)) {
             return new ODBEditor(c, bundleIdentifier, path);
         }
         if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
-            log.error("Support for non ODB editors must be enabled first");
+            log.error("Support for watch editors must be enabled first");
             return null;
         }
         return new WatchEditor(c, bundleIdentifier, path);
     }
 
-    public static Map<String, String> getSupportedOdbEditors() {
-        return SUPPORTED_ODB_EDITORS;
+    public static Map<String, String> getSupportedEditors() {
+        Map<String, String> supported = new HashMap<String, String>();
+        supported.putAll(ODBEditor.getSupportedEditors());
+        supported.putAll(WatchEditor.getSupportedEditors());
+        return supported;
     }
 
-    public static Map<String, String> getInstalledOdbEditors() {
-        return INSTALLED_ODB_EDITORS;
+    public static Map<String, String> getInstalledEditors() {
+        Map<String, String> installed = new HashMap<String, String>();
+        installed.putAll(ODBEditor.getInstalledEditors());
+        installed.putAll(WatchEditor.getInstalledEditors());
+        return installed;
     }
 }

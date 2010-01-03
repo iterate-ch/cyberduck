@@ -23,9 +23,11 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
+import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.CDBookmarkCell;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Bucket;
@@ -38,7 +40,9 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import com.enterprisedt.net.ftp.FTPTransferType;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -70,6 +74,8 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Outlet
     private NSView panelGeneral;
+    @Outlet
+    private NSView panelEditor;
     @Outlet
     private NSView panelInterface;
     @Outlet
@@ -123,9 +129,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.panelGeneral = panelGeneral;
     }
 
+    public void setPanelEditor(NSView panelEditor) {
+        this.panelEditor = panelEditor;
+    }
+
     @Override
     protected List<NSView> getPanels() {
-        return Arrays.asList(panelGeneral, panelInterface, panelTransfer, panelFTP, panelSFTP, panelS3,
+        return Arrays.asList(panelGeneral, panelInterface, panelTransfer, panelEditor, panelFTP, panelSFTP, panelS3,
                 panelBandwidth, panelAdvanced, panelUpdate);
     }
 
@@ -235,34 +245,111 @@ public class PreferencesController extends ToolbarWindowController {
     public void setEditorCombobox(NSPopUpButton editorCombobox) {
         this.editorCombobox = editorCombobox;
         this.editorCombobox.setAutoenablesItems(false);
-        this.editorCombobox.removeAllItems();
-        java.util.Map editors = EditorFactory.getSupportedOdbEditors();
-        java.util.Iterator editorNames = editors.keySet().iterator();
-        java.util.Iterator editorIdentifiers = editors.values().iterator();
-        while(editorNames.hasNext()) {
-            String editor = (String) editorNames.next();
-            String identifier = (String) editorIdentifiers.next();
-            this.editorCombobox.addItemWithTitle(editor);
-            final boolean enabled = EditorFactory.getInstalledOdbEditors().containsValue(identifier);
-            this.editorCombobox.itemWithTitle(editor).setEnabled(enabled);
-            if(enabled) {
-                final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
-                if(StringUtils.isNotEmpty(path)) {
-                    this.editorCombobox.itemWithTitle(editor).setImage(IconCache.instance().iconForPath(
-                        LocalFactory.createLocal(path), 16));
-                }
-            }
-        }
-        this.editorCombobox.setTarget(this.id());
-        this.editorCombobox.setAction(Foundation.selector("editorComboboxClicked:"));
-        this.editorCombobox.selectItemWithTitle(Preferences.instance().getProperty("editor.name"));
+        this.updateEditorCombobox();
     }
 
+    private void updateEditorCombobox() {
+        editorCombobox.removeAllItems();
+        Map<String,String> editors = EditorFactory.getSupportedEditors();
+        Iterator<String> editorNames = editors.keySet().iterator();
+        Iterator<String> editorIdentifiers = editors.values().iterator();
+        while(editorNames.hasNext()) {
+            this.addEditor(editorNames.next(), editorIdentifiers.next());
+        }
+        if(!editors.values().contains(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
+            this.addEditor(Preferences.instance().getProperty("editor.name"),
+                    Preferences.instance().getProperty("editor.bundleIdentifier"));
+        }
+        editorCombobox.setTarget(this.id());
+        final Selector action = Foundation.selector("editorComboboxClicked:");
+        editorCombobox.setAction(action);
+        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
+            editorCombobox.menu().addItem(NSMenuItem.separatorItem());
+            editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, "");
+            editorCombobox.itemAtIndex(editorCombobox.numberOfItems() - 1).setTarget(this.id());
+        }
+        editorCombobox.selectItemWithTitle(Preferences.instance().getProperty("editor.name"));
+    }
+
+    private void addEditor(String editor, String identifier) {
+        editorCombobox.addItemWithTitle(editor);
+        final boolean enabled = EditorFactory.getInstalledEditors().containsValue(identifier);
+        editorCombobox.itemWithTitle(editor).setEnabled(enabled);
+        if(enabled) {
+            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+            if(StringUtils.isNotEmpty(path)) {
+                editorCombobox.itemWithTitle(editor).setImage(IconCache.instance().iconForPath(
+                        LocalFactory.createLocal(path), 16));
+            }
+        }
+    }
+
+    private NSOpenPanel editorPathPanel;
+    private ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
+
     public void editorComboboxClicked(NSPopUpButton sender) {
-        Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
-        final String selected = EditorFactory.getSupportedOdbEditors().get(sender.titleOfSelectedItem());
-        Preferences.instance().setProperty("editor.bundleIdentifier", selected);
-        BrowserController.validateToolbarItems();
+        if(sender.title().equals(CHOOSE)) {
+            editorPathPanel = NSOpenPanel.openPanel();
+            editorPathPanel.setDelegate(editorPathPanelDelegate.id());
+            editorPathPanel.setAllowsMultipleSelection(false);
+            editorPathPanel.setCanCreateDirectories(false);
+            editorPathPanel.beginSheetForDirectory(null, null, this.window, this.id(),
+                    Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
+        }
+        else {
+            Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
+            final String selected = EditorFactory.getSupportedEditors().get(sender.titleOfSelectedItem());
+            Preferences.instance().setProperty("editor.bundleIdentifier", selected);
+            BrowserController.validateToolbarItems();
+        }
+    }
+
+    private static class EditorOpenPanelDelegate extends ProxyController {
+        public boolean panel_shouldShowFilename(ID panel, String path) {
+            final Local f = LocalFactory.createLocal(path);
+            if(f.isDirectory()) {
+                return true;
+            }
+            final String extension = f.getExtension();
+            if(StringUtils.isEmpty(extension)) {
+                return false;
+            }
+            return extension.equals("app");
+        }
+    }
+
+    public void editorPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
+        if(returncode == SheetCallback.DEFAULT_OPTION) {
+            NSArray selected = sheet.filenames();
+            String filename;
+            if((filename = selected.lastObject().toString()) != null) {
+                final Local application = LocalFactory.createLocal(filename);
+                final String name = FilenameUtils.removeExtension(application.getName());
+                final String identifier = NSBundle.bundleWithPath(application.getAbsolute()).bundleIdentifier();
+                if(!EditorFactory.getInstalledEditors().values().contains(identifier)) {
+                   WatchEditor.addInstalledEditor(name, identifier);
+                }
+                Preferences.instance().setProperty("editor.name", name);
+                Preferences.instance().setProperty("editor.bundleIdentifier", identifier);
+            }
+            this.updateEditorCombobox();
+            BrowserController.validateToolbarItems();
+        }
+    }
+
+    @Outlet
+    private NSButton defaultEditorCheckbox;
+
+    public void setDefaultEditorCheckbox(NSButton defaultEditorCheckbox) {
+        this.defaultEditorCheckbox = defaultEditorCheckbox;
+        this.defaultEditorCheckbox.setTarget(this.id());
+        this.defaultEditorCheckbox.setAction(Foundation.selector("defaultEditorCheckboxClicked:"));
+        this.defaultEditorCheckbox.setState(Preferences.instance().getBoolean("editor.alwaysUseDefault") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    public void defaultEditorCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        Preferences.instance().setProperty("editor.alwaysUseDefault", enabled);
     }
 
     @Outlet
@@ -307,10 +394,10 @@ public class PreferencesController extends ToolbarWindowController {
     private NSButton openUntitledBrowserCheckbox;
 
     public void setOpenUntitledBrowserCheckbox(NSButton openUntitledBrowserCheckbox) {
-        this.openUntitledBrowserCheckbox = openUntitledBrowserCheckbox;
-        this.openUntitledBrowserCheckbox.setTarget(this.id());
-        this.openUntitledBrowserCheckbox.setAction(Foundation.selector("openUntitledBrowserCheckboxClicked:"));
-        this.openUntitledBrowserCheckbox.setState(Preferences.instance().getBoolean("browser.openUntitled") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.defaultEditorCheckbox = openUntitledBrowserCheckbox;
+        this.defaultEditorCheckbox.setTarget(this.id());
+        this.defaultEditorCheckbox.setAction(Foundation.selector("openUntitledBrowserCheckboxClicked:"));
+        this.defaultEditorCheckbox.setState(Preferences.instance().getBoolean("browser.openUntitled") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     public void openUntitledBrowserCheckboxClicked(final NSButton sender) {

@@ -21,8 +21,13 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.BrowserController;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
 import org.apache.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -30,6 +35,49 @@ import org.apache.log4j.Logger;
 public class ODBEditor extends Editor {
     private static Logger log = Logger.getLogger(ODBEditor.class);
 
+    private static final Map<String, String> SUPPORTED_ODB_EDITORS = new HashMap<String, String>();
+    private static final Map<String, String> INSTALLED_ODB_EDITORS = new HashMap<String, String>();
+
+    static {
+        SUPPORTED_ODB_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
+        SUPPORTED_ODB_EDITORS.put("BBEdit", "com.barebones.bbedit");
+        SUPPORTED_ODB_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
+        SUPPORTED_ODB_EDITORS.put("TextMate", "com.macromates.textmate");
+        SUPPORTED_ODB_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
+        SUPPORTED_ODB_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
+        SUPPORTED_ODB_EDITORS.put("mi", "mi");
+        SUPPORTED_ODB_EDITORS.put("Smultron", "org.smultron.Smultron");
+        SUPPORTED_ODB_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
+        SUPPORTED_ODB_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
+        SUPPORTED_ODB_EDITORS.put("Tag", "com.talacia.Tag");
+        SUPPORTED_ODB_EDITORS.put("skEdit", "org.skti.skEdit");
+        SUPPORTED_ODB_EDITORS.put("JarInspector", "com.cgerdes.ji");
+        SUPPORTED_ODB_EDITORS.put("PageSpinner", "com.optima.PageSpinner");
+        SUPPORTED_ODB_EDITORS.put("WriteRoom", "com.hogbaysoftware.WriteRoom");
+        SUPPORTED_ODB_EDITORS.put("MacVim", "org.vim.MacVim");
+        SUPPORTED_ODB_EDITORS.put("ForgEdit", "com.forgedit.ForgEdit");
+        SUPPORTED_ODB_EDITORS.put("Taco HTML Edit", "com.tacosw.TacoHTMLEdit");
+        SUPPORTED_ODB_EDITORS.put("Espresso", "com.macrabbit.Espresso");
+
+        Iterator<String> editorNames = SUPPORTED_ODB_EDITORS.keySet().iterator();
+        Iterator<String> editorIdentifiers = SUPPORTED_ODB_EDITORS.values().iterator();
+        while(editorNames.hasNext()) {
+            String editor = editorNames.next();
+            String identifier = editorIdentifiers.next();
+            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
+                INSTALLED_ODB_EDITORS.put(editor, identifier);
+            }
+        }
+    }
+
+    public static Map<String, String> getSupportedEditors() {
+        return SUPPORTED_ODB_EDITORS;
+    }
+
+    public static Map<String, String> getInstalledEditors() {
+        return INSTALLED_ODB_EDITORS;
+    }
+    
     /**
      * @param c
      * @param bundleIdentifier

@@ -28,6 +28,7 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
@@ -177,7 +178,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(null == selected) {
                             return null;
                         }
-                        return selected.getLocal().getDefaultEditor();
+                        return EditorFactory.editorForFile(selected.getLocal());
                     }
                 }
                 return null;

@@ -360,7 +360,7 @@ public class FinderLocal extends Local {
      * @return The bundle identifier of the default application to open the file of this type or null if unknown
      */
     @Override
-    public String getDefaultEditor() {
+    public String getDefaultApplication() {
         final String path = this.applicationForExtension(this.getExtension());
         if(StringUtils.isEmpty(path)) {
             return null;
@@ -368,7 +368,6 @@ public class FinderLocal extends Local {
         return NSBundle.bundleWithPath(path).bundleIdentifier();
     }
 
-    @Override
     protected native String applicationForExtension(String extension);
 
     @Override

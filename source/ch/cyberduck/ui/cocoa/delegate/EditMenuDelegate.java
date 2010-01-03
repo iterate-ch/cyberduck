@@ -42,12 +42,14 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
     private Map<String, String> getEditors() {
-        final Map<String, String> editors = EditorFactory.getInstalledOdbEditors();
+        final Map<String, String> editors = EditorFactory.getInstalledEditors();
         final String selected = this.getSelectedEditor();
         if(StringUtils.isNotEmpty(selected)) {
-            final String editor = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(selected);
-            if(StringUtils.isNotEmpty(editor)) {
-                editors.put(FilenameUtils.removeExtension(LocalFactory.createLocal(editor).getDisplayName()), selected);
+            if(!editors.values().contains(selected)) {
+                final String editor = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(selected);
+                if(StringUtils.isNotEmpty(editor)) {
+                    editors.put(FilenameUtils.removeExtension(LocalFactory.createLocal(editor).getDisplayName()), selected);
+                }
             }
         }
         return editors;

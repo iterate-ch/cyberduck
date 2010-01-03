@@ -421,11 +421,9 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public abstract void bounce();
 
-    public String getDefaultEditor() {
-        return this.applicationForExtension(this.getExtension());
+    public String getDefaultApplication() {
+        return null;
     }
-
-    protected abstract String applicationForExtension(String extension);
 
     /**
      * @param originUrl Page that linked to the downloaded file
