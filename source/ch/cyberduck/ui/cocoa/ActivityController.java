@@ -193,7 +193,12 @@ public class ActivityController extends WindowController {
             }
 
             @Override
-            public int rowHeightForRow(int row) {
+            protected boolean isTypeSelectSupported() {
+                return false;
+            }
+
+            @Override
+            public int rowHeightForRow(NSInteger row) {
                 return 42;
             }
 

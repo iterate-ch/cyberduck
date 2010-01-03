@@ -281,14 +281,23 @@ public abstract class TransferPromptController extends SheetController implement
             }
 
             @Override
-            public int rowHeightForRow(int row) {
+            protected boolean isTypeSelectSupported() {
+                return true;
+            }
+
+            public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
+                                                                       NSTableColumn tableColumn,
+                                                                       NSInteger row) {
+                final Path p = browserModel.lookup(browserView.itemAtRow(row));
+                return p.getName();
+            }
+
+            @Override
+            public int rowHeightForRow(NSInteger row) {
                 return NSLayoutManager.layoutManager().defaultLineHeightForFont(
                         NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2;
             }
 
-            /**
-             * @see NSOutlineView.Delegate
-             */
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
                                                                         NSTableColumn tableColumn, NSObject item) {
                 if(null == item) {

@@ -757,7 +757,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
 
         @Override
-        public int rowHeightForRow(int row) {
+        public int rowHeightForRow(NSInteger row) {
             return l.defaultLineHeightForFont(
                     NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2;
         }
@@ -984,7 +984,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
-
         // setting appearance attributes
         this._updateBrowserAttributes(browserOutlineView);
         // selection properties
@@ -1069,6 +1068,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void outlineViewItemDidCollapse(NSNotification notification) {
                 updateStatusLabel();
             }
+
+            @Override
+            protected boolean isTypeSelectSupported() {
+                return true;
+            }
+
         }).id());
         {
             NSTableColumn c = browserOutlineColumnsFactory.create(BrowserTableDataSource.FILENAME_COLUMN);
@@ -1096,7 +1101,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
-
         // setting appearance attributes
         this._updateBrowserAttributes(browserListView);
         // selection properties
@@ -1135,6 +1139,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         cell.setTextColor(NSColor.controlTextColor());
                     }
                 }
+            }
+
+            @Override
+            protected boolean isTypeSelectSupported() {
+                return true;
             }
         }).id());
         {
@@ -1277,6 +1286,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 IconCache.iconNamed("NSAscendingSortIndicator") :
                 IconCache.iconNamed("NSDescendingSortIndicator"),
                 table.tableColumnWithIdentifier(Preferences.instance().getProperty("browser.sort.column")));
+        // Sets whether the order and width of this table view’s columns are automatically saved.
         table.setAutosaveTableColumns(true);
         table.sizeToFit();
         this.reloadData(false);
@@ -1326,7 +1336,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
 
             @Override
-            public int rowHeightForRow(int row) {
+            public int rowHeightForRow(NSInteger row) {
                 final int size = Preferences.instance().getInteger("bookmark.icon.size");
                 if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
                     return 18;
@@ -1335,6 +1345,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     return 45;
                 }
                 return 70;
+            }
+
+            @Override
+            public boolean isTypeSelectSupported() {
+                return true;
             }
 
             public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
@@ -1440,9 +1455,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void quickConnectSelectionChanged(final NSControl sender) {
-        if(null == sender) {
-            return;
-        }
         String input = (sender).stringValue();
         if(StringUtils.isBlank(input)) {
             return;

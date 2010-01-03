@@ -202,10 +202,12 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
 
     public boolean tableView_shouldTypeSelectForEvent_withCurrentSearchString(
             NSTableView tableView, NSEvent event, String searchString) {
-        return true;
+        return this.isTypeSelectSupported();
     }
-    
-    public abstract int rowHeightForRow(int row);
+
+    protected abstract boolean isTypeSelectSupported();
+
+    public abstract int rowHeightForRow(NSInteger row);
 
     /**
      * You should implement this method if your table supports varying row heights.
@@ -221,7 +223,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      * @return The height of the row. The height should not include intercell spacing and must be greater than zero.
      */
     public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
-        return new CGFloat(this.rowHeightForRow(row.intValue()));
+        return new CGFloat(this.rowHeightForRow(row));
     }
 
     /**
@@ -239,6 +241,6 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      * @return
      */
     public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item) {
-        return new CGFloat(this.rowHeightForRow(outlineView.rowForItem(item).intValue()));
+        return new CGFloat(this.rowHeightForRow(outlineView.rowForItem(item)));
     }
 }
