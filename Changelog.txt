@@ -13,7 +13,6 @@ Changelog. Last modified: $Date$
 - [Bugfix] Selection in synchronize prompt (#3901)
 - [Bugfix] Bonjour bookmarks ignore TXT record with path and credentials attributes (#3984)
 - [Bugfix] Donation prompt cannot be supressed (#3937)
-- [Bugfix] Donation prompt cannot be supressed (#3937)
 - [Bugfix] Error when uploading file with different display name from real filename (#4041)
 
 3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
