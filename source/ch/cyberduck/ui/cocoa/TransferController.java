@@ -381,9 +381,6 @@ public class TransferController extends WindowController implements NSToolbar.De
 
             @Override
             public int rowHeightForRow(NSInteger row) {
-                if(transferTable.isRowSelected(row)) {
-                    return 176;
-                }
                 return 82;
             }
 
@@ -402,7 +399,13 @@ public class TransferController extends WindowController implements NSToolbar.De
 
             @Override
             public boolean isTypeSelectSupported() {
-                return false;
+                return true;
+            }
+
+            public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
+                                                                       NSTableColumn tableColumn,
+                                                                       NSInteger row) {
+                return transferTableModel.getSource().get(row.intValue()).getName();
             }
         }).id());
         // receive drag events from types
