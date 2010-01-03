@@ -1613,18 +1613,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final NSInteger index = new NSInteger(row);
             bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
             bookmarkTable.scrollRowToVisible(index);
-            Host host = bookmarkModel.getSource().get(row);
-            final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark"),
-                    Locale.localizedString("Do you want to delete the selected bookmark?")
-                            + " (" + host.getNickname() + ")",
-                    Locale.localizedString("Delete"),
-                    Locale.localizedString("Cancel"),
-                    null);
-            switch(alert.runModal()) {
-                case SheetCallback.DEFAULT_OPTION:
-                    bookmarkModel.getSource().remove(row);
-                    j++;
+            if(bookmarkModel.getSource().allowsEdit()) {
+                Host host = bookmarkModel.getSource().get(row);
+                final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark"),
+                        Locale.localizedString("Do you want to delete the selected bookmark?")
+                                + " (" + host.getNickname() + ")",
+                        Locale.localizedString("Delete"),
+                        Locale.localizedString("Cancel"),
+                        null);
+                switch(alert.runModal()) {
+                    case SheetCallback.ALTERNATE_OPTION:
+                        continue;
+                }
             }
+            bookmarkModel.getSource().remove(row);
+            j++;
         }
         bookmarkTable.deselectAll(null);
     }
