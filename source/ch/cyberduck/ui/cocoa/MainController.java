@@ -725,10 +725,10 @@ public class MainController extends BundleController implements NSApplication.De
             final Calendar nextreminder = Calendar.getInstance();
             nextreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
             // Display donationPrompt every n days
-            nextreminder.roll(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("donate.reminder.interval"));
+            nextreminder.add(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("donate.reminder.interval"));
             log.debug("Next reminder:" + nextreminder.getTime().toString());
             // Display after upgrade
-            if(nextreminder.getTime().before(new Date(System.currentTimeMillis()))) {
+            if(nextreminder.getTime().after(new Date(System.currentTimeMillis()))) {
                 // Do not display if shown in the reminder interval
                 return NSApplication.NSTerminateNow;
             }
