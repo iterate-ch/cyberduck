@@ -4,7 +4,11 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.3.1 (Jan-01-2010) [http://trac.cyberduck.ch/query?status=closed&milestone=3.4]
+3.4 (Jan-08-2010) [http://trac.cyberduck.ch/query?status=closed&milestone=3.4]
+- [Feature] Support external editors with no ODB support for different file types (#3834)
+- [Feature] Allow user to define applications to use for editing (#3112)
+
+3.3.1 (Jan-05-2010) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3.1]
 - [Feature] Support for new US West Location (S3)
 - [Bugfix] Bookmark menu [#3924]
 - [Bugfix] SOCKS proxy support broken [#3803]
