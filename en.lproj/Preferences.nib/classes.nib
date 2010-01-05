@@ -7,13 +7,11 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
-				<key></key>
-				<string>id</string>
-				<key>help</key>
+				<key>checkForUpdates</key>
 				<string>id</string>
 			</dict>
 			<key>CLASS</key>
-			<string>FirstResponder</string>
+			<string>SUUpdater</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
 			<key>SUPERCLASS</key>
@@ -22,11 +20,13 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
-				<key>checkForUpdates</key>
+				<key></key>
+				<string>id</string>
+				<key>help</key>
 				<string>id</string>
 			</dict>
 			<key>CLASS</key>
-			<string>SUUpdater</string>
+			<string>FirstResponder</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
 			<key>SUPERCLASS</key>
@@ -75,6 +75,8 @@
 				<string>NSPopUpButton</string>
 				<key>defaultDownloadThrottleCombobox</key>
 				<string>NSPopUpButton</string>
+				<key>defaultEditorCheckbox</key>
+				<string>NSButton</string>
 				<key>defaultFTPHandlerCombobox</key>
 				<string>NSPopUpButton</string>
 				<key>defaultSFTPHandlerCombobox</key>
@@ -140,6 +142,8 @@
 				<key>panelAdvanced</key>
 				<string>NSView</string>
 				<key>panelBandwidth</key>
+				<string>NSView</string>
+				<key>panelEditor</key>
 				<string>NSView</string>
 				<key>panelFTP</key>
 				<string>NSView</string>

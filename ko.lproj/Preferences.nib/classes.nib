@@ -22,6 +22,7 @@
         defaultBookmarkCombobox = NSPopUpButton;
         defaultBucketLocation = NSPopUpButton;
         defaultDownloadThrottleCombobox = NSPopUpButton;
+        defaultEditorCheckbox = NSButton;
         defaultFTPHandlerCombobox = NSPopUpButton;
         defaultSFTPHandlerCombobox = NSPopUpButton;
         defaultUploadThrottleCombobox = NSPopUpButton;
@@ -55,6 +56,7 @@
         openUntitledBrowserCheckbox = NSButton;
         panelAdvanced = NSView;
         panelBandwidth = NSView;
+        panelEditor = NSView;
         panelFTP = NSView;
         panelGeneral = NSView;
         panelInterface = NSView;
