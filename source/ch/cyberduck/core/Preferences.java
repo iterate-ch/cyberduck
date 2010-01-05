@@ -268,7 +268,7 @@ public abstract class Preferences {
         /**
          * Editor for the current selected file. Used to set the shortcut key in the menu delegate
          */
-        defaults.put("editor.kqueue.enable", "false");
+        defaults.put("editor.kqueue.enable", "true");
         defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
         defaults.put("editor.file.trash", "true");
