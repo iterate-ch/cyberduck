@@ -516,6 +516,7 @@ public class MainController extends BundleController implements NSApplication.De
         log.info("Running Java " + System.getProperty("java.version") + " on " + System.getProperty("os.arch"));
         if(log.isInfoEnabled()) {
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
+            log.info("Current locale:" + java.util.Locale.getDefault());
         }
         if(Preferences.instance().getBoolean("browser.openUntitled")) {
             MainController.newDocument();
