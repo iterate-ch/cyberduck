@@ -331,10 +331,10 @@ public class PreferencesController extends ToolbarWindowController {
                 }
                 Preferences.instance().setProperty("editor.name", name);
                 Preferences.instance().setProperty("editor.bundleIdentifier", identifier);
+                BrowserController.validateToolbarItems();
             }
-            this.updateEditorCombobox();
-            BrowserController.validateToolbarItems();
         }
+        this.updateEditorCombobox();
     }
 
     @Outlet
