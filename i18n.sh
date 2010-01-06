@@ -56,7 +56,10 @@ init() {
 	cp $base_language/IDisk.strings $language/
 	cp $base_language/Growl.strings $language/
 	cp $base_language/S3.strings $language/
+	cp $base_language/Mosso.strings $language/
 	cp $base_language/Keychain.strings $language/
+	cp $base_language/Archive.strings $language/
+	cp $base_language/License.strings $language/
 	cp $base_language/InfoPlist.strings $language/
 	cp $base_language/License.txt $language/
 }
