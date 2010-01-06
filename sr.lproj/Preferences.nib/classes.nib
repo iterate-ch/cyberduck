@@ -1,0 +1,116 @@
+{
+    IBClasses =     (
+        {
+    CLASS = CDPreferencesController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        alternatingRowBackgroundCheckbox = NSButton;
+        anonymousField = NSTextField;
+        bookmarkSizePopup = NSPopUpButton;
+        bringQueueToBackCheckbox = NSButton;
+        bringQueueToFrontCheckbox = NSButton;
+        browserSerializeCheckbox = NSButton;
+        chmodDownloadCheckbox = NSButton;
+        chmodDownloadCustomCheckbox = NSButton;
+        chmodDownloadDefaultCheckbox = NSButton;
+        chmodDownloadTypePopup = NSPopUpButton;
+        chmodUploadCheckbox = NSButton;
+        chmodUploadCustomCheckbox = NSButton;
+        chmodUploadDefaultCheckbox = NSButton;
+        chmodUploadTypePopup = NSPopUpButton;
+        confirmDisconnectCheckbox = NSButton;
+        defaultBookmarkCombobox = NSPopUpButton;
+        defaultBucketLocation = NSPopUpButton;
+        defaultDownloadThrottleCombobox = NSPopUpButton;
+        defaultEditorCheckbox = NSButton;
+        defaultFTPHandlerCombobox = NSPopUpButton;
+        defaultSFTPHandlerCombobox = NSPopUpButton;
+        defaultUploadThrottleCombobox = NSPopUpButton;
+        dgroupr = NSButton;
+        dgroupw = NSButton;
+        dgroupx = NSButton;
+        dotherr = NSButton;
+        dotherw = NSButton;
+        dotherx = NSButton;
+        doubleClickCheckbox = NSButton;
+        downerr = NSButton;
+        downerw = NSButton;
+        downerx = NSButton;
+        downloadPathPopup = NSPopUpButton;
+        downloadSkipButton = NSButton;
+        downloadSkipRegexDefaultButton = NSButton;
+        downloadSkipRegexField = NSTextView;
+        duplicateDownloadCombobox = NSPopUpButton;
+        duplicateDownloadOverwriteButton = NSButton;
+        duplicateUploadCombobox = NSPopUpButton;
+        duplicateUploadOverwriteButton = NSButton;
+        editorCombobox = NSPopUpButton;
+        encodingCombobox = NSPopUpButton;
+        failInsecureDataChannelCheckbox = NSButton;
+        horizontalLinesCheckbox = NSButton;
+        infoWindowAsInspectorCheckbox = NSButton;
+        keychainCheckbox = NSButton;
+        lineEndingCombobox = NSPopUpButton;
+        loginField = NSTextField;
+        openAfterDownloadCheckbox = NSButton;
+        openUntitledBrowserCheckbox = NSButton;
+        panelAdvanced = NSView;
+        panelBandwidth = NSView;
+        panelEditor = NSView;
+        panelFTP = NSView;
+        panelGeneral = NSView;
+        panelInterface = NSView;
+        panelS3 = NSView;
+        panelSFTP = NSView;
+        panelTransfer = NSView;
+        panelUpdate = NSView;
+        preserveModificationDownloadCheckbox = NSButton;
+        preserveModificationUploadCheckbox = NSButton;
+        protocolCombobox = NSPopUpButton;
+        removeFromQueueCheckbox = NSButton;
+        returnKeyCheckbox = NSButton;
+        secureDataChannelCheckbox = NSButton;
+        showHiddenCheckbox = NSButton;
+        sshTransfersCombobox = NSPopUpButton;
+        tabView = NSTabView;
+        textFileTypeRegexField = NSTextField;
+        transferPopup = NSPopUpButton;
+        transfermodeCombobox = NSPopUpButton;
+        ugroupr = NSButton;
+        ugroupw = NSButton;
+        ugroupx = NSButton;
+        uotherr = NSButton;
+        uotherw = NSButton;
+        uotherx = NSButton;
+        uownerr = NSButton;
+        uownerw = NSButton;
+        uownerx = NSButton;
+        updateCheckbox = NSButton;
+        uploadSkipButton = NSButton;
+        uploadSkipRegexDefaultButton = NSButton;
+        uploadSkipRegexField = NSTextView;
+        verticalLinesCheckbox = NSButton;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    ACTIONS =     {
+        "" = id;
+        help = id;
+    };
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+},
+        {
+    ACTIONS =     {
+        checkForUpdates = id;
+    };
+    CLASS = SUUpdater;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}

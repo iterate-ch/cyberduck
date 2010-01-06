@@ -1812,6 +1812,88 @@ source/net/oofn/CTGradient.h -text
 source/net/oofn/CTGradient.m -text
 source/net/oofn/CTGradientView.h -text
 source/net/oofn/CTGradientView.m -text
+sr.lproj/Alert.nib/classes.nib -text
+sr.lproj/Alert.nib/info.nib -text
+sr.lproj/Alert.nib/keyedobjects.nib -text
+sr.lproj/Alert.strings -text svneol=unset#text/utf-16
+sr.lproj/Archive.strings -text svneol=unset#text/utf-16
+sr.lproj/Bookmark.nib/classes.nib -text
+sr.lproj/Bookmark.nib/info.nib -text
+sr.lproj/Bookmark.nib/keyedobjects.nib -text
+sr.lproj/Bookmark.strings -text svneol=unset#text/utf-16
+sr.lproj/Browser.nib/classes.nib -text
+sr.lproj/Browser.nib/info.nib -text
+sr.lproj/Browser.nib/keyedobjects.nib -text
+sr.lproj/Browser.strings -text svneol=unset#text/utf-16
+sr.lproj/Command.nib/classes.nib -text
+sr.lproj/Command.nib/info.nib -text
+sr.lproj/Command.nib/keyedobjects.nib -text
+sr.lproj/Command.strings -text svneol=unset#text/utf-16
+sr.lproj/Configuration.strings -text svneol=unset#text/utf-16
+sr.lproj/Connection.nib/classes.nib -text
+sr.lproj/Connection.nib/info.nib -text
+sr.lproj/Connection.nib/keyedobjects.nib -text
+sr.lproj/Connection.strings -text svneol=unset#text/utf-16
+sr.lproj/Crash.strings -text svneol=unset#text/utf-16
+sr.lproj/Credentials.strings -text svneol=unset#text/utf-16
+sr.lproj/Donate.nib/classes.nib -text
+sr.lproj/Donate.nib/info.nib -text
+sr.lproj/Donate.nib/keyedobjects.nib -text
+sr.lproj/Donate.strings -text svneol=unset#text/utf-16
+sr.lproj/Download.nib/classes.nib -text
+sr.lproj/Download.nib/info.nib -text
+sr.lproj/Download.nib/keyedobjects.nib -text
+sr.lproj/Download.strings -text svneol=unset#text/utf-16
+sr.lproj/Duplicate.nib/classes.nib -text
+sr.lproj/Duplicate.nib/info.nib -text
+sr.lproj/Duplicate.nib/keyedobjects.nib -text
+sr.lproj/Duplicate.strings -text svneol=unset#text/utf-16
+sr.lproj/Error.strings -text svneol=unset#text/utf-16
+sr.lproj/File.nib/classes.nib -text
+sr.lproj/File.nib/info.nib -text
+sr.lproj/File.nib/keyedobjects.nib -text
+sr.lproj/File.strings -text svneol=unset#text/utf-16
+sr.lproj/Folder.nib/classes.nib -text
+sr.lproj/Folder.nib/info.nib -text
+sr.lproj/Folder.nib/keyedobjects.nib -text
+sr.lproj/Folder.strings -text svneol=unset#text/utf-16
+sr.lproj/Goto.nib/classes.nib -text
+sr.lproj/Goto.nib/info.nib -text
+sr.lproj/Goto.nib/keyedobjects.nib -text
+sr.lproj/Goto.strings -text svneol=unset#text/utf-16
+sr.lproj/Growl.strings -text svneol=unset#text/utf-16
+sr.lproj/IDisk.strings -text svneol=unset#text/utf-16
+sr.lproj/Info.nib/classes.nib -text
+sr.lproj/Info.nib/info.nib -text
+sr.lproj/Info.nib/keyedobjects.nib -text
+sr.lproj/Info.strings -text svneol=unset#text/utf-16
+sr.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+sr.lproj/Keychain.strings -text svneol=unset#text/utf-16
+sr.lproj/License.strings -text svneol=unset#text/utf-16
+sr.lproj/Localizable.strings -text svneol=unset#text/utf-16
+sr.lproj/Login.nib/classes.nib -text
+sr.lproj/Login.nib/info.nib -text
+sr.lproj/Login.nib/keyedobjects.nib -text
+sr.lproj/Login.strings -text svneol=unset#text/utf-16
+sr.lproj/Main.nib/classes.nib -text
+sr.lproj/Main.nib/info.nib -text
+sr.lproj/Main.nib/keyedobjects.nib -text
+sr.lproj/Main.strings -text svneol=unset#text/utf-16
+sr.lproj/Mosso.strings -text svneol=unset#text/utf-16
+sr.lproj/Preferences.nib/classes.nib -text
+sr.lproj/Preferences.nib/info.nib -text
+sr.lproj/Preferences.nib/keyedobjects.nib -text
+sr.lproj/Preferences.strings -text svneol=unset#text/utf-16
+sr.lproj/Prompt.nib/classes.nib -text
+sr.lproj/Prompt.nib/info.nib -text
+sr.lproj/Prompt.nib/keyedobjects.nib -text
+sr.lproj/Prompt.strings -text svneol=unset#text/utf-16
+sr.lproj/S3.strings -text svneol=unset#text/utf-16
+sr.lproj/Status.strings -text svneol=unset#text/utf-16
+sr.lproj/Transfer.nib/classes.nib -text
+sr.lproj/Transfer.nib/info.nib -text
+sr.lproj/Transfer.nib/keyedobjects.nib -text
+sr.lproj/Transfer.strings -text svneol=unset#text/utf-16
 sv.lproj/Alert.nib/classes.nib -text
 sv.lproj/Alert.nib/info.nib -text
 sv.lproj/Alert.nib/keyedobjects.nib -text
