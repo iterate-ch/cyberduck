@@ -376,7 +376,7 @@ el.lproj/Info.nib/classes.nib -text
 el.lproj/Info.nib/info.nib -text
 el.lproj/Info.nib/keyedobjects.nib -text
 el.lproj/Info.strings -text
-el.lproj/InfoPlist.strings -text
+el.lproj/InfoPlist.strings -text svneol=unset#unset
 el.lproj/Keychain.strings -text
 el.lproj/License.strings -text svneol=unset#text/utf-16
 el.lproj/License.txt -text
