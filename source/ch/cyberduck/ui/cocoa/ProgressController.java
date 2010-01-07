@@ -125,11 +125,6 @@ public class ProgressController extends BundleController {
                         progressBar.setIndeterminate(true);
                         progressBar.setHidden(true);
                         messageText = null;
-                        // Do not display any progress text when transfer is stopped
-                        final Date timestamp = transfer.getTimestamp();
-                        if(null != timestamp) {
-                            messageText = DateFormatter.getLongFormat(timestamp.getTime());
-                        }
                         setMessageText();
                         setProgressText();
                         setStatusText();
@@ -186,6 +181,13 @@ public class ProgressController extends BundleController {
 
     private void setMessageText() {
         StringBuilder b = new StringBuilder();
+        if(null == messageText) {
+            // Do not display any progress text when transfer is stopped
+            final Date timestamp = transfer.getTimestamp();
+            if(null != timestamp) {
+                messageText = DateFormatter.getLongFormat(timestamp.getTime());
+            }
+        }
         if(messageText != null) {
             b.append(messageText);
         }
