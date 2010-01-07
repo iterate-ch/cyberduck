@@ -893,6 +893,16 @@ public class S3Path extends CloudPath {
     }
 
     @Override
+    public boolean isWriteModificationDateSupported() {
+        return false;
+    }
+
+    @Override
+    public void writeModificationDate(long millis) {
+        ;
+    }
+
+    @Override
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
