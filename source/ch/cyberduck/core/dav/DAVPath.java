@@ -241,6 +241,16 @@ public class DAVPath extends Path {
     }
 
     @Override
+    public boolean isWriteModificationDateSupported() {
+        return false;
+    }
+
+    @Override
+    public void writeModificationDate(long millis) {
+        ;
+    }
+
+    @Override
     public void rename(AbstractPath renamed) {
         log.debug("rename:" + renamed);
         try {

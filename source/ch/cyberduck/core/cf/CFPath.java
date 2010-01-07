@@ -190,6 +190,16 @@ public class CFPath extends CloudPath {
     }
 
     @Override
+    public boolean isWriteModificationDateSupported() {
+        return false;
+    }
+
+    @Override
+    public void writeModificationDate(long millis) {
+        ;
+    }
+
+    @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {

@@ -22,9 +22,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.sftp.SFTPException;
+import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
+import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,12 +37,6 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
-
-import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.sftp.SFTPException;
-import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
-import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
-import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 /**
  * @version $Id$
@@ -445,6 +444,44 @@ public class SFTPPath extends Path {
     }
 
     @Override
+    public void writeModificationDate(long millis) {
+        if(attributes.isFile()) {
+            try {
+                this.writeModificationDate(session.sftp().openFileRW(this.getAbsolute()), millis);
+            }
+            catch(IOException e) {
+                log.warn(e.getMessage());
+            }
+        }
+    }
+
+    public void writeModificationDate(SFTPv3FileHandle handle, long millis) throws IOException {
+        if(attributes.isFile()) {
+            log.info("Updating timestamp");
+            SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+            int t = (int) (millis / 1000);
+            // We must both set the accessed and modified time
+            // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+            attrs.atime = t;
+            attrs.mtime = t;
+            try {
+                if(null == handle) {
+                    if(attributes.isFile()) {
+                        handle = session.sftp().openFileRW(this.getAbsolute());
+                    }
+                }
+                session.sftp().fsetstat(handle, attrs);
+            }
+            catch(SFTPException e) {
+                // We might not be able to change the attributes if we are
+                // not the owner of the file; but then we still want to proceed as we
+                // might have group write privileges
+                log.warn(e.getMessage());
+            }
+        }
+    }
+
+    @Override
     public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         log.debug("download:" + this.toString());
         InputStream in = null;
@@ -544,32 +581,7 @@ public class SFTPPath extends Path {
             }
             if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    if(attributes.isFile()) {
-                        log.info("Updating timestamp");
-                        SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-                        int t = (int) (this.getLocal().attributes.getModificationDate() / 1000);
-                        // We must both set the accessed and modified time
-                        // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-                        attrs.atime = t;
-                        attrs.mtime = t;
-                        try {
-                            if(null == handle) {
-                                if(attributes.isFile()) {
-                                    handle = session.sftp().openFileRW(this.getAbsolute());
-                                }
-//                            if(attributes.isDirectory()) {
-//                                handle = session.sftp().openDirectory(this.getAbsolute());
-//                            }
-                            }
-                            session.sftp().fsetstat(handle, attrs);
-                        }
-                        catch(SFTPException e) {
-                            // We might not be able to change the attributes if we are
-                            // not the owner of the file; but then we still want to proceed as we
-                            // might have group write privileges
-                            log.warn(e.getMessage());
-                        }
-                    }
+                    this.writeModificationDate(handle, this.getLocal().attributes.getModificationDate());
                 }
             }
         }

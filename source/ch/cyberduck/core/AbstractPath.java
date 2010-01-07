@@ -364,12 +364,14 @@ public abstract class AbstractPath {
      */
     public abstract void writePermissions(Permission perm, boolean recursive);
 
+    public boolean isWriteModificationDateSupported() {
+        return true;
+    }
+
     /**
      * @param millis Milliseconds since 1970
      */
-    public void writeModificationDate(long millis) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract void writeModificationDate(long millis);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file

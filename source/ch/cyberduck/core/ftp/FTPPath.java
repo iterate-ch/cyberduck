@@ -681,6 +681,20 @@ public class FTPPath extends Path {
     }
 
     @Override
+    public void writeModificationDate(long millis) {
+        try {
+            this.writeModificationDate(millis, millis);
+        }
+        catch(IOException e) {
+            log.warn(e.getMessage());
+        }
+    }
+
+    public void writeModificationDate(long modified, long created) throws IOException {
+        session.FTP.mfmt(modified, created, this.getName());
+    }
+
+    @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         log.debug("download:" + this.toString());
         try {
@@ -828,8 +842,8 @@ public class FTPPath extends Path {
             }
             if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                 log.info("Updating timestamp");
-                session.FTP.mfmt(this.getLocal().attributes.getModificationDate(),
-                        this.getLocal().attributes.getCreationDate(), this.getName());
+                this.writeModificationDate(this.getLocal().attributes.getModificationDate(),
+                        this.getLocal().attributes.getCreationDate());
             }
         }
         catch(IOException e) {
