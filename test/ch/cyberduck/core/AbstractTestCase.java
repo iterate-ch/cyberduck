@@ -205,11 +205,6 @@ public class AbstractTestCase extends TestCase {
         }
 
         @Override
-        protected String applicationForExtension(String extension) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public void setQuarantine(String originUrl, String dataUrl) {
             throw new UnsupportedOperationException();
         }
