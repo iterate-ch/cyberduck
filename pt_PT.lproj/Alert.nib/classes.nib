@@ -1,26 +1,26 @@
 {
     IBClasses =     (
-                {
-            ACTIONS =             {
-                closeSheet = id;
-                toggleTranscriptView = id;
-            };
-            CLASS = CDSheetController;
-            LANGUAGE = ObjC;
-            OUTLETS =             {
-                diagnosticsButton = NSButton;
-                errorView = NSTableView;
-                transcriptButton = NSButton;
-                transcriptView = NSTextView;
-                window = NSWindow;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        }
+        {
+    ACTIONS =     {
+        closeSheet = id;
+        toggleTranscriptView = id;
+    };
+    CLASS = CDSheetController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        diagnosticsButton = NSButton;
+        errorView = NSTableView;
+        transcriptButton = NSButton;
+        transcriptView = NSTextView;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
     );
     IBVersion = 1;
 }
