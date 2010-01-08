@@ -12,6 +12,6 @@
 /* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
 "Deployed" = "Izvietots";
 
-"EU" = "EU (Ireland)";
-"US" = "US Standard";
-"us-west-1" = "US-West (Northern California)";
+"EU" = "EU (Īrija)";
+"US" = "ASV standarts";
+"us-west-1" = "ASV-Rietumu (Ziemeļ Kalifornija)";
