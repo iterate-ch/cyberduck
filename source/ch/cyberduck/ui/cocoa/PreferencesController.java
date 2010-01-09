@@ -293,7 +293,7 @@ public class PreferencesController extends ToolbarWindowController {
             editorPathPanel.setDelegate(editorPathPanelDelegate.id());
             editorPathPanel.setAllowsMultipleSelection(false);
             editorPathPanel.setCanCreateDirectories(false);
-            editorPathPanel.beginSheetForDirectory(null, null, this.window, this.id(),
+            editorPathPanel.beginSheetForDirectory("/Applications", null, this.window, this.id(),
                     Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
