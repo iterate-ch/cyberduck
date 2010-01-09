@@ -50,6 +50,13 @@ public class DateFormatter {
         shortDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterShortStyle);
     }
 
+    private static final NSDateFormatter mediumDateFormatter = NSDateFormatter.dateFormatter();
+
+    static {
+        mediumDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
+        mediumDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
+    }
+
     /**
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
      * @return Seconds since the first instant of 1 January 2001, GMT
@@ -66,17 +73,11 @@ public class DateFormatter {
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
      */
     public static String getShortFormat(final long milliseconds) {
-        return getShortFormat(toDate(milliseconds), NSTimeZone.systemTimeZone());
+        return shortDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
-    /**
-     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
-     *
-     * @return A short format string or "Unknown" if there is a problem converting the time to a string
-     */
-    public static String getShortFormat(final NSDate date, final NSTimeZone timezone) {
-        //shortDateFormatter.setTimeZone(timezone);
-        return shortDateFormatter.stringFromDate(date);
+    public static String getMediumFormat(final long milliseconds) {
+        return mediumDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
     /**
@@ -86,16 +87,6 @@ public class DateFormatter {
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
     public static String getLongFormat(final long milliseconds) {
-        return getLongFormat(toDate(milliseconds), NSTimeZone.systemTimeZone());
-    }
-
-    /**
-     * Date represented as NSUserDefaults.TimeDateFormatString
-     *
-     * @return A long format string or "Unknown" if there is a problem converting the time to a string
-     */
-    public static String getLongFormat(final NSDate date, final NSTimeZone timezone) {
-        //longDateFormatter.setTimeZone(timezone);
-        return longDateFormatter.stringFromDate(date);
+        return longDateFormatter.stringFromDate(toDate(milliseconds));
     }
 }
