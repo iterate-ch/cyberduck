@@ -181,6 +181,8 @@ public class LoginController extends AbstractLoginController implements ch.cyber
                     publicKeyPanel.setCanChooseDirectories(false);
                     publicKeyPanel.setCanChooseFiles(true);
                     publicKeyPanel.setAllowsMultipleSelection(false);
+                    publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM format", "Credentials"));
+                    publicKeyPanel.setPrompt(Locale.localizedString("Choose"));
                     publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                             null, this.window(), this.id(),
                             Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
@@ -215,10 +217,12 @@ public class LoginController extends AbstractLoginController implements ch.cyber
                 if(credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
                     this.updateField(this.pkLabel, credentials.getIdentity().toURL());
+                    this.pkLabel.setTextColor(NSColor.textColor());
                 }
                 else {
                     this.pkCheckbox.setState(NSCell.NSOffState);
-                    this.pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+                    this.pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+                    this.pkLabel.setTextColor(NSColor.disabledControlTextColor());
                 }
             }
 

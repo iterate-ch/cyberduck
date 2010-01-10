@@ -588,6 +588,8 @@ public class BookmarkController extends WindowController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
+            publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM format", "Credentials"));
+            publicKeyPanel.setPrompt(Locale.localizedString("Choose"));
             publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
@@ -742,10 +744,12 @@ public class BookmarkController extends WindowController {
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.NSOnState);
             this.updateField(pkLabel, host.getCredentials().getIdentity().toURL());
+            pkLabel.setTextColor(NSColor.textColor());
         }
         else {
             pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
         webURLField.setEnabled(host.getProtocol().isWebUrlConfigurable());
         webUrlImage.setToolTip(host.getWebURL());

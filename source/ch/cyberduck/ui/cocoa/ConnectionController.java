@@ -154,7 +154,7 @@ public class ConnectionController extends SheetController {
                 }
                 else {
                     pkCheckbox.setState(NSCell.NSOffState);
-                    pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+                    pkLabel.setStringValue(Locale.localizedString("No private key selected"));
                 }
                 if(StringUtils.isNotBlank(entry.getUser())) {
                     usernameField.setStringValue(entry.getUser());
@@ -163,7 +163,7 @@ public class ConnectionController extends SheetController {
         }
         else {
             pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
         }
     }
 
@@ -358,7 +358,8 @@ public class ConnectionController extends SheetController {
 
     public void setPkLabel(NSTextField pkLabel) {
         this.pkLabel = pkLabel;
-        this.pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+        this.pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+        this.pkLabel.setTextColor(NSColor.disabledControlTextColor());
     }
 
     @Outlet
@@ -417,14 +418,17 @@ public class ConnectionController extends SheetController {
             publicKeyPanel.setCanChooseDirectories(false);
             publicKeyPanel.setCanChooseFiles(true);
             publicKeyPanel.setAllowsMultipleSelection(false);
+            publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM format", "Credentials"));
+            publicKeyPanel.setPrompt(Locale.localizedString("Choose"));
             publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                     null, this.window(), this.id(),
                     Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            this.passField.setEnabled(true);
-            this.pkCheckbox.setState(NSCell.NSOffState);
-            this.pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+            passField.setEnabled(true);
+            pkCheckbox.setState(NSCell.NSOffState);
+            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
     }
 
@@ -436,13 +440,15 @@ public class ConnectionController extends SheetController {
             while(null != (next = enumerator.nextObject())) {
                 pkLabel.setStringValue(LocalFactory.createLocal(
                         Rococoa.cast(next, NSString.class).toString()).getAbbreviatedPath());
+                pkLabel.setTextColor(NSColor.textColor());
             }
             passField.setEnabled(false);
         }
         if(NSPanel.NSCancelButton == returncode) {
             passField.setEnabled(true);
             pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No Private Key selected"));
+            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
         publicKeyPanel = null;
     }
