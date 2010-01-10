@@ -723,6 +723,11 @@ public class MainController extends BundleController implements NSApplication.De
         }
         final License l = License.find();
         if(!l.verify()) {
+            final String lastversion = Preferences.instance().getProperty("donate.reminder");
+            if(NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
+                // Do not display if same version is installed
+                return NSApplication.NSTerminateNow;
+            }
             final Calendar nextreminder = Calendar.getInstance();
             nextreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
             // Display donationPrompt every n days
@@ -733,11 +738,6 @@ public class MainController extends BundleController implements NSApplication.De
                 // Do not display if shown in the reminder interval
                 return NSApplication.NSTerminateNow;
             }
-//            final String lastversion = Preferences.instance().getProperty("donate.reminder");
-//            if(NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
-//                // Do not display if same version is installed
-//                return NSApplication.NSTerminateNow;
-//            }
             final int uses = Preferences.instance().getInteger("uses");
             donationController = new WindowController() {
                 @Override
@@ -751,7 +751,10 @@ public class MainController extends BundleController implements NSApplication.De
                 public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
                     this.neverShowDonationCheckbox = neverShowDonationCheckbox;
                     this.neverShowDonationCheckbox.setTarget(this.id());
-                    this.neverShowDonationCheckbox.setState(NSCell.NSOffState);
+                    this.neverShowDonationCheckbox.setState(
+                            Preferences.instance().getProperty("donate.reminder").equals(
+                                    NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString())
+                                    ? NSCell.NSOnState : NSCell.NSOffState);
                 }
 
                 @Override

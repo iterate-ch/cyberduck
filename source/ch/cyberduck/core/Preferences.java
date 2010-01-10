@@ -135,7 +135,7 @@ public abstract class Preferences {
          * True if donation dialog will be displayed before quit
          */
         defaults.put("donate.reminder", String.valueOf(-1));
-        defaults.put("donate.reminder.interval", String.valueOf(30)); // in days
+        defaults.put("donate.reminder.interval", String.valueOf(20)); // in days
         defaults.put("donate.reminder.date", String.valueOf(new Date(0).getTime()));
 
         defaults.put("defaulthandler.reminder", String.valueOf(true));
