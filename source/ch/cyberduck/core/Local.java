@@ -27,6 +27,8 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -443,6 +445,10 @@ public abstract class Local extends AbstractPath implements Attributes {
 
     public String getDefaultApplication() {
         return null;
+    }
+
+    public List<String> getDefaultApplications() {
+        return Collections.emptyList();
     }
 
     /**

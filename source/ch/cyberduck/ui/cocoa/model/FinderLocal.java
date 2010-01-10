@@ -31,6 +31,9 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -361,7 +364,11 @@ public class FinderLocal extends Local {
      */
     @Override
     public String getDefaultApplication() {
-        final String path = this.applicationForExtension(this.getExtension());
+        final String extension = this.getExtension();
+        if(StringUtils.isEmpty(extension)) {
+            return null;
+        }
+        final String path = this.applicationForExtension(extension);
         if(StringUtils.isEmpty(path)) {
             return null;
         }
@@ -369,6 +376,25 @@ public class FinderLocal extends Local {
     }
 
     protected native String applicationForExtension(String extension);
+
+    /**
+     * @eturn All of the application bundle identifiers that are capable of handling
+     * the specified content type in the specified roles.
+     */
+    @Override
+    public List<String> getDefaultApplications() {
+        final String extension = this.getExtension();
+        if(StringUtils.isEmpty(extension)) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(this.applicationListForExtension(extension));
+    }
+
+    /**
+     * @param extensions
+     * @return
+     */
+    protected native String[] applicationListForExtension(String extensions);
 
     @Override
     public void open() {

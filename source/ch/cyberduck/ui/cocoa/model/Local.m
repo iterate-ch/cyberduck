@@ -102,7 +102,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_applicati
 	// creator signature, filename extension, or any combination of these characteristics.
     OSStatus err = LSGetApplicationForInfo(kLSUnknownType, kLSUnknownCreator,
         (CFStringRef)convertToNSString(env, extension),
-        kLSRolesAll, NULL, &url);
+        kLSRolesEditor, NULL, &url);
     if(err != noErr) {
         // kLSApplicationNotFoundErr
 		// If no application suitable for opening items with the specified characteristics is found
@@ -113,6 +113,29 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_applicati
     CFRelease(url);
 	return convertToJString(env, result);
 }
+
+
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_applicationListForExtension(
+										JNIEnv *env,
+										jobject this,
+                                        jstring extension)
+{
+    NSArray *handlers = [(NSArray *)LSCopyAllRoleHandlersForContentType(
+        UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)convertToNSString(env, extension), NULL),
+        kLSRolesEditor) autorelease];
+    if(nil == handlers) {
+        handlers = [NSArray array];
+    }
+    jobjectArray result = (jobjectArray)(*env)->NewObjectArray(env,
+        [handlers count], (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, "")
+    );
+    jint i;
+    for(i = 0; i < [handlers count]; i++) {
+        (*env)->SetObjectArrayElement(env, result, i, convertToJString(env, [handlers objectAtIndex:i]));
+    }
+    return result;
+}
+
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_kind(JNIEnv *env, jobject this, jstring extension)
 {
