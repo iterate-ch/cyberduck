@@ -74,10 +74,8 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandler
 JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_getAllHandlersForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
-    NSArray *handlers = nil;
-	handlers = (NSArray *)LSCopyAllHandlersForURLScheme(
-		(CFStringRef)convertToNSString(env, scheme)
-	);
+    NSArray *handlers = [(NSArray *)LSCopyAllHandlersForURLScheme(
+		(CFStringRef)convertToNSString(env, scheme)) autorelease];
     if(nil == handlers) {
         handlers = [NSArray array];
     }
@@ -87,9 +85,6 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHa
     jint i;
     for(i = 0; i < [handlers count]; i++) {
         (*env)->SetObjectArrayElement(env, result, i, convertToJString(env, [handlers objectAtIndex:i]));
-    }
-    if(handlers) {
-        [handlers release];
     }
     return result;
 }
