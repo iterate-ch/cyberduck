@@ -118,18 +118,6 @@ public abstract class NSSavePanel extends NSPanel {
     public abstract void setAccessoryView(NSView view);
 
     /**
-     * Original signature : <code>id delegate()</code><br>
-     * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:97</i>
-     */
-    public abstract org.rococoa.ID delegate();
-
-    /**
-     * Original signature : <code>void setDelegate(id)</code><br>
-     * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:99</i>
-     */
-    public abstract void setDelegate(org.rococoa.ID delegate);
-
-    /**
      * Original signature : <code>BOOL isExpanded()</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:101</i>
      */
