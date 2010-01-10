@@ -115,7 +115,7 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
         // the multi-threaded service for upload and download operations.
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
 
-        configuration.setProperty("httpclient.proxy-autodetect", "false");
+        configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         final Proxy proxy = ProxyFactory.instance();
         if(host.getProtocol().isSecure()) {
             if(proxy.isHTTPSProxyEnabled()) {
@@ -335,6 +335,9 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
         return S3 != null;
     }
 
+
+    private boolean streaming;
+
     /**
      * Amazon CloudFront Extension to create a new distribution configuration
      * *
@@ -348,6 +351,15 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
      */
     public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
+        if(streaming) {
+            return this.createCloudFrontService().createStreamingDistribution(
+                    this.getHostnameForBucket(bucket),
+                    String.valueOf(reference), // Caller reference - a unique string value
+                    cnames, // CNAME aliases for distribution
+                    new Date(reference).toString(), // Comment
+                    enabled  // Enabled?
+            );
+        }
         return this.createCloudFrontService().createDistribution(
                 this.getHostnameForBucket(bucket),
                 String.valueOf(reference), // Caller reference - a unique string value
@@ -369,13 +381,23 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
      */
     public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
-        this.createCloudFrontService().updateDistributionConfig(
-                distribution.getId(),
-                cnames, // CNAME aliases for distribution
-                new Date(reference).toString(), // Comment
-                enabled, // Enabled?
-                logging // Logging Status. Disabled if null
-        );
+        if(streaming) {
+            this.createCloudFrontService().updateStreamingDistributionConfig(
+                    distribution.getId(),
+                    cnames, // CNAME aliases for distribution
+                    new Date(reference).toString(), // Comment
+                    enabled // Enabled?
+            );
+        }
+        else {
+            this.createCloudFrontService().updateDistributionConfig(
+                    distribution.getId(),
+                    cnames, // CNAME aliases for distribution
+                    new Date(reference).toString(), // Comment
+                    enabled, // Enabled?
+                    logging // Logging Status. Disabled if null
+            );
+        }
     }
 
     /**

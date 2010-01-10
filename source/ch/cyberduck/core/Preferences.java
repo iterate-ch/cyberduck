@@ -268,10 +268,10 @@ public abstract class Preferences {
         /**
          * Editor for the current selected file. Used to set the shortcut key in the menu delegate
          */
-        defaults.put("editor.kqueue.enable", "true");
+        defaults.put("editor.kqueue.enable", String.valueOf(true));
         defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
-        defaults.put("editor.file.trash", "true");
+        defaults.put("editor.file.trash", String.valueOf(true));
 
         defaults.put("filetype.text.regex",
                 ".*\\.txt|.*\\.cgi|.*\\.htm|.*\\.html|.*\\.shtml|.*\\.xml|.*\\.xsl|.*\\.php|.*\\.php3|" +
