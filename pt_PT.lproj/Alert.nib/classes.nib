@@ -1,26 +1,47 @@
-{
-    IBClasses =     (
-        {
-    ACTIONS =     {
-        closeSheet = id;
-        toggleTranscriptView = id;
-    };
-    CLASS = CDSheetController;
-    LANGUAGE = ObjC;
-    OUTLETS =     {
-        diagnosticsButton = NSButton;
-        errorView = NSTableView;
-        transcriptButton = NSButton;
-        transcriptView = NSTextView;
-        window = NSWindow;
-    };
-    SUPERCLASS = NSObject;
-},
-        {
-    CLASS = FirstResponder;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSObject;
-}
-    );
-    IBVersion = 1;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>closeSheet</key>
+				<string>id</string>
+				<key>toggleTranscriptView</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>CDSheetController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>diagnosticsButton</key>
+				<string>NSButton</string>
+				<key>errorView</key>
+				<string>NSTableView</string>
+				<key>transcriptButton</key>
+				<string>NSButton</string>
+				<key>transcriptView</key>
+				<string>NSTextView</string>
+				<key>window</key>
+				<string>NSWindow</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>
