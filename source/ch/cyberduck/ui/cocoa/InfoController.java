@@ -1298,7 +1298,7 @@ public class InfoController extends ToolbarWindowController {
     public void helpButtonClicked(final NSButton sender) {
         NSWorkspace.sharedWorkspace().openURL(
                 NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                        + "/howto/s3")
+                        + "/howto/info")
         );
     }
 }
