@@ -84,6 +84,10 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbar.setSelectedItemIdentifier(page.identifier());
     }
 
+    protected String getSelectedTab() {
+        return toolbar.selectedItemIdentifier();
+    }
+
     @Override
     protected void invalidate() {
         toolbar.setDelegate(null);
