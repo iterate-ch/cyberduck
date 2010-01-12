@@ -169,15 +169,11 @@ public class MainController extends BundleController implements NSApplication.De
         this.editMenu = editMenu;
         this.editMenuDelegate = new EditMenuDelegate() {
             @Override
-            protected Local getSelected() {
+            protected Local getSelectedFile() {
                 final List<BrowserController> browsers = MainController.getBrowsers();
                 for(BrowserController controller : browsers) {
                     if(controller.window().isKeyWindow()) {
-                        final Path selected = controller.getSelectedPath();
-                        if(null == selected) {
-                            return null;
-                        }
-                        return selected.getLocal();
+                        return controller.getSelectedFile();
                     }
                 }
                 return null;

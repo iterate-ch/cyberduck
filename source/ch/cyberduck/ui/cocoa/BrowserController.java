@@ -520,15 +520,22 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.editMenu = editMenu;
         this.editMenuDelegate = new EditMenuDelegate() {
             @Override
-            protected Local getSelected() {
-                final Path selected = BrowserController.this.getSelectedPath();
-                if(null == selected) {
-                    return null;
-                }
-                return selected.getLocal();
+            protected Local getSelectedFile() {
+                return BrowserController.this.getSelectedFile();
             }
         };
         this.editMenu.setDelegate(editMenuDelegate.id());
+    }
+
+    protected Local getSelectedFile() {
+        final Path selected = BrowserController.this.getSelectedPath();
+        if(null == selected) {
+            return null;
+        }
+        if(selected.attributes.isFile()) {
+            return selected.getLocal();
+        }
+        return null;
     }
 
     @Outlet

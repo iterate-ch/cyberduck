@@ -42,14 +42,14 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        final int n = EditorFactory.getInstalledEditors(this.getSelected()).size();
+        final int n = EditorFactory.getInstalledEditors(this.getSelectedFile()).size();
         if(0 == n) {
             return new NSInteger(1);
         }
         return new NSInteger(n);
     }
 
-    protected abstract Local getSelected();
+    protected abstract Local getSelectedFile();
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
@@ -59,12 +59,12 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
-        final Map<String, String> editors = EditorFactory.getInstalledEditors(this.getSelected());
+        final Map<String, String> editors = EditorFactory.getInstalledEditors(this.getSelectedFile());
         if(editors.size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
-        String defaultEditor = EditorFactory.defaultEditor(this.getSelected());
+        String defaultEditor = EditorFactory.defaultEditor(this.getSelectedFile());
         String identifier = editors.values().toArray(new String[editors.size()])[index.intValue()];
         item.setRepresentedObject(identifier);
         String editor = editors.keySet().toArray(new String[editors.size()])[index.intValue()];
