@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -64,9 +65,11 @@ public class ODBEditor extends Editor {
         while(editorNames.hasNext()) {
             String editor = editorNames.next();
             String identifier = editorIdentifiers.next();
-            if(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier) != null) {
-                INSTALLED_ODB_EDITORS.put(editor, identifier);
+            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
+            if(StringUtils.isEmpty(path)) {
+                continue;
             }
+            INSTALLED_ODB_EDITORS.put(editor, identifier);
         }
     }
 
