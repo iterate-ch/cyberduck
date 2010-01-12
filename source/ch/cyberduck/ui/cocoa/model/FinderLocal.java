@@ -25,6 +25,8 @@ import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.apache.commons.collections.map.AbstractLinkedMap;
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -34,6 +36,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -358,6 +361,18 @@ public class FinderLocal extends Local {
     }
 
     /**
+     *
+     */
+    private static Map<String, String> defaultApplicationCache
+            = Collections.<String, String>synchronizedMap(new LRUMap(20) {
+        @Override
+        protected boolean removeLRU(AbstractLinkedMap.LinkEntry entry) {
+            log.debug("Removing from cache:" + entry);
+            return true;
+        }
+    });
+
+    /**
      * The default application for this file as set by the launch services
      *
      * @return The bundle identifier of the default application to open the file of this type or null if unknown
@@ -365,17 +380,36 @@ public class FinderLocal extends Local {
     @Override
     public String getDefaultApplication() {
         final String extension = this.getExtension();
-        if(StringUtils.isEmpty(extension)) {
-            return null;
+        if(!defaultApplicationCache.containsKey(extension)) {
+            if(StringUtils.isEmpty(extension)) {
+                defaultApplicationCache.put(extension, null);
+            }
+            else {
+                final String path = this.applicationForExtension(extension);
+                if(StringUtils.isEmpty(path)) {
+                    defaultApplicationCache.put(extension, null);
+                }
+                else {
+                    defaultApplicationCache.put(extension, NSBundle.bundleWithPath(path).bundleIdentifier());
+                }
+            }
         }
-        final String path = this.applicationForExtension(extension);
-        if(StringUtils.isEmpty(path)) {
-            return null;
-        }
-        return NSBundle.bundleWithPath(path).bundleIdentifier();
+        return defaultApplicationCache.get(extension);
     }
 
     protected native String applicationForExtension(String extension);
+
+    /**
+     *
+     */
+    private static Map<String, List<String>> defaultApplicationListCache
+            = Collections.<String, List<String>>synchronizedMap(new LRUMap(20) {
+        @Override
+        protected boolean removeLRU(AbstractLinkedMap.LinkEntry entry) {
+            log.debug("Removing from cache:" + entry);
+            return true;
+        }
+    });
 
     /**
      * @eturn All of the application bundle identifiers that are capable of handling
@@ -387,7 +421,10 @@ public class FinderLocal extends Local {
         if(StringUtils.isEmpty(extension)) {
             return Collections.emptyList();
         }
-        return Arrays.asList(this.applicationListForExtension(extension));
+        if(!defaultApplicationListCache.containsKey(extension)) {
+            defaultApplicationListCache.put(extension, Arrays.asList(this.applicationListForExtension(extension)));
+        }
+        return defaultApplicationListCache.get(extension);
     }
 
     /**
