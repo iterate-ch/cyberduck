@@ -66,7 +66,10 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      * @param index The index of the item in the menu to be displayed
      * @return True if menu validation can be skipped
      */
-    public boolean shouldSkipValidation(NSMenu menu, int index) {
+    protected boolean shouldSkipValidation(NSMenu menu, int index) {
+        if(log.isDebugEnabled()) {
+            log.debug("shouldSkipValidation:" + index);
+        }
         if(update) {
             if(menu.numberOfItems().intValue() - 1 == index) {
                 update = false;
@@ -80,12 +83,18 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     private boolean open;
 
     public void menuWillOpen(NSMenu menu) {
+        if(log.isDebugEnabled()) {
+            log.debug("menuWillOpen:" + menu);
+        }
         open = true;
         // Force validation
         menu.update();
     }
 
     public void menuDidClose(NSMenu menu) {
+        if(log.isDebugEnabled()) {
+            log.debug("menuDidClose:" + menu);
+        }
         open = true;
     }
 }
