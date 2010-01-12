@@ -324,86 +324,86 @@ de.lproj/Transfer.strings -text svneol=unset#text/utf-16
 el.lproj/Alert.nib/classes.nib -text
 el.lproj/Alert.nib/info.nib -text
 el.lproj/Alert.nib/keyedobjects.nib -text
-el.lproj/Alert.strings -text
+el.lproj/Alert.strings -text svneol=unset#text/utf-16
 el.lproj/Archive.strings -text svneol=unset#text/utf-16
 el.lproj/Bookmark.nib/classes.nib -text
 el.lproj/Bookmark.nib/info.nib -text
 el.lproj/Bookmark.nib/keyedobjects.nib -text
-el.lproj/Bookmark.strings -text
+el.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 el.lproj/Browser.nib/classes.nib -text
 el.lproj/Browser.nib/info.nib -text
 el.lproj/Browser.nib/keyedobjects.nib -text
-el.lproj/Browser.strings -text
+el.lproj/Browser.strings -text svneol=unset#text/utf-16
 el.lproj/Command.nib/classes.nib -text
 el.lproj/Command.nib/info.nib -text
 el.lproj/Command.nib/keyedobjects.nib -text
-el.lproj/Command.strings -text
-el.lproj/Configuration.strings -text
+el.lproj/Command.strings -text svneol=unset#text/utf-16
+el.lproj/Configuration.strings -text svneol=unset#text/utf-16
 el.lproj/Connection.nib/classes.nib -text
 el.lproj/Connection.nib/info.nib -text
 el.lproj/Connection.nib/keyedobjects.nib -text
-el.lproj/Connection.strings -text
-el.lproj/Crash.strings -text
-el.lproj/Credentials.strings -text
+el.lproj/Connection.strings -text svneol=unset#text/utf-16
+el.lproj/Crash.strings -text svneol=unset#text/utf-16
+el.lproj/Credentials.strings -text svneol=unset#text/utf-16
 el.lproj/Donate.nib/classes.nib -text
 el.lproj/Donate.nib/info.nib -text
 el.lproj/Donate.nib/keyedobjects.nib -text
-el.lproj/Donate.strings -text
+el.lproj/Donate.strings -text svneol=unset#text/utf-16
 el.lproj/Download.nib/classes.nib -text
 el.lproj/Download.nib/info.nib -text
 el.lproj/Download.nib/keyedobjects.nib -text
-el.lproj/Download.strings -text
+el.lproj/Download.strings -text svneol=unset#text/utf-16
 el.lproj/Duplicate.nib/classes.nib -text
 el.lproj/Duplicate.nib/info.nib -text
 el.lproj/Duplicate.nib/keyedobjects.nib -text
-el.lproj/Duplicate.strings -text
-el.lproj/Error.strings -text
+el.lproj/Duplicate.strings -text svneol=unset#text/utf-16
+el.lproj/Error.strings -text svneol=unset#text/utf-16
 el.lproj/File.nib/classes.nib -text
 el.lproj/File.nib/info.nib -text
 el.lproj/File.nib/keyedobjects.nib -text
-el.lproj/File.strings -text
+el.lproj/File.strings -text svneol=unset#text/utf-16
 el.lproj/Folder.nib/classes.nib -text
 el.lproj/Folder.nib/info.nib -text
 el.lproj/Folder.nib/keyedobjects.nib -text
-el.lproj/Folder.strings -text
+el.lproj/Folder.strings -text svneol=unset#text/utf-16
 el.lproj/Goto.nib/classes.nib -text
 el.lproj/Goto.nib/info.nib -text
 el.lproj/Goto.nib/keyedobjects.nib -text
-el.lproj/Goto.strings -text
-el.lproj/Growl.strings -text
-el.lproj/IDisk.strings -text
+el.lproj/Goto.strings -text svneol=unset#text/utf-16
+el.lproj/Growl.strings -text svneol=unset#text/utf-16
+el.lproj/IDisk.strings -text svneol=unset#text/utf-16
 el.lproj/Info.nib/classes.nib -text
 el.lproj/Info.nib/info.nib -text
 el.lproj/Info.nib/keyedobjects.nib -text
-el.lproj/Info.strings -text
-el.lproj/InfoPlist.strings -text svneol=unset#unset
-el.lproj/Keychain.strings -text
+el.lproj/Info.strings -text svneol=unset#text/utf-16
+el.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+el.lproj/Keychain.strings -text svneol=unset#text/utf-16
 el.lproj/License.strings -text svneol=unset#text/utf-16
 el.lproj/License.txt -text
-el.lproj/Localizable.strings -text
+el.lproj/Localizable.strings -text svneol=unset#text/utf-16
 el.lproj/Login.nib/classes.nib -text
 el.lproj/Login.nib/info.nib -text
 el.lproj/Login.nib/keyedobjects.nib -text
-el.lproj/Login.strings -text
+el.lproj/Login.strings -text svneol=unset#text/utf-16
 el.lproj/Main.nib/classes.nib -text
 el.lproj/Main.nib/info.nib -text
 el.lproj/Main.nib/keyedobjects.nib -text
-el.lproj/Main.strings -text
+el.lproj/Main.strings -text svneol=unset#text/utf-16
 el.lproj/Mosso.strings -text svneol=unset#text/utf-16
 el.lproj/Preferences.nib/classes.nib -text
 el.lproj/Preferences.nib/info.nib -text
 el.lproj/Preferences.nib/keyedobjects.nib -text
-el.lproj/Preferences.strings -text
+el.lproj/Preferences.strings -text svneol=unset#text/utf-16
 el.lproj/Prompt.nib/classes.nib -text
 el.lproj/Prompt.nib/info.nib -text
 el.lproj/Prompt.nib/keyedobjects.nib -text
-el.lproj/Prompt.strings -text
+el.lproj/Prompt.strings -text svneol=unset#text/utf-16
 el.lproj/S3.strings -text svneol=unset#text/utf-16
-el.lproj/Status.strings -text
+el.lproj/Status.strings -text svneol=unset#text/utf-16
 el.lproj/Transfer.nib/classes.nib -text
 el.lproj/Transfer.nib/info.nib -text
 el.lproj/Transfer.nib/keyedobjects.nib -text
-el.lproj/Transfer.strings -text
+el.lproj/Transfer.strings -text svneol=unset#text/utf-16
 en.lproj/Alert.nib/classes.nib -text
 en.lproj/Alert.nib/info.nib -text
 en.lproj/Alert.nib/keyedobjects.nib -text
