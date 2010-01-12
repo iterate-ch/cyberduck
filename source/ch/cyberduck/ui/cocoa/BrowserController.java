@@ -396,7 +396,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Override
     public void setWindow(NSWindow window) {
-        window.setTitle(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
+        window.setTitle(Preferences.instance().getProperty("application"));
         window.setMiniwindowImage(IconCache.iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setDelegate(this.id());
@@ -520,12 +520,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.editMenu = editMenu;
         this.editMenuDelegate = new EditMenuDelegate() {
             @Override
-            protected String getSelectedEditor() {
-                final Path selected = getSelectedPath();
+            protected Local getSelected() {
+                final Path selected = BrowserController.this.getSelectedPath();
                 if(null == selected) {
                     return null;
                 }
-                return EditorFactory.editorForFile(selected.getLocal());
+                return selected.getLocal();
             }
         };
         this.editMenu.setDelegate(editMenuDelegate.id());
@@ -2921,9 +2921,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 + "end tell";
         final NSAppleScript as = NSAppleScript.createWithSource(command);
         as.executeAndReturnError(new PointerByReference());
-        NSWorkspace.sharedWorkspace().launchApplication(
-                NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal")
-        );
+        final String terminal = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
+        if(StringUtils.isEmpty(terminal)) {
+            log.error("Terminal.app not installed");
+            return;
+        }
+        NSWorkspace.sharedWorkspace().launchApplication(terminal);
     }
 
     @Action
@@ -3255,7 +3258,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         bookmarkTable.setNeedsDisplay();
 
                         if(!isMounted()) {
-                            window.setTitle(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleName").toString());
+                            window.setTitle(Preferences.instance().getProperty("application"));
                             window.setRepresentedFilename("");
                         }
                         window.setDocumentEdited(false);
@@ -3692,7 +3695,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == EditorFactory.editorForFile(selected.getLocal())) {
+                    if(null == EditorFactory.defaultEditor(selected.getLocal())) {
                         return false;
                     }
                 }
@@ -3889,11 +3892,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         if(identifier.equals(TOOLBAR_EDIT)) {
-            String editor = EditorFactory.defaultEditor();
+            String editor;
             final Path selected = this.getSelectedPath();
             if(null != selected) {
                 // Choose editor for selected file
-                editor = EditorFactory.editorForFile(selected.getLocal());
+                editor = EditorFactory.defaultEditor(selected.getLocal());
+            }
+            else {
+                editor = EditorFactory.defaultEditor();
             }
             if(null == editor) {
                 // No editor found
@@ -4170,10 +4176,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
-            final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
-            item.setLabel(NSFileManager.defaultManager().displayNameAtPath(t));
-            item.setPaletteLabel(NSFileManager.defaultManager().displayNameAtPath(t));
-            item.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
+            final Local terminal = LocalFactory.createLocal(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal"));
+            item.setLabel(terminal.getDisplayName());
+            item.setPaletteLabel(terminal.getDisplayName());
+            item.setImage(IconCache.instance().iconForPath(terminal, 128));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openTerminalButtonClicked:"));
             return item;

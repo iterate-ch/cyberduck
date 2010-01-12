@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.IconCache;
@@ -27,7 +28,6 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -41,29 +41,15 @@ import java.util.Map;
 public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
-    private Map<String, String> getEditors() {
-        final Map<String, String> editors = EditorFactory.getInstalledEditors();
-        final String selected = this.getSelectedEditor();
-        if(StringUtils.isNotEmpty(selected)) {
-            if(!editors.values().contains(selected)) {
-                final String editor = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(selected);
-                if(StringUtils.isNotEmpty(editor)) {
-                    editors.put(FilenameUtils.removeExtension(LocalFactory.createLocal(editor).getDisplayName()), selected);
-                }
-            }
-        }
-        return editors;
-    }
-
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        final int n = this.getEditors().size();
+        final int n = EditorFactory.getInstalledEditors(this.getSelected()).size();
         if(0 == n) {
             return new NSInteger(1);
         }
         return new NSInteger(n);
     }
 
-    protected abstract String getSelectedEditor();
+    protected abstract Local getSelected();
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
@@ -73,17 +59,17 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
-        final Map<String, String> editors = this.getEditors();
+        final Map<String, String> editors = EditorFactory.getInstalledEditors(this.getSelected());
         if(editors.size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
-
+        String defaultEditor = EditorFactory.defaultEditor(this.getSelected());
         String identifier = editors.values().toArray(new String[editors.size()])[index.intValue()];
         item.setRepresentedObject(identifier);
         String editor = editors.keySet().toArray(new String[editors.size()])[index.intValue()];
         item.setTitle(editor);
-        if(identifier.equals(this.getSelectedEditor())) {
+        if(identifier.equalsIgnoreCase(defaultEditor)) {
             item.setKeyEquivalent("k");
             item.setKeyEquivalentModifierMask(NSEvent.NSCommandKeyMask);
         }

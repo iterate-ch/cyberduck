@@ -27,7 +27,6 @@ import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.CDBookmarkCell;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Bucket;
@@ -250,15 +249,11 @@ public class PreferencesController extends ToolbarWindowController {
 
     private void updateEditorCombobox() {
         editorCombobox.removeAllItems();
-        Map<String,String> editors = EditorFactory.getSupportedEditors();
+        Map<String, String> editors = EditorFactory.getSupportedEditors();
         Iterator<String> editorNames = editors.keySet().iterator();
         Iterator<String> editorIdentifiers = editors.values().iterator();
         while(editorNames.hasNext()) {
             this.addEditor(editorNames.next(), editorIdentifiers.next());
-        }
-        if(!editors.values().contains(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
-            this.addEditor(Preferences.instance().getProperty("editor.name"),
-                    Preferences.instance().getProperty("editor.bundleIdentifier"));
         }
         editorCombobox.setTarget(this.id());
         final Selector action = Foundation.selector("editorComboboxClicked:");
@@ -268,7 +263,8 @@ public class PreferencesController extends ToolbarWindowController {
             editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, "");
             editorCombobox.itemAtIndex(editorCombobox.numberOfItems() - 1).setTarget(this.id());
         }
-        editorCombobox.selectItemWithTitle(Preferences.instance().getProperty("editor.name"));
+        editorCombobox.selectItemWithTitle(
+                EditorFactory.getApplicationName(EditorFactory.defaultEditor()));
     }
 
     private void addEditor(String editor, String identifier) {
@@ -297,7 +293,6 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            Preferences.instance().setProperty("editor.name", sender.titleOfSelectedItem());
             final String selected = EditorFactory.getSupportedEditors().get(sender.titleOfSelectedItem());
             Preferences.instance().setProperty("editor.bundleIdentifier", selected);
             BrowserController.validateToolbarItems();
@@ -323,14 +318,12 @@ public class PreferencesController extends ToolbarWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
-                final Local application = LocalFactory.createLocal(filename);
-                final String name = FilenameUtils.removeExtension(application.getName());
-                final String identifier = NSBundle.bundleWithPath(application.getAbsolute()).bundleIdentifier();
-                if(!EditorFactory.getInstalledEditors().values().contains(identifier)) {
-                   WatchEditor.addInstalledEditor(name, identifier);
+                NSBundle app = NSBundle.bundleWithPath(LocalFactory.createLocal(filename).getAbsolute());
+                final String bundleIdentifier = app.bundleIdentifier();
+                if(!EditorFactory.getInstalledEditors().values().contains(bundleIdentifier)) {
+                    WatchEditor.addInstalledEditor(EditorFactory.getApplicationName(bundleIdentifier), app.bundleIdentifier());
                 }
-                Preferences.instance().setProperty("editor.name", name);
-                Preferences.instance().setProperty("editor.bundleIdentifier", identifier);
+                Preferences.instance().setProperty("editor.bundleIdentifier", bundleIdentifier);
                 BrowserController.validateToolbarItems();
             }
         }
@@ -1770,14 +1763,7 @@ public class PreferencesController extends ToolbarWindowController {
             if(StringUtils.isEmpty(path)) {
                 continue;
             }
-            NSBundle app = NSBundle.bundleWithPath(path);
-            if(null == app) {
-                continue;
-            }
-            if(null == app.infoDictionary().objectForKey("CFBundleName")) {
-                continue;
-            }
-            defaultProtocolHandlerCombobox.addItemWithTitle(app.infoDictionary().objectForKey("CFBundleName").toString());
+            defaultProtocolHandlerCombobox.addItemWithTitle(EditorFactory.getApplicationName(bundleIdentifier));
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
             item.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(path), 16));
             item.setRepresentedObject(bundleIdentifier);

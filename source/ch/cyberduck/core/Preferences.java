@@ -262,7 +262,6 @@ public abstract class Preferences {
         /**
          * Default editor
          */
-        defaults.put("editor.name", "TextMate");
         defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
         /**

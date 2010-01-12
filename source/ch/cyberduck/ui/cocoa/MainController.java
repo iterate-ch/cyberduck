@@ -28,7 +28,6 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
@@ -170,7 +169,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.editMenu = editMenu;
         this.editMenuDelegate = new EditMenuDelegate() {
             @Override
-            protected String getSelectedEditor() {
+            protected Local getSelected() {
                 final List<BrowserController> browsers = MainController.getBrowsers();
                 for(BrowserController controller : browsers) {
                     if(controller.window().isKeyWindow()) {
@@ -178,7 +177,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(null == selected) {
                             return null;
                         }
-                        return EditorFactory.editorForFile(selected.getLocal());
+                        return selected.getLocal();
                     }
                 }
                 return null;
@@ -289,9 +288,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void feedbackMenuClicked(final ID sender) {
-        String versionString = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion").toString();
         NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("mail.feedback")
-                + "?subject=" + NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName") + "-" + versionString));
+                + "?subject=" + Preferences.instance().getProperty("application") + "-" + Preferences.instance().getProperty("version")));
     }
 
     @Action
