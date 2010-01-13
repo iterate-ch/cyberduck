@@ -31,21 +31,20 @@ import org.rococoa.cocoa.foundation.NSInteger;
 public class ArchiveMenuDelegate extends AbstractMenuDelegate {
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        if(this.isPopulated()) {
+            // If you return a negative value, the number of items is left unchanged
+            // and menu:updateItem:atIndex:shouldCancel: is not called.
+            return new NSInteger(-1);
+        }
         return new NSInteger(Archive.getKnownArchives().length);
     }
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
-        if(shouldCancel) {
-            return false;
-        }
-        if(super.shouldSkipValidation(menu, index.intValue())) {
-            return false;
-        }
         final Archive archive = Archive.getKnownArchives()[index.intValue()];
         item.setRepresentedObject(archive.getIdentifier());
         item.setTitle(archive.getIdentifier());
         item.setAction(Foundation.selector("archiveMenuClicked:"));
-        return !shouldCancel;
+        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
     }
 }

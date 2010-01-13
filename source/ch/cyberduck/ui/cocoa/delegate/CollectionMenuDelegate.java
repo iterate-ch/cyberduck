@@ -23,7 +23,7 @@ import ch.cyberduck.core.CollectionListener;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate implements CollectionListener<T> {
 
@@ -35,15 +35,15 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
     }
 
     public void collectionItemAdded(T item) {
-        this.setNeedsUpdate();
+        this.setNeedsUpdate(true);
     }
 
     public void collectionItemRemoved(T item) {
-        this.setNeedsUpdate();
+        this.setNeedsUpdate(true);
     }
 
     public void collectionItemChanged(T item) {
-        this.setNeedsUpdate();
+        this.setNeedsUpdate(true);
     }
 
     @Override

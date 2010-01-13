@@ -43,6 +43,11 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
     }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        if(this.isPopulated()) {
+            // If you return a negative value, the number of items is left unchanged
+            // and menu:updateItem:atIndex:shouldCancel: is not called.
+            return new NSInteger(-1);
+        }
         int n = Rendezvous.instance().numberOfServices();
         if(n > 0) {
             return new NSInteger(n);
@@ -52,12 +57,6 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
-        if(shouldCancel) {
-            return false;
-        }
-        if(super.shouldSkipValidation(menu, index.intValue())) {
-            return false;
-        }
         if(Rendezvous.instance().numberOfServices() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
             item.setEnabled(false);
@@ -89,10 +88,10 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
     }
 
     public void serviceResolved(String servicename, String hostname) {
-        this.setNeedsUpdate();
+        this.setNeedsUpdate(true);
     }
 
     public void serviceLost(String servicename) {
-        this.setNeedsUpdate();
+        this.setNeedsUpdate(true);
     }
 }

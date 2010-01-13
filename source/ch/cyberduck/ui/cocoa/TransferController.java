@@ -221,9 +221,6 @@ public class TransferController extends WindowController implements NSToolbar.De
 
         @Override
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean shouldCancel) {
-            if(super.shouldSkipValidation(menu, i.intValue())) {
-                return false;
-            }
             final int selected = transferTable.numberOfSelectedRows().intValue();
             final int tag = item.tag();
             NSIndexSet iterator = transferTable.selectedRowIndexes();
@@ -249,7 +246,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     }
                 }
             }
-            return !shouldCancel;
+            return super.menuUpdateItemAtIndex(menu, item, i, shouldCancel);
         }
     }
 

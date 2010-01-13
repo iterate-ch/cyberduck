@@ -49,17 +49,16 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
     }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        if(this.isPopulated()) {
+            // If you return a negative value, the number of items is left unchanged
+            // and menu:updateItem:atIndex:shouldCancel: is not called.
+            return new NSInteger(-1);
+        }
         return new NSInteger(roots.size());
     }
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
-        if(shouldCancel) {
-            return false;
-        }
-        if(super.shouldSkipValidation(menu, index.intValue())) {
-            return false;
-        }
         final Path path = roots.get(index.intValue());
         item.setTitle(path.getName());
         if(path.getLocal().exists()) {
@@ -74,7 +73,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
         item.setRepresentedObject(path.getLocal().getAbsolute());
         item.setImage(IconCache.instance().iconForPath(path, 16));
-        return !shouldCancel;
+        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
     }
 
     public void reveal(final NSMenuItem sender) {

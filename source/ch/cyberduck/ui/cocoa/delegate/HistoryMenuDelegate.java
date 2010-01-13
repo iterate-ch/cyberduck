@@ -42,6 +42,11 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        if(this.isPopulated()) {
+            // If you return a negative value, the number of items is left unchanged
+            // and menu:updateItem:atIndex:shouldCancel: is not called.
+            return new NSInteger(-1);
+        }
         if(HistoryCollection.defaultCollection().size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
             return new NSInteger(HistoryCollection.defaultCollection().size() + 2);
@@ -50,30 +55,27 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem sender, NSInteger index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
         if(shouldCancel) {
-            return false;
-        }
-        if(super.shouldSkipValidation(menu, index.intValue())) {
             return false;
         }
         final int size = HistoryCollection.defaultCollection().size();
         if(size == 0) {
-            sender.setTitle(Locale.localizedString("No recently connected servers available"));
-            sender.setTarget(null);
-            sender.setAction(null);
-            sender.setImage(null);
-            sender.setEnabled(false);
+            item.setTitle(Locale.localizedString("No recently connected servers available"));
+            item.setTarget(null);
+            item.setAction(null);
+            item.setImage(null);
+            item.setEnabled(false);
             return false;
         }
         if(index.intValue() < size) {
             Host h = HistoryCollection.defaultCollection().get(index.intValue());
-            sender.setTitle(h.getNickname());
-            sender.setAction(Foundation.selector("historyMenuItemClicked:"));
-            sender.setRepresentedObject(h.getNickname());
-            sender.setTarget(this.id());
-            sender.setEnabled(true);
-            sender.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
+            item.setTitle(h.getNickname());
+            item.setAction(Foundation.selector("historyMenuItemClicked:"));
+            item.setRepresentedObject(h.getNickname());
+            item.setTarget(this.id());
+            item.setEnabled(true);
+            item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
             return !shouldCancel;
         }
         if(index.intValue() == size) {
@@ -82,13 +84,13 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             return !shouldCancel;
         }
         if(index.intValue() == size + 1) {
-            sender.setTitle(Locale.localizedString("Clear Menu"));
-            sender.setAction(Foundation.selector("clearMenuItemClicked:"));
-            sender.setTarget(this.id());
-            sender.setEnabled(true);
+            item.setTitle(Locale.localizedString("Clear Menu"));
+            item.setAction(Foundation.selector("clearMenuItemClicked:"));
+            item.setTarget(this.id());
+            item.setEnabled(true);
             return !shouldCancel;
         }
-        return true;
+        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
     }
 
     public void historyMenuItemClicked(NSMenuItem sender) {

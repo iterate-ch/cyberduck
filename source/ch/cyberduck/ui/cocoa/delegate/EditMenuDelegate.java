@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -41,7 +42,17 @@ import java.util.Map;
 public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
+    /**
+     * Last selected extension
+     */
+    private String extension = null;
+
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        if(this.isPopulated()) {
+            // If you return a negative value, the number of items is left unchanged
+            // and menu:updateItem:atIndex:shouldCancel: is not called.
+            return new NSInteger(-1);
+        }
         final int n = EditorFactory.getInstalledEditors(this.getSelectedFile()).size();
         if(0 == n) {
             return new NSInteger(1);
@@ -52,19 +63,29 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     protected abstract Local getSelectedFile();
 
     @Override
+    protected boolean isPopulated() {
+        final Local selected = this.getSelectedFile();
+        if(selected != null && ObjectUtils.equals(extension, selected.getExtension())) {
+            return true;
+        }
+        if(selected != null) {
+            extension = selected.getExtension();
+        }
+        else {
+            extension = null;
+        }
+        return false;
+    }
+
+    @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
-        if(shouldCancel) {
-            return false;
-        }
-        if(super.shouldSkipValidation(menu, index.intValue())) {
-            return false;
-        }
-        final Map<String, String> editors = EditorFactory.getInstalledEditors(this.getSelectedFile());
+        final Local selected = this.getSelectedFile();
+        final Map<String, String> editors = EditorFactory.getInstalledEditors(selected);
         if(editors.size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
-        String defaultEditor = EditorFactory.defaultEditor(this.getSelectedFile());
+        String defaultEditor = EditorFactory.defaultEditor(selected);
         String identifier = editors.values().toArray(new String[editors.size()])[index.intValue()];
         item.setRepresentedObject(identifier);
         String editor = editors.keySet().toArray(new String[editors.size()])[index.intValue()];
@@ -86,6 +107,6 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
             item.setImage(IconCache.iconNamed("pencil.tiff"));
         }
         item.setAction(Foundation.selector("editMenuClicked:"));
-        return !shouldCancel;
+        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
     }
 }

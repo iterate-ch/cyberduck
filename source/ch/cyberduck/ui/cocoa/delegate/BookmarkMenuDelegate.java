@@ -41,6 +41,11 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
+        if(this.isPopulated()) {
+            // If you return a negative value, the number of items is left unchanged
+            // and menu:updateItem:atIndex:shouldCancel: is not called.
+            return new NSInteger(-1);
+        }
         return new NSInteger(HostCollection.defaultCollection().size() + 9);
         //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
         // 6 is Bonjour with submenu, 7 is sepearator
@@ -50,12 +55,6 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
-        if(shouldCancel) {
-            return false;
-        }
-        if(super.shouldSkipValidation(menu, index.intValue())) {
-            return false;
-        }
         if(index.intValue() == BOOKMARKS_INDEX) {
             item.setEnabled(true);
             item.setImage(IconCache.iconNamed("history", 16));
@@ -72,7 +71,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setAction(Foundation.selector("bookmarkMenuItemClicked:"));
             item.setRepresentedObject(h.getNickname());
         }
-        return true;
+        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
     }
 
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
