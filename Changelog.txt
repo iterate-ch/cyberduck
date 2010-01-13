@@ -19,6 +19,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Bonjour bookmarks ignore TXT record with path and credentials attributes (#3984)
 - [Bugfix] Donation prompt cannot be supressed (#3937)
 - [Bugfix] Error when uploading file with different display name from real filename (#4041)
+- [Bugfix] Quick Connect needs extra keystroke to connect (#3801)
+- [Bugfix] Password in non-default keychain are copied to login keychain (#2878)
 
 3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
 - [Feature] Octal input field for permissions [#13]
