@@ -202,8 +202,8 @@ public class EditorFactory {
     });
 
     public static String getApplicationName(String bundleIdentifier) {
-        log.debug("getApplicationName:" + bundleIdentifier);
         if(!applicationNameCache.containsKey(bundleIdentifier)) {
+            log.debug("getApplicationName:" + bundleIdentifier);
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
             if(StringUtils.isEmpty(path)) {
                 log.warn("Cannot determine installation path for " + bundleIdentifier);
