@@ -11,6 +11,7 @@
         bucketLoggingButton = id;
         distributionCnameField = id;
         distributionCnameUrlField = id;
+        distributionDeliveryPopup = id;
         distributionEnableButton = id;
         distributionLoggingButton = id;
         distributionProgress = id;

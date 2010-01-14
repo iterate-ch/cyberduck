@@ -24,6 +24,8 @@
 				<string>id</string>
 				<key>distributionCnameUrlField</key>
 				<string>id</string>
+				<key>distributionDeliveryPopup</key>
+				<string>id</string>
 				<key>distributionEnableButton</key>
 				<string>id</string>
 				<key>distributionLoggingButton</key>
