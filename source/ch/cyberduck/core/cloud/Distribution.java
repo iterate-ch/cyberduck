@@ -26,9 +26,9 @@ import ch.cyberduck.core.i18n.Locale;
 public class Distribution {
 
     /**
-     * Configuration pending
+     * Configuration sucessfully applied and distributed
      */
-    private boolean inprogress;
+    private boolean deployed;
     /**
      * Deployment enabled
      */
@@ -40,6 +40,51 @@ public class Distribution {
     private String url;
     private String status;
     private String cnames[];
+
+    private Method method;
+
+    public static interface Method {
+        public abstract String toString();
+
+        public abstract String getProtocol();
+
+        public abstract String getContext();
+    }
+
+    public static final Method DOWNLOAD = new Method() {
+        public String toString() {
+            return Locale.localizedString("Download (HTTP)", "S3");
+        }
+
+        public String getProtocol() {
+            return "http://";
+        }
+
+        public String getContext() {
+            return "";
+        }
+    };
+
+    public static final Method STREAMING = new Method() {
+        public String toString() {
+            return Locale.localizedString("Streaming (RTMP)", "S3");
+        }
+
+        public String getProtocol() {
+            return "rtmp://";
+        }
+
+        public String getContext() {
+            return "/cfx/st";
+        }
+    };
+
+    /**
+     *
+     */
+    public Distribution() {
+        this(false, false, null, null, new String[]{}, false);
+    }
 
     /**
      * @param enabled
@@ -58,7 +103,7 @@ public class Distribution {
      * @param logging
      */
     public Distribution(boolean enabled, String url, String status, boolean logging) {
-        this(enabled, false, url, status, new String[]{}, logging);
+        this(enabled, enabled, url, status, new String[]{}, logging);
     }
 
     /**
@@ -68,35 +113,50 @@ public class Distribution {
      * @param cnames     Multiple CNAME aliases of this distribution
      */
     public Distribution(boolean enabled, String url, String status, String[] cnames) {
-        this(enabled, false, url, status, cnames);
+        this(enabled, enabled, url, status, cnames);
     }
 
     /**
      * @param enabled    Deployment Enabled
-     * @param inprogress Deployment Status is about to be changed
+     * @param deployed Deployment Status is about to be changed
      * @param url        Where to find this distribution
      * @param status     Status Message about Deployment Status
      * @param cnames     Multiple CNAME aliases of this distribution
      */
-    public Distribution(boolean enabled, boolean inprogress, String url, String status, String[] cnames) {
-        this(enabled, inprogress, url, status, cnames, false);
+    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames) {
+        this(enabled, deployed, url, status, cnames, false);
     }
 
     /**
      * @param enabled    Deployment Enabled
-     * @param inprogress Deployment Status is about to be changed
+     * @param deployed Deployment Status is about to be changed
      * @param url        Where to find this distribution
      * @param status     Status Message about Deployment Status
      * @param cnames     Multiple CNAME aliases of this distribution
      * @param logging
      */
-    public Distribution(boolean enabled, boolean inprogress, String url, String status, String[] cnames, boolean logging) {
+    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
+        this(enabled, deployed, url, status, cnames, logging, DOWNLOAD);
+    }
+
+    /**
+     *
+     * @param enabled
+     * @param deployed
+     * @param url
+     * @param status
+     * @param cnames
+     * @param logging
+     * @param method
+     */
+    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method) {
         this.enabled = enabled;
-        this.inprogress = inprogress;
+        this.deployed = deployed;
         this.url = url;
         this.status = status;
         this.cnames = cnames;
         this.logging = logging;
+        this.method = method;
     }
 
     /**
@@ -106,8 +166,8 @@ public class Distribution {
         return enabled;
     }
 
-    public boolean isInprogress() {
-        return inprogress;
+    public boolean isDeployed() {
+        return deployed;
     }
 
     public boolean isLogging() {
@@ -143,5 +203,13 @@ public class Distribution {
             return new String[]{};
         }
         return cnames;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public void setMethod(Method method) {
+        this.method = method;
     }
 }

@@ -204,6 +204,15 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSPopUpButton distributionDeliveryPopup;
+
+    public void setDistributionDeliveryPopup(NSPopUpButton b) {
+        this.distributionDeliveryPopup = b;
+        this.distributionDeliveryPopup.setTarget(this.id());
+        this.distributionDeliveryPopup.setAction(Foundation.selector("distributionStatusButtonClicked:"));
+    }
+
+    @Outlet
     private NSTextField bucketLocationField;
 
     public void setBucketLocationField(NSTextField t) {
@@ -250,9 +259,6 @@ public class InfoController extends ToolbarWindowController {
         this.s3CachePopup.removeAllItems();
         this.s3CachePopup.setTarget(this.id());
         this.s3CachePopup.setAction(Foundation.selector("s3CachePopupClicked:"));
-        for(int i = 0; i < this.s3CachePopup.numberOfItems(); i++) {
-            this.s3CachePopup.itemAtIndex(i).setState(NSCell.NSOffState);
-        }
         this.s3CachePopup.addItemWithTitle(Locale.localizedString("None"));
         this.s3CachePopup.addItemWithTitle("public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds"));
     }
@@ -823,6 +829,17 @@ public class InfoController extends ToolbarWindowController {
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                 servicename));
 
+        distributionDeliveryPopup.setEnabled(cloud);
+        distributionDeliveryPopup.removeAllItems();
+        if(cloud) {
+            CloudSession session = (CloudSession) file.getSession();
+            for(Distribution.Method method : session.getSupportedMethods()) {
+                distributionDeliveryPopup.addItemWithTitle(method.toString());
+                distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
+            }
+            distributionDeliveryPopup.selectItemWithTitle(Distribution.DOWNLOAD.toString());
+        }
+
         if(cloud) {
             distributionStatusButtonClicked(null);
         }
@@ -1131,6 +1148,7 @@ public class InfoController extends ToolbarWindowController {
         distributionEnableButton.setEnabled(enabled);
         distributionLoggingButton.setEnabled(enabled);
         distributionLoggingButton.setEnabled(enabled);
+        distributionDeliveryPopup.setEnabled(enabled);
         if(enabled) {
             distributionProgress.stopAnimation(null);
         }
@@ -1148,13 +1166,17 @@ public class InfoController extends ToolbarWindowController {
                     CloudPath cloud = (CloudPath) next;
                     CloudSession session = (CloudSession) cloud.getSession();
                     String container = cloud.getContainerName();
+                    Distribution.Method method = Distribution.DOWNLOAD;
+                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
+                        method = Distribution.STREAMING;
+                    }
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
-                        session.writeDistribution(container, distributionEnableButton.state() == NSCell.NSOnState,
+                        session.writeDistribution(distributionEnableButton.state() == NSCell.NSOnState, container, method,
                                 StringUtils.split(distributionCnameField.stringValue()),
                                 distributionLoggingButton.state() == NSCell.NSOnState);
                     }
                     else {
-                        session.writeDistribution(container, distributionEnableButton.state() == NSCell.NSOnState,
+                        session.writeDistribution(distributionEnableButton.state() == NSCell.NSOnState, container, method,
                                 new String[]{}, distributionLoggingButton.state() == NSCell.NSOnState);
                     }
                     break;
@@ -1180,7 +1202,12 @@ public class InfoController extends ToolbarWindowController {
                     CloudPath cloud = (CloudPath) next;
                     CloudSession session = (CloudSession) cloud.getSession();
                     // We only support one distribution per bucket for the sake of simplicity
-                    distribution = session.readDistribution(cloud.getContainerName());
+                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
+                        distribution = session.readDistribution(cloud.getContainerName(), Distribution.STREAMING);
+                    }
+                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
+                        distribution = session.readDistribution(cloud.getContainerName(), Distribution.DOWNLOAD);
+                    }
                     break;
                 }
             }
@@ -1222,7 +1249,7 @@ public class InfoController extends ToolbarWindowController {
                 else {
                     distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
                     for(String cname : cnames) {
-                        final String url = "http://" + cname + key;
+                        final String url = distribution.getMethod().getProtocol() + cname + distribution.getMethod().getContext() + key;
                         distributionCnameUrlField.setAttributedStringValue(
                                 HyperlinkAttributedStringFactory.create(
                                         NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)

@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 
 import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
 import com.rackspacecloud.client.cloudfiles.FilesClient;
@@ -180,10 +182,11 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
 
     /**
      * @param enabled Enable content distribution for the container
+     * @param method
      * @param cnames  Currently ignored
      * @param logging
      */
-    public void writeDistribution(String container, boolean enabled, String[] cnames, boolean logging) {
+    public void writeDistribution(boolean enabled, String container, Distribution.Method method, String[] cnames, boolean logging) {
         final AbstractX509TrustManager trust = this.getTrustManager();
         try {
             this.check();
@@ -217,7 +220,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         }
     }
 
-    public Distribution readDistribution(String container) {
+    public Distribution readDistribution(String container, Distribution.Method method) {
         if(null != container) {
             final AbstractX509TrustManager trust = this.getTrustManager();
             try {
@@ -241,6 +244,10 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
                 trust.setHostname(URI.create(CF.getStorageURL()).getHost());
             }
         }
-        return new Distribution(false, null, null);
+        return new Distribution();
+    }
+
+    public List<Distribution.Method> getSupportedMethods() {
+        return Arrays.asList(Distribution.DOWNLOAD);
     }
 }

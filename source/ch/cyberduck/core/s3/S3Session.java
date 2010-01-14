@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
+import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
@@ -39,7 +40,6 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.*;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.cloudfront.Distribution;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
@@ -335,9 +335,6 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
         return S3 != null;
     }
 
-
-    private boolean streaming;
-
     /**
      * Amazon CloudFront Extension to create a new distribution configuration
      * *
@@ -349,9 +346,11 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
      * @return Distribution configuration
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public Distribution createDistribution(boolean enabled, final String bucket, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
+    public org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
+                                                                               Distribution.Method method,
+                                                                               final String bucket, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
-        if(streaming) {
+        if(method.equals(Distribution.STREAMING)) {
             return this.createCloudFrontService().createStreamingDistribution(
                     this.getHostnameForBucket(bucket),
                     String.valueOf(reference), // Caller reference - a unique string value
@@ -373,15 +372,17 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
     /**
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      *
+     * @param enabled      Distribution status
      * @param distribution Distribution configuration
      * @param cnames       DNS CNAME aliases for distribution
-     * @param enabled      Distribution status
      * @param logging      Access log configuration
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public void updateDistribution(boolean enabled, final Distribution distribution, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
+    public void updateDistribution(boolean enabled, Distribution.Method method,
+                                   final org.jets3t.service.model.cloudfront.Distribution distribution, String[] cnames, LoggingStatus logging
+    ) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
-        if(streaming) {
+        if(method.equals(Distribution.STREAMING)) {
             this.createCloudFrontService().updateStreamingDistributionConfig(
                     distribution.getId(),
                     cnames, // CNAME aliases for distribution
@@ -404,10 +405,15 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
      * Amazon CloudFront Extension used to list all configured distributions
      *
      * @param bucket Name of the container
+     * @param method
      * @return All distributions for the given AWS Credentials
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
+    protected org.jets3t.service.model.cloudfront.Distribution[] listDistributions(String bucket,
+                                                                                   Distribution.Method method) throws CloudFrontServiceException {
+        if(method.equals(Distribution.STREAMING)) {
+            return this.createCloudFrontService().listStreamingDistributions(bucket);
+        }
         return this.createCloudFrontService().listDistributions(bucket);
     }
 
@@ -416,7 +422,11 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
      * @return
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    protected DistributionConfig getDistributionConfig(final Distribution distribution) throws CloudFrontServiceException {
+    protected DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution
+    ) throws CloudFrontServiceException {
+        if(distribution.isStreamingDistribution()) {
+            return this.createCloudFrontService().getStreamingDistributionConfig(distribution.getId());
+        }
         return this.createCloudFrontService().getDistributionConfig(distribution.getId());
     }
 
@@ -424,8 +434,14 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
      * @param distribution A distribution (the distribution must be disabled and deployed first)
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public void deleteDistribution(final Distribution distribution) throws CloudFrontServiceException {
-        this.createCloudFrontService().deleteDistribution(distribution.getId());
+    public void deleteDistribution(final org.jets3t.service.model.cloudfront.Distribution distribution
+    ) throws CloudFrontServiceException {
+        if(distribution.isStreamingDistribution()) {
+            this.createCloudFrontService().deleteStreamingDistribution(distribution.getId());
+        }
+        else {
+            this.createCloudFrontService().deleteDistribution(distribution.getId());
+        }
     }
 
     /**
@@ -470,42 +486,46 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
     /**
      * @return
      */
-    public ch.cyberduck.core.cloud.Distribution readDistribution(String container) {
+    public Distribution readDistribution(String container, Distribution.Method method) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
-            return new ch.cyberduck.core.cloud.Distribution(false, null, null);
+            return new Distribution();
         }
         try {
             this.check();
-            for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container)) {
+            for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container, method)) {
                 // Retrieve distribution's configuration to access current logging status settings.
                 final DistributionConfig distributionConfig = this.getDistributionConfig(d);
                 // We currently only support one distribution per bucket
-                return new ch.cyberduck.core.cloud.Distribution(d.isEnabled(), d.getStatus().equals("InProgress"),
-                        "http://" + d.getDomainName(), Locale.localizedString(d.getStatus(), "S3"), d.getCNAMEs(),
-                        distributionConfig.isLoggingEnabled());
+                return new Distribution(d.isEnabled(), d.isDeployed(),
+                        method.getProtocol() + d.getDomainName() + method.getContext(),
+                        Locale.localizedString(d.getStatus(), "S3"),
+                        distributionConfig.getCNAMEs(),
+                        distributionConfig.isLoggingEnabled(),
+                        method);
             }
         }
         catch(CloudFrontServiceException e) {
             if(e.getResponseCode() == 403) {
                 log.warn("Invalid CloudFront account:" + e.getMessage());
-                return new ch.cyberduck.core.cloud.Distribution(false, null, null);
+                return new Distribution();
             }
             this.error("Cannot read file attributes", e);
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-        return new ch.cyberduck.core.cloud.Distribution(false, null, null);
+        return new Distribution();
     }
 
     /**
      * Amazon CloudFront Extension
      *
      * @param enabled
+     * @param method
      * @param cnames
      * @param logging
      */
-    public void writeDistribution(String container, final boolean enabled, final String[] cnames, boolean logging) {
+    public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             return;
         }
@@ -517,21 +537,20 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
                         Preferences.instance().getProperty("cloudfront.logging.prefix"));
             }
             this.check();
+            StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
             if(enabled) {
-                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                        Locale.localizedString("Amazon CloudFront", "S3")));
+                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
             }
             else {
-                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
-                        Locale.localizedString("Amazon CloudFront", "S3")));
+                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
             }
-            for(org.jets3t.service.model.cloudfront.Distribution distribution : this.listDistributions(container)) {
-                this.updateDistribution(enabled, distribution, cnames, l);
+            for(org.jets3t.service.model.cloudfront.Distribution distribution : this.listDistributions(container, method)) {
+                this.updateDistribution(enabled, method, distribution, cnames, l);
                 // We currently only support one distribution per bucket
                 return;
             }
             // Create new configuration
-            this.createDistribution(enabled, container, cnames, l);
+            this.createDistribution(enabled, method, container, cnames, l);
         }
         catch(CloudFrontServiceException e) {
             this.error("Cannot write file attributes", e);
@@ -539,5 +558,9 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
         catch(IOException e) {
             this.error("Cannot write file attributes", e);
         }
+    }
+
+    public List<Distribution.Method> getSupportedMethods() {
+        return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
     }
 }

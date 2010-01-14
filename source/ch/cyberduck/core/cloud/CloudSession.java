@@ -1,4 +1,5 @@
 package ch.cyberduck.core.cloud;
+
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -17,6 +18,8 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.List;
+
 /**
  * @version $Id$
  */
@@ -24,13 +27,20 @@ public interface CloudSession {
 
     /**
      * @param enabled
+     * @param method
      * @param cnames
      * @param logging
      */
-    public abstract void writeDistribution(String container, final boolean enabled, final String[] cnames, boolean logging);
+    public abstract void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging);
 
     /**
      * @return
      */
-    public abstract Distribution readDistribution(String container);
+    public abstract Distribution readDistribution(String container, Distribution.Method method);
+
+    /**
+     *
+     * @return The supported protocols
+     */
+    public abstract List<Distribution.Method> getSupportedMethods();
 }

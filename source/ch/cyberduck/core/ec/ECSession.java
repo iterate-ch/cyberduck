@@ -19,10 +19,10 @@ package ch.cyberduck.core.ec;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.model.cloudfront.Distribution;
 
 /**
  * Elastic Utility Computing Architecture for Linking Your Programs To Useful Systems - is an open-source software
@@ -65,8 +65,8 @@ public class ECSession extends S3Session {
      * @return All distributions for the given AWS Credentials
      */
     @Override
-    public Distribution[] listDistributions(String bucket) throws CloudFrontServiceException {
-        return new Distribution[]{};
+    public org.jets3t.service.model.cloudfront.Distribution[] listDistributions(String bucket, Distribution.Method method) throws CloudFrontServiceException {
+        return new org.jets3t.service.model.cloudfront.Distribution[]{};
     }
 
 
@@ -74,7 +74,7 @@ public class ECSession extends S3Session {
      * @return
      */
     @Override
-    public ch.cyberduck.core.cloud.Distribution readDistribution(String container) {
+    public Distribution readDistribution(String container, Distribution.Method method) {
         throw new UnsupportedOperationException();
     }
 
@@ -82,11 +82,12 @@ public class ECSession extends S3Session {
      * Amazon CloudFront Extension
      *
      * @param enabled
+     * @param method
      * @param cnames
      * @param logging
      */
     @Override
-    public void writeDistribution(String container, final boolean enabled, final String[] cnames, boolean logging) {
+    public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
         throw new UnsupportedOperationException();
     }
 }

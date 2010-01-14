@@ -427,7 +427,7 @@ public class CFPath extends CloudPath {
      */
     @Override
     public String toHttpURL() {
-        final Distribution distribution = session.readDistribution(this.getContainerName());
+        final Distribution distribution = session.readDistribution(this.getContainerName(), Distribution.DOWNLOAD);
         if(null == distribution.getUrl()) {
             return super.toHttpURL();
         }
