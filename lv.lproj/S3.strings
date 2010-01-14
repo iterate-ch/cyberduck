@@ -15,3 +15,7 @@
 "EU" = "EU (Īrija)";
 "US" = "ASV standarts";
 "us-west-1" = "ASV-Rietumu (Ziemeļ Kalifornija)";
+
+/* Delivery methods including streaming protocols. */ 
+"Download (HTTP)" = "Download (HTTP)";
+"Streaming (RTMP)" = "Streaming (RTMP)";
