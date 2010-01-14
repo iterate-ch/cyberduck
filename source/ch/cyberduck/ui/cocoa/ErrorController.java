@@ -159,7 +159,7 @@ public class ErrorController extends BundleController {
             if(cause instanceof CloudFrontServiceException) {
                 final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
                 if(StringUtils.isNotBlank(cf.getErrorMessage())) {
-                    buffer.append(cf.getErrorMessage()).append(". ");
+                    buffer.append(" ").append(cf.getErrorMessage());
                 }
                 if(StringUtils.isNotBlank(cf.getErrorDetail())) {
                     buffer.append(" ").append(cf.getErrorDetail());
