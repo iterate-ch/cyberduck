@@ -1614,7 +1614,6 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				471D2C5405A2505600675163 /* Info.plist */,
-				474523971076B6D800823467 /* Carbon.framework */,
 			);
 			name = "cyberduck-cocoa";
 			sourceTree = "<group>";
@@ -1622,6 +1621,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				474523971076B6D800823467 /* Carbon.framework */,
 				474522C51076B68E00823467 /* ApplicationServices.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
 				470671150FD8896D00EE3291 /* Sparkle.framework */,
