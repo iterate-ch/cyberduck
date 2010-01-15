@@ -34,10 +34,7 @@
     <property name="build.unittests" value="${build}/unittests"/>
     <property name="build.unittests.reports" value="${build}/unittests/junit_reports"/>
     <property name="build.spotlight" value="${home}/Spotlight Importer/build/Release"/>
-    <property name="build.automator.upload" value="${home}/Upload Automator Action/build/Release"/>
-    <property name="build.automator.download" value="${home}/Download Automator Action/build/Release"/>
     <property name="config" value="${home}/config"/>
-    <property name="widget" value="${home}/Dashboard Widget"/>
     <property name="img" value="${home}/img"/>
     <property name="lib" value="${home}/lib"/>
     <property name="lib.ext" value="${lib}/ext"/>
@@ -87,7 +84,6 @@
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
-    <property name="app.automator" value="${app.library}/Automator"/>
 
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
@@ -160,7 +156,7 @@
             </fileset>
         </chmod>
         <exec dir="${home}" executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf  AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+            <arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf"/>
         </exec>
         <checksum
                 file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg"
@@ -198,7 +194,7 @@
     <target name="dmg">
         <echo message="Creating DMG archive..."/>
         <exec dir="${home}" executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf AppleScript\ Samples Dashboard\ Widget/build/${app.name}.wdgt"/>
+            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf"/>
         </exec>
         <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
                   algorithm="md5"/>
