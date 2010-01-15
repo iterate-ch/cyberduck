@@ -1019,6 +1019,7 @@ public class FTPClient {
                 return new BufferedReader(new InputStreamReader(data.getInputStream(),
                         Charset.forName(encoding)
                 )) {
+                    @Override
                     public String readLine() throws IOException {
                         String line = super.readLine();
                         if(null != line) {
@@ -1059,7 +1060,6 @@ public class FTPClient {
         }
         finally { // ensure we clean up the connection
             control.logout();
-            control = null;
         }
     }
 }
