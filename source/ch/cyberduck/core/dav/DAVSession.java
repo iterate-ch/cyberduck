@@ -52,7 +52,7 @@ public class DAVSession extends HTTPSession {
         }
     }
 
-    protected DAVResource DAV;
+    private DAVResource DAV;
 
     protected DAVSession(Host h) {
         super(h);
@@ -62,25 +62,33 @@ public class DAVSession extends HTTPSession {
     public void check() throws IOException {
         super.check();
         if(this.isConnected()) {
-            DAV.clearHeaders();
+            this.getClient().clearHeaders();
         }
     }
 
+    @Override
+    protected DAVResource getClient() throws ConnectionCanceledException {
+        if(null == DAV) {
+            throw new ConnectionCanceledException();
+        }
+        return DAV;
+    }
+
     protected void configure() throws IOException {
-        final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
+        final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
         client.getHostConfiguration().getParams().setParameter(
                 "http.useragent", this.getUserAgent()
         );
         final Proxy proxy = ProxyFactory.instance();
         if(proxy.isHTTPProxyEnabled()) {
-            this.DAV.setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
-            //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
+            this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+            //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
         }
         else {
-            this.DAV.setProxy(null, -1);
-            this.DAV.setProxyCredentials(null);
+            this.getClient().setProxy(null, -1);
+            this.getClient().setProxyCredentials(null);
         }
-        this.DAV.setFollowRedirects(Preferences.instance().getBoolean("webdav.followRedirects"));
+        this.getClient().setFollowRedirects(Preferences.instance().getBoolean("webdav.followRedirects"));
     }
 
     @Override
@@ -98,7 +106,7 @@ public class DAVSession extends HTTPSession {
         this.DAV = new DAVResource(host.toURL());
         final String workdir = host.getDefaultPath();
         if(StringUtils.isNotBlank(workdir)) {
-            this.DAV.setPath(workdir.startsWith(Path.DELIMITER) ? workdir : Path.DELIMITER + workdir);
+            this.getClient().setPath(workdir.startsWith(Path.DELIMITER) ? workdir : Path.DELIMITER + workdir);
         }
 
         this.configure();
@@ -109,7 +117,7 @@ public class DAVSession extends HTTPSession {
         this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
 
-        if(null == this.DAV.getResourceType() || !this.DAV.getResourceType().isCollection()) {
+        if(null == this.getClient().getResourceType() || !this.getClient().getResourceType().isCollection()) {
             throw new IOException("Listing directory failed");
         }
 
@@ -152,11 +160,11 @@ public class DAVSession extends HTTPSession {
     @Override
     protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
         try {
-            final HttpClient client = this.DAV.getSessionInstance(this.DAV.getHttpURL(), false);
+            final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
 
             if(credentials.isValid()) {
                 // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-                this.DAV.setCredentials(
+                this.getClient().setCredentials(
                         new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
             }
 
@@ -209,7 +217,7 @@ public class DAVSession extends HTTPSession {
             });
 
             // Try to get basic properties fo this resource using these credentials
-            this.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_0);
+            this.getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_0);
 
             this.message(Locale.localizedString("Login successful", "Credentials"));
         }
@@ -226,7 +234,7 @@ public class DAVSession extends HTTPSession {
         try {
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
-                DAV.close();
+                this.getClient().close();
             }
         }
         catch(IOException e) {
@@ -241,10 +249,9 @@ public class DAVSession extends HTTPSession {
     @Override
     public void interrupt() {
         try {
-            super.interrupt();
             this.fireConnectionWillCloseEvent();
             if(this.isConnected()) {
-                DAV.close();
+                this.getClient().close();
             }
         }
         catch(IOException e) {
@@ -261,7 +268,7 @@ public class DAVSession extends HTTPSession {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        DAV.setPath(workdir.isRoot() ? Path.DELIMITER : workdir.getAbsolute() + Path.DELIMITER);
+        this.getClient().setPath(workdir.isRoot() ? Path.DELIMITER : workdir.getAbsolute() + Path.DELIMITER);
         super.setWorkdir(workdir);
     }
 
@@ -273,11 +280,6 @@ public class DAVSession extends HTTPSession {
     @Override
     public void sendCommand(String command) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return DAV != null;
     }
 
     @Override

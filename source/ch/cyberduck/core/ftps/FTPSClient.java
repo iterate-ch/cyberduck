@@ -38,7 +38,7 @@ public class FTPSClient extends FTPClient {
 
     public FTPSClient(final String encoding, final FTPMessageListener listener, final X509TrustManager trustManager) {
         super(encoding, listener);
-        this.control = new FTPSControlSocket(encoding, listener, trustManager);
+        control = new FTPSControlSocket(encoding, listener, trustManager);
     }
 
     /**

@@ -93,22 +93,25 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public Session getSession() {
-        return this.session;
+    public SFTPSession getSession() throws ConnectionCanceledException {
+        if(null == session) {
+            throw new ConnectionCanceledException();
+        }
+        return session;
     }
 
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            List<SFTPv3DirectoryEntry> children = session.sftp().ls(this.getAbsolute());
+            List<SFTPv3DirectoryEntry> children = this.getSession().sftp().ls(this.getAbsolute());
             for(SFTPv3DirectoryEntry f : children) {
                 if(!f.filename.equals(".") && !f.filename.equals("..")) {
-                    Path p = new SFTPPath(session, this.getAbsolute(),
+                    Path p = new SFTPPath(this.getSession(), this.getAbsolute(),
                             f.filename, f.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     p.setParent(this);
                     if(null != f.attributes.uid) {
@@ -128,12 +131,12 @@ public class SFTPPath extends Path {
                     }
                     if(f.attributes.isSymlink()) {
                         try {
-                            String target = session.sftp().readLink(p.getAbsolute());
+                            String target = this.getSession().sftp().readLink(p.getAbsolute());
                             if(!target.startsWith("/")) {
                                 target = Path.normalize(this.getAbsolute() + Path.DELIMITER + target);
                             }
                             p.setSymlinkTarget(target);
-                            SFTPv3FileAttributes attr = session.sftp().stat(target);
+                            SFTPv3FileAttributes attr = this.getSession().sftp().stat(target);
                             if(attr.isDirectory()) {
                                 p.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                             }
@@ -153,7 +156,7 @@ public class SFTPPath extends Path {
                     childs.add(p);
                 }
             }
-            session.setWorkdir(this);
+            this.getSession().setWorkdir(this);
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);
@@ -171,12 +174,12 @@ public class SFTPPath extends Path {
                     this.getParent().mkdir(recursive);
                 }
             }
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
             Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-            session.sftp().mkdir(this.getAbsolute(), perm.getOctalNumber());
+            this.getSession().sftp().mkdir(this.getAbsolute(), perm.getOctalNumber());
         }
         catch(IOException e) {
             this.error("Cannot create folder", e);
@@ -186,14 +189,14 @@ public class SFTPPath extends Path {
     @Override
     public void rename(AbstractPath renamed) {
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
             if(renamed.exists()) {
                 renamed.delete();
             }
-            session.sftp().mv(this.getAbsolute(), renamed.getAbsolute());
+            this.getSession().sftp().mv(this.getAbsolute(), renamed.getAbsolute());
             this.setPath(renamed.getAbsolute());
         }
         catch(IOException e) {
@@ -210,24 +213,24 @@ public class SFTPPath extends Path {
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
-            session.check();
+            this.getSession().check();
             if(this.attributes.isFile() || this.attributes.isSymbolicLink()) {
-                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                session.sftp().rm(this.getAbsolute());
+                this.getSession().sftp().rm(this.getAbsolute());
             }
             else if(this.attributes.isDirectory()) {
                 for(AbstractPath child : this.childs()) {
-                    if(!session.isConnected()) {
+                    if(!this.getSession().isConnected()) {
                         break;
                     }
                     child.delete();
                 }
-                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                session.sftp().rmdir(this.getAbsolute());
+                this.getSession().sftp().rmdir(this.getAbsolute());
             }
         }
         catch(IOException e) {
@@ -245,14 +248,14 @@ public class SFTPPath extends Path {
         if(this.attributes.isFile()) {
             SFTPv3FileHandle handle = null;
             try {
-                session.check();
-                handle = session.sftp().openFileRO(this.getAbsolute());
-                SFTPv3FileAttributes attr = session.sftp().fstat(handle);
-                session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                this.getSession().check();
+                handle = this.getSession().sftp().openFileRO(this.getAbsolute());
+                SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
                 this.attributes.setSize(attr.size);
-                session.sftp().closeFile(handle);
+                this.getSession().sftp().closeFile(handle);
             }
             catch(IOException e) {
                 // Fail silently
@@ -261,7 +264,7 @@ public class SFTPPath extends Path {
             finally {
                 if(handle != null) {
                     try {
-                        session.sftp().closeFile(handle);
+                        this.getSession().sftp().closeFile(handle);
                     }
                     catch(IOException e) {
                         ;
@@ -276,14 +279,14 @@ public class SFTPPath extends Path {
         if(this.attributes.isFile()) {
             SFTPv3FileHandle handle = null;
             try {
-                session.check();
-                session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
-                handle = session.sftp().openFileRO(this.getAbsolute());
-                SFTPv3FileAttributes attr = session.sftp().fstat(handle);
+                handle = this.getSession().sftp().openFileRO(this.getAbsolute());
+                SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
                 this.attributes.setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
-                session.sftp().closeFile(handle);
+                this.getSession().sftp().closeFile(handle);
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -291,7 +294,7 @@ public class SFTPPath extends Path {
             finally {
                 if(handle != null) {
                     try {
-                        session.sftp().closeFile(handle);
+                        this.getSession().sftp().closeFile(handle);
                     }
                     catch(IOException e) {
                         ;
@@ -306,12 +309,12 @@ public class SFTPPath extends Path {
         if(this.attributes.isFile()) {
             SFTPv3FileHandle handle = null;
             try {
-                session.check();
-                session.message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                         this.getName()));
 
-                handle = session.sftp().openFileRO(this.getAbsolute());
-                SFTPv3FileAttributes attr = session.sftp().fstat(handle);
+                handle = this.getSession().sftp().openFileRO(this.getAbsolute());
+                SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
                 String perm = attr.getOctalPermissions();
                 try {
                     this.attributes.setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
@@ -319,7 +322,7 @@ public class SFTPPath extends Path {
                 catch(NumberFormatException e) {
                     log.error(e.getMessage());
                 }
-                session.sftp().closeFile(handle);
+                this.getSession().sftp().closeFile(handle);
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -327,7 +330,7 @@ public class SFTPPath extends Path {
             finally {
                 if(handle != null) {
                     try {
-                        session.sftp().closeFile(handle);
+                        this.getSession().sftp().closeFile(handle);
                     }
                     catch(IOException e) {
                         ;
@@ -341,18 +344,18 @@ public class SFTPPath extends Path {
     public void writeOwner(String owner, boolean recursive) {
         log.debug("changeOwner");
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                     this.getName(), owner));
 
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.uid = new Integer(owner);
-            session.sftp().setstat(this.getAbsolute(), attr);
+            this.getSession().sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes.isDirectory()) {
                 if(recursive) {
                     for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
-                        if(!session.isConnected()) {
+                        if(!this.getSession().isConnected()) {
                             break;
                         }
                         ((Path) iter.next()).writeOwner(owner, recursive);
@@ -372,17 +375,17 @@ public class SFTPPath extends Path {
     public void writeGroup(String group, boolean recursive) {
         log.debug("changeGroup");
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
                     this.getName(), group));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.gid = new Integer(group);
-            session.sftp().setstat(this.getAbsolute(), attr);
+            this.getSession().sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes.isDirectory()) {
                 if(recursive) {
                     for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
-                        if(!session.isConnected()) {
+                        if(!this.getSession().isConnected()) {
                             break;
                         }
                         ((Path) iter.next()).writeGroup(group, recursive);
@@ -402,8 +405,8 @@ public class SFTPPath extends Path {
     public void writePermissions(Permission perm, boolean recursive) {
         log.debug("changePermissions");
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), perm.getOctalString()));
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
@@ -425,12 +428,12 @@ public class SFTPPath extends Path {
             else {
                 attr.permissions = perm.getOctalNumber();
             }
-            session.sftp().setstat(getAbsolute(), attr);
+            this.getSession().sftp().setstat(getAbsolute(), attr);
             attributes.setPermission(perm);
             if(attributes.isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
-                        if(!session.isConnected()) {
+                        if(!this.getSession().isConnected()) {
                             break;
                         }
                         child.writePermissions(perm, recursive);
@@ -447,7 +450,7 @@ public class SFTPPath extends Path {
     public void writeModificationDate(long millis) {
         if(attributes.isFile()) {
             try {
-                this.writeModificationDate(session.sftp().openFileRW(this.getAbsolute()), millis);
+                this.writeModificationDate(this.getSession().sftp().openFileRW(this.getAbsolute()), millis);
             }
             catch(IOException e) {
                 log.warn(e.getMessage());
@@ -467,10 +470,10 @@ public class SFTPPath extends Path {
             try {
                 if(null == handle) {
                     if(attributes.isFile()) {
-                        handle = session.sftp().openFileRW(this.getAbsolute());
+                        handle = this.getSession().sftp().openFileRW(this.getAbsolute());
                     }
                 }
-                session.sftp().fsetstat(handle, attrs);
+                this.getSession().sftp().fsetstat(handle, attrs);
             }
             catch(SFTPException e) {
                 // We might not be able to change the attributes if we are
@@ -488,11 +491,11 @@ public class SFTPPath extends Path {
         OutputStream out = null;
         try {
             if(check) {
-                session.check();
+                this.getSession().check();
             }
             if(attributes.isFile()) {
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                    SFTPv3FileHandle handle = session.sftp().openFileRO(this.getAbsolute());
+                    SFTPv3FileHandle handle = this.getSession().sftp().openFileRO(this.getAbsolute());
                     in = new SFTPInputStream(handle);
                     if(getStatus().isResume()) {
                         log.info("Skipping " + getStatus().getCurrent() + " bytes");
@@ -503,8 +506,8 @@ public class SFTPPath extends Path {
                     }
                 }
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
-                    SCPClient scp = session.openScp();
-                    scp.setCharset(session.getEncoding());
+                    SCPClient scp = this.getSession().openScp();
+                    scp.setCharset(this.getSession().getEncoding());
                     in = scp.get(this.getAbsolute());
                 }
                 out = new Local.OutputStream(this.getLocal(), getStatus().isResume());
@@ -531,7 +534,7 @@ public class SFTPPath extends Path {
         SFTPv3FileHandle handle = null;
         try {
             if(check) {
-                session.check();
+                this.getSession().check();
             }
             if(attributes.isDirectory()) {
                 this.mkdir();
@@ -540,10 +543,10 @@ public class SFTPPath extends Path {
                 in = new Local.InputStream(this.getLocal());
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     if(getStatus().isResume() && this.exists()) {
-                        handle = session.sftp().openFileRWAppend(this.getAbsolute());
+                        handle = this.getSession().sftp().openFileRWAppend(this.getAbsolute());
                     }
                     else {
-                        handle = session.sftp().createFileTruncate(this.getAbsolute());
+                        handle = this.getSession().sftp().createFileTruncate(this.getAbsolute());
                     }
                     // We do set the permissions here as otherwise we might have an empty mask for
                     // interrupted file transfers
@@ -552,7 +555,7 @@ public class SFTPPath extends Path {
                             log.info("Updating permissions:" + p.getOctalString());
                             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                             attr.permissions = p.getOctalNumber();
-                            session.sftp().fsetstat(handle, attr);
+                            this.getSession().sftp().fsetstat(handle, attr);
                         }
                         catch(SFTPException e) {
                             // We might not be able to change the attributes if we are
@@ -571,8 +574,8 @@ public class SFTPPath extends Path {
                     }
                 }
                 else if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
-                    SCPClient scp = session.openScp();
-                    scp.setCharset(session.getEncoding());
+                    SCPClient scp = this.getSession().openScp();
+                    scp.setCharset(this.getSession().getEncoding());
                     out = scp.put(this.getName(), this.getLocal().attributes.getSize(),
                             this.getParent().getAbsolute(),
                             "0" + p.getOctalString());
@@ -591,7 +594,7 @@ public class SFTPPath extends Path {
         finally {
             try {
                 if(handle != null) {
-                    session.sftp().closeFile(handle);
+                    this.getSession().sftp().closeFile(handle);
                 }
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);

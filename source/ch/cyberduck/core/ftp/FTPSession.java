@@ -57,11 +57,19 @@ public class FTPSession extends Session {
         }
     }
 
-    protected FTPClient FTP;
+    private FTPClient FTP;
     protected FTPFileEntryParser parser;
 
     protected FTPSession(Host h) {
         super(h);
+    }
+
+    @Override
+    protected FTPClient getClient() throws ConnectionCanceledException {
+        if(null == FTP) {
+            throw new ConnectionCanceledException();
+        }
+        return FTP;
     }
 
     @Override
@@ -109,7 +117,7 @@ public class FTPSession extends Session {
             if(null == parser) {
                 String system = null;
                 try {
-                    system = this.FTP.system();
+                    system = this.getClient().system();
                 }
                 catch(FTPException e) {
                     log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
@@ -143,7 +151,7 @@ public class FTPSession extends Session {
             for(Path test : list) {
                 if(test.attributes.isFile()) {
                     // Read the modify fact which must be UTC
-                    long utc = this.FTP.mdtm(test.getAbsolute());
+                    long utc = this.getClient().mdtm(test.getAbsolute());
                     // Subtract seconds
                     utc -= utc % 60000;
                     long local = test.attributes.getModificationDate();
@@ -186,14 +194,6 @@ public class FTPSession extends Session {
         return Collections.emptyList();
     }
 
-    public void setStatListSupportedEnabled(boolean statListSupportedEnabled) {
-        this.FTP.setStatListSupportedEnabled(statListSupportedEnabled);
-    }
-
-    public void setExtendedListEnabled(boolean extendedListEnabled) {
-        this.FTP.setExtendedListEnabled(extendedListEnabled);
-    }
-
     private Map<FTPFileEntryParser, Boolean> parsers = new HashMap<FTPFileEntryParser, Boolean>(1);
 
     /**
@@ -229,7 +229,7 @@ public class FTPSession extends Session {
     public String getIdentification() {
         StringBuilder info = new StringBuilder(super.getIdentification() + "\n");
         try {
-            info.append(this.FTP.system()).append("\n");
+            info.append(this.getClient().system()).append("\n");
         }
         catch(IOException e) {
             log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
@@ -239,10 +239,12 @@ public class FTPSession extends Session {
 
     @Override
     public boolean isConnected() {
-        if(FTP != null) {
-            return this.FTP.isConnected();
+        try {
+            return this.getClient().isConnected();
         }
-        return false;
+        catch(ConnectionCanceledException e) {
+            return false;
+        }
     }
 
     @Override
@@ -250,7 +252,7 @@ public class FTPSession extends Session {
         try {
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
-                FTP.quit();
+                this.getClient().quit();
             }
         }
         catch(FTPException e) {
@@ -267,18 +269,14 @@ public class FTPSession extends Session {
     @Override
     public void interrupt() {
         try {
-            super.interrupt();
-            if(null == this.FTP) {
-                return;
-            }
             this.fireConnectionWillCloseEvent();
-            this.FTP.interrupt();
+            this.getClient().interrupt();
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
         finally {
-            this.FTP = null;
+            FTP = null;
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -310,7 +308,7 @@ public class FTPSession extends Session {
         }
     };
 
-    protected FTPClient getClient() {
+    protected FTPClient configure() {
         return new FTPClient(this.getEncoding(), messageListener);
     }
 
@@ -333,9 +331,9 @@ public class FTPSession extends Session {
         this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
-        this.configure(this.FTP = this.getClient());
+        this.configure(FTP = this.configure());
 
-        this.FTP.connect(host.getHostname(true), host.getPort());
+        this.getClient().connect(host.getHostname(true), host.getPort());
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
@@ -344,7 +342,7 @@ public class FTPSession extends Session {
         this.login();
         this.fireConnectionDidOpenEvent();
         if("UTF-8".equals(this.getEncoding())) {
-            this.FTP.utf8();
+            this.getClient().utf8();
         }
     }
 
@@ -368,7 +366,7 @@ public class FTPSession extends Session {
     @Override
     protected void login(final Credentials credentials) throws IOException {
         try {
-            this.FTP.login(credentials.getUsername(), credentials.getPassword());
+            this.getClient().login(credentials.getUsername(), credentials.getPassword());
             this.message(Locale.localizedString("Login successful", "Credentials"));
         }
         catch(FTPException e) {
@@ -384,7 +382,7 @@ public class FTPSession extends Session {
             throw new ConnectionCanceledException();
         }
         if(null == workdir) {
-            workdir = PathFactory.createPath(this, this.FTP.pwd(), Path.DIRECTORY_TYPE);
+            workdir = PathFactory.createPath(this, this.getClient().pwd(), Path.DIRECTORY_TYPE);
             if(workdir.isRoot()) {
                 workdir.attributes.setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
             }
@@ -402,10 +400,10 @@ public class FTPSession extends Session {
             throw new ConnectionCanceledException();
         }
         if(StringUtils.isNotEmpty(workdir.getSymlinkTarget())) {
-            this.FTP.chdir(workdir.getSymlinkTarget());
+            this.getClient().chdir(workdir.getSymlinkTarget());
         }
         else {
-            this.FTP.chdir(workdir.getAbsolute());
+            this.getClient().chdir(workdir.getAbsolute());
         }
         // Workdir change succeeded
         super.setWorkdir(workdir);
@@ -414,7 +412,7 @@ public class FTPSession extends Session {
     @Override
     protected void noop() throws IOException {
         if(this.isConnected()) {
-            this.FTP.noop();
+            this.getClient().noop();
         }
     }
 
@@ -428,7 +426,7 @@ public class FTPSession extends Session {
         if(this.isConnected()) {
             this.message(command);
 
-            this.FTP.quote(command);
+            this.getClient().quote(command);
         }
     }
 }

@@ -50,16 +50,29 @@ public class SFTPSession extends Session {
         }
     }
 
-    protected Connection SSH;
+    private Connection SSH;
 
     private SFTPSession(Host h) {
         super(h);
     }
 
     @Override
+    protected Connection getClient() throws ConnectionCanceledException {
+        if(null == SSH) {
+            throw new ConnectionCanceledException();
+        }
+        return SSH;
+    }
+
+    @Override
     public boolean isSecure() {
         if(super.isSecure()) {
-            return SSH.isAuthenticationComplete();
+            try {
+                return this.getClient().isAuthenticationComplete();
+            }
+            catch(ConnectionCanceledException e) {
+                return false;
+            }
         }
         return false;
     }
@@ -71,7 +84,7 @@ public class SFTPSession extends Session {
             info.append("SFTP Protocol version: ").append(SFTP.getProtocolVersion()).append("\n");
         }
         try {
-            final ConnectionInfo i = SSH.getConnectionInfo();
+            final ConnectionInfo i = this.getClient().getConnectionInfo();
             info.append("Key Exchange (KEX) Algorithm: ").append(i.keyExchangeAlgorithm).append("\n");
             info.append("Number of key exchanges performed on this connection so far: ").append(i.keyExchangeCounter).append("\n");
             info.append("Host Key Algorithm: ").append(i.serverHostKeyAlgorithm).append("\n");
@@ -105,12 +118,12 @@ public class SFTPSession extends Session {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
-            if(!SSH.isAuthenticationComplete()) {
+            if(!this.getClient().isAuthenticationComplete()) {
                 throw new LoginCanceledException();
             }
             this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
             try {
-                SFTP = new SFTPv3Client(SSH);
+                SFTP = new SFTPv3Client(this.getClient());
                 this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
                 SFTP.setCharset(this.getEncoding());
             }
@@ -130,10 +143,10 @@ public class SFTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        if(!SSH.isAuthenticationComplete()) {
+        if(!this.getClient().isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
-        final SCPClient client = new SCPClient(SSH);
+        final SCPClient client = new SCPClient(this.getClient());
         client.setCharset(this.getEncoding());
         return client;
     }
@@ -151,14 +164,14 @@ public class SFTPSession extends Session {
         SSH = new Connection(this.host.getHostname(true), this.host.getPort());
 
         final int timeout = this.timeout();
-        SSH.connect(verifier, timeout, timeout);
+        this.getClient().connect(verifier, timeout, timeout);
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
         this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
         this.login();
-        if(!SSH.isAuthenticationComplete()) {
+        if(!this.getClient().isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
         this.fireConnectionDidOpenEvent();
@@ -185,7 +198,7 @@ public class SFTPSession extends Session {
 
     private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
-        if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
+        if(this.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
             final Local identity = host.getCredentials().getIdentity();
             if(identity.exists()) {
                 // If the private key is passphrase protected then ask for the passphrase
@@ -215,7 +228,7 @@ public class SFTPSession extends Session {
                         }
                     }
                 }
-                return SSH.authenticateWithPublicKey(host.getCredentials().getUsername(), new File(identity.getAbsolute()),
+                return this.getClient().authenticateWithPublicKey(host.getCredentials().getUsername(), new File(identity.getAbsolute()),
                         passphrase);
             }
             log.error("Key file " + identity.getAbsolute() + " does not exist.");
@@ -225,8 +238,8 @@ public class SFTPSession extends Session {
 
     private boolean loginUsingPasswordAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPasswordAuthentication:" + credentials);
-        if(SSH.isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
-            return SSH.authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
+        if(this.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
+            return this.getClient().authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
         }
         return false;
     }
@@ -234,9 +247,9 @@ public class SFTPSession extends Session {
     private boolean loginUsingKBIAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingKBIAuthentication" +
                 "make:" + credentials);
-        if(SSH.isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
+        if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
             InteractiveLogic il = new InteractiveLogic(credentials);
-            return SSH.authenticateWithKeyboardInteractive(credentials.getUsername(), il);
+            return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(), il);
         }
         return false;
     }
@@ -284,9 +297,10 @@ public class SFTPSession extends Session {
             if(SFTP != null) {
                 SFTP.close();
             }
-            if(SSH != null) {
-                SSH.close();
-            }
+            this.getClient().close();
+        }
+        catch(ConnectionCanceledException e) {
+            log.error(e.getMessage());
         }
         finally {
             SFTP = null;
@@ -298,12 +312,11 @@ public class SFTPSession extends Session {
     @Override
     public void interrupt() {
         try {
-            super.interrupt();
-            if(null == SSH) {
-                return;
-            }
             this.fireConnectionWillCloseEvent();
-            SSH.close(null, true);
+            this.getClient().close(null, true);
+        }
+        catch(ConnectionCanceledException e) {
+            log.error(e.getMessage());
         }
         finally {
             SFTP = null;
@@ -356,7 +369,7 @@ public class SFTPSession extends Session {
     @Override
     protected void noop() throws IOException {
         if(this.isConnected()) {
-            SSH.sendIgnorePacket();
+            this.getClient().sendIgnorePacket();
         }
     }
 
@@ -377,7 +390,7 @@ public class SFTPSession extends Session {
 
     @Override
     public void sendCommand(String command) throws IOException {
-        final ch.ethz.ssh2.Session sess = SSH.openSession();
+        final ch.ethz.ssh2.Session sess = this.getClient().openSession();
         try {
             this.message(command);
 
@@ -406,10 +419,5 @@ public class SFTPSession extends Session {
         finally {
             sess.close();
         }
-    }
-
-    @Override
-    public boolean isConnected() {
-        return null != SSH;
     }
 }

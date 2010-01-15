@@ -85,10 +85,18 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         this.trustManager = trustManager;
     }
 
-    protected FilesClient CF;
+    private FilesClient CF;
 
     protected CFSession(Host h) {
         super(h);
+    }
+
+    @Override
+    protected FilesClient getClient() throws ConnectionCanceledException {
+        if(null == CF) {
+            throw new ConnectionCanceledException();
+        }
+        return CF;
     }
 
     @Override
@@ -101,7 +109,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
-        this.CF.setConnectionTimeOut(this.timeout());
+        this.getClient().setConnectionTimeOut(this.timeout());
         final HostConfiguration config = new StickyHostConfiguration();
         config.setHost(host.getHostname(), host.getPort(),
                 new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
@@ -111,8 +119,8 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         if(proxy.isHTTPSProxyEnabled()) {
             config.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
         }
-        this.CF.setHostConfiguration(config);
-        this.CF.setUserAgent(this.getUserAgent());
+        this.getClient().setHostConfiguration(config);
+        this.getClient().setUserAgent(this.getUserAgent());
 
         // Prompt the login credentials first
         this.login();
@@ -125,10 +133,10 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
 
     @Override
     protected void login(Credentials credentials) throws IOException {
-        this.CF.setUserName(credentials.getUsername());
-        this.CF.setPassword(credentials.getPassword());
+        this.getClient().setUserName(credentials.getUsername());
+        this.getClient().setPassword(credentials.getPassword());
         this.getTrustManager().setHostname(URI.create(CF.getAuthenticationURL()).getHost());
-        if(!this.CF.login()) {
+        if(!this.getClient().login()) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
             this.login.fail(host,
                     Locale.localizedString("Login with username and password", "Credentials"));
@@ -154,7 +162,6 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
     @Override
     public void interrupt() {
         try {
-            super.interrupt();
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
             }
@@ -173,11 +180,6 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
     @Override
     public void sendCommand(String command) throws IOException {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return CF != null;
     }
 
     /**

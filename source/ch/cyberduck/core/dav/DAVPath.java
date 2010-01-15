@@ -89,22 +89,25 @@ public class DAVPath extends Path {
     }
 
     @Override
-    public Session getSession() {
-        return this.session;
+    public DAVSession getSession() throws ConnectionCanceledException {
+        if(null == session) {
+            throw new ConnectionCanceledException();
+        }
+        return session;
     }
 
     @Override
     public void readSize() {
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
-            session.DAV.setPath(this.attributes.isDirectory() ?
+            this.getSession().getClient().setPath(this.attributes.isDirectory() ?
                     this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
-            session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-            attributes.setSize(session.DAV.getGetContentLength());
+            this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
+            attributes.setSize(this.getSession().getClient().getGetContentLength());
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
@@ -114,15 +117,15 @@ public class DAVPath extends Path {
     @Override
     public void readTimestamp() {
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
-            session.DAV.setPath(this.attributes.isDirectory() ?
+            this.getSession().getClient().setPath(this.attributes.isDirectory() ?
                     this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
-            session.DAV.setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-            attributes.setModificationDate(session.DAV.getGetLastModified());
+            this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
+            attributes.setModificationDate(this.getSession().getClient().getGetLastModified());
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
@@ -139,12 +142,12 @@ public class DAVPath extends Path {
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
 
-            if(!session.DAV.deleteMethod(this.getAbsolute())) {
-                throw new IOException(session.DAV.getStatusMessage());
+            if(!this.getSession().getClient().deleteMethod(this.getAbsolute())) {
+                throw new IOException(this.getSession().getClient().getStatusMessage());
             }
         }
         catch(IOException e) {
@@ -162,20 +165,20 @@ public class DAVPath extends Path {
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            session.setWorkdir(this);
-            session.DAV.setContentType("text/xml");
-            WebdavResource[] resources = session.DAV.listWebdavResources();
+            this.getSession().setWorkdir(this);
+            this.getSession().getClient().setContentType("text/xml");
+            WebdavResource[] resources = this.getSession().getClient().listWebdavResources();
 
             for(final WebdavResource resource : resources) {
                 boolean collection = false;
                 if(null != resource.getResourceType()) {
                     collection = resource.getResourceType().isCollection();
                 }
-                Path p = PathFactory.createPath(session, resource.getPath(),
+                Path p = PathFactory.createPath(this.getSession(), resource.getPath(),
                         collection ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 p.setParent(this);
 
@@ -207,13 +210,13 @@ public class DAVPath extends Path {
                     this.getParent().mkdir(recursive);
                 }
             }
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
-            session.DAV.setContentType("text/xml");
-            if(!session.DAV.mkcolMethod(this.getAbsolute())) {
-                throw new IOException(session.DAV.getStatusMessage());
+            this.getSession().getClient().setContentType("text/xml");
+            if(!this.getSession().getClient().mkcolMethod(this.getAbsolute())) {
+                throw new IOException(this.getSession().getClient().getStatusMessage());
             }
         }
         catch(IOException e) {
@@ -231,9 +234,9 @@ public class DAVPath extends Path {
     public void writePermissions(Permission perm, boolean recursive) {
 //            log.debug("changePermissions:" + perm);
 //            try {
-//                session.check();
-//                session.message(Locale.localizedString("Changing permission of {0} to {1}", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
-//                session.DAV.aclMethod(this.getAbsolute(), new Ace[]{});
+//                this.getSession().check();
+//                this.getSession().message(Locale.localizedString("Changing permission of {0} to {1}", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
+//                this.getSession().getClient().aclMethod(this.getAbsolute(), new Ace[]{});
 //            }
 //            catch(IOException e) {
 //                this.error("Cannot change permissions", e);
@@ -254,12 +257,12 @@ public class DAVPath extends Path {
     public void rename(AbstractPath renamed) {
         log.debug("rename:" + renamed);
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed.getName()));
 
-            if(!session.DAV.moveMethod(this.getAbsolute(), renamed.getAbsolute())) {
-                throw new IOException(session.DAV.getStatusMessage());
+            if(!this.getSession().getClient().moveMethod(this.getAbsolute(), renamed.getAbsolute())) {
+                throw new IOException(this.getSession().getClient().getStatusMessage());
             }
             this.setPath(renamed.getAbsolute());
         }
@@ -276,12 +279,12 @@ public class DAVPath extends Path {
     @Override
     public void copy(AbstractPath copy) {
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                     this.getName(), copy));
 
-            if(!session.DAV.copyMethod(this.getAbsolute(), copy.getAbsolute())) {
-                throw new IOException(session.DAV.getStatusMessage());
+            if(!this.getSession().getClient().copyMethod(this.getAbsolute(), copy.getAbsolute())) {
+                throw new IOException(this.getSession().getClient().getStatusMessage());
             }
         }
         catch(IOException e) {
@@ -301,17 +304,17 @@ public class DAVPath extends Path {
             InputStream in = null;
             try {
                 if(check) {
-                    session.check();
+                    this.getSession().check();
                 }
                 if(this.getStatus().isResume()) {
-                    session.DAV.addRequestHeader("Range", "bytes=" + this.getStatus().getCurrent() + "-");
+                    this.getSession().getClient().addRequestHeader("Range", "bytes=" + this.getStatus().getCurrent() + "-");
                 }
-                session.DAV.addRequestHeader("Accept-Encoding", "gzip");
-                in = session.DAV.getMethodData(this.getAbsolute());
+                this.getSession().getClient().addRequestHeader("Accept-Encoding", "gzip");
+                in = this.getSession().getClient().getMethodData(this.getAbsolute());
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
-                if(!session.DAV.isResume()) {
+                if(!this.getSession().getClient().isResume()) {
                     getStatus().setCurrent(0);
                 }
                 out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
@@ -336,7 +339,7 @@ public class DAVPath extends Path {
     public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
         try {
             if(check) {
-                session.check();
+                this.getSession().check();
             }
             if(attributes.isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
@@ -346,7 +349,7 @@ public class DAVPath extends Path {
                 try {
                     final Status stat = this.getStatus();
                     if(stat.isResume()) {
-                        session.DAV.addRequestHeader("Content-Range", "bytes "
+                        this.getSession().getClient().addRequestHeader("Content-Range", "bytes "
                                 + stat.getCurrent()
                                 + "-" + (this.getLocal().attributes.getSize() - 1)
                                 + "/" + this.getLocal().attributes.getSize()
@@ -357,7 +360,7 @@ public class DAVPath extends Path {
                             throw new IOResumeException("Skipped " + skipped + " bytes instead of " + stat.getCurrent());
                         }
                     }
-                    if(!session.DAV.putMethod(this.getAbsolute(),
+                    if(!this.getSession().getClient().putMethod(this.getAbsolute(),
                             new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - stat.getCurrent(), this.getLocal().getMimeType()) {
                                 boolean requested = false;
 
@@ -382,7 +385,7 @@ public class DAVPath extends Path {
                                 }
                             })) {
                         // Upload failed
-                        throw new IOException(session.DAV.getStatusMessage());
+                        throw new IOException(this.getSession().getClient().getStatusMessage());
                     }
                 }
                 finally {

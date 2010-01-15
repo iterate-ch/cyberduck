@@ -130,7 +130,7 @@ public class DownloadTransfer extends Transfer {
             if(p.attributes.isFile()) {
                 if(p.attributes.isSymbolicLink()) {
                     if(null != p.getSymlinkTarget()) {
-                        Path symlink = PathFactory.createPath(p.getSession(), p.getSymlinkTarget(),
+                        Path symlink = PathFactory.createPath(getSession(), p.getSymlinkTarget(),
                                 Path.FILE_TYPE);
                         if(symlink.attributes.getSize() == -1) {
                             symlink.readSize();

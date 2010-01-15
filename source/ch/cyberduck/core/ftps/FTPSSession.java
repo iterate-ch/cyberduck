@@ -79,10 +79,15 @@ public class FTPSSession extends FTPSession implements SSLSession {
     }
 
     @Override
-    protected FTPClient getClient() {
+    protected FTPSClient configure() {
         // AUTH command required before login
         auth = true;
         return new FTPSClient(this.getEncoding(), messageListener, this.getTrustManager());
+    }
+
+    @Override
+    protected FTPSClient getClient() throws ConnectionCanceledException {
+        return (FTPSClient)super.getClient();
     }
 
     private boolean auth;
@@ -91,11 +96,11 @@ public class FTPSSession extends FTPSession implements SSLSession {
     public void login(final Credentials credentials) throws IOException {
         if(auth) {
             // Only send AUTH before the first login attempt
-            ((FTPSClient) this.FTP).auth();
+            this.getClient().auth();
             auth = false;
         }
         super.login(credentials);
 
-        ((FTPSClient) this.FTP).prot();
+        this.getClient().prot();
     }
 }

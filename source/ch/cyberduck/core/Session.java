@@ -51,6 +51,8 @@ public abstract class Session {
         this.host = h;
     }
 
+    protected abstract <C> C getClient() throws ConnectionCanceledException;
+
     /**
      * @return The remote host identification such as the response to the SYST command in FTP
      */
@@ -71,11 +73,6 @@ public abstract class Session {
     public String getUserAgent() {
         return ua;
     }
-
-    /**
-     * Used for the hostname resolution in the background
-     */
-    private Resolver resolver;
 
     /**
      * Assert that the connection to the remote host is still alive.
@@ -329,12 +326,7 @@ public abstract class Session {
      * Close the underlying socket regardless of its state; will throw a socket exception
      * on the thread owning the socket
      */
-    public void interrupt() {
-        if(null == this.resolver) {
-            return;
-        }
-        this.resolver.cancel();
-    }
+    public abstract void interrupt();
 
     public boolean isSendCommandSupported() {
         return false;
@@ -404,7 +396,17 @@ public abstract class Session {
     /**
      * @return boolean True if the session has not yet been closed.
      */
-    public abstract boolean isConnected();
+    public boolean isConnected() {
+        try {
+            this.getClient();
+        }
+        catch(ConnectionCanceledException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean opening;
 
     /**
      * If a connection attempt is currently being made.
@@ -412,7 +414,7 @@ public abstract class Session {
      * @return
      */
     public boolean isOpening() {
-        return resolver != null;
+        return opening;
     }
 
     private Set<ConnectionListener> connectionListeners
@@ -443,12 +445,12 @@ public abstract class Session {
         // Configuring proxy if any
         ProxyFactory.instance().configure(host);
 
-        this.resolver = new Resolver(this.host.getHostname(true));
+        Resolver resolver = new Resolver(this.host.getHostname(true));
         this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                 host.getHostname()));
 
         // Try to resolve the hostname first
-        this.resolver.resolve();
+        resolver.resolve();
         // The IP address could successfully be determined
     }
 
@@ -460,7 +462,6 @@ public abstract class Session {
      */
     protected void fireConnectionDidOpenEvent() {
         log.debug("connectionDidOpen");
-        this.resolver = null;
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidOpen();
@@ -490,7 +491,6 @@ public abstract class Session {
     protected void fireConnectionDidCloseEvent() {
         log.debug("connectionDidClose");
 
-        this.resolver = null;
         this.workdir = null;
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
@@ -587,6 +587,7 @@ public abstract class Session {
     public Cache<Path> cache() {
         if(null == cache) {
             cache = new Cache<Path>() {
+                @Override
                 public String toString() {
                     return "Cache for " + Session.this.toString();
                 }

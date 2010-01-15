@@ -204,6 +204,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @param name Must be an absolute pathname
      */
+    @Override
     public void setPath(String name) {
         this.path = Path.normalize(name);
         this.parent = null;
@@ -234,13 +235,19 @@ public abstract class Path extends AbstractPath implements Serializable {
                     return this;
                 }
                 String parent = getParent(this.getAbsolute());
-                if(DELIMITER.equals(parent)) {
-                    this.parent = PathFactory.createPath(this.getSession(), DELIMITER,
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                try {
+                    if(DELIMITER.equals(parent)) {
+                        this.parent = PathFactory.createPath(this.getSession(), DELIMITER,
+                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                    }
+                    else {
+                        this.parent = PathFactory.createPath(this.getSession(), parent,
+                                Path.DIRECTORY_TYPE);
+                    }
                 }
-                else {
-                    this.parent = PathFactory.createPath(this.getSession(), parent,
-                            Path.DIRECTORY_TYPE);
+                catch(ConnectionCanceledException e) {
+                    log.error(e.getMessage());
+                    return null;
                 }
             }
         }
@@ -254,12 +261,14 @@ public abstract class Path extends AbstractPath implements Serializable {
         return status;
     }
 
-    /**
-     * @return
-     * @throws NullPointerException if session is not initialized
-     */
     public Host getHost() {
-        return this.getSession().getHost();
+        try {
+            return this.getSession().getHost();
+        }
+        catch(ConnectionCanceledException e) {
+            this.error(e.getMessage(), e);
+        }
+        return null;
     }
 
     /**
@@ -269,7 +278,13 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public Cache<Path> cache() {
-        return this.getSession().cache();
+        try {
+            return this.getSession().cache();
+        }
+        catch(ConnectionCanceledException e) {
+            log.error(e.getMessage());
+        }
+        return new Cache<Path>();
     }
 
     public void writeOwner(String owner, boolean recursive) {
@@ -407,7 +422,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return The session this path uses to send commands
      */
-    public abstract Session getSession();
+    public abstract Session getSession() throws ConnectionCanceledException;
 
     /**
      * Download with no bandwidth limit
@@ -728,7 +743,12 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @see Session#error(Path,String,Throwable)
      */
-    protected void error(String message, Throwable e) {
-        this.getSession().error(this, message, e);
+    protected void error(String message, Throwable throwable) {
+        try {
+            this.getSession().error(this, message, throwable);
+        }
+        catch(ConnectionCanceledException e) {
+            log.error(e.getMessage());
+        }
     }
 }

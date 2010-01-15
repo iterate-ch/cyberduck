@@ -101,48 +101,51 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public FTPSession getSession() {
-        return this.session;
+    public FTPSession getSession() throws ConnectionCanceledException {
+        if(null == session) {
+            throw new ConnectionCanceledException();
+        }
+        return session;
     }
 
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> childs = new AttributedList<Path>();
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            session.setWorkdir(this);
+            this.getSession().setWorkdir(this);
             // Cached file parser determined from SYST response with the timezone set from the bookmark
-            final FTPFileEntryParser parser = session.getFileParser();
-            boolean success = this.parse(childs, parser, session.FTP.stat(
+            final FTPFileEntryParser parser = this.getSession().getFileParser();
+            boolean success = this.parse(childs, parser, this.getSession().getClient().stat(
                     StringUtils.isNotEmpty(this.getSymlinkTarget()) ? this.getSymlinkTarget() : this.getAbsolute()));
             if(!success || childs.isEmpty()) {
                 // STAT listing failed or empty
                 // Set transfer type for traditional data socket file listings
-                session.FTP.setTransferType(FTPTransferType.ASCII);
-                final BufferedReader mlsd = session.FTP.mlsd(this.session.getEncoding());
+                this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
+                final BufferedReader mlsd = this.getSession().getClient().mlsd(this.getSession().getEncoding());
                 success = this.parse(childs, mlsd);
                 // MLSD listing failed
                 if(null != mlsd) {
                     // Close MLSD data socket
-                    session.FTP.finishDir();
+                    this.getSession().getClient().finishDir();
                 }
                 if(!success) {
-                    final BufferedReader lsa = session.FTP.list(this.session.getEncoding(), true);
+                    final BufferedReader lsa = this.getSession().getClient().list(this.getSession().getEncoding(), true);
                     success = this.parse(childs, parser, lsa);
                     if(null != lsa) {
                         // Close LIST data socket
-                        session.FTP.finishDir();
+                        this.getSession().getClient().finishDir();
                     }
                     if(!success) {
                         // LIST -a listing failed
-                        final BufferedReader ls = session.FTP.list(this.session.getEncoding(), false);
+                        final BufferedReader ls = this.getSession().getClient().list(this.getSession().getEncoding(), false);
                         success = this.parse(childs, parser, ls);
                         if(null != ls) {
                             // Close LIST data socket
-                            session.FTP.finishDir();
+                            this.getSession().getClient().finishDir();
                         }
                         if(!success) {
                             // LIST listing failed
@@ -154,7 +157,7 @@ public class FTPPath extends Path {
             for(Path child : childs) {
                 if(child.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
                     try {
-                        session.setWorkdir(child);
+                        this.getSession().setWorkdir(child);
                         child.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                     }
                     catch(FTPException e) {
@@ -256,7 +259,7 @@ public class FTPPath extends Path {
             }
             success = true; // At least one entry successfully parsed
             for(String name : file.keySet()) {
-                final Path parsed = PathFactory.createPath(session, this.getAbsolute(), name, Path.FILE_TYPE);
+                final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(), name, Path.FILE_TYPE);
                 parsed.setParent(this);
                 //                * size       -- Size in octets
                 //                * modify     -- Last modification time
@@ -304,10 +307,10 @@ public class FTPPath extends Path {
                         parsed.attributes.setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
                     }
                     if(facts.containsKey("modify")) {
-                        parsed.attributes.setModificationDate(session.FTP.parseTimestamp(facts.get("modify")));
+                        parsed.attributes.setModificationDate(this.getSession().getClient().parseTimestamp(facts.get("modify")));
                     }
                     if(facts.containsKey("create")) {
-                        parsed.attributes.setCreationDate(session.FTP.parseTimestamp(facts.get("create")));
+                        parsed.attributes.setCreationDate(this.getSession().getClient().parseTimestamp(facts.get("create")));
                     }
                     childs.add(parsed);
                 }
@@ -350,7 +353,7 @@ public class FTPPath extends Path {
                 continue;
             }
             // The filename should never contain a delimiter
-            final Path parsed = PathFactory.createPath(session, this.getAbsolute(),
+            final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
                     name.substring(name.lastIndexOf(DELIMITER) + 1), Path.FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
@@ -365,7 +368,7 @@ public class FTPPath extends Path {
             parsed.attributes.setSize(f.getSize());
             parsed.attributes.setOwner(f.getUser());
             parsed.attributes.setGroup(f.getGroup());
-            if(session.isPermissionSupported(parser)) {
+            if(this.getSession().isPermissionSupported(parser)) {
                 parsed.attributes.setPermission(new Permission(
                         new boolean[][]{
                                 {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
@@ -401,12 +404,12 @@ public class FTPPath extends Path {
                     this.getParent().mkdir(recursive);
                 }
             }
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                     this.getName()));
 
-            session.setWorkdir(this.getParent());
-            session.FTP.mkdir(this.getName());
+            this.getSession().setWorkdir(this.getParent());
+            this.getSession().getClient().mkdir(this.getName());
         }
         catch(IOException e) {
             this.error("Cannot create folder", e);
@@ -417,12 +420,12 @@ public class FTPPath extends Path {
     public void rename(AbstractPath renamed) {
         log.debug("rename:" + renamed);
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
-            session.setWorkdir(this.getParent());
-            session.FTP.rename(this.getName(), renamed.getAbsolute());
+            this.getSession().setWorkdir(this.getParent());
+            this.getSession().getClient().rename(this.getName(), renamed.getAbsolute());
             this.setPath(renamed.getAbsolute());
         }
         catch(IOException e) {
@@ -438,31 +441,31 @@ public class FTPPath extends Path {
     @Override
     public void readSize() {
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
             if(attributes.isFile()) {
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
-                        session.FTP.setTransferType(FTPTransferType.ASCII);
+                        this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
                     }
                     else {
-                        session.FTP.setTransferType(FTPTransferType.BINARY);
+                        this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
                     }
                 }
                 else if(Preferences.instance().getProperty("ftp.transfermode").equals(
                         FTPTransferType.BINARY.toString())) {
-                    session.FTP.setTransferType(FTPTransferType.BINARY);
+                    this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
                 }
                 else if(Preferences.instance().getProperty("ftp.transfermode").equals(
                         FTPTransferType.ASCII.toString())) {
-                    session.FTP.setTransferType(FTPTransferType.ASCII);
+                    this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
                 }
                 else {
                     throw new FTPException("Transfer type not set");
                 }
-                attributes.setSize(session.FTP.size(this.getAbsolute()));
+                attributes.setSize(this.getSession().getClient().size(this.getAbsolute()));
             }
             if(-1 == attributes.getSize()) {
                 // Read the size from the directory listing
@@ -480,8 +483,8 @@ public class FTPPath extends Path {
     @Override
     public void readTimestamp() {
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
             if(attributes.isFile()) {
@@ -489,7 +492,7 @@ public class FTPPath extends Path {
                 // Attempts to query the modification time of files that exist but are unable to be
                 // retrieved may generate an error-response
                 try {
-                    attributes.setModificationDate(session.FTP.mdtm(this.getAbsolute()));
+                    attributes.setModificationDate(this.getSession().getClient().mdtm(this.getAbsolute()));
                 }
                 catch(FTPException ignore) {
                     // MDTM not supported; ignore
@@ -513,8 +516,8 @@ public class FTPPath extends Path {
     @Override
     public void readPermission() {
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                     this.getName()));
 
             // Read the permission from the directory listing
@@ -532,35 +535,35 @@ public class FTPPath extends Path {
     public void delete() {
         log.debug("delete:" + this.toString());
         try {
-            session.check();
+            this.getSession().check();
             if(attributes.isFile() || attributes.isSymbolicLink()) {
-                session.setWorkdir(this.getParent());
-                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                this.getSession().setWorkdir(this.getParent());
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                session.FTP.delete(this.getName());
+                this.getSession().getClient().delete(this.getName());
             }
             else if(attributes.isDirectory()) {
-                session.setWorkdir(this);
+                this.getSession().setWorkdir(this);
                 for(AbstractPath file : this.childs()) {
-                    if(!session.isConnected()) {
+                    if(!this.getSession().isConnected()) {
                         break;
                     }
                     if(file.attributes.isFile() || file.attributes.isSymbolicLink()) {
-                        session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                        this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                                 file.getName()));
 
-                        session.FTP.delete(file.getName());
+                        this.getSession().getClient().delete(file.getName());
                     }
                     else if(file.attributes.isDirectory()) {
                         file.delete();
                     }
                 }
-                session.setWorkdir(this.getParent());
-                session.message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                this.getSession().setWorkdir(this.getParent());
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                session.FTP.rmdir(this.getName());
+                this.getSession().getClient().rmdir(this.getName());
             }
         }
         catch(IOException e) {
@@ -577,19 +580,19 @@ public class FTPPath extends Path {
     public void writeOwner(String owner, boolean recursive) {
         String command = "chown";
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                     this.getName(), owner));
 
-            session.setWorkdir(this.getParent());
+            this.getSession().setWorkdir(this.getParent());
             if(attributes.isFile() && !attributes.isSymbolicLink()) {
-                session.FTP.site(command + " " + owner + " " + this.getName());
+                this.getSession().getClient().site(command + " " + owner + " " + this.getName());
             }
             else if(attributes.isDirectory()) {
-                session.FTP.site(command + " " + owner + " " + this.getName());
+                this.getSession().getClient().site(command + " " + owner + " " + this.getName());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
-                        if(!session.isConnected()) {
+                        if(!this.getSession().isConnected()) {
                             break;
                         }
                         ((Path) child).writeOwner(owner, recursive);
@@ -606,19 +609,19 @@ public class FTPPath extends Path {
     public void writeGroup(String group, boolean recursive) {
         String command = "chgrp";
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
                     this.getName(), group));
 
-            session.setWorkdir(this.getParent());
+            this.getSession().setWorkdir(this.getParent());
             if(attributes.isFile() && !attributes.isSymbolicLink()) {
-                session.FTP.site(command + " " + group + " " + this.getName());
+                this.getSession().getClient().site(command + " " + group + " " + this.getName());
             }
             else if(attributes.isDirectory()) {
-                session.FTP.site(command + " " + group + " " + this.getName());
+                this.getSession().getClient().site(command + " " + group + " " + this.getName());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
-                        if(!session.isConnected()) {
+                        if(!this.getSession().isConnected()) {
                             break;
                         }
                         ((Path) child).writeGroup(group, recursive);
@@ -636,11 +639,11 @@ public class FTPPath extends Path {
         log.debug("changePermissions:" + perm);
         final String command = "CHMOD";
         try {
-            session.check();
-            session.message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), perm.getOctalString()));
 
-            session.setWorkdir(this.getParent());
+            this.getSession().setWorkdir(this.getParent());
             if(attributes.isFile() && !attributes.isSymbolicLink()) {
                 if(recursive) {
                     // Do not write executable bit for files if not already set when recursively updating directory.
@@ -655,18 +658,18 @@ public class FTPPath extends Path {
                     if(!attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
                         modified.getOtherPermissions()[Permission.EXECUTE] = false;
                     }
-                    session.FTP.site(command + " " + modified.getOctalString() + " " + this.getName());
+                    this.getSession().getClient().site(command + " " + modified.getOctalString() + " " + this.getName());
                 }
                 else {
-                    session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
+                    this.getSession().getClient().site(command + " " + perm.getOctalString() + " " + this.getName());
                 }
                 attributes.setPermission(perm);
             }
             else if(attributes.isDirectory()) {
-                session.FTP.site(command + " " + perm.getOctalString() + " " + this.getName());
+                this.getSession().getClient().site(command + " " + perm.getOctalString() + " " + this.getName());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
-                        if(!session.isConnected()) {
+                        if(!this.getSession().isConnected()) {
                             break;
                         }
                         child.writePermissions(perm, recursive);
@@ -691,7 +694,7 @@ public class FTPPath extends Path {
     }
 
     public void writeModificationDate(long modified, long created) throws IOException {
-        session.FTP.mfmt(modified, created, this.getName());
+        this.getSession().getClient().mfmt(modified, created, this.getName());
     }
 
     @Override
@@ -699,10 +702,10 @@ public class FTPPath extends Path {
         log.debug("download:" + this.toString());
         try {
             if(check) {
-                session.check();
+                this.getSession().check();
             }
             if(attributes.isFile()) {
-                session.setWorkdir(this.getParent());
+                this.getSession().setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.downloadASCII(throttle, listener);
@@ -734,24 +737,24 @@ public class FTPPath extends Path {
         InputStream in = null;
         OutputStream out = null;
         try {
-            session.FTP.setTransferType(FTPTransferType.BINARY);
+            this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
             if(this.getStatus().isResume()) {
-                if(!session.FTP.isFeatureSupported("REST STREAM")) {
+                if(!this.getSession().getClient().isFeatureSupported("REST STREAM")) {
                     this.getStatus().setResume(false);
                 }
             }
-            in = session.FTP.get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes.getSize() : 0);
+            in = this.getSession().getClient().get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes.getSize() : 0);
             out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
             this.download(in, out, throttle, listener);
             if(this.getStatus().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.validateTransfer();
+                this.getSession().getClient().validateTransfer();
             }
             if(this.getStatus().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.abor();
+                this.getSession().getClient().abor();
             }
         }
         finally {
@@ -774,8 +777,8 @@ public class FTPPath extends Path {
             else if(Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
                 lineSeparator = DOS_LINE_SEPARATOR;
             }
-            session.FTP.setTransferType(FTPTransferType.ASCII);
-            in = new FromNetASCIIInputStream(session.FTP.get(this.getName(), 0),
+            this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
+            in = new FromNetASCIIInputStream(this.getSession().getClient().get(this.getName(), 0),
                     lineSeparator);
             out = new FromNetASCIIOutputStream(new Local.OutputStream(this.getLocal(), false),
                     lineSeparator);
@@ -783,12 +786,12 @@ public class FTPPath extends Path {
             if(this.getStatus().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.validateTransfer();
+                this.getSession().getClient().validateTransfer();
             }
             if(this.getStatus().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.abor();
+                this.getSession().getClient().abor();
             }
         }
         finally {
@@ -802,10 +805,10 @@ public class FTPPath extends Path {
         log.debug("upload:" + this.toString());
         try {
             if(check) {
-                session.check();
+                this.getSession().check();
             }
             if(attributes.isFile()) {
-                session.setWorkdir(this.getParent());
+                this.getSession().setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.uploadASCII(throttle, listener);
@@ -832,7 +835,7 @@ public class FTPPath extends Path {
             if(null != p) {
                 try {
                     log.info("Updating permissions:" + p.getOctalString());
-                    session.FTP.chmod(p.getOctalString(),
+                    this.getSession().getClient().chmod(p.getOctalString(),
                             this.getName());
                 }
                 catch(FTPException ignore) {
@@ -855,9 +858,9 @@ public class FTPPath extends Path {
         InputStream in = null;
         OutputStream out = null;
         try {
-            session.FTP.setTransferType(FTPTransferType.BINARY);
+            this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
             in = new Local.InputStream(this.getLocal());
-            out = session.FTP.put(this.getName(), this.getStatus().isResume());
+            out = this.getSession().getClient().put(this.getName(), this.getStatus().isResume());
             if(null == out) {
                 throw new IOException("Unable opening data stream");
             }
@@ -865,12 +868,12 @@ public class FTPPath extends Path {
             if(this.getStatus().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.validateTransfer();
+                this.getSession().getClient().validateTransfer();
             }
             if(getStatus().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.abor();
+                this.getSession().getClient().abor();
             }
         }
         finally {
@@ -883,20 +886,20 @@ public class FTPPath extends Path {
         InputStream in = null;
         OutputStream out = null;
         try {
-            session.FTP.setTransferType(FTPTransferType.ASCII);
+            this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
             in = new ToNetASCIIInputStream(new Local.InputStream(this.getLocal()));
-            out = new ToNetASCIIOutputStream(session.FTP.put(this.getName(),
+            out = new ToNetASCIIOutputStream(this.getSession().getClient().put(this.getName(),
                     this.getStatus().isResume()));
             this.upload(out, in, throttle, listener);
             if(this.getStatus().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.validateTransfer();
+                this.getSession().getClient().validateTransfer();
             }
             if(getStatus().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                session.FTP.abor();
+                this.getSession().getClient().abor();
             }
         }
         finally {

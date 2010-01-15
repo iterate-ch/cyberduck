@@ -69,7 +69,7 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
         }
     }
 
-    protected S3Service S3;
+    private S3Service S3;
 
     private AbstractX509TrustManager trustManager;
 
@@ -99,6 +99,14 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
 
     protected S3Session(Host h) {
         super(h);
+    }
+
+    @Override
+    protected S3Service getClient() throws ConnectionCanceledException {
+        if(null == S3) {
+            throw new ConnectionCanceledException();
+        }
+        return S3;
     }
 
     /**
@@ -196,7 +204,7 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
                 if(null == bucketname) {
                     return buckets;
                 }
-                if(!S3.isBucketAccessible(bucketname)) {
+                if(!this.getClient().isBucketAccessible(bucketname)) {
                     throw new IOException("Bucket not available: " + bucketname);
                 }
                 final S3Path thirdparty = (S3Path) PathFactory.createPath(this, bucketname,
@@ -206,7 +214,7 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
             }
             else {
                 this.getTrustManager().setHostname(Constants.S3_HOSTNAME);
-                buckets.addAll(Arrays.asList(S3.listAllBuckets()));
+                buckets.addAll(Arrays.asList(this.getClient().listAllBuckets()));
             }
         }
         return buckets;
@@ -309,7 +317,6 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
     @Override
     public void interrupt() {
         try {
-            super.interrupt();
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
             }
@@ -328,11 +335,6 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
     @Override
     public void sendCommand(String command) throws IOException {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return S3 != null;
     }
 
     /**
