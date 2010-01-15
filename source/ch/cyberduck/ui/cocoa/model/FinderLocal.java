@@ -434,8 +434,8 @@ public class FinderLocal extends Local {
     protected native String[] applicationListForExtension(String extensions);
 
     @Override
-    public void open() {
-        NSWorkspace.sharedWorkspace().openFile(this.getAbsolute());
+    public boolean open() {
+        return NSWorkspace.sharedWorkspace().openFile(this.getAbsolute());
     }
 
     /**

@@ -224,7 +224,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void historyMenuClicked(NSMenuItem sender) {
-        NSWorkspace.sharedWorkspace().openFile(HistoryCollection.defaultCollection().getFile().getAbsolute());
+        HistoryCollection.defaultCollection().getFile().open();
     }
 
     @Action
@@ -242,20 +242,17 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void faqMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openFile(
-                new File(NSBundle.mainBundle().pathForResource_ofType("Cyberduck FAQ", "rtfd")).toString());
+        LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("Cyberduck FAQ", "rtfd")).open();
     }
 
     @Action
     public void licenseMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openFile(
-                new File(NSBundle.mainBundle().pathForResource_ofType("License", "txt")).toString());
+        LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("License", "txt")).open();
     }
 
     @Action
     public void acknowledgmentsMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openFile(
-                new File(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")).toString());
+        LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")).open();
     }
 
     @Action

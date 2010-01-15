@@ -195,7 +195,7 @@ public class AbstractTestCase extends TestCase {
         }
 
         @Override
-        public void open() {
+        public boolean open() {
             throw new UnsupportedOperationException();
         }
 
