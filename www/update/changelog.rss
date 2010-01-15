@@ -13,6 +13,7 @@
             <pubDate>_TIMESTAMP_</pubDate>
             <enclosure sparkle:version="_REVISION_"
                        sparkle:shortVersionString="_VERSION_"
+                       sparkle:dsaSignature="_DSASIGNATURE_"
                        url="_ARCHIVE_"
                        type="application/octet-stream"/>
             <sparkle:releaseNotesLink>_CHANGELOG_</sparkle:releaseNotesLink>

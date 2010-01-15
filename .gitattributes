@@ -2228,6 +2228,8 @@ www/help/zh_CN/.htaccess -text
 www/help/zh_TW/.htaccess -text
 www/update/changelog.html -text
 www/update/changelog.rss -text
+www/update/sign.rb -text
+www/update/update.pem -text
 zh_CN.lproj/Alert.nib/classes.nib -text
 zh_CN.lproj/Alert.nib/info.nib -text
 zh_CN.lproj/Alert.nib/keyedobjects.nib -text

@@ -242,11 +242,23 @@
                 <include name="changelog.rss"/>
             </fileset>
         </copy>
+
         <echo message="_ARCHIVE_=${url.archive}"/>
         <echo message="_CHANGELOG_=${url.changelog}"/>
+
         <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
                   algorithm="md5" property="md5sum"/>
         <echo message="_MD5SUM_=${md5sum}"/>
+
+        <echo message="Calculating DSA signature..."/>
+        <exec dir="${home}" executable="ruby" outputproperty="signature.dsa">
+            <arg value="${www.update}/sign.rb"/>
+            <arg value="${build}/${app.name}-${svn.revision}.tar.gz"/>
+            <arg value="${www.update}/private.pem"/>
+        </exec>
+        <property name="signature.dsa" value="${signature.dsa}"/>
+        <echo message="_DSASIGNATURE_=${signature.dsa}"/>
+
         <replace dir="${build}" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
             <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
@@ -254,7 +266,7 @@
             <replacefilter token="_CHANGELOG_" value="${url.changelog}"/>
             <replacefilter token="_REVISION_" value="${svn.revision}"/>
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="_MD5SUM_" value="${md5sum}"/>
+            <replacefilter token="_DSASIGNATURE_" value="${signature.dsa}"/>
         </replace>
     </target>
 

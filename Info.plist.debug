@@ -148,6 +148,14 @@
         <string>_SPARKLEFEED_</string>
         <key>SUCheckAtStartup</key>
         <false/>
+        <key>SUEnableSystemProfiling</key>
+        <false/>
+        <key>SUEnableAutomaticChecks</key>
+        <true/>
+        <key>SUAllowsAutomaticUpdates</key>
+        <false/>
+        <key>SUPublicDSAKeyFile</key>
+        <string>update.pem</string>
         <key>UTExportedTypeDeclarations</key>
         <array>
             <dict>
