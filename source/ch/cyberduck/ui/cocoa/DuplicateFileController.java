@@ -77,7 +77,7 @@ public class DuplicateFileController extends FileController {
     }
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {
-        final Path duplicate = PathFactory.createPath(selected.getSession(), selected.getAsDictionary());
+        final Path duplicate = PathFactory.createPath(this.getSession(), selected.getAsDictionary());
         duplicate.setPath(duplicate.getParent().getAbsolute(), filename);
         ((BrowserController) parent).duplicatePath(selected, duplicate, edit);
     }

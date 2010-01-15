@@ -877,7 +877,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
-                if(!NSWorkspace.sharedWorkspace().openFile(l.getAbsolute())) {
+                if(!l.open()) {
                     if(transfer.isComplete()) {
                         this.alert(NSAlert.alert(Locale.localizedString("Could not open the file"), //title
                                 Locale.localizedString("Could not open the file") + " \""

@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -106,9 +103,13 @@ public class GotoController extends SheetController {
         return StringUtils.isNotBlank(folderCombobox.stringValue());
     }
 
+    protected Session getSession() {
+        return ((BrowserController) parent).getSession();
+    }
+
     protected void gotoFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
-        final Path dir = PathFactory.createPath(workdir.getSession(), workdir.getAsDictionary());
+        final Path dir = PathFactory.createPath(this.getSession(), workdir.getAsDictionary());
         if(filename.charAt(0) != '/') {
             dir.setPath(workdir.getAbsolute(), filename);
         }

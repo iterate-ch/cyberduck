@@ -63,7 +63,7 @@ public class CreateFileController extends FileController {
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
-            final Path file = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
+            final Path file = PathFactory.createPath(this.getSession(), workdir.getAbsolute(),
                     LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), filename));
 
             public void run() {

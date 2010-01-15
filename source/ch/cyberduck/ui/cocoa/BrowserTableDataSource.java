@@ -144,7 +144,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         log.debug("setObjectValueForItem:" + item);
         if(identifier.equals(FILENAME_COLUMN)) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                final Path renamed = PathFactory.createPath(controller.getSession(),
                         item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
                 controller.renamePath(item, renamed);
             }
@@ -163,6 +163,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     );
 
     protected NSObject objectValueForItem(Path item, String identifier) {
+        if(null == item) {
+            return null;
+        }
         if(log.isDebugEnabled()) {
             log.debug("objectValueForItem:"+item.getAbsolute());
         }
@@ -289,9 +292,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard.getFiles(controller.getSession())) {
-                        Path original = PathFactory.createPath(controller.workdir().getSession(),
+                        Path original = PathFactory.createPath(controller.getSession(),
                                 next.getAbsolute(), next.attributes.getType());
-                        Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                        Path renamed = PathFactory.createPath(controller.getSession(),
                                 destination.getAbsolute(), original.getName(), next.attributes.getType());
                         files.put(original, renamed);
                     }

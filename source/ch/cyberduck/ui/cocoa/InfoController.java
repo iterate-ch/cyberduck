@@ -832,7 +832,7 @@ public class InfoController extends ToolbarWindowController {
         distributionDeliveryPopup.setEnabled(cloud);
         distributionDeliveryPopup.removeAllItems();
         if(cloud) {
-            CloudSession session = (CloudSession) file.getSession();
+            CloudSession session = (CloudSession) controller.getSession();
             for(Distribution.Method method : session.getSupportedMethods()) {
                 distributionDeliveryPopup.addItemWithTitle(method.toString());
                 distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
@@ -1006,7 +1006,7 @@ public class InfoController extends ToolbarWindowController {
                     this.initWebUrl();
                 }
                 else {
-                    final Path renamed = PathFactory.createPath(controller.workdir().getSession(),
+                    final Path renamed = PathFactory.createPath(controller.getSession(),
                             current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes.getType());
                     controller.renamePath(current, renamed);
                 }
@@ -1164,7 +1164,7 @@ public class InfoController extends ToolbarWindowController {
             public void run() {
                 for(Path next : files) {
                     CloudPath cloud = (CloudPath) next;
-                    CloudSession session = (CloudSession) cloud.getSession();
+                    CloudSession session = (CloudSession) controller.getSession();
                     String container = cloud.getContainerName();
                     Distribution.Method method = Distribution.DOWNLOAD;
                     if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
@@ -1200,7 +1200,7 @@ public class InfoController extends ToolbarWindowController {
             public void run() {
                 for(Path next : files) {
                     CloudPath cloud = (CloudPath) next;
-                    CloudSession session = (CloudSession) cloud.getSession();
+                    CloudSession session = (CloudSession) controller.getSession();
                     // We only support one distribution per bucket for the sake of simplicity
                     if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
                         distribution = session.readDistribution(cloud.getContainerName(), Distribution.STREAMING);

@@ -59,7 +59,7 @@ public class FolderController extends FileController {
         final BrowserController c = (BrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
             final Path folder
-                    = PathFactory.createPath(workdir.getSession(), workdir.getAbsolute(),
+                    = PathFactory.createPath(this.getSession(), workdir.getAbsolute(),
                     filename, Path.DIRECTORY_TYPE);
 
             public void run() {

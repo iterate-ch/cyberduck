@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
@@ -83,13 +84,17 @@ public abstract class FileController extends SheetController {
         return ((BrowserController) parent).workdir();
     }
 
+    protected Session getSession() {
+        return ((BrowserController) parent).getSession();
+    }
+
     @Override
     protected boolean validateInput() {
         if(filenameField.stringValue().indexOf('/') != -1) {
             return false;
         }
         if(StringUtils.isNotBlank(filenameField.stringValue())) {
-            Path file = PathFactory.createPath(this.getWorkdir().getSession(), this.getWorkdir().getAbsolute(),
+            Path file = PathFactory.createPath(this.getSession(), this.getWorkdir().getAbsolute(),
                     filenameField.stringValue(), Path.FILE_TYPE);
             return !file.exists();
         }
