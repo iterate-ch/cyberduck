@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.net.SocketException;
@@ -132,6 +133,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
 
                 public void setErrorView(NSTableView errorView) {
                     this.errorView = errorView;
+                    this.errorView.setRowHeight(new CGFloat(77));
                     this.errors = new ArrayList<ErrorController>();
                     for(BackgroundException e : exceptions) {
                         errors.add(new ErrorController(e));
@@ -166,11 +168,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         @Override
                         protected boolean isTypeSelectSupported() {
                             return false;
-                        }
-
-                        @Override
-                        public int rowHeightForRow(NSInteger row) {
-                            return 77;
                         }
 
                         public void enterKeyPressed(final ID sender) {

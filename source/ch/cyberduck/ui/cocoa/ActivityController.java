@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.view.CDControllerCell;
 import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.*;
@@ -147,6 +148,7 @@ public class ActivityController extends WindowController {
 
     public void setTable(NSTableView table) {
         this.table = table;
+        this.table.setRowHeight(new CGFloat(42));
         this.table.setDataSource((model = new ListDataSource() {
             /**
              * @param view
@@ -195,11 +197,6 @@ public class ActivityController extends WindowController {
             @Override
             protected boolean isTypeSelectSupported() {
                 return false;
-            }
-
-            @Override
-            public int rowHeightForRow(NSInteger row) {
-                return 42;
             }
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {

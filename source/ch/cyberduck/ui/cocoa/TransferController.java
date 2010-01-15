@@ -34,6 +34,7 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -347,6 +348,7 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     public void setQueueTable(NSTableView view) {
         this.transferTable = view;
+        this.transferTable.setRowHeight(new CGFloat(82));
         this.transferTable.setDataSource((transferTableModel = new TransferTableDataSource()).id());
         this.transferTable.setDelegate((transferTableDelegate = new AbstractTableDelegate<Transfer>() {
             public String tooltip(Transfer t) {
@@ -374,11 +376,6 @@ public class TransferController extends WindowController implements NSToolbar.De
             @Override
             public void selectionIsChanging(NSNotification notification) {
                 updateHighlight();
-            }
-
-            @Override
-            public int rowHeightForRow(NSInteger row) {
-                return 82;
             }
 
             @Override

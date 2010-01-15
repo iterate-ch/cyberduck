@@ -748,8 +748,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private abstract class AbstractBrowserTableDelegate<E> extends AbstractPathTableDelegate {
-        // setting appearance attributes
-        final NSLayoutManager l = NSLayoutManager.layoutManager();
 
         public AbstractBrowserTableDelegate() {
             BrowserController.this.addListener(new WindowListener() {
@@ -761,12 +759,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                 }
             });
-        }
-
-        @Override
-        public int rowHeightForRow(NSInteger row) {
-            return l.defaultLineHeightForFont(
-                    NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2;
         }
 
         @Override
@@ -978,6 +970,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         QuickLookFactory.instance().didEndQuickLook();
     }
 
+    // setting appearance attributes
+    final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
+
     private BrowserOutlineViewModel browserOutlineModel;
     @Outlet
     private NSOutlineView browserOutlineView;
@@ -999,6 +994,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         browserOutlineView.setAllowsColumnResizing(true);
         browserOutlineView.setAllowsColumnSelection(false);
         browserOutlineView.setAllowsColumnReordering(true);
+
+        browserOutlineView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
+                    NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
         browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
@@ -1116,6 +1114,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         browserListView.setAllowsColumnResizing(true);
         browserListView.setAllowsColumnSelection(false);
         browserListView.setAllowsColumnReordering(true);
+
+        browserListView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
+                    NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
         browserListView.setDataSource((browserListModel = new BrowserListViewModel(this)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>() {
@@ -1342,16 +1343,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete() && selected > 0);
             }
 
-            @Override
-            public int rowHeightForRow(NSInteger row) {
+            public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
                 final int size = Preferences.instance().getInteger("bookmark.icon.size");
                 if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
-                    return 18;
+                    return new CGFloat(18);
                 }
                 if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
-                    return 45;
+                    return new CGFloat(45);
                 }
-                return 70;
+                return new CGFloat(70);
             }
 
             @Override

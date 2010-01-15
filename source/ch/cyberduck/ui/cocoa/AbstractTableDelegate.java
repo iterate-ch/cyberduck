@@ -207,8 +207,6 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
 
     protected abstract boolean isTypeSelectSupported();
 
-    public abstract int rowHeightForRow(NSInteger row);
-
     /**
      * You should implement this method if your table supports varying row heights.
      * <p/>
@@ -222,9 +220,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      * @param row       The row index.
      * @return The height of the row. The height should not include intercell spacing and must be greater than zero.
      */
-    public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
-        return new CGFloat(this.rowHeightForRow(row));
-    }
+//    public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row);
 
     /**
      * Values returned by this method should not include intercell spacing and must be greater than 0. Implement
@@ -240,7 +236,5 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      * @param item
      * @return
      */
-    public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item) {
-        return new CGFloat(this.rowHeightForRow(outlineView.rowForItem(item)));
-    }
+//    public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item);
 }

@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -174,6 +175,9 @@ public abstract class TransferPromptController extends SheetController implement
         }
     }
 
+    // setting appearance attributes
+    final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
+
     /**
      * A browsable listing of duplicate files and folders
      */
@@ -185,6 +189,8 @@ public abstract class TransferPromptController extends SheetController implement
     public void setBrowserView(final NSOutlineView view) {
         this.browserView = view;
         this.browserView.setHeaderView(null);
+        this.browserView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
+                        NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         this.browserView.setDataSource(this.browserModel.id());
         this.browserView.setDelegate((this.browserViewDelegate = new AbstractPathTableDelegate() {
 
@@ -290,12 +296,6 @@ public abstract class TransferPromptController extends SheetController implement
                                                                        NSInteger row) {
                 final Path p = browserModel.lookup(browserView.itemAtRow(row));
                 return p.getName();
-            }
-
-            @Override
-            public int rowHeightForRow(NSInteger row) {
-                return NSLayoutManager.layoutManager().defaultLineHeightForFont(
-                        NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2;
             }
 
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
