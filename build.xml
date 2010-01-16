@@ -134,36 +134,6 @@
         </exec>
     </target>
 
-    <target name="release-localization" depends="build" if="localization">
-        <mkdir dir="${java.io.tmpdir}/${localization}"/>
-        <property name="app.bundle.loc" value="${java.io.tmpdir}/${localization}/${app.name}.app"/>
-        <copy todir="${app.bundle.loc}">
-            <fileset dir="${app.bundle}">
-                <include name="**/*"/>
-                <exclude name="**/*.lproj/**"/>
-            </fileset>
-        </copy>
-        <copy todir="${app.bundle.loc}">
-            <fileset dir="${app.bundle}">
-                <include name="**/${localization}.lproj/**"/>
-            </fileset>
-        </copy>
-        <chmod perm="a+x" type="file">
-            <fileset dir="${app.bundle.loc}">
-                <include name="**/*.framework/*"/>
-                <include name="**/*.framework/Versions/*/*"/>
-                <include name="**/MacOS/*"/>
-            </fileset>
-        </chmod>
-        <exec dir="${home}" executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName '${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg' -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor} (${localization})' -buildDir ${build}/localizations -compressionLevel 9 ${app.bundle.loc} ${app.name}\ Website.webloc Donate.webloc ${localization}.lproj/License.txt Credits.rtf"/>
-        </exec>
-        <checksum
-                file="${build}/localizations/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}-${localization}.dmg"
-                algorithm="md5"/>
-        <delete dir="${java.io.tmpdir}/${localization}"/>
-    </target>
-
     <target name="nightly">
         <antcall target="package">
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
@@ -187,17 +157,7 @@
             <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
         </antcall>
-        <antcall target="dmg"/>
         <antcall target="zip"/>
-    </target>
-
-    <target name="dmg">
-        <echo message="Creating DMG archive..."/>
-        <exec dir="${home}" executable="./buildDMG.pl" spawn="false">
-            <arg line="-dmgName ${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg -debug -volName '${app.name} ${cyberduck.version.major}.${cyberduck.version.minor}' -buildDir ${build} -compressionLevel 9 ${app.bundle} ${app.name}\ Website.webloc Donate.webloc en.lproj/License.txt Credits.rtf"/>
-        </exec>
-        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
-                  algorithm="md5"/>
     </target>
 
     <target name="zip">
@@ -342,16 +302,6 @@
     </target>
 
     <target name="mirror.release" depends="revision">
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.dmg.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
