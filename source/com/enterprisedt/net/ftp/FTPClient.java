@@ -1060,7 +1060,6 @@ public class FTPClient {
         }
         finally { // ensure we clean up the connection
             control.logout();
-            control = null;
         }
     }
 }

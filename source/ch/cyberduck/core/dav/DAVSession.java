@@ -247,23 +247,6 @@ public class DAVSession extends HTTPSession {
     }
 
     @Override
-    public void interrupt() {
-        try {
-            this.fireConnectionWillCloseEvent();
-            if(this.isConnected()) {
-                this.getClient().close();
-            }
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
-        }
-        finally {
-            DAV = null;
-            this.fireConnectionDidCloseEvent();
-        }
-    }
-
-    @Override
     public void setWorkdir(Path workdir) throws IOException {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();

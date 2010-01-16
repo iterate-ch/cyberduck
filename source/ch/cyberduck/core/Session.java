@@ -326,7 +326,9 @@ public abstract class Session {
      * Close the underlying socket regardless of its state; will throw a socket exception
      * on the thread owning the socket
      */
-    public abstract void interrupt();
+    public void interrupt() {
+        this.close();
+    }
 
     public boolean isSendCommandSupported() {
         return false;

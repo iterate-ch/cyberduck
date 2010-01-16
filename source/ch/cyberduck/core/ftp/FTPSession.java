@@ -238,16 +238,6 @@ public class FTPSession extends Session {
     }
 
     @Override
-    public boolean isConnected() {
-        try {
-            return this.getClient().isConnected();
-        }
-        catch(ConnectionCanceledException e) {
-            return false;
-        }
-    }
-
-    @Override
     public void close() {
         try {
             if(this.isConnected()) {
@@ -262,6 +252,7 @@ public class FTPSession extends Session {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
+            FTP = null;
             this.fireConnectionDidCloseEvent();
         }
     }

@@ -160,19 +160,6 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
     }
 
     @Override
-    public void interrupt() {
-        try {
-            if(this.isConnected()) {
-                this.fireConnectionWillCloseEvent();
-            }
-        }
-        finally {
-            CF = null;
-            this.fireConnectionDidCloseEvent();
-        }
-    }
-
-    @Override
     protected void noop() {
         ;
     }

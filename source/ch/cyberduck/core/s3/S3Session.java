@@ -309,19 +309,7 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
             }
         }
         finally {
-            S3 = null;
-            this.fireConnectionDidCloseEvent();
-        }
-    }
-
-    @Override
-    public void interrupt() {
-        try {
-            if(this.isConnected()) {
-                this.fireConnectionWillCloseEvent();
-            }
-        }
-        finally {
+            // No logout required
             S3 = null;
             this.fireConnectionDidCloseEvent();
         }
