@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.i18n.Locale;
-
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
@@ -20,9 +18,11 @@ import ch.cyberduck.core.i18n.Locale;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
+
 /**
  * @version $Id$
-*/
+ */
 public class Speedometer {
     //the time to start counting bytes transfered
     private long timestamp;
@@ -73,7 +73,7 @@ public class Speedometer {
                 b.append(0);
             }
             else {
-                b.append((int)(transfer.getTransferred()/transfer.getSize()*100));
+                b.append((int) (transfer.getTransferred() / transfer.getSize() * 100));
             }
             b.append("%");
             float speed = this.getSpeed();
