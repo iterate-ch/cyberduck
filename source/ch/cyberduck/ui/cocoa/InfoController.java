@@ -115,6 +115,13 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSTextField checksumField;
+
+    public void setChecksumField(NSTextField checksumField) {
+        this.checksumField = checksumField;
+    }
+
+    @Outlet
     private NSTextField pathField;
 
     public void setPathField(NSTextField pathField) {
@@ -613,35 +620,30 @@ public class InfoController extends ToolbarWindowController {
             else {
                 path = file.getParent().getAbsolute();
             }
-            pathField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(path, TRUNCATE_MIDDLE_ATTRIBUTES));
+            this.updateField(pathField, path, TRUNCATE_MIDDLE_ATTRIBUTES);
             pathField.setToolTip(path);
             groupField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
                     file.attributes.getGroup());
             if(count > 1) {
                 kindField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
-                kindField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(file.kind(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                this.updateField(kindField, file.kind(), TRUNCATE_MIDDLE_ATTRIBUTES);
             }
             if(count > 1) {
                 modifiedField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
                 if(-1 == file.attributes.getModificationDate()) {
-                    modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            Locale.localizedString("Unknown"),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
-
+                    this.updateField(modifiedField, Locale.localizedString("Unknown"));
                 }
                 else {
-                    modifiedField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            DateFormatter.getLongFormat(file.attributes.getModificationDate()),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    this.updateField(modifiedField, DateFormatter.getLongFormat(file.attributes.getModificationDate()), TRUNCATE_MIDDLE_ATTRIBUTES);
                 }
             }
-            ownerField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    file.attributes.getOwner());
+            this.updateField(ownerField, count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
+                    file.attributes.getOwner(), TRUNCATE_MIDDLE_ATTRIBUTES);
 
             recursiveCheckbox.setEnabled(true);
             for(Path next : files) {
@@ -663,6 +665,7 @@ public class InfoController extends ToolbarWindowController {
             this.initIcon();
             // Sum of files
             this.initSize();
+            this.initChecksum(file);
             // Cloudfront status
             this.initDistribution(file);
             // S3 Bucket attributes
@@ -869,6 +872,41 @@ public class InfoController extends ToolbarWindowController {
                 sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                         Status.getSizeAsString(size) + " (" + NumberFormat.getInstance().format(size) + " bytes)",
                         TRUNCATE_MIDDLE_ATTRIBUTES));
+            }
+
+            @Override
+            public String getActivity() {
+                return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                        files.get(0).getName());
+            }
+        });
+    }
+
+    private void initChecksum(final Path file) {
+        this.toggleSizeSettings(false);
+        controller.background(new BrowserBackgroundAction(controller) {
+
+            public void run() {
+                if(null == file.attributes.getChecksum()) {
+                    file.readChecksum();
+                }
+            }
+
+            @Override
+            public void cleanup() {
+                toggleSizeSettings(true);
+                if(StringUtils.isEmpty(file.attributes.getChecksum())) {
+                    updateField(checksumField, Locale.localizedString("Unknown"));
+                }
+                else {
+                    updateField(checksumField, file.attributes.getChecksum());
+                }
+            }
+
+            @Override
+            public String getActivity() {
+                return MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                        files.get(0).getName());
             }
         });
     }
