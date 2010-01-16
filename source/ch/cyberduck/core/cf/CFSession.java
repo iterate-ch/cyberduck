@@ -30,15 +30,15 @@ import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
+import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
+import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.rackspacecloud.client.cloudfiles.FilesException;
+
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
-
-import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
-import com.rackspacecloud.client.cloudfiles.FilesClient;
-import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -113,7 +113,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         final HostConfiguration config = new StickyHostConfiguration();
         config.setHost(host.getHostname(), host.getPort(),
                 new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                        (ProtocolSocketFactory)new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+                        (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
         );
         final Proxy proxy = ProxyFactory.instance();
         if(proxy.isHTTPSProxyEnabled()) {
@@ -135,14 +135,14 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
     protected void login(Credentials credentials) throws IOException {
         this.getClient().setUserName(credentials.getUsername());
         this.getClient().setPassword(credentials.getPassword());
-        this.getTrustManager().setHostname(URI.create(CF.getAuthenticationURL()).getHost());
+        this.getTrustManager().setHostname(URI.create(this.getClient().getAuthenticationURL()).getHost());
         if(!this.getClient().login()) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
             this.login.fail(host,
                     Locale.localizedString("Login with username and password", "Credentials"));
             this.login();
         }
-        this.getTrustManager().setHostname(URI.create(CF.getStorageURL()).getHost());
+        this.getTrustManager().setHostname(URI.create(this.getClient().getStorageURL()).getHost());
     }
 
     @Override
@@ -179,7 +179,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         final AbstractX509TrustManager trust = this.getTrustManager();
         try {
             this.check();
-            trust.setHostname(URI.create(CF.getCdnManagementURL()).getHost());
+            trust.setHostname(URI.create(this.getClient().getCdnManagementURL()).getHost());
             if(enabled) {
                 this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                         Locale.localizedString("Rackspace Cloud Files", "Mosso")));
@@ -190,22 +190,27 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
             }
             if(enabled) {
                 try {
-                    final FilesCDNContainer info = CF.getCDNContainerInfo(container);
+                    final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
                 }
                 catch(FilesException e) {
                     log.warn(e.getMessage());
                     // Not found.
-                    CF.cdnEnableContainer(container);
+                    this.getClient().cdnEnableContainer(container);
                 }
             }
             // Toggle content distribution for the container without changing the TTL expiration
-            CF.cdnUpdateContainer(container, -1, enabled, logging);
+            this.getClient().cdnUpdateContainer(container, -1, enabled, logging);
         }
         catch(IOException e) {
             this.error("Cannot write file attributes", e);
         }
         finally {
-            trust.setHostname(URI.create(CF.getStorageURL()).getHost());
+            try {
+                trust.setHostname(URI.create(this.getClient().getStorageURL()).getHost());
+            }
+            catch(ConnectionCanceledException e) {
+                log.error(e.getMessage());
+            }
         }
     }
 
@@ -214,9 +219,9 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
             final AbstractX509TrustManager trust = this.getTrustManager();
             try {
                 this.check();
-                trust.setHostname(URI.create(CF.getCdnManagementURL()).getHost());
+                trust.setHostname(URI.create(this.getClient().getCdnManagementURL()).getHost());
                 try {
-                    final FilesCDNContainer info = CF.getCDNContainerInfo(container);
+                    final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
                     return new Distribution(info.isEnabled(), info.getCdnURL(),
                             info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"), info.getRetainLogs());
                 }
@@ -230,7 +235,12 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
                 this.error("Cannot read file attributes", e);
             }
             finally {
-                trust.setHostname(URI.create(CF.getStorageURL()).getHost());
+                try {
+                    trust.setHostname(URI.create(this.getClient().getStorageURL()).getHost());
+                }
+                catch(ConnectionCanceledException e) {
+                    log.error(e.getMessage());
+                }
             }
         }
         return new Distribution();
