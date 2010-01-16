@@ -252,10 +252,10 @@ public abstract class Session {
     }
 
     /**
-     * Close the connecion to the remote host.
-     * The protocol specific implementation has to  be coded in the subclasses.
+     * Close the connecion to the remote host. The protocol specific
+     * implementation has to be implemented in the subclasses. Subsequent calls to #getClient() must return null.
      *
-     * @see Host
+     * @see #isConnected()
      */
     public abstract void close();
 
