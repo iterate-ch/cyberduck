@@ -52,6 +52,7 @@ public class PathAttributes implements Attributes, Serializable {
     private int type = Path.FILE_TYPE;
 
     protected Permission permission = null;
+    private String checksum;
 
     public PathAttributes() {
         super();
@@ -199,5 +200,13 @@ public class PathAttributes implements Attributes, Serializable {
             return Locale.localizedString("Unknown");
         }
         return this.group;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
     }
 }

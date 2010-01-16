@@ -37,7 +37,6 @@ import com.rackspacecloud.client.cloudfiles.FilesObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -234,6 +233,7 @@ public class CFPath extends CloudPath {
                             file.setParent(this);
                             if(file.attributes.getType() == Path.FILE_TYPE) {
                                 file.attributes.setSize(object.getSize());
+                                file.attributes.setChecksum(object.getMd5sum());
                             }
                             try {
                                 final Date modified = DateParser.parse(object.getLastModified());
@@ -311,15 +311,9 @@ public class CFPath extends CloudPath {
                 final InputStream in = new Local.InputStream(this.getLocal());
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
-                String md5sum = null;
-                try {
-                    md5sum = ServiceUtils.toHex(ServiceUtils.computeMD5Hash(new Local.InputStream(this.getLocal())));
-                    this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                            this.getName()));
-                }
-                catch(NoSuchAlgorithmException e) {
-                    log.error(e.getMessage(), e);
-                }
+                String md5sum = this.getLocal().getChecksum();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                        this.getName()));
 
                 final HashMap<String, String> metadata = new HashMap<String, String>();
 

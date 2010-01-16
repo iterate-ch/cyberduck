@@ -24,9 +24,11 @@ import ch.cyberduck.core.io.RepeatableFileInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 
@@ -100,10 +102,18 @@ public abstract class Local extends AbstractPath implements Attributes {
         ;
     }
 
+    /**
+     *
+     * @return Always null
+     */
     public String getOwner() {
         return null;
     }
 
+    /**
+     *
+     * @return Always null
+     */
     public String getGroup() {
         return null;
     }
@@ -435,8 +445,30 @@ public abstract class Local extends AbstractPath implements Attributes {
         }
     }
 
+    private String checksum;
+
+    @Override
+    public void readChecksum() {
+        try {
+            ServiceUtils.toHex(ServiceUtils.computeMD5Hash(new InputStream(this)));
+        }
+        catch(NoSuchAlgorithmException e) {
+            log.error("MD5 failed:" + e.getMessage());
+        }
+        catch(IOException e) {
+            log.error("MD5 failed:" + e.getMessage());
+        }
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
+    }
+
     /**
-     *
      * @return True if application was found to open the file with
      */
     public abstract boolean open();

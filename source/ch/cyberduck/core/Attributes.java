@@ -96,4 +96,8 @@ public interface Attributes {
     public abstract String getOwner();
 
     public abstract String getGroup();
+
+    public abstract String getChecksum();
+
+    public abstract void setChecksum(String md5);
 }

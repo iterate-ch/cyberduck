@@ -295,6 +295,11 @@ public abstract class Path extends AbstractPath implements Serializable {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void readChecksum() {
+        ;
+    }
+
     /**
      * Read the size of the file
      *

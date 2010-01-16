@@ -396,6 +396,32 @@ public class S3Path extends CloudPath {
     }
 
     @Override
+    public void readChecksum() {
+        if(attributes.isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                        this.getName()));
+
+                final S3Object details = this.getDetails();
+                if(StringUtils.isNotEmpty(details.getMd5HashAsHex())) {
+                    attributes.setChecksum(details.getMd5HashAsHex());
+                }
+                else {
+                    log.debug("Setting ETag Header as checksum for:" + this.toString());
+                    attributes.setChecksum(details.getETag());
+                }
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
+        }
+    }
+
+    @Override
     public void readSize() {
         if(attributes.isFile()) {
             try {
