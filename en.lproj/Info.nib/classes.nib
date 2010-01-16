@@ -20,6 +20,8 @@
 				<string>id</string>
 				<key>bucketLoggingButton</key>
 				<string>id</string>
+				<key>checksumField</key>
+				<string>id</string>
 				<key>distributionCnameField</key>
 				<string>id</string>
 				<key>distributionCnameUrlField</key>

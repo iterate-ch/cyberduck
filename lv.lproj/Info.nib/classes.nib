@@ -9,6 +9,7 @@
     OUTLETS =     {
         bucketLocationField = id;
         bucketLoggingButton = id;
+        checksumField = id;
         distributionCnameField = id;
         distributionCnameUrlField = id;
         distributionDeliveryPopup = id;
