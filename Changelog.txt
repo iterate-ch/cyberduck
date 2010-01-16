@@ -4,6 +4,9 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.4.1
+- [Feature] Display checksum of files in Info panel (S3, Rackspace Cloud Files) (#4043)
+
 3.4 (Jan-08-2010) [http://trac.cyberduck.ch/query?status=closed&milestone=3.4]
 - [Localize] Serbian Localization
 - [Feature] Support external editors with no ODB support for different file types (#3834)
