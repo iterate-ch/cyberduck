@@ -21,17 +21,16 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
+import ch.ethz.ssh2.*;
+import ch.ethz.ssh2.channel.ChannelClosedException;
+import ch.ethz.ssh2.crypto.PEMDecoder;
+import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.MessageFormat;
-
-import ch.ethz.ssh2.*;
-import ch.ethz.ssh2.channel.ChannelClosedException;
-import ch.ethz.ssh2.crypto.PEMDecoder;
-import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 /**
  * @version $Id$
@@ -122,14 +121,9 @@ public class SFTPSession extends Session {
                 throw new LoginCanceledException();
             }
             this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
-            try {
-                SFTP = new SFTPv3Client(this.getClient());
-                this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
-                SFTP.setCharset(this.getEncoding());
-            }
-            catch(IOException e) {
-                this.error(null, e.getMessage(), e);
-            }
+            SFTP = new SFTPv3Client(this.getClient());
+            this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
+            SFTP.setCharset(this.getEncoding());
         }
         return SFTP;
     }
