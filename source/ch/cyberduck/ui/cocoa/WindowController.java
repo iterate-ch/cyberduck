@@ -22,10 +22,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -257,6 +254,11 @@ public abstract class WindowController extends BundleController implements NSWin
 
     protected void updateField(final NSTextField f, final String value) {
         f.setStringValue(StringUtils.isNotBlank(value) ? value : "");
+    }
+
+    protected void updateField(final NSTextField f, final String value, final NSDictionary attributes) {
+        f.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(StringUtils.isNotBlank(value) ? value : "", attributes));
+
     }
 
     @Action
