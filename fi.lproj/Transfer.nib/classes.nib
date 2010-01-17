@@ -1,49 +1,88 @@
-{
-    IBClasses =     (
-        {
-    CLASS = CDListView;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSTableView;
-},
-        {
-    CLASS = CDQueueController;
-    LANGUAGE = ObjC;
-    OUTLETS =     {
-        bandwidthPopup = NSPopUpButton;
-        filterField = NSSearchField;
-        iconView = NSImageView;
-        localField = NSTextField;
-        logDrawer = NSDrawer;
-        queueSizeStepper = NSStepper;
-        queueTable = NSTableView;
-        urlField = NSTextField;
-        window = NSWindow;
-    };
-    SUPERCLASS = NSObject;
-},
-        {
-    ACTIONS =     {
-        changeAngle = id;
-        changeStyle = id;
-        changeType = id;
-    };
-    CLASS = CTGradientView;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSView;
-},
-        {
-    ACTIONS =     {
-        "" = id;
-        reloadButtonClicked = id;
-        removeButtonClicked = id;
-        resumeButtonClicked = id;
-        revealButtonClicked = id;
-        stopButtonClicked = id;
-    };
-    CLASS = FirstResponder;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSObject;
-}
-    );
-    IBVersion = 1;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key></key>
+				<string>id</string>
+				<key>reloadButtonClicked</key>
+				<string>id</string>
+				<key>removeButtonClicked</key>
+				<string>id</string>
+				<key>resumeButtonClicked</key>
+				<string>id</string>
+				<key>revealButtonClicked</key>
+				<string>id</string>
+				<key>stopButtonClicked</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>CDQueueController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>bandwidthPopup</key>
+				<string>NSPopUpButton</string>
+				<key>filterField</key>
+				<string>NSSearchField</string>
+				<key>iconView</key>
+				<string>NSImageView</string>
+				<key>localField</key>
+				<string>NSTextField</string>
+				<key>logDrawer</key>
+				<string>NSDrawer</string>
+				<key>queueSizeStepper</key>
+				<string>NSStepper</string>
+				<key>queueTable</key>
+				<string>NSTableView</string>
+				<key>urlField</key>
+				<string>NSTextField</string>
+				<key>window</key>
+				<string>NSWindow</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>changeAngle</key>
+				<string>id</string>
+				<key>changeStyle</key>
+				<string>id</string>
+				<key>changeType</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>CTGradientView</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSView</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>CDListView</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSTableView</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

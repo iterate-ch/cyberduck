@@ -43,11 +43,6 @@
     CLASS = FirstResponder;
     LANGUAGE = ObjC;
     SUPERCLASS = NSObject;
-},
-        {
-    CLASS = NSDatePicker;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSControl;
 }
     );
     IBVersion = 1;
