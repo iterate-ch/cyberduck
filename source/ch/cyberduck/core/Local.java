@@ -371,18 +371,18 @@ public abstract class Local extends AbstractPath implements Attributes {
         }
     }
 
-    @Override
-    public void writePermissions(Permission perm, boolean recursive) {
-        if(!_impl.setReadable(perm.getOwnerPermissions()[Permission.READ], !perm.getOtherPermissions()[Permission.READ])) {
-            log.warn("Write permissions failed:" + this.getAbsolute());
-        }
-        if(!_impl.setWritable(perm.getOwnerPermissions()[Permission.WRITE], !perm.getOtherPermissions()[Permission.WRITE])) {
-            log.warn("Write permissions failed:" + this.getAbsolute());
-        }
-        if(!_impl.setExecutable(perm.getOwnerPermissions()[Permission.EXECUTE], !perm.getOtherPermissions()[Permission.EXECUTE])) {
-            log.warn("Write permissions failed:" + this.getAbsolute());
-        }
-    }
+//    @Override
+//    public void writePermissions(Permission perm, boolean recursive) {
+//        if(!_impl.setReadable(perm.getOwnerPermissions()[Permission.READ], !perm.getOtherPermissions()[Permission.READ])) {
+//            log.warn("Write permissions failed:" + this.getAbsolute());
+//        }
+//        if(!_impl.setWritable(perm.getOwnerPermissions()[Permission.WRITE], !perm.getOtherPermissions()[Permission.WRITE])) {
+//            log.warn("Write permissions failed:" + this.getAbsolute());
+//        }
+//        if(!_impl.setExecutable(perm.getOwnerPermissions()[Permission.EXECUTE], !perm.getOtherPermissions()[Permission.EXECUTE])) {
+//            log.warn("Write permissions failed:" + this.getAbsolute());
+//        }
+//    }
 
     @Override
     public void rename(AbstractPath renamed) {
