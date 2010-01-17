@@ -25,9 +25,10 @@
 
 package com.barbarysoftware.watchservice;
 
+import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingDeque;
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+
 import java.io.IOException;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Base implementation class for watch services.
@@ -36,8 +37,8 @@ import java.util.concurrent.TimeUnit;
 abstract class AbstractWatchService extends WatchService {
 
     // signaled keys waiting to be dequeued
-    private final LinkedBlockingDeque<WatchKey> pendingKeys =
-            new LinkedBlockingDeque<WatchKey>();
+    private final LinkedBlockingDeque pendingKeys =
+            new LinkedBlockingDeque();
 
     // special key to indicate that watch service is closed
     private final WatchKey CLOSE_KEY = new AbstractWatchKey(null) {
@@ -67,6 +68,7 @@ abstract class AbstractWatchService extends WatchService {
             throws IOException;
 
     // used by AbstractWatchKey to enqueue key
+
     final void enqueueKey(WatchKey key) {
         pendingKeys.offer(key);
     }
@@ -75,8 +77,9 @@ abstract class AbstractWatchService extends WatchService {
      * Throws ClosedWatchServiceException if watch service is closed
      */
     private void checkOpen() {
-        if (closed)
+        if(closed) {
             throw new ClosedWatchServiceException();
+        }
     }
 
     /**
@@ -84,7 +87,7 @@ abstract class AbstractWatchService extends WatchService {
      * the watch service is closed.
      */
     private void checkKey(WatchKey key) {
-        if (key == CLOSE_KEY) {
+        if(key == CLOSE_KEY) {
             // re-queue in case there are other threads blocked in take/poll
             enqueueKey(key);
         }
@@ -94,7 +97,7 @@ abstract class AbstractWatchService extends WatchService {
     @Override
     public final WatchKey poll() {
         checkOpen();
-        WatchKey key = pendingKeys.poll();
+        WatchKey key = (WatchKey) pendingKeys.poll();
         checkKey(key);
         return key;
     }
@@ -103,7 +106,7 @@ abstract class AbstractWatchService extends WatchService {
     public final WatchKey poll(long timeout, TimeUnit unit)
             throws InterruptedException {
         checkOpen();
-        WatchKey key = pendingKeys.poll(timeout, unit);
+        WatchKey key = (WatchKey) pendingKeys.poll(timeout, unit);
         checkKey(key);
         return key;
     }
@@ -112,7 +115,7 @@ abstract class AbstractWatchService extends WatchService {
     public final WatchKey take()
             throws InterruptedException {
         checkOpen();
-        WatchKey key = pendingKeys.take();
+        WatchKey key = (WatchKey) pendingKeys.take();
         checkKey(key);
         return key;
     }
@@ -140,10 +143,11 @@ abstract class AbstractWatchService extends WatchService {
     @Override
     public final void close()
             throws IOException {
-        synchronized (closeLock) {
+        synchronized(closeLock) {
             // nothing to do if already closed
-            if (closed)
+            if(closed) {
                 return;
+            }
             closed = true;
 
             implClose();

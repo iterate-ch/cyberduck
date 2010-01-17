@@ -1,8 +1,9 @@
 package com.barbarysoftware.watchservice;
 
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public abstract class WatchService implements Closeable {
 
@@ -32,8 +33,7 @@ public abstract class WatchService implements Closeable {
      * present.
      *
      * @return the next watch key, or {@code null}
-     * @throws ClosedWatchServiceException
-     *          if this watch service is closed
+     * @throws ClosedWatchServiceException if this watch service is closed
      */
     public abstract WatchKey poll();
 
@@ -45,10 +45,9 @@ public abstract class WatchService implements Closeable {
      * @param unit    a {@code TimeUnit} determining how to interpret the timeout
      *                parameter
      * @return the next watch key, or {@code null}
-     * @throws ClosedWatchServiceException
-     *                              if this watch service is closed, or it is closed while waiting
-     *                              for the next key
-     * @throws InterruptedException if interrupted while waiting
+     * @throws ClosedWatchServiceException if this watch service is closed, or it is closed while waiting
+     *                                     for the next key
+     * @throws InterruptedException        if interrupted while waiting
      */
     public abstract WatchKey poll(long timeout, TimeUnit unit)
             throws InterruptedException;
@@ -57,10 +56,9 @@ public abstract class WatchService implements Closeable {
      * Retrieves and removes next watch key, waiting if none are yet present.
      *
      * @return the next watch key
-     * @throws ClosedWatchServiceException
-     *                              if this watch service is closed, or it is closed while waiting
-     *                              for the next key
-     * @throws InterruptedException if interrupted while waiting
+     * @throws ClosedWatchServiceException if this watch service is closed, or it is closed while waiting
+     *                                     for the next key
+     * @throws InterruptedException        if interrupted while waiting
      */
     public abstract WatchKey take() throws InterruptedException;
 
