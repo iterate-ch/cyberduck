@@ -4,16 +4,17 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.4.1
+3.4 (Jan-17-2010) [http://trac.cyberduck.ch/milestone/3.4.1]
 - [Feature] Display checksum of files in Info panel (S3, Rackspace Cloud Files) (#4043)
+- [Bugfix] Incompatibilities when running on OS X 10.5 [#4102]
 
-3.4 (Jan-08-2010) [http://trac.cyberduck.ch/query?status=closed&milestone=3.4]
+3.4 (Jan-16-2010) [http://trac.cyberduck.ch/milestone/3.4]
 - [Localize] Serbian Localization
 - [Feature] Support external editors with no ODB support for different file types (#3834)
 - [Feature] Allow user to define applications to use for editing (#3112)
 - [Feature] Configure Amazon CloudFront Streaming Distributions (S3) (#4069)
 
-3.3.1 (Jan-05-2010) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3.1]
+3.3.1 (Jan-05-2010) [http://trac.cyberduck.ch/milestone/3.3.1]
 - [Feature] Support for new US West Location (S3)
 - [Bugfix] Bookmark menu [#3924]
 - [Bugfix] SOCKS proxy support broken [#3803]
@@ -26,7 +27,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Quick Connect needs extra keystroke to connect (#3801)
 - [Bugfix] Password in non-default keychain are copied to login keychain (#2878)
 
-3.3 (Nov-13-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.3]
+3.3 (Nov-13-2009) [http://trac.cyberduck.ch/milestone/3.3]
 - [Feature] Octal input field for permissions [#13]
 - [Bugfix] Connect to default bookmark for new browser window [#3798]
 - [Bugfix] Excessive Growl notifications [#2388]
@@ -53,7 +54,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Incompatibility with Mac OS X 10.6 (Snow Leopard) [#3039]
 - [Feature] New application icon (Thanks to Dietmar Kerschner)
 
-3.2.1 (Jul-14-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.2.1]
+3.2.1 (Jul-14-2009) [http://trac.cyberduck.ch/milestone/3.2.1]
 - [Feature] Create placeholder objects for virtual directory (S3)
 - [Feature] Info window displays signed temporary public URL with a default validity of 24 hours (S3)
 - [Feature] Info window displays BitTorrent URL of file (S3)
@@ -66,7 +67,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] MobileMe iDisk upload failures (WebDAV) [#3149]
 - [Bugfix] Status bar is draggable [#2159]
 
-3.2 (Apr-26-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.2]
+3.2 (Apr-26-2009) [http://trac.cyberduck.ch/milestone/3.2]
 - [Feature] Choose Time Zone for bookmark (FTP) [#434]
 - [Feature] IPv6 Interoperability with support for EPSV and EPRT commands (FTP) [#2539, #2885]
 - [Feature] UTF8 charset negotiation [http://tools.ietf.org/html/draft-ietf-ftpext-utf-8-option-00] (FTP)
@@ -85,7 +86,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Improve Interoperability (WebDAV) [#2974, #3076]
 - [Bugfix] Different recursive permissions for directory and files [#1787]
 
-3.1.2 (Feb-01-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.2]
+3.1.2 (Feb-01-2009) [http://trac.cyberduck.ch/milestone/3.1.2]
 - [Feature] Enforce hostname verification (SSL)
 - [Feature] Improved container listing performance (Mosso)
 - [Feature] Updated bookmark icons (by Robert Curtis)
@@ -96,11 +97,11 @@ Changelog. Last modified: $Date$
 - [Bugfix] Incorrect CDN URI for public containers (Mosso) [#2875]
 - [Bugfix] Observe bandwidth setting for uploads (Mosso/WebDAV)
 
-3.1.1 (Jan-10-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.1.1]
+3.1.1 (Jan-10-2009) [http://trac.cyberduck.ch/milestone/3.1.1]
 - [Bugfix] Crash if no default login name is set in Preferences [#2852]
 - [Bugfix] Upload incompatibility (WebDAV) [#2858]
 
-3.1 (Jan-08-2009) [http://trac.cyberduck.ch/query?status=closed&milestone=3.1]
+3.1 (Jan-08-2009) [http://trac.cyberduck.ch/milestone/3.1]
 - [Feature] Amazon CloudFront Support (S3)
 - [Feature] Cloud Files Support (Mosso) [#2745]
 - [Feature] Pre-configured protocol settings for MobileMe iDisk (WebDAV)
@@ -120,12 +121,12 @@ Changelog. Last modified: $Date$
 - [Bugfix] Manually sorting bookmarks using drag and drop works for the entire row [#2571]
 - [Bugfix] Passwords stored in non default keychain are ignored [#2001]
 
-3.0.3 (Oct-20-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.3]
+3.0.3 (Oct-20-2008) [http://trac.cyberduck.ch/milestone/3.0.3]
 - [Bugfix] Arbitrary Crashes [#2142]
 - [Bugfix] Various compatibility fixes for STAT listings (FTP) [#2445, #2435]
 - [Bugfix] Open Web URL fails [#2466]
 
-3.0.2 (Aug-10-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.2]
+3.0.2 (Aug-10-2008) [http://trac.cyberduck.ch/milestone/3.0.2]
 - [Localize] Greek Localization
 - [Feature] Added transcript (S3)
 - [Feature] Added transcript (WebDAV)
@@ -146,7 +147,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Transfers fail using AppleScript (SFTP) [#2244]
 - [Bugfix] Updated Growl.framework to 1.1.4
 
-3.0.1 (May-18-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=3.0.1]
+3.0.1 (May-18-2008) [http://trac.cyberduck.ch/milestone/3.0.1]
 - [Feature] Added Taco HTML Edit to the list of supported editors (http://tacosw.com/htmledit/beta.php) [#188]
 - [Bugfix] Cannot connect to servers with unknown host key [#2044]
 - [Bugfix] Cannot edit filename in Info panel [#2049]
@@ -154,21 +155,21 @@ Changelog. Last modified: $Date$
 - [Bugfix] Missing resume option in transfer prompt
 - [Bugfix] Removed keep connection active feature. [#2057]
 
-3.0 (May-14-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
+3.0 (May-14-2008) [http://trac.cyberduck.ch/milestone/3.0]
 - [Feature] Support for file renaming and copying (Amazon S3)
 - [Feature] Support for copying files (WebDAV)
 - [Bugfix] Transfers larger than 2GB fail (SFTP) [#1235]
 
-3.0b3 (May-04-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
+3.0b3 (May-04-2008) [http://trac.cyberduck.ch/milestone/3.0]
 - [Feature] Activity Window [#1250]
 
-3.0b2 (Apr-19-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
+3.0b2 (Apr-19-2008) [http://trac.cyberduck.ch/milestone/3.0]
 - [Localize] Latvian Localization
 - [Feature] Quick Look files in browser [#1580]
 - [Feature] Set corresponding Web URL in bookmark. Open in browser toolbar button [#1098]
 - [Bugfix] APPE command broken (FTP) [#1915]
 
-3.0b1 (Apr-07-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=3.0]
+3.0b1 (Apr-07-2008) [http://trac.cyberduck.ch/milestone/3.0]
 - [Feature] Amazon Simple Storage Service (S3) protocol support (http://aws.amazon.com/s3) [#1725]
 - [Feature] WebDAV protocol support [#464]
 - [Feature] Search bookmarks [#916]
@@ -178,20 +179,20 @@ Changelog. Last modified: $Date$
 - [Feature] Skip option not available in transfer prompt [#1159]
 - [Bugfix] Type ahead works for child items in outline view [#471]
 
-2.8.5 (Apr-07-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.5]
+2.8.5 (Apr-07-2008) [http://trac.cyberduck.ch/milestone/2.8.5]
 - [Feature] Added ForgEdit to the list of supported editors (http://forgedit.com) [#1779]
 - [Feature] PRET (PRE Transfer) command support for distributed FTP (http://www.drftpd.org) [#684]
 - [Bugfix] Downloads no longer keep modified date [#1756]
 - [Bugfix] Leap year bug wen parsing date without year [#1813]
 
-2.8.4 (Jan-25-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.4]
+2.8.4 (Jan-25-2008) [http://trac.cyberduck.ch/milestone/2.8.4]
 - [Bugfix] Crash when dismissing sheet attached to window [#1616]
 - [Bugfix] Resolving Bonjour names blocks user interface [#1657]
 - [Bugfix] Closing browser window during connection attempt blocks user interface
 - [Bugfix] Downloading to default download location when dragging folder to Finder [#1611]
 - [Feature] Add group ownership as optional browser column [#1590]
 
-2.8.3 (Jan-14-2008) [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.3]
+2.8.3 (Jan-14-2008) [http://trac.cyberduck.ch/milestone/2.8.3]
 - [Feature] Log Drawer in browser and transfer window
 - [Feature] Toolbar button to open Terminal.app SSH session in current working directory (SFTP) [#1508]
 - [Feature] Added MacVim to the list of supported editors (http://code.google.com/p/macvim/) [#1322]
@@ -203,7 +204,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Directory parser compatibility with Freebox Server (FTP) [#1258]
 - [Bugfix] Directory parser compatibility with Trellix Server (FTP) [#1213]
 
-2.8.2 (Dec-11-2007) [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.2]
+2.8.2 (Dec-11-2007) [http://trac.cyberduck.ch/milestone/2.8.2]
 - [Feature] Show transfer progress when using browser session [#1313]
 - [Feature] Accept relative paths in bookmark setting [#1167]
 - [Feature] Ugly folder icons rendered (10.5)
@@ -214,14 +215,14 @@ Changelog. Last modified: $Date$
 - [Bugfix] Crashes after application launch (10.3.9) [#1339]
 - [Bugfix] Downloading multiple files with same name in outline hierarchy [#1400]
 
-2.8.1 (Nov-18-2007) [http://trac.cyberduck.ch/query?status=closed&milestone=2.8.1]
+2.8.1 (Nov-18-2007) [http://trac.cyberduck.ch/milestone/2.8.1]
 - [Feature] Application code is signed (10.5)
 - [Bugfix] Saving file in external editor does not cause upload (10.5) [#1244]
 - [Bugfix] Login failure with correct credentials [#1231]
 - [Bugfix] Failure to list directory on some servers (SFTP) [#1170]
 - [Bugfix] Transfers fails with punctuation characters in path (SCP) [#1265]
 
-2.8 (Sept-10-2007) [http://trac.cyberduck.ch/query?status=closed&milestone=2.8]
+2.8 (Sept-10-2007) [http://trac.cyberduck.ch/milestone/2.8]
 - [Feature] Using Ganymed SSH2 library [#185]
 - [Feature] Support for SCP transfers [#1043]
 - [Feature] Queuing file transfers [#986]
@@ -241,7 +242,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Resolve Alias files to upload [#859]
 - [Bugfix] Subsequent type-ahead selection misbehaving [#896] 
 
-2.7.3 (Feb-12-2007) [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.3]
+2.7.3 (Feb-12-2007) [http://trac.cyberduck.ch/milestone/2.7.3]
 - [Bugfix] Problem parsing PASV response from some servers (FTP) [#779, #869]
 - [Bugfix] Stalls when connection is interrupted during DNS lookup [#960]
 - [Bugfix] Improved sorting in 'Kind' browser column [#993]
@@ -254,7 +255,7 @@ Changelog. Last modified: $Date$
 - [Feature] Preference to exclude files from transfers using regular expression [#511]
 - [Feature] Clear command in History menu [#648]
 
-2.7.2 (Jan-15-2007) [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.2]
+2.7.2 (Jan-15-2007) [http://trac.cyberduck.ch/milestone/2.7.2]
 - [Feature] Option to use single connection for browser and transfers [#57]
 - [Feature] Option to remember open browser windows and reconnect upon relaunching the application [#59]
 - [Feature] Delay for spring-loaded folders can be set [#633]
@@ -272,7 +273,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] File length is set to zero if updating permission fails (SFTP) [#974]
 - [Bugfix] Directory listing is not refreshed when upload is completed after "Try Again" [#982]
 
-2.7.1 (Nov-29-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.7.1]
+2.7.1 (Nov-29-2006) [http://trac.cyberduck.ch/milestone/2.7.1]
 - [Localize] Portuguese Localization
 - [Bugfix] Reporting error about failed to set permissions whereas it actually succeeded [#--]
 - [Bugfix] Fail gracefully on uploading when server doesn't support changing permissions [#--]
@@ -280,7 +281,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Outline view not updated after dragged files have been uploaded [#--]
 - [Bugfix] Synchronisation not awaiting selection from user [#--]
 
-2.7 (Nov-25-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.7]
+2.7 (Nov-25-2006) [http://trac.cyberduck.ch/milestone/2.7]
 - [Feature] Don't block user interface when working in browser. All potentially lengthy operations are now performed in the background [#921]
 - [Feature] All (possibly stalled) operations in progress can be interrupted [#943]
 - [Feature] Improved error handling [#--]
@@ -296,7 +297,7 @@ Changelog. Last modified: $Date$
 - [Feature] Added JarInspector to the list of supported editors (http://www.cgerdes.com) [#--]
 - [Bugfix] Honor the existing permissions when replacing files [#--]
 
-2.6.2 (Sep-07-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.6.2]
+2.6.2 (Sep-07-2006) [http://trac.cyberduck.ch/milestone/2.6.2]
 - [Bugfix] Crash when typing hostname in connection dialog for some users [#711]
 - [Bugfix] Type-ahead selection not working for non-alphanumeric characters [#271]
 - [Bugfix] Control click discards multiple selection [#649]
@@ -304,7 +305,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Passwords stored in Keychain not accessible by other applications [#708]
 - [Bugfix] FTP URLs passed by another application pointing at folders fail to open [#704]
 
-2.6.1 (Aug-11-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.6.1]
+2.6.1 (Aug-11-2006) [http://trac.cyberduck.ch/milestone/2.6.1]
 - [Bugfix] Crash or spinning beachball after upload [#504]
 - [Bugfix] Active mode connections broken (FTP) [#450]
 - [Bugfix] Removed graphical error messages for the sake of simplicity; displayed in log drawer instead [#524, #580]
@@ -313,7 +314,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Unilingual builds broken [#436]
 - [Bugfix] Cannot delete symbolic links [#616]
 
-2.6 (Jun-07-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.6]
+2.6 (Jun-07-2006) [http://trac.cyberduck.ch/milestone/2.6]
 - [Localize] Turkish Localization
 - [Feature] Automatic software udpate using the Sparkle.framework (Thanks to Andy Matuschak!) [#300]
 - [Feature] Dashboard Widget included (Thanks to Claudio Procida!)
@@ -334,7 +335,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Improved compatibility with certain FTP servers
 - [Bugfix] Cannot upload files to drop boxes [#421]
 
-2.5.5 (Mar-01-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.5.5]
+2.5.5 (Mar-01-2006) [http://trac.cyberduck.ch/milestone/2.5.5]
 - [Localize] Hebrew Localization
 - [Bugfix] Excape key cancels editing [#190]
 - [Bugfix] Adjust permissions on created folders when transfering files [#77]
@@ -344,12 +345,12 @@ Changelog. Last modified: $Date$
 - [Feature] New Crash Reporter (Thanks to M. Uli Kusterer!) [#195]
 - [Feature] Added skEdit to the list of supported editors (http://www.skti.org)
 
-2.5.4 (Jan-20-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.5.4]
+2.5.4 (Jan-20-2006) [http://trac.cyberduck.ch/milestone/2.5.4]
 - [Localize] Thai Localization
 - [Bugfix] Random crashes [#65, #94, #96, #121, #122]
 - [Bugfix] High load while downloading [#12]
 
-2.5.3 (Jan-03-2006) [http://trac.cyberduck.ch/query?status=closed&milestone=2.5.3]
+2.5.3 (Jan-03-2006) [http://trac.cyberduck.ch/milestone/2.5.3]
 - [Feature] New and much improved Bonjour implementation
 - [Feature] Inline rename files in browser (Return key invokes editing)
 - [Feature] Paste files copied in Finder.app (Upload)
