@@ -316,8 +316,6 @@ public class IconCache {
             return icon;
         }
         icon.setName(icon.name() + width + height);
-        icon.setCacheMode(NSImage.NSImageCacheNever);
-        icon.setScalesWhenResized(true);
         icon.setSize(new NSSize(width, height));
         return icon;
     }
