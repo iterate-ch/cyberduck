@@ -15,7 +15,6 @@ public class WatchableFile implements Watchable {
         return file;
     }
 
-    @Override
     public WatchKey register(WatchService watcher,
                              WatchEvent.Kind<?>[] events,
                              WatchEvent.Modifier... modifiers)
@@ -29,7 +28,6 @@ public class WatchableFile implements Watchable {
 
     private static final WatchEvent.Modifier[] NO_MODIFIERS = new WatchEvent.Modifier[0];
 
-    @Override
     public final WatchKey register(WatchService watcher,
                                    WatchEvent.Kind<?>... events)
             throws IOException {

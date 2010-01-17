@@ -25,7 +25,6 @@ public abstract class WatchService implements Closeable {
      *
      * @throws IOException if an I/O error occurs
      */
-    @Override
     public abstract void close() throws IOException;
 
     /**

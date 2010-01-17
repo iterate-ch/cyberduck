@@ -32,12 +32,13 @@ package com.barbarysoftware.watchservice;
  */
 
 public final class StandardWatchEventKind {
-    private StandardWatchEventKind() { }
+    private StandardWatchEventKind() {
+    }
 
     /**
      * A special event to indicate that events may have been lost or
      * discarded.
-     *
+     * <p/>
      * <p> The {@link WatchEvent#context context} for this event is
      * implementation specific and may be {@code null}. The event {@link
      * WatchEvent#count count} may be greater than {@code 1}.
@@ -45,50 +46,61 @@ public final class StandardWatchEventKind {
      * @see WatchService
      */
     public static final WatchEvent.Kind<Void> OVERFLOW =
-        new StdWatchEventKind<Void>("OVERFLOW", Void.class);
+            new StdWatchEventKind<Void>("OVERFLOW", Void.class);
 
     /**
      * Directory entry created.
-     *
+     * <p/>
      * <p> When a directory is registered for this event then the {@link WatchKey}
      * is queued when it is observed that an entry is created in the directory
      * or renamed into the directory. The event {@link WatchEvent#count count}
      * for this event is always {@code 1}.
      */
     public static final WatchEvent.Kind<WatchableFile> ENTRY_CREATE =
-        new StdWatchEventKind<WatchableFile>("ENTRY_CREATE", WatchableFile.class);
+            new StdWatchEventKind<WatchableFile>("ENTRY_CREATE", WatchableFile.class);
 
     /**
      * Directory entry deleted.
-     *
+     * <p/>
      * <p> When a directory is registered for this event then the {@link WatchKey}
      * is queued when it is observed that an entry is deleted or renamed out of
      * the directory. The event {@link WatchEvent#count count} for this event
      * is always {@code 1}.
      */
     public static final WatchEvent.Kind<WatchableFile> ENTRY_DELETE =
-        new StdWatchEventKind<WatchableFile>("ENTRY_DELETE", WatchableFile.class);
+            new StdWatchEventKind<WatchableFile>("ENTRY_DELETE", WatchableFile.class);
 
     /**
      * Directory entry modified.
-     *
+     * <p/>
      * <p> When a directory is registered for this event then the {@link WatchKey}
      * is queued when it is observed that an entry in the directory has been
      * modified. The event {@link WatchEvent#count count} for this event is
      * {@code 1} or greater.
      */
     public static final WatchEvent.Kind<WatchableFile> ENTRY_MODIFY =
-        new StdWatchEventKind<WatchableFile>("ENTRY_MODIFY", WatchableFile.class);
+            new StdWatchEventKind<WatchableFile>("ENTRY_MODIFY", WatchableFile.class);
 
     private static class StdWatchEventKind<T> implements WatchEvent.Kind<T> {
         private final String name;
         private final Class<T> type;
+
         StdWatchEventKind(String name, Class<T> type) {
             this.name = name;
             this.type = type;
         }
-        @Override public String name() { return name; }
-        @Override public Class<T> type() { return type; }
-        @Override public String toString() { return name; }
+
+        public String name() {
+            return name;
+        }
+
+        public Class<T> type() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }
