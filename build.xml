@@ -45,6 +45,9 @@
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
 
+    <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
+    <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
+
     <path id="test.classpath">
         <path refid="build.classpath"/>
         <pathelement location="${build.classes}"/>
@@ -65,11 +68,11 @@
         </fileset>
     </path>
 
-	<path id="build.bootclasspath">
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/classes.jar"/>
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jce.jar"/>
-		<pathelement location="/System/Library/Frameworks/JavaVM.framework/Versions/1.5/Classes/jsse.jar"/>
-	</path>
+    <path id="build.bootclasspath">
+        <pathelement location="${jdk.home}/Classes/classes.jar"/>
+        <pathelement location="${jdk.home}/Classes/jce.jar"/>
+        <pathelement location="${jdk.home}/Classes/jsse.jar"/>
+    </path>
 
     <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
         <classpath refid="build.classpath"/>
@@ -99,6 +102,7 @@
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
         <echo message="Building ${app.name}..."/>
+        <echo message="Using JDK from ${jdk.home}"/>
         <mkdir dir="${build}"/>
         <mkdir dir="${build.classes}"/>
         <mkdir dir="${build.unittests}"/>
@@ -366,17 +370,17 @@
     </target>
 
     <target name="compile" depends="init" description="Compile the source tree">
-        <javac
-                debug="${debug}"
-                encoding="utf-8"
-                srcdir="${source}"
-                source="1.5"
-                target="1.5"
-                deprecation="on"
-                listfiles="on"
-                extdirs=""
-                destdir="${build.classes}">
-			<bootclasspath refid="build.bootclasspath"/>
+        <javac fork="true"
+               debug="${debug}"
+               encoding="utf-8"
+               srcdir="${source}"
+               source="1.5"
+               target="1.5"
+               deprecation="on"
+               listfiles="on"
+               extdirs=""
+               destdir="${build.classes}">
+            <bootclasspath refid="build.bootclasspath"/>
             <classpath refid="build.classpath"/>
         </javac>
     </target>
