@@ -180,7 +180,7 @@ public class EditorFactory {
             }
             editors.put(name, bundleIdentifier);
         }
-        final String defaultEditor = defaultEditor();
+        final String defaultEditor = defaultEditor(file);
         if(null != defaultEditor) {
             if(!editors.values().contains(defaultEditor)) {
                 editors.put(getApplicationName(defaultEditor), defaultEditor);
