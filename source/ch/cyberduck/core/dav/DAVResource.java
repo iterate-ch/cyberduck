@@ -16,6 +16,8 @@ package ch.cyberduck.core.dav;
  * limitations under the License.
  */
 
+import ch.cyberduck.core.Host;
+
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
@@ -41,9 +43,12 @@ import java.util.zip.GZIPInputStream;
 public class DAVResource extends WebdavResource {
     private static Logger log = Logger.getLogger(DAVResource.class);
 
-    public DAVResource(String url) throws IOException {
-        super(url);
+    public DAVResource(Host host) throws IOException {
+        super(host.getProtocol().isSecure()
+                ? new HttpsURL(host.getHostname(), host.getPort(), host.getDefaultPath())
+                : new HttpURL(host.getHostname(), host.getPort(), host.getDefaultPath()));
     }
+
 
     /**
      * Overwritten to make sure the client and its properties are not overwritten when

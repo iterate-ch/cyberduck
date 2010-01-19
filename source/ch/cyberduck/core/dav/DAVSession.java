@@ -103,7 +103,7 @@ public class DAVSession extends HTTPSession {
 
         WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
-        this.DAV = new DAVResource(host.toURL());
+        this.DAV = new DAVResource(host);
         final String workdir = host.getDefaultPath();
         if(StringUtils.isNotBlank(workdir)) {
             this.getClient().setPath(workdir.startsWith(Path.DELIMITER) ? workdir : Path.DELIMITER + workdir);
