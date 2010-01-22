@@ -4,7 +4,7 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.4 (Jan-17-2010) [http://trac.cyberduck.ch/milestone/3.4.1]
+3.4.1 (Jan-17-2010) [http://trac.cyberduck.ch/milestone/3.4.1]
 - [Feature] Display checksum of files in Info panel (S3, Rackspace Cloud Files) (#4043)
 - [Bugfix] Incompatibilities when running on OS X 10.5 [#4102]
 
