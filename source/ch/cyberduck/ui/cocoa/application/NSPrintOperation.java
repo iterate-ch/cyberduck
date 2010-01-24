@@ -176,13 +176,13 @@ public abstract class NSPrintOperation extends NSObject {
      * Original signature : <code>-(void)setPrintPanel:(NSPrintPanel*)</code><br>
      * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:133</i>
      */
-    public abstract void setPrintPanel(com.sun.jna.Pointer panel);
+    public abstract void setPrintPanel(NSPrintPanel panel);
 
     /**
      * Original signature : <code>-(NSPrintPanel*)printPanel</code><br>
      * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:134</i>
      */
-    public abstract com.sun.jna.Pointer printPanel();
+    public abstract NSPrintPanel printPanel();
 
     /**
      * Whether the print operation should spawn a separate thread in which to run itself.<br>

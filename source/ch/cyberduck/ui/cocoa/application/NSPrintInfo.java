@@ -333,24 +333,6 @@ public abstract class NSPrintInfo extends NSObject {
         return CLASS.defaultPrinter();
     }
 
-    /**
-     * A method that was deprecated in Mac OS 10.2.  +[NSPrintInfo setDefaultPrinter:] does nothing.<br>
-     * Original signature : <code>+(void)setDefaultPrinter:(NSPrinter*)</code><br>
-     * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:130</i>
-     */
-    public static void setDefaultPrinter(com.sun.jna.Pointer printer) {
-        CLASS.setDefaultPrinter(printer);
-    }
-
-    /**
-     * A method that was deprecated in Mac OS 10.2.  NSPrintInfo's implementation of this method recognizes only a small fixed set of paper names, and does not take the details of any particular printer into account.  You should use -[NSPrinter pageSizeForPaper:] instead.<br>
-     * Original signature : <code>+(id)sizeForPaperName:(NSString*)</code><br>
-     * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:133</i>
-     */
-    public static NSObject sizeForPaperName(String name) {
-        return CLASS.sizeForPaperName(name);
-    }
-
     /// <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h</i>
     public static NSPrintInfo alloc() {
         return CLASS.alloc();
