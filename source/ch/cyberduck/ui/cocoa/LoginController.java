@@ -121,6 +121,7 @@ public class LoginController extends AbstractLoginController implements ch.cyber
 
             public void setKeychainCheckbox(NSButton keychainCheckbox) {
                 this.keychainCheckbox = keychainCheckbox;
+                this.keychainCheckbox.setEnabled(Preferences.instance().getBoolean("connection.login.useKeychain"));
                 this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
                         && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
                 this.keychainCheckbox.setTarget(this.id());
@@ -128,7 +129,9 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             }
 
             public void keychainCheckboxClicked(final NSButton sender) {
-                credentials.setUseKeychain(sender.state() == NSCell.NSOnState);
+                final boolean enabled = sender.state() == NSCell.NSOnState;
+                credentials.setUseKeychain(enabled);
+                Preferences.instance().setProperty("connection.login.addKeychain", enabled);
             }
 
             @Outlet

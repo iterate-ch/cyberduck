@@ -367,7 +367,15 @@ public class ConnectionController extends SheetController {
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
-        this.keychainCheckbox.setState(NSCell.NSOffState);
+        this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
+                        && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.keychainCheckbox.setTarget(this.id());
+        this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
+    }
+
+    public void keychainCheckboxClicked(final NSButton sender) {
+        final boolean enabled = sender.state() == NSCell.NSOnState;
+        Preferences.instance().setProperty("connection.login.addKeychain", enabled);
     }
 
     @Outlet
@@ -404,8 +412,6 @@ public class ConnectionController extends SheetController {
         this.pkCheckbox.setTarget(this.id());
         this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionDidChange:"));
         this.pkCheckbox.setState(NSCell.NSOffState);
-        this.pkCheckbox.setEnabled(
-                Preferences.instance().getProperty("connection.protocol.default").equals(Protocol.SFTP.getIdentifier()));
     }
 
     private NSOpenPanel publicKeyPanel;
@@ -503,16 +509,28 @@ public class ConnectionController extends SheetController {
 
     public static ConnectionController instance(final WindowController parent) {
         if(!controllers.containsKey(parent)) {
-            final ConnectionController controller = new ConnectionController(parent) {
+            final ConnectionController c = new ConnectionController(parent) {
                 @Override
                 protected void invalidate() {
                     controllers.remove(parent);
                     super.invalidate();
                 }
             };
-            controllers.put(parent, controller);
+            c.loadBundle();
+            controllers.put(parent, c);
         }
-        return controllers.get(parent);
+        final ConnectionController c = controllers.get(parent);
+        c.init();
+        return c;
+    }
+
+    protected void init() {
+        passField.setStringValue("");
+        final boolean enabled = Preferences.instance().getBoolean("connection.login.useKeychain");
+        keychainCheckbox.setEnabled(enabled);
+        if(!enabled) {
+            keychainCheckbox.setState(NSCell.NSOffState);
+        }
     }
 
     @Override
@@ -629,11 +647,6 @@ public class ConnectionController extends SheetController {
             }
             ((BrowserController) parent).mount(host);
         }
-        this.reset();
-    }
-
-    private void reset() {
-        passField.setStringValue("");
         Preferences.instance().setProperty("connection.toggle.options", this.toggleOptionsButton.state());
     }
 }
