@@ -3903,14 +3903,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         if(identifier.equals(TOOLBAR_EDIT)) {
-            String editor;
+            String editor = null;
             final Path selected = this.getSelectedPath();
             if(null != selected) {
-                // Choose editor for selected file
-                editor = EditorFactory.defaultEditor(selected.getLocal());
-            }
-            else {
-                editor = EditorFactory.defaultEditor();
+                if(selected.attributes.isFile()) {
+                    // Choose editor for selected file
+                    editor = EditorFactory.defaultEditor(selected.getLocal());
+                }
             }
             if(null == editor) {
                 // No editor found
