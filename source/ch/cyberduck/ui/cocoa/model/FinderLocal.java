@@ -33,10 +33,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -397,10 +394,17 @@ public class FinderLocal extends Local {
         return defaultApplicationCache.get(extension);
     }
 
+    /**
+     * Uses LSGetApplicationForInfo
+     *
+     * @param extension
+     * @return Null if not found
+     */
     protected native String applicationForExtension(String extension);
 
     /**
-     *
+     * Caching map between application bundle identifiers and
+     * file type extensions.
      */
     private static Map<String, List<String>> defaultApplicationListCache
             = Collections.<String, List<String>>synchronizedMap(new LRUMap(20) {
@@ -422,16 +426,27 @@ public class FinderLocal extends Local {
             return Collections.emptyList();
         }
         if(!defaultApplicationListCache.containsKey(extension)) {
-            defaultApplicationListCache.put(extension, Arrays.asList(this.applicationListForExtension(extension)));
+            final List<String> applications = new ArrayList<String>(Arrays.asList(this.applicationListForExtension(extension)));
+            // Because of the different API used the default opening application may not be included
+            // in the above list returned. Always add the default application anyway.
+            final String defaultApplication = this.applicationForExtension(extension);
+            if(null != defaultApplication) {
+                if(!applications.contains(defaultApplication)) {
+                    applications.add(defaultApplication);
+                }
+            }
+            defaultApplicationListCache.put(extension, applications);
         }
         return defaultApplicationListCache.get(extension);
     }
 
     /**
-     * @param extensions
-     * @return
+     * Uses LSCopyAllRoleHandlersForContentType
+     *
+     * @param extension
+     * @return Empty array if none found
      */
-    protected native String[] applicationListForExtension(String extensions);
+    protected native String[] applicationListForExtension(String extension);
 
     @Override
     public boolean open() {

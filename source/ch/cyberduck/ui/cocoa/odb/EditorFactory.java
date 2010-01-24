@@ -45,7 +45,7 @@ public class EditorFactory {
     /**
      * @param c
      * @param path
-     * @return
+     * @return New editor instance for the given file type.
      */
     public static Editor createEditor(BrowserController c, final Path path) {
         return createEditor(c, defaultEditor(path.getLocal()), path);
@@ -55,7 +55,7 @@ public class EditorFactory {
      * @param c
      * @param bundleIdentifier The application bundle identifier of the editor to use
      * @param path
-     * @return
+     * @return New editor instance for the given file type.
      */
     public static Editor createEditor(BrowserController c, String bundleIdentifier, final Path path) {
         if(ODBEditor.getInstalledEditors().containsValue(bundleIdentifier)) {
@@ -69,6 +69,8 @@ public class EditorFactory {
     }
 
     /**
+     * Determine the default editor set
+     *
      * @return The bundle identifier of the default editor configured in
      *         Preferences or null if not installed.
      */
@@ -86,7 +88,7 @@ public class EditorFactory {
 
     /**
      * @param file
-     * @return The bundle identifier of the editor for this file or null if no
+     * @return The bundle identifier of the application for this file or null if no
      *         suitable and installed editor is found.
      */
     public static String defaultEditor(final Local file) {
@@ -128,6 +130,9 @@ public class EditorFactory {
         return null;
     }
 
+    /**
+     * @return All statically registered but possibly not installed editors
+     */
     public static Map<String, String> getSupportedEditors() {
         if(log.isDebugEnabled()) {
             log.debug("getSupportedEditors");
@@ -146,6 +151,9 @@ public class EditorFactory {
         return supported;
     }
 
+    /**
+     * @return All statically registered and installed editors
+     */
     public static Map<String, String> getInstalledEditors() {
         if(log.isDebugEnabled()) {
             log.debug("getInstalledEditors");
@@ -160,7 +168,8 @@ public class EditorFactory {
 
     /**
      * @param file
-     * @return
+     * @return Installed applications suitable to edit the given file type. Does always include
+     *         the default editor set in the Preferences
      */
     public static Map<String, String> getInstalledEditors(final Local file) {
         if(log.isDebugEnabled()) {
@@ -180,7 +189,9 @@ public class EditorFactory {
             }
             editors.put(name, bundleIdentifier);
         }
-        final String defaultEditor = defaultEditor(file);
+        // Add the application set as the default editor in the Preferences to be always
+        // included in the list of available editors.
+        final String defaultEditor = defaultEditor();
         if(null != defaultEditor) {
             if(!editors.values().contains(defaultEditor)) {
                 editors.put(getApplicationName(defaultEditor), defaultEditor);
@@ -190,7 +201,8 @@ public class EditorFactory {
     }
 
     /**
-     *
+     * Caching map between application bundle identifier and
+     * display name of application
      */
     private static Map<String, String> applicationNameCache
             = Collections.<String, String>synchronizedMap(new LRUMap(20) {
