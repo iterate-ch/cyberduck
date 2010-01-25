@@ -26,12 +26,11 @@ enable() {
 	# When enabled, you can connect to the running application using 
 	# -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
 	cp Info.plist.debug Info.plist;
-	cp build.xml.debug build.xml; 
 	make;
 }
 
 disable() {
-	svn revert Info.plist build.xml;
+	svn revert Info.plist;
 	make;
 }
 
