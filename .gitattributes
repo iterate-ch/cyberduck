@@ -1234,6 +1234,7 @@ lib/Sparkle.framework/Versions/A/Resources/zh_TW.lproj/SUUpdateAlert.nib/keyedob
 lib/Sparkle.framework/Versions/A/Resources/zh_TW.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Sparkle -text
 lib/Sparkle.framework/Versions/Current -text
+lib/activation-1.1.1.jar -text
 lib/asm-3.2.jar -text
 lib/backport-util-concurrent-3.1.jar -text
 lib/cglib-2.2.jar -text
@@ -1247,6 +1248,13 @@ lib/commons-logging-1.1.1.jar -text
 lib/commons-net-1.5.0-dev.jar -text
 lib/dns_sd.jar -text
 lib/ext/junit-4.6.jar -text
+lib/gdata-client-1.0.jar -text
+lib/gdata-client-meta-1.0.jar -text
+lib/gdata-core-1.0.jar -text
+lib/gdata-docs-3.0.jar -text
+lib/gdata-docs-meta-3.0.jar -text
+lib/gdata-media-1.0.jar -text
+lib/google-collect-1.0.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/jakarta-slide-webdavlib-2.2-dev.jar -text
@@ -1258,6 +1266,7 @@ lib/libAquaticPrime.a -text
 lib/libjdns_sd.jnilib -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
+lib/mail-1.4.3.jar -text
 lib/mime.types -text
 lib/slf4j-api-1.5.6.jar -text
 lib/slf4j-log4j12-1.5.6.jar -text
