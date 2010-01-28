@@ -154,6 +154,17 @@ public abstract class Preferences {
         defaults.put("growl.enable", String.valueOf(true));
         defaults.put("growl.limit", String.valueOf(10));
 
+        defaults.put("protocol.ftp.enable", String.valueOf(true));
+        defaults.put("protocol.ftpt.ls.enable", String.valueOf(true));
+        defaults.put("protocol.sftp.enable", String.valueOf(true));
+        defaults.put("protocol.webdav.enable", String.valueOf(true));
+        defaults.put("protocol.webdav.tls.enable", String.valueOf(true));
+        defaults.put("protocol.idisk.enable", String.valueOf(true));
+        defaults.put("protocol.s3.enable", String.valueOf(true));
+        defaults.put("protocol.eucalyptus.enable", String.valueOf(false));
+        defaults.put("protocol.cf.enable", String.valueOf(true));
+        defaults.put("protocol.gdocs.enable", String.valueOf(false));
+
         /**
          * Normalize path names
          */
@@ -472,7 +483,7 @@ public abstract class Preferences {
         defaults.put("connection.login.addKeychain", String.valueOf(true));
 
         defaults.put("connection.port.default", String.valueOf(21));
-        defaults.put("connection.protocol.default", "ftp");
+        defaults.put("connection.protocol.default", Protocol.FTP.getIdentifier());
 
         defaults.put("connection.timeout.seconds", String.valueOf(30));
         /**

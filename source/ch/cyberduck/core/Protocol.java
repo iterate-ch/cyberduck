@@ -19,9 +19,13 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -504,7 +508,7 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol MOSSO = new Protocol() {
+    public static final Protocol CLOUDFILES = new Protocol() {
         @Override
         public String getName() {
             return "Cloud Files";
@@ -556,13 +560,99 @@ public abstract class Protocol {
         }
     };
 
+    public static final Protocol GDOCS = new Protocol() {
+        @Override
+        public String getName() {
+            return "Google Documents";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Google Documents";
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "g";
+        }
+
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public boolean isHostnameConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getDefaultHostname() {
+            return "docs.google.com";
+        }
+
+        @Override
+        public String getScheme() {
+            return "https";
+        }
+
+        @Override
+        public int getDefaultPort() {
+            return 443;
+        }
+
+        @Override
+        public String icon() {
+            return "google";
+        }
+    };
+
+    private static List<Protocol> enabled = new ArrayList<Protocol>();
+
+    static {
+        if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
+            enabled.add(FTP);
+        }
+
+        if(Preferences.instance().getBoolean("protocol.ftpt.ls.enable")) {
+            enabled.add(FTP_TLS);
+        }
+        if(Preferences.instance().getBoolean("protocol.sftp.enable")) {
+            enabled.add(SFTP);
+        }
+        if(Preferences.instance().getBoolean("protocol.webdav.enable")) {
+            enabled.add(WEBDAV);
+        }
+        if(Preferences.instance().getBoolean("protocol.webdav.tls.enable")) {
+            enabled.add(WEBDAV_SSL);
+        }
+        if(Preferences.instance().getBoolean("protocol.idisk.enable")) {
+            enabled.add(IDISK);
+        }
+        if(Preferences.instance().getBoolean("protocol.s3.enable")) {
+            enabled.add(S3);
+        }
+        if(Preferences.instance().getBoolean("protocol.eucalyptus.enable")) {
+            enabled.add(EUCALYPTUS);
+        }
+        if(Preferences.instance().getBoolean("protocol.cf.enable")) {
+            enabled.add(CLOUDFILES);
+        }
+        if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
+            enabled.add(GDOCS);
+        }
+    }
+
+    public static List<Protocol> getKnownProtocols() {
+        return enabled;
+    }
+
     /**
      * @param port
      * @return The standard protocol for this port number
      */
     public static Protocol getDefaultProtocol(int port) {
-        final Protocol[] protocols = getKnownProtocols();
-        for(Protocol protocol : protocols) {
+        for(Protocol protocol : getKnownProtocols()) {
             if(protocol.getDefaultPort() == port) {
                 return protocol;
             }
@@ -572,22 +662,12 @@ public abstract class Protocol {
                 Preferences.instance().getProperty("connection.protocol.default"));
     }
 
-    public static String[] getProtocolDescriptions() {
-        final Protocol[] protocols = getKnownProtocols();
-        final String[] descriptions = new String[protocols.length];
-        for(int i = 0; i < protocols.length; i++) {
-            descriptions[i] = protocols[i].getDescription();
-        }
-        return descriptions;
-    }
-
     /**
      * @param identifier
      * @return
      */
     public static Protocol forName(final String identifier) {
-        final Protocol[] protocols = getKnownProtocols();
-        for(Protocol protocol : protocols) {
+        for(Protocol protocol : getKnownProtocols()) {
             if(protocol.getIdentifier().equals(identifier)) {
                 return protocol;
             }
@@ -601,8 +681,7 @@ public abstract class Protocol {
      * @return
      */
     public static Protocol forScheme(final String scheme) {
-        final Protocol[] protocols = getKnownProtocols();
-        for(Protocol protocol : protocols) {
+        for(Protocol protocol : getKnownProtocols()) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
                 if(protocol.getSchemes()[k].equals(scheme)) {
                     return protocol;
@@ -614,19 +693,13 @@ public abstract class Protocol {
                 Preferences.instance().getProperty("connection.protocol.default"));
     }
 
-    public static Protocol[] getKnownProtocols() {
-        return new Protocol[]{
-                FTP, FTP_TLS, SFTP, WEBDAV, WEBDAV_SSL, IDISK, S3, MOSSO};
-    }
-
     /**
      * @param str
      * @return
      */
     public static boolean isURL(String str) {
         if(StringUtils.isNotBlank(str)) {
-            Protocol[] protocols = getKnownProtocols();
-            for(Protocol protocol : protocols) {
+            for(Protocol protocol : getKnownProtocols()) {
                 String[] schemes = protocol.getSchemes();
                 for(String scheme : schemes) {
                     if(str.startsWith(scheme + "://")) {

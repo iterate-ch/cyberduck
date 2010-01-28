@@ -49,7 +49,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     static {
-        SessionFactory.addFactory(Protocol.MOSSO, new Factory());
+        SessionFactory.addFactory(Protocol.CLOUDFILES, new Factory());
     }
 
     private static class Factory extends SessionFactory {

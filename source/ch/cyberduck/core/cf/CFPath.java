@@ -52,7 +52,7 @@ public class CFPath extends CloudPath {
     private static Logger log = Logger.getLogger(CFPath.class);
 
     static {
-        PathFactory.addFactory(Protocol.MOSSO, new Factory());
+        PathFactory.addFactory(Protocol.CLOUDFILES, new Factory());
     }
 
     private static class Factory extends PathFactory<CFSession> {
