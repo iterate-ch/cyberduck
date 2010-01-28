@@ -613,7 +613,6 @@ public abstract class Protocol {
         if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
             enabled.add(FTP);
         }
-
         if(Preferences.instance().getBoolean("protocol.ftpt.ls.enable")) {
             enabled.add(FTP_TLS);
         }
