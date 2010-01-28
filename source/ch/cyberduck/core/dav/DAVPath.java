@@ -332,7 +332,6 @@ public class DAVPath extends Path {
         if(attributes.isDirectory()) {
             this.getLocal().mkdir(true);
         }
-
     }
 
     @Override
