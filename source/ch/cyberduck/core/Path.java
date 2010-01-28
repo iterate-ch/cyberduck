@@ -57,6 +57,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * The absolute remote path
      */
     private String path;
+
     /**
      * The local path to be used if file is copied
      */
@@ -108,6 +109,10 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        this.init(dict);
+    }
+
+    protected void init(Deserializer dict) {
         String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
             this.setPath(pathObj);
@@ -134,6 +139,10 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     public <S> S getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
+        return (S)this.getAsDictionary(dict);
+    }
+
+    protected <S> S getAsDictionary(Serializer dict) {
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(local != null) {
             dict.setStringForKey(local.toString(), "Local");
