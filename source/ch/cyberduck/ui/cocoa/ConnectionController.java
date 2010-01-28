@@ -52,8 +52,7 @@ public class ConnectionController extends SheetController {
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionDidChange:"));
         this.protocolPopup.removeAllItems();
-        final Protocol[] protocols = Protocol.getKnownProtocols();
-        for(Protocol protocol : protocols) {
+        for(Protocol protocol : Protocol.getKnownProtocols()) {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
@@ -100,7 +99,7 @@ public class ConnectionController extends SheetController {
                     Locale.localizedString("Secret Access Key", "S3")
             );
         }
-        if(protocol.equals(Protocol.MOSSO)) {
+        if(protocol.equals(Protocol.CLOUDFILES)) {
             Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString("");
             Rococoa.cast(passField.cell(), NSTextFieldCell.class).setPlaceholderString(
                     Locale.localizedString("API Access Key", "Mosso")

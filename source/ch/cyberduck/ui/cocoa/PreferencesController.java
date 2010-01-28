@@ -1640,9 +1640,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.protocolCombobox.setTarget(this.id());
         this.protocolCombobox.setAction(Foundation.selector("protocolComboboxClicked:"));
         this.protocolCombobox.removeAllItems();
-        this.protocolCombobox.addItemsWithTitles(NSArray.arrayWithObjects(Protocol.getProtocolDescriptions()));
-        final Protocol[] protocols = Protocol.getKnownProtocols();
-        for(Protocol protocol : protocols) {
+        for(Protocol protocol: Protocol.getKnownProtocols()) {
+            this.protocolCombobox.addItemWithTitle(protocol.getDescription());
+        }
+        for(Protocol protocol : Protocol.getKnownProtocols()) {
             final NSMenuItem item = this.protocolCombobox.itemWithTitle(protocol.getDescription());
             item.setRepresentedObject(protocol.getIdentifier());
             item.setImage(IconCache.iconNamed(protocol.icon(), 16));

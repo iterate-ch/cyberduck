@@ -51,8 +51,7 @@ public class BookmarkController extends WindowController {
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        final Protocol[] protocols = Protocol.getKnownProtocols();
-        for(Protocol protocol : protocols) {
+        for(Protocol protocol : Protocol.getKnownProtocols()) {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
