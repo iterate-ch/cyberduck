@@ -115,6 +115,10 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
     protected Jets3tProperties configuration = new Jets3tProperties();
 
     protected void configure() {
+        configuration.setProperty("s3service.s3-endpoint", host.getHostname());
+        if(!host.getHostname().equals("s3.amazonaws.com")) {
+            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+        }
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
