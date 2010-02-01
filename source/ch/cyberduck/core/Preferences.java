@@ -155,13 +155,13 @@ public abstract class Preferences {
         defaults.put("growl.limit", String.valueOf(10));
 
         defaults.put("protocol.ftp.enable", String.valueOf(true));
-        defaults.put("protocol.ftpt.ls.enable", String.valueOf(true));
+        defaults.put("protocol.ftp.tls.enable", String.valueOf(true));
         defaults.put("protocol.sftp.enable", String.valueOf(true));
         defaults.put("protocol.webdav.enable", String.valueOf(true));
         defaults.put("protocol.webdav.tls.enable", String.valueOf(true));
         defaults.put("protocol.idisk.enable", String.valueOf(true));
         defaults.put("protocol.s3.enable", String.valueOf(true));
-        defaults.put("protocol.eucalyptus.enable", String.valueOf(false));
+        defaults.put("protocol.s3.eucalyptus.enable", String.valueOf(false));
         defaults.put("protocol.cf.enable", String.valueOf(true));
         defaults.put("protocol.gdocs.enable", String.valueOf(false));
 

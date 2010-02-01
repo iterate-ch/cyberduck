@@ -613,7 +613,7 @@ public abstract class Protocol {
         if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
             enabled.add(FTP);
         }
-        if(Preferences.instance().getBoolean("protocol.ftpt.ls.enable")) {
+        if(Preferences.instance().getBoolean("protocol.ftp.tls.enable")) {
             enabled.add(FTP_TLS);
         }
         if(Preferences.instance().getBoolean("protocol.sftp.enable")) {
@@ -631,7 +631,7 @@ public abstract class Protocol {
         if(Preferences.instance().getBoolean("protocol.s3.enable")) {
             enabled.add(S3);
         }
-        if(Preferences.instance().getBoolean("protocol.eucalyptus.enable")) {
+        if(Preferences.instance().getBoolean("protocol.s3.eucalyptus.enable")) {
             enabled.add(EUCALYPTUS);
         }
         if(Preferences.instance().getBoolean("protocol.cf.enable")) {
