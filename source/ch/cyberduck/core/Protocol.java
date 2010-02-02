@@ -313,12 +313,12 @@ public abstract class Protocol {
     public static final Protocol EUCALYPTUS = new Protocol() {
         @Override
         public String getName() {
-            return "Walrus";
+            return "S3";
         }
 
         @Override
         public String getDescription() {
-            return Locale.localizedString("Eucalyptus Walrus", "S3");
+            return Locale.localizedString("Eucalyptus Walrus S3", "S3");
         }
 
         @Override
@@ -568,7 +568,7 @@ public abstract class Protocol {
 
         @Override
         public String getDescription() {
-            return "Google Documents";
+            return Locale.localizedString("Google Documents");
         }
 
         @Override
@@ -602,8 +602,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String icon() {
-            return "google";
+        public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("Google Account Email");
         }
     };
 

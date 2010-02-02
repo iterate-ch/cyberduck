@@ -842,6 +842,7 @@ img/eucalyptus-icon.png -text svneol=unset#image/png
 img/executable.tiff -text
 img/ftp-icon.png -text svneol=unset#image/png
 img/ftp.icns -text
+img/g-icon.png -text svneol=unset#image/png
 img/gear.tiff -text svneol=unset#image/tiff
 img/general.tiff -text svneol=unset#image/tiff
 img/goto.tiff -text svneol=unset#image/tiff
