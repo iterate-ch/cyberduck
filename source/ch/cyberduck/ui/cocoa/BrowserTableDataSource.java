@@ -60,8 +60,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public static final String GROUP_COLUMN = "GROUP";
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
     public static final String KIND_COLUMN = "KIND";
-    // virtual column to implement keyboard selection
-    protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
     // virtual column to implement quick look
     protected static final String LOCAL_COLUMN = "LOCAL";
 
@@ -208,9 +206,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(identifier.equals(KIND_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.kind(),
                         TableCellAttributes.browserFontLeftAlignment()));
-            }
-            if(identifier.equals(TYPEAHEAD_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSString.stringWithString(item.getName()));
             }
             if(identifier.equals(LOCAL_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSString.stringWithString(item.getLocal().getAbsolute()));
