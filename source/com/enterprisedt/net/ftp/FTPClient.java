@@ -754,16 +754,6 @@ public class FTPClient {
         return tsFormat.parse(timestamp, new ParsePosition(0)).getTime();
     }
 
-    protected boolean isMDTMSupported() throws IOException {
-        for(String feature : this.features()) {
-            if("MDTM".equals(feature.trim())) {
-                return true;
-            }
-        }
-        log.warn("No MDTM support");
-        return false;
-    }
-
     /**
      * Get modification time for a remote file
      *
@@ -771,7 +761,7 @@ public class FTPClient {
      * @return modification time of file in milliseconds
      */
     public long mdtm(String remoteFile) throws IOException, FTPException {
-        if(this.isMDTMSupported()) {
+        if(this.isFeatureSupported("MDTM")) {
             FTPReply reply = control.sendCommand("MDTM " + remoteFile);
             lastValidReply = control.validateReply(reply, "213");
 
