@@ -97,14 +97,16 @@ public abstract class AbstractController implements Controller {
     /**
      *
      */
-    private static final ScheduledExecutorService timerPool
-            = Executors.newScheduledThreadPool(1);
+    private static ScheduledExecutorService timerPool;
 
     /**
      *
      * @return
      */
     protected ScheduledExecutorService getTimerPool() {
+        if(null == timerPool) {
+            timerPool = Executors.newScheduledThreadPool(1);
+        }
         return timerPool;
     }
 
