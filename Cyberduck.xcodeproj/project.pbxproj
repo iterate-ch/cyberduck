@@ -185,6 +185,7 @@
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		479734DB077B735A0027370F /* arrowLeftBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479734D9077B735A0027370F /* arrowLeftBlack16.tiff */; };
 		479982820D26DA8200DB5353 /* executable.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479982810D26DA8200DB5353 /* executable.tiff */; };
+		479C3B2A112D84D100F04C16 /* g-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 479C3B29112D84D100F04C16 /* g-icon.png */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		479C7F4A1100EF72002AEFE5 /* update.pem in Resources */ = {isa = PBXBuildFile; fileRef = 479C7F491100EF72002AEFE5 /* update.pem */; };
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
@@ -1134,6 +1135,7 @@
 		47983764072AD73700FA3CDB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		479982810D26DA8200DB5353 /* executable.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = executable.tiff; sourceTree = "<group>"; };
 		479982AF05F54B1600F81519 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		479C3B29112D84D100F04C16 /* g-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "g-icon.png"; sourceTree = "<group>"; };
 		479C4229097AB2BB00DDE88A /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		479C7F491100EF72002AEFE5 /* update.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = update.pem; path = www/update/update.pem; sourceTree = "<group>"; };
 		479D64A50752257400FE6086 /* arrowUpBlack16.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUpBlack16.tiff; sourceTree = "<group>"; };
@@ -1819,6 +1821,7 @@
 				4717BE130F3096FD00BB4496 /* cf.icns */,
 				4717BE150F3096FD00BB4496 /* sftp.icns */,
 				47364F4E0F350E4F00A6618E /* me.icns */,
+				479C3B29112D84D100F04C16 /* g-icon.png */,
 				47F73AC40F93721B0054C930 /* ftp-icon.png */,
 				47F73AC50F93721B0054C930 /* dav-icon.png */,
 				47F73AC60F93721B0054C930 /* cf-icon.png */,
@@ -2601,6 +2604,7 @@
 				47D31BFE1013AD19006423B2 /* eucalyptus-icon.png in Resources */,
 				47C4E87710584D710001F618 /* bookmark.png in Resources */,
 				479C7F4A1100EF72002AEFE5 /* update.pem in Resources */,
+				479C3B2A112D84D100F04C16 /* g-icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
