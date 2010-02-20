@@ -328,6 +328,9 @@ public class GPath extends Path {
         DocumentListFeed pager = session.getClient().getFeed(query, DocumentListFeed.class);
         do {
             feed.getEntries().addAll(pager.getEntries());
+            if(null == pager.getNextLink()) {
+                break;
+            }
             pager = session.getClient().getFeed(new URL(pager.getNextLink().getHref()), DocumentListFeed.class);
         }
         while(pager.getEntries().size() > 0);
