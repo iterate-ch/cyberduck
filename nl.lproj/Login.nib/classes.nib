@@ -1,29 +1,53 @@
-{
-    IBClasses =     (
-                {
-            ACTIONS =             {
-                closeSheet = id;
-            };
-            CLASS = CDLoginController;
-            LANGUAGE = ObjC;
-            OUTLETS =             {
-                anonymousCheckbox = NSButton;
-                keychainCheckbox = NSButton;
-                passField = NSSecureTextField;
-                pkCheckbox = NSButton;
-                pkLabel = NSTextField;
-                textField = NSTextField;
-                titleField = NSTextField;
-                userField = NSTextField;
-                window = NSWindow;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        }
-    );
-    IBVersion = 1;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>closeSheet</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>CDLoginController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>anonymousCheckbox</key>
+				<string>NSButton</string>
+				<key>keychainCheckbox</key>
+				<string>NSButton</string>
+				<key>passField</key>
+				<string>NSSecureTextField</string>
+				<key>pkCheckbox</key>
+				<string>NSButton</string>
+				<key>pkLabel</key>
+				<string>NSTextField</string>
+				<key>textField</key>
+				<string>NSTextField</string>
+				<key>titleField</key>
+				<string>NSTextField</string>
+				<key>userField</key>
+				<string>NSTextField</string>
+				<key>window</key>
+				<string>NSWindow</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>
