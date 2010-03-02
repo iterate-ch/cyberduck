@@ -37,7 +37,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -758,13 +757,23 @@ public class MainController extends BundleController implements NSApplication.De
                 }
 
                 public void closeDonationSheet(final NSButton sender) {
-                    if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
-                        Preferences.instance().setProperty("donate.reminder",
-                                NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
-                    }
                     if(sender.tag() == SheetCallback.DEFAULT_OPTION) {
                         NSWorkspace.sharedWorkspace().openURL(
                                 NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
+                    }
+                    this.terminate();
+                }
+
+                @Override
+                public void windowWillClose(NSNotification notification) {
+                    this.terminate();
+                    super.windowWillClose(notification);
+                }
+
+                private void terminate() {
+                    if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
+                        Preferences.instance().setProperty("donate.reminder",
+                                NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
                     }
                     // Remeber this reminder date
                     Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
