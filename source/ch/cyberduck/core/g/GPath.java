@@ -39,6 +39,8 @@ import com.google.gdata.data.docs.DocumentListFeed;
 import com.google.gdata.data.docs.FolderEntry;
 import com.google.gdata.data.extensions.LastModifiedBy;
 import com.google.gdata.data.media.MediaSource;
+import com.google.gdata.data.media.MediaStreamSource;
+import com.google.gdata.util.ContentType;
 import com.google.gdata.util.ServiceException;
 
 import java.io.File;
@@ -91,6 +93,10 @@ public class GPath extends Path {
         if(exportUriObj != null) {
             this.setExportUri(exportUriObj);
         }
+        String documentTypeObj = dict.stringForKey("DocumentType");
+        if(documentTypeObj != null) {
+            this.setDocumentType(documentTypeObj);
+        }
         String documentUriObj = dict.stringForKey("DocumentUri");
         if(documentUriObj != null) {
             this.setExportUri(documentUriObj);
@@ -105,11 +111,18 @@ public class GPath extends Path {
         if(exportUri != null) {
             dict.setStringForKey(exportUri, "ExportUri");
         }
+        if(documentType != null) {
+            dict.setStringForKey(documentType, "DocumentType");
+        }
         if(documentUri != null) {
             dict.setStringForKey(exportUri, "DocumentUri");
         }
         return super.<S>getAsDictionary(dict);
     }
+
+    private static final String DOCUMENT_TEXT_TYPE = "document";
+    private static final String DOCUMENT_PRESENTATION_TYPE = "presentation";
+    private static final String DOCUMENT_SPREADSHEET_TYPE = "spreadsheet";
 
     private final GSession session;
 
@@ -147,6 +160,16 @@ public class GPath extends Path {
 
     public void setExportUri(String exportUri) {
         this.exportUri = exportUri;
+    }
+
+    private String documentType;
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
     }
 
     private String resourceId;
@@ -199,7 +222,11 @@ public class GPath extends Path {
                     this.getSession().check();
                 }
                 MediaContent mc = new MediaContent();
-                mc.setUri(this.getExportUri() + "&exportFormat=" + this.getExtension());
+                StringBuilder uri = new StringBuilder(this.getExportUri());
+                if(StringUtils.isNotEmpty(getExportFormat(this.getDocumentType()))) {
+                    uri.append("&exportFormat=").append(getExportFormat(this.getDocumentType()));
+                }
+                mc.setUri(uri.toString());
                 MediaSource ms = session.getClient().getMedia(mc);
                 in = ms.getInputStream();
                 if(null == in) {
@@ -254,11 +281,31 @@ public class GPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                DocumentListEntry newDocument = new DocumentEntry();
-                newDocument.setFile(new File(this.getLocal().getAbsolute()), this.getLocal().getMimeType());
-                newDocument.setTitle(new PlainTextConstruct(this.getName()));
-                session.getClient().insert(new URL("https://docs.google.com/feeds/default/private/full/"), newDocument);
-                this.getStatus().setComplete(true);
+                DocumentListEntry document = new DocumentEntry();
+                File upload = new File(this.getLocal().getAbsolute());
+                InputStream in = null;
+                try {
+                    in = new Local.InputStream(this.getLocal());
+                    MediaContent content = new MediaContent();
+                    final String mime = this.getLocal().getMimeType();
+                    content.setMediaSource(new MediaStreamSource(in, mime,
+                            new DateTime(this.getLocal().attributes.getModificationDate()),
+                            this.getLocal().attributes.getSize()));
+                    content.setMimeType(new ContentType(mime));
+                    document.setContent(content);
+                    document.setTitle(new PlainTextConstruct(this.getName()));
+
+                    this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                            this.getName()));
+                    getStatus().setCurrent(0);
+                    session.getClient().insert(new URL("https://docs.google.com/feeds/default/private/full/"), document);
+
+                    getStatus().setCurrent(this.getLocal().attributes.getSize());
+                    getStatus().setComplete(true);
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                }
             }
         }
         catch(ServiceException e) {
@@ -335,17 +382,14 @@ public class GPath extends Path {
         }
         while(pager.getEntries().size() > 0);
         this.filter(feed.getEntries());
-        for(DocumentListEntry entry : feed.getEntries()) {
+        for(final DocumentListEntry entry : feed.getEntries()) {
             log.debug("Resource:" + entry.getResourceId());
             final StringBuilder title = new StringBuilder(entry.getTitle().getPlainText());
-            final String extension = this.getExportFormat(entry.getType());
-            if(StringUtils.isNotBlank(extension)) {
-                title.append(".").append(extension);
-            }
             GPath p = new GPath(this.getSession(),
                     title.toString(),
                     "folder".equals(entry.getType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             p.setParent(this);
+            p.setDocumentType(entry.getType());
             if(!entry.getParentLinks().isEmpty()) {
                 p.setPath(entry.getParentLinks().iterator().next().getTitle(), title.toString());
             }
@@ -355,8 +399,8 @@ public class GPath extends Path {
             p.setResourceId(entry.getResourceId());
 
             p.attributes.setChecksum(entry.getDocId());
-            if(entry.getQuotaBytesUsed() > 0) {
-                p.attributes.setSize(entry.getQuotaBytesUsed());
+            if(null != entry.getMediaSource()) {
+                p.attributes.setSize(entry.getMediaSource().getContentLength());
             }
 
             final DateTime lastViewed = entry.getLastViewed();
@@ -381,20 +425,17 @@ public class GPath extends Path {
      * @param type The document type
      * @return
      */
-    private String getExportFormat(String type) {
-        if(type.equals("folder")) {
-            return null;
+    protected static String getExportFormat(String type) {
+        if(type.equals(DOCUMENT_TEXT_TYPE)) {
+            return Preferences.instance().getProperty("google.docs.export.document");
         }
-        if(type.equals("document")) {
-            return "doc";
+        if(type.equals(DOCUMENT_PRESENTATION_TYPE)) {
+            return Preferences.instance().getProperty("google.docs.export.presentation");
         }
-        else if(type.equals("presentation")) {
-            return "ppt";
+        if(type.equals(DOCUMENT_SPREADSHEET_TYPE)) {
+            return Preferences.instance().getProperty("google.docs.export.spreadsheet");
         }
-        else if(type.equals("spreadsheet")) {
-            return "xls";
-        }
-        log.warn("No output format for document type:" + type);
+        log.warn("No custom output format for document type:" + type);
         return null;
     }
 
