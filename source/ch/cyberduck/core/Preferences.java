@@ -457,6 +457,29 @@ public abstract class Preferences {
         defaults.put("cf.tls.acceptAnyCertificate", String.valueOf(false));
         defaults.put("cf.list.limit", String.valueOf(10000));
 
+        //doc	Microsoft Word
+        //html	HTML Format
+        //odt	Open Document Format
+        //pdf	Portable Document Format
+        //png	Portable Networks Graphic Image Format
+        //rtf	Rich Format
+        //txt	TXT File
+        //zip	ZIP archive. Contains the images (if any) used in the document and an exported .html file.
+        defaults.put("google.docs.export.document","doc");
+        //pdf	Portable Document Format
+        //png	Portable Networks Graphic Image Format
+        //ppt	Powerpoint Format
+        //swf	Flash Format
+        //txt	TXT file
+        defaults.put("google.docs.export.presentation", "ppt");
+        //xls	XLS (Microsoft Excel)
+        //csv	CSV (Comma Seperated Value)
+        //pdf	PDF (Portable Document Format)
+        //ods	ODS (Open Document Spreadsheet)
+        //tsv	TSV (Tab Seperated Value)
+        //html	HTML Format
+        defaults.put("google.docs.export.spreadsheet", "xls");
+
         /**
          * NTLM Windows Domain
          */
