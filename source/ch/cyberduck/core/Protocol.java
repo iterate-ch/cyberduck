@@ -503,6 +503,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public String disk() {
+            return WEBDAV_SSL.disk();
+        }
+
+        @Override
         public String icon() {
             return "NSDotMac";
         }
