@@ -38,7 +38,6 @@
 		472938A10F9DBC420086605D /* License.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389D0F9DBC420086605D /* License.h */; };
 		472938A30F9DBC420086605D /* License.m in Sources */ = {isa = PBXBuildFile; fileRef = 4729389F0F9DBC420086605D /* License.m */; };
 		4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4734425A102DEABD00C04C43 /* Quartz.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		47364F4F0F350E4F00A6618E /* me.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47364F4E0F350E4F00A6618E /* me.icns */; };
 		4739D3970F82681100D2782A /* reload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4739D3960F82681100D2782A /* reload.tiff */; };
 		4739D39B0F8268B700D2782A /* upload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4739D3990F8268B700D2782A /* upload.tiff */; };
 		4739D39C0F8268B700D2782A /* download.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4739D39A0F8268B700D2782A /* download.tiff */; };
@@ -602,7 +601,6 @@
 		47341E0D09A09D040065FF57 /* cy */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cy; path = cy.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341E0E09A09D070065FF57 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = th; path = th.lproj/Crash.strings; sourceTree = "<group>"; };
 		4734425A102DEABD00C04C43 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
-		47364F4E0F350E4F00A6618E /* me.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = me.icns; sourceTree = "<group>"; };
 		4739D3960F82681100D2782A /* reload.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = reload.tiff; sourceTree = "<group>"; };
 		4739D3990F8268B700D2782A /* upload.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = upload.tiff; sourceTree = "<group>"; };
 		4739D39A0F8268B700D2782A /* download.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = download.tiff; sourceTree = "<group>"; };
@@ -1820,7 +1818,6 @@
 				4717BE120F3096FD00BB4496 /* dav.icns */,
 				4717BE130F3096FD00BB4496 /* cf.icns */,
 				4717BE150F3096FD00BB4496 /* sftp.icns */,
-				47364F4E0F350E4F00A6618E /* me.icns */,
 				479C3B29112D84D100F04C16 /* g-icon.png */,
 				47F73AC40F93721B0054C930 /* ftp-icon.png */,
 				47F73AC50F93721B0054C930 /* dav-icon.png */,
@@ -2588,7 +2585,6 @@
 				4717BE190F3096FD00BB4496 /* dav.icns in Resources */,
 				4717BE1A0F3096FD00BB4496 /* cf.icns in Resources */,
 				4717BE1C0F3096FD00BB4496 /* sftp.icns in Resources */,
-				47364F4F0F350E4F00A6618E /* me.icns in Resources */,
 				475A4BA00F8179E200F65EB9 /* newfolder.icns in Resources */,
 				4739D3970F82681100D2782A /* reload.tiff in Resources */,
 				4739D39B0F8268B700D2782A /* upload.tiff in Resources */,
