@@ -126,8 +126,23 @@ public class FinderLocal extends Local {
 
     private native String resolveAlias(String absolute);
 
+    /**
+     * @return Human readable description of file type
+     */
     @Override
-    protected native String kind(String extension);
+    public String kind() {
+        if(attributes.isFile()) {
+            // Native file type mapping
+            final String kind = kind(this.getExtension());
+            if(StringUtils.isEmpty(kind)) {
+                return ch.cyberduck.core.i18n.Locale.localizedString("Unknown");
+            }
+            return kind;
+        }
+        return super.kind();
+    }
+
+    public static native String kind(String extension);
 
     @Override
     public Permission getPermission() {

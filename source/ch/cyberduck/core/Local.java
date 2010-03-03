@@ -278,27 +278,14 @@ public abstract class Local extends AbstractPath implements Attributes {
      * @return the file type for the extension of this file provided by launch services
      */
     public String kind() {
-        if(this.attributes.isDirectory()) {
+        if(attributes.isDirectory()) {
             return Locale.localizedString("Folder");
         }
         final String extension = this.getExtension();
         if(StringUtils.isEmpty(extension)) {
             return Locale.localizedString("Unknown");
         }
-        // Native file type mapping
-        final String kind = this.kind(this.getExtension());
-        if(StringUtils.isEmpty(kind)) {
-            return Locale.localizedString("Unknown");
-        }
-        return kind;
-    }
-
-    /**
-     * @param extension Filename extension
-     * @return Human readable description of file type
-     */
-    protected String kind(String extension) {
-        return null;
+        return Locale.localizedString("File");
     }
 
     @Override
