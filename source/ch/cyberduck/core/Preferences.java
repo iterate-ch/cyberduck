@@ -466,12 +466,14 @@ public abstract class Preferences {
         //txt	TXT File
         //zip	ZIP archive. Contains the images (if any) used in the document and an exported .html file.
         defaults.put("google.docs.export.document","doc");
+        defaults.put("google.docs.export.document.formats","doc,html,odt,pdf,png,rtf,txt,zip");
         //pdf	Portable Document Format
         //png	Portable Networks Graphic Image Format
         //ppt	Powerpoint Format
         //swf	Flash Format
         //txt	TXT file
         defaults.put("google.docs.export.presentation", "ppt");
+        defaults.put("google.docs.export.presentation.formats", "ppt,pdf,png,swf,txt");
         //xls	XLS (Microsoft Excel)
         //csv	CSV (Comma Seperated Value)
         //pdf	PDF (Portable Document Format)
@@ -479,6 +481,7 @@ public abstract class Preferences {
         //tsv	TSV (Tab Seperated Value)
         //html	HTML Format
         defaults.put("google.docs.export.spreadsheet", "xls");
+        defaults.put("google.docs.export.spreadsheet.formats", "xls,csv,pdf,ods,tsv,html");
 
         /**
          * NTLM Windows Domain
