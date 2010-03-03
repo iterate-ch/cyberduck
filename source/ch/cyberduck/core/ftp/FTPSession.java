@@ -420,4 +420,24 @@ public class FTPSession extends Session {
             this.getClient().quote(command);
         }
     }
+
+    @Override
+    public boolean isDownloadResumable() {
+        return this.isTransferResumable();
+    }
+
+    @Override
+    public boolean isUploadResumable() {
+        return this.isTransferResumable();
+    }
+
+    /**
+     * No resume supported for ASCII mode transfers.
+     *
+     * @return
+     */
+    private boolean isTransferResumable() {
+        return Preferences.instance().getProperty("ftp.transfermode").equals(
+                FTPTransferType.BINARY.toString());
+    }
 }

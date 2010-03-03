@@ -18,14 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
@@ -111,19 +109,7 @@ public abstract class Transfer implements Serializable {
     /**
      * @return
      */
-    public boolean isResumable() {
-        if(!this.isComplete()) {
-            if(this.getSession() instanceof SFTPSession) {
-                return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());
-            }
-            if(this.getSession() instanceof FTPSession) {
-                return Preferences.instance().getProperty("ftp.transfermode").equals(
-                        FTPTransferType.BINARY.toString());
-            }
-            return true;
-        }
-        return false;
-    }
+    public abstract boolean isResumable();
 
     /**
      * Create a transfer with a single root which can

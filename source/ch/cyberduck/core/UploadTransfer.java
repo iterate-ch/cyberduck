@@ -196,10 +196,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public boolean isResumable() {
-        if(this.getSession() instanceof S3Session) {
-            return false;
-        }
-        return super.isResumable();
+        return this.getSession().isUploadResumable();
     }
 
     private final TransferFilter ACTION_OVERWRITE = new UploadTransferFilter() {

@@ -524,6 +524,22 @@ public abstract class Session {
         }
     }
 
+    /**
+     * Content Range support
+     * @return True if skipping is supported
+     */
+    public boolean isDownloadResumable() {
+        return true;
+    }
+
+    /**
+     * Content Range support
+     * @return True if appending is supported
+     */
+    public boolean isUploadResumable() {
+        return true;
+    }
+
     private Set<ProgressListener> progressListeners
             = Collections.synchronizedSet(new HashSet<ProgressListener>());
 

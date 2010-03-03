@@ -414,4 +414,22 @@ public class SFTPSession extends Session {
             sess.close();
         }
     }
+
+    @Override
+    public boolean isDownloadResumable() {
+        return this.isTransferResumable();
+    }
+
+    @Override
+    public boolean isUploadResumable() {
+        return this.isTransferResumable();
+    }
+
+    /**
+     * No resume supported for SCP transfers.
+     * @return
+     */
+    private boolean isTransferResumable() {
+        return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());
+    }
 }

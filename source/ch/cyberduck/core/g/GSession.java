@@ -153,4 +153,14 @@ public class GSession extends Session {
     public void sendCommand(String command) throws IOException {
         ;
     }
+
+    @Override
+    public boolean isDownloadResumable() {
+        return false;
+    }
+
+    @Override
+    public boolean isUploadResumable() {
+        return false;
+    }
 }

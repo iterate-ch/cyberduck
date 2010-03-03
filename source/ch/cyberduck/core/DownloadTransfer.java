@@ -372,4 +372,9 @@ public class DownloadTransfer extends Transfer {
     protected boolean shouldOpenWhenComplete() {
         return Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");
     }
+
+    @Override
+    public boolean isResumable() {
+        return getSession().isDownloadResumable();
+    }
 }

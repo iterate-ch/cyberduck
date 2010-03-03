@@ -169,6 +169,16 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public boolean isDownloadResumable() {
+        return false;
+    }
+
+    @Override
+    public boolean isUploadResumable() {
+        return false;
+    }
+
     /**
      * @param enabled Enable content distribution for the container
      * @param method

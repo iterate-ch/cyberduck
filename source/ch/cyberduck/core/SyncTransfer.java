@@ -91,6 +91,11 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
+    public boolean isResumable() {
+        return _delegateDownload.isResumable() && _delegateUpload.isResumable();
+    }
+
+    @Override
     public double getTransferred() {
         final double transferred = _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
         if(0 == transferred) {

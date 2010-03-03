@@ -320,6 +320,16 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
     }
 
     @Override
+    public boolean isDownloadResumable() {
+        return true;
+    }
+
+    @Override
+    public boolean isUploadResumable() {
+        return false;
+    }
+
+    @Override
     protected void noop() throws IOException {
         ;
     }
