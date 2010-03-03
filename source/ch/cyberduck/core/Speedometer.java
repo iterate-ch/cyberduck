@@ -60,35 +60,46 @@ public class Speedometer {
         return -1;
     }
 
+    /**
+     * @return Progress information string with bytes transfered
+     *         including a percentage and estimated time remaining
+     */
     public String getProgress() {
         StringBuilder b = new StringBuilder();
         b.append(Status.getSizeAsString(transfer.getTransferred()));
         b.append(" ");
         b.append(Locale.localizedString("of", "1.2MB of 3.4MB"));
         b.append(" ");
-        b.append(Status.getSizeAsString(transfer.getSize()));
+        final double size = transfer.getSize();
+        b.append(Status.getSizeAsString(size));
+        final float speed = this.getSpeed();
         if(transfer.isRunning()) {
-            b.append(" (");
-            if(0 == transfer.getSize()) {
-                b.append(0);
-            }
-            else {
-                b.append((int) (transfer.getTransferred() / transfer.getSize() * 100));
-            }
-            b.append("%");
-            float speed = this.getSpeed();
-            if(speed > 0) {
-                b.append(", ");
-                b.append(Status.getSizeAsString(speed));
-                b.append("/sec");
-                if(transfer.getSize() > 0) {
-                    b.append(", ");
-                    // remaining time in seconds
-                    double remaining = ((transfer.getSize() - this.getBytesTransfered()) / speed);
-                    b.append(Status.getRemainingAsString(remaining));
+            if(size > -1 || speed > 0) {
+                b.append(" (");
+                if(size > -1) {
+                    if(0 == size) {
+                        b.append(0);
+                    }
+                    else {
+                        b.append((int) (transfer.getTransferred() / size * 100));
+                    }
+                    b.append("%");
                 }
+                if(speed > 0) {
+                    if(size > -1) {
+                        b.append(", ");
+                    }
+                    b.append(Status.getSizeAsString(speed));
+                    b.append("/sec");
+                    if(size > 0) {
+                        b.append(", ");
+                        // remaining time in seconds
+                        double remaining = ((size - this.getBytesTransfered()) / speed);
+                        b.append(Status.getRemainingAsString(remaining));
+                    }
+                }
+                b.append(")");
             }
-            b.append(")");
         }
         return b.toString();
     }
