@@ -266,7 +266,11 @@ public abstract class AbstractPath {
     }
 
     public String getMimeType() {
-        return Mimetypes.getInstance().getMimetype(this.getName().toLowerCase());
+        return getMimeType(this.getName().toLowerCase());
+    }
+
+    public static String getMimeType(String extension) {
+        return Mimetypes.getInstance().getMimetype(extension);
     }
 
     /**

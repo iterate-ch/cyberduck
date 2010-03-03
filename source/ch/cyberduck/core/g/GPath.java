@@ -385,11 +385,26 @@ public class GPath extends Path {
         for(final DocumentListEntry entry : feed.getEntries()) {
             log.debug("Resource:" + entry.getResourceId());
             final StringBuilder title = new StringBuilder(entry.getTitle().getPlainText());
+            final String type = entry.getType();
             GPath p = new GPath(this.getSession(),
                     title.toString(),
-                    "folder".equals(entry.getType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    "folder".equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE) {
+                @Override
+                public String getMimeType() {
+                    return getMimeType(getExportFormat(type));
+                }
+
+                @Override
+                public String getExtension() {
+                    final String exportFormat = getExportFormat(type);
+                    if(StringUtils.isNotEmpty(exportFormat)) {
+                        return exportFormat;
+                    }
+                    return super.getExtension();
+                }
+            };
             p.setParent(this);
-            p.setDocumentType(entry.getType());
+            p.setDocumentType(type);
             if(!entry.getParentLinks().isEmpty()) {
                 p.setPath(entry.getParentLinks().iterator().next().getTitle(), title.toString());
             }
