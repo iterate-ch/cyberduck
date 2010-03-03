@@ -869,8 +869,12 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void cleanup() {
                 toggleSizeSettings(true);
+                StringBuilder formatted = new StringBuilder(Status.getSizeAsString(size));
+                if(size > -1) {
+                    formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
+                }
                 sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        Status.getSizeAsString(size) + " (" + NumberFormat.getInstance().format(size) + " bytes)",
+                        formatted.toString(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
             }
 
