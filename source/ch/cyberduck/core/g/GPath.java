@@ -120,6 +120,7 @@ public class GPath extends Path {
         return super.<S>getAsDictionary(dict);
     }
 
+    private static final String DOCUMENT_FOLDER_TYPE = "folder";
     private static final String DOCUMENT_TEXT_TYPE = "document";
     private static final String DOCUMENT_PRESENTATION_TYPE = "presentation";
     private static final String DOCUMENT_SPREADSHEET_TYPE = "spreadsheet";
@@ -162,7 +163,7 @@ public class GPath extends Path {
         this.exportUri = exportUri;
     }
 
-    private String documentType;
+    private String documentType = DOCUMENT_FOLDER_TYPE;
 
     public String getDocumentType() {
         return documentType;
@@ -388,21 +389,7 @@ public class GPath extends Path {
             final String type = entry.getType();
             GPath p = new GPath(this.getSession(),
                     title.toString(),
-                    "folder".equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE) {
-                @Override
-                public String getMimeType() {
-                    return getMimeType(getExportFormat(type));
-                }
-
-                @Override
-                public String getExtension() {
-                    final String exportFormat = getExportFormat(type);
-                    if(StringUtils.isNotEmpty(exportFormat)) {
-                        return exportFormat;
-                    }
-                    return super.getExtension();
-                }
-            };
+                    DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             p.setParent(this);
             p.setDocumentType(type);
             if(!entry.getParentLinks().isEmpty()) {
@@ -434,6 +421,31 @@ public class GPath extends Path {
             childs.add(p);
         }
         return childs;
+    }
+
+    @Override
+    public String getMimeType() {
+        return getMimeType(getExportFormat(this.getDocumentType()));
+    }
+
+    @Override
+    public String getExtension() {
+        final String exportFormat = getExportFormat(this.getDocumentType());
+        if(StringUtils.isNotEmpty(exportFormat)) {
+            return exportFormat;
+        }
+        return super.getExtension();
+    }
+
+    @Override
+    public String getName() {
+        final String exportFormat = getExportFormat(this.getDocumentType());
+        if(StringUtils.isNotEmpty(exportFormat)) {
+            if(!super.getName().endsWith(exportFormat)) {
+                return super.getName() + "." + exportFormat;
+            }
+        }
+        return super.getName();
     }
 
     /**
