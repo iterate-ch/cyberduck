@@ -143,11 +143,12 @@ public class ProgressController extends BundleController {
                             public void run() {
                                 setProgressText();
                                 final double transferred = transfer.getTransferred();
-                                if(transferred > 0) {
+                                final double size = transfer.getSize();
+                                if(transferred > 0 && size > 0) {
                                     progressBar.setIndeterminate(false);
+                                    progressBar.setMaxValue(size);
+                                    progressBar.setDoubleValue(transferred);
                                 }
-                                progressBar.setMaxValue(transfer.getSize());
-                                progressBar.setDoubleValue(transferred);
                             }
                         });
                     }
