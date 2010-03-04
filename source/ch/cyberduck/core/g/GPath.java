@@ -84,7 +84,6 @@ public class GPath extends Path {
 
     @Override
     protected void init(Deserializer dict) {
-        super.init(dict);
         String resourceIdObj = dict.stringForKey("ResourceId");
         if(resourceIdObj != null) {
             this.setResourceId(resourceIdObj);
@@ -101,6 +100,7 @@ public class GPath extends Path {
         if(documentUriObj != null) {
             this.setDocumentUri(documentUriObj);
         }
+        super.init(dict);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class GPath extends Path {
         this.exportUri = exportUri;
     }
 
-    private String documentType = DOCUMENT_FOLDER_TYPE;
+    private String documentType;
 
     public String getDocumentType() {
         return documentType;
@@ -425,24 +425,31 @@ public class GPath extends Path {
 
     @Override
     public String getMimeType() {
-        return getMimeType(getExportFormat(this.getDocumentType()));
+        if(attributes.isFile()) {
+            return getMimeType(getExportFormat(this.getDocumentType()));
+        }
+        return super.getMimeType();
     }
 
     @Override
     public String getExtension() {
-        final String exportFormat = getExportFormat(this.getDocumentType());
-        if(StringUtils.isNotEmpty(exportFormat)) {
-            return exportFormat;
+        if(attributes.isFile()) {
+            final String exportFormat = getExportFormat(this.getDocumentType());
+            if(StringUtils.isNotEmpty(exportFormat)) {
+                return exportFormat;
+            }
         }
         return super.getExtension();
     }
 
     @Override
     public String getName() {
-        final String exportFormat = getExportFormat(this.getDocumentType());
-        if(StringUtils.isNotEmpty(exportFormat)) {
-            if(!super.getName().endsWith(exportFormat)) {
-                return super.getName() + "." + exportFormat;
+        if(attributes.isFile()) {
+            final String exportFormat = getExportFormat(this.getDocumentType());
+            if(StringUtils.isNotEmpty(exportFormat)) {
+                if(!super.getName().endsWith(exportFormat)) {
+                    return super.getName() + "." + exportFormat;
+                }
             }
         }
         return super.getName();
