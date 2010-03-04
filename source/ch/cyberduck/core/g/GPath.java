@@ -87,7 +87,7 @@ public class GPath extends Path {
         super.init(dict);
         String resourceIdObj = dict.stringForKey("ResourceId");
         if(resourceIdObj != null) {
-            this.setExportUri(resourceIdObj);
+            this.setResourceId(resourceIdObj);
         }
         String exportUriObj = dict.stringForKey("ExportUri");
         if(exportUriObj != null) {
@@ -99,14 +99,14 @@ public class GPath extends Path {
         }
         String documentUriObj = dict.stringForKey("DocumentUri");
         if(documentUriObj != null) {
-            this.setExportUri(documentUriObj);
+            this.setDocumentUri(documentUriObj);
         }
     }
 
     @Override
     protected <S> S getAsDictionary(Serializer dict) {
         if(resourceId != null) {
-            dict.setStringForKey(exportUri, "ResourceId");
+            dict.setStringForKey(resourceId, "ResourceId");
         }
         if(exportUri != null) {
             dict.setStringForKey(exportUri, "ExportUri");
@@ -115,7 +115,7 @@ public class GPath extends Path {
             dict.setStringForKey(documentType, "DocumentType");
         }
         if(documentUri != null) {
-            dict.setStringForKey(exportUri, "DocumentUri");
+            dict.setStringForKey(documentUri, "DocumentUri");
         }
         return super.<S>getAsDictionary(dict);
     }
@@ -462,7 +462,7 @@ public class GPath extends Path {
         if(type.equals(DOCUMENT_SPREADSHEET_TYPE)) {
             return Preferences.instance().getProperty("google.docs.export.spreadsheet");
         }
-        log.warn("No custom output format for document type:" + type);
+        log.debug("No output format conversion for document type:" + type);
         return null;
     }
 
