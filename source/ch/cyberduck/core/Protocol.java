@@ -568,12 +568,12 @@ public abstract class Protocol {
     public static final Protocol GDOCS = new Protocol() {
         @Override
         public String getName() {
-            return "Google Documents";
+            return "Google Docs";
         }
 
         @Override
         public String getDescription() {
-            return Locale.localizedString("Google Documents");
+            return Locale.localizedString("Google Docs");
         }
 
         @Override
