@@ -645,23 +645,6 @@ public class InfoController extends ToolbarWindowController {
             this.updateField(ownerField, count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
                     file.attributes.getOwner(), TRUNCATE_MIDDLE_ATTRIBUTES);
 
-            recursiveCheckbox.setEnabled(true);
-            for(Path next : files) {
-                if(next.attributes.isFile()) {
-                    recursiveCheckbox.setState(NSCell.NSOffState);
-                    recursiveCheckbox.setEnabled(false);
-                    sizeButton.setEnabled(false);
-                    break;
-                }
-            }
-            sizeButton.setEnabled(false);
-            for(Path next : files) {
-                if(next.attributes.isDirectory()) {
-                    sizeButton.setEnabled(true);
-                    break;
-                }
-            }
-
             this.initIcon();
             // Sum of files
             this.initSize();
@@ -1169,6 +1152,13 @@ public class InfoController extends ToolbarWindowController {
             }
         }
         recursiveCheckbox.setEnabled(enabled);
+        for(Path next : files) {
+            if(next.attributes.isFile()) {
+                recursiveCheckbox.setState(NSCell.NSOffState);
+                recursiveCheckbox.setEnabled(false);
+                break;
+            }
+        }
         octalField.setEnabled(enabled);
         ownerr.setEnabled(enabled);
         ownerw.setEnabled(enabled);
@@ -1358,7 +1348,13 @@ public class InfoController extends ToolbarWindowController {
         else {
             sizeProgress.startAnimation(null);
         }
-        sizeButton.setEnabled(enabled);
+        sizeButton.setEnabled(false);
+        for(Path next : files) {
+            if(next.attributes.isDirectory()) {
+                sizeButton.setEnabled(enabled);
+                break;
+            }
+        }
     }
 
 
