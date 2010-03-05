@@ -121,6 +121,7 @@ public class GPath extends Path {
     }
 
     private static final String DOCUMENT_FOLDER_TYPE = "folder";
+    private static final String DOCUMENT_FILE_TYPE = "file";
     private static final String DOCUMENT_TEXT_TYPE = "document";
     private static final String DOCUMENT_PRESENTATION_TYPE = "presentation";
     private static final String DOCUMENT_SPREADSHEET_TYPE = "spreadsheet";
@@ -163,7 +164,10 @@ public class GPath extends Path {
         this.exportUri = exportUri;
     }
 
-    private String documentType;
+    /**
+     * Arbitrary file type not converted to Google Docs.
+     */
+    private String documentType = DOCUMENT_FILE_TYPE;
 
     public String getDocumentType() {
         return documentType;
@@ -299,9 +303,11 @@ public class GPath extends Path {
                     this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                             this.getName()));
                     getStatus().setCurrent(0);
-                    session.getClient().insert(new URL("https://docs.google.com/feeds/default/private/full/"), document);
+                    session.getClient().insert(new URL("https://docs.google.com/feeds/default/private/full/?convert="
+                            + Preferences.instance().getBoolean("google.docs.upload.convert")), document);
 
                     getStatus().setCurrent(this.getLocal().attributes.getSize());
+                    listener.bytesSent(this.getLocal().attributes.getSize());
                     getStatus().setComplete(true);
                 }
                 finally {
