@@ -34,8 +34,6 @@ public abstract class NSMutableDictionary extends NSDictionary {
         NSMutableDictionary dictionaryWithCapacity(NSUInteger numItems);
 
         NSMutableDictionary dictionaryWithDictionary(NSDictionary dict);
-
-        NSMutableDictionary alloc();
     }
 
     public static NSMutableDictionary dictionary() {

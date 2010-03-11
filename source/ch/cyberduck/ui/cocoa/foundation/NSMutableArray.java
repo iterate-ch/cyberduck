@@ -42,8 +42,6 @@ public abstract class NSMutableArray extends NSArray {
         NSMutableArray arrayWithCapacity(NSUInteger numItems);
 
         NSMutableArray array();
-
-        NSMutableArray alloc();
     }
 
     /**

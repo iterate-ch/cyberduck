@@ -41,38 +41,38 @@ public abstract class NSAttributedString extends NSObject {
          * Original signature : <code>NSArray* textTypes()</code><br>
          * <i>from NSAttributedStringKitAdditions native declaration : :183</i>
          */
-        com.sun.jna.Pointer textTypes();
+        NSArray textTypes();
 
         /**
          * Original signature : <code>NSArray* textUnfilteredTypes()</code><br>
          * <i>from NSAttributedStringKitAdditions native declaration : :184</i>
          */
-        com.sun.jna.Pointer textUnfilteredTypes();
+        NSArray textUnfilteredTypes();
 
         /**
          * Methods that were deprecated in Mac OS 10.5. You can now use +textTypes and +textUnfilteredTypes to get arrays of Uniform Type Identifiers (UTIs).<br>
          * Original signature : <code>NSArray* textFileTypes()</code><br>
          * <i>from NSDeprecatedKitAdditions native declaration : :249</i>
          */
-        com.sun.jna.Pointer textFileTypes();
+        NSArray textFileTypes();
 
         /**
          * Original signature : <code>NSArray* textPasteboardTypes()</code><br>
          * <i>from NSDeprecatedKitAdditions native declaration : :250</i>
          */
-        com.sun.jna.Pointer textPasteboardTypes();
+        NSArray textPasteboardTypes();
 
         /**
          * Original signature : <code>NSArray* textUnfilteredFileTypes()</code><br>
          * <i>from NSDeprecatedKitAdditions native declaration : :251</i>
          */
-        com.sun.jna.Pointer textUnfilteredFileTypes();
+        NSArray textUnfilteredFileTypes();
 
         /**
          * Original signature : <code>NSArray* textUnfilteredPasteboardTypes()</code><br>
          * <i>from NSDeprecatedKitAdditions native declaration : :252</i>
          */
-        com.sun.jna.Pointer textUnfilteredPasteboardTypes();
+        NSArray textUnfilteredPasteboardTypes();
 
         NSAttributedString alloc();
     }

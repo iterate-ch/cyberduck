@@ -198,7 +198,7 @@ public abstract class NSMenu extends NSObject implements NSCopying {
      * Original signature : <code>NSInteger indexOfItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :76</i>
      */
-    public abstract NSInteger indexOfItemWithTag(int aTag);
+    public abstract NSInteger indexOfItemWithTag(NSInteger aTag);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithRepresentedObject(id)</code><br>
@@ -220,7 +220,7 @@ public abstract class NSMenu extends NSObject implements NSCopying {
      * Original signature : <code>NSMenuItem* itemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :81</i>
      */
-    public abstract NSMenuItem itemAtIndex(int index);
+    public abstract NSMenuItem itemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>NSMenuItem* itemWithTitle(NSString*)</code><br>
@@ -232,7 +232,7 @@ public abstract class NSMenu extends NSObject implements NSCopying {
      * Original signature : <code>NSMenuItem* itemWithTag(NSInteger)</code><br>
      * <i>native declaration : :83</i>
      */
-    public abstract NSMenuItem itemWithTag(int tag);
+    public abstract NSMenuItem itemWithTag(NSInteger tag);
 
     /**
      * Original signature : <code>void setAutoenablesItems(BOOL)</code><br>
@@ -353,7 +353,7 @@ public abstract class NSMenu extends NSObject implements NSCopying {
      * Original signature : <code>void performActionForItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :115</i>
      */
-    public abstract void performActionForItemAtIndex(int index);
+    public abstract void performActionForItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>void setDelegate(id)</code><br>

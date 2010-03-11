@@ -201,8 +201,6 @@ public abstract class NSWindow extends NSResponder {
          * <i>native declaration : :513</i>
          */
         NSButton standardWindowButton_forStyleMask(int b, int styleMask);
-
-        NSWindow alloc();
     }
 
     public static interface Delegate {

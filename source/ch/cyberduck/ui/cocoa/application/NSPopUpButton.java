@@ -53,16 +53,6 @@ public abstract class NSPopUpButton extends NSButton {
      * <i>native declaration : :33</i>
      */
     public abstract boolean autoenablesItems();
-    /**
-     * <i>native declaration : :35</i><br>
-     * Conversion Error : /// Original signature : <code>void setPreferredEdge(null)</code><br>
-     * - (void)setPreferredEdge:(null)edge; (Argument edge cannot be converted)
-     */
-    /**
-     * Original signature : <code>preferredEdge()</code><br>
-     * <i>native declaration : :36</i>
-     */
-    public abstract com.sun.jna.Pointer preferredEdge();
 
     /**
      * Adding and removing items<br>
@@ -118,19 +108,19 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>NSInteger indexOfItem(NSMenuItem*)</code><br>
      * <i>native declaration : :53</i>
      */
-    public abstract int indexOfItem(NSMenuItem item);
+    public abstract NSInteger indexOfItem(NSMenuItem item);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTitle(NSString*)</code><br>
      * <i>native declaration : :54</i>
      */
-    public abstract int indexOfItemWithTitle(String title);
+    public abstract NSInteger indexOfItemWithTitle(String title);
 
     /**
      * Original signature : <code>NSInteger indexOfItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :55</i>
      */
-    public abstract int indexOfItemWithTag(NSInteger tag);
+    public abstract NSInteger indexOfItemWithTag(NSInteger tag);
     /**
      * <i>native declaration : :56</i><br>
      * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithRepresentedObject(null)</code><br>
@@ -145,7 +135,7 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>NSMenuItem* itemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :59</i>
      */
-    public abstract NSMenuItem itemAtIndex(int index);
+    public abstract NSMenuItem itemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>NSMenuItem* itemWithTitle(NSString*)</code><br>
@@ -170,7 +160,7 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>void selectItemAtIndex(NSInteger)</code><br>
      * <i>native declaration : :66</i>
      */
-    public abstract void selectItemAtIndex(int index);
+    public abstract void selectItemAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>void selectItemWithTitle(NSString*)</code><br>
@@ -182,7 +172,7 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>BOOL selectItemWithTag(NSInteger)</code><br>
      * <i>native declaration : :69</i>
      */
-    public abstract boolean selectItemWithTag(int tag);
+    public abstract boolean selectItemWithTag(NSInteger tag);
 
     /**
      * Original signature : <code>NSMenuItem* selectedItem()</code><br>
@@ -194,7 +184,7 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>NSInteger indexOfSelectedItem()</code><br>
      * <i>native declaration : :74</i>
      */
-    public abstract int indexOfSelectedItem();
+    public abstract NSInteger indexOfSelectedItem();
 
     /**
      * Original signature : <code>void synchronizeTitleAndSelectedItem()</code><br>
@@ -220,6 +210,4 @@ public abstract class NSPopUpButton extends NSButton {
      * <i>native declaration : :80</i>
      */
     public abstract String titleOfSelectedItem();
-
-    public abstract NSPopUpButtonCell cell();
 }

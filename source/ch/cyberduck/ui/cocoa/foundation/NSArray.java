@@ -56,8 +56,6 @@ public abstract class NSArray extends NSObject {
     }
 
     public interface _Class extends ObjCClass {
-        public NSArray alloc();
-
         /**
          * Original signature : <code>id array()</code><br>
          * <i>from NSArrayCreation native declaration : :60</i>
@@ -140,11 +138,6 @@ public abstract class NSArray extends NSObject {
      * Conversion Error : /// Original signature : <code>BOOL containsObject(null)</code><br>
      * - (BOOL)containsObject:(null)anObject; (Argument anObject cannot be converted)
      */
-    /**
-     * Original signature : <code>NSString* description()</code><br>
-     * <i>from NSExtendedArray native declaration : :27</i>
-     */
-    public abstract String description();
     /**
      * <i>from NSExtendedArray native declaration : :28</i><br>
      * Conversion Error : /// Original signature : <code>NSString* descriptionWithLocale(null)</code><br>
