@@ -52,8 +52,6 @@ public abstract class QLPreviewPanel extends NSPanel {
          * <i>native declaration : line 44</i>
          */
         public abstract boolean sharedPreviewPanelExists();
-
-        public abstract QLPreviewPanel alloc();
     }
 
     /**
