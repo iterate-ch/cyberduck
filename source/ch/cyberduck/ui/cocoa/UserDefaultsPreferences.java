@@ -26,8 +26,12 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSUInteger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes. The NSUserDefaults class is thread-safe.
@@ -55,12 +59,21 @@ public class UserDefaultsPreferences extends Preferences {
     private NSUserDefaults props;
 
     @Override
-    public Object getObject(final String property) {
+    public String getDefault(final String property) {
         NSObject value = props.objectForKey(property);
         if(null == value) {
-            return super.getObject(property);
+            return super.getDefault(property);
         }
-        return value;
+        return value.toString();
+    }
+
+    @Override
+    public List<String> getList(final String property) {
+        NSObject value = props.objectForKey(property);
+        if(null == value) {
+            return null;
+        }
+        return this.toList(Rococoa.cast(value, NSArray.class));
     }
 
     @Override
@@ -71,10 +84,16 @@ public class UserDefaultsPreferences extends Preferences {
             // Setting a default has no effect on the value returned by the objectForKey method if
             // the same key exists in a domain that precedes the application domain in the search list.
             this.props.setObjectForKey(NSString.stringWithString(value), property);
+            this.save();
         }
-        else {
-            this.props.setObjectForKey(null, property);
-        }
+    }
+
+    @Override
+    public void setProperty(String property, List<String> value) {
+        // Sets the value of the default identified by defaultName in the standard application domain.
+        // Setting a default has no effect on the value returned by the objectForKey method if
+        // the same key exists in a domain that precedes the application domain in the search list.
+        this.props.setObjectForKey(NSArray.arrayWithObjects(value.toArray(new String[value.size()])), property);
         this.save();
     }
 
@@ -161,16 +180,42 @@ public class UserDefaultsPreferences extends Preferences {
     }
 
     @Override
-    protected String locale() {
-        String locale = "en";
-        NSArray preferredLocalizations = NSBundle.mainBundle().preferredLocalizations();
-        if(null == preferredLocalizations) {
-            log.warn("No localizations found in main bundle");
-            return locale;
+    public String locale() {
+        final List<String> languages = this.getList("AppleLanguages");
+        if(null != languages) {
+            return languages.iterator().next();
         }
-        if(preferredLocalizations.count().intValue() > 0) {
-            locale = preferredLocalizations.objectAtIndex(new NSUInteger(0)).toString();
+        return super.locale();
+    }
+
+    @Override
+    public List<String> applicationLocales() {
+//        return this.toList(NSBundle.mainBundle().preferredLocalizations());
+        return this.toList(NSBundle.mainBundle().localizations());
+    }
+
+    @Override
+    public List<String> systemLocales() {
+        // Language ordering in system preferences. Can be overriden
+        // using the "AppleLanguages" user default
+        return this.toList(NSLocale.preferredLanguages());
+    }
+
+    /**
+     * Convert collection
+     * @param list
+     * @return
+     */
+    private List<String> toList(NSArray list) {
+        if(null == list) {
+            return Collections.emptyList();
         }
-        return locale;
+        List<String> localizations = new ArrayList<String>();
+        NSEnumerator ordered = list.objectEnumerator();
+        NSObject next;
+        while(((next = ordered.nextObject()) != null)) {
+            localizations.add(next.toString());
+        }
+        return localizations;
     }
 }

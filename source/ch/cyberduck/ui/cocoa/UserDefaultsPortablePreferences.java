@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 
@@ -35,12 +36,12 @@ public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
     private NSMutableDictionary dict;
 
     @Override
-    public Object getObject(String property) {
-        Object value = dict.objectForKey(property);
+    public String getDefault(String property) {
+        NSObject value = dict.objectForKey(property);
         if(null == value) {
-            return super.getObject(property);
+            return super.getDefault(property);
         }
-        return value;
+        return value.toString();
     }
 
     @Override

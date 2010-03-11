@@ -21,12 +21,10 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -77,41 +75,74 @@ public abstract class Preferences {
     }
 
     /**
-     * @param property The name of the property to overwrite
-     * @param value    The new vlaue
+     * Update the given property with a string value.
+     *
+     * @param property The name of the property to create or update
+     * @param v        The new or updated value
      */
-    public abstract void setProperty(String property, String value);
+    public abstract void setProperty(String property, String v);
 
+    /**
+     * Update the given property with a list value
+     *
+     * @param property The name of the property to create or update
+     * @param values        The new or updated value
+     */
+    public abstract void setProperty(String property, List<String> values);
+
+    /**
+     * Remove a user customized property from the preferences.
+     *
+     * @param property Property name
+     */
     public abstract void deleteProperty(String property);
 
     /**
-     * @param property The name of the property to overwrite
-     * @param v        The new vlaue
+     * Internally always saved as a string.
+     *
+     * @param property The name of the property to create or update
+     * @param v        The new or updated value
      */
     public void setProperty(String property, boolean v) {
         this.setProperty(property, v ? String.valueOf(true) : String.valueOf(false));
     }
 
     /**
-     * @param property The name of the property to overwrite
-     * @param v        The new vlaue
+     * Internally always saved as a string.
+     *
+     * @param property The name of the property to create or update
+     * @param v        The new or updated value
      */
     public void setProperty(String property, int v) {
         this.setProperty(property, String.valueOf(v));
     }
 
     /**
-     * @param property The name of the property to overwrite
-     * @param v        The new vlaue
+     * Internally always saved as a string.
+     *
+     * @param property The name of the property to create or update
+     * @param v        The new or updated value
      */
     public void setProperty(String property, float v) {
         this.setProperty(property, String.valueOf(v));
     }
 
+    /**
+     * Internally always saved as a string.
+     *
+     * @param property The name of the property to create or update
+     * @param v        The new or updated value
+     */
     public void setProperty(String property, long v) {
         this.setProperty(property, String.valueOf(v));
     }
 
+    /**
+     * Internally always saved as a string.
+     *
+     * @param property The name of the property to create or update
+     * @param v        The new or updated value
+     */
     public void setProperty(String property, double v) {
         this.setProperty(property, String.valueOf(v));
     }
@@ -363,6 +394,29 @@ public abstract class Preferences {
         defaults.put("queue.download.wherefrom", String.valueOf(true));
 
         /**
+         * Bandwidth throttle options
+         */
+        StringBuilder options = new StringBuilder();
+        options.append(5*Status.KILO).append(",");
+        options.append(10*Status.KILO).append(",");
+        options.append(20*Status.KILO).append(",");
+        options.append(50*Status.KILO).append(",");
+        options.append(100*Status.KILO).append(",");
+        options.append(150*Status.KILO).append(",");
+        options.append(200*Status.KILO).append(",");
+        options.append(500*Status.KILO).append(",");
+        options.append(1*Status.MEGA).append(",");
+        options.append(2*Status.MEGA).append(",");
+        options.append(5*Status.MEGA).append(",");
+        options.append(10*Status.MEGA).append(",");
+        options.append(15*Status.MEGA).append(",");
+        options.append(20*Status.MEGA).append(",");
+        options.append(50*Status.MEGA).append(",");
+        options.append(100*Status.MEGA).append(",");
+        defaults.put("queue.download.bandwidth.options", options.toString());
+        defaults.put("queue.upload.bandwidth.options", options.toString());
+
+        /**
          * Bandwidth throttle upload stream
          */
         defaults.put("queue.upload.bandwidth.bytes", String.valueOf(-1));
@@ -465,8 +519,8 @@ public abstract class Preferences {
         //rtf	Rich Format
         //txt	TXT File
         //zip	ZIP archive. Contains the images (if any) used in the document and an exported .html file.
-        defaults.put("google.docs.export.document","doc");
-        defaults.put("google.docs.export.document.formats","doc,html,odt,pdf,png,rtf,txt,zip");
+        defaults.put("google.docs.export.document", "doc");
+        defaults.put("google.docs.export.document.formats", "doc,html,odt,pdf,png,rtf,txt,zip");
         //pdf	Portable Document Format
         //png	Portable Networks Graphic Image Format
         //ppt	Powerpoint Format
@@ -539,7 +593,10 @@ public abstract class Preferences {
          */
         defaults.put("bookmark.favicon.download", String.valueOf(true));
 
-        defaults.put("bookmark.icon.size", String.valueOf(32));
+        /**
+         * Default to large icon size
+         */
+        defaults.put("bookmark.icon.size", String.valueOf(64));
 
         /**
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
@@ -591,16 +648,23 @@ public abstract class Preferences {
      * @param property The property to query.
      * @return The value of the property
      */
-    public Object getObject(String property) {
-        Object value = defaults.get(property);
+    public String getDefault(String property) {
+        String value = defaults.get(property);
         if(null == value) {
             log.warn("No property with key '" + property + "'");
         }
         return value;
     }
 
+    /**
+     *
+     * @param property
+     * @return
+     */
+    public abstract List<String> getList(String property);
+
     public String getProperty(String property) {
-        final Object v = this.getObject(property);
+        final Object v = this.getDefault(property);
         if(null == v) {
             return null;
         }
@@ -608,7 +672,7 @@ public abstract class Preferences {
     }
 
     public int getInteger(String property) {
-        final Object v = this.getObject(property);
+        final Object v = this.getDefault(property);
         if(null == v) {
             return -1;
         }
@@ -616,7 +680,7 @@ public abstract class Preferences {
     }
 
     public float getFloat(String property) {
-        final Object v = this.getObject(property);
+        final Object v = this.getDefault(property);
         if(null == v) {
             return -1;
         }
@@ -624,7 +688,7 @@ public abstract class Preferences {
     }
 
     public long getLong(String property) {
-        final Object v = this.getObject(property);
+        final Object v = this.getDefault(property);
         if(null == v) {
             return -1;
         }
@@ -632,7 +696,7 @@ public abstract class Preferences {
     }
 
     public double getDouble(String property) {
-        final Object v = this.getObject(property);
+        final Object v = this.getDefault(property);
         if(null == v) {
             return -1;
         }
@@ -640,7 +704,7 @@ public abstract class Preferences {
     }
 
     public boolean getBoolean(String property) {
-        final Object v = this.getObject(property);
+        final Object v = this.getDefault(property);
         if(null == v) {
             return false;
         }
@@ -676,8 +740,35 @@ public abstract class Preferences {
     protected abstract void load();
 
     /**
-     * @return The preferred locale of all available in this application bundle
-     *         for the currently logged in user
+     * @return The preferred locale of all localizations available
+     *         in this application bundle
      */
-    protected abstract String locale();
+    public String locale() {
+        return this.applicationLocales().iterator().next();
+    }
+
+    /**
+     * The localizations available in this application bundle
+     * sorted by preference by the user.
+     *
+     * @return
+     */
+    public abstract List<String> applicationLocales();
+
+    public abstract List<String> systemLocales();
+
+    /**
+     * @param locale ISO Language identifier
+     * @return Human readable language name in the target language
+     */
+    public String getDisplayName(String locale) {
+        java.util.Locale l;
+        if(StringUtils.contains(locale, "_")) {
+            l = new java.util.Locale(locale.split("_")[0], locale.split("_")[1]);
+        }
+        else {
+            l = new java.util.Locale(locale);
+        }
+        return StringUtils.capitalize(l.getDisplayName(l));
+    }
 }
