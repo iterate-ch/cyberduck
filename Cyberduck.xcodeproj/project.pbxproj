@@ -20,6 +20,7 @@
 		4717BE190F3096FD00BB4496 /* dav.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE120F3096FD00BB4496 /* dav.icns */; };
 		4717BE1A0F3096FD00BB4496 /* cf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE130F3096FD00BB4496 /* cf.icns */; };
 		4717BE1C0F3096FD00BB4496 /* sftp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE150F3096FD00BB4496 /* sftp.icns */; };
+		4717E01A1146657200F095D2 /* language.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4717E0191146657200F095D2 /* language.tiff */; };
 		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
 		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
 		4718C202107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1FF107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h */; };
@@ -479,6 +480,7 @@
 		4717BE120F3096FD00BB4496 /* dav.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dav.icns; sourceTree = "<group>"; };
 		4717BE130F3096FD00BB4496 /* cf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = cf.icns; sourceTree = "<group>"; };
 		4717BE150F3096FD00BB4496 /* sftp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = sftp.icns; sourceTree = "<group>"; };
+		4717E0191146657200F095D2 /* language.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = language.tiff; sourceTree = "<group>"; };
 		47181E840E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E850E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Info.nib; sourceTree = "<group>"; };
 		47181E860E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1827,6 +1829,7 @@
 				47D31BFD1013AD19006423B2 /* eucalyptus-icon.png */,
 				47D327A30F0829EC00619C38 /* rendezvous.tiff */,
 				47D327C40F096E6C00619C38 /* site.tiff */,
+				4717E0191146657200F095D2 /* language.tiff */,
 				479F9DFF0C0E210100610A91 /* goto.tiff */,
 				479982810D26DA8200DB5353 /* executable.tiff */,
 				4741653D06C4FC3F00AC0BD2 /* add.tiff */,
@@ -2601,6 +2604,7 @@
 				47C4E87710584D710001F618 /* bookmark.png in Resources */,
 				479C7F4A1100EF72002AEFE5 /* update.pem in Resources */,
 				479C3B2A112D84D100F04C16 /* g-icon.png in Resources */,
+				4717E01A1146657200F095D2 /* language.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
