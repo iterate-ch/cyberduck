@@ -81,15 +81,24 @@ public class AbstractTestCase extends TestCase {
             @Override
             protected Preferences create() {
                 return new Preferences() {
-
                     @Override
                     public void setProperty(String property, String value) {
                         ;
                     }
 
                     @Override
+                    public void setProperty(String property, List<String> values) {
+                        ;
+                    }
+
+                    @Override
                     public void deleteProperty(String property) {
                         ;
+                    }
+
+                    @Override
+                    public List<String> getList(String property) {
+                        return Collections.emptyList();
                     }
 
                     @Override
@@ -103,8 +112,18 @@ public class AbstractTestCase extends TestCase {
                     }
 
                     @Override
-                    protected String locale() {
+                    public String locale() {
                         return Locale.getDefault().toString();
+                    }
+
+                    @Override
+                    public List<String> applicationLocales() {
+                        return Collections.emptyList();
+                    }
+
+                    @Override
+                    public List<String> systemLocales() {
+                        return Collections.emptyList();
                     }
                 };
             }
@@ -147,7 +166,7 @@ public class AbstractTestCase extends TestCase {
             protected Deserializer create(final Map<String, Object> dict) {
                 return new Deserializer() {
                     public String stringForKey(String key) {
-                        return (String)dict.get(key);
+                        return (String) dict.get(key);
                     }
 
                     public Object objectForKey(String key) {
