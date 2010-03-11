@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
@@ -129,7 +130,7 @@ public class ProgressController extends BundleController {
                         setProgressText();
                         setStatusText();
                         statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
-                        filesPopup.itemAtIndex(0).setEnabled(transfer.getRoot().getLocal().exists());
+                        filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
                     }
                 });
             }
@@ -256,14 +257,14 @@ public class ProgressController extends BundleController {
         progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         messageField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         if(transfer.getRoot().getLocal().exists()) {
-            filesPopup.itemAtIndex(0).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(0).title(),
+            filesPopup.itemAtIndex(new NSInteger(0)).setAttributedTitle(
+                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
                             highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
             );
         }
         else {
-            filesPopup.itemAtIndex(0).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(0).title(),
+            filesPopup.itemAtIndex(new NSInteger(0)).setAttributedTitle(
+                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
                             highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
             );
         }

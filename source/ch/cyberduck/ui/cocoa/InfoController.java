@@ -36,6 +36,7 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
@@ -272,7 +273,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void s3CachePopupClicked(final NSPopUpButton sender) {
-        if(sender.indexOfSelectedItem() == 0) {
+        if(sender.indexOfSelectedItem().intValue() == 0) {
             this.toggleS3Settings(false);
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
@@ -287,7 +288,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             });
         }
-        if(sender.indexOfSelectedItem() == 1) {
+        if(sender.indexOfSelectedItem().intValue() == 1) {
             final String cache = sender.selectedItem().title();
             this.toggleS3Settings(false);
             controller.background(new BrowserBackgroundAction(controller) {
@@ -404,6 +405,7 @@ public class InfoController extends ToolbarWindowController {
     public void setWindow(NSWindow window) {
         title = window.title();
         window.setShowsResizeIndicator(true);
+        window.setMaxSize(new NSSize(500, window.maxSize().height.doubleValue()));
         super.setWindow(window);
     }
 
@@ -980,7 +982,7 @@ public class InfoController extends ToolbarWindowController {
                     if(metadata.containsKey(S3Path.METADATA_HEADER_CACHE_CONTROL)) {
                         String cache = (String) metadata.get(S3Path.METADATA_HEADER_CACHE_CONTROL);
                         if(StringUtils.isNotBlank(cache)) {
-                            if(s3CachePopup.indexOfItemWithTitle(cache) == -1) {
+                            if(s3CachePopup.indexOfItemWithTitle(cache).intValue() == -1) {
                                 s3CachePopup.addItemWithTitle(cache);
                             }
                             s3CachePopup.selectItemWithTitle(cache);

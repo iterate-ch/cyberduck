@@ -1423,7 +1423,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.actionPopupButton = actionPopupButton;
         this.actionPopupButton.setPullsDown(true);
         this.actionPopupButton.setAutoenablesItems(true);
-        this.actionPopupButton.itemAtIndex(0).setImage(IconCache.iconNamed("gear.tiff"));
+        this.actionPopupButton.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("gear.tiff"));
     }
 
     @Outlet
@@ -1755,9 +1755,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Action
-    public void pathPopupSelectionChanged(final ID sender) {
-        final String selected = pathPopupButton.itemAtIndex(
-                pathPopupButton.indexOfSelectedItem()).representedObject();
+    public void pathPopupSelectionChanged(final NSPopUpButton sender) {
+        final String selected = sender.selectedItem().representedObject();
         final Path previous = this.workdir();
         if(selected != null) {
             final Path path = PathFactory.createPath(session, selected, Path.DIRECTORY_TYPE);

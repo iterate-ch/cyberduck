@@ -30,6 +30,8 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.*;
@@ -429,20 +431,20 @@ public class BookmarkController extends WindowController {
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, "");
-        this.downloadPathPopup.itemAtIndex(this.downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
+        this.downloadPathPopup.lastItem().setTarget(this.id());
     }
 
     private void addDownloadPath(Selector action, Local f) {
         if(downloadPathPopup.menu().itemWithTitle(f.getDisplayName()) == null) {
             downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, "");
-            downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setTarget(this.id());
-            downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setImage(
+            downloadPathPopup.lastItem().setTarget(this.id());
+            downloadPathPopup.lastItem().setImage(
                     IconCache.instance().iconForPath(f, 16)
             );
-            downloadPathPopup.itemAtIndex(downloadPathPopup.numberOfItems() - 1).setRepresentedObject(
+            downloadPathPopup.lastItem().setRepresentedObject(
                     f.getAbsolute());
             if(host.getDownloadFolder().equals(f)) {
-                downloadPathPopup.selectItemAtIndex(downloadPathPopup.numberOfItems() - 1);
+                downloadPathPopup.selectItem(downloadPathPopup.lastItem());
             }
         }
     }
@@ -473,10 +475,10 @@ public class BookmarkController extends WindowController {
                 host.setDownloadFolder(selected.lastObject().toString());
             }
         }
-        downloadPathPopup.itemAtIndex(0).setTitle(host.getDownloadFolder().getDisplayName());
-        downloadPathPopup.itemAtIndex(0).setRepresentedObject(host.getDownloadFolder().getAbsolute());
-        downloadPathPopup.itemAtIndex(0).setImage(IconCache.instance().iconForPath(host.getDownloadFolder(), 16));
-        downloadPathPopup.selectItemAtIndex(0);
+        downloadPathPopup.itemAtIndex(new NSInteger(0)).setTitle(host.getDownloadFolder().getDisplayName());
+        downloadPathPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(host.getDownloadFolder().getAbsolute());
+        downloadPathPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.instance().iconForPath(host.getDownloadFolder(), 16));
+        downloadPathPopup.selectItemAtIndex(new NSInteger(0));
         downloadPathPanel = null;
         this.itemChanged();
     }
@@ -559,6 +561,12 @@ public class BookmarkController extends WindowController {
         this.updateFavicon();
 
         super.awakeFromNib();
+    }
+
+    @Override
+    public void setWindow(NSWindow window) {
+        window.setMaxSize(new NSSize(600, window.maxSize().height.doubleValue()));
+        super.setWindow(window);
     }
 
     @Outlet

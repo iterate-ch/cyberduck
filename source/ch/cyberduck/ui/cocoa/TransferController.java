@@ -211,7 +211,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.bandwidthPopup.setAllowsMixedState(true);
         this.bandwidthPopup.setTarget(this.id());
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
-        this.bandwidthPopup.itemAtIndex(0).setImage(IconCache.iconNamed("bandwidth", 16));
+        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth", 16));
         this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthDelegate()).id());
     }
 
@@ -514,12 +514,12 @@ public class TransferController extends WindowController implements NSToolbar.De
             }
             if(transfer.getBandwidth() != BandwidthThrottle.UNLIMITED) {
                 // Mark as throttled
-                this.bandwidthPopup.itemAtIndex(0).setImage(IconCache.iconNamed("turtle.tiff"));
+                this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("turtle.tiff"));
                 return;
             }
         }
         // Set the standard icon
-        this.bandwidthPopup.itemAtIndex(0).setImage(IconCache.iconNamed("bandwidth", 16));
+        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth", 16));
     }
 
     private void reloadData() {
