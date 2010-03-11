@@ -538,6 +538,7 @@ public abstract class Preferences {
         defaults.put("google.docs.export.spreadsheet.formats", "xls,csv,pdf,ods,tsv,html");
 
         defaults.put("google.docs.upload.convert", String.valueOf(true));
+        defaults.put("google.docs.upload.ocr", String.valueOf(true));
 
         /**
          * NTLM Windows Domain
