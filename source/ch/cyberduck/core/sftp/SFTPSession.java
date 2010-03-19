@@ -26,6 +26,7 @@ import ch.ethz.ssh2.channel.ChannelClosedException;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.sftp.SFTPv3Client;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -190,25 +191,23 @@ public class SFTPSession extends Session {
         this.login();
     }
 
+    /**
+     * Authenticate with public key
+     *
+     * @param credentials
+     * @return True if authentication succeeded
+     * @throws IOException
+     */
     private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
             final Local identity = host.getCredentials().getIdentity();
             if(identity.exists()) {
                 // If the private key is passphrase protected then ask for the passphrase
-                char[] buff = new char[256];
-                CharArrayWriter cw = new CharArrayWriter();
-                FileReader fr = new FileReader(new File(identity.getAbsolute()));
-                while(true) {
-                    int len = fr.read(buff);
-                    if(len < 0) {
-                        break;
-                    }
-                    cw.write(buff, 0, len);
-                }
-                fr.close();
-                String passphrase = null;
-                if(PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
+                CharArrayWriter privatekey = new CharArrayWriter();
+                IOUtils.copy(new FileReader(new File(identity.getAbsolute())), privatekey);
+                String passphrase;
+                if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
                     passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
                         login.prompt(host,
@@ -216,20 +215,29 @@ public class SFTPSession extends Session {
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
                         passphrase = credentials.getPassword();
-                        if(credentials.usesKeychain() && PEMDecoder.isPEMEncrypted(cw.toCharArray())) {
-                            KeychainFactory.instance().addPassword("SSHKeychain", identity.toURL(),
-                                    passphrase);
+                        if(credentials.usesKeychain()) {
+                            KeychainFactory.instance().addPassword("SSHKeychain", identity.toURL(), passphrase);
                         }
                     }
                 }
-                return this.getClient().authenticateWithPublicKey(host.getCredentials().getUsername(), new File(identity.getAbsolute()),
-                        passphrase);
+                else {
+                    passphrase = privatekey.toString();
+                }
+                return this.getClient().authenticateWithPublicKey(host.getCredentials().getUsername(), 
+                        privatekey.toCharArray(), passphrase);
             }
             log.error("Key file " + identity.getAbsolute() + " does not exist.");
         }
         return false;
     }
 
+    /**
+     * Authenticate with plain password.
+     *
+     * @param credentials
+     * @return True if authentication succeeded
+     * @throws IOException
+     */
     private boolean loginUsingPasswordAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPasswordAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
@@ -238,6 +246,13 @@ public class SFTPSession extends Session {
         return false;
     }
 
+    /**
+     * Authenticate using challenge and response method.
+     *
+     * @param credentials
+     * @return True if authentication succeeded
+     * @throws IOException
+     */
     private boolean loginUsingKBIAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingKBIAuthentication" +
                 "make:" + credentials);
