@@ -70,6 +70,9 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     }
 
     public boolean isHostExcluded(String hostname) {
+        if(!Preferences.instance().getBoolean("connection.proxy.enable")) {
+            return false;
+        }
         if(!loadNative()) {
             return false;
         }
@@ -85,6 +88,9 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     public native boolean isHostExcludedNative(String hostname);
 
     public boolean isSOCKSProxyEnabled() {
+        if(!Preferences.instance().getBoolean("connection.proxy.enable")) {
+            return false;
+        }
         if(!loadNative()) {
             return false;
         }
@@ -106,6 +112,9 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     }
 
     public boolean isHTTPProxyEnabled() {
+        if(!Preferences.instance().getBoolean("connection.proxy.enable")) {
+            return false;
+        }
         if(!loadNative()) {
             return false;
         }
@@ -127,6 +136,9 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     }
 
     public boolean isHTTPSProxyEnabled() {
+        if(!Preferences.instance().getBoolean("connection.proxy.enable")) {
+            return false;
+        }
         if(!loadNative()) {
             return false;
         }

@@ -2156,4 +2156,38 @@ public class PreferencesController extends ToolbarWindowController {
                     Collections.singletonList(sender.selectedItem().representedObject()));
         }
     }
+
+    @Outlet
+    private NSPopUpButton useProxiesButton;
+
+    public void setUseProxiesButton(NSPopUpButton useProxiesButton) {
+        this.useProxiesButton = useProxiesButton;
+        this.useProxiesButton.setTarget(this.id());
+        this.useProxiesButton.setAction(Foundation.selector("useProxiesButtonClicked:"));
+        this.useProxiesButton.setState(Preferences.instance().getBoolean("connection.proxy.enable") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void useProxiesButtonClicked(NSButton sender) {
+        Preferences.instance().setProperty("connection.proxy.enable", sender.state() == NSCell.NSOnState);
+    }
+
+    @Outlet
+    private NSPopUpButton configureProxiesButton;
+
+    public void setConfigureProxiesButton(NSPopUpButton configureProxiesButton) {
+        this.configureProxiesButton = configureProxiesButton;
+        this.configureProxiesButton.setTarget(this.id());
+        this.configureProxiesButton.setAction(Foundation.selector("configureProxiesButtonClicked:"));
+    }
+
+    @Action
+    public void configureProxiesButtonClicked(NSButton sender) {
+        final String script = "tell application \"System Preferences\"\n" +
+                "activate\n" +
+                "reveal anchor \"Proxies\" of pane \"com.apple.preference.network\"\n" +
+                "end tell";
+        NSAppleScript open = NSAppleScript.createWithSource(script);
+        open.executeAndReturnError(null);
+    }
 }

@@ -587,6 +587,11 @@ public abstract class Preferences {
          */
         defaults.put("connection.dns.ipv6", String.valueOf(false));
 
+        /**
+         * Read proxy settings from system preferences
+         */
+        defaults.put("connection.proxy.enable", String.valueOf(true));
+
         defaults.put("transcript.length", String.valueOf(1000));
 
         /**
