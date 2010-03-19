@@ -1181,7 +1181,7 @@ public class InfoController extends ToolbarWindowController {
     private void toggleDistributionSettings(boolean enabled) {
         distributionEnableButton.setEnabled(enabled);
         distributionLoggingButton.setEnabled(enabled);
-        distributionLoggingButton.setEnabled(enabled);
+        distributionCnameField.setEnabled(enabled);
         distributionDeliveryPopup.setEnabled(enabled);
         if(enabled) {
             distributionProgress.stopAnimation(null);
