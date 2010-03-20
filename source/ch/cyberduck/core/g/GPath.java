@@ -303,9 +303,17 @@ public class GPath extends Path {
                     this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                             this.getName()));
                     getStatus().setCurrent(0);
-                    session.getClient().insert(new URL("https://docs.google.com/feeds/default/private/full/?convert="
-                            + Preferences.instance().getBoolean("google.docs.upload.convert")), document);
 
+                    StringBuilder url = new StringBuilder("https://docs.google.com/feeds/default/private/full/");
+                    if(this.isOcrSupported()) {
+                        // Image file type
+                        url.append("?ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
+                    }
+                    else if(this.isConversionSupported()) {
+                        // Convertible to Google Docs file type
+                        url.append("?convert=").append(Preferences.instance().getProperty("google.docs.upload.convert"));
+                    }
+                    session.getClient().insert(new URL(url.toString()), document);
                     getStatus().setCurrent(this.getLocal().attributes.getSize());
                     listener.bytesSent(this.getLocal().attributes.getSize());
                     getStatus().setComplete(true);
@@ -321,6 +329,21 @@ public class GPath extends Path {
         catch(IOException e) {
             this.error("Upload failed", e);
         }
+    }
+
+    /**
+     * @return True for image formats supported by OCR
+     */
+    protected boolean isOcrSupported() {
+        return this.getMimeType().endsWith("png") || this.getMimeType().endsWith("jpeg")
+                || this.getMimeType().endsWith("gif");
+    }
+
+    /**
+     * @return True if the document, spreadsheet or presentation format is recognized by Google Docs.
+     */
+    protected boolean isConversionSupported() {
+        return true;
     }
 
     @Override
@@ -432,7 +455,10 @@ public class GPath extends Path {
     @Override
     public String getMimeType() {
         if(attributes.isFile()) {
-            return getMimeType(getExportFormat(this.getDocumentType()));
+            final String exportFormat = getExportFormat(this.getDocumentType());
+            if(StringUtils.isNotEmpty(exportFormat)) {
+                return getMimeType(exportFormat);
+            }
         }
         return super.getMimeType();
     }
