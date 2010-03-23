@@ -55,7 +55,7 @@ public abstract class AbstractProxy implements Proxy {
             // can either be a SOCKS v4 or v5 server and it has to allow for
             // unauthenticated connections.
             final int port = this.getSOCKSProxyPort();
-            properties.put(SOCKS_PORT, port);
+            properties.put(SOCKS_PORT, Integer.toString(port));
             final String proxy = this.getSOCKSProxyHost();
             properties.put(SOCKS_HOST, proxy);
             log.info("Using SOCKS Proxy " + proxy + ":" + port);
