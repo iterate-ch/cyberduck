@@ -75,7 +75,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSView panelEditor;
     @Outlet
-    private NSView panelInterface;
+    private NSView panelBrowser;
     @Outlet
     private NSView panelTransfer;
     @Outlet
@@ -127,8 +127,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.panelTransfer = panelTransfer;
     }
 
-    public void setPanelInterface(NSView panelInterface) {
-        this.panelInterface = panelInterface;
+    public void setPanelBrowser(NSView panelBrowser) {
+        this.panelBrowser = panelBrowser;
     }
 
     public void setPanelGeneral(NSView panelGeneral) {
@@ -145,8 +145,8 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Override
     protected List<NSView> getPanels() {
-        return Arrays.asList(panelGeneral, panelInterface, panelTransfer, panelEditor, panelFTP, panelSFTP, panelS3,
-                panelGoogle, panelBandwidth, panelAdvanced, panelUpdate, panelLanguage);
+        return Arrays.asList(panelGeneral, panelBrowser, panelTransfer, panelEditor, panelFTP, panelSFTP, panelS3,
+                panelBandwidth, panelAdvanced, panelUpdate, panelLanguage);
     }
 
     @Override

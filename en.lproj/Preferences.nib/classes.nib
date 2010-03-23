@@ -67,7 +67,11 @@
 				<string>NSButton</string>
 				<key>chmodUploadTypePopup</key>
 				<string>NSPopUpButton</string>
+				<key>configureProxiesButton</key>
+				<string>NSButton</string>
 				<key>confirmDisconnectCheckbox</key>
+				<string>NSButton</string>
+				<key>convertUploadsCheckbox</key>
 				<string>NSButton</string>
 				<key>defaultBookmarkCombobox</key>
 				<string>NSPopUpButton</string>
@@ -89,6 +93,8 @@
 				<string>NSButton</string>
 				<key>dgroupx</key>
 				<string>NSButton</string>
+				<key>documentExportFormatPopup</key>
+				<string>NSPopUpButton</string>
 				<key>dotherr</key>
 				<string>NSButton</string>
 				<key>dotherw</key>
@@ -131,10 +137,14 @@
 				<string>NSButton</string>
 				<key>keychainCheckbox</key>
 				<string>NSButton</string>
+				<key>languagePopup</key>
+				<string>NSPopUpButton</string>
 				<key>lineEndingCombobox</key>
 				<string>NSPopUpButton</string>
 				<key>loginField</key>
 				<string>NSTextField</string>
+				<key>ocrUploadsCheckbox</key>
+				<string>NSButton</string>
 				<key>openAfterDownloadCheckbox</key>
 				<string>NSButton</string>
 				<key>openUntitledBrowserCheckbox</key>
@@ -143,13 +153,17 @@
 				<string>NSView</string>
 				<key>panelBandwidth</key>
 				<string>NSView</string>
+				<key>panelBrowser</key>
+				<string>NSView</string>
 				<key>panelEditor</key>
 				<string>NSView</string>
 				<key>panelFTP</key>
 				<string>NSView</string>
 				<key>panelGeneral</key>
 				<string>NSView</string>
-				<key>panelInterface</key>
+				<key>panelGoogle</key>
+				<string>NSView</string>
+				<key>panelLanguage</key>
 				<string>NSView</string>
 				<key>panelS3</key>
 				<string>NSView</string>
@@ -159,6 +173,8 @@
 				<string>NSView</string>
 				<key>panelUpdate</key>
 				<string>NSView</string>
+				<key>presentationExportFormatPopup</key>
+				<string>NSPopUpButton</string>
 				<key>preserveModificationDownloadCheckbox</key>
 				<string>NSButton</string>
 				<key>preserveModificationUploadCheckbox</key>
@@ -173,6 +189,8 @@
 				<string>NSButton</string>
 				<key>showHiddenCheckbox</key>
 				<string>NSButton</string>
+				<key>spreadsheetExportFormatPopup</key>
+				<string>NSPopUpButton</string>
 				<key>sshTransfersCombobox</key>
 				<string>NSPopUpButton</string>
 				<key>tabView</key>
@@ -209,6 +227,8 @@
 				<string>NSButton</string>
 				<key>uploadSkipRegexField</key>
 				<string>NSTextView</string>
+				<key>useProxiesButton</key>
+				<string>NSButton</string>
 				<key>verticalLinesCheckbox</key>
 				<string>NSButton</string>
 				<key>window</key>
