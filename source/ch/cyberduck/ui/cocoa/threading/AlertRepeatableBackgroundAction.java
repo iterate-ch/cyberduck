@@ -80,8 +80,9 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
 
                 @Override
                 public void awakeFromNib() {
-                    this.setState(this.transcriptButton,
-                            transcript.length() > 0 && Preferences.instance().getBoolean("alert.toggle.transcript"));
+                    final boolean log = transcript.length() > 0;
+                    this.setState(transcriptButton, log && Preferences.instance().getBoolean("alert.toggle.transcript"));
+                    transcriptButton.setEnabled(log);
                     super.awakeFromNib();
                 }
 
