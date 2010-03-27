@@ -1,21 +1,22 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
@@ -212,10 +213,10 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.bandwidthPopup.setTarget(this.id());
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
         this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth", 16));
-        this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthDelegate()).id());
+        this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthMenuDelegate()).id());
     }
 
-    private class BandwidthDelegate extends AbstractMenuDelegate {
+    private class BandwidthMenuDelegate extends AbstractMenuDelegate {
         public NSInteger numberOfItemsInMenu(NSMenu menu) {
             return menu.numberOfItems();
         }
@@ -265,6 +266,9 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.updateBandwidthPopup();
     }
 
+    /**
+     * Loading bundle
+     */
     private TransferController() {
         this.loadBundle();
     }
@@ -292,11 +296,10 @@ public class TransferController extends WindowController implements NSToolbar.De
         super.invalidate();
     }
 
-    /*
-      * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
-      * running transfers to be checked first
-      */
-
+    /**
+     * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
+     *         running transfers to be checked first
+     */
     public static NSUInteger applicationShouldTerminate(final NSApplication app) {
         if(null != instance) {
             //Saving state of transfer window
@@ -823,7 +826,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
-            if(transfer.isRunning() || transfer.isQueued()) {
+            if(transfer.isRunning()) {
                 this.background(new AbstractBackgroundAction() {
                     public void run() {
                         transfer.cancel();
@@ -837,7 +840,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     public void stopAllButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(final Transfer transfer : transfers) {
-            if(transfer.isRunning() || transfer.isQueued()) {
+            if(transfer.isRunning()) {
                 this.background(new AbstractBackgroundAction() {
                     public void run() {
                         transfer.cancel();
@@ -853,7 +856,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
-            if(!transfer.isRunning() && !transfer.isQueued()) {
+            if(!transfer.isRunning()) {
                 this.startTransfer(transfer, true, false);
             }
         }
@@ -865,7 +868,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
-            if(!transfer.isRunning() && !transfer.isQueued()) {
+            if(!transfer.isRunning()) {
                 this.startTransfer(transfer, false, true);
             }
         }
@@ -905,8 +908,10 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void revealButtonClicked(final ID sender) {
-        if(transferTable.numberOfSelectedRows().intValue() == 1) {
-            final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
+        NSIndexSet iterator = transferTable.selectedRowIndexes();
+        final Collection<Transfer> transfers = transferTableModel.getSource();
+        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+            final Transfer transfer = transfers.get(index.intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
                 // If a second path argument is specified, a new file viewer is opened. If you specify an
@@ -946,7 +951,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
-            if(!transfer.isRunning() && !transfer.isQueued()) {
+            if(!transfer.isRunning()) {
                 TransferCollection.instance().remove(transfer);
             }
         }
@@ -958,7 +963,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     public void clearButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(Transfer transfer : transfers) {
-            if(!transfer.isRunning() && !transfer.isQueued() && transfer.isComplete()) {
+            if(!transfer.isRunning() && transfer.isComplete()) {
                 TransferCollection.instance().remove(transfer);
             }
         }
@@ -972,7 +977,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
-            if(!transfer.isRunning() && !transfer.isQueued()) {
+            if(!transfer.isRunning()) {
                 for(Path path : transfer.getRoots()) {
                     path.getLocal().delete();
                 }
@@ -1073,7 +1078,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         if(action.equals(Foundation.selector("stopButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
-                    return transfer.isRunning() || transfer.isQueued();
+                    return transfer.isRunning();
                 }
             });
         }
@@ -1081,14 +1086,14 @@ public class TransferController extends WindowController implements NSToolbar.De
                 || action.equals(Foundation.selector("deleteButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
-                    return !transfer.isRunning() && !transfer.isQueued();
+                    return !transfer.isRunning();
                 }
             });
         }
         if(action.equals(Foundation.selector("resumeButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
-                    if(transfer.isRunning() || transfer.isQueued()) {
+                    if(transfer.isRunning()) {
                         return false;
                     }
                     return transfer.isResumable();
