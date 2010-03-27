@@ -1,21 +1,22 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
@@ -405,8 +406,12 @@ public class InfoController extends ToolbarWindowController {
     public void setWindow(NSWindow window) {
         title = window.title();
         window.setShowsResizeIndicator(true);
-        window.setMaxSize(new NSSize(500, window.maxSize().height.doubleValue()));
         super.setWindow(window);
+    }
+
+    @Override
+    protected double getMaxWindowWidth() {
+        return 500;
     }
 
     @Override

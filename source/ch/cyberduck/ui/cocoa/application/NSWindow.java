@@ -1223,6 +1223,7 @@ public abstract class NSWindow extends NSResponder {
      * <i>native declaration : :480</i><br>
      * Conversion Error : NSSize
      */
+    public abstract NSSize minSize();
     /**
      * <i>native declaration : :481</i><br>
      * Conversion Error : NSSize

@@ -1,21 +1,22 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
@@ -146,7 +147,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     protected List<NSView> getPanels() {
         return Arrays.asList(panelGeneral, panelBrowser, panelTransfer, panelEditor, panelFTP, panelSFTP, panelS3,
-                panelBandwidth, panelAdvanced, panelUpdate, panelLanguage);
+                /*panelGoogle,*/ panelBandwidth, panelAdvanced, panelUpdate, panelLanguage);
     }
 
     @Override
@@ -160,8 +161,12 @@ public class PreferencesController extends ToolbarWindowController {
     public void setWindow(NSWindow window) {
         window.setExcludedFromWindowsMenu(true);
         window.setFrameAutosaveName("Preferences");
-        window.setMaxSize(new NSSize(700, window.maxSize().height.doubleValue()));
         super.setWindow(window);
+    }
+
+    @Override
+    protected double getMaxWindowWidth() {
+        return 700;
     }
 
     @Override

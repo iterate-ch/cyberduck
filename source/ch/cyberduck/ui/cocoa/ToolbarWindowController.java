@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- * Copyright (c) 2002-2009 David Kocher. All rights reserved.
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
  * http://cyberduck.ch/
  *
@@ -22,9 +22,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -103,6 +100,8 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setDelegate(this.id());
         window.setShowsToolbarButton(false);
         super.setWindow(window);
+//        window.setMinSize(new NSSize(this.getMinWindowWidth(), this.getMinWindowHeight()));
+        window.setMaxSize(new NSSize(this.getMaxWindowWidth(), this.getMaxWindowHeight()));
     }
 
     private NSToolbar toolbar;
@@ -202,16 +201,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     private void resize() {
         NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(this.window().frame(), this.window().styleMask());
 
-        NSRect contentRect = new NSRect(0, 0);
-        final NSView view = tabView.selectedTabViewItem().view();
-        final NSEnumerator enumerator = view.subviews().objectEnumerator();
-        NSObject next;
-        while(null != (next = enumerator.nextObject())) {
-            final NSView subview = Rococoa.cast(next, NSView.class);
-            contentRect = FoundationKitFunctionsLibrary.NSUnionRect(contentRect, subview.frame());
-        }
-        //Border top + toolbar
-        double height = contentRect.size.height.doubleValue() + 40 + this.toolbarHeightForWindow(this.window());
+        double height = this.getMinWindowHeight();
 
         NSRect frameRect = new NSRect(
                 new NSPoint(windowFrame.origin.x.doubleValue(), windowFrame.origin.y.doubleValue() + windowFrame.size.height.doubleValue() - height),
@@ -231,16 +221,51 @@ public abstract class ToolbarWindowController extends WindowController implement
      * @return
      */
     private double toolbarHeightForWindow(NSWindow window) {
-        if(window.toolbar().isVisible()) {
-            NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(this.window().frame(), this.window().styleMask());
-            return windowFrame.size.height.doubleValue() - this.window().contentView().frame().size.height.doubleValue();
-        }
-        return 0;
+        NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(this.window().frame(), this.window().styleMask());
+        return windowFrame.size.height.doubleValue() - this.window().contentView().frame().size.height.doubleValue();
     }
 
     public void tabView_didSelectTabViewItem(NSTabView tabView, NSTabViewItem tabViewItem) {
         this.window.setTitle(windowTitle + " – " + this.getTitle(tabViewItem));
         this.resize();
-        Preferences.instance().setProperty(this.getToolbarName() + ".selected", tabView.indexOfTabViewItem(tabViewItem));
+        Preferences.instance().setProperty(this.getToolbarName() + ".selected",
+                tabView.indexOfTabViewItem(tabViewItem));
+    }
+
+    protected double getMaxWindowHeight() {
+        return window.maxSize().height.doubleValue();
+    }
+
+    protected double getMaxWindowWidth() {
+        return window.maxSize().width.doubleValue();
+    }
+
+    protected double getMinWindowHeight() {
+        NSRect contentRect = this.getContentRect();
+        //Border top + toolbar
+        final double height = contentRect.size.height.doubleValue()
+                + 40 + this.toolbarHeightForWindow(this.window());
+//        log.debug("getMinWindowHeight:" + height);
+        return height;
+    }
+
+    protected double getMinWindowWidth() {
+        NSRect contentRect = this.getContentRect();
+        final double width = contentRect.size.width.doubleValue();
+//        log.debug("getMinWindowWidth:" + width);
+        return width;
+    }
+
+    private NSRect getContentRect() {
+        NSRect contentRect = new NSRect(0, 0);
+        final NSView view = tabView.selectedTabViewItem().view();
+        final NSEnumerator enumerator = view.subviews().objectEnumerator();
+        NSObject next;
+        while(null != (next = enumerator.nextObject())) {
+            final NSView subview = Rococoa.cast(next, NSView.class);
+            contentRect = FoundationKitFunctionsLibrary.NSUnionRect(contentRect, subview.frame());
+        }
+        return contentRect;
+//        return this.window().contentView().frame();
     }
 }
