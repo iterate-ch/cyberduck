@@ -1,21 +1,22 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2006 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.serializer.TransferReaderFactory;
@@ -54,7 +55,7 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     @Override
-    public  boolean add(Transfer o) {
+    public boolean add(Transfer o) {
         boolean r = super.add(o);
         this.save();
         return r;
@@ -68,7 +69,7 @@ public class TransferCollection extends Collection<Transfer> {
      * @see #save()
      */
     @Override
-    public  void add(int row, Transfer o) {
+    public void add(int row, Transfer o) {
         super.add(row, o);
         this.save();
     }
@@ -81,7 +82,7 @@ public class TransferCollection extends Collection<Transfer> {
      * @see #save()
      */
     @Override
-    public  Transfer remove(int row) {
+    public Transfer remove(int row) {
         return super.remove(row);
     }
 
@@ -89,7 +90,7 @@ public class TransferCollection extends Collection<Transfer> {
         this.save(QUEUE_FILE);
     }
 
-    private  void save(Local f) {
+    private void save(Local f) {
         log.debug("save");
         if(Preferences.instance().getBoolean("queue.save")) {
             TransferWriterFactory.instance().write(this, f);
@@ -100,7 +101,7 @@ public class TransferCollection extends Collection<Transfer> {
         this.load(QUEUE_FILE);
     }
 
-    private  void load(Local f) {
+    private void load(Local f) {
         log.debug("load");
         if(f.exists()) {
             log.info("Found Queue file: " + f.toString());
@@ -111,7 +112,7 @@ public class TransferCollection extends Collection<Transfer> {
     /**
      * @return
      */
-    public  int numberOfRunningTransfers() {
+    public int numberOfRunningTransfers() {
         int running = 0;
         // Count the number of running transfers
         for(Transfer t : this) {
@@ -129,7 +130,7 @@ public class TransferCollection extends Collection<Transfer> {
     /**
      * @return
      */
-    public  int numberOfQueuedTransfers() {
+    public int numberOfQueuedTransfers() {
         int queued = 0;
         // Count the number of queued transfers
         for(Transfer t : this) {
