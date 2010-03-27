@@ -162,6 +162,10 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
 
         configuration.setProperty("downloads.restoreLastModifiedDate",
                 Preferences.instance().getProperty("queue.download.preserveDate"));
+
+        // Upload throttle in Kilobytes
+        configuration.setProperty("httpclient.read-throttle", 
+                String.valueOf(Preferences.instance().getFloat("queue.upload.bandwidth.bytes") / 1024));
     }
 
     /**
