@@ -24,6 +24,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.ethz.ssh2.*;
 import ch.ethz.ssh2.channel.ChannelClosedException;
 import ch.ethz.ssh2.crypto.PEMDecoder;
+import ch.ethz.ssh2.crypto.PEMDecryptException;
 import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 import org.apache.commons.io.IOUtils;
@@ -223,8 +224,20 @@ public class SFTPSession extends Session {
                 else {
                     passphrase = privatekey.toString();
                 }
-                return this.getClient().authenticateWithPublicKey(host.getCredentials().getUsername(), 
-                        privatekey.toCharArray(), passphrase);
+                try {
+                    return this.getClient().authenticateWithPublicKey(host.getCredentials().getUsername(),
+                            privatekey.toCharArray(), passphrase);
+                }
+                catch(IOException e) {
+                    if(e.getCause() instanceof PEMDecryptException) {
+                        this.message(Locale.localizedString("Login failed", "Credentials"));
+                        this.login.fail(host, e.getCause().getMessage());
+                        this.login();
+                    }
+                    else {
+                        throw e;
+                    }
+                }
             }
             log.error("Key file " + identity.getAbsolute() + " does not exist.");
         }
@@ -442,6 +455,7 @@ public class SFTPSession extends Session {
 
     /**
      * No resume supported for SCP transfers.
+     *
      * @return
      */
     private boolean isTransferResumable() {

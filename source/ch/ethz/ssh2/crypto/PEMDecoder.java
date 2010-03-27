@@ -106,12 +106,12 @@ public class PEMDecoder
 		int rfc_1423_padding = buff[buff.length - 1] & 0xff;
 
 		if ((rfc_1423_padding < 1) || (rfc_1423_padding > blockSize))
-			throw new IOException("Decrypted PEM has wrong padding, did you specify the correct password?");
+			throw new PEMDecryptException("Decrypted PEM has wrong padding, did you specify the correct password?");
 
 		for (int i = 2; i <= rfc_1423_padding; i++)
 		{
 			if (buff[buff.length - i] != rfc_1423_padding)
-				throw new IOException("Decrypted PEM has wrong padding, did you specify the correct password?");
+				throw new PEMDecryptException("Decrypted PEM has wrong padding, did you specify the correct password?");
 		}
 
 		byte[] tmp = new byte[buff.length - rfc_1423_padding];
