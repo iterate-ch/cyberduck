@@ -1,21 +1,22 @@
 package ch.cyberduck.core.threading;
 
 /*
- *  Copyright (c) 2006 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
@@ -97,8 +98,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     /**
+     * Apppend to the transcript. Reset if maximum length has been reached.
+     *
      * @param request
      * @param message @see ch.cyberduck.core.TranscriptListener
+     * @see #TRANSCRIPT_MAX_LENGTH
      */
     public void log(boolean request, String message) {
         if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
@@ -149,6 +153,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return 0;
     }
 
+    /**
+     * @return True if the the action had a permanent failures. Returns false if
+     *         there were only temporary exceptions and the action suceeded upon retry
+     * @see #retry()
+     */
     protected boolean hasFailed() {
         return failed;
     }
@@ -161,6 +170,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             this.pause();
             if(!this.isCanceled()) {
                 repeatCount++;
+                // Reset the failure status
                 failed = false;
                 // Re-run the action with the previous lock used
                 this.run();
@@ -237,6 +247,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
     }
 
+    /**
+     * @return The session instance
+     */
     @Override
     public Object lock() {
         return this.getSession();
