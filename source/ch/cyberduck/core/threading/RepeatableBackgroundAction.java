@@ -43,6 +43,39 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
 
     /**
+     * Contains all exceptions thrown while this action was running
+     */
+    protected List<BackgroundException> exceptions
+            = new Collection<BackgroundException>();
+
+    /**
+     * This action encountered one or more exceptions
+     */
+    private boolean failed;
+
+    /**
+     * Contains the transcript of the session while this action was running
+     */
+    protected StringBuilder transcript;
+
+    /**
+     *
+     */
+    private final int repeatAttempts
+            = Preferences.instance().getInteger("connection.retry");
+
+    /**
+     * The number of times this action has been run
+     */
+    protected int repeatCount;
+
+    /**
+     * Maximum transcript buffer
+     */
+    private static final int TRANSCRIPT_MAX_LENGTH =
+            Preferences.instance().getInteger("transcript.length");
+
+    /**
      * @param exception
      * @see ch.cyberduck.core.ErrorListener
      */
@@ -54,23 +87,14 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             // Do not report as failed if instanceof ConnectionCanceledException
             return;
         }
-        final String description = null == exception.getPath() ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
+        final String description
+                = (null == exception.getPath()) ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
         if(exceptions.size() < Preferences.instance().getInteger("growl.limit")) {
             Growl.instance().notify(exception.getMessage(), description);
         }
         exceptions.add(exception);
+        failed = true;
     }
-
-    /**
-     * Contains the transcript of the session while this action was running
-     */
-    protected StringBuilder transcript;
-
-    /**
-     * Maximum transcript buffer
-     */
-    private static final int TRANSCRIPT_MAX_LENGTH =
-            Preferences.instance().getInteger("transcript.length");
 
     /**
      * @param request
@@ -81,10 +105,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             transcript = new StringBuilder();
         }
         transcript.append(message).append("\n");
-    }
-
-    public RepeatableBackgroundAction() {
-        this.exceptions = new Collection<BackgroundException>();
     }
 
     @Override
@@ -105,11 +125,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * @return The session if any
      */
     protected abstract Session getSession();
-
-    /**
-     *
-     */
-    private final int repeatAttempts = Preferences.instance().getInteger("connection.retry");
 
     /**
      * The number of times a new connection attempt should be made. Takes into
@@ -134,20 +149,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return 0;
     }
 
-    /**
-     * Contains all exceptions thrown while
-     * this action was running
-     */
-    protected List<BackgroundException> exceptions;
-
     protected boolean hasFailed() {
-        return this.exceptions.size() > 0;
+        return failed;
     }
-
-    /**
-     * The number of times this action has been run
-     */
-    protected int repeatCount;
 
     @Override
     public void finish() {
@@ -157,6 +161,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             this.pause();
             if(!this.isCanceled()) {
                 repeatCount++;
+                failed = false;
                 // Re-run the action with the previous lock used
                 this.run();
             }
