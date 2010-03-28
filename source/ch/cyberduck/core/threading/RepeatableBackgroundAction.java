@@ -157,7 +157,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             this.pause();
             if(!this.isCanceled()) {
                 repeatCount++;
-                exceptions.clear();
                 // Re-run the action with the previous lock used
                 this.run();
             }
