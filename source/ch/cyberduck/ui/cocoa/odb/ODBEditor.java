@@ -48,6 +48,7 @@ public class ODBEditor extends Editor {
         SUPPORTED_ODB_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
         SUPPORTED_ODB_EDITORS.put("mi", "mi");
         SUPPORTED_ODB_EDITORS.put("Smultron", "org.smultron.Smultron");
+        SUPPORTED_ODB_EDITORS.put("Fraise", "org.fraise.Fraise");
         SUPPORTED_ODB_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
         SUPPORTED_ODB_EDITORS.put("CSSEdit", "com.macrabbit.cssedit");
         SUPPORTED_ODB_EDITORS.put("Tag", "com.talacia.Tag");
