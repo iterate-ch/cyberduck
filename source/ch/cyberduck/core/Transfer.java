@@ -236,13 +236,13 @@ public abstract class Transfer implements Serializable {
     protected void fireTransferDidEnd() {
         running = false;
         queued = false;
+        timestamp = new Date();
         for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferDidEnd();
         }
         synchronized(Queue.instance()) {
             Queue.instance().notify();
         }
-        timestamp = new Date();
     }
 
     protected void fireWillTransferPath(Path path) {
