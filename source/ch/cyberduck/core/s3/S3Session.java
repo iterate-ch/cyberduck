@@ -24,6 +24,7 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -164,8 +165,10 @@ public class S3Session extends HTTPSession implements SSLSession, CloudSession {
                 Preferences.instance().getProperty("queue.download.preserveDate"));
 
         // Upload throttle in Kilobytes
-        configuration.setProperty("httpclient.read-throttle", 
-                String.valueOf(Preferences.instance().getFloat("queue.upload.bandwidth.bytes") / 1024));
+        final int limit = Preferences.instance().getInteger("queue.upload.bandwidth.bytes");
+        if(limit != BandwidthThrottle.UNLIMITED) {
+            configuration.setProperty("httpclient.read-throttle", String.valueOf(limit / 1024));
+        }
     }
 
     /**
