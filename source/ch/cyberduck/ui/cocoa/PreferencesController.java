@@ -36,7 +36,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import com.enterprisedt.net.ftp.FTPTransferType;
