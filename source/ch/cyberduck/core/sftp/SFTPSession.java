@@ -30,6 +30,7 @@ import ch.ethz.ssh2.sftp.SFTPv3Client;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.io.*;
 import java.text.MessageFormat;
@@ -157,7 +158,7 @@ public class SFTPSession extends Session {
         this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
-        SSH = new Connection(this.host.getHostname(true), this.host.getPort());
+        SSH = new Connection(this.getHostname(), host.getPort());
 
         final int timeout = this.timeout();
         this.getClient().connect(verifier, timeout, timeout);
@@ -171,6 +172,18 @@ public class SFTPSession extends Session {
             throw new LoginCanceledException();
         }
         this.fireConnectionDidOpenEvent();
+    }
+
+    /**
+     * @return Resolves any alias given in ~/.ssh/config
+     */
+    private String getHostname() {
+        return OpenSshConfig.create().lookup(host.getHostname(true)).getHostName();
+    }
+
+    @Override
+    protected Resolver getResolver() {
+        return new Resolver(this.getHostname());
     }
 
     @Override

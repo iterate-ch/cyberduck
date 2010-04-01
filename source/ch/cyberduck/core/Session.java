@@ -58,10 +58,10 @@ public abstract class Session {
      */
     public String getIdentification() {
         try {
-            return this.host.getIp();
+            return host.getIp();
         }
         catch(UnknownHostException e) {
-            return this.host.getHostname();
+            return host.getHostname();
         }
     }
 
@@ -447,13 +447,17 @@ public abstract class Session {
         // Configuring proxy if any
         ProxyFactory.instance().configure(host);
 
-        Resolver resolver = new Resolver(this.host.getHostname(true));
+        Resolver resolver = this.getResolver();
         this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                 host.getHostname()));
 
         // Try to resolve the hostname first
         resolver.resolve();
         // The IP address could successfully be determined
+    }
+
+    protected Resolver getResolver() {
+        return new Resolver(host.getHostname(true));
     }
 
     /**
