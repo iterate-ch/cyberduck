@@ -58,14 +58,16 @@ public class EditorFactory {
      * @return New editor instance for the given file type.
      */
     public static Editor createEditor(BrowserController c, String bundleIdentifier, final Path path) {
-        if(ODBEditor.getInstalledEditors().containsValue(bundleIdentifier)) {
-            return new ODBEditor(c, bundleIdentifier, path);
+        if(Preferences.instance().getBoolean("editor.odb.enable")) {
+            if(ODBEditor.getInstalledEditors().containsValue(bundleIdentifier)) {
+                return new ODBEditor(c, bundleIdentifier, path);
+            }
         }
-        if(!Preferences.instance().getBoolean("editor.kqueue.enable")) {
-            log.error("Support for watch editors must be enabled first");
-            return null;
+        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
+            return new WatchEditor(c, bundleIdentifier, path);
         }
-        return new WatchEditor(c, bundleIdentifier, path);
+        log.error("No editor support enabled");
+        return null;
     }
 
     /**
@@ -108,14 +110,16 @@ public class EditorFactory {
             // Use default editor if not applicable application found which handles this file type
             return defaultEditor();
         }
-        // Find matching ODB editor if any
-        for(final String bundleIdentifier : ODBEditor.getInstalledEditors().values()) {
-            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
-            if(StringUtils.isEmpty(path)) {
-                continue;
-            }
-            if(path.equals(defaultApplication)) {
-                return bundleIdentifier;
+        if(Preferences.instance().getBoolean("editor.odb.enable")) {
+            // Find matching ODB editor if any
+            for(final String bundleIdentifier : ODBEditor.getInstalledEditors().values()) {
+                final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
+                if(StringUtils.isEmpty(path)) {
+                    continue;
+                }
+                if(path.equals(defaultApplication)) {
+                    return bundleIdentifier;
+                }
             }
         }
         if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
@@ -138,8 +142,12 @@ public class EditorFactory {
             log.debug("getSupportedEditors");
         }
         Map<String, String> supported = new HashMap<String, String>();
-        supported.putAll(ODBEditor.getSupportedEditors());
-        supported.putAll(WatchEditor.getSupportedEditors());
+        if(Preferences.instance().getBoolean("editor.odb.enable")) {
+            supported.putAll(ODBEditor.getSupportedEditors());
+        }
+        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
+            supported.putAll(WatchEditor.getSupportedEditors());
+        }
         final String defaultEditor = defaultEditor();
         if(null == defaultEditor) {
             return supported;
@@ -159,7 +167,9 @@ public class EditorFactory {
             log.debug("getInstalledEditors");
         }
         Map<String, String> installed = new HashMap<String, String>();
-        installed.putAll(ODBEditor.getInstalledEditors());
+        if(Preferences.instance().getBoolean("editor.odb.enable")) {
+            installed.putAll(ODBEditor.getInstalledEditors());
+        }
         if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
             installed.putAll(WatchEditor.getInstalledEditors());
         }

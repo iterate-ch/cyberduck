@@ -306,9 +306,8 @@ public abstract class Preferences {
          */
         defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
-        /**
-         * Editor for the current selected file. Used to set the shortcut key in the menu delegate
-         */
+
+        defaults.put("editor.odb.enable", String.valueOf(true));
         defaults.put("editor.kqueue.enable", String.valueOf(true));
         defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
