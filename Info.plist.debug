@@ -71,6 +71,10 @@
         <string>APPL</string>
         <key>CFBundleSignature</key>
         <string>CYCK</string>
+		<key>CFBundleHelpBookFolder</key>
+		<string>Cyberduck Help</string>
+		<key>CFBundleHelpBookName</key>
+		<string>Cyberduck Help</string>
         <key>CFBundleURLTypes</key>
         <array>
             <dict>
