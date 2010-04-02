@@ -178,7 +178,12 @@ public class SFTPSession extends Session {
      * @return Resolves any alias given in ~/.ssh/config
      */
     private String getHostname() {
-        return OpenSshConfig.create().lookup(host.getHostname(true)).getHostName();
+        final String alias = OpenSshConfig.create().lookup(host.getHostname()).getHostName();
+        if(host.getHostname().equals(alias)) {
+            return host.getHostname(true);
+        }
+        log.info("Using hostname alias from ~/.ssh/config:" + alias);
+        return alias;
     }
 
     @Override
