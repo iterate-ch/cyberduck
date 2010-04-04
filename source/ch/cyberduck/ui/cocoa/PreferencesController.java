@@ -1899,7 +1899,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultDownloadThrottleCombobox.setTarget(this.id());
         this.defaultDownloadThrottleCombobox.setAction(Foundation.selector("defaultDownloadThrottleComboboxClicked:"));
         int bandwidth = Preferences.instance().getInteger("queue.download.bandwidth.bytes");
-        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.download.bandwidth.options"), ",");
+        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
             this.defaultDownloadThrottleCombobox.addItemWithTitle(Status.getSizeAsString(Integer.parseInt(bytes)) + "/s");
@@ -1938,7 +1938,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultUploadThrottleCombobox.setTarget(this.id());
         this.defaultUploadThrottleCombobox.setAction(Foundation.selector("defaultUploadThrottleComboboxClicked:"));
         int bandwidth = Preferences.instance().getInteger("queue.upload.bandwidth.bytes");
-        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.upload.bandwidth.options"), ",");
+        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
             this.defaultUploadThrottleCombobox.addItemWithTitle(Status.getSizeAsString(Integer.parseInt(bytes)) + "/s");

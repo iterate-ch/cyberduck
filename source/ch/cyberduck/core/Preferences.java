@@ -412,8 +412,7 @@ public abstract class Preferences {
         options.append(20*Status.MEGA).append(",");
         options.append(50*Status.MEGA).append(",");
         options.append(100*Status.MEGA).append(",");
-        defaults.put("queue.download.bandwidth.options", options.toString());
-        defaults.put("queue.upload.bandwidth.options", options.toString());
+        defaults.put("queue.bandwidth.options", options.toString());
 
         /**
          * Bandwidth throttle upload stream
