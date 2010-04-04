@@ -102,7 +102,7 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>NSInteger numberOfItems()</code><br>
      * <i>native declaration : :51</i>
      */
-    public abstract int numberOfItems();
+    public abstract NSInteger numberOfItems();
 
     /**
      * Original signature : <code>NSInteger indexOfItem(NSMenuItem*)</code><br>
@@ -197,7 +197,7 @@ public abstract class NSPopUpButton extends NSButton {
      * Original signature : <code>NSString* itemTitleAtIndex(NSInteger)</code><br>
      * <i>native declaration : :78</i>
      */
-    public abstract String itemTitleAtIndex(int index);
+    public abstract String itemTitleAtIndex(NSInteger index);
 
     /**
      * Original signature : <code>NSArray* itemTitles()</code><br>

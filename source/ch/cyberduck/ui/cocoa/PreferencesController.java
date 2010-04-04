@@ -374,7 +374,7 @@ public class PreferencesController extends ToolbarWindowController {
 //        this.bookmarkSizePopup.itemAtIndex(0).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.SMALL_BOOKMARK_SIZE));
 //        this.bookmarkSizePopup.itemAtIndex(1).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.MEDIUM_BOOKMARK_SIZE));
 //        this.bookmarkSizePopup.itemAtIndex(2).setImage(IconCache.iconNamed("ftp", CDBookmarkCell.LARGE_BOOKMARK_SIZE));
-        for(int i = 0; i < this.bookmarkSizePopup.numberOfItems(); i++) {
+        for(int i = 0; i < this.bookmarkSizePopup.numberOfItems().intValue(); i++) {
             this.bookmarkSizePopup.itemAtIndex(new NSInteger(i)).setState(NSCell.NSOffState);
         }
         if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
