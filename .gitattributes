@@ -99,9 +99,6 @@ ca.lproj/Prompt.nib/keyedobjects.nib -text
 ca.lproj/Prompt.strings -text svneol=unset#text/utf-16
 ca.lproj/S3.strings -text svneol=unset#text/utf-16
 ca.lproj/Status.strings -text svneol=unset#text/utf-16
-ca.lproj/Transfer.nib/classes.nib -text
-ca.lproj/Transfer.nib/info.nib -text
-ca.lproj/Transfer.nib/keyedobjects.nib -text
 ca.lproj/Transfer.strings -text svneol=unset#text/utf-16
 cs.lproj/Alert.nib/classes.nib -text
 cs.lproj/Alert.nib/info.nib -text
@@ -151,9 +148,6 @@ cs.lproj/Prompt.nib/keyedobjects.nib -text
 cs.lproj/Prompt.strings -text svneol=unset#text/utf-16
 cs.lproj/S3.strings -text svneol=unset#text/utf-16
 cs.lproj/Status.strings -text svneol=unset#text/utf-16
-cs.lproj/Transfer.nib/classes.nib -text
-cs.lproj/Transfer.nib/info.nib -text
-cs.lproj/Transfer.nib/keyedobjects.nib -text
 cs.lproj/Transfer.strings -text svneol=unset#text/utf-16
 cy.lproj/Alert.nib/classes.nib -text
 cy.lproj/Alert.nib/info.nib -text
@@ -203,9 +197,6 @@ cy.lproj/Prompt.nib/keyedobjects.nib -text
 cy.lproj/Prompt.strings -text svneol=unset#text/utf-16
 cy.lproj/S3.strings -text svneol=unset#text/utf-16
 cy.lproj/Status.strings -text svneol=unset#text/utf-16
-cy.lproj/Transfer.nib/classes.nib -text
-cy.lproj/Transfer.nib/info.nib -text
-cy.lproj/Transfer.nib/keyedobjects.nib -text
 cy.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /cyberduck-application.icns -text svneol=unset#image/icns
 /cyberduck-application.png -text svneol=unset#image/png
@@ -258,9 +249,6 @@ da.lproj/Prompt.nib/keyedobjects.nib -text
 da.lproj/Prompt.strings -text svneol=unset#text/utf-16
 da.lproj/S3.strings -text svneol=unset#text/utf-16
 da.lproj/Status.strings -text svneol=unset#text/utf-16
-da.lproj/Transfer.nib/classes.nib -text
-da.lproj/Transfer.nib/info.nib -text
-da.lproj/Transfer.nib/keyedobjects.nib -text
 da.lproj/Transfer.strings -text svneol=unset#text/utf-16
 de.lproj/Alert.nib/classes.nib -text
 de.lproj/Alert.nib/info.nib -text
@@ -310,9 +298,6 @@ de.lproj/Prompt.nib/keyedobjects.nib -text
 de.lproj/Prompt.strings -text svneol=unset#text/utf-16
 de.lproj/S3.strings -text svneol=unset#text/utf-16
 de.lproj/Status.strings -text svneol=unset#text/utf-16
-de.lproj/Transfer.nib/classes.nib -text
-de.lproj/Transfer.nib/info.nib -text
-de.lproj/Transfer.nib/keyedobjects.nib -text
 de.lproj/Transfer.strings -text svneol=unset#text/utf-16
 el.lproj/Alert.nib/classes.nib -text
 el.lproj/Alert.nib/info.nib -text
@@ -393,9 +378,6 @@ el.lproj/Prompt.nib/keyedobjects.nib -text
 el.lproj/Prompt.strings -text svneol=unset#text/utf-16
 el.lproj/S3.strings -text svneol=unset#text/utf-16
 el.lproj/Status.strings -text svneol=unset#text/utf-16
-el.lproj/Transfer.nib/classes.nib -text
-el.lproj/Transfer.nib/info.nib -text
-el.lproj/Transfer.nib/keyedobjects.nib -text
 el.lproj/Transfer.strings -text svneol=unset#text/utf-16
 en.lproj/Alert.nib/classes.nib -text
 en.lproj/Alert.nib/info.nib -text
@@ -494,9 +476,6 @@ es.lproj/Prompt.nib/keyedobjects.nib -text
 es.lproj/Prompt.strings -text svneol=unset#text/utf-16
 es.lproj/S3.strings -text svneol=unset#text/utf-16
 es.lproj/Status.strings -text svneol=unset#text/utf-16
-es.lproj/Transfer.nib/classes.nib -text
-es.lproj/Transfer.nib/info.nib -text
-es.lproj/Transfer.nib/keyedobjects.nib -text
 es.lproj/Transfer.strings -text svneol=unset#text/utf-16
 fi.lproj/Alert.nib/classes.nib -text
 fi.lproj/Alert.nib/info.nib -text
@@ -546,9 +525,6 @@ fi.lproj/Prompt.nib/keyedobjects.nib -text
 fi.lproj/Prompt.strings -text svneol=unset#text/utf-16
 fi.lproj/S3.strings -text svneol=unset#text/utf-16
 fi.lproj/Status.strings -text svneol=unset#text/utf-16
-fi.lproj/Transfer.nib/classes.nib -text
-fi.lproj/Transfer.nib/info.nib -text
-fi.lproj/Transfer.nib/keyedobjects.nib -text
 fi.lproj/Transfer.strings -text svneol=unset#text/utf-16
 fr.lproj/Alert.nib/classes.nib -text
 fr.lproj/Alert.nib/info.nib -text
@@ -598,9 +574,6 @@ fr.lproj/Prompt.nib/keyedobjects.nib -text
 fr.lproj/Prompt.strings -text svneol=unset#text/utf-16
 fr.lproj/S3.strings -text svneol=unset#text/utf-16
 fr.lproj/Status.strings -text svneol=unset#text/utf-16
-fr.lproj/Transfer.nib/classes.nib -text
-fr.lproj/Transfer.nib/info.nib -text
-fr.lproj/Transfer.nib/keyedobjects.nib -text
 fr.lproj/Transfer.strings -text svneol=unset#text/utf-16
 he.lproj/Alert.nib/classes.nib -text
 he.lproj/Alert.nib/info.nib -text
@@ -680,9 +653,6 @@ he.lproj/Prompt.nib/keyedobjects.nib -text
 he.lproj/Prompt.strings -text svneol=unset#text/utf-16
 he.lproj/S3.strings -text svneol=unset#text/utf-16
 he.lproj/Status.strings -text svneol=unset#text/utf-16
-he.lproj/Transfer.nib/classes.nib -text
-he.lproj/Transfer.nib/info.nib -text
-he.lproj/Transfer.nib/keyedobjects.nib -text
 he.lproj/Transfer.strings -text svneol=unset#text/utf-16
 hu.lproj/Alert.nib/classes.nib -text
 hu.lproj/Alert.nib/info.nib -text
@@ -732,9 +702,6 @@ hu.lproj/Prompt.nib/keyedobjects.nib -text
 hu.lproj/Prompt.strings -text svneol=unset#text/utf-16
 hu.lproj/S3.strings -text svneol=unset#text/utf-16
 hu.lproj/Status.strings -text svneol=unset#text/utf-16
-hu.lproj/Transfer.nib/classes.nib -text
-hu.lproj/Transfer.nib/info.nib -text
-hu.lproj/Transfer.nib/keyedobjects.nib -text
 hu.lproj/Transfer.strings -text svneol=unset#text/utf-16
 id.lproj/Alert.nib/classes.nib -text
 id.lproj/Alert.nib/info.nib -text
@@ -784,9 +751,6 @@ id.lproj/Prompt.nib/keyedobjects.nib -text
 id.lproj/Prompt.strings -text svneol=unset#text/utf-16
 id.lproj/S3.strings -text svneol=unset#text/utf-16
 id.lproj/Status.strings -text svneol=unset#text/utf-16
-id.lproj/Transfer.nib/classes.nib -text
-id.lproj/Transfer.nib/info.nib -text
-id.lproj/Transfer.nib/keyedobjects.nib -text
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
 img/AliasBadgeIcon.icns -text
 img/DropFolderBadgeIcon.icns -text
@@ -926,9 +890,6 @@ it.lproj/Prompt.nib/keyedobjects.nib -text
 it.lproj/Prompt.strings -text svneol=unset#text/utf-16
 it.lproj/S3.strings -text svneol=unset#text/utf-16
 it.lproj/Status.strings -text svneol=unset#text/utf-16
-it.lproj/Transfer.nib/classes.nib -text
-it.lproj/Transfer.nib/info.nib -text
-it.lproj/Transfer.nib/keyedobjects.nib -text
 it.lproj/Transfer.strings -text svneol=unset#text/utf-16
 ja.lproj/Alert.nib/classes.nib -text
 ja.lproj/Alert.nib/info.nib -text
@@ -979,9 +940,6 @@ ja.lproj/Prompt.nib/keyedobjects.nib -text
 ja.lproj/Prompt.strings -text svneol=unset#text/utf-16
 ja.lproj/S3.strings -text svneol=unset#text/utf-16
 ja.lproj/Status.strings -text svneol=unset#text/utf-16
-ja.lproj/Transfer.nib/classes.nib -text
-ja.lproj/Transfer.nib/info.nib -text
-ja.lproj/Transfer.nib/keyedobjects.nib -text
 ja.lproj/Transfer.strings -text svneol=unset#text/utf-16
 ko.lproj/Alert.nib/classes.nib -text
 ko.lproj/Alert.nib/info.nib -text
@@ -1031,9 +989,6 @@ ko.lproj/Prompt.nib/keyedobjects.nib -text
 ko.lproj/Prompt.strings -text svneol=unset#text/utf-16
 ko.lproj/S3.strings -text svneol=unset#text/utf-16
 ko.lproj/Status.strings -text svneol=unset#text/utf-16
-ko.lproj/Transfer.nib/classes.nib -text
-ko.lproj/Transfer.nib/info.nib -text
-ko.lproj/Transfer.nib/keyedobjects.nib -text
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
 lib/Growl.framework/Growl -text
 lib/Growl.framework/Headers -text
@@ -1347,9 +1302,6 @@ lv.lproj/Prompt.strings -text svneol=unset#text/utf-16
 lv.lproj/S3.strings -text svneol=unset#text/utf-16
 lv.lproj/Security.strings -text svneol=unset#text/utf-16
 lv.lproj/Status.strings -text svneol=unset#text/utf-16
-lv.lproj/Transfer.nib/classes.nib -text
-lv.lproj/Transfer.nib/info.nib -text
-lv.lproj/Transfer.nib/keyedobjects.nib -text
 lv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 nl.lproj/Alert.nib/classes.nib -text
 nl.lproj/Alert.nib/info.nib -text
@@ -1399,9 +1351,6 @@ nl.lproj/Prompt.nib/keyedobjects.nib -text
 nl.lproj/Prompt.strings -text svneol=unset#text/utf-16
 nl.lproj/S3.strings -text svneol=unset#text/utf-16
 nl.lproj/Status.strings -text svneol=unset#text/utf-16
-nl.lproj/Transfer.nib/classes.nib -text
-nl.lproj/Transfer.nib/info.nib -text
-nl.lproj/Transfer.nib/keyedobjects.nib -text
 nl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 no.lproj/Alert.nib/classes.nib -text
 no.lproj/Alert.nib/info.nib -text
@@ -1451,9 +1400,6 @@ no.lproj/Prompt.nib/keyedobjects.nib -text
 no.lproj/Prompt.strings -text svneol=unset#text/utf-16
 no.lproj/S3.strings -text svneol=unset#text/utf-16
 no.lproj/Status.strings -text svneol=unset#text/utf-16
-no.lproj/Transfer.nib/classes.nib -text
-no.lproj/Transfer.nib/info.nib -text
-no.lproj/Transfer.nib/keyedobjects.nib -text
 no.lproj/Transfer.strings -text svneol=unset#text/utf-16
 pl.lproj/Alert.nib/classes.nib -text
 pl.lproj/Alert.nib/info.nib -text
@@ -1504,9 +1450,6 @@ pl.lproj/Prompt.nib/keyedobjects.nib -text
 pl.lproj/Prompt.strings -text svneol=unset#text/utf-16
 pl.lproj/S3.strings -text svneol=unset#text/utf-16
 pl.lproj/Status.strings -text svneol=unset#text/utf-16
-pl.lproj/Transfer.nib/classes.nib -text
-pl.lproj/Transfer.nib/info.nib -text
-pl.lproj/Transfer.nib/keyedobjects.nib -text
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Alert.nib/classes.nib -text
 pt_BR.lproj/Alert.nib/info.nib -text
@@ -1589,9 +1532,6 @@ pt_BR.lproj/Queue.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/S3.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Security.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Status.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/Transfer.nib/classes.nib -text
-pt_BR.lproj/Transfer.nib/info.nib -text
-pt_BR.lproj/Transfer.nib/keyedobjects.nib -text
 pt_BR.lproj/Transfer.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Alert.nib/classes.nib -text
 pt_PT.lproj/Alert.nib/info.nib -text
@@ -1641,9 +1581,6 @@ pt_PT.lproj/Prompt.nib/keyedobjects.nib -text
 pt_PT.lproj/Prompt.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/S3.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Status.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/Transfer.nib/classes.nib -text
-pt_PT.lproj/Transfer.nib/info.nib -text
-pt_PT.lproj/Transfer.nib/keyedobjects.nib -text
 pt_PT.lproj/Transfer.strings -text svneol=unset#text/utf-16
 resources/Activity.nib/classes.nib -text
 resources/Activity.nib/info.nib -text
@@ -1711,9 +1648,6 @@ ru.lproj/Prompt.nib/keyedobjects.nib -text
 ru.lproj/Prompt.strings -text svneol=unset#text/utf-16
 ru.lproj/S3.strings -text svneol=unset#text/utf-16
 ru.lproj/Status.strings -text svneol=unset#text/utf-16
-ru.lproj/Transfer.nib/classes.nib -text
-ru.lproj/Transfer.nib/info.nib -text
-ru.lproj/Transfer.nib/keyedobjects.nib -text
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
 sk.lproj/Alert.nib/classes.nib -text
 sk.lproj/Alert.nib/info.nib -text
@@ -1763,9 +1697,6 @@ sk.lproj/Prompt.nib/keyedobjects.nib -text
 sk.lproj/Prompt.strings -text svneol=unset#text/utf-16
 sk.lproj/S3.strings -text svneol=unset#text/utf-16
 sk.lproj/Status.strings -text svneol=unset#text/utf-16
-sk.lproj/Transfer.nib/classes.nib -text
-sk.lproj/Transfer.nib/info.nib -text
-sk.lproj/Transfer.nib/keyedobjects.nib -text
 sk.lproj/Transfer.strings -text svneol=unset#text/utf-16
 source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
@@ -1894,9 +1825,6 @@ sr.lproj/Prompt.nib/keyedobjects.nib -text
 sr.lproj/Prompt.strings -text svneol=unset#text/utf-16
 sr.lproj/S3.strings -text svneol=unset#text/utf-16
 sr.lproj/Status.strings -text svneol=unset#text/utf-16
-sr.lproj/Transfer.nib/classes.nib -text
-sr.lproj/Transfer.nib/info.nib -text
-sr.lproj/Transfer.nib/keyedobjects.nib -text
 sr.lproj/Transfer.strings -text svneol=unset#text/utf-16
 sv.lproj/Alert.nib/classes.nib -text
 sv.lproj/Alert.nib/info.nib -text
@@ -1946,9 +1874,6 @@ sv.lproj/Prompt.nib/keyedobjects.nib -text
 sv.lproj/Prompt.strings -text svneol=unset#text/utf-16
 sv.lproj/S3.strings -text svneol=unset#text/utf-16
 sv.lproj/Status.strings -text svneol=unset#text/utf-16
-sv.lproj/Transfer.nib/classes.nib -text
-sv.lproj/Transfer.nib/info.nib -text
-sv.lproj/Transfer.nib/keyedobjects.nib -text
 sv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 th.lproj/Alert.nib/classes.nib -text
 th.lproj/Alert.nib/info.nib -text
@@ -2028,9 +1953,6 @@ th.lproj/Prompt.nib/keyedobjects.nib -text
 th.lproj/Prompt.strings -text svneol=unset#text/utf-16
 th.lproj/S3.strings -text svneol=unset#text/utf-16
 th.lproj/Status.strings -text svneol=unset#text/utf-16
-th.lproj/Transfer.nib/classes.nib -text
-th.lproj/Transfer.nib/info.nib -text
-th.lproj/Transfer.nib/keyedobjects.nib -text
 th.lproj/Transfer.strings -text svneol=unset#text/utf-16
 tr.lproj/Alert.nib/classes.nib -text
 tr.lproj/Alert.nib/info.nib -text
@@ -2110,9 +2032,6 @@ tr.lproj/Prompt.nib/keyedobjects.nib -text
 tr.lproj/Prompt.strings -text svneol=unset#text/utf-16
 tr.lproj/S3.strings -text svneol=unset#text/utf-16
 tr.lproj/Status.strings -text svneol=unset#text/utf-16
-tr.lproj/Transfer.nib/classes.nib -text
-tr.lproj/Transfer.nib/info.nib -text
-tr.lproj/Transfer.nib/keyedobjects.nib -text
 tr.lproj/Transfer.strings -text svneol=unset#text/utf-16
 www/crash/crash.py -text
 www/help/.htaccess -text
@@ -2282,9 +2201,6 @@ zh_CN.lproj/Prompt.nib/keyedobjects.nib -text
 zh_CN.lproj/Prompt.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/S3.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Status.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/Transfer.nib/classes.nib -text
-zh_CN.lproj/Transfer.nib/info.nib -text
-zh_CN.lproj/Transfer.nib/keyedobjects.nib -text
 zh_CN.lproj/Transfer.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Alert.nib/classes.nib -text
 zh_TW.lproj/Alert.nib/info.nib -text
@@ -2334,7 +2250,4 @@ zh_TW.lproj/Prompt.nib/keyedobjects.nib -text
 zh_TW.lproj/Prompt.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/S3.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Status.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/Transfer.nib/classes.nib -text
-zh_TW.lproj/Transfer.nib/info.nib -text
-zh_TW.lproj/Transfer.nib/keyedobjects.nib -text
 zh_TW.lproj/Transfer.strings -text svneol=unset#text/utf-16
