@@ -3321,6 +3321,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
                     @Override
                     public void cleanup() {
+                        browserListModel.clear();
+                        browserOutlineModel.clear();
                         // Set the working directory
                         setWorkdir(mount);
                         if(!session.isConnected()) {

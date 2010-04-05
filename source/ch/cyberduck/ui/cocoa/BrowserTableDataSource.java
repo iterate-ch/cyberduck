@@ -79,9 +79,16 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         this.controller = controller;
     }
 
+    /**
+     * Clear the view cache
+     */
+    protected void clear() {
+        tableViewCache.clear();
+    }
+
     @Override
     protected void invalidate() {
-        tableViewCache.clear();
+        this.clear();
         super.invalidate();
     }
 
