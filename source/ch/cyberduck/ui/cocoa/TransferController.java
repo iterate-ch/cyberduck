@@ -42,6 +42,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -101,6 +102,14 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     public void setLocalField(NSTextField localField) {
         this.localField = localField;
+    }
+
+    @Outlet
+    private NSTextField localLabel;
+
+    public void setLocalLabel(NSTextField localLabel) {
+        this.localLabel = localLabel;
+        this.localLabel.setStringValue(Locale.localizedString("Local File:", "Transfer"));
     }
 
     @Outlet
@@ -212,39 +221,53 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.bandwidthPopup.setAllowsMixedState(true);
         this.bandwidthPopup.setTarget(this.id());
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
+        this.bandwidthPopup.removeAllItems();
+        this.bandwidthPopup.addItemWithTitle("");
         this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth", 16));
+        this.bandwidthPopup.addItemWithTitle(Locale.localizedString("Unlimited Bandwidth", "Transfer"));
+        this.bandwidthPopup.itemAtIndex(new NSInteger(1)).setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
+        this.bandwidthPopup.menu().addItem(NSMenuItem.separatorItem());
+        final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
+        while(options.hasMoreTokens()) {
+            final String bytes = options.nextToken();
+            this.bandwidthPopup.addItemWithTitle(Status.getSizeAsString(Integer.parseInt(bytes)) + "/s");
+            this.bandwidthPopup.lastItem().setRepresentedObject(bytes);
+        }
         this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthMenuDelegate()).id());
     }
 
     private class BandwidthMenuDelegate extends AbstractMenuDelegate {
         public NSInteger numberOfItemsInMenu(NSMenu menu) {
-            return menu.numberOfItems();
+            return new NSInteger(new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",").countTokens() + 3);
         }
 
         @Override
         public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean shouldCancel) {
-            final int selected = transferTable.numberOfSelectedRows().intValue();
-            final int tag = item.tag();
-            NSIndexSet iterator = transferTable.selectedRowIndexes();
-            for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-                Transfer transfer = TransferCollection.instance().get(index.intValue());
-                if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth()) {
-                    if(BandwidthThrottle.UNLIMITED == tag) {
-                        item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
-                        break;
+            log.debug("menuUpdateItemAtIndex:" + item);
+            if(item.representedObject() != null) {
+                final int selected = transferTable.numberOfSelectedRows().intValue();
+                int bytes = Integer.valueOf(item.representedObject());
+                NSIndexSet iterator = transferTable.selectedRowIndexes();
+                for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+                    Transfer transfer = TransferCollection.instance().get(index.intValue());
+                    if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth()) {
+                        if(BandwidthThrottle.UNLIMITED == bytes) {
+                            item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
+                            break;
+                        }
+                        else {
+                            item.setState(NSCell.NSOffState);
+                        }
                     }
                     else {
-                        item.setState(NSCell.NSOffState);
-                    }
-                }
-                else {
-                    int bandwidth = (int) transfer.getBandwidth() / 1024;
-                    if(tag == bandwidth) {
-                        item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
-                        break;
-                    }
-                    else {
-                        item.setState(NSCell.NSOffState);
+                        int bandwidth = (int) transfer.getBandwidth();
+                        if(bytes == bandwidth) {
+                            item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
+                            break;
+                        }
+                        else {
+                            item.setState(NSCell.NSOffState);
+                        }
                     }
                 }
             }
@@ -255,10 +278,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     @Action
     public void bandwidthPopupChanged(NSPopUpButton sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
-        int bandwidth = BandwidthThrottle.UNLIMITED;
-        if(sender.selectedItem().tag() > 0) {
-            bandwidth = sender.selectedItem().tag() * 1024; // from Kilobytes to Bytes
-        }
+        int bandwidth = Integer.valueOf(sender.selectedItem().representedObject());
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             Transfer transfer = TransferCollection.instance().get(index.intValue());
             transfer.setBandwidth(bandwidth);
