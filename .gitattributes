@@ -445,9 +445,6 @@ en.lproj/Prompt.nib/keyedobjects.nib -text
 en.lproj/Prompt.strings -text svneol=unset#text/utf-16
 en.lproj/S3.strings -text svneol=unset#text/utf-16
 en.lproj/Status.strings -text svneol=unset#text/utf-16
-en.lproj/Transfer.nib/classes.nib -text
-en.lproj/Transfer.nib/info.nib -text
-en.lproj/Transfer.nib/keyedobjects.nib -text
 en.lproj/Transfer.strings -text svneol=unset#text/utf-16
 es.lproj/Alert.nib/classes.nib -text
 es.lproj/Alert.nib/info.nib -text
@@ -1663,6 +1660,9 @@ resources/Task.nib/keyedobjects.nib -text
 resources/Transcript.nib/classes.nib -text
 resources/Transcript.nib/info.nib -text
 resources/Transcript.nib/keyedobjects.nib -text
+resources/Transfer.nib/classes.nib -text
+resources/Transfer.nib/info.nib -text
+resources/Transfer.nib/keyedobjects.nib -text
 ru.lproj/Alert.nib/classes.nib -text
 ru.lproj/Alert.nib/info.nib -text
 ru.lproj/Alert.nib/keyedobjects.nib -text

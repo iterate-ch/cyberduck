@@ -42,6 +42,8 @@
 				<string>NSImageView</string>
 				<key>localField</key>
 				<string>NSTextField</string>
+				<key>localLabel</key>
+				<string>NSTextField</string>
 				<key>logDrawer</key>
 				<string>NSDrawer</string>
 				<key>queueSizeStepper</key>
