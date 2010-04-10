@@ -146,7 +146,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     protected List<NSView> getPanels() {
         return Arrays.asList(panelGeneral, panelBrowser, panelTransfer, panelEditor, panelFTP, panelSFTP, panelS3,
-                /*panelGoogle,*/ panelBandwidth, panelAdvanced, panelUpdate, panelLanguage);
+                panelGoogle, panelBandwidth, panelAdvanced, panelUpdate, panelLanguage);
     }
 
     @Override
