@@ -8,6 +8,9 @@ Changelog. Last modified: $Date$
 - [Localize] Georgian Localization
 - [Feature] Choose localization in preferences
 - [Feature] Option to disable use of system proxy settings in preferences
+- [Feature] Allow arbitrary input for bandwidth throttle (#1746)
+- [Feature] Read hostname alias from ~/.ssh/config (SFTP) (#3819)
+- [Feature] Allow page setup configuration for browser view print (#4139)
 - [Bugfix] Connections fail with at sign in username (WebDAV) (#4097)
 - [Bugfix] SOCKS proxy support broken [#3803]
 
