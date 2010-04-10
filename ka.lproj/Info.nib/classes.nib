@@ -1,0 +1,65 @@
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        helpButtonClicked = id;
+    };
+    CLASS = CDInfoController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        bucketLocationField = id;
+        bucketLoggingButton = id;
+        checksumField = id;
+        distributionCnameField = id;
+        distributionCnameUrlField = id;
+        distributionDeliveryPopup = id;
+        distributionEnableButton = id;
+        distributionLoggingButton = id;
+        distributionProgress = id;
+        distributionStatusField = id;
+        distributionUrlField = id;
+        filenameField = id;
+        groupField = id;
+        groupr = id;
+        groupw = id;
+        groupx = id;
+        iconImageView = id;
+        kindField = id;
+        modifiedField = id;
+        octalField = id;
+        otherr = id;
+        otherw = id;
+        otherx = id;
+        ownerField = id;
+        ownerr = id;
+        ownerw = id;
+        ownerx = id;
+        panelAmazon = NSView;
+        panelDistribution = NSView;
+        panelGeneral = NSView;
+        panelPermissions = NSView;
+        pathField = id;
+        permissionProgress = id;
+        permissionsField = id;
+        recursiveCheckbox = id;
+        s3CachePopup = id;
+        s3Progress = id;
+        s3PublicUrlField = id;
+        s3torrentUrlField = id;
+        sizeButton = id;
+        sizeField = id;
+        sizeProgress = id;
+        tabView = id;
+        webUrlField = id;
+        window = id;
+    };
+    SUPERCLASS = "java.lang.Object";
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}

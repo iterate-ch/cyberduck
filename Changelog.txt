@@ -4,7 +4,8 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.4.2 (Mar-30-2010) [http://trac.cyberduck.ch/milestone/3.4.2]
+3.4.2 (Apr-10-2010) [http://trac.cyberduck.ch/milestone/3.4.2]
+- [Localize] Georgian Localization
 - [Feature] Choose localization in preferences
 - [Feature] Option to disable use of system proxy settings in preferences
 - [Bugfix] Connections fail with at sign in username (WebDAV) (#4097)

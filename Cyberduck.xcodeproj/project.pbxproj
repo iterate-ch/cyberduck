@@ -877,6 +877,38 @@
 		4749576507EDED4E00B34D53 /* list.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = list.tiff; sourceTree = "<group>"; };
 		47497C1D073F9618009BF63D /* Changelog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Changelog.txt; sourceTree = "<group>"; };
 		474B5BA30AEFB7F5009FD459 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Alert.nib; sourceTree = "<group>"; };
+		474ECFBC116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Alert.nib; sourceTree = "<group>"; };
+		474ECFBD116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Bookmark.nib; sourceTree = "<group>"; };
+		474ECFBE116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Browser.nib; sourceTree = "<group>"; };
+		474ECFBF116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Command.nib; sourceTree = "<group>"; };
+		474ECFC0116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Connection.nib; sourceTree = "<group>"; };
+		474ECFC1116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Donate.nib; sourceTree = "<group>"; };
+		474ECFC2116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Download.nib; sourceTree = "<group>"; };
+		474ECFC3116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Duplicate.nib; sourceTree = "<group>"; };
+		474ECFC4116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/File.nib; sourceTree = "<group>"; };
+		474ECFC5116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Folder.nib; sourceTree = "<group>"; };
+		474ECFC6116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Goto.nib; sourceTree = "<group>"; };
+		474ECFC7116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Info.nib; sourceTree = "<group>"; };
+		474ECFC8116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Login.nib; sourceTree = "<group>"; };
+		474ECFC9116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Main.nib; sourceTree = "<group>"; };
+		474ECFCA116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Preferences.nib; sourceTree = "<group>"; };
+		474ECFCB116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ka; path = ka.lproj/Prompt.nib; sourceTree = "<group>"; };
+		474ECFCC116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text; name = ka; path = ka.lproj/License.txt; sourceTree = "<group>"; };
+		474ECFF9116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Archive.strings; sourceTree = "<group>"; };
+		474ED000116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Configuration.strings; sourceTree = "<group>"; };
+		474ED003116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Crash.strings; sourceTree = "<group>"; };
+		474ED004116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Credentials.strings; sourceTree = "<group>"; };
+		474ED00B116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Error.strings; sourceTree = "<group>"; };
+		474ED012116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Growl.strings; sourceTree = "<group>"; };
+		474ED013116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/IDisk.strings; sourceTree = "<group>"; };
+		474ED016116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		474ED017116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Keychain.strings; sourceTree = "<group>"; };
+		474ED018116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/License.strings; sourceTree = "<group>"; };
+		474ED019116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Localizable.strings; sourceTree = "<group>"; };
+		474ED01E116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Mosso.strings; sourceTree = "<group>"; };
+		474ED023116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/S3.strings; sourceTree = "<group>"; };
+		474ED024116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Status.strings; sourceTree = "<group>"; };
+		474ED025116F7AD20068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Transfer.strings; sourceTree = "<group>"; };
 		4751799D097943FA008F671F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A409794467008F671F /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Credentials.strings; sourceTree = "<group>"; };
 		475179A509794472008F671F /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = cs.lproj/Credentials.strings; sourceTree = "<group>"; };
@@ -2911,6 +2943,7 @@
 				4701682F0EED9EA8005E2CCF /* tr */,
 				470168300EED9EA8005E2CCF /* de */,
 				472539CC10F4D19800DF0F02 /* sr */,
+				474ECFF9116F7AD20068A4DB /* ka */,
 			);
 			name = Archive.strings;
 			sourceTree = "<group>";
@@ -2948,6 +2981,7 @@
 				4701684E0EED9EB7005E2CCF /* cy */,
 				4701684F0EED9EB7005E2CCF /* ca */,
 				472539CE10F4D1A300DF0F02 /* sr */,
+				474ED01E116F7AD20068A4DB /* ka */,
 			);
 			name = Mosso.strings;
 			sourceTree = "<group>";
@@ -2985,6 +3019,7 @@
 				47B347620DACAF3200A51452 /* lv */,
 				47181E9A0E17D1E500568D80 /* el */,
 				4725398E10F4D10B00DF0F02 /* sr */,
+				474ED013116F7AD20068A4DB /* ka */,
 			);
 			name = IDisk.strings;
 			sourceTree = "<group>";
@@ -3022,6 +3057,7 @@
 				47B347800DACAF3300A51452 /* lv */,
 				47181E890E17D1A600568D80 /* el */,
 				4725399F10F4D10B00DF0F02 /* sr */,
+				474ECFCB116F7A970068A4DB /* ka */,
 			);
 			name = Prompt.nib;
 			sourceTree = "<group>";
@@ -3059,6 +3095,7 @@
 				47B3474E0DACAF3200A51452 /* lv */,
 				47181E840E17D1A600568D80 /* el */,
 				4725397110F4D10B00DF0F02 /* sr */,
+				474ECFBF116F7A970068A4DB /* ka */,
 			);
 			name = Command.nib;
 			sourceTree = "<group>";
@@ -3096,6 +3133,7 @@
 				47B3474D0DACAF3200A51452 /* lv */,
 				47181E850E17D1A600568D80 /* el */,
 				4725398F10F4D10B00DF0F02 /* sr */,
+				474ECFC7116F7A970068A4DB /* ka */,
 			);
 			name = Info.nib;
 			sourceTree = "<group>";
@@ -3133,6 +3171,7 @@
 				47B347400DACAF3200A51452 /* lv */,
 				47181E920E17D1A600568D80 /* el */,
 				4725396E10F4D10B00DF0F02 /* sr */,
+				474ECFBE116F7A970068A4DB /* ka */,
 			);
 			name = Browser.nib;
 			sourceTree = "<group>";
@@ -3170,6 +3209,7 @@
 				47B347440DACAF3200A51452 /* lv */,
 				47181E860E17D1A600568D80 /* el */,
 				4725399910F4D10B00DF0F02 /* sr */,
+				474ECFC9116F7A970068A4DB /* ka */,
 			);
 			name = Main.nib;
 			sourceTree = "<group>";
@@ -3207,6 +3247,7 @@
 				47B347460DACAF3200A51452 /* lv */,
 				47181E8C0E17D1A600568D80 /* el */,
 				4725398710F4D10B00DF0F02 /* sr */,
+				474ECFC5116F7A970068A4DB /* ka */,
 			);
 			name = Folder.nib;
 			sourceTree = "<group>";
@@ -3244,6 +3285,7 @@
 				47B3474A0DACAF3200A51452 /* lv */,
 				47181E880E17D1A600568D80 /* el */,
 				4725397D10F4D10B00DF0F02 /* sr */,
+				474ECFC2116F7A970068A4DB /* ka */,
 			);
 			name = Download.nib;
 			sourceTree = "<group>";
@@ -3281,6 +3323,7 @@
 				47B3475E0DACAF3200A51452 /* lv */,
 				47181E9F0E17D1E500568D80 /* el */,
 				4725399410F4D10B00DF0F02 /* sr */,
+				474ECFCC116F7A970068A4DB /* ka */,
 			);
 			name = License.txt;
 			sourceTree = "<group>";
@@ -3318,6 +3361,7 @@
 				47B347410DACAF3200A51452 /* lv */,
 				47181E8F0E17D1A600568D80 /* el */,
 				4725398A10F4D10B00DF0F02 /* sr */,
+				474ECFC6116F7A970068A4DB /* ka */,
 			);
 			name = Goto.nib;
 			sourceTree = "<group>";
@@ -3355,6 +3399,7 @@
 				47B347490DACAF3200A51452 /* lv */,
 				47181E870E17D1A600568D80 /* el */,
 				4725397510F4D10B00DF0F02 /* sr */,
+				474ECFC0116F7A970068A4DB /* ka */,
 			);
 			name = Connection.nib;
 			sourceTree = "<group>";
@@ -3392,6 +3437,7 @@
 				47B347480DACAF3200A51452 /* lv */,
 				47181E8A0E17D1A600568D80 /* el */,
 				4725397A10F4D10B00DF0F02 /* sr */,
+				474ECFC1116F7A970068A4DB /* ka */,
 			);
 			name = Donate.nib;
 			sourceTree = "<group>";
@@ -3429,6 +3475,7 @@
 				47B347420DACAF3200A51452 /* lv */,
 				47181E8B0E17D1A600568D80 /* el */,
 				4725399610F4D10B00DF0F02 /* sr */,
+				474ECFC8116F7A970068A4DB /* ka */,
 			);
 			name = Login.nib;
 			sourceTree = "<group>";
@@ -3466,6 +3513,7 @@
 				47B3474B0DACAF3200A51452 /* lv */,
 				47181E900E17D1A600568D80 /* el */,
 				4725399C10F4D10B00DF0F02 /* sr */,
+				474ECFCA116F7A970068A4DB /* ka */,
 			);
 			name = Preferences.nib;
 			sourceTree = "<group>";
@@ -3503,6 +3551,7 @@
 				47B347450DACAF3200A51452 /* lv */,
 				47181E940E17D1A600568D80 /* el */,
 				4725396B10F4D10B00DF0F02 /* sr */,
+				474ECFBD116F7A970068A4DB /* ka */,
 			);
 			name = Bookmark.nib;
 			sourceTree = "<group>";
@@ -3540,6 +3589,7 @@
 				47B3475F0DACAF3200A51452 /* lv */,
 				47181E970E17D1E500568D80 /* el */,
 				4725399210F4D10B00DF0F02 /* sr */,
+				474ED016116F7AD20068A4DB /* ka */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3577,6 +3627,7 @@
 				47B3475D0DACAF3200A51452 /* lv */,
 				47181E990E17D1E500568D80 /* el */,
 				4725399510F4D10B00DF0F02 /* sr */,
+				474ED019116F7AD20068A4DB /* ka */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3614,6 +3665,7 @@
 				47B3474F0DACAF3200A51452 /* lv */,
 				47181E8E0E17D1A600568D80 /* el */,
 				4725398010F4D10B00DF0F02 /* sr */,
+				474ECFC3116F7A970068A4DB /* ka */,
 			);
 			name = Duplicate.nib;
 			sourceTree = "<group>";
@@ -3651,6 +3703,7 @@
 				47B347470DACAF3200A51452 /* lv */,
 				47181E930E17D1A600568D80 /* el */,
 				4725396810F4D10B00DF0F02 /* sr */,
+				474ECFBC116F7A970068A4DB /* ka */,
 			);
 			name = Alert.nib;
 			sourceTree = "<group>";
@@ -3687,6 +3740,7 @@
 				47A8EA000BB14490002C74F2 /* pt_PT */,
 				47B347710DACAF3200A51452 /* lv */,
 				4725397910F4D10B00DF0F02 /* sr */,
+				474ED004116F7AD20068A4DB /* ka */,
 			);
 			name = Credentials.strings;
 			sourceTree = "<group>";
@@ -3724,6 +3778,7 @@
 				47B3474C0DACAF3200A51452 /* lv */,
 				47181E8D0E17D1A600568D80 /* el */,
 				4725398410F4D10B00DF0F02 /* sr */,
+				474ECFC4116F7A970068A4DB /* ka */,
 			);
 			name = File.nib;
 			sourceTree = "<group>";
@@ -3760,6 +3815,7 @@
 				478427210F9F76280068BA2E /* tr */,
 				478427220F9F762A0068BA2E /* de */,
 				472539CF10F4D1B400DF0F02 /* sr */,
+				474ED018116F7AD20068A4DB /* ka */,
 			);
 			name = License.strings;
 			sourceTree = "<group>";
@@ -3797,6 +3853,7 @@
 				47993F7511699F12000271A8 /* fi */,
 				47993F7611699F12000271A8 /* sk */,
 				47993F7711699F12000271A8 /* de */,
+				474ED025116F7AD20068A4DB /* ka */,
 			);
 			name = Transfer.strings;
 			sourceTree = "<group>";
@@ -3834,6 +3891,7 @@
 				47B347750DACAF3200A51452 /* lv */,
 				47181E9E0E17D1E500568D80 /* el */,
 				4725397410F4D10B00DF0F02 /* sr */,
+				474ED000116F7AD20068A4DB /* ka */,
 			);
 			name = Configuration.strings;
 			sourceTree = "<group>";
@@ -3871,6 +3929,7 @@
 				47B3476A0DACAF3200A51452 /* lv */,
 				47181E9C0E17D1E500568D80 /* el */,
 				4725398310F4D10B00DF0F02 /* sr */,
+				474ED00B116F7AD20068A4DB /* ka */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -3907,6 +3966,7 @@
 				47B607490DA420880068282C /* da */,
 				47181E950E17D1E500568D80 /* el */,
 				4725399310F4D10B00DF0F02 /* sr */,
+				474ED017116F7AD20068A4DB /* ka */,
 			);
 			name = Keychain.strings;
 			sourceTree = "<group>";
@@ -3943,6 +4003,7 @@
 				47EF0EDD0D6DBF3F00AC2F94 /* zh_CN */,
 				47181E9B0E17D1E500568D80 /* el */,
 				472539A210F4D10B00DF0F02 /* sr */,
+				474ED023116F7AD20068A4DB /* ka */,
 			);
 			name = S3.strings;
 			sourceTree = "<group>";
@@ -3980,6 +4041,7 @@
 				47B347630DACAF3200A51452 /* lv */,
 				47181E960E17D1E500568D80 /* el */,
 				4725398D10F4D10B00DF0F02 /* sr */,
+				474ED012116F7AD20068A4DB /* ka */,
 			);
 			name = Growl.strings;
 			sourceTree = "<group>";
@@ -4017,6 +4079,7 @@
 				47B347520DACAF3200A51452 /* lv */,
 				47181E9D0E17D1E500568D80 /* el */,
 				472539A310F4D10B00DF0F02 /* sr */,
+				474ED024116F7AD20068A4DB /* ka */,
 			);
 			name = Status.strings;
 			sourceTree = "<group>";
@@ -4054,6 +4117,7 @@
 				47B347720DACAF3200A51452 /* lv */,
 				47181E980E17D1E500568D80 /* el */,
 				4725397810F4D10B00DF0F02 /* sr */,
+				474ED003116F7AD20068A4DB /* ka */,
 			);
 			name = Crash.strings;
 			sourceTree = "<group>";

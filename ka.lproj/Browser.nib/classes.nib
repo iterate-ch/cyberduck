@@ -1,0 +1,92 @@
+{
+    IBClasses =     (
+        {
+    CLASS = CDBrowserController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        actionPopupButton = NSPopUpButton;
+        addBookmarkButton = NSButton;
+        archiveMenu = NSMenu;
+        bonjourButton = NSButton;
+        bookmarkButton = NSButton;
+        bookmarkSwitchView = NSSegmentedControl;
+        bookmarkTable = NSTableView;
+        browserListView = NSTableView;
+        browserOutlineView = NSOutlineView;
+        browserSwitchView = NSSegmentedControl;
+        browserTabView = NSTabView;
+        deleteBookmarkButton = NSButton;
+        editBookmarkButton = NSButton;
+        editMenu = NSMenu;
+        encodingPopup = NSPopUpButton;
+        historyButton = NSButton;
+        logDrawer = NSDrawer;
+        navigationButton = NSSegmentedControl;
+        pathPopup = NSPopUpButton;
+        quickConnectPopup = NSComboBox;
+        searchField = NSView;
+        securityLabel = NSButton;
+        spinner = NSProgressIndicator;
+        statusLabel = NSTextField;
+        upButton = NSSegmentedControl;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = CDListView;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSTableView;
+},
+        {
+    CLASS = CDOutlineView;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSOutlineView;
+},
+        {
+    ACTIONS =     {
+        changeAngle = id;
+        changeStyle = id;
+        changeType = id;
+    };
+    CLASS = CTGradientView;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSView;
+},
+        {
+    ACTIONS =     {
+        addBookmarkButtonClicked = id;
+        archiveButtonClicked = id;
+        connectBookmarkButtonClicked = id;
+        copyURLButtonClicked = id;
+        createFileButtonClicked = id;
+        createFolderButtonClicked = id;
+        deleteBookmarkButtonClicked = id;
+        deleteFileButtonClicked = id;
+        downloadAsButtonClicked = id;
+        downloadButtonClicked = id;
+        downloadToButtonClicked = id;
+        duplicateFileButtonClicked = id;
+        editBookmarkButtonClicked = id;
+        editButtonClicked = id;
+        infoButtonClicked = id;
+        newBrowserButtonClicked = id;
+        openBrowserButtonClicked = id;
+        reloadButtonClicked = id;
+        renameFileButtonClicked = id;
+        syncButtonClicked = id;
+        unarchiveButtonClicked = id;
+        uploadButtonClicked = id;
+    };
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = NSSegmentedControl;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSControl;
+}
+    );
+    IBVersion = 1;
+}

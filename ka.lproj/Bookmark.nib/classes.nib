@@ -1,0 +1,37 @@
+{
+    IBClasses =     (
+        {
+    CLASS = CDBookmarkController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        alertIcon = NSButton;
+        commentField = NSTextView;
+        connectmodePopup = NSPopUpButton;
+        downloadPathPopup = NSPopUpButton;
+        encodingPopup = NSPopUpButton;
+        hostField = NSTextField;
+        nicknameField = NSTextField;
+        pathField = NSTextField;
+        pkCheckbox = NSButton;
+        pkLabel = NSTextField;
+        portField = NSTextField;
+        protocolPopup = NSPopUpButton;
+        timezonePopup = NSPopUpButton;
+        toggleOptionsButton = NSButton;
+        transferPopup = NSPopUpButton;
+        urlField = NSTextField;
+        usernameField = NSTextField;
+        webURLField = NSTextField;
+        webUrlImage = NSButton;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}
