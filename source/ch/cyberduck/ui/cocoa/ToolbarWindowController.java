@@ -161,8 +161,6 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbarItem.setLabel(tab.label());
         toolbarItem.setPaletteLabel(tab.label());
         toolbarItem.setTag(tabView.indexOfTabViewItemWithIdentifier(itemIdentifier));
-
-        // Set up a reasonable tooltip, and image   Note, these aren't localized, but you will likely want to localize many of the item's properties
         toolbarItem.setToolTip(tab.label());
         toolbarItem.setImage(IconCache.iconNamed(itemIdentifier, 32));
         toolbarItem.setTarget(this.id());
