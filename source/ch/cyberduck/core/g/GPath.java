@@ -212,6 +212,16 @@ public class GPath extends Path {
 
     }
 
+    /**
+     * @return Always false
+     */
+    @Override
+    public boolean exists() {
+        // We do not currently support replacing documents. Instead uploads with the same
+        // name will create a new document
+        return false;
+    }
+
     @Override
     public GSession getSession() throws ConnectionCanceledException {
         return session;
