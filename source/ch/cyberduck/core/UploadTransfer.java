@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
 
