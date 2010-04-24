@@ -90,21 +90,13 @@ public class ConnectionController extends SheetController {
             usernameField.cell().setPlaceholderString("");
             passField.cell().setPlaceholderString("");
         }
-        if(protocol.equals(Protocol.S3)) {
-            hostField.setStringValue(protocol.getDefaultHostname());
-            Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
-                    Locale.localizedString("Access Key ID", "S3")
-            );
-            Rococoa.cast(passField.cell(), NSTextFieldCell.class).setPlaceholderString(
-                    Locale.localizedString("Secret Access Key", "S3")
-            );
-        }
-        if(protocol.equals(Protocol.CLOUDFILES)) {
-            Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString("");
-            Rococoa.cast(passField.cell(), NSTextFieldCell.class).setPlaceholderString(
-                    Locale.localizedString("API Access Key", "Mosso")
-            );
-        }
+        hostField.setStringValue(protocol.getDefaultHostname());
+        Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
+                protocol.getUsernamePlaceholder()
+        );
+        Rococoa.cast(passField.cell(), NSTextFieldCell.class).setPlaceholderString(
+                protocol.getPasswordPlaceholder()
+        );
         if(protocol.equals(Protocol.IDISK)) {
             Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
                     Locale.localizedString("MobileMe Member Name", "IDisk")

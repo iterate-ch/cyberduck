@@ -724,8 +724,7 @@ public class BookmarkController extends WindowController {
         portField.setEnabled(host.getProtocol().isHostnameConfigurable());
         this.updateField(pathField, host.getDefaultPath());
         this.updateField(usernameField, host.getCredentials().getUsername());
-        final NSTextFieldCell usernameCell = usernameField.cell();
-        usernameCell.setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
+        usernameField.cell().setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
         protocolPopup.selectItemWithTitle(host.getProtocol().getDescription());
         if(null == host.getMaxConnections()) {
             transferPopup.selectItemWithTitle(DEFAULT);

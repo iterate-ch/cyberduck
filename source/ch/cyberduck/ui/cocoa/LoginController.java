@@ -71,11 +71,7 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             public void setUserField(NSTextField userField) {
                 this.userField = userField;
                 this.updateField(this.userField, credentials.getUsername());
-                if(host.getProtocol().equals(Protocol.S3)) {
-                    this.userField.cell().setPlaceholderString(
-                            Locale.localizedString("Access Key ID", "S3")
-                    );
-                }
+                this.userField.cell().setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("userFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
@@ -101,11 +97,9 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             public void setPassField(NSSecureTextField passField) {
                 this.passField = passField;
                 this.updateField(this.passField, credentials.getPassword());
-                if(host.getProtocol().equals(Protocol.S3)) {
-                    this.passField.cell().setPlaceholderString(
-                            Locale.localizedString("Secret Access Key", "S3")
-                    );
-                }
+                this.passField.cell().setPlaceholderString(
+                        host.getProtocol().getPasswordPlaceholder()
+                );
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("passFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
