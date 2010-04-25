@@ -1,8 +1,15 @@
 Cyberduck
-FTP, SFTP, WebDAV & Amazon S3 Browser for Mac OS X.
+FTP, SFTP, WebDAV, Cloud Files, Google Docs & Amazon S3 Browser for Mac OS X.
 http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
+
+3.5 (May-01-2010) [http://trac.cyberduck.ch/milestone/3.5]
+- [Feature] Google Docs storage support (Google Docs)
+- [Feature] Convert uploads to Google Docs format (Google Docs)
+- [Feature] Optical Character Recognition (OCR) for image uploads (Google Docs)
+- [Bugfix] Overwrite files causes append (S3) (#4419)
+- [Bugfix] Help menu items disabled (#4406)
 
 3.4.2 (Apr-10-2010) [http://trac.cyberduck.ch/milestone/3.4.2]
 - [Localize] Georgian Localization
