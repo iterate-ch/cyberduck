@@ -25,7 +25,7 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.s3.S3Path;
+import ch.cyberduck.core.s3h.S3HPath;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -278,7 +278,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        ((S3Path) next).setCacheControl(null);
+                        ((S3HPath) next).setCacheControl(null);
                     }
                 }
 
@@ -294,7 +294,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        ((S3Path) next).setCacheControl(cache);
+                        ((S3HPath) next).setCacheControl(cache);
                     }
                 }
 
@@ -485,7 +485,7 @@ public class InfoController extends ToolbarWindowController {
         }
         if(itemIdentifier.equals("s3")) {
             for(Path path : files) {
-                return path instanceof S3Path && !controller.getSession().getHost().getCredentials().isAnonymousLogin();
+                return path instanceof S3HPath && !controller.getSession().getHost().getCredentials().isAnonymousLogin();
             }
             return false;
         }
@@ -801,7 +801,7 @@ public class InfoController extends ToolbarWindowController {
         distributionStatusField.setEnabled(cloud);
 
         // Amazon S3 only
-        final boolean amazon = file instanceof S3Path;
+        final boolean amazon = file instanceof S3HPath;
 
         distributionCnameField.setStringValue(Locale.localizedString("Unknown"));
         distributionCnameField.setEnabled(amazon);
@@ -926,7 +926,7 @@ public class InfoController extends ToolbarWindowController {
     private void initS3(final Path file) {
         // Amazon S3 only
         final Credentials credentials = file.getHost().getCredentials();
-        final boolean amazon = file instanceof S3Path && !credentials.isAnonymousLogin();
+        final boolean amazon = file instanceof S3HPath && !credentials.isAnonymousLogin();
 
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLocationField.setEnabled(amazon);
@@ -936,7 +936,7 @@ public class InfoController extends ToolbarWindowController {
         s3PublicUrlField.setStringValue(Locale.localizedString("Unknown"));
         s3torrentUrlField.setStringValue(Locale.localizedString("Unknown"));
         if(amazon) {
-            final S3Path s3 = (S3Path) file;
+            final S3HPath s3 = (S3HPath) file;
             if(file.attributes.isFile()) {
                 if(this.numberOfFiles() > 1) {
                     s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -983,8 +983,8 @@ public class InfoController extends ToolbarWindowController {
                     if(StringUtils.isNotBlank(location)) {
                         bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                     }
-                    if(metadata.containsKey(S3Path.METADATA_HEADER_CACHE_CONTROL)) {
-                        String cache = (String) metadata.get(S3Path.METADATA_HEADER_CACHE_CONTROL);
+                    if(metadata.containsKey(S3HPath.METADATA_HEADER_CACHE_CONTROL)) {
+                        String cache = (String) metadata.get(S3HPath.METADATA_HEADER_CACHE_CONTROL);
                         if(StringUtils.isNotBlank(cache)) {
                             if(s3CachePopup.indexOfItemWithTitle(cache).intValue() == -1) {
                                 s3CachePopup.addItemWithTitle(cache);
@@ -1004,7 +1004,7 @@ public class InfoController extends ToolbarWindowController {
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 for(Path next : files) {
-                    ((S3Path) next).setLogging(bucketLoggingButton.state() == NSCell.NSOnState);
+                    ((S3HPath) next).setLogging(bucketLoggingButton.state() == NSCell.NSOnState);
                     break;
                 }
             }

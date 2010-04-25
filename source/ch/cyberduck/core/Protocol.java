@@ -116,6 +116,10 @@ public abstract class Protocol {
         return "";
     }
 
+    public String getPasswordPlaceholder() {
+        return "";
+    }
+
     public String getDefaultHostname() {
         return Preferences.instance().getProperty("connection.hostname.default");
     }
@@ -258,7 +262,7 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol S3 = new Protocol() {
+    public static final Protocol S3_SSL = new Protocol() {
         @Override
         public String getName() {
             return "S3";
@@ -308,6 +312,68 @@ public abstract class Protocol {
         public String getUsernamePlaceholder() {
             return Locale.localizedString("Access Key ID", "S3");
         }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("Secret Access Key", "S3");
+        }
+    };
+
+    public static final Protocol S3 = new Protocol() {
+        @Override
+        public String getName() {
+            return "S3";
+        }
+
+        @Override
+        public String getDescription() {
+            return Locale.localizedString("S3/HTTP (Amazon Simple Storage Service)", "S3");
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "s3h";
+        }
+
+        @Override
+        public int getDefaultPort() {
+            return 80;
+        }
+
+        @Override
+        public String getScheme() {
+            return "http";
+        }
+
+        @Override
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "s3"};
+        }
+
+        @Override
+        public String getDefaultHostname() {
+            return Constants.S3_HOSTNAME;
+        }
+
+        @Override
+        public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("Access Key ID", "S3");
+        }
+
+        @Override
+        public String disk() {
+            return S3_SSL.disk();
+        }
+
+        @Override
+        public String icon() {
+            return S3_SSL.icon();
+        }
     };
 
     public static final Protocol EUCALYPTUS = new Protocol() {
@@ -352,18 +418,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getDefaultHostname() {
-            return "mayhem9.cs.ucsb.edu";
-        }
-
-        @Override
-        public boolean isWebUrlConfigurable() {
-            return false;
-        }
-
-        @Override
         public String disk() {
-            return S3.disk();
+            return S3_SSL.disk();
         }
 
         @Override
@@ -511,6 +567,11 @@ public abstract class Protocol {
         public String icon() {
             return "NSDotMac";
         }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("MobileMe Member Name", "IDisk");
+        }
     };
 
     public static final Protocol CLOUDFILES = new Protocol() {
@@ -562,6 +623,11 @@ public abstract class Protocol {
         @Override
         public boolean isWebUrlConfigurable() {
             return false;
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("API Access Key", "Mosso");
         }
     };
 
@@ -642,6 +708,9 @@ public abstract class Protocol {
         }
         if(Preferences.instance().getBoolean("protocol.idisk.enable")) {
             enabled.add(IDISK);
+        }
+        if(Preferences.instance().getBoolean("protocol.s3.tls.enable")) {
+            enabled.add(S3_SSL);
         }
         if(Preferences.instance().getBoolean("protocol.s3.enable")) {
             enabled.add(S3);

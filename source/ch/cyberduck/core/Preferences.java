@@ -191,7 +191,8 @@ public abstract class Preferences {
         defaults.put("protocol.webdav.enable", String.valueOf(true));
         defaults.put("protocol.webdav.tls.enable", String.valueOf(true));
         defaults.put("protocol.idisk.enable", String.valueOf(true));
-        defaults.put("protocol.s3.enable", String.valueOf(true));
+        defaults.put("protocol.s3.enable", String.valueOf(false));
+        defaults.put("protocol.s3.tls.enable", String.valueOf(true));
         defaults.put("protocol.s3.eucalyptus.enable", String.valueOf(false));
         defaults.put("protocol.cf.enable", String.valueOf(true));
         defaults.put("protocol.gdocs.enable", String.valueOf(false));
