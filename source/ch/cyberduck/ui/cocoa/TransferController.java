@@ -551,6 +551,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         }
         transferTable.reloadData();
         this.updateHighlight();
+        this.updateSelection();
     }
 
     /**
