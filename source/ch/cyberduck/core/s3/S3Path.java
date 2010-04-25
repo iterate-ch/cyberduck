@@ -621,7 +621,7 @@ public class S3Path extends CloudPath {
                         // application/x-directory
                         return;
                     }
-                    download.setAppendToFile(true);
+                    download.setAppendToFile(this.getStatus().isResume());
                     out = download.getOutputStream();
                 }
                 catch(Exception e) {
