@@ -5,9 +5,11 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 3.5 (May-01-2010) [http://trac.cyberduck.ch/milestone/3.5]
+- [Localize] Slovenian Localization
 - [Feature] Google Docs storage support (Google Docs)
 - [Feature] Convert uploads to Google Docs format (Google Docs)
 - [Feature] Optical Character Recognition (OCR) for image uploads (Google Docs)
+- [Feature] Support for Asia Pacific (Singapore) location (S3)
 - [Bugfix] Overwrite files causes append (S3) (#4419)
 - [Bugfix] Help menu items disabled (#4406)
 

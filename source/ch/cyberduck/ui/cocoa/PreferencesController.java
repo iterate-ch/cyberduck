@@ -1999,6 +1999,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation.itemAtIndex(new NSInteger(1)).setRepresentedObject(S3Bucket.LOCATION_EUROPE);
         this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(S3Bucket.LOCATION_US_WEST, "S3"));
         this.defaultBucketLocation.itemAtIndex(new NSInteger(2)).setRepresentedObject(S3Bucket.LOCATION_US_WEST);
+        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString("ap-southeast-1", "S3"));
+        this.defaultBucketLocation.itemAtIndex(new NSInteger(3)).setRepresentedObject("ap-southeast-1");
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
         this.defaultBucketLocation.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.location"), "S3"));
