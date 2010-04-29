@@ -91,16 +91,10 @@ public class ConnectionController extends SheetController {
             passField.cell().setPlaceholderString("");
         }
         hostField.setStringValue(protocol.getDefaultHostname());
-        Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
-                protocol.getUsernamePlaceholder()
-        );
-        Rococoa.cast(passField.cell(), NSTextFieldCell.class).setPlaceholderString(
-                protocol.getPasswordPlaceholder()
-        );
+        usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
+        passField.cell().setPlaceholderString(protocol.getPasswordPlaceholder());
         if(protocol.equals(Protocol.IDISK)) {
-            Rococoa.cast(usernameField.cell(), NSTextFieldCell.class).setPlaceholderString(
-                    Locale.localizedString("MobileMe Member Name", "IDisk")
-            );
+            usernameField.cell().setPlaceholderString(Locale.localizedString("MobileMe Member Name", "IDisk"));
             final String member = Preferences.instance().getProperty("iToolsMember");
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
