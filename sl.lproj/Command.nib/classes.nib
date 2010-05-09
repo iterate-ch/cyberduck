@@ -1,0 +1,26 @@
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        closeSheet = id;
+        sendButtonClicked = id;
+    };
+    CLASS = CDCommandController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        image = NSImageView;
+        inputField = NSTextField;
+        progress = NSProgressIndicator;
+        responseField = NSTextView;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}

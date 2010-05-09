@@ -1,0 +1,22 @@
+"S3 (Amazon Simple Storage Service)" = "S3 (Amazon Simple Storage Service)";
+
+/* Use your Access Key ID as the value of the AWSAccessKeyId parameter in requests you send to Amazon Web Services (when required). Your Access Key ID identifies you as the party responsible for the request. */
+"Access Key ID" = "ID ključa za dostop";
+
+/* Since your Access Key ID is not encrypted in requests to AWS, it could be discovered and used by anyone. Services that are not free require you to provide additional information, a request signature, to verify that a request containing your unique Access Key ID could only have come from you. */
+"Secret Access Key" = "Skrivni ključ za dostop";
+
+/* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
+"InProgress" = "V teku";
+
+/* The current status of the distribution. When the status is Deployed, the distribution's information is fully propagated throughout the Amazon CloudFront system. */
+"Deployed" = "Razporejeno";
+
+"EU" = "EU";
+"US" = "ZDA standard";
+"us-west-1" = "ZDA-zahod (severna Kalifornija)";
+"ap-southeast-1" = "Asia Pacific (Singapore)";
+
+/* Delivery methods including streaming protocols. */ 
+"Download (HTTP)" = "Prenos (HTTP)";
+"Streaming (RTMP)" = "Pretočne vsebine (RTMP)";
