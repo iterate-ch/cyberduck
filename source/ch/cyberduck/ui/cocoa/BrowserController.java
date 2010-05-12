@@ -764,13 +764,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         @Override
         public boolean isColumnEditable(NSTableColumn column) {
             if(Preferences.instance().getBoolean("browser.editable")) {
-                if(column.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    Path selected = getSelectedPath();
-                    if(null == selected) {
-                        return false;
-                    }
-                    return true;
-                }
+                return column.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN);
             }
             return false;
         }
@@ -2583,7 +2577,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @param transfer
+     * @param transfer Upload
      * @param workdir  Will reload the data for this directory in the browser after the
      *                 transfer completes
      * @see #transfer(Transfer)

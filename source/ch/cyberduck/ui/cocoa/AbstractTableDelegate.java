@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Comparator;
 
@@ -68,7 +69,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @see NSTableView.DataSource
      */
-    public boolean tableView_shouldSelectRow(NSTableView view, int rowIndex) {
+    public boolean tableView_shouldSelectRow(NSTableView view, NSInteger row) {
         return true;
     }
 
@@ -82,15 +83,15 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @see NSTableView.DataSource
      */
-    public boolean tableView_shouldEditTableColumn_row(NSTableView view, NSTableColumn tableColumn, int row) {
-        return false;
+    public boolean tableView_shouldEditTableColumn_row(NSTableView view, NSTableColumn c, NSInteger row) {
+        return this.isColumnEditable(c);
     }
 
     /**
      * @see NSTableView.DataSource
      */
-    public boolean outlineView_shouldEditTableColumn_item(NSOutlineView view, NSTableColumn tableColumn, NSObject item) {
-        return false;
+    public boolean outlineView_shouldEditTableColumn_item(NSOutlineView view, NSTableColumn c, NSObject item) {
+        return this.isColumnEditable(c);
     }
 
     public boolean selectionShouldChange() {
