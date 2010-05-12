@@ -974,7 +974,7 @@ public class InfoController extends ToolbarWindowController {
                         location = "US";
                     }
                     logging = s3.isLogging();
-                    metadata = s3.getMetadata();
+                    metadata = s3.readMetadata();
                 }
 
                 @Override
