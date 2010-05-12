@@ -247,7 +247,7 @@ public class GPath extends Path {
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
-                out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
+                out = this.getLocal().getOutputStream(this.getStatus().isResume());
 
                 this.download(in, out, throttle, listener);
             }
@@ -300,7 +300,7 @@ public class GPath extends Path {
                 File upload = new File(this.getLocal().getAbsolute());
                 InputStream in = null;
                 try {
-                    in = new Local.InputStream(this.getLocal());
+                    in = this.getLocal().getInputStream();
                     MediaContent content = new MediaContent();
                     final String mime = this.getLocal().getMimeType();
                     content.setMediaSource(new MediaStreamSource(in, mime,

@@ -510,7 +510,7 @@ public class SFTPPath extends Path {
                     scp.setCharset(this.getSession().getEncoding());
                     in = scp.get(this.getAbsolute());
                 }
-                out = new Local.OutputStream(this.getLocal(), getStatus().isResume());
+                out = this.getLocal().getOutputStream(this.getStatus().isResume());
                 this.download(in, out, throttle, listener);
             }
             else if(attributes.isDirectory()) {
@@ -540,7 +540,7 @@ public class SFTPPath extends Path {
                 this.mkdir();
             }
             if(attributes.isFile()) {
-                in = new Local.InputStream(this.getLocal());
+                in = this.getLocal().getInputStream();
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     if(getStatus().isResume() && this.exists()) {
                         handle = this.getSession().sftp().openFileRWAppend(this.getAbsolute());

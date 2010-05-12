@@ -281,7 +281,7 @@ public class CFPath extends CloudPath {
                 }
 
                 getStatus().setCurrent(0);
-                out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
+                out = this.getLocal().getOutputStream(this.getStatus().isResume());
 
                 this.download(in, out, throttle, listener);
             }
@@ -308,7 +308,7 @@ public class CFPath extends CloudPath {
                 // No Content-Range support
                 final Status stat = this.getStatus();
                 stat.setCurrent(0);
-                final InputStream in = new Local.InputStream(this.getLocal());
+                final InputStream in = this.getLocal().getInputStream();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
                 String md5sum = this.getLocal().getChecksum();

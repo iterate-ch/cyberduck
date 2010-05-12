@@ -317,7 +317,7 @@ public class DAVPath extends Path {
                 if(!this.getSession().getClient().isResume()) {
                     getStatus().setCurrent(0);
                 }
-                out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
+                out = this.getLocal().getOutputStream(this.getStatus().isResume());
 
                 this.download(in, out, throttle, listener);
             }
@@ -344,7 +344,7 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                final InputStream in = new Local.InputStream(this.getLocal());
+                final InputStream in = this.getLocal().getInputStream();
                 try {
                     final Status stat = this.getStatus();
                     if(stat.isResume()) {

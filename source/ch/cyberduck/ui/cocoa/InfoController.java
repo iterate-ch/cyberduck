@@ -839,7 +839,7 @@ public class InfoController extends ToolbarWindowController {
 
     /**
      * Updates the size field by iterating over all files and
-     * rading the cached size value in the attributes of the path
+     * reading the cached size value in the attributes of the path
      */
     private void initSize() {
         this.toggleSizeSettings(false);

@@ -744,7 +744,7 @@ public class FTPPath extends Path {
                 }
             }
             in = this.getSession().getClient().get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes.getSize() : 0);
-            out = new Local.OutputStream(this.getLocal(), this.getStatus().isResume());
+            out = this.getLocal().getOutputStream(this.getStatus().isResume());
             this.download(in, out, throttle, listener);
             if(this.getStatus().isComplete()) {
                 IOUtils.closeQuietly(in);
@@ -780,7 +780,7 @@ public class FTPPath extends Path {
             this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
             in = new FromNetASCIIInputStream(this.getSession().getClient().get(this.getName(), 0),
                     lineSeparator);
-            out = new FromNetASCIIOutputStream(new Local.OutputStream(this.getLocal(), false),
+            out = new FromNetASCIIOutputStream(this.getLocal().getOutputStream(false),
                     lineSeparator);
             this.download(in, out, throttle, listener);
             if(this.getStatus().isComplete()) {
@@ -859,7 +859,7 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
-            in = new Local.InputStream(this.getLocal());
+            in = this.getLocal().getInputStream();
             out = this.getSession().getClient().put(this.getName(), this.getStatus().isResume());
             if(null == out) {
                 throw new IOException("Unable opening data stream");
@@ -887,7 +887,7 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
-            in = new ToNetASCIIInputStream(new Local.InputStream(this.getLocal()));
+            in = new ToNetASCIIInputStream(this.getLocal().getInputStream());
             out = new ToNetASCIIOutputStream(this.getSession().getClient().put(this.getName(),
                     this.getStatus().isResume()));
             this.upload(out, in, throttle, listener);

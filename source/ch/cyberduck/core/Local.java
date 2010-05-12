@@ -437,7 +437,7 @@ public abstract class Local extends AbstractPath implements Attributes {
     @Override
     public void readChecksum() {
         try {
-            ServiceUtils.toHex(ServiceUtils.computeMD5Hash(new InputStream(this)));
+            ServiceUtils.toHex(ServiceUtils.computeMD5Hash(this.getInputStream()));
         }
         catch(NoSuchAlgorithmException e) {
             log.error("MD5 failed:" + e.getMessage());
@@ -482,15 +482,11 @@ public abstract class Local extends AbstractPath implements Attributes {
      */
     public abstract void setWhereFrom(final String dataUrl);
 
-    public static class OutputStream extends FileOutputStream {
-        public OutputStream(Local local, boolean resume) throws FileNotFoundException {
-            super(local._impl, resume);
-        }
+    public java.io.InputStream getInputStream() throws FileNotFoundException {
+        return new RepeatableFileInputStream(this._impl);
     }
 
-    public static class InputStream extends RepeatableFileInputStream {
-        public InputStream(Local local) throws FileNotFoundException {
-            super(local._impl);
-        }
+    public java.io.OutputStream getOutputStream(boolean resume) throws FileNotFoundException {
+        return new FileOutputStream(this._impl, resume);
     }
 }
