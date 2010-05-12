@@ -47,11 +47,14 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
         return new NSInteger(0);
     }
 
-    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {
-        super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row.intValue()), value, tableColumn.identifier());
+    public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
+                                                            NSTableColumn tableColumn, NSInteger row) {
+        super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row.intValue()),
+                value, tableColumn.identifier());
     }
 
-    public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
+    public NSObject tableView_objectValueForTableColumn_row(NSTableView view,
+                                                            NSTableColumn tableColumn, NSInteger row) {
         if(controller.isMounted()) {
             final List<Path> childs = this.childs(this.controller.workdir());
             if(row.intValue() < childs.size()) {
@@ -65,7 +68,9 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     // Drop methods
     // ----------------------------------------------------------
 
-    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view,
+                                                                               NSDraggingInfo draggingInfo,
+                                                                               NSInteger row, NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
@@ -82,7 +87,8 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
         return super.validateDrop(view, null, row, draggingInfo);
     }
 
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo,
+                                                          NSInteger row, NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
@@ -105,7 +111,8 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
      * @param rowIndexes is the list of row numbers that will be participating in the drag.
      * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data, owner, and so on).
      */
-    public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes, NSPasteboard pboard) {
+    public boolean tableView_writeRowsWithIndexes_toPasteboard(NSTableView view, NSIndexSet rowIndexes,
+                                                               NSPasteboard pboard) {
         if(controller.isMounted()) {
             NSMutableArray items = NSMutableArray.array();
             final AttributedList<Path> childs = this.childs(this.controller.workdir());
@@ -117,7 +124,8 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
         return false;
     }
 
-    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
+    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view,
+                                                                                                final NSURL dropDestination, NSIndexSet rowIndexes) {
         return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
 
