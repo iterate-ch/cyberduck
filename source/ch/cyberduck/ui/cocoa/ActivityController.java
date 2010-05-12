@@ -178,7 +178,7 @@ public class ActivityController extends WindowController {
             }
 
             @Override
-            public boolean tableView_shouldSelectRow(NSTableView view, int row) {
+            public boolean tableView_shouldSelectRow(NSTableView view, NSInteger row) {
                 return false;
             }
 
