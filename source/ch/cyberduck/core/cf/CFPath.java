@@ -33,15 +33,14 @@ import org.w3c.util.InvalidDateException;
 
 import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
 import com.rackspacecloud.client.cloudfiles.FilesObject;
+import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -405,6 +404,38 @@ public class CFPath extends CloudPath {
             }
             if(this.attributes.isDirectory()) {
                 this.error("Cannot delete folder", e);
+            }
+        }
+    }
+
+    /**
+     * @return Modifiable HTTP header metatdata key and values
+     */
+    @Override
+    public Map<String, String> readMetadata() {
+        if(attributes.isFile()) {
+            try {
+                this.getSession().check();
+                final FilesObjectMetaData meta
+                        = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getName());
+                return meta.getMetaData();
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
+        }
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public void writeMetadata(Map<String, String> meta) {
+        if(attributes.isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getName(), meta);
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
             }
         }
     }

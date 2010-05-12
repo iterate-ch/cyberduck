@@ -321,10 +321,8 @@ public class S3HPath extends CloudPath {
         }
     }
 
-    /**
-     * @return
-     */
-    public Map getMetadata() {
+    @Override
+    public Map<String, String> readMetadata() {
         if(attributes.isFile()) {
             try {
                 this.getSession().check();
@@ -338,7 +336,25 @@ public class S3HPath extends CloudPath {
                 this.error("Cannot read file attributes", e);
             }
         }
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public void writeMetadata(Map<String, String> meta) {
+        if(attributes.isFile()) {
+            try {
+                this.getSession().check();
+                final S3Object target = this.getDetails();
+                target.replaceAllMetadata(meta);
+                this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot write file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
+            }
+        }
     }
 
     /**

@@ -23,6 +23,8 @@ import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
+import java.util.Map;
+
 /**
  * @version $Id$
  */
@@ -70,7 +72,7 @@ public abstract class CloudPath extends Path {
         }
         CloudPath bucketname = this;
         while(!bucketname.isContainer()) {
-            bucketname = (CloudPath)bucketname.getParent();
+            bucketname = (CloudPath) bucketname.getParent();
         }
         return bucketname.getName();
     }
@@ -87,4 +89,14 @@ public abstract class CloudPath extends Path {
         }
         return null;
     }
+
+    /**
+     * @return Modifiable HTTP header metatdata key and values
+     */
+    public abstract Map<String, String> readMetadata();
+
+    /**
+     * @param meta Modifiable HTTP header metatdata key and values
+     */
+    public abstract void writeMetadata(Map<String, String> meta);
 }
