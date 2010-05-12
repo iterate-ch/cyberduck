@@ -649,7 +649,7 @@ public abstract class Protocol {
 
         @Override
         public String disk() {
-            return SFTP.disk();
+            return "google";
         }
 
         @Override

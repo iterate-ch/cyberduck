@@ -806,6 +806,7 @@ img/ftp.icns -text
 img/g-icon.png -text svneol=unset#image/png
 img/gear.tiff -text svneol=unset#image/tiff
 img/general.tiff -text svneol=unset#image/tiff
+img/google.icns -text
 img/goto.tiff -text svneol=unset#image/tiff
 img/history.tiff -text svneol=unset#image/tiff
 img/info.tiff -text svneol=unset#image/tiff
