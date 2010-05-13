@@ -11,7 +11,7 @@ Changelog. Last modified: $Date$
 - [Feature] Optical Character Recognition (OCR) for image uploads (Google Docs)
 - [Feature] Support for Asia Pacific (Singapore) location (S3)
 - [Feature] HTTP plain text connection support to connect to third party S3 servers (#4181) (S3)
-- [Feature] Custom metadata attributes (#4063) (S3)
+- [Feature] Custom metadata attributes (#4063) (S3, Rackspace Cloud Files)
 - [Bugfix] Overwrite files causes append (S3) (#4419)
 - [Bugfix] Help menu items disabled (#4406)
 
