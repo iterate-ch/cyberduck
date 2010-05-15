@@ -33,14 +33,19 @@ import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.Constants;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Rococoa;
+import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import com.rackspacecloud.client.cloudfiles.FilesConstants;
+
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -49,6 +54,9 @@ import java.util.*;
 public class InfoController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(InfoController.class);
 
+    /**
+     * Selected files
+     */
     private List<Path> files = Collections.emptyList();
 
     @Outlet
@@ -260,53 +268,6 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSPopUpButton s3CachePopup;
-
-    public void setS3CachePopup(NSPopUpButton b) {
-        this.s3CachePopup = b;
-        this.s3CachePopup.removeAllItems();
-        this.s3CachePopup.setTarget(this.id());
-        this.s3CachePopup.setAction(Foundation.selector("s3CachePopupClicked:"));
-        this.s3CachePopup.addItemWithTitle(Locale.localizedString("None"));
-        this.s3CachePopup.addItemWithTitle("public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds"));
-    }
-
-    @Action
-    public void s3CachePopupClicked(final NSPopUpButton sender) {
-        if(sender.indexOfSelectedItem().intValue() == 0) {
-            this.toggleS3Settings(false);
-            controller.background(new BrowserBackgroundAction(controller) {
-                public void run() {
-                    for(Path next : files) {
-                        ((S3HPath) next).setCacheControl(null);
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    toggleS3Settings(true);
-                }
-            });
-        }
-        if(sender.indexOfSelectedItem().intValue() == 1) {
-            final String cache = sender.selectedItem().title();
-            this.toggleS3Settings(false);
-            controller.background(new BrowserBackgroundAction(controller) {
-                public void run() {
-                    for(Path next : files) {
-                        ((S3HPath) next).setCacheControl(cache);
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    toggleS3Settings(true);
-                }
-            });
-        }
-    }
-
-    @Outlet
     private NSTextField distributionCnameField;
 
     public void setDistributionCnameField(NSTextField t) {
@@ -336,6 +297,293 @@ public class InfoController extends ToolbarWindowController {
         this.distributionCnameUrlField = t;
         this.distributionCnameUrlField.setAllowsEditingTextAttributes(true);
         this.distributionCnameUrlField.setSelectable(true);
+    }
+
+    @Outlet
+    private NSTableView metadataTable;
+    private ListDataSource metadataTableModel;
+    private AbstractTableDelegate<String> metadataTableDelegate;
+
+    public static final String HEADER_NAME_COLUMN = "NAME";
+    public static final String HEADER_VALUE_COLUMN = "VALUE";
+
+    /**
+     * Custom HTTP headers for REST protocols
+     */
+    private Map<String, String> metadata
+            = new TreeMap<String, String>();
+
+    /**
+     * Replace current metadata model. Will reload the table view.
+     *
+     * @param m The new header key and values
+     */
+    private void setMetadata(Map<String, String> m) {
+        metadata.clear();
+        metadata.putAll(m);
+        metadataTable.reloadData();
+    }
+
+    public void setMetadataTable(final NSTableView metadataTable) {
+        this.metadataTable = metadataTable;
+        this.metadataTable.setDataSource((metadataTableModel = new ListDataSource() {
+            /**
+             * @param view
+             */
+            public NSInteger numberOfRowsInTableView(NSTableView view) {
+                return new NSInteger(metadata.size());
+            }
+
+            /**
+             * @param view
+             * @param tableColumn
+             * @param row
+             */
+            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
+                                                                    NSInteger row) {
+                final String identifier = tableColumn.identifier();
+                if(identifier.equals(HEADER_NAME_COLUMN)) {
+                    return NSString.stringWithString(metadata.keySet().toArray(new String[metadata.size()])[row.intValue()]);
+                }
+                if(identifier.equals(HEADER_VALUE_COLUMN)) {
+                    return NSString.stringWithString(metadata.values().toArray(new String[metadata.size()])[row.intValue()]);
+                }
+                return null;
+            }
+
+            @Override
+            public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
+                                                                    NSTableColumn c, NSInteger row) {
+                if(StringUtils.isNotBlank(value.toString())) {
+                    final String previousKey = metadata.keySet().toArray(new String[metadata.size()])[row.intValue()];
+                    final String previousValue = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
+                    metadata.remove(previousKey);
+                    if(c.identifier().equals(HEADER_NAME_COLUMN)) {
+                        metadata.put(value.toString(), previousValue);
+                        if(StringUtils.isNotBlank(previousValue)) {
+                            // Only update if both fields are set
+                            metadataInputDidEndEditing();
+                        }
+                    }
+                    if(c.identifier().equals(HEADER_VALUE_COLUMN)) {
+                        metadata.put(previousKey, value.toString());
+                        if(StringUtils.isNotBlank(previousKey)) {
+                            // Only update if both fields are set
+                            metadataInputDidEndEditing();
+                        }
+                    }
+                }
+            }
+        }).id());
+        this.metadataTable.setDelegate((metadataTableDelegate = new AbstractTableDelegate<String>() {
+            @Override
+            public boolean isColumnEditable(NSTableColumn column) {
+                return true;
+            }
+
+            @Override
+            public void tableRowDoubleClicked(final ID sender) {
+                this.enterKeyPressed(sender);
+            }
+
+            public void enterKeyPressed(final ID sender) {
+                metadataTable.editRow(
+                        metadataTable.columnWithIdentifier(HEADER_VALUE_COLUMN),
+                        metadataTable.selectedRow(), true);
+            }
+
+            public void deleteKeyPressed(final ID sender) {
+                metadataRemoveButtonClicked(sender);
+            }
+
+            public String tooltip(String c) {
+                return c;
+            }
+
+            @Override
+            public void tableColumnClicked(NSTableView view, NSTableColumn c) {
+                ;
+            }
+
+            @Override
+            public void selectionDidChange(NSNotification notification) {
+                metadataRemoveButton.setEnabled(metadataTable.numberOfSelectedRows().intValue() > 0);
+            }
+
+            @Override
+            protected boolean isTypeSelectSupported() {
+                return false;
+            }
+        }).id());
+    }
+
+    @Outlet
+    private NSPopUpButton metadataAddButton;
+
+    public void setMetadataAddButton(NSPopUpButton b) {
+        this.metadataAddButton = b;
+        this.metadataAddButton.setTarget(this.id());
+        this.metadataAddButton.addItemWithTitle("");
+        this.metadataAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
+        this.metadataAddButton.addItemWithTitle("Custom Header");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCustomClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
+        this.metadataAddButton.menu().addItem(NSMenuItem.separatorItem());
+        this.metadataAddButton.addItemWithTitle("Cache-Control");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCacheControlClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
+        this.metadataAddButton.addItemWithTitle("Expires");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddExpiresClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
+        this.metadataAddButton.addItemWithTitle("Pragma");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddPragmaClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
+        this.metadataAddButton.addItemWithTitle("Content-Type");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddContentTypeClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
+        this.metadataAddButton.addItemWithTitle("Content-Encoding");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddContentEncodingClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
+    }
+
+    /**
+     * Add a custom metadata header. This will be prefixed depending on the service.
+     *
+     * @param sender
+     * @see Constants#REST_METADATA_PREFIX
+     * @see FilesConstants#X_OBJECT_META
+     */
+    @Action
+    public void metadataAddCustomClicked(ID sender) {
+        this.addMetadataItem(Locale.localizedString("Unknown"));
+    }
+
+    @Action
+    public void metadataAddCacheControlClicked(ID sender) {
+        this.addMetadataItem("Cache-Control",
+                "public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds"));
+    }
+
+    @Action
+    public void metadataAddContentTypeClicked(ID sender) {
+        this.addMetadataItem("Content-Type", "", true);
+    }
+
+    @Action
+    public void metadataAddContentEncodingClicked(ID sender) {
+        this.addMetadataItem("Content-Encoding", "", true);
+    }
+
+    /**
+     * Format to RFC 1123 timestamp
+     * Expires: Thu, 01 Dec 1994 16:00:00 GMT
+     */
+    private SimpleDateFormat rfc1123 =
+            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", java.util.Locale.ENGLISH);
+
+    {
+        rfc1123.setTimeZone(TimeZone.getDefault());
+    }
+
+    @Action
+    public void metadataAddExpiresClicked(ID sender) {
+        this.addMetadataItem("Expires", rfc1123.format(new Date()));
+    }
+
+    @Action
+    public void metadataAddPragmaClicked(ID sender) {
+        this.addMetadataItem("Pragma", "", true);
+    }
+
+    /**
+     * Add new metadata row and selects the name column
+     *
+     * @param name
+     */
+    private void addMetadataItem(String name) {
+        this.addMetadataItem(name, "", false);
+    }
+
+    /**
+     * Add new metadata row and selects the value column
+     *
+     * @param name
+     * @param value
+     */
+    private void addMetadataItem(String name, String value) {
+        this.addMetadataItem(name, value, true);
+    }
+
+    /**
+     * @param name        HTTP header name
+     * @param value       HTTP header value
+     * @param selectValue Select the value field or the name header field
+     */
+    private void addMetadataItem(String name, String value, boolean selectValue) {
+        log.debug("addMetadataItem:" + name);
+        Map<String, String> m = new TreeMap<String, String>(metadata);
+        m.put(name, value);
+        this.setMetadata(m);
+        int row = 0;
+        for(String key : metadata.keySet()) {
+            if(key.equals(name)) {
+                break;
+            }
+            row++;
+        }
+        metadataTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
+        metadataTable.editRow(
+                selectValue ? metadataTable.columnWithIdentifier(HEADER_VALUE_COLUMN) : metadataTable.columnWithIdentifier(HEADER_NAME_COLUMN),
+                new NSInteger(row), true);
+    }
+
+    @Outlet
+    private NSButton metadataRemoveButton;
+
+    public void setMetadataRemoveButton(NSButton b) {
+        this.metadataRemoveButton = b;
+        // Only enable upon selection change
+        this.metadataRemoveButton.setEnabled(false);
+        this.metadataRemoveButton.setAction(Foundation.selector("metadataRemoveButtonClicked:"));
+        this.metadataRemoveButton.setTarget(this.id());
+    }
+
+    @Action
+    public void metadataRemoveButtonClicked(ID sender) {
+        Map<String, String> m = new TreeMap<String, String>(metadata);
+        NSIndexSet iterator = metadataTable.selectedRowIndexes();
+        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+            m.remove(new ArrayList<String>(m.keySet()).get(index.intValue()));
+        }
+        this.setMetadata(m);
+        this.metadataInputDidEndEditing();
+    }
+
+    private void metadataInputDidEndEditing() {
+        toggleMetadataSettings(false);
+        controller.background(new BrowserBackgroundAction(controller) {
+            private Map<String, String> m = Collections.emptyMap();
+
+            public void run() {
+                for(Path next : files) {
+                    ((CloudPath) next).writeMetadata(metadata);
+                    m = ((CloudPath) next).readMetadata();
+                    break;
+                }
+            }
+
+            @Override
+            public void cleanup() {
+                setMetadata(m);
+                toggleMetadataSettings(true);
+            }
+
+            @Override
+            public String getActivity() {
+                return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                        files.get(0).getName());
+            }
+        });
     }
 
     @Outlet
@@ -399,10 +647,14 @@ public class InfoController extends ToolbarWindowController {
         this.iconImageView = iconImageView;
     }
 
+    /**
+     * Window title including the filename
+     */
     private String title;
 
     @Override
     public void setWindow(NSWindow window) {
+        // Remember original window title
         title = window.title();
         window.setShowsResizeIndicator(true);
         super.setWindow(window);
@@ -472,21 +724,37 @@ public class InfoController extends ToolbarWindowController {
         this.setFiles(files);
     }
 
+    private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
+    private static final String TOOLBAR_ITEM_CLOUD = "cloud";
+
     @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String itemIdentifier = item.itemIdentifier();
         log.debug("validateToolbarItem:" + itemIdentifier);
-        if(itemIdentifier.equals("cloud")) {
-            item.setImage(IconCache.iconNamed(controller.getSession().getHost().getProtocol().disk(), 32));
-            for(Path path : files) {
-                return path instanceof CloudPath && !controller.getSession().getHost().getCredentials().isAnonymousLogin();
+        final Session session = controller.getSession();
+        final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
+        if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
+            // Give icon and label of the given session
+            item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+            if(session instanceof CloudSession) {
+                return !anonymous;
             }
+            // Not enabled if not a cloud session
             return false;
         }
-        if(itemIdentifier.equals("s3")) {
-            for(Path path : files) {
-                return path instanceof S3HPath && !controller.getSession().getHost().getCredentials().isAnonymousLogin();
+        if(itemIdentifier.equals(TOOLBAR_ITEM_CLOUD)) {
+            if(session instanceof CloudSession) {
+                // Give icon and label of the given session
+                item.setLabel(session.getHost().getProtocol().getName());
+                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+                return !anonymous;
             }
+            else {
+                // Fallback to disabled default cloud provider
+                item.setLabel(Protocol.S3.getName());
+                item.setImage(IconCache.iconNamed(Protocol.S3.disk(), 32));
+            }
+            // Not enabled if not a cloud session
             return false;
         }
         return super.validateToolbarItem(item);
@@ -555,33 +823,34 @@ public class InfoController extends ToolbarWindowController {
         this.cascade();
 
         this.ownerr.setTarget(this.id());
-        this.ownerr.setAction(Foundation.selector("permissionSelectionChanged:"));
+        final Selector s = Foundation.selector("permissionSelectionChanged:");
+        this.ownerr.setAction(s);
         this.ownerr.setAllowsMixedState(true);
         this.ownerw.setTarget(this.id());
-        this.ownerw.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.ownerw.setAction(s);
         this.ownerw.setAllowsMixedState(true);
         this.ownerx.setTarget(this.id());
-        this.ownerx.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.ownerx.setAction(s);
         this.ownerx.setAllowsMixedState(true);
 
         this.groupr.setTarget(this.id());
-        this.groupr.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.groupr.setAction(s);
         this.groupr.setAllowsMixedState(true);
         this.groupw.setTarget(this.id());
-        this.groupw.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.groupw.setAction(s);
         this.groupw.setAllowsMixedState(true);
         this.groupx.setTarget(this.id());
-        this.groupx.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.groupx.setAction(s);
         this.groupx.setAllowsMixedState(true);
 
         this.otherr.setTarget(this.id());
-        this.otherr.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.otherr.setAction(s);
         this.otherr.setAllowsMixedState(true);
         this.otherw.setTarget(this.id());
-        this.otherw.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.otherw.setAction(s);
         this.otherw.setAllowsMixedState(true);
         this.otherx.setTarget(this.id());
-        this.otherx.setAction(Foundation.selector("permissionSelectionChanged:"));
+        this.otherx.setAction(s);
         this.otherx.setAllowsMixedState(true);
 
         super.awakeFromNib();
@@ -594,14 +863,11 @@ public class InfoController extends ToolbarWindowController {
 
     private String getName() {
         final int count = this.numberOfFiles();
-        if(count > 0) {
-            Path file = this.files.get(0);
-            if(count > 1) {
-                return "(" + Locale.localizedString("Multiple files") + ")";
-            }
-            for(Path next : files) {
-                return next.getName();
-            }
+        if(count > 1) {
+            return "(" + Locale.localizedString("Multiple files") + ")";
+        }
+        for(Path next : files) {
+            return next.getName();
         }
         return null;
     }
@@ -659,6 +925,8 @@ public class InfoController extends ToolbarWindowController {
             this.initDistribution(file);
             // S3 Bucket attributes
             this.initS3(file);
+            // HTTP custom headers
+            this.initMetadata(file);
             // Read HTTP URL
             this.initWebUrl();
 
@@ -792,7 +1060,7 @@ public class InfoController extends ToolbarWindowController {
         final boolean cloud = file instanceof CloudPath;
 
         this.distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
-        Rococoa.cast(this.distributionCnameField.cell(), NSTextFieldCell.class).setPlaceholderString(Locale.localizedString("Unknown"));
+        this.distributionCnameField.cell().setPlaceholderString(Locale.localizedString("Unknown"));
 
         distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
         distributionUrlField.setEnabled(cloud);
@@ -911,7 +1179,6 @@ public class InfoController extends ToolbarWindowController {
      */
     private void toggleS3Settings(boolean enabled) {
         bucketLoggingButton.setEnabled(enabled);
-        s3CachePopup.setEnabled(enabled);
         if(enabled) {
             s3Progress.stopAnimation(null);
         }
@@ -927,12 +1194,12 @@ public class InfoController extends ToolbarWindowController {
         // Amazon S3 only
         final Credentials credentials = file.getHost().getCredentials();
         final boolean amazon = file instanceof S3HPath && !credentials.isAnonymousLogin();
+        final boolean cloud = file instanceof CloudPath;
 
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLocationField.setEnabled(amazon);
-        s3CachePopup.setEnabled(amazon && file.attributes.isFile());
         bucketLoggingButton.setEnabled(amazon);
-        bucketLoggingButton.setToolTip("");
+        bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
         s3PublicUrlField.setStringValue(Locale.localizedString("Unknown"));
         s3torrentUrlField.setStringValue(Locale.localizedString("Unknown"));
         if(amazon) {
@@ -965,16 +1232,15 @@ public class InfoController extends ToolbarWindowController {
             this.toggleS3Settings(false);
             controller.background(new BrowserBackgroundAction(controller) {
                 String location = null;
-                boolean logging;
-                Map metadata = null;
+                boolean logging = false;
 
                 public void run() {
+                    final S3HPath s3 = (S3HPath) file;
                     location = s3.getLocation();
                     if(null == location) {
                         location = "US";
                     }
                     logging = s3.isLogging();
-                    metadata = s3.readMetadata();
                 }
 
                 @Override
@@ -983,16 +1249,64 @@ public class InfoController extends ToolbarWindowController {
                     if(StringUtils.isNotBlank(location)) {
                         bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                     }
-                    if(metadata.containsKey(S3HPath.METADATA_HEADER_CACHE_CONTROL)) {
-                        String cache = (String) metadata.get(S3HPath.METADATA_HEADER_CACHE_CONTROL);
-                        if(StringUtils.isNotBlank(cache)) {
-                            if(s3CachePopup.indexOfItemWithTitle(cache).intValue() == -1) {
-                                s3CachePopup.addItemWithTitle(cache);
-                            }
-                            s3CachePopup.selectItemWithTitle(cache);
-                        }
-                    }
                     toggleS3Settings(true);
+                }
+            });
+        }
+    }
+
+    /**
+     * Toggle settings before and after update
+     *
+     * @param enabled
+     */
+    private void toggleMetadataSettings(boolean enabled) {
+        metadataTable.setEnabled(enabled);
+        metadataAddButton.setEnabled(enabled);
+        metadataRemoveButton.setEnabled(enabled);
+        if(enabled) {
+            s3Progress.stopAnimation(null);
+        }
+        else {
+            s3Progress.startAnimation(null);
+        }
+    }
+
+    /**
+     * Read custom metadata HTTP headers from cloud provider
+     *
+     * @param file
+     */
+    private void initMetadata(final Path file) {
+        // Amazon S3 only
+        final Credentials credentials = file.getHost().getCredentials();
+
+        final boolean cloud = file instanceof CloudPath;
+
+        metadataTable.setEnabled(cloud);
+        metadataAddButton.setEnabled(cloud);
+
+        if(cloud) {
+            this.toggleMetadataSettings(false);
+            controller.background(new BrowserBackgroundAction(controller) {
+                Map<String, String> m = Collections.emptyMap();
+
+                public void run() {
+                    final CloudPath cloud = (CloudPath) file;
+                    // Reading HTTP headers custom metadata
+                    m = cloud.readMetadata();
+                }
+
+                @Override
+                public void cleanup() {
+                    setMetadata(m);
+                    toggleMetadataSettings(true);
+                }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                            files.get(0).getName());
                 }
             });
         }
@@ -1017,7 +1331,9 @@ public class InfoController extends ToolbarWindowController {
     }
 
     /**
-     * @return
+     * Selected files in browser.
+     *
+     * @return The number of selected files to display information for.
      */
     private int numberOfFiles() {
         return null == files ? 0 : files.size();
