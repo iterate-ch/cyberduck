@@ -3,6 +3,12 @@
         {
     ACTIONS =     {
         helpButtonClicked = id;
+        metadataAddButtonClicked = id;
+        metadataAddCacheControlClicked = id;
+        metadataAddContentEncodingClicked = id;
+        metadataAddContentTypeClicked = id;
+        metadataAddExpiresClicked = id;
+        metadataRemoveButtonClicked = id;
     };
     CLASS = CDInfoController;
     LANGUAGE = ObjC;
@@ -25,6 +31,9 @@
         groupx = id;
         iconImageView = id;
         kindField = id;
+        metadataAddButton = id;
+        metadataRemoveButton = id;
+        metadataTable = id;
         modifiedField = id;
         octalField = id;
         otherr = id;
@@ -42,7 +51,6 @@
         permissionProgress = id;
         permissionsField = id;
         recursiveCheckbox = id;
-        s3CachePopup = id;
         s3Progress = id;
         s3PublicUrlField = id;
         s3torrentUrlField = id;

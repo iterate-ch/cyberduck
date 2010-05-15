@@ -9,6 +9,18 @@
 			<dict>
 				<key>helpButtonClicked</key>
 				<string>id</string>
+				<key>metadataAddButtonClicked</key>
+				<string>id</string>
+				<key>metadataAddCacheControlClicked</key>
+				<string>id</string>
+				<key>metadataAddContentEncodingClicked</key>
+				<string>id</string>
+				<key>metadataAddContentTypeClicked</key>
+				<string>id</string>
+				<key>metadataAddExpiresClicked</key>
+				<string>id</string>
+				<key>metadataRemoveButtonClicked</key>
+				<string>id</string>
 			</dict>
 			<key>CLASS</key>
 			<string>CDInfoController</string>
@@ -52,6 +64,12 @@
 				<string>id</string>
 				<key>kindField</key>
 				<string>id</string>
+				<key>metadataAddButton</key>
+				<string>id</string>
+				<key>metadataRemoveButton</key>
+				<string>id</string>
+				<key>metadataTable</key>
+				<string>id</string>
 				<key>modifiedField</key>
 				<string>id</string>
 				<key>octalField</key>
@@ -85,8 +103,6 @@
 				<key>permissionsField</key>
 				<string>id</string>
 				<key>recursiveCheckbox</key>
-				<string>id</string>
-				<key>s3CachePopup</key>
 				<string>id</string>
 				<key>s3Progress</key>
 				<string>id</string>
