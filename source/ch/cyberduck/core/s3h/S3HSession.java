@@ -328,7 +328,9 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     public org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
                                                                                Distribution.Method method,
-                                                                               final String bucket, String[] cnames, LoggingStatus logging) throws CloudFrontServiceException {
+                                                                               final String bucket,
+                                                                               String[] cnames,
+                                                                               LoggingStatus logging) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
         if(method.equals(Distribution.STREAMING)) {
             return this.createCloudFrontService().createStreamingDistribution(
@@ -336,7 +338,8 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     String.valueOf(reference), // Caller reference - a unique string value
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
-                    enabled  // Enabled?
+                    enabled,  // Enabled?
+                    logging
             );
         }
         return this.createCloudFrontService().createDistribution(
@@ -367,7 +370,8 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     distribution.getId(),
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
-                    enabled // Enabled?
+                    enabled, // Enabled?
+                    logging
             );
         }
         else {
@@ -399,8 +403,8 @@ public class S3HSession extends HTTPSession implements CloudSession {
 
     /**
      * @param distribution Distribution configuration
-     * @returann
      * @throws CloudFrontServiceException CloudFront failure details
+     * @returann
      */
     protected DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution
     ) throws CloudFrontServiceException {

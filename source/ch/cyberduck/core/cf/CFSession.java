@@ -233,7 +233,8 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
                 try {
                     final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
                     return new Distribution(info.isEnabled(), info.getCdnURL(),
-                            info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"), info.getRetainLogs());
+                            info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
+                            info.getRetainLogs());
                 }
                 catch(FilesException e) {
                     log.warn(e.getMessage());
