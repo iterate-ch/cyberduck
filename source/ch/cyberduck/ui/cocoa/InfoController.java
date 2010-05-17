@@ -562,13 +562,14 @@ public class InfoController extends ToolbarWindowController {
     private void metadataInputDidEndEditing() {
         toggleMetadataSettings(false);
         controller.background(new BrowserBackgroundAction(controller) {
-            private Map<String, String> m = Collections.emptyMap();
+            private Map<String, String> m = new HashMap<String, String>();
 
             public void run() {
                 for(Path next : files) {
                     ((CloudPath) next).writeMetadata(metadata);
-                    m = ((CloudPath) next).readMetadata();
-                    break;
+                }
+                for(Path next : files) {
+                    m.putAll(((CloudPath) next).readMetadata());
                 }
             }
 
@@ -1278,9 +1279,6 @@ public class InfoController extends ToolbarWindowController {
      * @param file
      */
     private void initMetadata(final Path file) {
-        // Amazon S3 only
-        final Credentials credentials = file.getHost().getCredentials();
-
         final boolean cloud = file instanceof CloudPath;
 
         metadataTable.setEnabled(cloud);
@@ -1289,12 +1287,13 @@ public class InfoController extends ToolbarWindowController {
         if(cloud) {
             this.toggleMetadataSettings(false);
             controller.background(new BrowserBackgroundAction(controller) {
-                Map<String, String> m = Collections.emptyMap();
+                Map<String, String> m = new HashMap<String, String>();
 
                 public void run() {
-                    final CloudPath cloud = (CloudPath) file;
-                    // Reading HTTP headers custom metadata
-                    m = cloud.readMetadata();
+                    for(Path next : files) {
+                        // Reading HTTP headers custom metadata
+                        m.putAll(((CloudPath) next).readMetadata());
+                    }
                 }
 
                 @Override
