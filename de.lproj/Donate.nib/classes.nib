@@ -1,37 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>IBClasses</key>
-	<array>
-		<dict>
-			<key>CLASS</key>
-			<string>FirstResponder</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>closeDonationSheet</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>CDWindowController</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>OUTLETS</key>
-			<dict>
-				<key>neverShowDonationCheckbox</key>
-				<string>NSButton</string>
-				<key>window</key>
-				<string>NSWindow</string>
-			</dict>
-		</dict>
-	</array>
-	<key>IBVersion</key>
-	<string>1</string>
-</dict>
-</plist>
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        closeDonationSheet = id;
+    };
+    CLASS = CDWindowController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        neverShowDonationCheckbox = NSButton;
+        window = NSWindow;
+    };
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}
