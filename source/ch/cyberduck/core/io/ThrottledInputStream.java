@@ -50,6 +50,7 @@ public class ThrottledInputStream extends InputStream {
      *
      * @throws IOException if an I/O error occurs on the InputStream.
      */
+    @Override
     public int read() throws IOException {
         int allow = _throttle.request(1); //Note that BandwidthRequeset#request never returns zero.
         assert (allow == 1);
@@ -61,9 +62,10 @@ public class ThrottledInputStream extends InputStream {
      *
      * @param data   the bytes to read.
      * @param offset the index in the array to start at.
-     * @param length the number of bytes to read.
+     * @param totalLength the number of bytes to read.
      * @throws IOException if an I/O error occurs on the InputStream.
      */
+    @Override
     public int read(byte[] data, int offset, int totalLength) throws IOException {
         int totalRead = 0;
         while(totalLength > 0) {
@@ -83,6 +85,7 @@ public class ThrottledInputStream extends InputStream {
         return totalRead;
     }
 
+    @Override
     public void close() throws IOException {
         _delegate.close();
     }

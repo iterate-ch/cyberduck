@@ -50,6 +50,7 @@ public class ThrottledOutputStream extends OutputStream {
      * @param b the byte to write.
      * @throws IOException if an I/O error occurs on the OutputStream.
      */
+    @Override
     public void write(final int b) throws IOException {
         int allow = _throttle.request(1); //Note that _request never returns zero.
         assert (allow == 1);
@@ -66,6 +67,7 @@ public class ThrottledOutputStream extends OutputStream {
      * @param totalLength the number of bytes to write.
      * @throws IOException if an I/O error occurs on the OutputStream.
      */
+    @Override
     public void write(byte[] data, int offset, int totalLength)
             throws IOException {
         //Note that we delegate directly to out.  Do NOT call super.write();
@@ -83,14 +85,17 @@ public class ThrottledOutputStream extends OutputStream {
      * Write the given bytes to the delegate stream, possibly blocking if
      * necessary to ensure that throughput doesn't exceed the limits.
      */
+    @Override
     public void write(byte[] data) throws IOException {
         write(data, 0, data.length);
     }
 
+    @Override
     public void flush() throws IOException {
         _delegate.flush();
     }
 
+    @Override
     public void close() throws IOException {
         _delegate.close();
     }
