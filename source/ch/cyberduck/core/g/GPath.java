@@ -312,7 +312,7 @@ public class GPath extends Path {
 
                     this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                             this.getName()));
-                    getStatus().setCurrent(0);
+                    getStatus().setResume(false);
 
                     StringBuilder url = new StringBuilder("https://docs.google.com/feeds/default/private/full/");
                     if(this.isOcrSupported()) {
@@ -540,7 +540,7 @@ public class GPath extends Path {
 
     @Override
     public void writePermissions(Permission perm, boolean recursive) {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -550,7 +550,7 @@ public class GPath extends Path {
 
     @Override
     public void writeModificationDate(long millis) {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -577,6 +577,11 @@ public class GPath extends Path {
         }
     }
 
+    /**
+     * Renaming is not currently supported
+     *
+     * @return Always false
+     */
     @Override
     public boolean isRenameSupported() {
         return false;
@@ -584,7 +589,7 @@ public class GPath extends Path {
 
     @Override
     public void rename(AbstractPath renamed) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override

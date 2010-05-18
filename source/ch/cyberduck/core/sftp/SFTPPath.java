@@ -403,7 +403,6 @@ public class SFTPPath extends Path {
 
     @Override
     public void writePermissions(Permission perm, boolean recursive) {
-        log.debug("changePermissions");
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),

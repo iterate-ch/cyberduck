@@ -25,7 +25,6 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
@@ -128,25 +127,9 @@ public class S3HSession extends HTTPSession implements CloudSession {
         configuration.setProperty("httpclient.socket-timeout-ms", String.valueOf(this.timeout()));
         configuration.setProperty("httpclient.useragent", this.getUserAgent());
         configuration.setProperty("httpclient.authentication-preemptive", String.valueOf(false));
+
         // How many times to retry connections when they fail with IO errors. Set this to 0 to disable retries.
         // configuration.setProperty("httpclient.retry-max", String.valueOf(0));
-
-//        final String cipher = Preferences.instance().getProperty("s3.crypto.algorithm");
-//        if(EncryptionUtil.isCipherAvailableForUse(cipher)) {
-//            configuration.setProperty("crypto.algorithm", cipher);
-//        }
-//        else {
-//            log.warn("Cipher " + cipher + " not available for use.");
-//        }
-
-        configuration.setProperty("downloads.restoreLastModifiedDate",
-                Preferences.instance().getProperty("queue.download.preserveDate"));
-
-        // Upload throttle in Kilobytes
-        final int limit = Preferences.instance().getInteger("queue.upload.bandwidth.bytes");
-        if(limit != BandwidthThrottle.UNLIMITED) {
-            configuration.setProperty("httpclient.read-throttle", String.valueOf(limit / 1024));
-        }
     }
 
     /**
@@ -273,6 +256,12 @@ public class S3HSession extends HTTPSession implements CloudSession {
         }
     }
 
+    /**
+     * Check for Invalid Access ID or Invalid Secret Key
+     *
+     * @param e
+     * @return True if the error code of the S3 exception is a login failure
+     */
     private boolean isLoginFailure(S3ServiceException e) {
         if(null == e.getS3ErrorCode()) {
             return false;
@@ -295,11 +284,17 @@ public class S3HSession extends HTTPSession implements CloudSession {
         }
     }
 
+    /**
+     * @return True
+     */
     @Override
     public boolean isDownloadResumable() {
         return true;
     }
 
+    /**
+     * @return No Content-Range support
+     */
     @Override
     public boolean isUploadResumable() {
         return false;

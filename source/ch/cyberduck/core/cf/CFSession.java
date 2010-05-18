@@ -169,11 +169,17 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @return No Content-Range support
+     */
     @Override
     public boolean isDownloadResumable() {
         return false;
     }
 
+    /**
+     * @return No Content-Range support
+     */
     @Override
     public boolean isUploadResumable() {
         return false;

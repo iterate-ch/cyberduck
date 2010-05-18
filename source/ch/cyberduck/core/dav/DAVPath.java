@@ -232,15 +232,7 @@ public class DAVPath extends Path {
 
     @Override
     public void writePermissions(Permission perm, boolean recursive) {
-//            log.debug("changePermissions:" + perm);
-//            try {
-//                this.getSession().check();
-//                this.getSession().message(Locale.localizedString("Changing permission of {0} to {1}", "Status", "") + " " + perm.getOctalString() + " (" + this.getName() + ")");
-//                this.getSession().getClient().aclMethod(this.getAbsolute(), new Ace[]{});
-//            }
-//            catch(IOException e) {
-//                this.error("Cannot change permissions", e);
-//            }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -250,7 +242,7 @@ public class DAVPath extends Path {
 
     @Override
     public void writeModificationDate(long millis) {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -315,7 +307,7 @@ public class DAVPath extends Path {
                     throw new IOException("Unable opening data stream");
                 }
                 if(!this.getSession().getClient().isResume()) {
-                    getStatus().setCurrent(0);
+                    this.getStatus().setResume(false);;
                 }
                 out = this.getLocal().getOutputStream(this.getStatus().isResume());
 
@@ -346,29 +338,29 @@ public class DAVPath extends Path {
 
                 final InputStream in = this.getLocal().getInputStream();
                 try {
-                    final Status stat = this.getStatus();
-                    if(stat.isResume()) {
+                    final Status status = this.getStatus();
+                    if(status.isResume()) {
                         this.getSession().getClient().addRequestHeader("Content-Range", "bytes "
-                                + stat.getCurrent()
+                                + status.getCurrent()
                                 + "-" + (this.getLocal().attributes.getSize() - 1)
                                 + "/" + this.getLocal().attributes.getSize()
                         );
-                        long skipped = in.skip(stat.getCurrent());
+                        long skipped = in.skip(status.getCurrent());
                         log.info("Skipping " + skipped + " bytes");
-                        if(skipped < stat.getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + stat.getCurrent());
+                        if(skipped < status.getCurrent()) {
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status.getCurrent());
                         }
                     }
                     if(!this.getSession().getClient().putMethod(this.getAbsolute(),
-                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - stat.getCurrent(), this.getLocal().getMimeType()) {
+                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - status.getCurrent(), this.getLocal().getMimeType()) {
                                 boolean requested = false;
 
                                 @Override
                                 public void writeRequest(OutputStream out) throws IOException {
                                     if(requested) {
                                         in.reset();
-                                        stat.reset();
-                                        stat.setCurrent(0);
+                                        status.reset();
+                                        status.setResume(false);
                                     }
                                     try {
                                         DAVPath.this.upload(out, in, throttle, listener);

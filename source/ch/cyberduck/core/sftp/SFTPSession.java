@@ -474,7 +474,7 @@ public class SFTPSession extends Session {
     /**
      * No resume supported for SCP transfers.
      *
-     * @return
+     * @return True if SFTP is the selected transfer protocol for SSH sessions.
      */
     private boolean isTransferResumable() {
         return Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier());

@@ -187,7 +187,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void writePermissions(Permission perm, boolean recursive) {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -197,7 +197,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void writeModificationDate(long millis) {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -279,8 +279,9 @@ public class CFPath extends CloudPath {
                     throw new IOException("Unable opening data stream");
                 }
 
-                getStatus().setCurrent(0);
-                out = this.getLocal().getOutputStream(this.getStatus().isResume());
+                final Status status = this.getStatus();
+                status.setResume(false);
+                out = this.getLocal().getOutputStream(status.isResume());
 
                 this.download(in, out, throttle, listener);
             }
@@ -305,44 +306,47 @@ public class CFPath extends CloudPath {
             }
             if(attributes.isFile()) {
                 // No Content-Range support
-                final Status stat = this.getStatus();
-                stat.setCurrent(0);
-                final InputStream in = this.getLocal().getInputStream();
+                final Status status = this.getStatus();
+                status.setResume(false);
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
                 String md5sum = this.getLocal().getChecksum();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                final HashMap<String, String> metadata = new HashMap<String, String>();
+                final InputStream in = this.getLocal().getInputStream();
+                try {
+                    this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
+                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize(), this.getLocal().getMimeType()) {
 
-                this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
-                        new InputStreamRequestEntity(in, this.getLocal().attributes.getSize(), this.getLocal().getMimeType()) {
+                                boolean requested = false;
 
-                            boolean requested = false;
-
-                            @Override
-                            public void writeRequest(OutputStream out) throws IOException {
-                                if(requested) {
-                                    in.reset();
-                                    stat.reset();
-                                    stat.setCurrent(0);
+                                @Override
+                                public void writeRequest(OutputStream out) throws IOException {
+                                    if(requested) {
+                                        in.reset();
+                                        status.reset();
+                                        status.setResume(false);;
+                                    }
+                                    try {
+                                        CFPath.this.upload(out, in, throttle, listener);
+                                    }
+                                    finally {
+                                        requested = true;
+                                    }
                                 }
-                                try {
-                                    CFPath.this.upload(out, in, throttle, listener);
-                                }
-                                finally {
-                                    requested = true;
-                                }
-                            }
 
-                            @Override
-                            public boolean isRepeatable() {
-                                return true;
-                            }
-                        },
-                        metadata, md5sum
-                );
+                                @Override
+                                public boolean isRepeatable() {
+                                    return true;
+                                }
+                            },
+                            new HashMap<String, String>(), md5sum
+                    );
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                }
             }
             if(attributes.isDirectory()) {
                 this.mkdir();
@@ -440,6 +444,11 @@ public class CFPath extends CloudPath {
         }
     }
 
+    /**
+     * Renaming is not currently supported
+     *
+     * @return Always false
+     */
     @Override
     public boolean isRenameSupported() {
         return false;

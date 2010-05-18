@@ -636,7 +636,6 @@ public class FTPPath extends Path {
 
     @Override
     public void writePermissions(Permission perm, boolean recursive) {
-        log.debug("changePermissions:" + perm);
         final String command = "CHMOD";
         try {
             this.getSession().check();
@@ -693,7 +692,7 @@ public class FTPPath extends Path {
         }
     }
 
-    public void writeModificationDate(long modified, long created) throws IOException {
+    private void writeModificationDate(long modified, long created) throws IOException {
         this.getSession().getClient().mfmt(modified, created, this.getName());
     }
 
