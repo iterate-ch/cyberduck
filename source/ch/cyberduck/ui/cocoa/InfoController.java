@@ -487,7 +487,9 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void metadataAddExpiresClicked(ID sender) {
-        this.addMetadataItem("Expires", rfc1123.format(new Date()));
+        final Calendar time = Calendar.getInstance();
+        time.add(Calendar.SECOND, Preferences.instance().getInteger("s3.cache.seconds"));
+        this.addMetadataItem("Expires", rfc1123.format(time.getTime()));
     }
 
     @Action
@@ -1677,7 +1679,6 @@ public class InfoController extends ToolbarWindowController {
             }
         }
     }
-
 
     @Override
     @Action
