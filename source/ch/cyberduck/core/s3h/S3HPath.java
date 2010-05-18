@@ -24,6 +24,7 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,7 +40,7 @@ import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.S3Owner;
-import org.jets3t.service.multithread.*;
+import org.jets3t.service.multithread.DownloadPackage;
 import org.jets3t.service.utils.ObjectUtils;
 
 import java.io.File;
@@ -110,26 +111,6 @@ public class S3HPath extends CloudPath {
             throw new ConnectionCanceledException();
         }
         return session;
-    }
-
-    private Status status;
-
-    @Override
-    public Status getStatus() {
-        if(null == status) {
-            status = new Status() {
-                @Override
-                public void setCanceled() {
-                    super.setCanceled();
-                    if(null == cancelTrigger) {
-                        return;
-                    }
-                    log.debug("Cancel trigger:" + cancelTrigger.toString());
-                    cancelTrigger.cancelTask(this);
-                }
-            };
-        }
-        return status;
     }
 
     @Override
@@ -551,66 +532,6 @@ public class S3HPath extends CloudPath {
         return new Permission(p);
     }
 
-    private CancelEventTrigger cancelTrigger;
-
-    private class S3ServiceTransferEventAdaptor extends S3ServiceEventAdaptor {
-
-        long bytesTransferred = getStatus().getCurrent();
-
-        private StreamListener listener;
-
-        public S3ServiceTransferEventAdaptor(StreamListener listener) {
-            this.listener = listener;
-        }
-
-//        public void s3ServiceEventPerformed(DownloadObjectsEvent event) {
-//            super.s3ServiceEventPerformed(event);
-//
-//            if(ServiceEvent.EVENT_STARTED == event.getEventCode()) {
-//                final ThreadWatcher watcher = event.getThreadWatcher();
-//
-//                cancelTrigger = watcher.getCancelEventListener();
-//            }
-//            else if(ServiceEvent.EVENT_IN_PROGRESS == event.getEventCode()) {
-//                final ThreadWatcher watcher = event.getThreadWatcher();
-//
-//                final long diff = watcher.getBytesTransferred() - bytesTransferred;
-//
-//                listener.bytesReceived(diff);
-//                S3HPath.this.getStatus().setCurrent(bytesTransferred += diff);
-//            }
-//            else if(ServiceEvent.EVENT_ERROR == event.getEventCode()) {
-//                S3HPath.this.error("Download failed", event.getErrorCause());
-//            }
-//        }
-
-        @Override
-        public void s3ServiceEventPerformed(CreateObjectsEvent event) {
-            super.s3ServiceEventPerformed(event);
-
-            if(ServiceEvent.EVENT_IN_PROGRESS == event.getEventCode()) {
-                final ThreadWatcher watcher = event.getThreadWatcher();
-
-                final long diff = watcher.getBytesTransferred() - bytesTransferred;
-
-                listener.bytesSent(diff);
-                S3HPath.this.getStatus().setCurrent(bytesTransferred += diff);
-            }
-            else if(ServiceEvent.EVENT_STARTED == event.getEventCode()) {
-                final ThreadWatcher watcher = event.getThreadWatcher();
-
-                cancelTrigger = watcher.getCancelEventListener();
-            }
-            else if(ServiceEvent.EVENT_COMPLETED == event.getEventCode()) {
-                // Manually mark as complete
-                S3HPath.this.getStatus().setComplete(true);
-            }
-            else if(ServiceEvent.EVENT_ERROR == event.getEventCode()) {
-                S3HPath.this.error("Upload failed", event.getErrorCause());
-            }
-        }
-    }
-
     @Override
     public void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes.isFile()) {
@@ -662,48 +583,84 @@ public class S3HPath extends CloudPath {
     }
 
     @Override
-    public void upload(BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener,
+                       final Permission p, final boolean check) {
         try {
             if(check) {
                 this.getSession().check();
             }
             if(attributes.isFile()) {
-                final S3ServiceMulti multi = new S3ServiceMulti(this.getSession().getClient(),
-                        new S3ServiceTransferEventAdaptor(listener)
-                );
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
-
-                final S3Object object;
+                S3Object object;
                 try {
                     object = ObjectUtils.createObjectForUpload(this.getKey(),
                             new File(this.getLocal().getAbsolute()),
                             null, //no encryption
-                            false); //no gzip
-                    AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
-                    if(null != p) {
-                        if(p.getOtherPermissions()[Permission.READ]) {
-                            acl = AccessControlList.REST_CANNED_PUBLIC_READ;
-                        }
-                        if(p.getOtherPermissions()[Permission.WRITE]) {
-                            acl = AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
-                        }
-                    }
-                    object.setAcl(acl);
+                            false); //no gzip)
                 }
                 catch(Exception e) {
                     throw new IOException(e.getMessage());
                 }
+                AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
+                if(null != p) {
+                    if(p.getOtherPermissions()[Permission.READ]) {
+                        acl = AccessControlList.REST_CANNED_PUBLIC_READ;
+                    }
+                    if(p.getOtherPermissions()[Permission.WRITE]) {
+                        acl = AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
+                    }
+                }
+                object.setAcl(acl);
 
-                // No Content-Range support
-                getStatus().setCurrent(0);
-
-                // Transfer
-                final S3Bucket bucket = this.getBucket();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                multi.putObjects(bucket, new S3Object[]{object});
+                final Status status = this.getStatus();
+                // No Content-Range support
+                status.setResume(false);
+
+                final InputStream in;
+                try {
+                    in = object.getDataInputStream();
+                }
+                catch(S3ServiceException e) {
+                    throw new IOException(e.getMessage());
+                }
+                try {
+                    ((RestS3Service) this.getSession().getClient()).pubObjectImpl(
+                            this.getContainerName(), object, new InputStreamRequestEntity(in,
+                                    this.getLocal().attributes.getSize() - status.getCurrent(),
+                                    this.getLocal().getMimeType()) {
+                                boolean requested = false;
+
+                                @Override
+                                public void writeRequest(OutputStream out) throws IOException {
+                                    if(requested) {
+                                        in.reset();
+                                        status.reset();
+                                        status.setResume(false);
+                                    }
+                                    try {
+                                        S3HPath.this.upload(out, in, throttle, listener);
+                                    }
+                                    finally {
+                                        requested = true;
+                                    }
+                                }
+
+                                @Override
+                                public boolean isRepeatable() {
+                                    return true;
+                                }
+                            });
+                }
+                catch(S3ServiceException e) {
+                    throw new IOException(e.getMessage());
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                }
             }
             if(attributes.isDirectory()) {
                 this.mkdir();
@@ -850,7 +807,8 @@ public class S3HPath extends CloudPath {
                     this.error("Bucket name is not DNS compatible");
                     return;
                 }
-                this.getSession().getClient().createBucket(this.getName(), Preferences.instance().getProperty("s3.location"));
+                this.getSession().getClient().createBucket(this.getName(),
+                        Preferences.instance().getProperty("s3.location"));
                 this.getSession().getBuckets(true);
             }
             else {
@@ -986,8 +944,13 @@ public class S3HPath extends CloudPath {
         }
     }
 
+    /**
+     * Renaming buckets is not currently supported by S3
+     *
+     * @return True if directory placeholder or object
+     */
+    @Override
     public boolean isRenameSupported() {
-        // Renaming buckets is not currently supported by S3
         return !attributes.isVolume();
     }
 
