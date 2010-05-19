@@ -1,67 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>IBClasses</key>
-	<array>
-		<dict>
-			<key>CLASS</key>
-			<string>FirstResponder</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>closeSheet</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>CDTransferPrompt</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>OUTLETS</key>
-			<dict>
-				<key>actionPopup</key>
-				<string>NSPopUpButton</string>
-				<key>browserView</key>
-				<string>NSTableView</string>
-				<key>localModificationField</key>
-				<string>NSTextField</string>
-				<key>localSizeField</key>
-				<string>NSTextField</string>
-				<key>localURLField</key>
-				<string>NSTextField</string>
-				<key>remoteModificationField</key>
-				<string>NSTextField</string>
-				<key>remoteSizeField</key>
-				<string>NSTextField</string>
-				<key>remoteURLField</key>
-				<string>NSTextField</string>
-				<key>statusIndicator</key>
-				<string>NSProgressIndicator</string>
-				<key>statusLabel</key>
-				<string>NSTextField</string>
-				<key>toggleDetailsButton</key>
-				<string>NSButton</string>
-				<key>window</key>
-				<string>NSWindow</string>
-			</dict>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>CLASS</key>
-			<string>CDOutlineView</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSOutlineView</string>
-		</dict>
-	</array>
-	<key>IBVersion</key>
-	<string>1</string>
-</dict>
-</plist>
+{
+    IBClasses =     (
+        {
+    CLASS = CDOutlineView;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSOutlineView;
+},
+        {
+    ACTIONS =     {
+        closeSheet = id;
+    };
+    CLASS = CDTransferPrompt;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        actionPopup = NSPopUpButton;
+        browserView = NSTableView;
+        localModificationField = NSTextField;
+        localSizeField = NSTextField;
+        localURLField = NSTextField;
+        remoteModificationField = NSTextField;
+        remoteSizeField = NSTextField;
+        remoteURLField = NSTextField;
+        statusIndicator = NSProgressIndicator;
+        statusLabel = NSTextField;
+        toggleDetailsButton = NSButton;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}

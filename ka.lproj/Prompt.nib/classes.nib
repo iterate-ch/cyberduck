@@ -1,11 +1,6 @@
 {
     IBClasses =     (
         {
-    CLASS = CDListView;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSTableView;
-},
-        {
     CLASS = CDOutlineView;
     LANGUAGE = ObjC;
     SUPERCLASS = NSOutlineView;
