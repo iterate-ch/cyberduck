@@ -170,4 +170,12 @@ public class Credentials {
         return StringUtils.isNotEmpty(this.getUsername())
                 && this.getPassword() != null;
     }
+
+    /**
+     * Reset credentials.
+     */
+    public void clear() {
+        user = null;
+        password = null;
+    }
 }
