@@ -1,47 +1,26 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>IBClasses</key>
-	<array>
-		<dict>
-			<key>CLASS</key>
-			<string>FirstResponder</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>closeSheet</key>
-				<string>id</string>
-				<key>sendButtonClicked</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>CDCommandController</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>OUTLETS</key>
-			<dict>
-				<key>image</key>
-				<string>NSImageView</string>
-				<key>inputField</key>
-				<string>NSTextField</string>
-				<key>progress</key>
-				<string>NSProgressIndicator</string>
-				<key>responseField</key>
-				<string>NSTextView</string>
-				<key>window</key>
-				<string>NSWindow</string>
-			</dict>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-	</array>
-	<key>IBVersion</key>
-	<string>1</string>
-</dict>
-</plist>
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        closeSheet = id;
+        sendButtonClicked = id;
+    };
+    CLASS = CDCommandController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        image = NSImageView;
+        inputField = NSTextField;
+        progress = NSProgressIndicator;
+        responseField = NSTextView;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}
