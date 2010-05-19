@@ -45,7 +45,6 @@ import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -94,7 +93,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
 
     protected void configure() {
         configuration.setProperty("s3service.s3-endpoint", host.getHostname());
-        if(!host.getHostname().equals("s3.amazonaws.com")) {
+        if(!host.getHostname().endsWith("s3.amazonaws.com")) {
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
@@ -146,10 +145,15 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @return
      */
     protected String getBucketForHostname(String hostname) {
-        if(hostname.equals(Constants.S3_HOSTNAME)) {
+        if(hostname.equals(Protocol.S3.getDefaultHostname())) {
             return null;
         }
-        return ServiceUtils.findBucketNameInHostname(hostname);
+        // Bucket name is available in URL's host name.
+        if(hostname.endsWith(Protocol.S3.getDefaultHostname())) {
+            // Bucket name is available as S3 subdomain
+            return hostname.substring(0, hostname.length() - Protocol.S3.getDefaultHostname().length() - 1);
+        }
+        return null;
     }
 
     /**
@@ -182,7 +186,6 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 final S3HPath thirdparty = (S3HPath) PathFactory.createPath(this, bucketname,
                         Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                 buckets.add(new S3Bucket(thirdparty.getContainerName()));
-
             }
             else {
                 buckets.addAll(Arrays.asList(this.getClient().listAllBuckets()));

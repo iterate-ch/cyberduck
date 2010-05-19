@@ -26,7 +26,6 @@ import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.jets3t.service.Constants;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.S3Bucket;
 
@@ -34,7 +33,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3Session extends S3HSession implements SSLSession {
 
@@ -93,7 +92,7 @@ public class S3Session extends S3HSession implements SSLSession {
     protected List<S3Bucket> getBuckets(boolean reload) throws IOException, S3ServiceException {
         if(!host.getCredentials().isAnonymousLogin()) {
             // List all operation
-            this.getTrustManager().setHostname(Constants.S3_HOSTNAME);
+            this.getTrustManager().setHostname(Protocol.S3.getDefaultHostname());
         }
         return super.getBuckets(reload);
     }
