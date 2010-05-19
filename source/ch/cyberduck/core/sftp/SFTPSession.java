@@ -199,11 +199,15 @@ public class SFTPSession extends Session {
                 return;
             }
         }
-        else if(this.loginUsingPasswordAuthentication(credentials) || this.loginUsingKBIAuthentication(credentials)) {
+        else if(this.loginUsingKBIAuthentication(credentials)) {
             this.message(Locale.localizedString("Login successful", "Credentials"));
             return;
         }
-        if(this.getClient().isAuthenticationPartialSuccess()) {
+        else if(this.loginUsingPasswordAuthentication(credentials)) {
+            this.message(Locale.localizedString("Login successful", "Credentials"));
+            return;
+        }
+        else if(this.getClient().isAuthenticationPartialSuccess()) {
             credentials.clear();
             login.check(host, Locale.localizedString("Partial authentication success. Provide additional login credentials."));
             if(this.loginUsingKBIAuthentication(credentials)) {
