@@ -43,4 +43,13 @@ public class MESession extends DAVSSession {
     protected MESession(Host h) {
         super(h);
     }
+
+    /**
+     * Prefixing user agent with "WebDAVFS". Fix for #4435.
+     * @return
+     */
+    @Override
+    public String getUserAgent() {
+        return "WebDAVFS/" + super.getUserAgent();
+    }
 }
