@@ -14,6 +14,7 @@ Changelog. Last modified: $Date$
 - [Feature] Custom metadata attributes (#4063) (S3, Rackspace Cloud Files)
 - [Feature] Configure Access Logs for CloudFront streaming distributions (S3)
 - [Bugfix] Overwrite files causes append (S3) (#4419)
+- [Bugfix] Connect anonymously to public buckets (S3) (#4480)
 - [Bugfix] Help menu items disabled (#4406)
 
 3.4.2 (Apr-10-2010) [http://trac.cyberduck.ch/milestone/3.4.2]
