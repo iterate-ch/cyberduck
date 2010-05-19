@@ -300,7 +300,7 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return Constants.S3_HOSTNAME;
+            return "s3.amazonaws.com";
         }
 
         @Override
@@ -352,7 +352,7 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return Constants.S3_HOSTNAME;
+            return "s3.amazonaws.com";
         }
 
         @Override
