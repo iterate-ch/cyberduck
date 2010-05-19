@@ -207,7 +207,7 @@ public class SFTPSession extends Session {
             this.message(Locale.localizedString("Login successful", "Credentials"));
             return;
         }
-        else if(this.getClient().isAuthenticationPartialSuccess()) {
+        if(this.getClient().isAuthenticationPartialSuccess()) {
             credentials.clear();
             login.check(host, Locale.localizedString("Partial authentication success. Provide additional login credentials."));
             if(this.loginUsingKBIAuthentication(credentials)) {
