@@ -470,8 +470,7 @@
             <formatter type="xml" extension=".xml" usefile="true"/>
             <batchtest todir="${build.unittests.reports}">
                 <fileset dir="${build.unittests}">
-                    <include name="**/*Test*.class"/>
-                    <exclude name="**/AllTests.class"/>
+                    <include name="**/*Test.class"/>
                 </fileset>
             </batchtest>
         </junit>
