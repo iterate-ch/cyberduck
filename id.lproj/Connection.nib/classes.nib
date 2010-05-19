@@ -1,47 +1,47 @@
 {
     IBClasses =     (
-                {
-            ACTIONS =             {
-                closeSheet = id;
-                helpButtonClicked = id;
-            };
-            CLASS = CDConnectionController;
-            LANGUAGE = ObjC;
-            OUTLETS =             {
-                alertIcon = NSButton;
-                anonymousCheckbox = NSButton;
-                connectmodePopup = NSPopUpButton;
-                encodingPopup = NSPopUpButton;
-                hostPopup = NSComboBox;
-                keychainCheckbox = NSButton;
-                passField = NSSecureTextField;
-                pathField = NSTextField;
-                pkCheckbox = NSButton;
-                pkLabel = NSTextField;
-                portField = NSTextField;
-                protocolPopup = NSPopUpButton;
-                toggleOptionsButton = NSButton;
-                urlLabel = NSTextField;
-                usernameField = NSTextField;
-                window = NSWindow;
-            };
-            SUPERCLASS = NSObject;
-        },
-                {
-            CLASS = FirstResponder;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSObject;
-        },
-                {
-            ACTIONS =             {
-                hide = id;
-                show = id;
-                toggleDisclosure = id;
-            };
-            CLASS = SNDisclosableView;
-            LANGUAGE = ObjC;
-            SUPERCLASS = NSView;
-        }
+        {
+    ACTIONS =     {
+        closeSheet = id;
+        helpButtonClicked = id;
+    };
+    CLASS = CDConnectionController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        alertIcon = NSButton;
+        anonymousCheckbox = NSButton;
+        connectmodePopup = NSPopUpButton;
+        encodingPopup = NSPopUpButton;
+        hostPopup = NSComboBox;
+        keychainCheckbox = NSButton;
+        passField = NSSecureTextField;
+        pathField = NSTextField;
+        pkCheckbox = NSButton;
+        pkLabel = NSTextField;
+        portField = NSTextField;
+        protocolPopup = NSPopUpButton;
+        toggleOptionsButton = NSButton;
+        urlLabel = NSTextField;
+        usernameField = NSTextField;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+},
+        {
+    ACTIONS =     {
+        hide = id;
+        show = id;
+        toggleDisclosure = id;
+    };
+    CLASS = SNDisclosableView;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSView;
+}
     );
     IBVersion = 1;
 }

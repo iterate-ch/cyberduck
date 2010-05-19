@@ -1,86 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>IBClasses</key>
-	<array>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>closeSheet</key>
-				<string>id</string>
-				<key>helpButtonClicked</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>CDConnectionController</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>OUTLETS</key>
-			<dict>
-				<key>alertIcon</key>
-				<string>NSButton</string>
-				<key>anonymousCheckbox</key>
-				<string>NSButton</string>
-				<key>connectmodePopup</key>
-				<string>NSPopUpButton</string>
-				<key>encodingPopup</key>
-				<string>NSPopUpButton</string>
-				<key>hostPopup</key>
-				<string>NSComboBox</string>
-				<key>keychainCheckbox</key>
-				<string>NSButton</string>
-				<key>passField</key>
-				<string>NSSecureTextField</string>
-				<key>pathField</key>
-				<string>NSTextField</string>
-				<key>pkCheckbox</key>
-				<string>NSButton</string>
-				<key>pkLabel</key>
-				<string>NSTextField</string>
-				<key>portField</key>
-				<string>NSTextField</string>
-				<key>protocolPopup</key>
-				<string>NSPopUpButton</string>
-				<key>toggleOptionsButton</key>
-				<string>NSButton</string>
-				<key>urlLabel</key>
-				<string>NSTextField</string>
-				<key>usernameField</key>
-				<string>NSTextField</string>
-				<key>window</key>
-				<string>NSWindow</string>
-			</dict>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>CLASS</key>
-			<string>FirstResponder</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>hide</key>
-				<string>id</string>
-				<key>show</key>
-				<string>id</string>
-				<key>toggleDisclosure</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>SNDisclosableView</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSView</string>
-		</dict>
-	</array>
-	<key>IBVersion</key>
-	<string>1</string>
-</dict>
-</plist>
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        closeSheet = id;
+        helpButtonClicked = id;
+    };
+    CLASS = CDConnectionController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        alertIcon = NSButton;
+        anonymousCheckbox = NSButton;
+        connectmodePopup = NSPopUpButton;
+        encodingPopup = NSPopUpButton;
+        hostPopup = NSComboBox;
+        keychainCheckbox = NSButton;
+        passField = NSSecureTextField;
+        pathField = NSTextField;
+        pkCheckbox = NSButton;
+        pkLabel = NSTextField;
+        portField = NSTextField;
+        protocolPopup = NSPopUpButton;
+        toggleOptionsButton = NSButton;
+        urlLabel = NSTextField;
+        usernameField = NSTextField;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+},
+        {
+    ACTIONS =     {
+        hide = id;
+        show = id;
+        toggleDisclosure = id;
+    };
+    CLASS = SNDisclosableView;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSView;
+}
+    );
+    IBVersion = 1;
+}
