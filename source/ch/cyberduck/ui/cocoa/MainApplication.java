@@ -48,14 +48,6 @@ public class MainApplication {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 
         try {
-            final Logger root = Logger.getRootLogger();
-            root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
-
-            if(log.isInfoEnabled()) {
-                log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
-                log.info("Encoding " + System.getProperty("file.encoding"));
-            }
-
             // This method also makes a connection to the window server and completes other initialization.
             // Your program should invoke this method as one of the first statements in main();
             // The NSApplication class sets up autorelease pools (instances of the NSAutoreleasePool class)
@@ -63,6 +55,39 @@ public class MainApplication {
             // (or sharedApplication) and run methods.
             final NSApplication app = NSApplication.sharedApplication();
 
+            /**
+             * Register factory implementations.
+             */
+            {
+                FinderLocal.register();
+                UserDefaultsPreferences.register();
+                BundleLocale.register();
+                GrowlNative.registerImpl();
+
+                PlistDeserializer.register();
+                PlistSerializer.register();
+
+                HostPlistReader.register();
+                TransferPlistReader.register();
+
+                PlistWriter.register();
+
+                Keychain.register();
+                SystemConfigurationProxy.register();
+                SystemConfigurationReachability.register();
+
+                DeprecatedQuickLook.register();
+                QuartzQuickLook.register();
+            }
+
+            final Logger root = Logger.getRootLogger();
+            root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
+
+            if(log.isInfoEnabled()) {
+                log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
+                log.info("Encoding " + System.getProperty("file.encoding"));
+            }
+            
             final MainController c = new MainController();
 
             // Must implement NSApplicationDelegate protocol
@@ -77,30 +102,5 @@ public class MainApplication {
         finally {
             pool.drain();
         }
-    }
-
-    /**
-     * Register factory implementations.
-     */
-    static {
-        FinderLocal.register();
-        UserDefaultsPreferences.register();
-        BundleLocale.register();
-        GrowlNative.registerImpl();
-
-        PlistDeserializer.register();
-        PlistSerializer.register();
-
-        HostPlistReader.register();
-        TransferPlistReader.register();
-
-        PlistWriter.register();
-
-        Keychain.register();
-        SystemConfigurationProxy.register();
-        SystemConfigurationReachability.register();
-
-        DeprecatedQuickLook.register();
-        QuartzQuickLook.register();
     }
 }
