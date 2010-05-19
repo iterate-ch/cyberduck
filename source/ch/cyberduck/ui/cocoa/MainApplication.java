@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.serializer.*;
+import ch.cyberduck.ui.growl.GrowlNative;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -85,6 +86,7 @@ public class MainApplication {
         FinderLocal.register();
         UserDefaultsPreferences.register();
         BundleLocale.register();
+        GrowlNative.registerImpl();
 
         PlistDeserializer.register();
         PlistSerializer.register();

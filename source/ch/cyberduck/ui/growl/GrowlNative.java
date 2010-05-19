@@ -29,6 +29,17 @@ public class GrowlNative extends Growl {
         Native.load("Growl");
     }
 
+    public static void registerImpl() {
+        GrowlFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends GrowlFactory {
+        @Override
+        protected Growl create() {
+            return new GrowlNative();
+        }
+    }
+
     @Override
     public native void register();
 

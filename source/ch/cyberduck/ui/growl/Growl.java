@@ -28,22 +28,21 @@ import org.apache.log4j.Logger;
 public abstract class Growl {
     private static Logger log = Logger.getLogger(Growl.class);
 
-    private static Growl instance = null;
-
-    protected Growl() {
-        //
-    }
+    private static Growl current = null;
 
     private static final Object lock = new Object();
 
+    /**
+     * @return The singleton instance of me.
+     */
     public static Growl instance() {
         synchronized(lock) {
-            if (null == instance) {
-                if (Preferences.instance().getBoolean("growl.enable")) {
-                    instance = new GrowlNative();
+            if(null == current) {
+                if(Preferences.instance().getBoolean("growl.enable")) {
+                    current = GrowlFactory.createGrowl();
                 }
                 else {
-                    instance = new Growl() {
+                    current = new Growl() {
                         public void register() {
                             log.warn("Growl notifications disabled");
                         }
@@ -59,7 +58,7 @@ public abstract class Growl {
                 }
             }
         }
-        return instance;
+        return current;
     }
 
     /**
