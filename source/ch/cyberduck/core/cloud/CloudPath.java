@@ -97,6 +97,7 @@ public abstract class CloudPath extends Path {
 
     /**
      * @param meta Modifiable HTTP header metatdata key and values
+     * @return The updated headers of the object
      */
     public abstract void writeMetadata(Map<String, String> meta);
 }

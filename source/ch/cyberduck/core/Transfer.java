@@ -31,8 +31,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.*;
 
-import com.enterprisedt.net.ftp.FTPTransferType;
-
 /**
  * @version $Id$
  */
@@ -355,7 +353,7 @@ public abstract class Transfer implements Serializable {
     public Path lookup(PathReference r) {
         return session.cache().lookup(r);
     }
-    
+
     /**
      * Returns the childs of this path filtering it with the default regex filter
      *
@@ -384,6 +382,7 @@ public abstract class Transfer implements Serializable {
 
     /**
      * Select the path to be included in the transfer
+     *
      * @param item
      * @param selected
      */
@@ -549,7 +548,7 @@ public abstract class Transfer implements Serializable {
      *         no longer connected
      */
     private boolean check() {
-        log.debug("check:");
+        log.debug("check:" + this.toString());
         if(!this.getSession().isConnected()) {
             // Bail out if no more connected
             return false;
@@ -562,7 +561,7 @@ public abstract class Transfer implements Serializable {
      * Clear all cached values
      */
     protected void clear(final TransferOptions options) {
-        log.debug("clear");
+        log.debug("clear:" + options);
         if(options.closeSession) {
             session.cache().clear();
         }
@@ -634,7 +633,7 @@ public abstract class Transfer implements Serializable {
      * @see Session#interrupt()
      */
     public void interrupt() {
-        log.debug("interrupt:");
+        log.debug("interrupt:" + this.toString());
         this.getSession().interrupt();
     }
 
@@ -644,17 +643,15 @@ public abstract class Transfer implements Serializable {
      * state, the underlying session's socket is interrupted to force exit.
      */
     public void cancel() {
-        log.debug("cancel:");
+        log.debug("cancel:" + this.toString());
+        if(_current != null) {
+            _current.getStatus().setCanceled();
+        }
         if(this.isCanceled()) {
             // Called prevously; now force
             this.interrupt();
         }
-        else {
-            if(_current != null) {
-                _current.getStatus().setCanceled();
-            }
-            canceled = true;
-        }
+        canceled = true;
         synchronized(Queue.instance()) {
             Queue.instance().notify();
         }
@@ -664,7 +661,7 @@ public abstract class Transfer implements Serializable {
      * Recalculate the size of the <code>queue</code>
      */
     protected void reset() {
-        log.debug("reset:");
+        log.debug("reset:" + this.toString());
         this.transferred = 0;
         this.size = 0;
         this.reset = true;
@@ -689,7 +686,6 @@ public abstract class Transfer implements Serializable {
      *         the bytes transfered is > 0
      */
     public boolean isComplete() {
-        log.debug("isComplete");
         for(Path root : this.roots) {
             if(root.getStatus().isSkipped()) {
                 continue;

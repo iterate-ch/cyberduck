@@ -902,7 +902,7 @@ public class S3HPath extends CloudPath {
 
     @Override
     public void writeModificationDate(long millis) {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override

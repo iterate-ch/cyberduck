@@ -139,7 +139,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     public <S> S getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
-        return (S)this.getAsDictionary(dict);
+        return (S) this.getAsDictionary(dict);
     }
 
     protected <S> S getAsDictionary(Serializer dict) {
@@ -160,8 +160,12 @@ public abstract class Path extends AbstractPath implements Serializable {
         return dict.<S>getSerialized();
     }
 
+    /**
+     *
+     */
     {
         attributes = new PathAttributes();
+        status = new Status();
     }
 
     /**
@@ -263,13 +267,16 @@ public abstract class Path extends AbstractPath implements Serializable {
         return this.parent;
     }
 
+    /**
+     * @return
+     */
     public Status getStatus() {
-        if(null == status) {
-            status = new Status();
-        }
         return status;
     }
 
+    /**
+     * @return Null if the connection has been closed
+     */
     public Host getHost() {
         try {
             return this.getSession().getHost();
@@ -435,6 +442,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      * @return The session this path uses to send commands
+     * @throws ConnectionCanceledException If the connection has been closed already
      */
     public abstract Session getSession() throws ConnectionCanceledException;
 
@@ -605,7 +613,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @throws IOException
      */
     private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
-        final int chunksize = 32768;
+        final int chunksize = Preferences.instance().getInteger("connection.chunksize");
         byte[] chunk = new byte[chunksize];
         long bytesTransferred = getStatus().getCurrent();
         while(!getStatus().isCanceled()) {
@@ -727,17 +735,19 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return
+     * @return The URL accessible with HTTP using the
+     *         hostname configuration from the bookmark
      */
     public String toHttpURL() {
         return this.toHttpURL(this.getHost().getWebURL());
     }
 
     /**
-     * @param host
-     * @return
+     * @param hostname The hostname to prepend to the path
+     * @return The HTTP accessible URL of this path including the default path
+     *         prepended from the bookmark
      */
-    protected String toHttpURL(String host) {
+    protected String toHttpURL(String hostname) {
         String absolute = this.encode(this.getAbsolute());
         if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
             if(absolute.startsWith(this.getHost().getDefaultPath())) {
@@ -747,14 +757,21 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(!absolute.startsWith(Path.DELIMITER)) {
             absolute = Path.DELIMITER + absolute;
         }
-        return host + absolute;
+        return hostname + absolute;
     }
 
+    /**
+     * Append an error message without any stacktrace information
+     *
+     * @param message Failure description
+     */
     protected void error(String message) {
         this.error(message, null);
     }
 
     /**
+     * @param message   Failure description
+     * @param throwable The cause of the message
      * @see Session#error(Path,String,Throwable)
      */
     protected void error(String message, Throwable throwable) {

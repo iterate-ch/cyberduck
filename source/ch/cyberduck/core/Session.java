@@ -43,7 +43,7 @@ public abstract class Session {
     protected Host host;
 
     /**
-     *
+     * Current working directory
      */
     protected Path workdir;
 
@@ -51,6 +51,11 @@ public abstract class Session {
         this.host = h;
     }
 
+    /**
+     * @param <C>
+     * @return The client implementation.
+     * @throws ConnectionCanceledException
+     */
     protected abstract <C> C getClient() throws ConnectionCanceledException;
 
     /**
@@ -139,7 +144,9 @@ public abstract class Session {
     }
 
     /**
-     * @return true if the control channel is either tunneled using TLS or SSH
+     * No information about the curren state of the connection but only the protocol.
+     *
+     * @return True if the control channel is either tunneled using TLS or SSH
      */
     public boolean isSecure() {
         if(this.isConnected()) {
@@ -168,6 +175,11 @@ public abstract class Session {
         this.login = loginController;
     }
 
+    /**
+     * Attempts to login using the credentials provided from the login controller.
+     *
+     * @throws IOException
+     */
     protected void login() throws IOException {
         login.check(host);
 
@@ -411,9 +423,8 @@ public abstract class Session {
     private boolean opening;
 
     /**
-     * If a connection attempt is currently being made.
-     *
-     * @return
+     * @return True if a connection attempt is currently being made. False if the connection
+     *         has already been established or is closed.
      */
     public boolean isOpening() {
         return opening;
@@ -530,6 +541,7 @@ public abstract class Session {
 
     /**
      * Content Range support
+     *
      * @return True if skipping is supported
      */
     public boolean isDownloadResumable() {
@@ -538,6 +550,7 @@ public abstract class Session {
 
     /**
      * Content Range support
+     *
      * @return True if appending is supported
      */
     public boolean isUploadResumable() {
@@ -599,12 +612,12 @@ public abstract class Session {
     }
 
     /**
-     * Caching files listings of previously visited directories
+     * Caching files listings of previously listed directories
      */
     private Cache<Path> cache;
 
     /**
-     * @return The directory listing cache
+     * @return The directory listing cache for this session
      */
     public Cache<Path> cache() {
         if(null == cache) {

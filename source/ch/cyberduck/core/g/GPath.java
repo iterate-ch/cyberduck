@@ -248,7 +248,9 @@ public class GPath extends Path {
                     throw new IOException("Unable opening data stream");
                 }
                 out = this.getLocal().getOutputStream(this.getStatus().isResume());
-
+                if(null == out) {
+                    throw new IOException("Unable opening data stream");
+                }
                 this.download(in, out, throttle, listener);
             }
             catch(IOException e) {

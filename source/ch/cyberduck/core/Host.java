@@ -680,10 +680,18 @@ public class Host implements Serializable {
         this.webURL = webURL;
     }
 
+    /**
+     * @return The date this bookmark was last accessed.
+     */
     public Date getTimestamp() {
         return timestamp;
     }
 
+    /**
+     * Update the time this bookmark was last accessed.
+     *
+     * @param timestamp
+     */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }

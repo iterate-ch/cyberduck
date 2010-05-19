@@ -189,6 +189,12 @@ public class FinderLocal extends Local {
         });
     }
 
+
+    /**
+     * Write <code>NSFileModificationDate</code>.
+     *
+     * @param millis Milliseconds since 1970
+     */
     @Override
     public void writeModificationDate(final long millis) {
         new ProxyController().invoke(new DefaultMainAction() {
@@ -205,6 +211,11 @@ public class FinderLocal extends Local {
         });
     }
 
+    /**
+     * Read <code>NSFileCreationDate</code>.
+     *
+     * @return Milliseconds since 1970
+     */
     @Override
     public long getCreationDate() {
         final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
@@ -225,7 +236,7 @@ public class FinderLocal extends Local {
     }
 
     /**
-     * NSWorkspace.RecycleOperation
+     * Move file to trash on main interface thread using <code>NSWorkspace.RecycleOperation</code>.
      */
     @Override
     public void trash() {

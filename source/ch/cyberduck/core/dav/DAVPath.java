@@ -303,14 +303,11 @@ public class DAVPath extends Path {
                 }
                 this.getSession().getClient().addRequestHeader("Accept-Encoding", "gzip");
                 in = this.getSession().getClient().getMethodData(this.getAbsolute());
-                if(null == in) {
-                    throw new IOException("Unable opening data stream");
-                }
+                // Content-Range header in response not found
                 if(!this.getSession().getClient().isResume()) {
-                    this.getStatus().setResume(false);;
+                    this.getStatus().setResume(false);
                 }
                 out = this.getLocal().getOutputStream(this.getStatus().isResume());
-
                 this.download(in, out, throttle, listener);
             }
             catch(IOException e) {
@@ -352,7 +349,8 @@ public class DAVPath extends Path {
                         }
                     }
                     if(!this.getSession().getClient().putMethod(this.getAbsolute(),
-                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - status.getCurrent(), this.getLocal().getMimeType()) {
+                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - status.getCurrent(),
+                                    this.getLocal().getMimeType()) {
                                 boolean requested = false;
 
                                 @Override

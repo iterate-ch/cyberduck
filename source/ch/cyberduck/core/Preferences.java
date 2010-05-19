@@ -86,7 +86,7 @@ public abstract class Preferences {
      * Update the given property with a list value
      *
      * @param property The name of the property to create or update
-     * @param values        The new or updated value
+     * @param values   The new or updated value
      */
     public abstract void setProperty(String property, List<String> values);
 
@@ -397,22 +397,22 @@ public abstract class Preferences {
          * Bandwidth throttle options
          */
         StringBuilder options = new StringBuilder();
-        options.append(5*Status.KILO).append(",");
-        options.append(10*Status.KILO).append(",");
-        options.append(20*Status.KILO).append(",");
-        options.append(50*Status.KILO).append(",");
-        options.append(100*Status.KILO).append(",");
-        options.append(150*Status.KILO).append(",");
-        options.append(200*Status.KILO).append(",");
-        options.append(500*Status.KILO).append(",");
-        options.append(1*Status.MEGA).append(",");
-        options.append(2*Status.MEGA).append(",");
-        options.append(5*Status.MEGA).append(",");
-        options.append(10*Status.MEGA).append(",");
-        options.append(15*Status.MEGA).append(",");
-        options.append(20*Status.MEGA).append(",");
-        options.append(50*Status.MEGA).append(",");
-        options.append(100*Status.MEGA).append(",");
+        options.append(5 * Status.KILO).append(",");
+        options.append(10 * Status.KILO).append(",");
+        options.append(20 * Status.KILO).append(",");
+        options.append(50 * Status.KILO).append(",");
+        options.append(100 * Status.KILO).append(",");
+        options.append(150 * Status.KILO).append(",");
+        options.append(200 * Status.KILO).append(",");
+        options.append(500 * Status.KILO).append(",");
+        options.append(1 * Status.MEGA).append(",");
+        options.append(2 * Status.MEGA).append(",");
+        options.append(5 * Status.MEGA).append(",");
+        options.append(10 * Status.MEGA).append(",");
+        options.append(15 * Status.MEGA).append(",");
+        options.append(20 * Status.MEGA).append(",");
+        options.append(50 * Status.MEGA).append(",");
+        options.append(100 * Status.MEGA).append(",");
         defaults.put("queue.bandwidth.options", options.toString());
 
         /**
@@ -590,6 +590,11 @@ public abstract class Preferences {
          */
         defaults.put("connection.proxy.enable", String.valueOf(true));
 
+        /**
+         * Transfer read buffer size
+         */
+        defaults.put("connection.chunksize", String.valueOf(32768));
+
         defaults.put("transcript.length", String.valueOf(1000));
 
         /**
@@ -661,7 +666,6 @@ public abstract class Preferences {
     }
 
     /**
-     *
      * @param property
      * @return
      */

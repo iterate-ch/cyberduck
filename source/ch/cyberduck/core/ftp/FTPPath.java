@@ -22,11 +22,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.*;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
+import com.enterprisedt.net.ftp.FTPException;
+import com.enterprisedt.net.ftp.FTPTransferType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,9 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPTransferType;
 
 /**
  * @version $Id$
@@ -860,11 +860,8 @@ public class FTPPath extends Path {
             this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
             in = this.getLocal().getInputStream();
             out = this.getSession().getClient().put(this.getName(), this.getStatus().isResume());
-            if(null == out) {
-                throw new IOException("Unable opening data stream");
-            }
             this.upload(out, in, throttle, listener);
-            if(this.getStatus().isComplete()) {
+            if(getStatus().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().validateTransfer();
