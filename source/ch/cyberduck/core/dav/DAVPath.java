@@ -351,26 +351,9 @@ public class DAVPath extends Path {
                     if(!this.getSession().getClient().putMethod(this.getAbsolute(),
                             new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
-                                boolean requested = false;
-
                                 @Override
                                 public void writeRequest(OutputStream out) throws IOException {
-                                    if(requested) {
-                                        in.reset();
-                                        status.reset();
-                                        status.setResume(false);
-                                    }
-                                    try {
-                                        DAVPath.this.upload(out, in, throttle, listener);
-                                    }
-                                    finally {
-                                        requested = true;
-                                    }
-                                }
-
-                                @Override
-                                public boolean isRepeatable() {
-                                    return true;
+                                    DAVPath.this.upload(out, in, throttle, listener);
                                 }
                             })) {
                         // Upload failed

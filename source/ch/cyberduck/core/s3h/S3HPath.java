@@ -632,26 +632,10 @@ public class S3HPath extends CloudPath {
                             this.getContainerName(), object, new InputStreamRequestEntity(in,
                                     this.getLocal().attributes.getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
-                                boolean requested = false;
 
                                 @Override
                                 public void writeRequest(OutputStream out) throws IOException {
-                                    if(requested) {
-                                        in.reset();
-                                        status.reset();
-                                        status.setResume(false);
-                                    }
-                                    try {
-                                        S3HPath.this.upload(out, in, throttle, listener);
-                                    }
-                                    finally {
-                                        requested = true;
-                                    }
-                                }
-
-                                @Override
-                                public boolean isRepeatable() {
-                                    return true;
+                                    S3HPath.this.upload(out, in, throttle, listener);
                                 }
                             });
                 }

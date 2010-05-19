@@ -321,26 +321,9 @@ public class CFPath extends CloudPath {
                                     this.getLocal().attributes.getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
 
-                                boolean requested = false;
-
                                 @Override
                                 public void writeRequest(OutputStream out) throws IOException {
-                                    if(requested) {
-                                        in.reset();
-                                        status.reset();
-                                        status.setResume(false);
-                                    }
-                                    try {
-                                        CFPath.this.upload(out, in, throttle, listener);
-                                    }
-                                    finally {
-                                        requested = true;
-                                    }
-                                }
-
-                                @Override
-                                public boolean isRepeatable() {
-                                    return true;
+                                    CFPath.this.upload(out, in, throttle, listener);
                                 }
                             },
                             new HashMap<String, String>(), md5sum
