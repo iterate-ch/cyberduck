@@ -299,7 +299,7 @@ public class SFTPSession extends Session {
         log.debug("loginUsingKBIAuthentication" +
                 "make:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
-            InteractiveLogic il = new InteractiveLogic(credentials);
+            InteractiveLogic il = new InteractiveLogic(credentials, this);
             return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(), il);
         }
         return false;
@@ -312,9 +312,11 @@ public class SFTPSession extends Session {
     private static class InteractiveLogic implements InteractiveCallback {
         int promptCount = 0;
         Credentials credentials;
+        Session session;
 
-        public InteractiveLogic(final Credentials credentials) {
+        public InteractiveLogic(final Credentials credentials, final Session session) {
             this.credentials = credentials;
+            this.session = session;
         }
 
         /**
@@ -323,12 +325,23 @@ public class SFTPSession extends Session {
          */
         public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
                                          boolean[] echo) throws IOException {
+            log.debug("replyToChallenge: promptCount " + promptCount+ " / numPrompts " + numPrompts + " / first prompt " + prompt[0] + " / first echo " + echo[0]);
+
+            // In its first callback the server prompts for the password
+            if (promptCount == 0){
+                log.debug("First callback returning provided credentials");
+                promptCount++;
+                return new String[]{credentials.getPassword()};
+            }
+
             String[] result = new String[numPrompts];
             for(int i = 0; i < numPrompts; i++) {
+                credentials.clear();
+                session.login.check(session.getHost(), Locale.localizedString("Keyboard-interactive authentication. Server prompts: ") + prompt[i]);
+                log.debug("Returning " + credentials.getPassword() + " for prompt " + prompt[i]);
                 result[i] = credentials.getPassword();
                 promptCount++;
             }
-
             return result;
         }
 

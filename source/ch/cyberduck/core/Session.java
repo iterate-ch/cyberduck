@@ -163,7 +163,7 @@ public abstract class Session {
      */
     protected abstract void connect() throws IOException, ConnectionCanceledException, LoginCanceledException;
 
-    protected LoginController login;
+    public LoginController login;
 
     /**
      * Sets the callback to ask for login credentials
