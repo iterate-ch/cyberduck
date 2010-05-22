@@ -20,3 +20,7 @@
 /* Delivery methods including streaming protocols. */ 
 "Download (HTTP)" = "Download (HTTP)";
 "Streaming (RTMP)" = "Streaming (RTMP)";
+
+/* Storage class */
+"STANDARD" = "Regular Amazon S3 storage"
+"REDUCED_REDUNDANCY" = "Reduced Redundancy Storage (RSS)"
