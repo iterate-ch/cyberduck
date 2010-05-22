@@ -209,7 +209,8 @@ public class SFTPSession extends Session {
         }
         if(this.getClient().isAuthenticationPartialSuccess()) {
             credentials.clear();
-            login.check(host, Locale.localizedString("Partial authentication success. Provide additional login credentials."));
+            login.check(host, Locale.localizedString("Partial authentication success", "Credentials")
+                    + ". " + Locale.localizedString("Provide additional login credentials", "Credentials") + ".");
             if(this.loginUsingKBIAuthentication(credentials)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
@@ -310,8 +311,8 @@ public class SFTPSession extends Session {
      * supported.
      */
     private class InteractiveLogic implements InteractiveCallback {
-        int promptCount = 0;
-        Credentials credentials;
+        private int promptCount = 0;
+        private Credentials credentials;
 
         public InteractiveLogic(final Credentials credentials) {
             this.credentials = credentials;
@@ -323,24 +324,23 @@ public class SFTPSession extends Session {
          */
         public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
                                          boolean[] echo) throws IOException {
-            log.debug("replyToChallenge: promptCount " + promptCount + " / numPrompts " + numPrompts + " / first prompt " + prompt[0] + " / first echo " + echo[0]);
-
+            log.debug("replyToChallenge:" + name);
             // In its first callback the server prompts for the password
-            if(promptCount == 0) {
+            if(0 == promptCount) {
                 log.debug("First callback returning provided credentials");
                 promptCount++;
-                return new String[]{credentials.getPassword()};
+                return new String[]{this.credentials.getPassword()};
             }
-            String[] result = new String[numPrompts];
+            String[] response = new String[numPrompts];
             for(int i = 0; i < numPrompts; i++) {
-                credentials.clear();
+                this.credentials.clear();
                 SFTPSession.this.login.check(SFTPSession.this.getHost(),
-                        Locale.localizedString("Keyboard-interactive authentication. Server prompts: ") + prompt[i]);
-                log.debug("Returning " + credentials.getPassword() + " for prompt " + prompt[i]);
-                result[i] = credentials.getPassword();
+                        Locale.localizedString("Provide additional login credentials", "Credentials")
+                                + ": " + prompt[i]);
+                response[i] = this.credentials.getPassword();
                 promptCount++;
             }
-            return result;
+            return response;
         }
     }
 
