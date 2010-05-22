@@ -612,6 +612,7 @@ public class S3HPath extends CloudPath {
                     }
                 }
                 object.setAcl(acl);
+                object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
 
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
@@ -731,6 +732,7 @@ public class S3HPath extends CloudPath {
                                 path.attributes.setType(Path.DIRECTORY_TYPE);
                             }
                         }
+                        path.attributes.setStorageClass(object.getStorageClass());
                         childs.add(path);
                     }
 

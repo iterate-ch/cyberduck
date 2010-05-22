@@ -100,4 +100,8 @@ public interface Attributes {
     public abstract String getChecksum();
 
     public abstract void setChecksum(String md5);
+
+    public abstract void setStorageClass(String redundancy);
+
+    public abstract String getStorageClass();
 }

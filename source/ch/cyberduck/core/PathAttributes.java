@@ -44,15 +44,20 @@ public class PathAttributes implements Attributes, Serializable {
     private long modified = -1;
     private long accessed = -1;
     private long created = -1;
-    private String owner = null;
-    private String group = null;
+    private String owner;
+    private String group;
     /**
      * The file type
      */
     private int type = Path.FILE_TYPE;
 
-    protected Permission permission = null;
+    protected Permission permission;
     private String checksum;
+
+    /**
+     * Redundany level if available
+     */
+    private String storageClass;
 
     public PathAttributes() {
         super();
@@ -208,5 +213,13 @@ public class PathAttributes implements Attributes, Serializable {
 
     public void setChecksum(String checksum) {
         this.checksum = checksum;
+    }
+
+    public String getStorageClass() {
+        return storageClass;
+    }
+
+    public void setStorageClass(String redundancy) {
+        this.storageClass = redundancy;
     }
 }

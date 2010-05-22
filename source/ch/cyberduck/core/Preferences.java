@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.model.S3Object;
 
 import java.util.*;
 
@@ -484,6 +485,10 @@ public abstract class Preferences {
          * Default bucket location
          */
         defaults.put("s3.location", "US");
+        /**
+         * Default redundancy level
+         */
+        defaults.put("s3.storage.class", S3Object.STORAGE_CLASS_STANDARD);
         /**
          * Validaty for public S3 URLs
          */
