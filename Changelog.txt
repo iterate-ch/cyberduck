@@ -4,12 +4,13 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.5 (May-01-2010) [http://trac.cyberduck.ch/milestone/3.5]
+3.5 (Jun-01-2010) [http://trac.cyberduck.ch/milestone/3.5]
 - [Localize] Slovenian Localization
 - [Feature] Google Docs storage support (Google Docs)
 - [Feature] Convert uploads to Google Docs format (Google Docs)
 - [Feature] Optical Character Recognition (OCR) for image uploads (Google Docs)
 - [Feature] Support for Asia Pacific (Singapore) location (S3)
+- [Feature] Support for keyboard-interactive authentiation using SecurID (#4459) (SFTP)
 - [Feature] HTTP plain text connection support to connect to third party S3 servers (#4181) (S3)
 - [Feature] Custom metadata attributes (#4063) (S3, Rackspace Cloud Files)
 - [Feature] Configure Access Logs for CloudFront streaming distributions (S3)
