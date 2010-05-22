@@ -116,6 +116,8 @@
 				<string>id</string>
 				<key>sizeProgress</key>
 				<string>id</string>
+				<key>storageClassPopup</key>
+				<string>NSPopUpButton</string>
 				<key>tabView</key>
 				<string>id</string>
 				<key>webUrlField</key>

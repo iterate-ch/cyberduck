@@ -34,6 +34,7 @@ import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
+import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
@@ -239,11 +240,62 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSPopUpButton storageClassPopup;
+
+    public void setStorageClassPopup(NSPopUpButton b) {
+        this.storageClassPopup = b;
+        this.storageClassPopup.setAutoenablesItems(false);
+        this.storageClassPopup.removeAllItems();
+        this.storageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"));
+        this.storageClassPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(S3Object.STORAGE_CLASS_STANDARD);
+        this.storageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
+        this.storageClassPopup.itemAtIndex(new NSInteger(1)).setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        this.storageClassPopup.setTarget(this.id());
+        this.storageClassPopup.setAction(Foundation.selector("storageClassPopupClicked:"));
+    }
+
+    @Action
+    public void storageClassPopupClicked(final NSPopUpButton sender) {
+        this.toggleS3Settings(false);
+        controller.background(new BrowserBackgroundAction(controller) {
+            public void run() {
+                for(Path next : files) {
+                    ((S3HPath) next).attributes.setStorageClass(sender.selectedItem().representedObject());
+                    // Copy item in place to write new attributes
+                    next.copy(next);
+                }
+            }
+
+            @Override
+            public void cleanup() {
+                toggleS3Settings(true);
+            }
+        });
+    }
+
+    @Outlet
     private NSButton bucketLoggingButton;
 
     public void setBucketLoggingButton(NSButton b) {
         this.bucketLoggingButton = b;
         this.bucketLoggingButton.setAction(Foundation.selector("bucketLoggingButtonClicked:"));
+    }
+
+    @Action
+    public void bucketLoggingButtonClicked(final NSButton sender) {
+        this.toggleS3Settings(false);
+        controller.background(new BrowserBackgroundAction(controller) {
+            public void run() {
+                for(Path next : files) {
+                    ((S3HPath) next).setLogging(bucketLoggingButton.state() == NSCell.NSOnState);
+                }
+            }
+
+            @Override
+            public void cleanup() {
+                toggleS3Settings(true);
+            }
+        });
     }
 
     @Outlet
@@ -1182,6 +1234,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void toggleS3Settings(boolean enabled) {
         bucketLoggingButton.setEnabled(enabled);
+        storageClassPopup.setEnabled(enabled);
         if(enabled) {
             s3Progress.stopAnimation(null);
         }
@@ -1201,13 +1254,20 @@ public class InfoController extends ToolbarWindowController {
 
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLocationField.setEnabled(amazon);
+        storageClassPopup.setEnabled(amazon & file.attributes.isFile());
         bucketLoggingButton.setEnabled(amazon);
         bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
         s3PublicUrlField.setStringValue(Locale.localizedString("Unknown"));
         s3torrentUrlField.setStringValue(Locale.localizedString("Unknown"));
         if(amazon) {
             final S3HPath s3 = (S3HPath) file;
+            bucketLoggingButton.setToolTip(
+                    s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
             if(file.attributes.isFile()) {
+                final String redundancy = s3.attributes.getStorageClass();
+                if(StringUtils.isNotEmpty(redundancy)) {
+                    storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
+                }
                 if(this.numberOfFiles() > 1) {
                     s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                     s3PublicUrlField.setToolTip("");
@@ -1229,9 +1289,7 @@ public class InfoController extends ToolbarWindowController {
                     s3torrentUrlField.setToolTip(torrent);
                 }
             }
-            bucketLoggingButton.setToolTip(
-                    s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix")
-            );
+
             this.toggleS3Settings(false);
             controller.background(new BrowserBackgroundAction(controller) {
                 String location = null;
@@ -1311,24 +1369,6 @@ public class InfoController extends ToolbarWindowController {
                 }
             });
         }
-    }
-
-    @Action
-    public void bucketLoggingButtonClicked(final NSButton sender) {
-        this.toggleS3Settings(false);
-        controller.background(new BrowserBackgroundAction(controller) {
-            public void run() {
-                for(Path next : files) {
-                    ((S3HPath) next).setLogging(bucketLoggingButton.state() == NSCell.NSOnState);
-                    break;
-                }
-            }
-
-            @Override
-            public void cleanup() {
-                toggleS3Settings(true);
-            }
-        });
     }
 
     /**

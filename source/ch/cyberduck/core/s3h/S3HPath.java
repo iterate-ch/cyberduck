@@ -984,8 +984,10 @@ public class S3HPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
-                this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(), ((S3HPath) copy).getContainerName(),
-                        new S3Object(((S3HPath) copy).getKey()), false);
+                S3Object destination = new S3Object(((S3HPath) copy).getKey());
+                destination.setStorageClass(copy.attributes.getStorageClass());
+                this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                        ((S3HPath) copy).getContainerName(), destination, false);
             }
             else if(attributes.isDirectory()) {
                 for(AbstractPath i : this.childs()) {

@@ -57,6 +57,7 @@
         sizeButton = id;
         sizeField = id;
         sizeProgress = id;
+        storageClassPopup = NSPopUpButton;
         tabView = id;
         webUrlField = id;
         window = id;
