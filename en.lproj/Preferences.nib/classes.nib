@@ -85,6 +85,8 @@
 				<string>NSPopUpButton</string>
 				<key>defaultSFTPHandlerCombobox</key>
 				<string>NSPopUpButton</string>
+				<key>defaultStorageClassPopup</key>
+				<string>NSPopUpButton</string>
 				<key>defaultUploadThrottleCombobox</key>
 				<string>NSPopUpButton</string>
 				<key>dgroupr</key>

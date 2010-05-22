@@ -32,6 +32,7 @@ import ch.cyberduck.ui.cocoa.view.CDBookmarkCell;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
@@ -2009,6 +2010,27 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void defaultBucketLocationClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("s3.location", sender.selectedItem().representedObject());
+    }
+
+    @Outlet
+    private NSPopUpButton defaultStorageClassPopup;
+
+    public void setDefaultStorageClassPopup(NSPopUpButton b) {
+        this.defaultStorageClassPopup = b;
+        this.defaultStorageClassPopup.setAutoenablesItems(false);
+        this.defaultStorageClassPopup.removeAllItems();
+        this.defaultStorageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"));
+        this.defaultStorageClassPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(S3Object.STORAGE_CLASS_STANDARD);
+        this.defaultStorageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
+        this.defaultStorageClassPopup.itemAtIndex(new NSInteger(1)).setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        this.defaultStorageClassPopup.setTarget(this.id());
+        this.defaultStorageClassPopup.setAction(Foundation.selector("setDefaultStorageClassPopupClicked:"));
+        this.defaultStorageClassPopup.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.storage.class"), "S3"));
+    }
+
+    @Action
+    public void setDefaultStorageClassPopupClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("s3.storage.class", sender.selectedItem().representedObject());
     }
 
     @Outlet

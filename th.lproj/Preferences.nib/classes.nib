@@ -27,6 +27,7 @@
         defaultEditorCheckbox = NSButton;
         defaultFTPHandlerCombobox = NSPopUpButton;
         defaultSFTPHandlerCombobox = NSPopUpButton;
+        defaultStorageClassPopup = NSPopUpButton;
         defaultUploadThrottleCombobox = NSPopUpButton;
         dgroupr = NSButton;
         dgroupw = NSButton;
