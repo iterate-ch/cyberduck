@@ -22,5 +22,5 @@
 "Streaming (RTMP)" = "Pretočne vsebine (RTMP)";
 
 /* Storage class */
-"STANDARD" = "Regular Amazon S3 storage"
-"REDUCED_REDUNDANCY" = "Reduced Redundancy Storage (RSS)"
+"STANDARD" = "Regular Amazon S3 storage";
+"REDUCED_REDUNDANCY" = "Reduced Redundancy Storage (RSS)";
