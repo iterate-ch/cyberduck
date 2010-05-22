@@ -514,4 +514,12 @@ public class FinderLocal extends Local {
     public boolean isWritable() {
         return NSFileManager.defaultManager().isWritableFileAtPath(this.getAbsolute());
     }
+
+    public String getStorageClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setStorageClass(String redundancy) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -237,5 +237,13 @@ public class AbstractTestCase extends TestCase {
         public void writePermissions(Permission perm, boolean recursive) {
             throw new UnsupportedOperationException();
         }
+
+        public void setStorageClass(String redundancy) {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getStorageClass() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
