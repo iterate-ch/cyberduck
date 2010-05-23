@@ -1180,7 +1180,6 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                toggleSizeSettings(true);
                 StringBuilder formatted = new StringBuilder(Status.getSizeAsString(size));
                 if(size > -1) {
                     formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
@@ -1188,6 +1187,7 @@ public class InfoController extends ToolbarWindowController {
                 sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                         formatted.toString(),
                         TRUNCATE_MIDDLE_ATTRIBUTES));
+                toggleSizeSettings(true);
             }
 
             @Override
@@ -1199,32 +1199,37 @@ public class InfoController extends ToolbarWindowController {
     }
 
     private void initChecksum(final Path file) {
-        this.toggleSizeSettings(false);
-        controller.background(new BrowserBackgroundAction(controller) {
+        if(this.numberOfFiles() > 1) {
+            checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+        }
+        else {
+            this.toggleSizeSettings(false);
+            controller.background(new BrowserBackgroundAction(controller) {
 
-            public void run() {
-                if(null == file.attributes.getChecksum()) {
-                    file.readChecksum();
+                public void run() {
+                    if(null == file.attributes.getChecksum()) {
+                        file.readChecksum();
+                    }
                 }
-            }
 
-            @Override
-            public void cleanup() {
-                toggleSizeSettings(true);
-                if(StringUtils.isEmpty(file.attributes.getChecksum())) {
-                    updateField(checksumField, Locale.localizedString("Unknown"));
+                @Override
+                public void cleanup() {
+                    if(StringUtils.isEmpty(file.attributes.getChecksum())) {
+                        updateField(checksumField, Locale.localizedString("Unknown"));
+                    }
+                    else {
+                        updateField(checksumField, file.attributes.getChecksum());
+                    }
+                    toggleSizeSettings(true);
                 }
-                else {
-                    updateField(checksumField, file.attributes.getChecksum());
-                }
-            }
 
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                        files.get(0).getName());
-            }
-        });
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                            files.get(0).getName());
+                }
+            });
+        }
     }
 
     /**
@@ -1481,8 +1486,8 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                togglePermissionSettings(true);
                 initPermissions();
+                togglePermissionSettings(true);
             }
 
             @Override
@@ -1609,8 +1614,6 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                toggleDistributionSettings(true);
-
                 distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                 distributionStatusField.setStringValue(distribution.getStatus());
                 distributionLoggingButton.setEnabled(distribution.isEnabled());
@@ -1654,6 +1657,7 @@ public class InfoController extends ToolbarWindowController {
                         break;
                     }
                 }
+                toggleDistributionSettings(true);
             }
         });
     }
@@ -1675,8 +1679,8 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void cleanup() {
-                toggleSizeSettings(true);
                 initSize();
+                toggleSizeSettings(true);
             }
 
             /**
