@@ -390,11 +390,17 @@ public class FTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        if(StringUtils.isNotEmpty(workdir.getSymlinkTarget())) {
-            this.getClient().chdir(workdir.getSymlinkTarget());
-        }
-        else {
+        try {
             this.getClient().chdir(workdir.getAbsolute());
+        }
+        catch(FTPException e) {
+            if(StringUtils.isNotBlank(workdir.getSymlinkTarget())) {
+                // Try if CWD to symbolic link target succeeds
+                this.getClient().chdir(workdir.getSymlinkTarget());
+            }
+            else {
+                throw e;
+            }
         }
         // Workdir change succeeded
         super.setWorkdir(workdir);
