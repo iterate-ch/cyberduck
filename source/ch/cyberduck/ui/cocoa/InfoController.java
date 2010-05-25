@@ -941,7 +941,7 @@ public class InfoController extends ToolbarWindowController {
             this.window().setTitle(title + " – " + filename);
             filenameField.setEnabled(1 == count && file.isRenameSupported());
             String path;
-            if(file.attributes.isSymbolicLink() && file.getSymlinkTarget() != null) {
+            if(StringUtils.isNotEmpty(file.getSymlinkTarget())) {
                 path = file.getSymlinkTarget();
             }
             else {
