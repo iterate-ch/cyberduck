@@ -42,7 +42,8 @@ import java.util.concurrent.CyclicBarrier;
  */
 public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction implements ErrorListener, TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
-
+    private static final String lineSeparator = System.getProperty ("line.separator");
+    
     /**
      * Contains all exceptions thrown while this action was running
      */
@@ -108,7 +109,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
             transcript = new StringBuilder();
         }
-        transcript.append(message).append("\n");
+        transcript.append(message).append(lineSeparator);
     }
 
     @Override
