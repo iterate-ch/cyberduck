@@ -8,6 +8,7 @@ Changelog. Last modified: $Date$
 - [Localize] Slovenian Localization
 - [Feature] Google Docs storage support (Google Docs)
 - [Feature] Convert uploads to Google Docs format (Google Docs)
+- [Feature] Download format preferences for documents (Google Docs)
 - [Feature] Optical Character Recognition (OCR) for image uploads (Google Docs)
 - [Feature] Support for Asia Pacific (Singapore) location (S3)
 - [Feature] Support for keyboard-interactive authentiation using SecurID (#4459) (SFTP)
