@@ -23,4 +23,4 @@
 
 /* Storage class */
 "STANDARD" = "Regular Amazon S3 Storage";
-"REDUCED_REDUNDANCY" = "Reduced Redundancy Storage (RSS)";
+"REDUCED_REDUNDANCY" = "Reduced Redundancy Storage (RRS)";
