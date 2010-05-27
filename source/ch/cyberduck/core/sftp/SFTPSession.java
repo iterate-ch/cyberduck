@@ -333,7 +333,7 @@ public class SFTPSession extends Session {
             }
             String[] response = new String[numPrompts];
             for(int i = 0; i < numPrompts; i++) {
-                this.credentials.clear();
+                this.credentials.setPassword(null);
                 SFTPSession.this.login.check(SFTPSession.this.getHost(),
                         Locale.localizedString("Provide additional login credentials", "Credentials")
                                 + ": " + prompt[i]);
