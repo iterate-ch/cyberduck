@@ -1319,6 +1319,9 @@ public class InfoController extends ToolbarWindowController {
                 }
             });
         }
+        else {
+            storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
+        }
     }
 
     /**

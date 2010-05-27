@@ -1,4 +1,4 @@
-package ch.cyberduck.core.g;
+package ch.cyberduck.core.gd;
 
 /*
  *  Copyright (c) 2010 David Kocher. All rights reserved.
@@ -53,32 +53,28 @@ import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 
-public class GPath extends Path {
-    private static Logger log = Logger.getLogger(GPath.class);
+public class GDPath extends Path {
+    private static Logger log = Logger.getLogger(GDPath.class);
 
-    static {
-        PathFactory.addFactory(Protocol.GDOCS, new Factory());
-    }
-
-    private static class Factory extends PathFactory<GSession> {
+    public static class Factory extends PathFactory<GDSession> {
         @Override
-        protected Path create(GSession session, String path, int type) {
-            return new GPath(session, path, type);
+        protected Path create(GDSession session, String path, int type) {
+            return new GDPath(session, path, type);
         }
 
         @Override
-        protected Path create(GSession session, String parent, String name, int type) {
-            return new GPath(session, parent, name, type);
+        protected Path create(GDSession session, String parent, String name, int type) {
+            return new GDPath(session, parent, name, type);
         }
 
         @Override
-        protected Path create(GSession session, String path, Local file) {
-            return new GPath(session, path, file);
+        protected Path create(GDSession session, String path, Local file) {
+            return new GDPath(session, path, file);
         }
 
         @Override
-        protected <T> Path create(GSession session, T dict) {
-            return new GPath(session, dict);
+        protected <T> Path create(GDSession session, T dict) {
+            return new GDPath(session, dict);
         }
     }
 
@@ -126,24 +122,24 @@ public class GPath extends Path {
     private static final String DOCUMENT_PRESENTATION_TYPE = "presentation";
     private static final String DOCUMENT_SPREADSHEET_TYPE = "spreadsheet";
 
-    private final GSession session;
+    private final GDSession session;
 
-    protected GPath(GSession s, String parent, String name, int type) {
+    protected GDPath(GDSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected GPath(GSession s, String path, int type) {
+    protected GDPath(GDSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected GPath(GSession s, String parent, Local file) {
+    protected GDPath(GDSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected <T> GPath(GSession s, T dict) {
+    protected <T> GDPath(GDSession s, T dict) {
         super(dict);
         this.session = s;
     }
@@ -223,7 +219,7 @@ public class GPath extends Path {
     }
 
     @Override
-    public GSession getSession() throws ConnectionCanceledException {
+    public GDSession getSession() throws ConnectionCanceledException {
         return session;
     }
 
@@ -428,7 +424,7 @@ public class GPath extends Path {
             log.debug("Resource:" + entry.getResourceId());
             final StringBuilder title = new StringBuilder(entry.getTitle().getPlainText());
             final String type = entry.getType();
-            GPath p = new GPath(this.getSession(),
+            GDPath p = new GDPath(this.getSession(),
                     title.toString(),
                     DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             p.setParent(this);

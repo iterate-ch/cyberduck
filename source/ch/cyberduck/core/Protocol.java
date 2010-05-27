@@ -22,7 +22,6 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -644,12 +643,17 @@ public abstract class Protocol {
 
         @Override
         public String getIdentifier() {
-            return "g";
+            return "gd";
         }
 
         @Override
         public String disk() {
             return "google";
+        }
+
+        @Override
+        public String icon() {
+            return "google-icon";
         }
 
         @Override

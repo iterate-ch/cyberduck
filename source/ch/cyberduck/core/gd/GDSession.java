@@ -1,4 +1,4 @@
-package ch.cyberduck.core.g;
+package ch.cyberduck.core.gd;
 
 /*
  *  Copyright (c) 2010 David Kocher. All rights reserved.
@@ -32,23 +32,19 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public class GSession extends Session {
-    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(GSession.class);
+public class GDSession extends Session {
+    private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(GDSession.class);
 
-    static {
-        SessionFactory.addFactory(Protocol.GDOCS, new Factory());
-    }
-
-    private static class Factory extends SessionFactory {
+    public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
-            return new GSession(h);
+            return new GDSession(h);
         }
     }
 
     private DocsService client;
 
-    protected GSession(Host h) {
+    protected GDSession(Host h) {
         super(h);
     }
 
@@ -63,7 +59,7 @@ public class GSession extends Session {
     private final Handler appender = new Handler() {
         @Override
         public void publish(LogRecord record) {
-            GSession.this.log(false, record.getMessage());
+            GDSession.this.log(false, record.getMessage());
         }
 
         @Override
