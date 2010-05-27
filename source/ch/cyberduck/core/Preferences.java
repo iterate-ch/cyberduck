@@ -196,7 +196,7 @@ public abstract class Preferences {
         defaults.put("protocol.s3.tls.enable", String.valueOf(true));
         defaults.put("protocol.s3.eucalyptus.enable", String.valueOf(false));
         defaults.put("protocol.cf.enable", String.valueOf(true));
-        defaults.put("protocol.gdocs.enable", String.valueOf(false));
+        defaults.put("protocol.gdocs.enable", String.valueOf(true));
 
         /**
          * Normalize path names
