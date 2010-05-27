@@ -68,7 +68,7 @@ public class Speedometer {
         StringBuilder b = new StringBuilder();
         b.append(Status.getSizeAsString(transfer.getTransferred()));
         b.append(" ");
-        b.append(Locale.localizedString("of", "1.2MB of 3.4MB"));
+        b.append(Locale.localizedString("of"));
         b.append(" ");
         final double size = transfer.getSize();
         b.append(Status.getSizeAsString(size));
