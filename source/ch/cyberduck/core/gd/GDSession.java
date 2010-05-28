@@ -35,6 +35,10 @@ import java.util.logging.Logger;
 public class GDSession extends Session {
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(GDSession.class);
 
+    static {
+        SessionFactory.addFactory(Protocol.GDOCS, new Factory());
+    }
+
     public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {

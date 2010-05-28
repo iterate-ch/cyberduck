@@ -56,6 +56,10 @@ import java.util.List;
 public class GDPath extends Path {
     private static Logger log = Logger.getLogger(GDPath.class);
 
+    static {
+        PathFactory.addFactory(Protocol.GDOCS, new Factory());
+    }
+
     public static class Factory extends PathFactory<GDSession> {
         @Override
         protected Path create(GDSession session, String path, int type) {
