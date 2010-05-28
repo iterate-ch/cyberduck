@@ -53,12 +53,6 @@ public class GSSession extends S3Session {
         super(h);
     }
 
-    @Override
-    protected void configure() {
-        super.configure();
-        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-    }
-
     /**
      * Not supported
      *
