@@ -1954,9 +1954,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(null == selected || !selected.attributes.isDirectory()) {
             selected = this.workdir();
         }
-        BrowserController c = new BrowserController();
-        c.cascade();
-        c.window().makeKeyAndOrderFront(null);
+        BrowserController c = MainController.newDocument(true);
         final Host host = new Host(this.getSession().getHost().<NSDictionary>getAsDictionary());
         host.setDefaultPath(selected.getAbsolute());
         c.mount(host);
