@@ -20,14 +20,27 @@ package ch.cyberduck.core.gs;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.jets3t.service.CloudFrontServiceException;
+
 /**
- * @version $Id:$
+ * Google Storage for Developers is a new service for developers to store and
+ * access data in Google's cloud. It offers developers direct access to Google's
+ * scalable storage and networking infrastructure as well as powerful authentication
+ * and data sharing mechanisms.
+ *
+ * @version $Id$
  */
 public class GSSession extends S3Session {
+
+    static {
+        SessionFactory.addFactory(Protocol.GOOGLESTORAGE, new Factory());
+    }
 
     public static class Factory extends SessionFactory {
         @Override
@@ -38,5 +51,53 @@ public class GSSession extends S3Session {
 
     protected GSSession(Host h) {
         super(h);
+    }
+
+    @Override
+    protected void configure() {
+        super.configure();
+        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+    }
+
+    /**
+     * Not supported
+     *
+     * @param bucket Name of the container
+     * @param method
+     * @return
+     * @throws CloudFrontServiceException
+     */
+    @Override
+    public org.jets3t.service.model.cloudfront.Distribution[] listDistributions(String bucket, Distribution.Method method) throws CloudFrontServiceException {
+        return new org.jets3t.service.model.cloudfront.Distribution[]{};
+    }
+
+
+    /**
+     * Not supported
+     *
+     * @param container
+     * @param method
+     * @return
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public Distribution readDistribution(String container, Distribution.Method method) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Not supported
+     *
+     * @param enabled
+     * @param container
+     * @param method
+     * @param cnames
+     * @param logging
+     * @throws UnsupportedOperationException
+     */
+    @Override
+    public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
+        throw new UnsupportedOperationException();
     }
 }

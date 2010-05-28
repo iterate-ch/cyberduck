@@ -197,6 +197,7 @@ public abstract class Preferences {
         defaults.put("protocol.s3.eucalyptus.enable", String.valueOf(false));
         defaults.put("protocol.cf.enable", String.valueOf(true));
         defaults.put("protocol.gdocs.enable", String.valueOf(true));
+        defaults.put("protocol.gstorage.enable", String.valueOf(false));
 
         /**
          * Normalize path names

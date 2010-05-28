@@ -22,13 +22,18 @@ package ch.cyberduck.core.gs;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GSPath extends S3Path {
+
+    static {
+        PathFactory.addFactory(Protocol.GOOGLESTORAGE, new Factory());
+    }
 
     public static class Factory extends PathFactory<GSSession> {
         @Override
@@ -66,5 +71,10 @@ public class GSPath extends S3Path {
 
     protected <T> GSPath(S3Session s, T dict) {
         super(s, dict);
+    }
+
+    @Override
+    public String toHttpURL() {
+        return "https://sandbox.google.com/storage" + this.getAbsolute();
     }
 }

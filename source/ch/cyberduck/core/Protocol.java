@@ -692,6 +692,68 @@ public abstract class Protocol {
         }
     };
 
+    public static final Protocol GOOGLESTORAGE = new Protocol() {
+        @Override
+        public String getName() {
+            return "Google Storage";
+        }
+
+        @Override
+        public String getDescription() {
+            return Locale.localizedString("Google Storage");
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "gs";
+        }
+
+        @Override
+        public String disk() {
+            return "google";
+        }
+
+        @Override
+        public String icon() {
+            return "google-icon";
+        }
+
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public boolean isHostnameConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getDefaultHostname() {
+            return "commondatastorage.googleapis.com";
+        }
+
+        @Override
+        public String getScheme() {
+            return "https";
+        }
+
+        @Override
+        public int getDefaultPort() {
+            return 443;
+        }
+
+        @Override
+        public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("Google Account Email");
+        }
+    };
+    
     private static List<Protocol> enabled = new ArrayList<Protocol>();
 
     static {
@@ -727,6 +789,9 @@ public abstract class Protocol {
         }
         if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
             enabled.add(GDOCS);
+        }
+        if(Preferences.instance().getBoolean("protocol.gstorage.enable")) {
+            enabled.add(GOOGLESTORAGE);
         }
     }
 
