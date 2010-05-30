@@ -22,6 +22,7 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -299,7 +300,7 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return "s3.amazonaws.com";
+            return Constants.S3_DEFAULT_HOSTNAME;
         }
 
         @Override
@@ -351,7 +352,7 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return "s3.amazonaws.com";
+            return Constants.S3_DEFAULT_HOSTNAME;
         }
 
         @Override
@@ -688,7 +689,12 @@ public abstract class Protocol {
 
         @Override
         public String getUsernamePlaceholder() {
-            return Locale.localizedString("Google Account Email");
+            return Locale.localizedString("Google Account Email", "S3");
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("Google Account Password", "S3");
         }
     };
 
@@ -700,7 +706,7 @@ public abstract class Protocol {
 
         @Override
         public String getDescription() {
-            return Locale.localizedString("Google Storage");
+            return Locale.localizedString("Google Storage", "S3");
         }
 
         @Override
@@ -750,10 +756,15 @@ public abstract class Protocol {
 
         @Override
         public String getUsernamePlaceholder() {
-            return Locale.localizedString("Google Account Email");
+            return Locale.localizedString("Google Account Email", "S3");
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("Google Account Password", "S3");
         }
     };
-    
+
     private static List<Protocol> enabled = new ArrayList<Protocol>();
 
     static {
