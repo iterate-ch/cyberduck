@@ -166,7 +166,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Override
     protected double getMaxWindowWidth() {
-        return 700;
+        return 800;
     }
 
     @Override
