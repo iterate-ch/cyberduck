@@ -59,6 +59,7 @@ init() {
 	cp $base_language/Mosso.strings $language/
 	cp $base_language/Keychain.strings $language/
 	cp $base_language/Archive.strings $language/
+	cp $base_language/Transfer.strings $language/
 	cp $base_language/License.strings $language/
 	cp $base_language/InfoPlist.strings $language/
 	cp $base_language/License.txt $language/
