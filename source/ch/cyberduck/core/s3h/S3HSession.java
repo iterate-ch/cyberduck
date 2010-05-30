@@ -35,16 +35,22 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.*;
+import org.jets3t.service.CloudFrontService;
+import org.jets3t.service.CloudFrontServiceException;
+import org.jets3t.service.Jets3tProperties;
+import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -72,18 +78,32 @@ public class S3HSession extends HTTPSession implements CloudSession {
         }
     }
 
-    private S3Service S3;
+    private CustomRestS3Service S3;
 
     protected S3HSession(Host h) {
         super(h);
     }
 
     @Override
-    protected S3Service getClient() throws ConnectionCanceledException {
+    protected CustomRestS3Service getClient() throws ConnectionCanceledException {
         if(null == S3) {
             throw new ConnectionCanceledException();
         }
         return S3;
+    }
+
+    /**
+     * Exposing protected methods
+     */
+    public static class CustomRestS3Service extends RestS3Service {
+        public CustomRestS3Service(AWSCredentials awsCredentials, String invokingApplicationDescription, CredentialsProvider credentialsProvider, Jets3tProperties jets3tProperties, HostConfiguration hostConfig) throws S3ServiceException {
+            super(awsCredentials, invokingApplicationDescription, credentialsProvider, jets3tProperties, hostConfig);
+        }
+
+        @Override
+        public void pubObjectWithRequestEntityImpl(String bucketName, S3Object object, RequestEntity requestEntity) throws S3ServiceException {
+            super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
+        }
     }
 
     /**
@@ -92,8 +112,11 @@ public class S3HSession extends HTTPSession implements CloudSession {
     protected Jets3tProperties configuration = new Jets3tProperties();
 
     protected void configure() {
-        configuration.setProperty("s3service.s3-endpoint", host.getHostname());
-        if(!host.getHostname().endsWith("s3.amazonaws.com")) {
+        if(host.getHostname().endsWith(host.getProtocol().getDefaultHostname())) {
+            configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
+        }
+        else {
+            configuration.setProperty("s3service.s3-endpoint", host.getHostname());
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
@@ -136,8 +159,8 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @return
      */
     public String getHostnameForBucket(String bucket) {
-        return S3Service.generateS3HostnameForBucket(bucket,
-                configuration.getBoolProperty("s3service.disable-dns-buckets", false));
+        return ServiceUtils.generateS3HostnameForBucket(bucket,
+                configuration.getBoolProperty("s3service.disable-dns-buckets", false), this.getHost().getHostname());
     }
 
     /**
@@ -145,13 +168,13 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @return
      */
     protected String getBucketForHostname(String hostname) {
-        if(hostname.equals(Protocol.S3.getDefaultHostname())) {
+        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
             return null;
         }
         // Bucket name is available in URL's host name.
-        if(hostname.endsWith(Protocol.S3.getDefaultHostname())) {
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
             // Bucket name is available as S3 subdomain
-            return hostname.substring(0, hostname.length() - Protocol.S3.getDefaultHostname().length() - 1);
+            return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
         }
         return null;
     }
@@ -174,14 +197,19 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 String bucketname = this.getBucketForHostname(host.getHostname());
                 if(null == bucketname) {
                     if(StringUtils.isNotBlank(host.getDefaultPath())) {
-                        bucketname = host.getDefaultPath();
+                        Path d = PathFactory.createPath(this, host.getDefaultPath(), AbstractPath.DIRECTORY_TYPE);
+                        while(!d.getParent().isRoot()) {
+                            d = d.getParent();
+                        }
+                        bucketname = d.getName();
                     }
                 }
                 if(null == bucketname) {
+                    log.error("No bucket name given in hostname or default path");
                     return buckets;
                 }
                 if(!this.getClient().isBucketAccessible(bucketname)) {
-                    throw new IOException("Bucket not available: " + bucketname);
+                    throw new IOException("Bucket not accessible: " + bucketname);
                 }
                 final S3HPath thirdparty = (S3HPath) PathFactory.createPath(this, bucketname,
                         Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
@@ -231,7 +259,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     protected void login(final Credentials credentials, final HostConfiguration hostconfig) throws IOException {
         try {
-            this.S3 = new RestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
+            this.S3 = new CustomRestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                     credentials.getPassword()), this.getUserAgent(), new CredentialsProvider() {
                 /**
                  * Implementation method for the CredentialsProvider interface

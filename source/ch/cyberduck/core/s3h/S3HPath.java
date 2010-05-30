@@ -35,13 +35,13 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
-import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.S3Owner;
 import org.jets3t.service.multithread.DownloadPackage;
 import org.jets3t.service.utils.ObjectUtils;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -176,17 +176,6 @@ public class S3HPath extends CloudPath {
                 this.error("Cannot read file attributes", e);
             }
             log.warn("Bucket not found with name:" + bucketname);
-        }
-
-        final Credentials credentials = this.getSession().getHost().getCredentials();
-        if(null == _bucket.getAcl() && !credentials.isAnonymousLogin()) {
-            try {
-                final AccessControlList acl = this.getSession().getClient().getBucketAcl(_bucket);
-                _bucket.setAcl(acl);
-            }
-            catch(S3ServiceException e) {
-                this.error("Cannot read file attributes", e);
-            }
         }
         return _bucket;
     }
@@ -475,6 +464,10 @@ public class S3HPath extends CloudPath {
                     this.getName()));
             AccessControlList acl = null;
             if(this.isContainer()) {
+                final Credentials credentials = this.getSession().getHost().getCredentials();
+                if(null == this.getBucket().getAcl() && !credentials.isAnonymousLogin()) {
+                    this.getBucket().setAcl(this.getSession().getClient().getBucketAcl(this.getBucket()));
+                }
                 acl = this.getBucket().getAcl();
             }
             else if(attributes.isFile()) {
@@ -557,13 +550,11 @@ public class S3HPath extends CloudPath {
                         // application/x-directory
                         return;
                     }
-                    download.setAppendToFile(this.getStatus().isResume());
-                    out = download.getOutputStream();
+                    out = this.getLocal().getOutputStream(this.getStatus().isResume());
                 }
                 catch(Exception e) {
                     throw new S3ServiceException(e.getMessage(), e);
                 }
-
                 this.download(in, out, throttle, listener);
             }
             catch(S3ServiceException e) {
@@ -629,7 +620,7 @@ public class S3HPath extends CloudPath {
                     throw new IOException(e.getMessage());
                 }
                 try {
-                    ((RestS3Service) this.getSession().getClient()).pubObjectImpl(
+                    this.getSession().getClient().pubObjectWithRequestEntityImpl(
                             this.getContainerName(), object, new InputStreamRequestEntity(in,
                                     this.getLocal().attributes.getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
@@ -789,7 +780,7 @@ public class S3HPath extends CloudPath {
 
             if(this.isContainer()) {
                 // Create bucket
-                if(!RestS3Service.isBucketNameValidDNSName(this.getName())) {
+                if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
                     this.error("Bucket name is not DNS compatible");
                     return;
                 }
@@ -1024,7 +1015,7 @@ public class S3HPath extends CloudPath {
         }
         final String key = this.isContainer() ? "" : this.encode(this.getKey());
         try {
-            if(RestS3Service.isBucketNameValidDNSName(this.getContainerName())) {
+            if(ServiceUtils.isBucketNameValidDNSName(this.getContainerName())) {
                 return Protocol.S3.getScheme() + "://"
                         + this.getSession().getHostnameForBucket(this.getContainerName()) + key;
             }
@@ -1054,9 +1045,9 @@ public class S3HPath extends CloudPath {
             long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
 
             // Generate URL
-            return S3Service.createSignedUrl("GET",
+            return this.getSession().getClient().createSignedUrl("GET",
                     this.getContainerName(), this.getKey(), null,
-                    null, this.getSession().getClient().getAWSCredentials(), secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(),
+                    null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(),
                     this.getSession().configuration.getBoolProperty("s3service.disable-dns-buckets", false));
         }
         catch(S3ServiceException e) {
@@ -1075,6 +1066,13 @@ public class S3HPath extends CloudPath {
      * @return
      */
     public String createTorrentUrl() {
-        return S3Service.createTorrentUrl(this.getContainerName(), this.getKey());
+        try {
+            return S3Service.createTorrentUrl(
+                    this.getContainerName(), this.getKey(), this.getSession().configuration);
+        }
+        catch(ConnectionCanceledException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return null;
     }
 }
