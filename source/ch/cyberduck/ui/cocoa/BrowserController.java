@@ -1397,6 +1397,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         this._updateBookmarkCell();
 
+        final int size = Preferences.instance().getInteger("bookmark.icon.size");
+        if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
+            this.bookmarkTable.setRowHeight(new CGFloat(18));
+        }
+        else if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
+            this.bookmarkTable.setRowHeight(new CGFloat(45));
+        }
+        else {
+            this.bookmarkTable.setRowHeight(new CGFloat(70));
+        }
+
         // setting appearance attributes
         this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
         this.bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
