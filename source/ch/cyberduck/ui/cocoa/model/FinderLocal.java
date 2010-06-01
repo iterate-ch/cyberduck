@@ -522,4 +522,12 @@ public class FinderLocal extends Local {
     public void setStorageClass(String redundancy) {
         throw new UnsupportedOperationException();
     }
+
+    public void setVersionId(String versionId) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getVersionId() {
+        throw new UnsupportedOperationException();
+    }
 }

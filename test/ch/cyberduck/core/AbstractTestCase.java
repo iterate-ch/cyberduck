@@ -245,5 +245,13 @@ public class AbstractTestCase extends TestCase {
         public String getStorageClass() {
             throw new UnsupportedOperationException();
         }
+
+        public void setVersionId(String versionId) {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getVersionId() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

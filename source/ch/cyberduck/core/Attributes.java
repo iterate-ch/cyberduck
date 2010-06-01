@@ -104,4 +104,8 @@ public interface Attributes {
     public abstract void setStorageClass(String redundancy);
 
     public abstract String getStorageClass();
+
+    public abstract void setVersionId(String versionId);
+
+    public abstract String getVersionId();
 }

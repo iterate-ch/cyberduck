@@ -58,6 +58,7 @@ public class PathAttributes implements Attributes, Serializable {
      * Redundany level if available
      */
     private String storageClass;
+    private String versionId;
 
     public PathAttributes() {
         super();
@@ -221,5 +222,13 @@ public class PathAttributes implements Attributes, Serializable {
 
     public void setStorageClass(String redundancy) {
         this.storageClass = redundancy;
+    }
+
+    public String getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(String versionId) {
+        this.versionId = versionId;
     }
 }
