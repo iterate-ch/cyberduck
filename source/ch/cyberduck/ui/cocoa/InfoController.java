@@ -1276,6 +1276,8 @@ public class InfoController extends ToolbarWindowController {
         bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
         s3PublicUrlField.setStringValue(Locale.localizedString("Unknown"));
         s3torrentUrlField.setStringValue(Locale.localizedString("Unknown"));
+        storageClassPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
         if(this.toggleS3Settings(false)) {
             final S3HPath s3 = (S3HPath) file;
@@ -1284,6 +1286,7 @@ public class InfoController extends ToolbarWindowController {
             if(file.attributes.isFile()) {
                 final String redundancy = s3.attributes.getStorageClass();
                 if(StringUtils.isNotEmpty(redundancy)) {
+                    storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 }
                 if(this.numberOfFiles() > 1) {
