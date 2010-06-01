@@ -194,6 +194,15 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSProgressIndicator metadataProgress;
+
+    public void setMetadataProgress(final NSProgressIndicator p) {
+        this.metadataProgress = p;
+        this.metadataProgress.setDisplayedWhenStopped(false);
+        this.metadataProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
+    }
+
+    @Outlet
     private NSProgressIndicator distributionProgress;
 
     public void setDistributionProgress(final NSProgressIndicator p) {
@@ -1345,10 +1354,10 @@ public class InfoController extends ToolbarWindowController {
         metadataAddButton.setEnabled(stop && enable);
         metadataRemoveButton.setEnabled(stop && enable);
         if(stop) {
-            s3Progress.stopAnimation(null);
+            metadataProgress.stopAnimation(null);
         }
         else if(enable) {
-            s3Progress.startAnimation(null);
+            metadataProgress.startAnimation(null);
         }
         return enable;
     }

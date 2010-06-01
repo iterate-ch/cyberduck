@@ -66,6 +66,8 @@
 				<string>id</string>
 				<key>metadataAddButton</key>
 				<string>id</string>
+				<key>metadataProgress</key>
+				<string>id</string>
 				<key>metadataRemoveButton</key>
 				<string>id</string>
 				<key>metadataTable</key>

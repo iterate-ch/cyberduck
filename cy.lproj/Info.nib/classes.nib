@@ -32,6 +32,7 @@
         iconImageView = id;
         kindField = id;
         metadataAddButton = id;
+        metadataProgress = id;
         metadataRemoveButton = id;
         metadataTable = id;
         modifiedField = id;
