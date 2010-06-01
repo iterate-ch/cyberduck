@@ -96,4 +96,14 @@ public class S3Session extends S3HSession implements SSLSession {
         }
         return super.getBuckets(reload);
     }
+
+    @Override
+    protected S3Bucket getBucket(final String container) throws IOException {
+        final S3Bucket bucket = super.getBucket(container);
+        // We now connect to bucket subdomain
+        this.getTrustManager().setHostname(
+                this.getHostnameForBucket(bucket.getName())
+        );
+        return bucket;
+    }
 }

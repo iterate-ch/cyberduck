@@ -31,7 +31,7 @@ import org.jets3t.service.model.S3Bucket;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class S3Path extends S3HPath {
 
@@ -75,15 +75,5 @@ public class S3Path extends S3HPath {
 
     protected <T> S3Path(S3Session s, T dict) {
         super(s, dict);
-    }
-
-    @Override
-    protected S3Bucket getBucket() throws IOException {
-        final S3Bucket bucket = super.getBucket();
-        // We now connect to bucket subdomain
-        ((SSLSession) this.getSession()).getTrustManager().setHostname(
-                this.getSession().getHostnameForBucket(bucket.getName())
-        );
-        return bucket;
     }
 }

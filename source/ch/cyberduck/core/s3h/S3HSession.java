@@ -46,6 +46,8 @@ import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3BucketLoggingStatus;
+import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
@@ -54,10 +56,7 @@ import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Connecting to S3 service with plain HTTP.
@@ -182,7 +181,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
     /**
      * Caching the uses's buckets
      */
-    private List<S3Bucket> buckets = new ArrayList<S3Bucket>();
+    private Map<String, S3Bucket> buckets = new HashMap<String, S3Bucket>();
 
     /**
      * @param reload
@@ -206,20 +205,65 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 }
                 if(null == bucketname) {
                     log.error("No bucket name given in hostname or default path");
-                    return buckets;
+                    return Collections.emptyList();
                 }
                 if(!this.getClient().isBucketAccessible(bucketname)) {
                     throw new IOException("Bucket not accessible: " + bucketname);
                 }
                 final S3HPath thirdparty = (S3HPath) PathFactory.createPath(this, bucketname,
                         Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                buckets.add(new S3Bucket(thirdparty.getContainerName()));
+                buckets.put(thirdparty.getContainerName(), new S3Bucket(thirdparty.getContainerName()));
             }
             else {
-                buckets.addAll(Arrays.asList(this.getClient().listAllBuckets()));
+                for(S3Bucket bucket : this.getClient().listAllBuckets()) {
+                    buckets.put(bucket.getName(), bucket);
+                }
             }
         }
-        return buckets;
+        return new ArrayList<S3Bucket>(buckets.values());
+    }
+
+    /**
+     *
+     * @param bucketname
+     * @return
+     * @throws IOException
+     */
+    protected S3Bucket getBucket(final String bucketname) throws IOException {
+        try {
+            for(S3Bucket bucket : this.getBuckets(false)) {
+                if(bucket.getName().equals(bucketname)) {
+                    return bucket;
+                }
+            }
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        throw new ConnectionCanceledException("Bucket not found with name:" + bucketname);
+    }
+
+    /**
+     * Bucket geographical location
+     *
+     * @return
+     */
+    public String getLocation(final String container) {
+        try {
+            final S3Bucket bucket = this.getBucket(container);
+            if(bucket.isLocationKnown()) {
+                return bucket.getLocation();
+            }
+            this.check();
+            return this.getClient().getBucketLocation(bucket.getName());
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return null;
     }
 
     @Override
@@ -572,5 +616,160 @@ public class S3HSession extends HTTPSession implements CloudSession {
 
     public List<Distribution.Method> getSupportedMethods() {
         return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
+    }
+
+    /**
+     * @param container The bucket name
+     * @return True if the bucket logging status is enabled.
+     */
+    public boolean isLogging(final String container) {
+        try {
+            this.check();
+
+            final S3BucketLoggingStatus status
+                    = this.getClient().getBucketLoggingStatus(container);
+            return status.isLoggingEnabled();
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return false;
+    }
+
+    /**
+     * @param container The bucket name
+     * @param enabled
+     */
+    public void setLogging(final String container, final boolean enabled) {
+        // Logging target bucket
+        final S3BucketLoggingStatus loggingStatus = new S3BucketLoggingStatus();
+        if(enabled) {
+            loggingStatus.setTargetBucketName(container);
+            loggingStatus.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
+        }
+        try {
+            this.check();
+            this.getClient().setBucketLoggingStatus(container, loggingStatus, true);
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot write file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot write file attributes", e);
+        }
+    }
+
+    /**
+     * @param container The bucket name
+     * @return
+     */
+    public boolean isVersioning(final String container) {
+        try {
+            this.check();
+
+            final S3BucketVersioningStatus status
+                    = this.getClient().getBucketVersioningStatus(container);
+            return status.isVersioningEnabled();
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return false;
+    }
+
+    /**
+     * @param container               The bucket name
+     * @param enabled
+     * @param multiFactorSerialNumber Optional if MFA should be enabled
+     * @param multiFactorAuthCode     Optional if MFA should be enabled
+     */
+    public void setVersioning(final String container, boolean enabled, String multiFactorSerialNumber, String multiFactorAuthCode) {
+        try {
+            this.check();
+            if(enabled) {
+                if(StringUtils.isNotBlank(multiFactorSerialNumber) && StringUtils.isNotBlank(multiFactorAuthCode)) {
+                    this.getClient().enableBucketVersioningWithMFA(container);
+                }
+                else {
+                    this.getClient().enableBucketVersioning(container);
+                }
+            }
+            else {
+                if(StringUtils.isNotBlank(multiFactorSerialNumber) && StringUtils.isNotBlank(multiFactorAuthCode)) {
+                    this.getClient().suspendBucketVersioningWithMFA(container, multiFactorSerialNumber, multiFactorAuthCode);
+                }
+                else {
+                    this.getClient().suspendBucketVersioning(container);
+                }
+            }
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot write file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot write file attributes", e);
+        }
+    }
+
+    /**
+     * @param container The bucket name
+     * @return True if MFA is required to delete objects in this bucket.
+     */
+    public boolean isMultiFactorAuthentication(final String container) {
+        try {
+            this.check();
+
+            final S3BucketVersioningStatus status = this.getClient().getBucketVersioningStatus(
+                    container);
+            return status.isMultiFactorAuthDeleteRequired();
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return false;
+    }
+
+    /**
+     * @param container The bucket name
+     * @param enabled
+     */
+    public void setRequesterPays(final String container, boolean enabled) {
+        try {
+            this.check();
+            this.getClient().setRequesterPaysBucket(container, enabled);
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot write file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot write file attributes", e);
+        }
+    }
+
+    /**
+     * @param container The bucket name
+     * @return
+     */
+    public boolean isRequesterPays(final String container) {
+        try {
+            this.check();
+            return this.getClient().isRequesterPaysBucket(container);
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return false;
     }
 }

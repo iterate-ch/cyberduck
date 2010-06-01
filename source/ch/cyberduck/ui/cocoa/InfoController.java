@@ -26,6 +26,7 @@ import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3h.S3HPath;
+import ch.cyberduck.core.s3h.S3HSession;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -290,19 +291,22 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
-        this.toggleS3Settings(false);
-        controller.background(new BrowserBackgroundAction(controller) {
-            public void run() {
-                for(Path next : files) {
-                    ((S3HPath) next).setLogging(bucketLoggingButton.state() == NSCell.NSOnState);
+        if(this.toggleS3Settings(false)) {
+            controller.background(new BrowserBackgroundAction(controller) {
+                public void run() {
+                    for(Path next : files) {
+                        final String container = ((S3HPath) next).getContainerName();
+                        ((S3HSession) controller.getSession()).setLogging(container,
+                                bucketLoggingButton.state() == NSCell.NSOnState);
+                    }
                 }
-            }
 
-            @Override
-            public void cleanup() {
-                toggleS3Settings(true);
-            }
-        });
+                @Override
+                public void cleanup() {
+                    toggleS3Settings(true);
+                }
+            });
+        }
     }
 
     @Outlet
@@ -1258,7 +1262,9 @@ public class InfoController extends ToolbarWindowController {
             enable = enable && file instanceof S3HPath;
         }
         bucketLoggingButton.setEnabled(stop && enable);
-        storageClassPopup.setEnabled(stop && enable);
+        for(Path file : files) {
+            storageClassPopup.setEnabled(stop && enable && file.attributes.isFile());
+        }
         if(stop) {
             s3Progress.stopAnimation(null);
         }
@@ -1320,11 +1326,12 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     final S3HPath s3 = (S3HPath) file;
-                    location = s3.getLocation();
+                    final S3HSession s = (S3HSession) controller.getSession();
+                    location = s.getLocation(s3.getContainerName());
                     if(StringUtils.isBlank(location)) {
                         location = "US"; //Default location US is null
                     }
-                    logging = s3.isLogging();
+                    logging = s.isLogging(s3.getContainerName());
                 }
 
                 @Override
