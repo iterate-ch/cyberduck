@@ -32,7 +32,7 @@ import ch.cyberduck.core.s3.S3Session;
 public class GSPath extends S3Path {
 
     static {
-        PathFactory.addFactory(Protocol.GOOGLESTORAGE, new Factory());
+        PathFactory.addFactory(Protocol.GOOGLESTORAGE_SSL, new Factory());
     }
 
     public static class Factory extends PathFactory<GSSession> {

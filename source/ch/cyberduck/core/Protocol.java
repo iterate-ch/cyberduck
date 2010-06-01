@@ -698,7 +698,7 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol GOOGLESTORAGE = new Protocol() {
+    public static final Protocol GOOGLESTORAGE_SSL = new Protocol() {
         @Override
         public String getName() {
             return "Google Storage";
@@ -802,7 +802,7 @@ public abstract class Protocol {
             enabled.add(GDOCS);
         }
         if(Preferences.instance().getBoolean("protocol.gstorage.enable")) {
-            enabled.add(GOOGLESTORAGE);
+            enabled.add(GOOGLESTORAGE_SSL);
         }
     }
 

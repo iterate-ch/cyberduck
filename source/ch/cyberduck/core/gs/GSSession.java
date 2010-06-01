@@ -39,7 +39,7 @@ import org.jets3t.service.CloudFrontServiceException;
 public class GSSession extends S3Session {
 
     static {
-        SessionFactory.addFactory(Protocol.GOOGLESTORAGE, new Factory());
+        SessionFactory.addFactory(Protocol.GOOGLESTORAGE_SSL, new Factory());
     }
 
     public static class Factory extends SessionFactory {
