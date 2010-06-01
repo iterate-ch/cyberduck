@@ -23,6 +23,7 @@ import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.ethz.ssh2.sftp.SFTPException;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.StatusLine;
@@ -31,13 +32,12 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.S3ServiceException;
 
+import com.enterprisedt.net.ftp.FTPException;
+import com.rackspacecloud.client.cloudfiles.FilesException;
+
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-
-import ch.ethz.ssh2.sftp.SFTPException;
-import com.enterprisedt.net.ftp.FTPException;
-import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * @version $Id:$
@@ -154,6 +154,13 @@ public class ErrorController extends BundleController {
                 if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
                     // S3 protocol message
                     buffer.append(" ").append(s3.getS3ErrorMessage());
+                }
+            }
+            if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
+                final org.jets3t.service.impl.rest.HttpException http = (org.jets3t.service.impl.rest.HttpException) cause;
+                buffer.append(" ").append(http.getResponseCode());
+                if(StringUtils.isNotBlank(http.getResponseMessage())) {
+                    buffer.append(" ").append(http.getResponseMessage());
                 }
             }
             if(cause instanceof CloudFrontServiceException) {
