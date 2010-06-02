@@ -6,6 +6,7 @@ Changelog. Last modified: $Date$
 
 3.5 (Jun-01-2010) [http://trac.cyberduck.ch/milestone/3.5]
 - [Localize] Slovenian Localization
+- [Localize] Romanian Localization
 - [Feature] Google Docs storage support (Google Docs)
 - [Feature] Convert uploads to Google Docs format (Google Docs)
 - [Feature] Download format preferences for documents (Google Docs)
