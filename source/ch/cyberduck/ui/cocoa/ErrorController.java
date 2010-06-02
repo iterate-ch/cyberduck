@@ -149,7 +149,7 @@ public class ErrorController extends BundleController {
                 final S3ServiceException s3 = (S3ServiceException) cause;
                 if(StringUtils.isNotBlank(s3.getResponseStatus())) {
                     // HTTP method status
-                    buffer.append(" ").append(s3.getResponseStatus());
+                    buffer.append(" ").append(s3.getResponseStatus()).append(".");
                 }
                 if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
                     // S3 protocol message
