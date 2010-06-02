@@ -1748,6 +1748,9 @@ ro.lproj/Main.nib/info.nib -text
 ro.lproj/Main.nib/keyedobjects.nib -text
 ro.lproj/Main.strings -text svneol=unset#text/utf-16
 ro.lproj/Mosso.strings -text svneol=unset#text/utf-16
+ro.lproj/Preferences.nib/classes.nib -text
+ro.lproj/Preferences.nib/info.nib -text
+ro.lproj/Preferences.nib/keyedobjects.nib -text
 ro.lproj/Preferences.strings -text svneol=unset#text/utf-16
 ro.lproj/Prompt.nib/classes.nib -text
 ro.lproj/Prompt.nib/info.nib -text
