@@ -223,9 +223,9 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
         this.bandwidthPopup.removeAllItems();
         this.bandwidthPopup.addItemWithTitle("");
-        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth", 16));
+        this.bandwidthPopup.lastItem().setImage(IconCache.iconNamed("bandwidth", 16));
         this.bandwidthPopup.addItemWithTitle(Locale.localizedString("Unlimited Bandwidth", "Transfer"));
-        this.bandwidthPopup.itemAtIndex(new NSInteger(1)).setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
+        this.bandwidthPopup.lastItem().setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
         this.bandwidthPopup.menu().addItem(NSMenuItem.separatorItem());
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
