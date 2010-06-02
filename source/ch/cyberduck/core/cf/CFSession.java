@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -263,7 +264,15 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         return new Distribution();
     }
 
-    public List<Distribution.Method> getSupportedMethods() {
+    public String getDistributionServiceName() {
+        return Locale.localizedString("Limelight Content", "Mosso");
+    }
+
+    public List<Distribution.Method> getSupportedDistributionMethods() {
         return Arrays.asList(Distribution.DOWNLOAD);
+    }
+
+    public List<String> getSupportedStorageClasses() {
+        return Collections.emptyList();
     }
 }
