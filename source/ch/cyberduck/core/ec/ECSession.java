@@ -22,7 +22,8 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
-import org.jets3t.service.CloudFrontServiceException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Elastic Utility Computing Architecture for Linking Your Programs To Useful Systems - is an open-source software
@@ -56,25 +57,25 @@ public class ECSession extends S3Session {
         super.configure();
         configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize("/services/Walrus"));
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
     }
 
-    /**
-     * Amazon CloudFront Extension used to list all configured distributions
-     *
-     * @return All distributions for the given AWS Credentials
-     */
     @Override
-    public org.jets3t.service.model.cloudfront.Distribution[] listDistributions(String bucket, Distribution.Method method) throws CloudFrontServiceException {
-        return new org.jets3t.service.model.cloudfront.Distribution[]{};
+    public List<String> getSupportedStorageClasses() {
+        return Collections.emptyList();
     }
 
+    @Override
+    public List<Distribution.Method> getSupportedDistributionMethods() {
+        return Collections.emptyList();
+    }
 
     /**
      * @return
      */
     @Override
     public Distribution readDistribution(String container, Distribution.Method method) {
-        throw new UnsupportedOperationException();
+        return new Distribution();
     }
 
     /**
@@ -86,7 +87,8 @@ public class ECSession extends S3Session {
      * @param logging
      */
     @Override
-    public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
-        throw new UnsupportedOperationException();
+    public void writeDistribution(final boolean enabled, String container, Distribution.Method method,
+                                  final String[] cnames, boolean logging) {
+        ;
     }
 }
