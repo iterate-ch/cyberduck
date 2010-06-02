@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cf.CFPath;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
@@ -35,7 +34,6 @@ import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
-import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
@@ -253,10 +251,6 @@ public class InfoController extends ToolbarWindowController {
         this.storageClassPopup = b;
         this.storageClassPopup.setAutoenablesItems(false);
         this.storageClassPopup.removeAllItems();
-        this.storageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"));
-        this.storageClassPopup.itemAtIndex(new NSInteger(0)).setRepresentedObject(S3Object.STORAGE_CLASS_STANDARD);
-        this.storageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
-        this.storageClassPopup.itemAtIndex(new NSInteger(1)).setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         this.storageClassPopup.setTarget(this.id());
         this.storageClassPopup.setAction(Foundation.selector("storageClassPopupClicked:"));
     }
@@ -791,6 +785,7 @@ public class InfoController extends ToolbarWindowController {
         this.setFiles(files);
     }
 
+    private static final String TOOLBAR_ITEM_PERMISSIONS = "NSUserAccounts";
     private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
     private static final String TOOLBAR_ITEM_CLOUD = "cloud";
 
@@ -799,11 +794,20 @@ public class InfoController extends ToolbarWindowController {
         final String itemIdentifier = item.itemIdentifier();
         final Session session = controller.getSession();
         final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
+        if(itemIdentifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
+            if(anonymous) {
+                return false;
+            }
+            return true;
+        }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             // Give icon and label of the given session
             item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+            if(anonymous) {
+                return false;
+            }
             if(session instanceof CloudSession) {
-                return !anonymous;
+                return ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
             }
             // Not enabled if not a cloud session
             return false;
@@ -1126,51 +1130,25 @@ public class InfoController extends ToolbarWindowController {
      * @param file
      */
     private void initDistribution(Path file) {
-        final boolean cloud = file instanceof CloudPath;
-
         this.distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
         this.distributionCnameField.cell().setPlaceholderString(Locale.localizedString("Unknown"));
-
         distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
-        distributionUrlField.setEnabled(cloud);
-
         distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
-        distributionStatusField.setEnabled(cloud);
-
-        // Amazon S3 only
-        final boolean amazon = file instanceof S3HPath;
-
         distributionCnameField.setStringValue(Locale.localizedString("Unknown"));
-        distributionCnameField.setEnabled(amazon);
-
-        distributionLoggingButton.setEnabled(cloud);
-
-        String servicename = "";
-        if(amazon) {
-            servicename = Locale.localizedString("Amazon CloudFront", "S3");
-        }
-        // Mosso only
-        final boolean mosso = file instanceof CFPath;
-        if(mosso) {
-            servicename = Locale.localizedString("Limelight Content", "Mosso");
-        }
-        distributionEnableButton.setEnabled(cloud);
-        distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                servicename));
-
-        distributionDeliveryPopup.setEnabled(cloud);
         distributionDeliveryPopup.removeAllItems();
-        if(cloud) {
+        distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        if(this.toggleDistributionSettings(false)) {
             CloudSession session = (CloudSession) controller.getSession();
-            for(Distribution.Method method : session.getSupportedMethods()) {
+            distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                    session.getDistributionServiceName()));
+            distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
+            for(Distribution.Method method : session.getSupportedDistributionMethods()) {
                 distributionDeliveryPopup.addItemWithTitle(method.toString());
                 distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
             }
             distributionDeliveryPopup.selectItemWithTitle(Distribution.DOWNLOAD.toString());
-        }
 
-        if(cloud) {
-            distributionStatusButtonClicked(null);
+            this.distributionStatusButtonClicked(null);
         }
     }
 
@@ -1290,6 +1268,10 @@ public class InfoController extends ToolbarWindowController {
             bucketLoggingButton.setToolTip(
                     s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
             if(file.attributes.isFile()) {
+                for(String redundancy : ((CloudSession) controller.getSession()).getSupportedStorageClasses()) {
+                    storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
+                    storageClassPopup.lastItem().setRepresentedObject(redundancy);
+                }
                 final String redundancy = s3.attributes.getStorageClass();
                 if(StringUtils.isNotEmpty(redundancy)) {
                     storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
@@ -1328,9 +1310,6 @@ public class InfoController extends ToolbarWindowController {
                     final S3HPath s3 = (S3HPath) file;
                     final S3HSession s = (S3HSession) controller.getSession();
                     location = s.getLocation(s3.getContainerName());
-                    if(StringUtils.isBlank(location)) {
-                        location = "US"; //Default location US is null
-                    }
                     logging = s.isLogging(s3.getContainerName());
                 }
 
@@ -1537,7 +1516,8 @@ public class InfoController extends ToolbarWindowController {
      * @return True if controls are enabled for the given protocol in idle state
      */
     private boolean togglePermissionSettings(boolean stop) {
-        boolean enable = true;
+        final Credentials credentials = controller.getSession().getHost().getCredentials();
+        boolean enable =  !credentials.isAnonymousLogin();
         boolean cloud = false;
         for(Path next : files) {
             if(!next.isWritePermissionsSupported()) {
@@ -1547,7 +1527,7 @@ public class InfoController extends ToolbarWindowController {
                 cloud = true;
             }
         }
-        recursiveCheckbox.setEnabled(stop);
+        recursiveCheckbox.setEnabled(stop && enable);
         for(Path next : files) {
             if(next.attributes.isFile()) {
                 recursiveCheckbox.setState(NSCell.NSOffState);
@@ -1555,20 +1535,20 @@ public class InfoController extends ToolbarWindowController {
                 break;
             }
         }
-        octalField.setEnabled(stop);
-        ownerr.setEnabled(stop);
-        ownerw.setEnabled(stop);
-        ownerx.setEnabled(stop);
-        groupr.setEnabled(!cloud && stop);
-        groupw.setEnabled(!cloud && stop);
-        groupx.setEnabled(!cloud && stop);
-        otherr.setEnabled(stop);
-        otherw.setEnabled(stop);
-        otherx.setEnabled(stop);
+        octalField.setEnabled(stop && enable);
+        ownerr.setEnabled(stop && enable);
+        ownerw.setEnabled(stop && enable);
+        ownerx.setEnabled(stop && enable);
+        groupr.setEnabled(!cloud && stop && enable);
+        groupw.setEnabled(!cloud && stop && enable);
+        groupx.setEnabled(!cloud && stop && enable);
+        otherr.setEnabled(stop && enable);
+        otherw.setEnabled(stop && enable);
+        otherx.setEnabled(stop && enable);
         if(stop) {
             permissionProgress.stopAnimation(null);
         }
-        else {
+        else if(enable) {
             permissionProgress.startAnimation(null);
         }
         return enable;
@@ -1581,17 +1561,28 @@ public class InfoController extends ToolbarWindowController {
      * @return True if controls are enabled for the given protocol in idle state
      */
     private boolean toggleDistributionSettings(boolean stop) {
-        distributionEnableButton.setEnabled(stop);
-        distributionLoggingButton.setEnabled(stop);
-        distributionCnameField.setEnabled(stop);
-        distributionDeliveryPopup.setEnabled(stop);
+        // Not all cloud providers support different distributions
+        boolean enable = false;
+        if(controller.getSession() instanceof CloudSession) {
+            final Credentials credentials = controller.getSession().getHost().getCredentials();
+            enable = enable && !credentials.isAnonymousLogin();
+            enable = enable && ((CloudSession) controller.getSession()).getSupportedDistributionMethods().size() > 0;
+        }
+        distributionEnableButton.setEnabled(stop && enable);
+        distributionLoggingButton.setEnabled(stop && enable);
+        distributionCnameField.setEnabled(stop && enable);
+        for(Path file : files) {
+            // Amazon S3 only
+            distributionCnameField.setEnabled(stop && enable && file instanceof S3HPath);
+        }
+        distributionDeliveryPopup.setEnabled(stop && enable);
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
-        else {
+        else if(enable) {
             distributionProgress.startAnimation(null);
         }
-        return true;
+        return enable;
     }
 
     @Action
