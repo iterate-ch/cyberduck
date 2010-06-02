@@ -92,7 +92,7 @@ public class S3Session extends S3HSession implements SSLSession {
     protected List<S3Bucket> getBuckets(boolean reload) throws IOException, S3ServiceException {
         if(!host.getCredentials().isAnonymousLogin()) {
             // List all operation
-            this.getTrustManager().setHostname(Protocol.S3.getDefaultHostname());
+            this.getTrustManager().setHostname(host.getProtocol().getDefaultHostname());
         }
         return super.getBuckets(reload);
     }
