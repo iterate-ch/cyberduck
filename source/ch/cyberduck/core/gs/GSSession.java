@@ -24,9 +24,14 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cloud.Distribution;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
-import org.jets3t.service.CloudFrontServiceException;
+import org.jets3t.service.model.S3Object;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -53,19 +58,21 @@ public class GSSession extends S3Session {
         super(h);
     }
 
-    /**
-     * Not supported
-     *
-     * @param bucket Name of the container
-     * @param method
-     * @return
-     * @throws CloudFrontServiceException
-     */
     @Override
-    public org.jets3t.service.model.cloudfront.Distribution[] listDistributions(String bucket, Distribution.Method method) throws CloudFrontServiceException {
-        return new org.jets3t.service.model.cloudfront.Distribution[]{};
+    protected void configure() {
+        super.configure();
+        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
     }
 
+    @Override
+    public List<String> getSupportedStorageClasses() {
+        return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD);
+    }
+
+    @Override
+    public List<Distribution.Method> getSupportedDistributionMethods() {
+        return Collections.emptyList();
+    }
 
     /**
      * Not supported
@@ -77,7 +84,7 @@ public class GSSession extends S3Session {
      */
     @Override
     public Distribution readDistribution(String container, Distribution.Method method) {
-        throw new UnsupportedOperationException();
+        return new Distribution();
     }
 
     /**
@@ -91,7 +98,48 @@ public class GSSession extends S3Session {
      * @throws UnsupportedOperationException
      */
     @Override
-    public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
-        throw new UnsupportedOperationException();
+    public void writeDistribution(final boolean enabled, String container, Distribution.Method method,
+                                  final String[] cnames, boolean logging) {
+        ;
+    }
+
+    @Override
+    public boolean isLogging(String container) {
+        return false;
+    }
+
+    @Override
+    public void setLogging(String container, boolean enabled) {
+        ;
+    }
+
+    @Override
+    public String getLocation(String container) {
+        return Locale.localizedString("US", "S3");
+    }
+
+    @Override
+    public boolean isVersioning(String container) {
+        return false;
+    }
+
+    @Override
+    public void setVersioning(String container, boolean enabled, String multiFactorSerialNumber, String multiFactorAuthCode) {
+        ;
+    }
+
+    @Override
+    public boolean isMultiFactorAuthentication(String container) {
+        return false;
+    }
+
+    @Override
+    public void setRequesterPays(String container, boolean enabled) {
+        ;
+    }
+
+    @Override
+    public boolean isRequesterPays(String container) {
+        return false;
     }
 }

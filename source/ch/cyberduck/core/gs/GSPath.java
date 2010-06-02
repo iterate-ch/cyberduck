@@ -74,7 +74,12 @@ public class GSPath extends S3Path {
     }
 
     @Override
-    public String toHttpURL() {
+    public String createSignedUrl() {
         return "https://sandbox.google.com/storage" + this.getAbsolute();
+    }
+
+    @Override
+    public String createTorrentUrl() {
+        return null;
     }
 }
