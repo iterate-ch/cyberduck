@@ -756,12 +756,12 @@ public abstract class Protocol {
 
         @Override
         public String getUsernamePlaceholder() {
-            return Locale.localizedString("Google Account Email", "S3");
+            return Locale.localizedString("Access Key", "S3");
         }
 
         @Override
         public String getPasswordPlaceholder() {
-            return Locale.localizedString("Google Account Password", "S3");
+            return Locale.localizedString("Secret", "S3");
         }
     };
 
