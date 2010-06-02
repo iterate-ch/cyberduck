@@ -39,8 +39,16 @@ public interface CloudSession {
     public abstract Distribution readDistribution(String container, Distribution.Method method);
 
     /**
-     *
      * @return The supported protocols
      */
-    public abstract List<Distribution.Method> getSupportedMethods();
+    public abstract List<Distribution.Method> getSupportedDistributionMethods();
+
+    /**
+     * Marketing name for the distribution service
+     *
+     * @return Localized description
+     */
+    public abstract String getDistributionServiceName();
+
+    public abstract List<String> getSupportedStorageClasses();
 }

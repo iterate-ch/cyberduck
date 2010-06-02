@@ -553,7 +553,7 @@ public class S3HPath extends CloudPath {
             if(this.isRoot()) {
                 // List all buckets
                 for(S3Bucket bucket : this.getSession().getBuckets(true)) {
-                    S3HPath p = new S3HPath(this.getSession(), this.getAbsolute(), bucket.getName(),
+                    Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     if(null != bucket.getOwner()) {
                         p.attributes.setOwner(bucket.getOwner().getDisplayName());
@@ -595,7 +595,7 @@ public class S3HPath extends CloudPath {
 
                     final S3Object[] objects = chunk.getObjects();
                     for(S3Object object : objects) {
-                        final S3HPath path = new S3HPath(this.getSession(), bucket.getName(), object.getKey(), Path.FILE_TYPE);
+                        final S3HPath path = (S3HPath) PathFactory.createPath(this.getSession(), bucket.getName(), object.getKey(), Path.FILE_TYPE);
                         path.setParent(this);
                         if(path.getAbsolute().equals(this.getAbsolute())) {
                             // #Workaround for key that end with /. Refer to #3347.
@@ -624,7 +624,7 @@ public class S3HPath extends CloudPath {
                             log.warn("Skipping prefix " + common);
                             continue;
                         }
-                        final S3HPath p = new S3HPath(this.getSession(), bucket.getName(), common, Path.DIRECTORY_TYPE);
+                        final Path p = PathFactory.createPath(this.getSession(), bucket.getName(), common, Path.DIRECTORY_TYPE);
                         p.setParent(this);
                         if(childs.contains(p)) {
                             continue;
@@ -723,15 +723,19 @@ public class S3HPath extends CloudPath {
                             org.jets3t.service.acl.Permission.PERMISSION_READ);
                 }
                 if(perm.getOwnerPermissions()[Permission.WRITE]) {
+                    // Google Storage does not allow WRITE permission to objects because
+                    // bucket ACLs control who can upload, overwrite, and delete objects
                     acl.grantPermission(ownerGrantee,
-                            org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                            org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL);
                 }
                 acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
                 if(perm.getOtherPermissions()[Permission.READ]) {
-                    acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
+                    acl.grantPermission(GroupGrantee.ALL_USERS,
+                            org.jets3t.service.acl.Permission.PERMISSION_READ);
                 }
                 if(perm.getOtherPermissions()[Permission.WRITE]) {
-                    acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                    acl.grantPermission(GroupGrantee.ALL_USERS,
+                            org.jets3t.service.acl.Permission.PERMISSION_WRITE);
                 }
                 if(this.isContainer()) {
                     this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
@@ -922,6 +926,10 @@ public class S3HPath extends CloudPath {
      */
     public String createSignedUrl() {
         try {
+            if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
+                log.info("Anonymous cannot create signed URL");
+                return null;
+            }
             this.getSession().check();
             // Determine expiry time for URL
             int secondsFromNow = Preferences.instance().getInteger("s3.url.expire.seconds");

@@ -192,6 +192,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
             if(host.getCredentials().isAnonymousLogin()) {
+                log.info("Anonymous cannot list buckets");
                 // Listing buckets not supported for thirdparty buckets
                 String bucketname = this.getBucketForHostname(host.getHostname());
                 if(null == bucketname) {
@@ -224,7 +225,6 @@ public class S3HSession extends HTTPSession implements CloudSession {
     }
 
     /**
-     *
      * @param bucketname
      * @return
      * @throws IOException
@@ -254,8 +254,16 @@ public class S3HSession extends HTTPSession implements CloudSession {
             if(bucket.isLocationKnown()) {
                 return bucket.getLocation();
             }
+            if(this.getHost().getCredentials().isAnonymousLogin()) {
+                log.info("Anonymous cannot access bucket location");
+                return null;
+            }
             this.check();
-            return this.getClient().getBucketLocation(bucket.getName());
+            final String location = this.getClient().getBucketLocation(bucket.getName());
+            if(StringUtils.isBlank(location)) {
+                return "US"; //Default location US is null
+            }
+            return location;
         }
         catch(S3ServiceException e) {
             this.error("Cannot read file attributes", e);
@@ -542,6 +550,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     public Distribution readDistribution(String container, Distribution.Method method) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot read distribution");
             return new Distribution();
         }
         try {
@@ -581,6 +590,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot write distribution");
             return;
         }
         try {
@@ -614,8 +624,16 @@ public class S3HSession extends HTTPSession implements CloudSession {
         }
     }
 
-    public List<Distribution.Method> getSupportedMethods() {
+    public String getDistributionServiceName() {
+        return Locale.localizedString("Amazon CloudFront", "S3");
+    }
+
+    public List<Distribution.Method> getSupportedDistributionMethods() {
         return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
+    }
+
+    public List<String> getSupportedStorageClasses() {
+        return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
     }
 
     /**
@@ -624,6 +642,10 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     public boolean isLogging(final String container) {
         try {
+            if(this.getHost().getCredentials().isAnonymousLogin()) {
+                log.info("Anonymous cannot access logging status");
+                return false;
+            }
             this.check();
 
             final S3BucketLoggingStatus status
