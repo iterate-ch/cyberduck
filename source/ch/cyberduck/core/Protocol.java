@@ -801,7 +801,7 @@ public abstract class Protocol {
         if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
             enabled.add(GDOCS);
         }
-        if(Preferences.instance().getBoolean("protocol.gstorage.enable")) {
+        if(Preferences.instance().getBoolean("protocol.gstorage.tls.enable")) {
             enabled.add(GOOGLESTORAGE_SSL);
         }
     }
