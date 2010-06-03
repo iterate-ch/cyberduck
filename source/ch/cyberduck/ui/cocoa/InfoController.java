@@ -790,8 +790,41 @@ public class InfoController extends ToolbarWindowController {
     private static final String TOOLBAR_ITEM_CLOUD = "cloud";
 
     @Override
+    protected void setSelectedTab(int tab) {
+        final String item = tabView.tabViewItemAtIndex(tab).identifier();
+        if(this.validateTabWithIdentifier(item)) {
+            super.setSelectedTab(tab);
+        }
+        else {
+            super.setSelectedTab(-1);
+        }
+    }
+
+    @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String itemIdentifier = item.itemIdentifier();
+        final Session session = controller.getSession();
+        if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
+            // Give icon and label of the given session
+            item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+        }
+        if(itemIdentifier.equals(TOOLBAR_ITEM_CLOUD)) {
+            if(session instanceof CloudSession) {
+                // Give icon and label of the given session
+                item.setLabel(session.getHost().getProtocol().getName());
+                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+            }
+            else {
+                // Fallback to disabled default cloud provider
+                item.setLabel(Protocol.S3.getName());
+                item.setImage(IconCache.iconNamed(Protocol.S3.disk(), 32));
+            }
+        }
+        return super.validateToolbarItem(item);
+    }
+
+    @Override
+    protected boolean validateTabWithIdentifier(String itemIdentifier) {
         final Session session = controller.getSession();
         final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
         if(itemIdentifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
@@ -801,8 +834,6 @@ public class InfoController extends ToolbarWindowController {
             return true;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            // Give icon and label of the given session
-            item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
             if(anonymous) {
                 return false;
             }
@@ -814,20 +845,12 @@ public class InfoController extends ToolbarWindowController {
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_CLOUD)) {
             if(session instanceof CloudSession) {
-                // Give icon and label of the given session
-                item.setLabel(session.getHost().getProtocol().getName());
-                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
                 return !anonymous;
-            }
-            else {
-                // Fallback to disabled default cloud provider
-                item.setLabel(Protocol.S3.getName());
-                item.setImage(IconCache.iconNamed(Protocol.S3.disk(), 32));
             }
             // Not enabled if not a cloud session
             return false;
         }
-        return super.validateToolbarItem(item);
+        return true;
     }
 
     @Override
@@ -1517,7 +1540,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean togglePermissionSettings(boolean stop) {
         final Credentials credentials = controller.getSession().getHost().getCredentials();
-        boolean enable =  !credentials.isAnonymousLogin();
+        boolean enable = !credentials.isAnonymousLogin();
         boolean cloud = false;
         for(Path next : files) {
             if(!next.isWritePermissionsSupported()) {
@@ -1562,12 +1585,13 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleDistributionSettings(boolean stop) {
         // Not all cloud providers support different distributions
-        boolean enable = false;
-        if(controller.getSession() instanceof CloudSession) {
-            final Credentials credentials = controller.getSession().getHost().getCredentials();
-            enable = enable && !credentials.isAnonymousLogin();
-            enable = enable && ((CloudSession) controller.getSession()).getSupportedDistributionMethods().size() > 0;
+        boolean enable = controller.getSession() instanceof CloudSession;
+        final Credentials credentials = controller.getSession().getHost().getCredentials();
+        enable = enable && !credentials.isAnonymousLogin();
+        if(enable) {
+            enable = ((CloudSession) controller.getSession()).getSupportedDistributionMethods().size() > 0;
         }
+
         distributionEnableButton.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);

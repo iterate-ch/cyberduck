@@ -22,14 +22,15 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +44,7 @@ import java.util.Map;
 public abstract class ToolbarWindowController extends WindowController implements NSToolbar.Delegate, NSTabView.Delegate {
     private static Logger log = Logger.getLogger(ToolbarWindowController.class);
 
-    private NSTabView tabView;
+    protected NSTabView tabView;
 
     @Override
     public void windowDidBecomeKey(NSNotification notification) {
@@ -64,12 +65,17 @@ public abstract class ToolbarWindowController extends WindowController implement
         this.window().setToolbar(this.createToolbar());
 
         // Change selection to last selected item in preferences
-        this.setSelected(Preferences.instance().getInteger(this.getToolbarName() + ".selected"));
+        this.setSelectedTab(Preferences.instance().getInteger(this.getToolbarName() + ".selected"));
 
         super.awakeFromNib();
     }
 
-    private void setSelected(int tab) {
+    /**
+     * Change the toolbar selection and display the tab index.
+     *
+     * @param tab The index of the tab to be selected
+     */
+    protected void setSelectedTab(int tab) {
         if(-1 == tab) {
             tab = 0;
         }
@@ -81,6 +87,9 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbar.setSelectedItemIdentifier(page.identifier());
     }
 
+    /**
+     * @return The item identifier of the tab selected.
+     */
     protected String getSelectedTab() {
         return toolbar.selectedItemIdentifier();
     }
@@ -104,7 +113,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setMaxSize(new NSSize(this.getMaxWindowWidth(), this.getMaxWindowHeight()));
     }
 
-    private NSToolbar toolbar;
+    protected NSToolbar toolbar;
 
     private NSMutableArray items = NSMutableArray.array();
 
@@ -182,6 +191,10 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     public boolean validateToolbarItem(final NSToolbarItem item) {
+        return this.validateTabWithIdentifier(item.itemIdentifier());
+    }
+
+    protected boolean validateTabWithIdentifier(String itemIdentifier) {
         return true;
     }
 
