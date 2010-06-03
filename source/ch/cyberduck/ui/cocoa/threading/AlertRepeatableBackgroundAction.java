@@ -64,6 +64,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
             // Display alert if the action was not canceled intentionally
             this.alert();
         }
+        this.reset();
     }
 
     /**
@@ -215,7 +216,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                             }
                             workdir.invalidate();
                         }
-                        exceptions.clear();
+                        AlertRepeatableBackgroundAction.this.reset();
                         // Re-run the action with the previous lock used
                         controller.background(AlertRepeatableBackgroundAction.this);
                     }

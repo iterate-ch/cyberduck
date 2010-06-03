@@ -42,8 +42,8 @@ import java.util.concurrent.CyclicBarrier;
  */
 public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction implements ErrorListener, TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
-    private static final String lineSeparator = System.getProperty ("line.separator");
-    
+    private static final String lineSeparator = System.getProperty("line.separator");
+
     /**
      * Contains all exceptions thrown while this action was running
      */
@@ -154,6 +154,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return 0;
     }
 
+    protected void reset() {
+        failed = false;
+        exceptions.clear();
+    }
+
     /**
      * @return True if the the action had a permanent failures. Returns false if
      *         there were only temporary exceptions and the action suceeded upon retry
@@ -171,13 +176,12 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             this.pause();
             if(!this.isCanceled()) {
                 repeatCount++;
-                // Reset the failure status
+                // Reset the failure status but remember the previous exception for automatic retry.
                 failed = false;
                 // Re-run the action with the previous lock used
                 this.run();
             }
         }
-
         final Session session = this.getSession();
         if(session != null) {
             // It is important _not_ to do this in #cleanup as otherwise
@@ -186,7 +190,6 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             session.removeTranscriptListener(this);
             session.removeErrorListener(this);
         }
-
         super.finish();
     }
 
