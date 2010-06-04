@@ -1609,7 +1609,6 @@ pt_BR.lproj/Prompt.nib/keyedobjects.nib -text
 pt_BR.lproj/Prompt.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Queue.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/S3.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/Security.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Status.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Transfer.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Alert.nib/classes.nib -text
