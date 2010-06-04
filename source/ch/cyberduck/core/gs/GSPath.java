@@ -73,11 +73,26 @@ public class GSPath extends S3Path {
         super(s, dict);
     }
 
+    /**
+     * This creates an URL that uses Cookie-based Authentication. The ACLs for the given Google user account
+     * has to be setup first before.
+     * <p/>
+     * Google Storage lets you provide browser-based authenticated downloads to users who do not have
+     * Google Storage accounts. To do this, you apply Google account-based ACLs to the object and then
+     * you provide users with a URL that is scoped to the object.
+     *
+     * @return
+     */
     @Override
     public String createSignedUrl() {
         return "https://sandbox.google.com/storage" + this.getAbsolute();
     }
 
+    /**
+     * Torrent links are not supported.
+     *
+     * @return Always null.
+     */
     @Override
     public String createTorrentUrl() {
         return null;
