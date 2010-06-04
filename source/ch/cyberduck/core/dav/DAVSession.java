@@ -80,7 +80,7 @@ public class DAVSession extends HTTPSession {
                 "http.useragent", this.getUserAgent()
         );
         final Proxy proxy = ProxyFactory.instance();
-        if(proxy.isHTTPProxyEnabled()) {
+        if(proxy.isHTTPProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
             this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
             //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
         }

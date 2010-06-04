@@ -55,13 +55,13 @@ public class DAVSSession extends DAVSession implements SSLSession {
                 new org.apache.commons.httpclient.protocol.Protocol("https",
                         (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort()));
         final Proxy proxy = ProxyFactory.instance();
-        if(proxy.isHTTPSProxyEnabled()) {
+        if(proxy.isHTTPSProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
             this.getClient().setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
             //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
         }
         else {
             this.getClient().setProxy(null, -1);
-            //this.DAV.setProxyCredentials(null);
+            this.getClient().setProxyCredentials(null);
         }
     }
 
