@@ -1380,7 +1380,6 @@ lv.lproj/Prompt.nib/info.nib -text
 lv.lproj/Prompt.nib/keyedobjects.nib -text
 lv.lproj/Prompt.strings -text svneol=unset#text/utf-16
 lv.lproj/S3.strings -text svneol=unset#text/utf-16
-lv.lproj/Security.strings -text svneol=unset#text/utf-16
 lv.lproj/Status.strings -text svneol=unset#text/utf-16
 lv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 nl.lproj/Alert.nib/classes.nib -text

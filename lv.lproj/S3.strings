@@ -23,4 +23,4 @@
 
 /* Storage class */
 "STANDARD" = "Pastāvīgā Amazon S3 glabātuve";
-"REDUCED_REDUNDANCY" = "Samazinātā dublēšanas glabātuve (RRS)";
+"REDUCED_REDUNDANCY" = "Samazināta līdzīgo datu glabātuve (RRS)";
