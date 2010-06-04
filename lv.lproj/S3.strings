@@ -15,16 +15,12 @@
 "EU" = "EU (Īrija)";
 "US" = "ASV standarts";
 "us-west-1" = "ASV-Rietumu (Ziemeļ Kalifornija)";
-"ap-southeast-1" = "Asia Pacific (Singapore)";
+"ap-southeast-1" = "Āzija un Klusais okeāns (Singapore)";
 
 /* Delivery methods including streaming protocols. */ 
-"Download (HTTP)" = "Download (HTTP)";
-"Streaming (RTMP)" = "Streaming (RTMP)";
+"Download (HTTP)" = "Lejuplāde (HTTP)";
+"Streaming (RTMP)" = "Straumēšana (RTMP)";
 
 /* Storage class */
-"STANDARD" = "Regular Amazon S3 Storage";
-"REDUCED_REDUNDANCY" = "Reduced Redundancy Storage (RRS)";
-
-/* Google Login Credentials */
-"Google Account Email" = "Google Account Email";
-"Google Account Password" = "Google Account Password";
+"STANDARD" = "Pastāvīgā Amazon S3 glabātuve";
+"REDUCED_REDUNDANCY" = "Samazinātā dublēšanas glabātuve (RRS)";
