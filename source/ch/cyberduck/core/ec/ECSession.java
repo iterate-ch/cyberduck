@@ -70,6 +70,31 @@ public class ECSession extends S3Session {
         return Collections.emptyList();
     }
 
+    @Override
+    public boolean isLoggingSupported() {
+        return false;
+    }
+
+    @Override
+    public String getLocation(String container) {
+        return null;
+    }
+
+    @Override
+    public boolean isVersioning(String container) {
+        return false;
+    }
+
+    @Override
+    public boolean isMultiFactorAuthentication(String container) {
+        return false;
+    }
+
+    @Override
+    public boolean isRequesterPays(String container) {
+        return false;
+    }
+
     /**
      * @return
      */
