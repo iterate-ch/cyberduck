@@ -1272,7 +1272,7 @@ public class InfoController extends ToolbarWindowController {
      *
      * @param stop Enable controls and stop progress spinner
      */
-    private boolean toggleS3Settings(boolean stop) {
+    private boolean toggleS3Settings(final boolean stop) {
         // Amazon S3 only
         boolean enable = true;
         for(Path file : files) {
@@ -1383,7 +1383,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleMetadataSettings(boolean stop) {
+    private boolean toggleMetadataSettings(final boolean stop) {
         boolean enable = true;
         for(Path file : files) {
             final Credentials credentials = file.getHost().getCredentials();
@@ -1567,13 +1567,13 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if controls are enabled for the given protocol in idle state
      */
-    private boolean togglePermissionSettings(boolean stop) {
+    private boolean togglePermissionSettings(final boolean stop) {
         final Credentials credentials = controller.getSession().getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin();
         boolean cloud = false;
         for(Path next : files) {
             if(!next.isWritePermissionsSupported()) {
-                stop = false;
+                enable = false;
             }
             if(next instanceof CloudPath) {
                 cloud = true;
@@ -1612,7 +1612,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if controls are enabled for the given protocol in idle state
      */
-    private boolean toggleDistributionSettings(boolean stop) {
+    private boolean toggleDistributionSettings(final boolean stop) {
         // Not all cloud providers support different distributions
         boolean enable = controller.getSession() instanceof CloudSession;
         final Credentials credentials = controller.getSession().getHost().getCredentials();
@@ -1807,7 +1807,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return
      */
-    private boolean toggleSizeSettings(boolean stop) {
+    private boolean toggleSizeSettings(final boolean stop) {
         sizeButton.setEnabled(false);
         for(Path next : files) {
             if(next.attributes.isDirectory()) {
