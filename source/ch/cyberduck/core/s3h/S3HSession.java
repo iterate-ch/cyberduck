@@ -637,6 +637,13 @@ public class S3HSession extends HTTPSession implements CloudSession {
     }
 
     /**
+     * @return True if the service supports bucket logging.
+     */
+    public boolean isLoggingSupported() {
+        return true;
+    }
+
+    /**
      * @param container The bucket name
      * @return True if the bucket logging status is enabled.
      */

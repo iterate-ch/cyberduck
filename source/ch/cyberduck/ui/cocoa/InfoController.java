@@ -1280,8 +1280,13 @@ public class InfoController extends ToolbarWindowController {
             enable = enable && !credentials.isAnonymousLogin();
             enable = enable && file instanceof S3HPath;
         }
-        bucketLoggingButton.setEnabled(stop && enable);
+        boolean logging = true;
+        if(enable) {
+            S3HSession s = (S3HSession) controller.getSession();
+            logging = s.isLoggingSupported();
+        }
         for(Path file : files) {
+            bucketLoggingButton.setEnabled(stop && enable && logging);
             storageClassPopup.setEnabled(stop && enable && file.attributes.isFile());
         }
         if(stop) {
