@@ -271,6 +271,12 @@ public class InfoController extends ToolbarWindowController {
                 public void cleanup() {
                     toggleS3Settings(true);
                 }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                            files.get(0).getName());
+                }
             });
         }
     }
@@ -298,6 +304,12 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleS3Settings(true);
+                }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                            files.get(0).getName());
                 }
             });
         }
@@ -1117,6 +1129,12 @@ public class InfoController extends ToolbarWindowController {
                     }
                     togglePermissionSettings(true);
                 }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
+                            files.get(0).getName());
+                }
             });
         }
     }
@@ -1343,6 +1361,12 @@ public class InfoController extends ToolbarWindowController {
                         bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                     }
                     toggleS3Settings(true);
+                }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                            files.get(0).getName());
                 }
             });
         }
@@ -1640,6 +1664,12 @@ public class InfoController extends ToolbarWindowController {
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                            files.get(0).getName());
+                }
             });
         }
     }
@@ -1711,6 +1741,12 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     toggleDistributionSettings(true);
+                }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                            files.get(0).getName());
                 }
             });
         }
