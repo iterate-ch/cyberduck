@@ -1588,15 +1588,15 @@ public class InfoController extends ToolbarWindowController {
             }
         }
         octalField.setEnabled(stop && enable);
-        ownerr.setEnabled(stop && enable);
-        ownerw.setEnabled(stop && enable);
-        ownerx.setEnabled(stop && enable);
+        ownerr.setEnabled(!cloud && stop && enable);
+        ownerw.setEnabled(!cloud && stop && enable);
+        ownerx.setEnabled(!cloud && stop && enable);
         groupr.setEnabled(!cloud && stop && enable);
         groupw.setEnabled(!cloud && stop && enable);
         groupx.setEnabled(!cloud && stop && enable);
         otherr.setEnabled(stop && enable);
         otherw.setEnabled(stop && enable);
-        otherx.setEnabled(stop && enable);
+        otherx.setEnabled(!cloud && stop && enable);
         if(stop) {
             permissionProgress.stopAnimation(null);
         }
