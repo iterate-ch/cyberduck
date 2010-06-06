@@ -400,6 +400,9 @@ public class S3HPath extends CloudPath {
                         || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
                     p[Permission.OTHER][Permission.WRITE] = true;
                 }
+                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    p[Permission.OTHER][Permission.EXECUTE] = true;
+                }
             }
             final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
             if(null != owner) {
@@ -411,6 +414,9 @@ public class S3HPath extends CloudPath {
                     if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)
                             || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
                         p[Permission.OWNER][Permission.WRITE] = true;
+                    }
+                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                        p[Permission.OWNER][Permission.EXECUTE] = true;
                     }
                 }
             }
@@ -716,27 +722,7 @@ public class S3HPath extends CloudPath {
                 acl = this.getSession().getClient().getObjectAcl(bucket, this.getKey());
             }
             if(acl != null) {
-                final CanonicalGrantee ownerGrantee = new CanonicalGrantee(acl.getOwner().getId());
-                acl.revokeAllPermissions(ownerGrantee);
-                if(perm.getOwnerPermissions()[Permission.READ]) {
-                    acl.grantPermission(ownerGrantee,
-                            org.jets3t.service.acl.Permission.PERMISSION_READ);
-                }
-                if(perm.getOwnerPermissions()[Permission.WRITE]) {
-                    // Google Storage does not allow WRITE permission to objects because
-                    // bucket ACLs control who can upload, overwrite, and delete objects
-                    acl.grantPermission(ownerGrantee,
-                            org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL);
-                }
-                acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
-                if(perm.getOtherPermissions()[Permission.READ]) {
-                    acl.grantPermission(GroupGrantee.ALL_USERS,
-                            org.jets3t.service.acl.Permission.PERMISSION_READ);
-                }
-                if(perm.getOtherPermissions()[Permission.WRITE]) {
-                    acl.grantPermission(GroupGrantee.ALL_USERS,
-                            org.jets3t.service.acl.Permission.PERMISSION_WRITE);
-                }
+                this.updateAccessControlList(perm, acl);
                 if(this.isContainer()) {
                     this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
                 }
@@ -761,6 +747,28 @@ public class S3HPath extends CloudPath {
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
+        }
+    }
+
+    protected void updateAccessControlList(Permission perm, AccessControlList acl) {
+        final CanonicalGrantee owner = new CanonicalGrantee(acl.getOwner().getId());
+        acl.revokeAllPermissions(owner);
+        if(perm.getOwnerPermissions()[Permission.READ]) {
+            acl.grantPermission(owner,
+                    org.jets3t.service.acl.Permission.PERMISSION_READ);
+        }
+        if(perm.getOwnerPermissions()[Permission.WRITE]) {
+            acl.grantPermission(owner,
+                    org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+        }
+        acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
+        if(perm.getOtherPermissions()[Permission.READ]) {
+            acl.grantPermission(GroupGrantee.ALL_USERS,
+                    org.jets3t.service.acl.Permission.PERMISSION_READ);
+        }
+        if(perm.getOtherPermissions()[Permission.WRITE]) {
+            acl.grantPermission(GroupGrantee.ALL_USERS,
+                    org.jets3t.service.acl.Permission.PERMISSION_WRITE);
         }
     }
 

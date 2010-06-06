@@ -19,12 +19,12 @@ package ch.cyberduck.core.gs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
+
+import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.GroupGrantee;
 
 /**
  * @version $Id$
@@ -96,5 +96,45 @@ public class GSPath extends S3Path {
     @Override
     public String createTorrentUrl() {
         return null;
+    }
+
+    /**
+     * Google Storage lets you assign the following permissions:
+     * READ
+     * When applied to an object, this permission lets a user download an object. When applied to
+     * a bucket, this permission lets a user list a bucket's contents.
+     * WRITE
+     * When applied to a bucket, this permission lets a user create objects, overwrite
+     * objects, and delete objects in a bucket. This permission also lets a user list the
+     * contents of a bucket. You cannot apply this permission to objects because bucket ACLs
+     * control who can upload, overwrite, and delete objects. Also, you must grant READ permission
+     * if you grant WRITE permission.
+     * FULL_CONTROL
+     * When applied to a bucket, this permission gives a user READ and WRITE permissions on the
+     * bucket. It also lets a user read and write bucket ACLs. When applied to an object, this
+     * permission gives a user READ permission on the object. It also lets a user read and
+     * write object ACLs.
+     * <p/>
+     * Note: You cannot grant discrete permissions for reading or writing ACLs. To let
+     * someone read and write ACLs you must grant them FULL_CONTROL permission.
+     *
+     * @param perm
+     * @param acl
+     */
+    @Override
+    protected void updateAccessControlList(Permission perm, AccessControlList acl) {
+        acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
+        if(perm.getOtherPermissions()[Permission.READ]) {
+            acl.grantPermission(GroupGrantee.ALL_USERS,
+                    org.jets3t.service.acl.Permission.PERMISSION_READ);
+        }
+        if(perm.getOtherPermissions()[Permission.WRITE]) {
+            if(this.isContainer()) {
+                acl.grantPermission(GroupGrantee.ALL_USERS,
+                        org.jets3t.service.acl.Permission.PERMISSION_READ);
+                acl.grantPermission(GroupGrantee.ALL_USERS,
+                        org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+            }
+        }
     }
 }
