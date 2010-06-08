@@ -4,7 +4,7 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-3.5 (Jun-01-2010) [http://trac.cyberduck.ch/milestone/3.5]
+3.5 (Jun-09-2010) [http://trac.cyberduck.ch/milestone/3.5]
 - [Localize] Slovenian Localization
 - [Localize] Romanian Localization
 - [Feature] Google Docs storage support (Google Docs)
