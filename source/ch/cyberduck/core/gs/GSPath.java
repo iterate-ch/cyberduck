@@ -118,22 +118,19 @@ public class GSPath extends S3Path {
      * Note: You cannot grant discrete permissions for reading or writing ACLs. To let
      * someone read and write ACLs you must grant them FULL_CONTROL permission.
      *
-     * @param perm
-     * @param acl
+     * @param perm The permissions to apply
+     * @param acl  The ACL to update
      */
     @Override
     protected void updateAccessControlList(Permission perm, AccessControlList acl) {
         acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
         if(perm.getOtherPermissions()[Permission.READ]) {
-            acl.grantPermission(GroupGrantee.ALL_USERS,
-                    org.jets3t.service.acl.Permission.PERMISSION_READ);
+            acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
         }
         if(perm.getOtherPermissions()[Permission.WRITE]) {
             if(this.isContainer()) {
-                acl.grantPermission(GroupGrantee.ALL_USERS,
-                        org.jets3t.service.acl.Permission.PERMISSION_READ);
-                acl.grantPermission(GroupGrantee.ALL_USERS,
-                        org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
+                acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
             }
         }
     }

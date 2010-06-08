@@ -169,6 +169,19 @@ public class S3HPath extends CloudPath {
         return _details;
     }
 
+    public AccessControlList readAcl() {
+        try {
+            return this.getDetails().getAcl();
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return null;
+    }
+
     /**
      * Format to RFC 1123 timestamp
      * Expires: Thu, 01 Dec 1994 16:00:00 GMT
@@ -389,33 +402,29 @@ public class S3HPath extends CloudPath {
      */
     private Permission readPermissions(Set<GrantAndPermission> grants) throws IOException, S3ServiceException {
         boolean[][] p = new boolean[3][3];
+        final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
         for(GrantAndPermission grant : grants) {
             final org.jets3t.service.acl.Permission access = grant.getPermission();
             if(grant.getGrantee().equals(GroupGrantee.ALL_USERS)) {
-                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)
-                        || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
                     p[Permission.OTHER][Permission.READ] = true;
                 }
-                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)
-                        || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)) {
                     p[Permission.OTHER][Permission.WRITE] = true;
                 }
-                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
                     p[Permission.OTHER][Permission.EXECUTE] = true;
                 }
             }
-            final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
             if(null != owner) {
                 if(grant.getGrantee().equals(new CanonicalGrantee(owner.getId()))) {
-                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)
-                            || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
                         p[Permission.OWNER][Permission.READ] = true;
                     }
-                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)
-                            || access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)) {
                         p[Permission.OWNER][Permission.WRITE] = true;
                     }
-                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
+                    else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
                         p[Permission.OWNER][Permission.EXECUTE] = true;
                     }
                 }
@@ -611,6 +620,7 @@ public class S3HPath extends CloudPath {
                         path.attributes.setModificationDate(object.getLastModifiedDate().getTime());
                         if(null != bucket.getOwner()) {
                             path.attributes.setOwner(bucket.getOwner().getDisplayName());
+                            path.attributes.setGroup(bucket.getOwner().getId());
                         }
                         if(0 == object.getContentLength()) {
                             final S3Object details = path.getDetails();
@@ -637,6 +647,7 @@ public class S3HPath extends CloudPath {
                         }
                         if(null != bucket.getOwner()) {
                             p.attributes.setOwner(bucket.getOwner().getDisplayName());
+                            p.attributes.setGroup(bucket.getOwner().getId());
                         }
                         p.attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
                         childs.add(p);
@@ -723,12 +734,7 @@ public class S3HPath extends CloudPath {
             }
             if(acl != null) {
                 this.updateAccessControlList(perm, acl);
-                if(this.isContainer()) {
-                    this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
-                }
-                else if(attributes.isFile()) {
-                    this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
-                }
+                this.writePermissions(acl);
             }
             if(attributes.isDirectory()) {
                 if(recursive) {
@@ -750,25 +756,54 @@ public class S3HPath extends CloudPath {
         }
     }
 
+    public void writePermissions(AccessControlList acl) {
+        try {
+            if(this.isContainer()) {
+                this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
+            }
+            else if(attributes.isFile()) {
+                this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
+            }
+        }
+        catch(S3ServiceException e) {
+            this.error(e.getS3ErrorMessage(), e);
+        }
+        catch(IOException e) {
+            this.error("Cannot change permissions", e);
+        }
+    }
+
+    /**
+     * @param perm The permissions to apply
+     * @param acl  The ACL to update
+     */
     protected void updateAccessControlList(Permission perm, AccessControlList acl) {
         final CanonicalGrantee owner = new CanonicalGrantee(acl.getOwner().getId());
+        // Even the owner is subject to the ACL. For example, if an owner does not have READ access
+        // to an object, the owner cannot read that object. However, the owner of
+        // an object always has write access to the access control policy (WRITE_ACP)
+        // and can change the ACL to read the object.
         acl.revokeAllPermissions(owner);
         if(perm.getOwnerPermissions()[Permission.READ]) {
-            acl.grantPermission(owner,
-                    org.jets3t.service.acl.Permission.PERMISSION_READ);
+            acl.grantPermission(owner, org.jets3t.service.acl.Permission.PERMISSION_READ);
         }
         if(perm.getOwnerPermissions()[Permission.WRITE]) {
-            acl.grantPermission(owner,
-                    org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+            // when applied to a bucket, grants permission to create, overwrite, and delete any object in the bucket.
+            // This permission is not supported for objects.
+            if(this.isContainer()) {
+                acl.grantPermission(owner, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+            }
         }
         acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
         if(perm.getOtherPermissions()[Permission.READ]) {
-            acl.grantPermission(GroupGrantee.ALL_USERS,
-                    org.jets3t.service.acl.Permission.PERMISSION_READ);
+            acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
         }
         if(perm.getOtherPermissions()[Permission.WRITE]) {
-            acl.grantPermission(GroupGrantee.ALL_USERS,
-                    org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+            // when applied to a bucket, grants permission to create, overwrite, and delete any object in the bucket.
+            // This permission is not supported for objects.
+            if(this.isContainer()) {
+                acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+            }
         }
     }
 
@@ -839,8 +874,14 @@ public class S3HPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
 
+                final S3Object destination = new S3Object(((S3HPath) renamed).getKey());
+                // Keep same storage class
+                destination.setStorageClass(this.attributes.getStorageClass());
+                // Apply non standard ACL
+                destination.setAcl(this.getDetails().getAcl());
+                // Moving the object retaining the metadata of the original.
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
-                        new S3Object(((S3HPath) renamed).getKey()), false);
+                        destination, false);
                 this.setPath(renamed.getAbsolute());
             }
             else if(attributes.isVolume()) {
@@ -873,7 +914,11 @@ public class S3HPath extends CloudPath {
                         this.getName(), copy));
 
                 S3Object destination = new S3Object(((S3HPath) copy).getKey());
+                // Keep same storage class
                 destination.setStorageClass(copy.attributes.getStorageClass());
+                // Apply non standard ACL
+                destination.setAcl(this.getDetails().getAcl());
+                // Copying object applying the metadata of the original
                 this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                         ((S3HPath) copy).getContainerName(), destination, false);
             }
