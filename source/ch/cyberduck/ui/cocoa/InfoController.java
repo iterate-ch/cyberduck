@@ -596,7 +596,7 @@ public class InfoController extends ToolbarWindowController {
         m.put(name, value);
         this.setMetadata(m);
         int row = 0;
-        for(String key : metadata.keySet()) {
+        for(String key : m.keySet()) {
             if(key.equals(name)) {
                 break;
             }
