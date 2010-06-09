@@ -109,6 +109,11 @@ public class GSSession extends S3Session {
     }
 
     @Override
+    public boolean isVersioningSupported() {
+        return false;
+    }
+
+    @Override
     public boolean isLogging(String container) {
         return false;
     }

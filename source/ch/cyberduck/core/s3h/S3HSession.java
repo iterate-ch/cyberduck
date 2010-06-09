@@ -643,6 +643,10 @@ public class S3HSession extends HTTPSession implements CloudSession {
         return true;
     }
 
+    public boolean isVersioningSupported() {
+        return true;
+    }
+
     /**
      * @param container The bucket name
      * @return True if the bucket logging status is enabled.
