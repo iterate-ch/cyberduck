@@ -24,14 +24,18 @@ package ch.cyberduck.core;
 public abstract class ConnectionAdapter implements ConnectionListener {
 
     public void connectionWillOpen() {
+        ;
     }
 
     public void connectionDidOpen() {
+        ;
     }
 
     public void connectionWillClose() {
+        ;
     }
 
     public void connectionDidClose() {
+        ;
     }
 }
