@@ -32,10 +32,10 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
+import com.enterprisedt.net.ftp.FTPConnectMode;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.enterprisedt.net.ftp.FTPConnectMode;
 
 /**
  * @version $Id$
@@ -353,7 +353,7 @@ public class ConnectionController extends SheetController {
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
-                        && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+                && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
     }
@@ -579,10 +579,12 @@ public class ConnectionController extends SheetController {
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue());
-            urlLabel.setStringValue(url);
+            urlLabel.setAttributedStringValue(
+                    NSAttributedString.attributedStringWithAttributes(url, TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
-            urlLabel.setStringValue(hostField.stringValue());
+            urlLabel.setAttributedStringValue(
+                    NSAttributedString.attributedStringWithAttributes(hostField.stringValue(), TRUNCATE_MIDDLE_ATTRIBUTES));
         }
     }
 
