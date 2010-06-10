@@ -79,28 +79,6 @@ public class SFTPSession extends Session {
         return false;
     }
 
-    @Override
-    public String getIdentification() {
-        StringBuilder info = new StringBuilder(super.getIdentification() + "\n");
-        if(SFTP != null) {
-            info.append("SFTP Protocol version: ").append(SFTP.getProtocolVersion()).append("\n");
-        }
-        try {
-            final ConnectionInfo i = this.getClient().getConnectionInfo();
-            info.append("Key Exchange (KEX) Algorithm: ").append(i.keyExchangeAlgorithm).append("\n");
-            info.append("Number of key exchanges performed on this connection so far: ").append(i.keyExchangeCounter).append("\n");
-            info.append("Host Key Algorithm: ").append(i.serverHostKeyAlgorithm).append("\n");
-            info.append("Server to Client Crypto Algorithm: ").append(i.serverToClientCryptoAlgorithm).append("\n");
-            info.append("Client to Server Crypto Algorithm: ").append(i.clientToServerCryptoAlgorithm).append("\n");
-            info.append("Server to Client MAC Algorithm: ").append(i.serverToClientMACAlgorithm).append("\n");
-            info.append("Client to Server MAC Algorithm: ").append(i.clientToServerMACAlgorithm).append("\n");
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
-        }
-        return info.toString();
-    }
-
     private ServerHostKeyVerifier verifier = null;
 
     public void setHostKeyVerificationController(ServerHostKeyVerifier v) {
@@ -334,9 +312,8 @@ public class SFTPSession extends Session {
             String[] response = new String[numPrompts];
             for(int i = 0; i < numPrompts; i++) {
                 this.credentials.setPassword(null);
-                SFTPSession.this.login.check(SFTPSession.this.getHost(),
-                        Locale.localizedString("Provide additional login credentials", "Credentials")
-                                + ": " + prompt[i]);
+                SFTPSession.this.login.prompt(SFTPSession.this.getHost(),
+                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i]);
                 response[i] = this.credentials.getPassword();
                 promptCount++;
             }
