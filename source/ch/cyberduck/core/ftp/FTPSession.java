@@ -226,18 +226,6 @@ public class FTPSession extends Session {
     }
 
     @Override
-    public String getIdentification() {
-        StringBuilder info = new StringBuilder(super.getIdentification() + "\n");
-        try {
-            info.append(this.getClient().system()).append("\n");
-        }
-        catch(IOException e) {
-            log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
-        }
-        return info.toString();
-    }
-
-    @Override
     public void close() {
         try {
             if(this.isConnected()) {

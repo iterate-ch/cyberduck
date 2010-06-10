@@ -58,18 +58,6 @@ public abstract class Session {
      */
     protected abstract <C> C getClient() throws ConnectionCanceledException;
 
-    /**
-     * @return The remote host identification such as the response to the SYST command in FTP
-     */
-    public String getIdentification() {
-        try {
-            return host.getIp();
-        }
-        catch(UnknownHostException e) {
-            return host.getHostname();
-        }
-    }
-
     private final String ua = Preferences.instance().getProperty("application") + "/"
             + Preferences.instance().getProperty("version")
             + " (" + System.getProperty("os.name") + "/" + System.getProperty("os.version") + ")"
@@ -173,6 +161,14 @@ public abstract class Session {
      */
     public void setLoginController(LoginController loginController) {
         this.login = loginController;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public LoginController getLoginController() {
+        return login;
     }
 
     /**
