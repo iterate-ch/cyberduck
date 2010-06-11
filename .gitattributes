@@ -832,6 +832,7 @@ img/s3.icns -text
 img/sftp-icon.png -text svneol=unset#image/png
 img/sftp.icns -text
 img/site.tiff -text
+img/statusBlue.tiff -text
 img/statusGreen.tiff -text svneol=unset#image/tiff
 img/statusRed.tiff -text svneol=unset#image/tiff
 img/statusYellow.tiff -text svneol=unset#image/tiff
