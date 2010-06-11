@@ -500,6 +500,8 @@ public abstract class Preferences {
         defaults.put("s3.url.public", String.valueOf(false));
         defaults.put("s3.tls.acceptAnyCertificate", String.valueOf(false));
 
+        defaults.put("s3.mfa.serialnumber", "");
+
         /**
          * A prefix to apply to log file names
          */

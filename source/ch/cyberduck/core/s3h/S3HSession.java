@@ -697,6 +697,27 @@ public class S3HSession extends HTTPSession implements CloudSession {
 
     /**
      * @param container The bucket name
+     * @return True if Multi-Factor Authentication for deleting versioned files is enabled
+     */
+    public boolean isMFA(final String container) {
+        try {
+            this.check();
+
+            final S3BucketVersioningStatus status
+                    = this.getClient().getBucketVersioningStatus(container);
+            return status.isMultiFactorAuthDeleteRequired();
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return false;
+    }
+
+    /**
+     * @param container The bucket name
      * @return
      */
     public boolean isVersioning(final String container) {

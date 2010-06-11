@@ -35,10 +35,7 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.S3Owner;
-import org.jets3t.service.multithread.DownloadPackage;
+import org.jets3t.service.model.*;
 import org.jets3t.service.utils.ObjectUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -167,6 +164,138 @@ public class S3HPath extends CloudPath {
             return new S3Object(this.getSession().getBucket(this.getContainerName()), this.getKey());
         }
         return _details;
+    }
+
+    /**
+     * Versioning support. List all available version markers for this object.
+     *
+     * @return
+     */
+    public List<S3Version> getVersions() {
+        if(this.attributes.isFile()) {
+            try {
+                List<S3Version> versions = new ArrayList<S3Version>();
+                for(BaseVersionOrDeleteMarker marker : this.getSession().getClient().getObjectVersions(this.getContainerName(), this.getKey())) {
+                    if(marker instanceof S3Version) {
+                        versions.add((S3Version) marker);
+                    }
+                }
+                return versions;
+            }
+            catch(S3ServiceException e) {
+                this.error("Listing directory failed", e);
+            }
+            catch(IOException e) {
+                this.error("Listing directory failed", e);
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * Versioning support. Download a specific version of this object.
+     *
+     * @param versionId
+     */
+    public void download(String versionId) {
+        if(this.attributes.isFile()) {
+            OutputStream out = null;
+            InputStream in = null;
+            try {
+                if(StringUtils.isBlank(versionId)) {
+                    log.error("Cannot revert to version ID that is null");
+                    return;
+                }
+                final S3Object object = this.getSession().getClient().getVersionedObject(versionId,
+                        this.getContainerName(), this.getKey());
+
+                in = object.getDataInputStream();
+                out = this.getLocal().getOutputStream(this.getStatus().isResume());
+                this.download(in, out, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                        new AbstractStreamListener());
+            }
+            catch(S3ServiceException e) {
+                this.error("Download failed", e);
+            }
+            catch(IOException e) {
+                this.error("Download failed", e);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
+        }
+    }
+
+    /**
+     * Versioning support. Copy a previous version of the object into the same bucket.
+     * The copied object becomes the latest version of that object and all object versions are preserved.
+     *
+     * @param versionId
+     */
+    public void revert(String versionId) {
+        if(this.attributes.isFile()) {
+            try {
+                if(StringUtils.isBlank(versionId)) {
+                    log.error("Cannot revert to version ID that is null");
+                    return;
+                }
+                final S3Object destination = new S3Object(this.getKey());
+                // Keep same storage class
+                destination.setStorageClass(this.attributes.getStorageClass());
+                // Apply non standard ACL
+                destination.setAcl(this.getDetails().getAcl());
+                this.getSession().getClient().copyVersionedObject(versionId,
+                        this.getContainerName(), this.getKey(), this.getContainerName(), destination, false);
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot revert file", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot revert file", e);
+            }
+        }
+    }
+
+    /**
+     * Versioning support. Delete a version using MFA if enabled.
+     *
+     * @param versionId
+     */
+    public void delete(String versionId) {
+        if(this.attributes.isFile()) {
+            try {
+                if(StringUtils.isBlank(versionId)) {
+                    log.error("Cannot revert to version ID that is null");
+                    return;
+                }
+                if(this.getSession().isMFA(this.getContainerName())) {
+                    this.getSession().getHost().getCredentials().setUsername(
+                            Preferences.instance().getProperty("s3.mfa.serialnumber")
+                    );
+                    this.getSession().getHost().getCredentials().setUseKeychain(false);
+                    // Prompt for MFA credentials.
+                    this.getSession().getLoginController().prompt(
+                            this.getSession().getHost(),
+                            Locale.localizedString("Provide additional login credentials", "Credentials"),
+                            Locale.localizedString("Multi-Factor Authentication", "S3"));
+                    this.getSession().getClient().deleteVersionedObjectWithMFA(versionId,
+                            this.getSession().getHost().getCredentials().getUsername(),
+                            this.getSession().getHost().getCredentials().getPassword(),
+                            this.getContainerName(), this.getKey());
+                }
+                else {
+                    this.getSession().getClient().deleteVersionedObject(versionId, this.getContainerName(),
+                            this.getKey());
+                }
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot delete file", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot delete file", e);
+            }
+        }
     }
 
     public AccessControlList readAcl() {
@@ -449,20 +578,7 @@ public class S3HPath extends CloudPath {
 
                 in = this.getSession().getClient().getObject(bucket, this.getKey(), null, null, null, null,
                         this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
-
-                try {
-                    DownloadPackage download = ObjectUtils.createPackageForDownload(
-                            new S3Object(bucket, this.getKey()),
-                            new File(this.getLocal().getAbsolute()), true, false, null);
-                    if(null == download) {
-                        // application/x-directory
-                        return;
-                    }
-                    out = this.getLocal().getOutputStream(this.getStatus().isResume());
-                }
-                catch(Exception e) {
-                    throw new S3ServiceException(e.getMessage(), e);
-                }
+                out = this.getLocal().getOutputStream(this.getStatus().isResume());
                 this.download(in, out, throttle, listener);
             }
             catch(S3ServiceException e) {
@@ -520,13 +636,7 @@ public class S3HPath extends CloudPath {
                 // No Content-Range support
                 status.setResume(false);
 
-                final InputStream in;
-                try {
-                    in = object.getDataInputStream();
-                }
-                catch(S3ServiceException e) {
-                    throw new IOException(e.getS3ErrorMessage());
-                }
+                final InputStream in = object.getDataInputStream();
                 try {
                     this.getSession().getClient().pubObjectWithRequestEntityImpl(
                             this.getContainerName(), object, new InputStreamRequestEntity(in,
@@ -539,9 +649,6 @@ public class S3HPath extends CloudPath {
                                 }
                             });
                 }
-                catch(S3ServiceException e) {
-                    throw new IOException(e.getS3ErrorMessage());
-                }
                 finally {
                     IOUtils.closeQuietly(in);
                 }
@@ -549,6 +656,9 @@ public class S3HPath extends CloudPath {
             if(attributes.isDirectory()) {
                 this.mkdir();
             }
+        }
+        catch(S3ServiceException e) {
+            this.error("Upload failed", e);
         }
         catch(IOException e) {
             this.error("Upload failed", e);
@@ -661,7 +771,7 @@ public class S3HPath extends CloudPath {
         }
         catch(S3ServiceException e) {
             childs.attributes().setReadable(false);
-            this.error(e.getS3ErrorMessage(), e);
+            this.error("Listing directory failed", e);
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);
@@ -704,7 +814,7 @@ public class S3HPath extends CloudPath {
             }
         }
         catch(S3ServiceException e) {
-            this.error(e.getS3ErrorMessage(), e);
+            this.error("Cannot create folder", e);
         }
         catch(IOException e) {
             this.error("Cannot create folder", e);
@@ -749,7 +859,7 @@ public class S3HPath extends CloudPath {
             attributes.setPermission(perm);
         }
         catch(S3ServiceException e) {
-            this.error(e.getS3ErrorMessage(), e);
+            this.error("Cannot change permissions", e);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
@@ -766,7 +876,7 @@ public class S3HPath extends CloudPath {
             }
         }
         catch(S3ServiceException e) {
-            this.error(e.getS3ErrorMessage(), e);
+            this.error("Cannot change permissions", e);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
@@ -807,6 +917,17 @@ public class S3HPath extends CloudPath {
         }
     }
 
+    /**
+     * Use ACL support.
+     *
+     * @return Always returning false because permissions should be set using ACLs
+     * @see #writePermissions(org.jets3t.service.acl.AccessControlList)
+     */
+    @Override
+    public boolean isWritePermissionsSupported() {
+        return true;
+    }
+
     @Override
     public boolean isWriteModificationDateSupported() {
         return false;
@@ -844,7 +965,12 @@ public class S3HPath extends CloudPath {
             }
         }
         catch(S3ServiceException e) {
-            this.error(e.getS3ErrorMessage(), e);
+            if(this.attributes.isFile()) {
+                this.error("Cannot delete file", e);
+            }
+            if(this.attributes.isDirectory()) {
+                this.error("Cannot delete folder", e);
+            }
         }
         catch(IOException e) {
             if(this.attributes.isFile()) {
@@ -972,7 +1098,8 @@ public class S3HPath extends CloudPath {
     }
 
     /**
-     * Generates a signed URL string that will grant access to an S3 resource (bucket or object)
+     * Query String Authentication generates a signed URL string that will grant
+     * access to an S3 resource (bucket or object)
      * to whoever uses the URL up until the time specified.
      *
      * @return
