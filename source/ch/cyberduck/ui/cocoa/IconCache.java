@@ -98,6 +98,10 @@ public class IconCache {
         return instance;
     }
 
+    private IconCache() {
+        ;
+    }
+
     /**
      * Cache limited to n entries
      */
