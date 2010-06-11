@@ -103,7 +103,7 @@ public class GDSession extends Session {
         this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
-        client = new DocsService(Preferences.instance().getProperty("application") + "-" + Preferences.instance().getProperty("version"));
+        client = new DocsService(this.getUserAgent());
         client.setReadTimeout(this.timeout());
         client.setConnectTimeout(this.timeout());
         client.useSsl();
@@ -115,6 +115,12 @@ public class GDSession extends Session {
                 host.getProtocol().getName()));
         this.login();
         this.fireConnectionDidOpenEvent();
+    }
+
+    @Override
+    public String getUserAgent() {
+        return Preferences.instance().getProperty("application") + "-"
+                + Preferences.instance().getProperty("version");
     }
 
     @Override

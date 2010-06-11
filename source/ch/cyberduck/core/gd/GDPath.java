@@ -29,6 +29,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.google.gdata.client.DocumentQuery;
+import com.google.gdata.client.GoogleAuthTokenFactory;
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.Link;
 import com.google.gdata.data.MediaContent;
@@ -164,12 +166,13 @@ public class GDPath extends Path {
         this.exportUri = exportUri;
     }
 
-    /**
-     * Arbitrary file type not converted to Google Docs.
-     */
-    private String documentType = DOCUMENT_FILE_TYPE;
+    private String documentType;
 
     public String getDocumentType() {
+        if(null == documentType) {
+            // Arbitrary file type not converted to Google Docs.
+            return DOCUMENT_FILE_TYPE;
+        }
         return documentType;
     }
 
@@ -238,20 +241,38 @@ public class GDPath extends Path {
                 }
                 MediaContent mc = new MediaContent();
                 StringBuilder uri = new StringBuilder(this.getExportUri());
-                if(StringUtils.isNotEmpty(getExportFormat(this.getDocumentType()))) {
-                    uri.append("&exportFormat=").append(getExportFormat(this.getDocumentType()));
+                final String type = this.getDocumentType();
+                final GoogleAuthTokenFactory.UserToken token
+                        = (GoogleAuthTokenFactory.UserToken) this.getSession().getClient().getAuthTokenFactory().getAuthToken();
+                try {
+                    if(type.equals(DOCUMENT_SPREADSHEET_TYPE)) {
+                        // Authenticate against the Spreadsheets API to obtain an auth token
+                        SpreadsheetService spreadsheet = new SpreadsheetService(this.getSession().getUserAgent());
+                        final Credentials credentials = this.getSession().getHost().getCredentials();
+                        spreadsheet.setUserCredentials(credentials.getUsername(), credentials.getPassword());
+                        // Substitute the spreadsheets token for the docs token
+                        this.getSession().getClient().setUserToken(
+                                ((GoogleAuthTokenFactory.UserToken) spreadsheet.getAuthTokenFactory().getAuthToken()).getValue());
+                    }
+                    if(StringUtils.isNotEmpty(getExportFormat(type))) {
+                        uri.append("&exportFormat=").append(getExportFormat(type));
+                    }
+                    mc.setUri(uri.toString());
+                    MediaSource ms = session.getClient().getMedia(mc);
+                    in = ms.getInputStream();
+                    if(null == in) {
+                        throw new IOException("Unable opening data stream");
+                    }
+                    out = this.getLocal().getOutputStream(this.getStatus().isResume());
+                    if(null == out) {
+                        throw new IOException("Unable opening data stream");
+                    }
+                    this.download(in, out, throttle, listener);
                 }
-                mc.setUri(uri.toString());
-                MediaSource ms = session.getClient().getMedia(mc);
-                in = ms.getInputStream();
-                if(null == in) {
-                    throw new IOException("Unable opening data stream");
+                finally {
+                    // Restore docs token for our DocList client
+                    this.getSession().getClient().setUserToken(token.getValue());
                 }
-                out = this.getLocal().getOutputStream(this.getStatus().isResume());
-                if(null == out) {
-                    throw new IOException("Unable opening data stream");
-                }
-                this.download(in, out, throttle, listener);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -428,8 +449,7 @@ public class GDPath extends Path {
             log.debug("Resource:" + entry.getResourceId());
             final StringBuilder title = new StringBuilder(entry.getTitle().getPlainText());
             final String type = entry.getType();
-            GDPath p = new GDPath(this.getSession(),
-                    title.toString(),
+            GDPath p = new GDPath(this.getSession(), title.toString(),
                     DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             p.setParent(this);
             p.setDocumentType(type);
