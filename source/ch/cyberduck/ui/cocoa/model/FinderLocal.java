@@ -455,10 +455,10 @@ public class FinderLocal extends Local {
             final List<String> applications = new ArrayList<String>(Arrays.asList(this.applicationListForExtension(extension)));
             // Because of the different API used the default opening application may not be included
             // in the above list returned. Always add the default application anyway.
-            final String defaultApplication = this.applicationForExtension(extension);
-            if(null != defaultApplication) {
-                if(!applications.contains(defaultApplication)) {
-                    applications.add(defaultApplication);
+            final String defaultApplication = this.getDefaultApplication();
+            if(null !=  defaultApplication) {
+                if(!applications.contains( defaultApplication)) {
+                    applications.add( defaultApplication);
                 }
             }
             defaultApplicationListCache.put(extension, applications);
