@@ -391,11 +391,9 @@ public class GDPath extends Path {
             childs.addAll(this.list(
                     new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full"))
             ));
-            if(this.isRoot()) {
-                childs.addAll(this.list(
-                        new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full/-/folder"))
-                ));
-            }
+            childs.addAll(this.list(
+                    new DocumentQuery(new URL("https://docs.google.com/feeds/default/private/full/-/folder"))
+            ));
         }
         catch(ServiceException e) {
             childs.attributes().setReadable(false);
