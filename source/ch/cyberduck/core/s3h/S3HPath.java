@@ -257,7 +257,7 @@ public class S3HPath extends CloudPath {
                     log.error("Cannot revert to version ID that is null");
                     return;
                 }
-                if(this.getSession().isMFA(this.getContainerName())) {
+                if(this.getSession().isMultiFactorAuthentication(this.getContainerName())) {
                     this.getSession().getHost().getCredentials().setUsername(
                             Preferences.instance().getProperty("s3.mfa.serialnumber")
                     );
@@ -286,6 +286,10 @@ public class S3HPath extends CloudPath {
         }
     }
 
+    /**
+     * @return The ACL of the bucket or object. Return AccessControlList.REST_CANNED_PRIVATE if
+     *         reading fails.
+     */
     public AccessControlList readAcl() {
         try {
             final Credentials credentials = this.getSession().getHost().getCredentials();
@@ -859,6 +863,11 @@ public class S3HPath extends CloudPath {
         }
     }
 
+    /**
+     * Write ACL to bucket or object.
+     *
+     * @param acl The updated access control list.
+     */
     public void writePermissions(AccessControlList acl) {
         try {
             if(this.isContainer()) {
@@ -878,7 +887,7 @@ public class S3HPath extends CloudPath {
 
     /**
      * @param perm The permissions to apply
-     * @param acl  The ACL to update
+     * @param acl  The updated access control list.
      */
     protected void updateAccessControlList(Permission perm, AccessControlList acl) {
         final CanonicalGrantee owner = new CanonicalGrantee(acl.getOwner().getId());
