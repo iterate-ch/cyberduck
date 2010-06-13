@@ -190,10 +190,6 @@ public class S3HPath extends CloudPath {
             OutputStream out = null;
             InputStream in = null;
             try {
-                if(StringUtils.isBlank(versionId)) {
-                    log.error("Cannot revert to version ID that is null");
-                    return;
-                }
                 final S3Object object = this.getSession().getClient().getVersionedObject(versionId,
                         this.getContainerName(), this.getKey());
 
