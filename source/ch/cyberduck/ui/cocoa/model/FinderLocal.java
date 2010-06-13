@@ -398,23 +398,22 @@ public class FinderLocal extends Local {
     /**
      * The default application for this file as set by the launch services
      *
-     * @return The bundle identifier of the default application to open the file of this type or null if unknown
+     * @return The bundle identifier of the default application to open the
+     *         file of this type or null if unknown
      */
     @Override
     public String getDefaultApplication() {
         final String extension = this.getExtension();
         if(!defaultApplicationCache.containsKey(extension)) {
             if(StringUtils.isEmpty(extension)) {
+                return null;
+            }
+            final String path = this.applicationForExtension(extension);
+            if(StringUtils.isEmpty(path)) {
                 defaultApplicationCache.put(extension, null);
             }
             else {
-                final String path = this.applicationForExtension(extension);
-                if(StringUtils.isEmpty(path)) {
-                    defaultApplicationCache.put(extension, null);
-                }
-                else {
-                    defaultApplicationCache.put(extension, NSBundle.bundleWithPath(path).bundleIdentifier());
-                }
+                defaultApplicationCache.put(extension, NSBundle.bundleWithPath(path).bundleIdentifier());
             }
         }
         return defaultApplicationCache.get(extension);
@@ -452,13 +451,14 @@ public class FinderLocal extends Local {
             return Collections.emptyList();
         }
         if(!defaultApplicationListCache.containsKey(extension)) {
-            final List<String> applications = new ArrayList<String>(Arrays.asList(this.applicationListForExtension(extension)));
+            final List<String> applications = new ArrayList<String>(Arrays.asList(
+                    this.applicationListForExtension(extension)));
             // Because of the different API used the default opening application may not be included
             // in the above list returned. Always add the default application anyway.
             final String defaultApplication = this.getDefaultApplication();
-            if(null !=  defaultApplication) {
-                if(!applications.contains( defaultApplication)) {
-                    applications.add( defaultApplication);
+            if(null != defaultApplication) {
+                if(!applications.contains(defaultApplication)) {
+                    applications.add(defaultApplication);
                 }
             }
             defaultApplicationListCache.put(extension, applications);
