@@ -76,6 +76,11 @@ public class ECSession extends S3Session {
     }
 
     @Override
+    public boolean isVersioningSupported() {
+        return false;
+    }
+
+    @Override
     public String getLocation(String container) {
         return null;
     }
