@@ -52,6 +52,7 @@
         insideButtonClicked = id;
         interruptButtonClicked = id;
         openBrowserButtonClicked = id;
+        openTerminalButtonClicked = id;
         pasteFromFinder = id;
         quicklookButtonClicked = id;
         reloadButtonClicked = id;

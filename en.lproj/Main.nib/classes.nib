@@ -55,6 +55,8 @@
 				<string>id</string>
 				<key>openBrowserButtonClicked</key>
 				<string>id</string>
+				<key>openTerminalButtonClicked</key>
+				<string>id</string>
 				<key>pasteFromFinder</key>
 				<string>id</string>
 				<key>quicklookButtonClicked</key>
