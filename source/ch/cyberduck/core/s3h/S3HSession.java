@@ -334,7 +334,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 this.login();
             }
             else {
-                throw new IOException(e.getS3ErrorMessage());
+                throw new IOException(e.getMessage());
             }
         }
     }
