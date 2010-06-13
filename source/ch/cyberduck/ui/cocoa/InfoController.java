@@ -803,6 +803,9 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     protected void setSelectedTab(int tab) {
+        if(-1 == tab) {
+            tab = 0;
+        }
         final String item = tabView.tabViewItemAtIndex(tab).identifier();
         if(this.validateTabWithIdentifier(item)) {
             super.setSelectedTab(tab);
