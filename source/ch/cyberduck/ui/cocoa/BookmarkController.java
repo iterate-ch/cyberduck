@@ -34,9 +34,9 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.spearce.jgit.transport.OpenSshConfig;
 
-import java.util.*;
-
 import com.enterprisedt.net.ftp.FTPConnectMode;
+
+import java.util.*;
 
 /**
  * @version $Id$
@@ -65,15 +65,21 @@ public class BookmarkController extends WindowController {
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        final Protocol selected = Protocol.forName(protocolPopup.selectedItem().representedObject());
-        host.setPort(selected.getDefaultPort());
-        if(host.getProtocol().getDefaultHostname().equals(host.getHostname())) {
-            host.setHostname(selected.getDefaultHostname());
+        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+        host.setPort(protocol.getDefaultPort());
+        if(!host.getProtocol().isHostnameConfigurable()) {
+            // Previously selected protocol had a default hostname. Change to default
+            // of newly selected protocol.
+            host.setHostname(protocol.getDefaultHostname());
         }
-        if(!selected.isWebUrlConfigurable()) {
+        if(!protocol.isHostnameConfigurable()) {
+            // Hostname of newly selected protocol is not configurable. Change to default.
+            host.setHostname(protocol.getDefaultHostname());
+        }
+        if(!protocol.isWebUrlConfigurable()) {
             host.setWebURL(null);
         }
-        if(selected.equals(Protocol.IDISK)) {
+        if(protocol.equals(Protocol.IDISK)) {
             final String member = Preferences.instance().getProperty("iToolsMember");
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
@@ -81,13 +87,13 @@ public class BookmarkController extends WindowController {
                 host.setDefaultPath(Path.DELIMITER + member);
             }
         }
-        host.setProtocol(selected);
+        host.setProtocol(protocol);
         this.readOpenSshConfiguration();
         this.itemChanged();
         this.init();
         this.reachable();
     }
-    
+
     /**
      * Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
      */
@@ -104,7 +110,7 @@ public class BookmarkController extends WindowController {
         else {
             host.getCredentials().setIdentity(null);
         }
-    }    
+    }
 
     @Outlet
     private NSPopUpButton encodingPopup;
