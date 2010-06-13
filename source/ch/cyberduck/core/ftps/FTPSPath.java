@@ -45,7 +45,7 @@ public class FTPSPath extends FTPPath {
         }
 
         @Override
-        protected Path create(FTPSSession session, String path, Local file) {
+        protected Path create(FTPSSession session, Path path, Local file) {
             return new FTPSPath(session, path, file);
         }
 
@@ -63,7 +63,7 @@ public class FTPSPath extends FTPPath {
         super(s, path, type);
     }
 
-    protected FTPSPath(FTPSSession s, String parent, Local file) {
+    protected FTPSPath(FTPSSession s, Path parent, Local file) {
         super(s, parent, file);
     }
 

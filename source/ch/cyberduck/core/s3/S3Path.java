@@ -24,11 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.s3h.S3HPath;
-import ch.cyberduck.core.ssl.SSLSession;
-
-import org.jets3t.service.model.S3Bucket;
-
-import java.io.IOException;
 
 /**
  * @version $Id$
@@ -51,7 +46,7 @@ public class S3Path extends S3HPath {
         }
 
         @Override
-        protected Path create(S3Session session, String path, Local file) {
+        protected Path create(S3Session session, Path path, Local file) {
             return new S3Path(session, path, file);
         }
 
@@ -69,7 +64,7 @@ public class S3Path extends S3HPath {
         super(s, path, type);
     }
 
-    protected S3Path(S3Session s, String parent, Local file) {
+    protected S3Path(S3Session s, Path parent, Local file) {
         super(s, parent, file);
     }
 

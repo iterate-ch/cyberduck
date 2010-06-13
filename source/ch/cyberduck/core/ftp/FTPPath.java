@@ -23,7 +23,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.*;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.log4j.Logger;
@@ -68,7 +67,7 @@ public class FTPPath extends Path {
         }
 
         @Override
-        protected Path create(FTPSession session, String path, Local file) {
+        protected Path create(FTPSession session, Path path, Local file) {
             return new FTPPath(session, path, file);
         }
 
@@ -90,7 +89,7 @@ public class FTPPath extends Path {
         this.session = s;
     }
 
-    protected FTPPath(FTPSession s, String parent, Local file) {
+    protected FTPPath(FTPSession s, Path parent, Local file) {
         super(parent, file);
         this.session = s;
     }

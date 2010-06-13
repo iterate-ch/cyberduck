@@ -45,7 +45,7 @@ public class MEPath extends DAVSPath {
         }
 
         @Override
-        protected Path create(MESession session, String path, Local file) {
+        protected Path create(MESession session, Path path, Local file) {
             return new MEPath(session, path, file);
         }
 
@@ -63,7 +63,7 @@ public class MEPath extends DAVSPath {
         super(s, path, type);
     }
 
-    protected MEPath(MESession s, String parent, Local file) {
+    protected MEPath(MESession s, Path parent, Local file) {
         super(s, parent, file);
     }
 

@@ -56,8 +56,8 @@ public class DAVPath extends Path {
         }
 
         @Override
-        protected Path create(DAVSession session, String path, Local file) {
-            return new DAVPath(session, path, file);
+        protected Path create(DAVSession session, Path parent, Local file) {
+            return new DAVPath(session, parent, file);
         }
 
         @Override
@@ -78,7 +78,7 @@ public class DAVPath extends Path {
         this.session = s;
     }
 
-    protected DAVPath(DAVSession s, String parent, Local file) {
+    protected DAVPath(DAVSession s, Path parent, Local file) {
         super(parent, file);
         this.session = s;
     }

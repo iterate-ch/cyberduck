@@ -32,7 +32,7 @@ public abstract class PathFactory<S extends Session> {
 
     protected abstract Path create(S session, String parent, String name, int type);
 
-    protected abstract Path create(S session, String path, Local file);
+    protected abstract Path create(S session, Path parent, Local file);
 
     protected abstract <T> Path create(S session, T dict);
 
@@ -66,7 +66,7 @@ public abstract class PathFactory<S extends Session> {
      * @param parent The parent directory
      * @param file   The local counterpart of this path
      */
-    public static Path createPath(Session session, String parent, Local file) {
+    public static Path createPath(Session session, Path parent, Local file) {
         loadClass(session.getHost().getProtocol());
         return (factories.get(session.getHost().getProtocol())).create(session, parent, file);
     }

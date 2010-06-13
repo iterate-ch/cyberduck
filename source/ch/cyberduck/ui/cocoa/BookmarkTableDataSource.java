@@ -29,6 +29,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
@@ -36,11 +37,7 @@ import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSUInteger;
+import org.rococoa.cocoa.foundation.*;
 
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -350,7 +347,8 @@ public class BookmarkTableDataSource extends ListDataSource {
                         session = SessionFactory.createSession(h);
                     }
                     // Upload to the remote host this bookmark points to
-                    roots.add(PathFactory.createPath(session, h.getDefaultPath(), LocalFactory.createLocal(filename)));
+                    roots.add(PathFactory.createPath(session, PathFactory.createPath(session, h.getDefaultPath()),
+                            LocalFactory.createLocal(filename)));
                 }
             }
             if(!roots.isEmpty()) {

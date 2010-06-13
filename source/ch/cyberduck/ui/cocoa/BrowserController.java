@@ -2558,8 +2558,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             NSObject next;
             while((next = iterator.nextObject()) != null) {
                 roots.add(PathFactory.createPath(session,
-                        destination.getAbsolute(),
-                        LocalFactory.createLocal(next.toString())));
+                        destination, LocalFactory.createLocal(next.toString())));
             }
             final Transfer q = new UploadTransfer(roots);
             transfer(q, destination);
@@ -2859,7 +2858,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final List<Path> roots = new Collection<Path>();
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     Path p = PathFactory.createPath(session,
-                            workdir.getAbsolute(),
+                            workdir,
                             LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     roots.add(p);
                 }

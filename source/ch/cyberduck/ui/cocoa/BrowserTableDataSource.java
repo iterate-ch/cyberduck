@@ -259,7 +259,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final List<Path> roots = new Collection<Path>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         Path p = PathFactory.createPath(session,
-                                destination.getAbsolute(),
+                                destination,
                                 LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         roots.add(p);
                     }

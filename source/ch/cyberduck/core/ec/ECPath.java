@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Path;
 
 /**
@@ -46,7 +45,7 @@ public class ECPath extends S3Path {
         }
 
         @Override
-        protected Path create(ECSession session, String path, Local file) {
+        protected Path create(ECSession session, Path path, Local file) {
             return new ECPath(session, path, file);
         }
 
@@ -64,7 +63,7 @@ public class ECPath extends S3Path {
         super(s, path, type);
     }
 
-    protected ECPath(ECSession s, String parent, Local file) {
+    protected ECPath(ECSession s, Path parent, Local file) {
         super(s, parent, file);
     }
 

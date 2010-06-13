@@ -69,7 +69,7 @@ public class S3HPath extends CloudPath {
         }
 
         @Override
-        protected Path create(S3HSession session, String path, Local file) {
+        protected Path create(S3HSession session, Path path, Local file) {
             return new S3HPath(session, path, file);
         }
 
@@ -91,7 +91,7 @@ public class S3HPath extends CloudPath {
         this.session = s;
     }
 
-    protected S3HPath(S3HSession s, String parent, Local file) {
+    protected S3HPath(S3HSession s, Path parent, Local file) {
         super(parent, file);
         this.session = s;
     }
