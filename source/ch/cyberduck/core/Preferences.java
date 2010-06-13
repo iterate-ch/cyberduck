@@ -221,6 +221,9 @@ public abstract class Preferences {
         defaults.put("bookmark.model.cache.size", String.valueOf(50));
         defaults.put("queue.model.cache.size", String.valueOf(20));
 
+        defaults.put("info.toolbar.selected", String.valueOf(0));
+        defaults.put("preferences.toolbar.selected", String.valueOf(0));
+
         /**
          * Current default browser view is outline view (0-List view, 1-Outline view, 2-Column view)
          */
