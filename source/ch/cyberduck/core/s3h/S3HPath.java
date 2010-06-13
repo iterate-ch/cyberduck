@@ -141,18 +141,6 @@ public class S3HPath extends CloudPath {
             try {
                 _details = this.getSession().getClient().getObjectDetails(
                         this.getSession().getBucket(this.getContainerName()), this.getKey());
-                if(null == _details.getAcl()) {
-                    try {
-                        final AccessControlList acl = this.getSession().getClient().getObjectAcl(
-                                this.getSession().getBucket(this.getContainerName()), this.getKey());
-                        _details.setAcl(acl);
-                    }
-                    catch(S3ServiceException e) {
-                        // This method can be performed by anonymous services, but can only succeed if the
-                        // object's existing ACL already allows read access by the anonymous user.
-                        log.error(e.getXmlMessage());
-                    }
-                }
             }
             catch(S3ServiceException e) {
                 // Anonymous services can only get a publicly-readable object's details
@@ -300,7 +288,30 @@ public class S3HPath extends CloudPath {
 
     public AccessControlList readAcl() {
         try {
-            return this.getDetails().getAcl();
+            final Credentials credentials = this.getSession().getHost().getCredentials();
+            if(credentials.isAnonymousLogin()) {
+                return AccessControlList.REST_CANNED_PRIVATE;
+            }
+            final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
+            if(this.isContainer()) {
+                if(null == bucket.getAcl()) {
+                    // This method can be performed by anonymous services, but can only succeed if the
+                    // bucket's existing ACL already allows write access by the anonymous user.
+                    // In general, you can only access the ACL of a bucket if the ACL already in place
+                    // for that bucket (in S3) allows you to do so.
+                    bucket.setAcl(this.getSession().getClient().getBucketAcl(bucket));
+                }
+                return bucket.getAcl();
+            }
+            else if(attributes.isFile()) {
+                final S3Object details = this.getDetails();
+                if(null == details.getAcl()) {
+                    // This method can be performed by anonymous services, but can only succeed if the
+                    // object's existing ACL already allows read access by the anonymous user.
+                    details.setAcl(this.getSession().getClient().getObjectAcl(bucket, this.getKey()));
+                }
+                return details.getAcl();
+            }
         }
         catch(S3ServiceException e) {
             this.error("Cannot read file attributes", e);
@@ -308,7 +319,7 @@ public class S3HPath extends CloudPath {
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-        return null;
+        return AccessControlList.REST_CANNED_PRIVATE;
     }
 
     /**
@@ -480,42 +491,13 @@ public class S3HPath extends CloudPath {
         }
     }
 
-    private static final Permission DEFAULT_FOLDER_PERMISSION;
-
-    static {
-        boolean[][] access = new boolean[3][3];
-        access[Permission.OWNER][Permission.READ] = true;
-        access[Permission.OWNER][Permission.WRITE] = true;
-        access[Permission.OWNER][Permission.EXECUTE] = true;
-        DEFAULT_FOLDER_PERMISSION = new Permission(access);
-    }
-
     @Override
     public void readPermission() {
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                     this.getName()));
-            AccessControlList acl = null;
-            if(this.isContainer()) {
-                final Credentials credentials = this.getSession().getHost().getCredentials();
-                if(null == this.getSession().getBucket(this.getContainerName()).getAcl() && !credentials.isAnonymousLogin()) {
-                    this.getSession().getBucket(this.getContainerName()).setAcl(
-                            this.getSession().getClient().getBucketAcl(this.getSession().getBucket(this.getContainerName())));
-                }
-                acl = this.getSession().getBucket(this.getContainerName()).getAcl();
-            }
-            else if(attributes.isFile()) {
-                acl = this.getDetails().getAcl();
-            }
-            if(null == acl) {
-                if(attributes.isDirectory()) {
-                    attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
-                }
-            }
-            else {
-                attributes.setPermission(this.readPermissions(acl.getGrants()));
-            }
+            attributes.setPermission(this.readPermissions(this.readAcl().getGrants()));
         }
         catch(S3ServiceException e) {
             this.error("Cannot read file attributes", e);
@@ -665,6 +647,16 @@ public class S3HPath extends CloudPath {
         }
     }
 
+    private static final Permission DEFAULT_FOLDER_PERMISSION;
+
+    static {
+        boolean[][] access = new boolean[3][3];
+        access[Permission.OWNER][Permission.READ] = true;
+        access[Permission.OWNER][Permission.WRITE] = true;
+        access[Permission.OWNER][Permission.EXECUTE] = true;
+        DEFAULT_FOLDER_PERMISSION = new Permission(access);
+    }
+
     private static final int BUCKET_LIST_CHUNKING_SIZE = 1000;
 
     @Override
@@ -750,7 +742,8 @@ public class S3HPath extends CloudPath {
                             log.warn("Skipping prefix " + common);
                             continue;
                         }
-                        final Path p = PathFactory.createPath(this.getSession(), bucket.getName(), common, Path.DIRECTORY_TYPE);
+                        final Path p = PathFactory.createPath(this.getSession(),
+                                bucket.getName(), common, Path.DIRECTORY_TYPE);
                         p.setParent(this);
                         if(childs.contains(p)) {
                             continue;
@@ -925,7 +918,7 @@ public class S3HPath extends CloudPath {
      */
     @Override
     public boolean isWritePermissionsSupported() {
-        return true;
+        return false;
     }
 
     @Override
