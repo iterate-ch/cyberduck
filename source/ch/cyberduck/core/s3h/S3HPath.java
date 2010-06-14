@@ -837,7 +837,7 @@ public class S3HPath extends CloudPath {
             }
             if(acl != null) {
                 this.updateAccessControlList(perm, acl);
-                this.writePermissions(acl);
+                this.writePermissions(acl, recursive);
             }
             if(attributes.isDirectory()) {
                 if(recursive) {
@@ -864,13 +864,23 @@ public class S3HPath extends CloudPath {
      *
      * @param acl The updated access control list.
      */
-    public void writePermissions(AccessControlList acl) {
+    public void writePermissions(AccessControlList acl, boolean recursive) {
         try {
             if(this.isContainer()) {
                 this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
             }
             else if(attributes.isFile()) {
                 this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
+            }
+            else if(attributes.isDirectory()) {
+                if(recursive) {
+                    for(AbstractPath child : this.childs()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        ((S3HPath) child).writePermissions(acl, recursive);
+                    }
+                }
             }
         }
         catch(S3ServiceException e) {
@@ -918,12 +928,12 @@ public class S3HPath extends CloudPath {
     /**
      * Use ACL support.
      *
-     * @return Always returning false because permissions should be set using ACLs
-     * @see #writePermissions(org.jets3t.service.acl.AccessControlList)
+     * @return Always returning false in the future because permissions should be set using ACLs
+     * @see #writePermissions(org.jets3t.service.acl.AccessControlList, boolean)
      */
     @Override
     public boolean isWritePermissionsSupported() {
-        return false;
+        return true;
     }
 
     @Override
