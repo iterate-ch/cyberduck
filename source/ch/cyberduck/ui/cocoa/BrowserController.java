@@ -762,7 +762,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
 
         @Override
-        public boolean isColumnEditable(NSTableColumn column) {
+        public boolean isColumnRowEditable(NSTableColumn column, int row) {
             if(Preferences.instance().getBoolean("browser.editable")) {
                 return column.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN);
             }

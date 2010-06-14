@@ -62,7 +62,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     /**
      * @return By default no column is editable. To be overriden in subclasses
      */
-    public boolean isColumnEditable(NSTableColumn column) {
+    public boolean isColumnRowEditable(NSTableColumn column, int row) {
         return false;
     }
 
@@ -84,14 +84,14 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
      * @see NSTableView.DataSource
      */
     public boolean tableView_shouldEditTableColumn_row(NSTableView view, NSTableColumn c, NSInteger row) {
-        return this.isColumnEditable(c);
+        return this.isColumnRowEditable(c, row.intValue());
     }
 
     /**
      * @see NSTableView.DataSource
      */
     public boolean outlineView_shouldEditTableColumn_item(NSOutlineView view, NSTableColumn c, NSObject item) {
-        return this.isColumnEditable(c);
+        return this.isColumnRowEditable(c, -1);
     }
 
     public boolean selectionShouldChange() {
