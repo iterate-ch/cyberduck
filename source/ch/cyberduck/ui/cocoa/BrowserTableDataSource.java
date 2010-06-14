@@ -130,6 +130,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 controller.reloadData(true);
                             }
                         }
+                        super.cleanup();
                     }
                 });
             }
