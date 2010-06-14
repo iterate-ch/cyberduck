@@ -4,6 +4,13 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+3.5.1 (Jun-15-2010) [http://trac.cyberduck.ch/milestone/3.5.1]
+- [Bugfix] Crash opening Info window (#4536)
+- [Bugfix] Nested folder not visible (#4534) (Google Docs)
+- [Bugfix] Upload into folder not possible (#4550) (Google Docs)
+- [Bugfix] Downloading spreadsheets fails with permission error (#4538) (Google Docs)
+- [Feature] Replacing documents (Google Docs)
+
 3.5 (Jun-09-2010) [http://trac.cyberduck.ch/milestone/3.5]
 - [Localize] Slovenian Localization
 - [Localize] Romanian Localization
