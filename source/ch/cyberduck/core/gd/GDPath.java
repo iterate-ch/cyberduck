@@ -156,8 +156,9 @@ public class GDPath extends Path {
     private String exportUri;
 
     public String getExportUri() {
-        if(null == exportUri) {
-            return this.getAbsolute();
+        if(StringUtils.isBlank(exportUri)) {
+            log.warn("Refetching Export URI for " + this.toString());
+            exportUri = ((GDPath) this.getParent().childs().get(this.getReference())).getExportUri();
         }
         return exportUri;
     }
@@ -183,6 +184,10 @@ public class GDPath extends Path {
     private String resourceId;
 
     public String getResourceId() {
+        if(StringUtils.isBlank(resourceId)) {
+            log.warn("Refetching Resource ID for " + this.toString());
+            resourceId = ((GDPath) this.getParent().childs().get(this.getReference())).getResourceId();
+        }
         return resourceId;
     }
 
@@ -193,6 +198,10 @@ public class GDPath extends Path {
     private String documentUri;
 
     public String getDocumentUri() {
+        if(StringUtils.isBlank(documentUri)) {
+            log.warn("Refetching Document URI for " + this.toString());
+            documentUri = ((GDPath) this.getParent().childs().get(this.getReference())).getDocumentUri();
+        }
         return documentUri;
     }
 
@@ -200,15 +209,18 @@ public class GDPath extends Path {
         this.documentUri = documentUri;
     }
 
-    protected String getFeed() {
+    public String getDocumentId() {
+        // Removing document type from resourceId gives us the documentId
+        return StringUtils.removeStart(this.getResourceId(), this.getDocumentType() + ":");
+    }
+
+    protected String getFolderFeed() {
         if(this.isRoot()) {
             return "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents";
         }
         else if(StringUtils.isNotBlank(this.getResourceId())) {
-            // Removing document type from resourceId gives us the documentId
-            final String documentId = StringUtils.removeStart(this.getResourceId(), this.getDocumentType() + ":");
             return "https://docs.google.com/feeds/default/private/full/folder%3A"
-                    + documentId + "/contents";
+                    + this.getDocumentId() + "/contents";
         }
         log.warn("Missing Resource ID for " + this.toString());
         return "https://docs.google.com/feeds/default/private/full/";
@@ -227,16 +239,6 @@ public class GDPath extends Path {
     @Override
     public void readPermission() {
         ;
-    }
-
-    /**
-     * @return Always false
-     */
-    @Override
-    public boolean exists() {
-        // We do not currently support replacing documents. Instead uploads with the same
-        // name will create a new document
-        return false;
     }
 
     @Override
@@ -272,7 +274,7 @@ public class GDPath extends Path {
                         uri.append("&exportFormat=").append(getExportFormat(type));
                     }
                     mc.setUri(uri.toString());
-                    MediaSource ms = session.getClient().getMedia(mc);
+                    MediaSource ms = this.getSession().getClient().getMedia(mc);
                     in = ms.getInputStream();
                     if(null == in) {
                         throw new IOException("Unable opening data stream");
@@ -333,35 +335,45 @@ public class GDPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                DocumentListEntry document = new DocumentEntry();
                 File upload = new File(this.getLocal().getAbsolute());
                 InputStream in = null;
                 try {
                     in = this.getLocal().getInputStream();
-                    MediaContent content = new MediaContent();
                     final String mime = this.getLocal().getMimeType();
-                    content.setMediaSource(new MediaStreamSource(in, mime,
+                    final MediaStreamSource source = new MediaStreamSource(in, mime,
                             new DateTime(this.getLocal().attributes.getModificationDate()),
-                            this.getLocal().attributes.getSize()));
-                    content.setMimeType(new ContentType(mime));
-                    document.setContent(content);
-                    document.setTitle(new PlainTextConstruct(this.getName()));
-
-                    this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                            this.getName()));
-                    getStatus().setResume(false);
-
-                    String feed = ((GDPath)this.getParent()).getFeed();
-                    StringBuilder url = new StringBuilder(feed);
-                    if(this.isOcrSupported()) {
-                        // Image file type
-                        url.append("?ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
+                            this.getLocal().attributes.getSize());
+                    if(this.exists()) {
+                        // First, fetch entry using the resourceId
+                        URL url = new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId());
+                        final DocumentEntry updated = this.getSession().getClient().getEntry(url, DocumentEntry.class);
+                        updated.setMediaSource(source);
+                        updated.updateMedia(true);
                     }
-                    else if(this.isConversionSupported()) {
-                        // Convertible to Google Docs file type
-                        url.append("?convert=").append(Preferences.instance().getProperty("google.docs.upload.convert"));
+                    else {
+                        final MediaContent content = new MediaContent();
+                        content.setMediaSource(source);
+                        content.setMimeType(new ContentType(mime));
+                        final DocumentEntry document = new DocumentEntry();
+                        document.setContent(content);
+                        document.setTitle(new PlainTextConstruct(this.getName()));
+
+                        this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                                this.getName()));
+                        getStatus().setResume(false);
+
+                        String feed = ((GDPath) this.getParent()).getFolderFeed();
+                        StringBuilder url = new StringBuilder(feed);
+                        if(this.isOcrSupported()) {
+                            // Image file type
+                            url.append("?ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
+                        }
+                        else if(this.isConversionSupported()) {
+                            // Convertible to Google Docs file type
+                            url.append("?convert=").append(Preferences.instance().getProperty("google.docs.upload.convert"));
+                        }
+                        this.getSession().getClient().insert(new URL(url.toString()), document);
                     }
-                    session.getClient().insert(new URL(url.toString()), document);
                     getStatus().setCurrent(this.getLocal().attributes.getSize());
                     listener.bytesSent(this.getLocal().attributes.getSize());
                     getStatus().setComplete(true);
@@ -404,7 +416,7 @@ public class GDPath extends Path {
 
             this.getSession().setWorkdir(this);
 
-            childs.addAll(this.list(new DocumentQuery(new URL(this.getFeed()))));
+            childs.addAll(this.list(new DocumentQuery(new URL(this.getFolderFeed()))));
         }
         catch(ServiceException e) {
             childs.attributes().setReadable(false);
@@ -444,13 +456,13 @@ public class GDPath extends Path {
         final AttributedList<Path> childs = new AttributedList<Path>();
 
         DocumentListFeed feed = new DocumentListFeed();
-        DocumentListFeed pager = session.getClient().getFeed(query, DocumentListFeed.class);
+        DocumentListFeed pager = this.getSession().getClient().getFeed(query, DocumentListFeed.class);
         do {
             feed.getEntries().addAll(pager.getEntries());
             if(null == pager.getNextLink()) {
                 break;
             }
-            pager = session.getClient().getFeed(new URL(pager.getNextLink().getHref()), DocumentListFeed.class);
+            pager = this.getSession().getClient().getFeed(new URL(pager.getNextLink().getHref()), DocumentListFeed.class);
         }
         while(pager.getEntries().size() > 0);
         this.filter(feed.getEntries());
@@ -465,7 +477,6 @@ public class GDPath extends Path {
             if(!entry.getParentLinks().isEmpty()) {
                 p.setPath(entry.getParentLinks().iterator().next().getTitle(), title.toString());
             }
-
             p.setExportUri(((MediaContent) entry.getContent()).getUri());
             p.setDocumentUri(entry.getDocumentLink().getHref());
             p.setResourceId(entry.getResourceId());
@@ -553,9 +564,8 @@ public class GDPath extends Path {
         try {
             DocumentListEntry folder = new FolderEntry();
             folder.setTitle(new PlainTextConstruct(this.getName()));
-            URL feedUrl = new URL(this.getFeed());
             try {
-                session.getClient().insert(feedUrl, folder);
+                this.getSession().getClient().insert(new URL(this.getFolderFeed()), folder);
             }
             catch(ServiceException e) {
                 throw new IOException(e.getMessage());
