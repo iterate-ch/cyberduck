@@ -24,3 +24,13 @@
 /* Storage class */
 "STANDARD" = "Navadno Amazon S3 shranjevanje podatkov";
 "REDUCED_REDUNDANCY" = "»Reduced Redundancy Storage« (RSS)";
+
+/* MFA */
+"Multi-Factor Authentication" = "Multi-Factor Authentication";
+"MFA Serial Number" = "MFA Serial Number";
+"MFA Authentication Code" = "MFA Authentication Code";
+
+/* ACL Editing */
+"Canonical User ID" = "Canonical User ID";
+"Email Address" = "Email Address";
+"http://acs.amazonaws.com/groups/global/AllUsers" = "http://acs.amazonaws.com/groups/global/AllUsers";
