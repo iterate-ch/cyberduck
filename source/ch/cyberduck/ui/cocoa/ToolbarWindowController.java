@@ -123,7 +123,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         toolbar.setSizeMode(this.getToolbarSize());
         toolbar.setDisplayMode(this.getToolbarMode());
         toolbar.setDelegate(this.id());
-        for(int i = 0; i < tabView.numberOfTabViewItems(); i++) {
+        for(int i = 0; i < this.getPanels().size(); i++) {
             final NSTabViewItem tab = tabView.tabViewItemAtIndex(i);
             items.insertObject_atIndex(tab.identifier(), new NSUInteger(i));
         }
