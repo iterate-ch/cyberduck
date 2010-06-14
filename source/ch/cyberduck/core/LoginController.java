@@ -44,7 +44,7 @@ public interface LoginController {
      *
      * @param host
      */
-    public void success(final Host host);
+    void success(final Host host);
 
     /**
      * Call this to allow the user to reenter the new login credentials.
