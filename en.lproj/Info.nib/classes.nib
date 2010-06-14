@@ -5,21 +5,15 @@
 	<key>IBClasses</key>
 	<array>
 		<dict>
+			<key>CLASS</key>
+			<string>NSObject</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+		</dict>
+		<dict>
 			<key>ACTIONS</key>
 			<dict>
 				<key>helpButtonClicked</key>
-				<string>id</string>
-				<key>metadataAddButtonClicked</key>
-				<string>id</string>
-				<key>metadataAddCacheControlClicked</key>
-				<string>id</string>
-				<key>metadataAddContentEncodingClicked</key>
-				<string>id</string>
-				<key>metadataAddContentTypeClicked</key>
-				<string>id</string>
-				<key>metadataAddExpiresClicked</key>
-				<string>id</string>
-				<key>metadataRemoveButtonClicked</key>
 				<string>id</string>
 			</dict>
 			<key>CLASS</key>
@@ -28,9 +22,21 @@
 			<string>ObjC</string>
 			<key>OUTLETS</key>
 			<dict>
+				<key>aclAddButton</key>
+				<string>id</string>
+				<key>aclProgress</key>
+				<string>id</string>
+				<key>aclRemoveButton</key>
+				<string>id</string>
+				<key>aclTable</key>
+				<string>id</string>
 				<key>bucketLocationField</key>
 				<string>id</string>
 				<key>bucketLoggingButton</key>
+				<string>id</string>
+				<key>bucketMfaButton</key>
+				<string>id</string>
+				<key>bucketVersioningButton</key>
 				<string>id</string>
 				<key>checksumField</key>
 				<string>id</string>
@@ -90,7 +96,7 @@
 				<string>id</string>
 				<key>ownerx</key>
 				<string>id</string>
-				<key>panelAmazon</key>
+				<key>panelCloud</key>
 				<string>NSView</string>
 				<key>panelDistribution</key>
 				<string>NSView</string>
@@ -98,6 +104,8 @@
 				<string>NSView</string>
 				<key>panelPermissions</key>
 				<string>NSView</string>
+				<key>panelVersions</key>
+				<string>id</string>
 				<key>pathField</key>
 				<string>id</string>
 				<key>permissionProgress</key>
@@ -121,6 +129,14 @@
 				<key>storageClassPopup</key>
 				<string>NSPopUpButton</string>
 				<key>tabView</key>
+				<string>id</string>
+				<key>versionDeleteButton</key>
+				<string>id</string>
+				<key>versionGearButton</key>
+				<string>id</string>
+				<key>versionsProgress</key>
+				<string>id</string>
+				<key>versionsTable</key>
 				<string>id</string>
 				<key>webUrlField</key>
 				<string>id</string>

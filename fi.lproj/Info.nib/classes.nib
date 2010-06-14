@@ -3,18 +3,18 @@
         {
     ACTIONS =     {
         helpButtonClicked = id;
-        metadataAddButtonClicked = id;
-        metadataAddCacheControlClicked = id;
-        metadataAddContentEncodingClicked = id;
-        metadataAddContentTypeClicked = id;
-        metadataAddExpiresClicked = id;
-        metadataRemoveButtonClicked = id;
     };
     CLASS = CDInfoController;
     LANGUAGE = ObjC;
     OUTLETS =     {
+        aclAddButton = id;
+        aclProgress = id;
+        aclRemoveButton = id;
+        aclTable = id;
         bucketLocationField = id;
         bucketLoggingButton = id;
+        bucketMfaButton = id;
+        bucketVersioningButton = id;
         checksumField = id;
         distributionCnameField = id;
         distributionCnameUrlField = id;
@@ -44,10 +44,11 @@
         ownerr = id;
         ownerw = id;
         ownerx = id;
-        panelAmazon = NSView;
+        panelCloud = NSView;
         panelDistribution = NSView;
         panelGeneral = NSView;
         panelPermissions = NSView;
+        panelVersions = id;
         pathField = id;
         permissionProgress = id;
         permissionsField = id;
@@ -60,6 +61,10 @@
         sizeProgress = id;
         storageClassPopup = NSPopUpButton;
         tabView = id;
+        versionDeleteButton = id;
+        versionGearButton = id;
+        versionsProgress = id;
+        versionsTable = id;
         webUrlField = id;
         window = id;
     };
@@ -69,6 +74,10 @@
     CLASS = FirstResponder;
     LANGUAGE = ObjC;
     SUPERCLASS = NSObject;
+},
+        {
+    CLASS = NSObject;
+    LANGUAGE = ObjC;
 }
     );
     IBVersion = 1;
