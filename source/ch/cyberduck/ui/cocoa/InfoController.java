@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.acl.*;
+import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -340,19 +341,20 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
-        if(this.toggleS3Settings(false)) {
+        if(this.toggleVersionsSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
                         final String container = ((S3HPath) next).getContainerName();
                         ((S3HSession) controller.getSession()).setVersioning(container,
-                                bucketVersioningButton.state() == NSCell.NSOnState, null, null);
+                                bucketMfaButton.state() == NSCell.NSOnState,
+                                bucketVersioningButton.state() == NSCell.NSOnState);
                     }
                 }
 
                 @Override
                 public void cleanup() {
-                    toggleS3Settings(true);
+                    toggleVersionsSettings(true);
                 }
             });
         }
@@ -368,20 +370,21 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
-        if(this.toggleS3Settings(false)) {
+        if(this.toggleVersionsSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
                         final String container = ((S3HPath) next).getContainerName();
                         ((S3HSession) controller.getSession()).setVersioning(container,
-                                bucketVersioningButton.state() == NSCell.NSOnState,
-                                Preferences.instance().getProperty("s3.mfa.serialnumber"), null);
+                                bucketMfaButton.state() == NSCell.NSOnState,
+                                bucketVersioningButton.state() == NSCell.NSOnState
+                        );
                     }
                 }
 
                 @Override
                 public void cleanup() {
-                    toggleS3Settings(true);
+                    toggleVersionsSettings(true);
                 }
             });
         }
@@ -443,10 +446,15 @@ public class InfoController extends ToolbarWindowController {
     /**
      * S3 versioning model
      */
-    private List<S3Version> versions
-            = new ArrayList<S3Version>();
+    private List<BaseVersionOrDeleteMarker> versions
+            = new ArrayList<BaseVersionOrDeleteMarker>();
 
-    public void setVersions(List<S3Version> versions) {
+    public void setVersions(List<BaseVersionOrDeleteMarker> versions) {
+        Collections.sort(versions, new Comparator<BaseVersionOrDeleteMarker>() {
+            public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
+                return o2.getLastModified().compareTo(o1.getLastModified());
+            }
+        });
         this.versions = versions;
         this.versionsTable.reloadData();
     }
@@ -478,13 +486,16 @@ public class InfoController extends ToolbarWindowController {
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 final String identifier = tableColumn.identifier();
-                final S3Version version = versions.get(row.intValue());
+                final BaseVersionOrDeleteMarker version = versions.get(row.intValue());
                 if(identifier.equals(HEADER_VERSIONS_ID_COLUMN)) {
                     return NSString.stringWithString(StringUtils.isNotBlank(version.getVersionId()) ?
                             version.getVersionId() : Locale.localizedString("Unknown"));
                 }
                 if(identifier.equals(HEADER_VERSIONS_SIZE_COLUMN)) {
-                    return NSString.stringWithString(Status.getSizeAsString(version.getSize()));
+                    if(version.isDeleteMarker()) {
+                        return NSString.stringWithString(Locale.localizedString("Unknown"));
+                    }
+                    return NSString.stringWithString(Status.getSizeAsString(((S3Version) version).getSize()));
                 }
                 if(identifier.equals(HEADER_VERSIONS_MODIFIED_COLUMN)) {
                     return NSString.stringWithString(
@@ -518,11 +529,28 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(NSNotification notification) {
-                final boolean enable = versionsTable.numberOfSelectedRows().intValue() == 1;
+                boolean enable = versionsTable.numberOfSelectedRows().intValue() == 1;
+                if(enable) {
+                    final BaseVersionOrDeleteMarker version = versions.get(versionsTable.selectedRow().intValue());
+                    enable = !version.isDeleteMarker();
+                }
                 for(int i = 0; i < versionGearButton.numberOfItems().intValue(); i++) {
                     versionGearButton.itemAtIndex(new NSInteger(i)).setEnabled(enable);
                 }
                 versionDeleteButton.setEnabled(enable);
+            }
+
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
+                                                                     NSTableColumn c, NSInteger row) {
+                if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
+                    final BaseVersionOrDeleteMarker version = versions.get(row.intValue());
+                    if(version.isDeleteMarker()) {
+                        cell.setTextColor(NSColor.disabledControlTextColor());
+                    }
+                    else {
+                        cell.setTextColor(NSColor.controlTextColor());
+                    }
+                }
             }
 
             @Override
@@ -545,7 +573,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void versionDeleteButtonClicked(ID sender) {
-        final List<S3Version> deleted = new ArrayList<S3Version>();
+        final List<BaseVersionOrDeleteMarker> deleted = new ArrayList<BaseVersionOrDeleteMarker>();
         NSIndexSet iterator = versionsTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             deleted.add(versions.get(index.intValue()));
@@ -555,7 +583,7 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        for(S3Version version : deleted) {
+                        for(BaseVersionOrDeleteMarker version : deleted) {
                             if(version.getKey().equals(next.getName())) {
                                 ((S3HPath) next).delete(version.getVersionId());
                             }
@@ -583,23 +611,23 @@ public class InfoController extends ToolbarWindowController {
 
     public void setVersionGearButton(NSPopUpButton b) {
         this.versionGearButton = b;
-        this.versionGearButton.setEnabled(false);
+        this.versionGearButton.setAutoenablesItems(false);
         this.versionGearButton.setTarget(this.id());
         this.versionGearButton.addItemWithTitle("");
         this.versionGearButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
 
-        this.versionGearButton.addItemWithTitle(Locale.localizedString("Revert", "S3"));
+        this.versionGearButton.addItemWithTitle(Locale.localizedString("Revert Version", "S3"));
         this.versionGearButton.lastItem().setAction(Foundation.selector("versionRevertButtonClicked:"));
         this.versionGearButton.lastItem().setTarget(this.id());
 
-        this.versionGearButton.addItemWithTitle(Locale.localizedString("Download", "S3"));
+        this.versionGearButton.addItemWithTitle(Locale.localizedString("Download Version", "S3"));
         this.versionGearButton.lastItem().setAction(Foundation.selector("versionDownloadButtonClicked:"));
         this.versionGearButton.lastItem().setTarget(this.id());
     }
 
     @Action
     public void versionDownloadButtonClicked(ID sender) {
-        final List<S3Version> downloads = new ArrayList<S3Version>();
+        final List<BaseVersionOrDeleteMarker> downloads = new ArrayList<BaseVersionOrDeleteMarker>();
         NSIndexSet iterator = versionsTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             downloads.add(versions.get(index.intValue()));
@@ -609,7 +637,7 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        for(S3Version version : downloads) {
+                        for(BaseVersionOrDeleteMarker version : downloads) {
                             if(version.getKey().equals(next.getName())) {
                                 ((S3HPath) next).download(version.getVersionId());
                             }
@@ -632,7 +660,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void versionRevertButtonClicked(ID sender) {
-        final S3Version version = versions.get(versionsTable.selectedRow().intValue());
+        final BaseVersionOrDeleteMarker version = versions.get(versionsTable.selectedRow().intValue());
         if(this.toggleVersionsSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
 
@@ -1337,7 +1365,7 @@ public class InfoController extends ToolbarWindowController {
         this.setFiles(files);
     }
 
-    private static final String TOOLBAR_ITEM_PERMISSIONS = "NSUserAccounts";
+    private static final String TOOLBAR_ITEM_PERMISSIONS = "permissions";
     private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
     private static final String TOOLBAR_ITEM_CLOUD = "cloud";
     private static final String TOOLBAR_ITEM_VERSIONS = "versions";
@@ -1487,8 +1515,8 @@ public class InfoController extends ToolbarWindowController {
         this.initWebUrl();
         // Read permissions
         this.initPermissions();
-//        this.initAcl();
-//        this.initVersions();
+        this.initAcl();
+        this.initVersions();
         if(!update) {
             this.initDistribution();
         }
@@ -1546,7 +1574,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     protected List<NSView> getPanels() {
-        return Arrays.asList(panelGeneral, panelPermissions, panelDistribution, panelCloud/*, panelVersions*/);
+        return Arrays.asList(panelGeneral, panelPermissions, panelDistribution, panelCloud, panelVersions);
     }
 
     private String getName() {
@@ -1836,13 +1864,11 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleS3Settings(final boolean stop) {
         // Amazon S3 only
-        boolean enable = this.numberOfFiles() == 1;
-        if(enable) {
-            for(Path file : files) {
-                final Credentials credentials = file.getHost().getCredentials();
-                enable = enable && !credentials.isAnonymousLogin();
-                enable = enable && file instanceof S3HPath;
-            }
+        boolean enable = true;
+        for(Path file : files) {
+            final Credentials credentials = file.getHost().getCredentials();
+            enable = enable && !credentials.isAnonymousLogin();
+            enable = enable && file instanceof S3HPath;
         }
         boolean logging = false;
         if(enable) {
@@ -1981,18 +2007,19 @@ public class InfoController extends ToolbarWindowController {
             for(Path file : files) {
                 final Credentials credentials = file.getHost().getCredentials();
                 enable = enable && !credentials.isAnonymousLogin();
-                enable = enable && file.attributes.isFile();
                 enable = enable && file instanceof S3HPath;
             }
         }
         if(enable) {
             enable = ((S3HSession) controller.getSession()).isVersioningSupported();
         }
-        versionsTable.setEnabled(stop && enable);
-        versionGearButton.setEnabled(stop && enable);
-        versionDeleteButton.setEnabled(stop && enable);
+        for(Path file : files) {
+            versionsTable.setEnabled(stop && enable && file.attributes.isFile());
+            versionGearButton.setEnabled(stop && enable && file.attributes.isFile());
+            versionDeleteButton.setEnabled(stop && enable && file.attributes.isFile());
+        }
         bucketVersioningButton.setEnabled(stop && enable);
-        bucketMfaButton.setEnabled(stop && enable);
+        bucketMfaButton.setEnabled(stop && enable && bucketVersioningButton.state() == NSCell.NSOnState);
         if(stop) {
             versionsProgress.stopAnimation(null);
         }
@@ -2095,11 +2122,11 @@ public class InfoController extends ToolbarWindowController {
      * Read versions in the background
      */
     private void initVersions() {
-        this.setVersions(Collections.<S3Version>emptyList());
+        this.setVersions(Collections.<BaseVersionOrDeleteMarker>emptyList());
         if(this.toggleVersionsSettings(false)) {
             this.setGrants(Collections.<GrantAndPermission>emptyList());
             controller.background(new BrowserBackgroundAction(controller) {
-                private List<S3Version> updated = new ArrayList<S3Version>();
+                private List<BaseVersionOrDeleteMarker> updated = new ArrayList<BaseVersionOrDeleteMarker>();
                 private boolean versioning = false;
                 private boolean mfa = false;
 
@@ -2109,14 +2136,16 @@ public class InfoController extends ToolbarWindowController {
                         final S3HSession s = (S3HSession) controller.getSession();
                         final String container = ((S3HPath) file).getContainerName();
                         versioning = s.isVersioning(container);
-                        mfa = s.isMultiFactorAuthentication(container);
-                        break;
+                        if(versioning) {
+                            mfa = s.isMultiFactorAuthentication(container);
+                        }
                     }
                 }
 
                 @Override
                 public void cleanup() {
                     bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
+                    bucketMfaButton.setEnabled(versioning);
                     bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
                     setVersions(updated);
                     toggleVersionsSettings(true);
