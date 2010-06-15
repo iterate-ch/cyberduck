@@ -159,16 +159,12 @@ public class S3HPath extends CloudPath {
      *
      * @return
      */
-    public List<S3Version> getVersions() {
+    public List<BaseVersionOrDeleteMarker> getVersions() {
         if(this.attributes.isFile()) {
             try {
-                List<S3Version> versions = new ArrayList<S3Version>();
-                for(BaseVersionOrDeleteMarker marker : this.getSession().getClient().getObjectVersions(this.getContainerName(), this.getKey())) {
-                    if(marker instanceof S3Version) {
-                        versions.add((S3Version) marker);
-                    }
-                }
-                return versions;
+                return Arrays.asList(
+                        this.getSession().getClient().getObjectVersions(this.getContainerName(), this.getKey())
+                );
             }
             catch(S3ServiceException e) {
                 this.error("Listing directory failed", e);
@@ -254,18 +250,16 @@ public class S3HPath extends CloudPath {
                     return;
                 }
                 if(this.getSession().isMultiFactorAuthentication(this.getContainerName())) {
-                    this.getSession().getHost().getCredentials().setUsername(
-                            Preferences.instance().getProperty("s3.mfa.serialnumber")
-                    );
-                    this.getSession().getHost().getCredentials().setUseKeychain(false);
+                    final Credentials credentials = this.getSession().getHost().getCredentials();
+                    credentials.setUsername(Preferences.instance().getProperty("s3.mfa.serialnumber"));
+                    credentials.setUseKeychain(false);
                     // Prompt for MFA credentials.
-                    this.getSession().getLoginController().prompt(
-                            this.getSession().getHost(),
+                    this.getSession().getLoginController().prompt(this.getSession().getHost(),
                             Locale.localizedString("Provide additional login credentials", "Credentials"),
                             Locale.localizedString("Multi-Factor Authentication", "S3"));
                     this.getSession().getClient().deleteVersionedObjectWithMFA(versionId,
-                            this.getSession().getHost().getCredentials().getUsername(),
-                            this.getSession().getHost().getCredentials().getPassword(),
+                            credentials.getUsername(),
+                            credentials.getPassword(),
                             this.getContainerName(), this.getKey());
                 }
                 else {

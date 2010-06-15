@@ -717,16 +717,15 @@ public class S3HSession extends HTTPSession implements CloudSession {
     }
 
     /**
-     * @param container               The bucket name
+     * @param container The bucket name
+     * @param mfa
      * @param enabled
-     * @param multiFactorSerialNumber Optional if MFA should be enabled
-     * @param multiFactorAuthCode     Optional if MFA should be enabled
      */
-    public void setVersioning(final String container, boolean enabled, String multiFactorSerialNumber, String multiFactorAuthCode) {
+    public void setVersioning(final String container, boolean mfa, boolean enabled) {
         try {
             this.check();
             if(enabled) {
-                if(StringUtils.isNotBlank(multiFactorSerialNumber) && StringUtils.isNotBlank(multiFactorAuthCode)) {
+                if(mfa) {
                     this.getClient().enableBucketVersioningWithMFA(container);
                 }
                 else {
@@ -734,8 +733,18 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 }
             }
             else {
-                if(StringUtils.isNotBlank(multiFactorSerialNumber) && StringUtils.isNotBlank(multiFactorAuthCode)) {
-                    this.getClient().suspendBucketVersioningWithMFA(container, multiFactorSerialNumber, multiFactorAuthCode);
+                if(mfa) {
+                    final Credentials credentials = this.getHost().getCredentials();
+                    credentials.setUsername(Preferences.instance().getProperty("s3.mfa.serialnumber"));
+                    credentials.setUseKeychain(false);
+                    // Prompt for MFA credentials.
+                    this.getLoginController().prompt(this.getHost(),
+                            Locale.localizedString("Provide additional login credentials", "Credentials"),
+                            Locale.localizedString("Multi-Factor Authentication", "S3"));
+                    String multiFactorSerialNumber = credentials.getUsername();
+                    String multiFactorAuthCode = credentials.getPassword();
+                    this.getClient().suspendBucketVersioningWithMFA(container,
+                            multiFactorSerialNumber, multiFactorAuthCode);
                 }
                 else {
                     this.getClient().suspendBucketVersioning(container);
