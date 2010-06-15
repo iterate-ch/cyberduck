@@ -74,6 +74,11 @@ public class GSSession extends S3Session {
         return Collections.emptyList();
     }
 
+    @Override
+    public String getLocation(String container) {
+        return Locale.localizedString("US", "S3");
+    }
+
     /**
      * Not supported
      *
@@ -109,23 +114,13 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public boolean isVersioningSupported() {
-        return false;
-    }
-
-    @Override
     public boolean isLogging(String container) {
         return false;
     }
 
     @Override
-    public void setLogging(String container, boolean enabled) {
-        ;
-    }
-
-    @Override
-    public String getLocation(String container) {
-        return Locale.localizedString("US", "S3");
+    public boolean isVersioningSupported() {
+        return false;
     }
 
     @Override
@@ -134,18 +129,8 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public void setVersioning(String container, boolean enabled, String multiFactorSerialNumber, String multiFactorAuthCode) {
-        ;
-    }
-
-    @Override
     public boolean isMultiFactorAuthentication(String container) {
         return false;
-    }
-
-    @Override
-    public void setRequesterPays(String container, boolean enabled) {
-        ;
     }
 
     @Override
