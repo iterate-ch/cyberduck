@@ -35,3 +35,7 @@
 "Canonical User ID" = "Canonical User ID";
 "Email Address" = "Email Address";
 "GroupGrantee [http://acs.amazonaws.com/groups/global/AllUsers]" = "GroupGrantee [http://acs.amazonaws.com/groups/global/AllUsers]";
+
+/* Versioning */
+"Revert Version" = "Revert Version";
+"Download Version" = "Download Version";
