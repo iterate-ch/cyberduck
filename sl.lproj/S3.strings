@@ -33,4 +33,4 @@
 /* ACL Editing */
 "Canonical User ID" = "Canonical User ID";
 "Email Address" = "Email Address";
-"http://acs.amazonaws.com/groups/global/AllUsers" = "http://acs.amazonaws.com/groups/global/AllUsers";
+"GroupGrantee [http://acs.amazonaws.com/groups/global/AllUsers]" = "GroupGrantee [http://acs.amazonaws.com/groups/global/AllUsers]";
