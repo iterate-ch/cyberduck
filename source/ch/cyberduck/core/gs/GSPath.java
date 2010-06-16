@@ -121,7 +121,6 @@ public class GSPath extends S3Path {
      * @param perm The permissions to apply
      * @param acl  The ACL to update
      */
-    @Override
     protected void updateAccessControlList(Permission perm, AccessControlList acl) {
         acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
         if(perm.getOtherPermissions()[Permission.READ]) {
