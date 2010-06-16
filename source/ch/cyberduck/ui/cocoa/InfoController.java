@@ -704,6 +704,12 @@ public class InfoController extends ToolbarWindowController {
     private void setGrants(List<GrantAndPermission> grants) {
         Collections.sort(grants, new Comparator<GrantAndPermission>() {
             public int compare(GrantAndPermission o1, GrantAndPermission o2) {
+                if(StringUtils.isBlank(o1.getGrantee().getIdentifier())) {
+                    return -1;
+                }
+                if(StringUtils.isBlank(o2.getGrantee().getIdentifier())) {
+                    return 1;
+                }
                 return o1.getGrantee().getIdentifier().compareTo(o2.getGrantee().getIdentifier());
             }
         });
