@@ -704,12 +704,6 @@ public class InfoController extends ToolbarWindowController {
     private void setGrants(List<GrantAndPermission> grants) {
         Collections.sort(grants, new Comparator<GrantAndPermission>() {
             public int compare(GrantAndPermission o1, GrantAndPermission o2) {
-                if(StringUtils.isBlank(o1.getGrantee().getIdentifier())) {
-                    return -1;
-                }
-                if(StringUtils.isBlank(o2.getGrantee().getIdentifier())) {
-                    return 1;
-                }
                 return o1.getGrantee().getIdentifier().compareTo(o2.getGrantee().getIdentifier());
             }
         });
@@ -846,7 +840,6 @@ public class InfoController extends ToolbarWindowController {
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
-                cell.setPlaceholderString(Locale.localizedString("Canonical User ID", "S3"));
                 final GrantAndPermission grant = grants.get(row.intValue());
                 if(grant.getGrantee() instanceof CanonicalGrantee) {
                     cell.setPlaceholderString(Locale.localizedString("Canonical User ID", "S3"));
@@ -896,12 +889,12 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void aclCanonicalAddButtonClicked(ID sender) {
-        this.aclAddButtonClicked(new CanonicalGrantee());
+        this.aclAddButtonClicked(new CanonicalGrantee(""));
     }
 
     @Action
     public void aclEmailAddButtonClicked(ID sender) {
-        this.aclAddButtonClicked(new EmailAddressGrantee());
+        this.aclAddButtonClicked(new EmailAddressGrantee(""));
     }
 
     @Action
