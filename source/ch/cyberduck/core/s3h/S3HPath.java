@@ -910,12 +910,12 @@ public class S3HPath extends CloudPath {
     /**
      * Use ACL support.
      *
-     * @return Always returning false in the future because permissions should be set using ACLs
+     * @return Always returning false because permissions should be set using ACLs
      * @see #writePermissions(org.jets3t.service.acl.AccessControlList, boolean)
      */
     @Override
     public boolean isWritePermissionsSupported() {
-        return true;
+        return false;
     }
 
     @Override
