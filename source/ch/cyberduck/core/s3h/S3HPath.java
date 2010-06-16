@@ -849,6 +849,8 @@ public class S3HPath extends CloudPath {
      */
     public void writePermissions(AccessControlList acl, boolean recursive) {
         try {
+            final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
+            acl.setOwner(owner);
             if(this.isContainer()) {
                 this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
             }
