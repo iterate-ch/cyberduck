@@ -462,7 +462,7 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSTableView versionsTable;
     private ListDataSource versionsTableModel;
-    private AbstractTableDelegate<String> versionsTableDelegate;
+    private AbstractTableDelegate<BaseVersionOrDeleteMarker> versionsTableDelegate;
 
     public static final String HEADER_VERSIONS_ID_COLUMN = "ID";
     public static final String HEADER_VERSIONS_SIZE_COLUMN = "SIZE";
@@ -504,7 +504,7 @@ public class InfoController extends ToolbarWindowController {
                 return null;
             }
         }).id());
-        this.versionsTable.setDelegate((versionsTableDelegate = new AbstractTableDelegate<String>() {
+        this.versionsTable.setDelegate((versionsTableDelegate = new AbstractTableDelegate<BaseVersionOrDeleteMarker>() {
             public void enterKeyPressed(ID sender) {
                 ;
             }
@@ -518,8 +518,14 @@ public class InfoController extends ToolbarWindowController {
                 versionDeleteButtonClicked(sender);
             }
 
-            public String tooltip(String c) {
-                return c;
+            public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
+                                                                                      ID rect, NSTableColumn c,
+                                                                                      NSInteger row, NSPoint mouseLocation) {
+                return this.tooltip(versions.get(row.intValue()));
+            }
+
+            public String tooltip(BaseVersionOrDeleteMarker v) {
+                return v.getKey();
             }
 
             @Override
@@ -542,14 +548,12 @@ public class InfoController extends ToolbarWindowController {
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
-                if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    final BaseVersionOrDeleteMarker version = versions.get(row.intValue());
-                    if(version.isDeleteMarker()) {
-                        cell.setTextColor(NSColor.disabledControlTextColor());
-                    }
-                    else {
-                        cell.setTextColor(NSColor.controlTextColor());
-                    }
+                final BaseVersionOrDeleteMarker version = versions.get(row.intValue());
+                if(version.isDeleteMarker()) {
+                    cell.setTextColor(NSColor.disabledControlTextColor());
+                }
+                else {
+                    cell.setTextColor(NSColor.controlTextColor());
                 }
             }
 
@@ -783,9 +787,12 @@ public class InfoController extends ToolbarWindowController {
         this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<GrantAndPermission>() {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, int row) {
-                final GrantAndPermission grant = grants.get(row);
-                if(grant.getGrantee() instanceof GroupGrantee) {
-                    return false;
+                if(column.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                    final GrantAndPermission grant = grants.get(row);
+                    if(grant.getGrantee() instanceof GroupGrantee) {
+                        // Group Grantee identifier is not editable
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -803,8 +810,8 @@ public class InfoController extends ToolbarWindowController {
                 aclRemoveButtonClicked(sender);
             }
 
-            public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView aTableView, NSCell aCell,
-                                                                                      ID rect, NSTableColumn aTableColumn,
+            public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
+                                                                                      ID rect, NSTableColumn c,
                                                                                       NSInteger row, NSPoint mouseLocation) {
                 return this.tooltip(grants.get(row.intValue()));
             }
@@ -828,6 +835,28 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void selectionDidChange(NSNotification notification) {
                 aclRemoveButton.setEnabled(aclTable.numberOfSelectedRows().intValue() > 0);
+            }
+
+
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
+                                                                     NSTableColumn c, NSInteger row) {
+                cell.setPlaceholderString(Locale.localizedString("Canonical User ID", "S3"));
+                final GrantAndPermission grant = grants.get(row.intValue());
+                if(grant.getGrantee() instanceof CanonicalGrantee) {
+                    cell.setPlaceholderString(Locale.localizedString("Canonical User ID", "S3"));
+                }
+                else if(grant.getGrantee() instanceof EmailAddressGrantee) {
+                    cell.setPlaceholderString(Locale.localizedString("Email Address", "S3"));
+                }
+                if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                    if(grant.getGrantee() instanceof GroupGrantee) {
+                        // Group Grantee identifier is not editable
+                        cell.setTextColor(NSColor.disabledControlTextColor());
+                    }
+                    else {
+                        cell.setTextColor(NSColor.controlTextColor());
+                    }
+                }
             }
 
             @Override
@@ -854,23 +883,19 @@ public class InfoController extends ToolbarWindowController {
         this.aclAddButton.lastItem().setAction(Foundation.selector("aclEmailAddButtonClicked:"));
         this.aclAddButton.lastItem().setTarget(this.id());
 
-        this.aclAddButton.addItemWithTitle(Locale.localizedString(GroupGrantee.ALL_USERS.toString(), "S3"));
+        this.aclAddButton.addItemWithTitle(Locale.localizedString(GroupGrantee.ALL_USERS.getIdentifier(), "S3"));
         this.aclAddButton.lastItem().setAction(Foundation.selector("aclAllUsersAddButtonClicked:"));
         this.aclAddButton.lastItem().setTarget(this.id());
     }
 
     @Action
     public void aclCanonicalAddButtonClicked(ID sender) {
-        for(Path file : files) {
-            final String owner = ((S3HPath) file).attributes.getOwner();
-            this.aclAddButtonClicked(new CanonicalGrantee(owner));
-            break;
-        }
+        this.aclAddButtonClicked(new CanonicalGrantee());
     }
 
     @Action
     public void aclEmailAddButtonClicked(ID sender) {
-        this.aclAddButtonClicked(new EmailAddressGrantee(Locale.localizedString("Email Address", "S3")));
+        this.aclAddButtonClicked(new EmailAddressGrantee());
     }
 
     @Action
@@ -918,10 +943,9 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        AccessControlList list = ((S3HPath) next).readAcl();
-                        list.getGrants().clear();
-                        list.grantAllPermissions(new HashSet<GrantAndPermission>(grants));
-                        ((S3HPath) next).writePermissions(list, true);
+                        AccessControlList acl = new AccessControlList();
+                        acl.grantAllPermissions(new HashSet<GrantAndPermission>(grants));
+                        ((S3HPath) next).writePermissions(acl, true);
                     }
                 }
 
