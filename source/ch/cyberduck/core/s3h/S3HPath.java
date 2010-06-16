@@ -35,7 +35,10 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
-import org.jets3t.service.model.*;
+import org.jets3t.service.model.BaseVersionOrDeleteMarker;
+import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.S3Owner;
 import org.jets3t.service.utils.ObjectUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -522,7 +525,7 @@ public class S3HPath extends CloudPath {
                 }
             }
             if(null != owner) {
-                if(grant.getGrantee().equals(new CanonicalGrantee(owner.getId()))) {
+                if(grant.getGrantee().getIdentifier().equals(owner.getId())) {
                     if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
                         p[Permission.OWNER][Permission.READ] = true;
                     }
@@ -821,18 +824,7 @@ public class S3HPath extends CloudPath {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), perm.getOctalString()));
 
-            AccessControlList acl = null;
-            final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
-            if(this.isContainer()) {
-                acl = this.getSession().getClient().getBucketAcl(bucket);
-            }
-            else if(attributes.isFile()) {
-                acl = this.getSession().getClient().getObjectAcl(bucket, this.getKey());
-            }
-            if(acl != null) {
-                this.updateAccessControlList(perm, acl);
-                this.writePermissions(acl, recursive);
-            }
+            this.writePermissions(this.getAccessControlList(perm), recursive);
             if(attributes.isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
@@ -844,9 +836,6 @@ public class S3HPath extends CloudPath {
                 }
             }
             attributes.setPermission(perm);
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot change permissions", e);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
@@ -886,37 +875,36 @@ public class S3HPath extends CloudPath {
     }
 
     /**
-     * @param perm The permissions to apply
-     * @param acl  The updated access control list.
+     * @param permission The permissions to apply
+     * @return The updated access control list.
      */
-    protected void updateAccessControlList(Permission perm, AccessControlList acl) {
-        final CanonicalGrantee owner = new CanonicalGrantee(acl.getOwner().getId());
-        // Even the owner is subject to the ACL. For example, if an owner does not have READ access
-        // to an object, the owner cannot read that object. However, the owner of
-        // an object always has write access to the access control policy (WRITE_ACP)
-        // and can change the ACL to read the object.
-        acl.revokeAllPermissions(owner);
-        if(perm.getOwnerPermissions()[Permission.READ]) {
-            acl.grantPermission(owner, org.jets3t.service.acl.Permission.PERMISSION_READ);
+    protected AccessControlList getAccessControlList(Permission permission) throws IOException {
+        final AccessControlList acl = new AccessControlList();
+        final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
+        acl.setOwner(owner);
+        final CanonicalGrantee grantee = new CanonicalGrantee(owner.getId());
+        if(permission.getOwnerPermissions()[Permission.READ]) {
+            acl.grantPermission(grantee, org.jets3t.service.acl.Permission.PERMISSION_READ);
         }
-        if(perm.getOwnerPermissions()[Permission.WRITE]) {
+        if(permission.getOwnerPermissions()[Permission.WRITE]) {
             // when applied to a bucket, grants permission to create, overwrite, and delete any object in the bucket.
             // This permission is not supported for objects.
             if(this.isContainer()) {
-                acl.grantPermission(owner, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
+                acl.grantPermission(grantee, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
             }
         }
         acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
-        if(perm.getOtherPermissions()[Permission.READ]) {
+        if(permission.getOtherPermissions()[Permission.READ]) {
             acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
         }
-        if(perm.getOtherPermissions()[Permission.WRITE]) {
+        if(permission.getOtherPermissions()[Permission.WRITE]) {
             // when applied to a bucket, grants permission to create, overwrite, and delete any object in the bucket.
             // This permission is not supported for objects.
             if(this.isContainer()) {
                 acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
             }
         }
+        return acl;
     }
 
     /**
