@@ -24,7 +24,10 @@ import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GroupGrantee;
+
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -118,19 +121,25 @@ public class GSPath extends S3Path {
      * Note: You cannot grant discrete permissions for reading or writing ACLs. To let
      * someone read and write ACLs you must grant them FULL_CONTROL permission.
      *
-     * @param perm The permissions to apply
-     * @param acl  The ACL to update
+     * @param permission The permissions to apply
+     * @return The updated access control list.
      */
-    protected void updateAccessControlList(Permission perm, AccessControlList acl) {
+    @Override
+    protected AccessControlList getAccessControlList(Permission permission) throws IOException {
+        final AccessControlList acl = super.getAccessControlList(permission);
+        // Owner always has FULL_CONTROL
+        acl.revokeAllPermissions(new CanonicalGrantee(acl.getOwner().getId()));
+        // Revoke standard S3 permissions
         acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
-        if(perm.getOtherPermissions()[Permission.READ]) {
+        if(permission.getOtherPermissions()[Permission.READ]) {
             acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
         }
-        if(perm.getOtherPermissions()[Permission.WRITE]) {
+        if(permission.getOtherPermissions()[Permission.WRITE]) {
             if(this.isContainer()) {
                 acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
                 acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
             }
         }
+        return acl;
     }
 }

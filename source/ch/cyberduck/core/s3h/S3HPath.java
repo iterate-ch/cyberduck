@@ -895,7 +895,6 @@ public class S3HPath extends CloudPath {
                 acl.grantPermission(grantee, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
             }
         }
-        acl.revokeAllPermissions(GroupGrantee.ALL_USERS);
         if(permission.getOtherPermissions()[Permission.READ]) {
             acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
         }
