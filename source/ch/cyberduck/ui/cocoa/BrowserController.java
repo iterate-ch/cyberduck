@@ -730,8 +730,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private abstract class AbstractBrowserOutlineViewDelegate<E> extends AbstractBrowserTableDelegate<E>
             implements NSOutlineView.Delegate {
 
-        public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView outlineView, NSCell cell,
-                                                                                     ID rect, NSTableColumn tc,
+        public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell,
+                                                                                     ID rect, NSTableColumn c,
                                                                                      NSObject item, NSPoint mouseLocation) {
             return this.tooltip(lookup(new OutlinePathReference(item)));
         }
@@ -740,8 +740,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate<E>
             implements NSTableView.Delegate {
 
-        public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView aTableView, NSCell aCell,
-                                                                                  ID rect, NSTableColumn aTableColumn,
+        public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
+                                                                                  ID rect, NSTableColumn c,
                                                                                   NSInteger row, NSPoint mouseLocation) {
             return this.tooltip(browserListModel.childs(workdir()).get(row.intValue()));
         }
@@ -920,10 +920,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         private void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
             if(browserListView.tableColumnWithIdentifier(columnIdentifier) != null) {
-                browserListView.setIndicatorImage_inTableColumn(image, browserListView.tableColumnWithIdentifier(columnIdentifier));
+                browserListView.setIndicatorImage_inTableColumn(image,
+                        browserListView.tableColumnWithIdentifier(columnIdentifier));
             }
             if(browserOutlineView.tableColumnWithIdentifier(columnIdentifier) != null) {
-                browserOutlineView.setIndicatorImage_inTableColumn(image, browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
+                browserOutlineView.setIndicatorImage_inTableColumn(image,
+                        browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
             }
         }
     }
