@@ -992,7 +992,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         browserOutlineView.setAllowsColumnReordering(true);
 
         browserOutlineView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                    NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
+                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
         browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
@@ -1112,7 +1112,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         browserListView.setAllowsColumnReordering(true);
 
         browserListView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                    NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
+                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
 
         browserListView.setDataSource((browserListModel = new BrowserListViewModel(this)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>() {
@@ -2713,7 +2713,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void insideButtonClicked(final ID sender) {
-        final Path selected = this.getSelectedPath(); //last row selected
+        final Path selected = this.getSelectedPath(); //first row selected
         if(null == selected) {
             return;
         }
