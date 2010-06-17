@@ -18,15 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Keychain;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.SystemConfigurationProxy;
-import ch.cyberduck.core.SystemConfigurationReachability;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
+import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.serializer.*;
@@ -69,6 +67,7 @@ public class MainApplication {
 
                 HostPlistReader.register();
                 TransferPlistReader.register();
+                OutlinePathReference.register();
 
                 PlistWriter.register();
 

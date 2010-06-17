@@ -19,7 +19,9 @@ package ch.cyberduck.ui.cocoa.model;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.PathReferenceFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
@@ -35,7 +37,8 @@ public class OutlinePathReference extends PathReference<NSObject> {
 
     private int hashcode;
 
-    public OutlinePathReference(String absolute) {
+    public OutlinePathReference(Path path) {
+        String absolute = path.getAbsolute();
         this.reference = NSString.stringWithString(absolute);
         this.hashcode = absolute.hashCode();
     }
@@ -53,5 +56,27 @@ public class OutlinePathReference extends PathReference<NSObject> {
     @Override
     public int hashCode() {
         return hashcode;
+    }
+
+    private static class Factory extends PathReferenceFactory {
+        @Override
+        protected PathReference create() {
+            throw new UnsupportedOperationException("Please provide a parameter");
+        }
+
+        @Override
+        protected <T, P> PathReference<T> create(P param) {
+            if(param instanceof NSObject) {
+                return (PathReference<T>) new OutlinePathReference((NSObject) param);
+            }
+            if(param instanceof Path) {
+                return (PathReference<T>) new OutlinePathReference((Path) param);
+            }
+            throw new RuntimeException("No support for parameter type " + param.getClass().getName());
+        }
+    }
+
+    public static void register() {
+        PathReferenceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 }

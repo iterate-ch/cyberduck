@@ -1941,6 +1941,7 @@ source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/HistoryCollection.java -text
 source/ch/cyberduck/core/NaturalOrderComparator.java -text
+source/ch/cyberduck/core/PathReferenceFactory.java -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/RendezvousCollection.java -text
 source/ch/cyberduck/core/Serializable.java -text

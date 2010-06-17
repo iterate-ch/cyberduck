@@ -27,15 +27,11 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.StringTokenizer;
@@ -378,13 +374,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     @Override
     public <T> PathReference<T> getReference() {
         if(null == reference) {
-            reference = new OutlinePathReference(this.getAbsolute());
-//            reference = new PathReference() {
-//                @Override
-//                public Object unique() {
-//                    return Path.this;
-//                }
-//            };
+            reference = PathReferenceFactory.createPathReference(this);
         }
         return reference;
     }
