@@ -48,7 +48,7 @@ public class DownloadPromptModel extends TransferPromptModel {
             log.debug("accept:" + child);
             if(child.getLocal().exists()) {
                 if(child.attributes.isFile()) {
-                    if(child.getLocal().attributes.getSize() == 0) {
+                    if(child.getLocal().getAttributes().getSize() == 0) {
                         // Do not prompt for zero sized files
                         return false;
                     }
@@ -67,7 +67,7 @@ public class DownloadPromptModel extends TransferPromptModel {
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes.getSize()),
+            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().getAttributes().getSize()),
                     TableCellAttributes.browserFontRightAlignment());
         }
         if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
@@ -75,7 +75,7 @@ public class DownloadPromptModel extends TransferPromptModel {
                 if(item.attributes.getSize() == 0) {
                     return ALERT_ICON;
                 }
-                if(item.getLocal().attributes.getSize() > item.attributes.getSize()) {
+                if(item.getLocal().getAttributes().getSize() > item.attributes.getSize()) {
                     return ALERT_ICON;
                 }
             }

@@ -230,21 +230,21 @@ public abstract class TransferPromptController extends SheetController implement
                     localURLField.setHidden(false);
 
                     if(p.getLocal().exists()) {
-                        if(p.getLocal().attributes.getSize() == -1) {
+                        if(p.getLocal().getAttributes().getSize() == -1) {
                             localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
                             localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    Status.getSizeAsString(p.getLocal().attributes.getSize()),
+                                    Status.getSizeAsString(p.getLocal().getAttributes().getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         localSizeField.setHidden(false);
-                        if(p.getLocal().attributes.getModificationDate() == -1) {
+                        if(p.getLocal().getAttributes().getModificationDate() == -1) {
                             localModificationField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
                             localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    DateFormatter.getLongFormat(p.getLocal().attributes.getModificationDate()),
+                                    DateFormatter.getLongFormat(p.getLocal().getAttributes().getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         localModificationField.setHidden(false);

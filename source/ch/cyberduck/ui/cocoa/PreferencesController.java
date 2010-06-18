@@ -321,7 +321,7 @@ public class PreferencesController extends ToolbarWindowController {
     private static class EditorOpenPanelDelegate extends ProxyController {
         public boolean panel_shouldShowFilename(ID panel, String path) {
             final Local f = LocalFactory.createLocal(path);
-            if(f.isDirectory()) {
+            if(f.getAttributes().isDirectory()) {
                 return true;
             }
             final String extension = f.getExtension();

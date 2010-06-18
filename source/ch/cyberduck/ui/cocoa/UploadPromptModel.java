@@ -58,10 +58,10 @@ public class UploadPromptModel extends TransferPromptModel {
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
             if(item.attributes.isFile()) {
-                if(item.getLocal().attributes.getSize() == 0) {
+                if(item.getLocal().getAttributes().getSize() == 0) {
                     return ALERT_ICON;
                 }
-                if(item.attributes.getSize() > item.getLocal().attributes.getSize()) {
+                if(item.attributes.getSize() > item.getLocal().getAttributes().getSize()) {
                     return ALERT_ICON;
                 }
             }
