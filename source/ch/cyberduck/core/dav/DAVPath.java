@@ -339,8 +339,8 @@ public class DAVPath extends Path {
                     if(status.isResume()) {
                         this.getSession().getClient().addRequestHeader("Content-Range", "bytes "
                                 + status.getCurrent()
-                                + "-" + (this.getLocal().attributes.getSize() - 1)
-                                + "/" + this.getLocal().attributes.getSize()
+                                + "-" + (this.getLocal().getAttributes().getSize() - 1)
+                                + "/" + this.getLocal().getAttributes().getSize()
                         );
                         long skipped = in.skip(status.getCurrent());
                         log.info("Skipping " + skipped + " bytes");
@@ -349,7 +349,7 @@ public class DAVPath extends Path {
                         }
                     }
                     if(!this.getSession().getClient().putMethod(this.getAbsolute(),
-                            new InputStreamRequestEntity(in, this.getLocal().attributes.getSize() - status.getCurrent(),
+                            new InputStreamRequestEntity(in, this.getLocal().getAttributes().getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
                                 @Override
                                 public void writeRequest(OutputStream out) throws IOException {

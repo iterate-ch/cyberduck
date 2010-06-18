@@ -341,8 +341,8 @@ public class GDPath extends Path {
                     in = this.getLocal().getInputStream();
                     final String mime = this.getLocal().getMimeType();
                     final MediaStreamSource source = new MediaStreamSource(in, mime,
-                            new DateTime(this.getLocal().attributes.getModificationDate()),
-                            this.getLocal().attributes.getSize());
+                            new DateTime(this.getLocal().getAttributes().getModificationDate()),
+                            this.getLocal().getAttributes().getSize());
                     if(this.exists()) {
                         // First, fetch entry using the resourceId
                         URL url = new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId());
@@ -374,8 +374,8 @@ public class GDPath extends Path {
                         }
                         this.getSession().getClient().insert(new URL(url.toString()), document);
                     }
-                    getStatus().setCurrent(this.getLocal().attributes.getSize());
-                    listener.bytesSent(this.getLocal().attributes.getSize());
+                    getStatus().setCurrent(this.getLocal().getAttributes().getSize());
+                    listener.bytesSent(this.getLocal().getAttributes().getSize());
                     getStatus().setComplete(true);
                 }
                 finally {

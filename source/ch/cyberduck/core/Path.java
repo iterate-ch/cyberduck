@@ -31,7 +31,10 @@ import ch.cyberduck.core.serializer.SerializerFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.StringTokenizer;
@@ -196,7 +199,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     protected Path(Path parent, final Local local) {
         this.setPath(parent, local);
         this.attributes.setType(
-                local.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                local.getAttributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
     }
 
     /**
@@ -317,7 +320,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    /**
+     * No checksum calculation by default. Might be supported by specific provider implementation.
+     */
     public void readChecksum() {
         ;
     }
@@ -386,7 +391,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public void setLocal(Local file) {
         if(null != file) {
-            if(file.attributes.isSymbolicLink()) {
+            if(file.getAttributes().isSymbolicLink()) {
                 if(null != file.getSymlinkTarget()) {
                     /**
                      * A canonical pathname is both absolute and unique.  The precise

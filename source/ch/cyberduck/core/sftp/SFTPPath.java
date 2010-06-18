@@ -575,7 +575,7 @@ public class SFTPPath extends Path {
                 else if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
                     SCPClient scp = this.getSession().openScp();
                     scp.setCharset(this.getSession().getEncoding());
-                    out = scp.put(this.getName(), this.getLocal().attributes.getSize(),
+                    out = scp.put(this.getName(), this.getLocal().getAttributes().getSize(),
                             this.getParent().getAbsolute(),
                             "0" + p.getOctalString());
                 }
@@ -583,7 +583,7 @@ public class SFTPPath extends Path {
             }
             if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    this.writeModificationDate(handle, this.getLocal().attributes.getModificationDate());
+                    this.writeModificationDate(handle, this.getLocal().getAttributes().getModificationDate());
                 }
             }
         }

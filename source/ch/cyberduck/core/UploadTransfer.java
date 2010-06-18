@@ -120,7 +120,7 @@ public class UploadTransfer extends Transfer {
         public void prepare(Path p) {
             if(p.attributes.isFile()) {
                 // Read file size
-                size += p.getLocal().attributes.getSize();
+                size += p.getLocal().getAttributes().getSize();
                 if(p.getStatus().isResume()) {
                     transferred += p.attributes.getSize();
                 }
@@ -235,7 +235,7 @@ public class UploadTransfer extends Transfer {
                 if(p.attributes.isDirectory()) {
                     return !p.exists();
                 }
-                if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
+                if(p.getStatus().isComplete() || p.getLocal().getAttributes().getSize() == p.attributes.getSize()) {
                     // No need to resume completed transfers
                     p.getStatus().setComplete(true);
                     return false;
@@ -335,7 +335,7 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path root : this.getRoots()) {
                 if(root.exists()) {
-                    if(root.getLocal().attributes.isDirectory()) {
+                    if(root.getLocal().getAttributes().isDirectory()) {
                         if(0 == this.childs(root).size()) {
                             // Do not prompt for existing empty directories
                             continue;
@@ -387,7 +387,7 @@ public class UploadTransfer extends Transfer {
                     }
                 }
                 else {
-                    permission = p.getLocal().attributes.getPermission();
+                    permission = p.getLocal().getAttributes().getPermission();
                 }
             }
         }

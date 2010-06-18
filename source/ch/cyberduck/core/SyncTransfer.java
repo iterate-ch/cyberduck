@@ -357,16 +357,16 @@ public class SyncTransfer extends Transfer {
             p.readSize();
         }
         //fist make sure both files are larger than 0 bytes
-        if(p.attributes.getSize() == 0 && p.getLocal().attributes.getSize() == 0) {
+        if(p.attributes.getSize() == 0 && p.getLocal().getAttributes().getSize() == 0) {
             return COMPARISON_EQUAL;
         }
         if(p.attributes.getSize() == 0) {
             return COMPARISON_LOCAL_NEWER;
         }
-        if(p.getLocal().attributes.getSize() == 0) {
+        if(p.getLocal().getAttributes().getSize() == 0) {
             return COMPARISON_REMOTE_NEWER;
         }
-        if(p.attributes.getSize() == p.getLocal().attributes.getSize()) {
+        if(p.attributes.getSize() == p.getLocal().getAttributes().getSize()) {
             return COMPARISON_EQUAL;
         }
         //different file size - further comparison check
@@ -384,7 +384,7 @@ public class SyncTransfer extends Transfer {
             p.readTimestamp();
         }
         final Calendar remote = this.asCalendar(p.attributes.getModificationDate(), Calendar.SECOND);
-        final Calendar local = this.asCalendar(p.getLocal().attributes.getModificationDate(), Calendar.SECOND);
+        final Calendar local = this.asCalendar(p.getLocal().getAttributes().getModificationDate(), Calendar.SECOND);
         if(local.before(remote)) {
             return COMPARISON_REMOTE_NEWER;
         }

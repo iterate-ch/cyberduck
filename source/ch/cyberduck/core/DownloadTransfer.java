@@ -142,7 +142,7 @@ public class DownloadTransfer extends Transfer {
                     size += p.attributes.getSize();
                 }
                 if(p.getStatus().isResume()) {
-                    transferred += p.getLocal().attributes.getSize();
+                    transferred += p.getLocal().getAttributes().getSize();
                 }
             }
             if(!p.getLocal().getParent().exists()) {
@@ -197,7 +197,7 @@ public class DownloadTransfer extends Transfer {
 
     private final TransferFilter ACTION_RESUME = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
-            if(p.getStatus().isComplete() || p.getLocal().attributes.getSize() == p.attributes.getSize()) {
+            if(p.getStatus().isComplete() || p.getLocal().getAttributes().getSize() == p.attributes.getSize()) {
                 // No need to resume completed transfers
                 p.getStatus().setComplete(true);
                 return false;
@@ -212,9 +212,9 @@ public class DownloadTransfer extends Transfer {
         public void prepare(final Path p) {
             if(p.attributes.isFile()) {
                 final boolean resume = p.getLocal().exists()
-                        && p.getLocal().attributes.getSize() > 0;
+                        && p.getLocal().getAttributes().getSize() > 0;
                 p.getStatus().setResume(resume);
-                long skipped = p.getLocal().attributes.getSize();
+                long skipped = p.getLocal().getAttributes().getSize();
                 p.getStatus().setCurrent(skipped);
             }
             super.prepare(p);
@@ -231,7 +231,7 @@ public class DownloadTransfer extends Transfer {
             if(p.attributes.isFile()) {
                 p.getStatus().setResume(false);
             }
-            if(p.getLocal().exists() && p.getLocal().attributes.getSize() > 0) {
+            if(p.getLocal().exists() && p.getLocal().getAttributes().getSize() > 0) {
                 final String parent = p.getLocal().getParent().getAbsolute();
                 final String filename = p.getName();
                 int no = 0;
@@ -273,14 +273,14 @@ public class DownloadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path root : this.getRoots()) {
                 if(root.getLocal().exists()) {
-                    if(root.getLocal().attributes.isDirectory()) {
+                    if(root.getLocal().getAttributes().isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
-                    if(root.getLocal().attributes.isFile()) {
-                        if(root.getLocal().attributes.getSize() == 0) {
+                    if(root.getLocal().getAttributes().isFile()) {
+                        if(root.getLocal().getAttributes().getSize() == 0) {
                             // Do not prompt for zero sized files
                             continue;
                         }

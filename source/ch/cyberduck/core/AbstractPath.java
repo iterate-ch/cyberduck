@@ -46,7 +46,7 @@ public abstract class AbstractPath {
     /**
      * Attributes denoting this path
      */
-    public Attributes attributes;
+    public PathAttributes attributes;
 
     public static final int FILE_TYPE = 1;
     public static final int DIRECTORY_TYPE = 2;
@@ -444,9 +444,4 @@ public abstract class AbstractPath {
                 || perm.getGroupPermissions()[Permission.WRITE]
                 || perm.getOtherPermissions()[Permission.WRITE];
     }
-
-    /**
-     * Calculate the MD5 sum as Hex-encoded string or null if failure
-     */
-    public abstract void readChecksum();
 }

@@ -35,126 +35,136 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class Local extends AbstractPath implements Attributes {
+public abstract class Local extends AbstractPath {
     private static Logger log = Logger.getLogger(Local.class);
 
-    {
-        attributes = this;
-    }
+    /**
+     *
+     */
+    private LocalAttributes attributes;
 
-    public Permission getPermission() {
-        return null;
-    }
-
-    public void setPermission(Permission p) {
-        ;
-    }
-
-    public boolean isVolume() {
-        return null == _impl.getParent();
-    }
-
-    public boolean isDirectory() {
-        return _impl.isDirectory();
-    }
-
-    public boolean isFile() {
-        return _impl.isFile();
+    public LocalAttributes getAttributes() {
+        if(null == attributes) {
+            attributes = new LocalAttributes();
+        }
+        return attributes;
     }
 
     /**
-     * Checks whether a given file is a symbolic link.
-     * <p/>
-     * <p>It doesn't really test for symbolic links but whether the
-     * canonical and absolute paths of the file are identical - this
-     * may lead to false positives on some platforms.</p>
-     *
-     * @return true if the file is a symbolic link.
+     * 
      */
-    public boolean isSymbolicLink() {
-        if(!Local.this.exists()) {
-            return false;
+    public class LocalAttributes extends Attributes {
+        /**
+         * @return Always null
+         */
+        @Override
+        public String getOwner() {
+            return Locale.localizedString("Unknown");
         }
-        // For a link that actually points to something (either a file or a directory),
-        // the absolute path is the path through the link, whereas the canonical path
-        // is the path the link references.
-        try {
-            return !_impl.getAbsolutePath().equals(_impl.getCanonicalPath());
+
+        /**
+         * @return Always null
+         */
+        @Override
+        public String getGroup() {
+            return Locale.localizedString("Unknown");
         }
-        catch(IOException e) {
-            return false;
+
+        @Override
+        public long getModificationDate() {
+            return _impl.lastModified();
         }
-    }
 
-    public void setType(int i) {
-        ;
-    }
-
-    public void setSize(long size) {
-        ;
-    }
-
-    public void setOwner(String owner) {
-        ;
-    }
-
-    public void setGroup(String group) {
-        ;
-    }
-
-    /**
-     *
-     * @return Always null
-     */
-    public String getOwner() {
-        return null;
-    }
-
-    /**
-     *
-     * @return Always null
-     */
-    public String getGroup() {
-        return null;
-    }
-
-    public long getModificationDate() {
-        return _impl.lastModified();
-    }
-
-    public void setModificationDate(long millis) {
-        ;
-    }
-
-    public long getCreationDate() {
-        return this.getModificationDate();
-    }
-
-    public void setCreationDate(long millis) {
-        ;
-    }
-
-    public long getAccessedDate() {
-        return this.getModificationDate();
-    }
-
-    public void setAccessedDate(long millis) {
-        ;
-    }
-
-    public int getType() {
-        final int t = this.isFile() ? AbstractPath.FILE_TYPE : AbstractPath.DIRECTORY_TYPE;
-        if(this.isSymbolicLink()) {
-            return t | AbstractPath.SYMBOLIC_LINK_TYPE;
+        @Override
+        public long getCreationDate() {
+            return this.getModificationDate();
         }
-        return t;
-    }
 
-    public long getSize() {
-        if(this.isDirectory()) {
-            return -1;
+        @Override
+        public long getAccessedDate() {
+            return this.getModificationDate();
         }
-        return _impl.length();
+
+        @Override
+        public int getType() {
+            final int t = this.isFile() ? AbstractPath.FILE_TYPE : AbstractPath.DIRECTORY_TYPE;
+            if(this.isSymbolicLink()) {
+                return t | AbstractPath.SYMBOLIC_LINK_TYPE;
+            }
+            return t;
+        }
+
+        @Override
+        public long getSize() {
+            if(this.isDirectory()) {
+                return -1;
+            }
+            return _impl.length();
+        }
+
+        @Override
+        public Permission getPermission() {
+            return null;
+        }
+
+        @Override
+        public boolean isVolume() {
+            return null == _impl.getParent();
+        }
+
+        @Override
+        public boolean isDirectory() {
+            return _impl.isDirectory();
+        }
+
+        @Override
+        public boolean isFile() {
+            return _impl.isFile();
+        }
+
+        /**
+         * Checks whether a given file is a symbolic link.
+         * <p/>
+         * <p>It doesn't really test for symbolic links but whether the
+         * canonical and absolute paths of the file are identical - this
+         * may lead to false positives on some platforms.</p>
+         *
+         * @return true if the file is a symbolic link.
+         */
+        @Override
+        public boolean isSymbolicLink() {
+            if(!Local.this.exists()) {
+                return false;
+            }
+            // For a link that actually points to something (either a file or a directory),
+            // the absolute path is the path through the link, whereas the canonical path
+            // is the path the link references.
+            try {
+                return !_impl.getAbsolutePath().equals(_impl.getCanonicalPath());
+            }
+            catch(IOException e) {
+                return false;
+            }
+        }
+
+        /**
+         * Calculate the MD5 sum as Hex-encoded string
+         *
+         * @return Null if failure
+         */
+        @Override
+        public String getChecksum() {
+            try {
+                return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(Local.this.getInputStream()));
+            }
+            catch(NoSuchAlgorithmException e) {
+                log.error("MD5 failed:" + e.getMessage());
+            }
+            catch(IOException e) {
+                log.error("MD5 failed:" + e.getMessage());
+            }
+            return null;
+        }
     }
 
     protected File _impl;
@@ -278,7 +288,7 @@ public abstract class Local extends AbstractPath implements Attributes {
      * @return the file type for the extension of this file provided by launch services
      */
     public String kind() {
-        if(attributes.isDirectory()) {
+        if(this.getAttributes().isDirectory()) {
             return Locale.localizedString("Folder");
         }
         final String extension = this.getExtension();
@@ -430,29 +440,6 @@ public abstract class Local extends AbstractPath implements Attributes {
             log.error(e.getMessage());
             return null;
         }
-    }
-
-    private String checksum;
-
-    @Override
-    public void readChecksum() {
-        try {
-            ServiceUtils.toHex(ServiceUtils.computeMD5Hash(this.getInputStream()));
-        }
-        catch(NoSuchAlgorithmException e) {
-            log.error("MD5 failed:" + e.getMessage());
-        }
-        catch(IOException e) {
-            log.error("MD5 failed:" + e.getMessage());
-        }
-    }
-
-    public String getChecksum() {
-        return checksum;
-    }
-
-    public void setChecksum(String checksum) {
-        this.checksum = checksum;
     }
 
     /**

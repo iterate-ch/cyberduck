@@ -105,10 +105,10 @@ public class HistoryCollection extends HostCollection {
             public int compare(Host o1, Host o2) {
                 Local f1 = getFile(o1);
                 Local f2 = getFile(o2);
-                if(f1.attributes.getModificationDate() < f2.attributes.getModificationDate()) {
+                if(f1.getAttributes().getModificationDate() < f2.getAttributes().getModificationDate()) {
                     return 1;
                 }
-                if(f1.attributes.getModificationDate() > f2.attributes.getModificationDate()) {
+                if(f1.getAttributes().getModificationDate() > f2.getAttributes().getModificationDate()) {
                     return -1;
                 }
                 return 0;

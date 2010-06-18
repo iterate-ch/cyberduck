@@ -24,6 +24,7 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class PathAttributes implements Attributes, Serializable {
+public class PathAttributes extends Attributes implements Serializable {
     private static Logger log = Logger.getLogger(PathAttributes.class);
 
     /**
@@ -59,6 +60,11 @@ public class PathAttributes implements Attributes, Serializable {
      */
     private String storageClass;
     private String versionId;
+
+    /**
+     * Should be hidden in the browser by default.
+     */
+    private boolean hidden;
 
     public PathAttributes() {
         super();
@@ -113,10 +119,12 @@ public class PathAttributes implements Attributes, Serializable {
     /**
      * @return length the size of file in bytes.
      */
+    @Override
     public long getSize() {
         return this.size;
     }
 
+    @Override
     public long getModificationDate() {
         return this.modified;
     }
@@ -125,6 +133,7 @@ public class PathAttributes implements Attributes, Serializable {
         this.modified = millis;
     }
 
+    @Override
     public long getCreationDate() {
         return this.created;
     }
@@ -133,6 +142,7 @@ public class PathAttributes implements Attributes, Serializable {
         this.created = millis;
     }
 
+    @Override
     public long getAccessedDate() {
         return this.accessed;
     }
@@ -151,6 +161,7 @@ public class PathAttributes implements Attributes, Serializable {
     /**
      * @return
      */
+    @Override
     public Permission getPermission() {
         return this.permission;
     }
@@ -159,23 +170,28 @@ public class PathAttributes implements Attributes, Serializable {
         this.type = type;
     }
 
+    @Override
     public int getType() {
         return this.type;
     }
 
+    @Override
     public boolean isVolume() {
         return (this.type & Path.VOLUME_TYPE) == Path.VOLUME_TYPE;
     }
 
+    @Override
     public boolean isDirectory() {
         return (this.type & Path.DIRECTORY_TYPE) == Path.DIRECTORY_TYPE
                 || this.isVolume();
     }
 
+    @Override
     public boolean isFile() {
         return (this.type & Path.FILE_TYPE) == Path.FILE_TYPE;
     }
 
+    @Override
     public boolean isSymbolicLink() {
         return (this.type & Path.SYMBOLIC_LINK_TYPE) == Path.SYMBOLIC_LINK_TYPE;
     }
@@ -187,6 +203,7 @@ public class PathAttributes implements Attributes, Serializable {
     /**
      * @return The owner of the file or 'Unknown' if not set
      */
+    @Override
     public String getOwner() {
         if(null == this.owner) {
             return Locale.localizedString("Unknown");
@@ -201,6 +218,7 @@ public class PathAttributes implements Attributes, Serializable {
     /**
      * @return
      */
+    @Override
     public String getGroup() {
         if(null == this.group) {
             return Locale.localizedString("Unknown");
@@ -208,6 +226,7 @@ public class PathAttributes implements Attributes, Serializable {
         return this.group;
     }
 
+    @Override
     public String getChecksum() {
         return checksum;
     }
@@ -230,5 +249,24 @@ public class PathAttributes implements Attributes, Serializable {
 
     public void setVersionId(String versionId) {
         this.versionId = versionId;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof PathAttributes) {
+            if(StringUtils.isNotBlank(this.getVersionId()) && StringUtils.isNotBlank(((PathAttributes) other).getVersionId())) {
+                // Compare by version ID if e.g. supported by S3
+                return this.getVersionId().equals(((PathAttributes) other).getVersionId());
+            }
+        }
+        return super.equals(other);
     }
 }

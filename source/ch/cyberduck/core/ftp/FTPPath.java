@@ -740,7 +740,7 @@ public class FTPPath extends Path {
                     this.getStatus().setResume(false);
                 }
             }
-            in = this.getSession().getClient().get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes.getSize() : 0);
+            in = this.getSession().getClient().get(this.getName(), this.getStatus().isResume() ? this.getLocal().getAttributes().getSize() : 0);
             out = this.getLocal().getOutputStream(this.getStatus().isResume());
             this.download(in, out, throttle, listener);
             if(this.getStatus().isComplete()) {
@@ -842,8 +842,8 @@ public class FTPPath extends Path {
             }
             if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                 log.info("Updating timestamp");
-                this.writeModificationDate(this.getLocal().attributes.getModificationDate(),
-                        this.getLocal().attributes.getCreationDate());
+                this.writeModificationDate(this.getLocal().getAttributes().getModificationDate(),
+                        this.getLocal().getAttributes().getCreationDate());
             }
         }
         catch(IOException e) {

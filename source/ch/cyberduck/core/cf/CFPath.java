@@ -310,7 +310,7 @@ public class CFPath extends CloudPath {
                 status.setResume(false);
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
-                String md5sum = this.getLocal().getChecksum();
+                String md5sum = this.getLocal().getAttributes().getChecksum();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
@@ -318,7 +318,7 @@ public class CFPath extends CloudPath {
                 try {
                     this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
                             new InputStreamRequestEntity(in,
-                                    this.getLocal().attributes.getSize() - status.getCurrent(),
+                                    this.getLocal().getAttributes().getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
 
                                 @Override

@@ -124,14 +124,82 @@ public class FinderLocal extends Local {
         return JNI_LOADED;
     }
 
+    /**
+     * @param absolute The absolute path of the alias file.
+     * @return The absolute path this alias is pointing to.
+     */
     private native String resolveAlias(String absolute);
+
+    private FinderLocalAttributes attributes;
+
+    /**
+     * Uses <code>NSFileManager</code> for reading file attributes.
+     */
+    private class FinderLocalAttributes extends LocalAttributes {
+        @Override
+        public Permission getPermission() {
+            try {
+                NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(
+                        _impl.getAbsolutePath());
+                if(null == fileAttributes) {
+                    log.error("No such file:" + getAbsolute());
+                    return null;
+                }
+                NSObject object = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions);
+                if(null == object) {
+                    log.error("No such file:" + getAbsolute());
+                    return null;
+                }
+                NSNumber posix = Rococoa.cast(object, NSNumber.class);
+                String posixString = Integer.toString(posix.intValue() & 0177777, 8);
+                return new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
+            }
+            catch(NumberFormatException e) {
+                log.error(e.getMessage());
+            }
+            return null;
+        }
+
+        /**
+         * Read <code>NSFileCreationDate</code>.
+         *
+         * @return Milliseconds since 1970
+         */
+        @Override
+        public long getCreationDate() {
+            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
+            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
+            // if the link points to a nonexistent file, this method returns null. If flag is false,
+            // the attributes of the symbolic link are returned.
+            if(null == fileAttributes) {
+                log.error("No such file:" + getAbsolute());
+                return -1;
+            }
+            NSObject date = fileAttributes.objectForKey(NSFileManager.NSFileCreationDate);
+            if(null == date) {
+                // Returns an entry’s value given its key, or null if no value is associated with key.
+                log.error("No such file:" + getAbsolute());
+                return -1;
+            }
+            return (long) (Rococoa.cast(date, NSDate.class).timeIntervalSince1970() * 1000);
+        }
+
+    }
+
+    @Override
+    public LocalAttributes getAttributes() {
+        if(null == attributes) {
+            attributes = new FinderLocalAttributes();
+        }
+        return attributes;
+    }
 
     /**
      * @return Human readable description of file type
      */
     @Override
     public String kind() {
-        if(attributes.isFile()) {
+        if(this.getAttributes().isFile()) {
             // Native file type mapping
             final String kind = kind(this.getExtension());
             if(StringUtils.isEmpty(kind)) {
@@ -143,30 +211,6 @@ public class FinderLocal extends Local {
     }
 
     public static native String kind(String extension);
-
-    @Override
-    public Permission getPermission() {
-        try {
-            NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(
-                    _impl.getAbsolutePath());
-            if(null == fileAttributes) {
-                log.error("No such file:" + getAbsolute());
-                return null;
-            }
-            NSObject object = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions);
-            if(null == object) {
-                log.error("No such file:" + getAbsolute());
-                return null;
-            }
-            NSNumber posix = Rococoa.cast(object, NSNumber.class);
-            String posixString = Integer.toString(posix.intValue() & 0177777, 8);
-            return new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
-        }
-        catch(NumberFormatException e) {
-            log.error(e.getMessage());
-            return null;
-        }
-    }
 
     @Override
     public void writePermissions(final Permission perm, final boolean recursive) {
@@ -189,7 +233,6 @@ public class FinderLocal extends Local {
         });
     }
 
-
     /**
      * Write <code>NSFileModificationDate</code>.
      *
@@ -209,30 +252,6 @@ public class FinderLocal extends Local {
                 }
             }
         });
-    }
-
-    /**
-     * Read <code>NSFileCreationDate</code>.
-     *
-     * @return Milliseconds since 1970
-     */
-    @Override
-    public long getCreationDate() {
-        final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
-        // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
-        // if the link points to a nonexistent file, this method returns null. If flag is false,
-        // the attributes of the symbolic link are returned.
-        if(null == fileAttributes) {
-            log.error("No such file:" + getAbsolute());
-            return -1;
-        }
-        NSObject date = fileAttributes.objectForKey(NSFileManager.NSFileCreationDate);
-        if(null == date) {
-            // Returns an entry’s value given its key, or null if no value is associated with key.
-            log.error("No such file:" + getAbsolute());
-            return -1;
-        }
-        return (long) (Rococoa.cast(date, NSDate.class).timeIntervalSince1970() * 1000);
     }
 
     /**
@@ -513,21 +532,5 @@ public class FinderLocal extends Local {
     @Override
     public boolean isWritable() {
         return NSFileManager.defaultManager().isWritableFileAtPath(this.getAbsolute());
-    }
-
-    public String getStorageClass() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setStorageClass(String redundancy) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setVersionId(String versionId) {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getVersionId() {
-        throw new UnsupportedOperationException();
     }
 }

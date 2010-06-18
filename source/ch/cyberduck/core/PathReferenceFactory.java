@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id: PathReferenceFactory.java 5451 2010-06-16 07:34:10Z yla $
+ * @version $Id$
  */
 public abstract class PathReferenceFactory extends Factory<PathReference> {
 

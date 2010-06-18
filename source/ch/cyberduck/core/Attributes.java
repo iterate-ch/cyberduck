@@ -18,15 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @version $Id$
  */
-public interface Attributes {
-
-    public abstract int getType();
+public abstract class Attributes {
 
     /**
-     * @param i
+     * @return
      * @see AbstractPath#FILE_TYPE
      * @see AbstractPath#DIRECTORY_TYPE
      * @see AbstractPath#SYMBOLIC_LINK_TYPE
@@ -34,7 +34,7 @@ public interface Attributes {
      * @see #isFile()
      * @see #isSymbolicLink()
      */
-    public abstract void setType(int i);
+    public abstract int getType();
 
     /**
      * @return The length of the file
@@ -46,28 +46,20 @@ public interface Attributes {
      */
     public abstract long getModificationDate();
 
-    public abstract void setModificationDate(long millis);
-
     /**
      * @return The time the file was created in millis UTC or -1 if unknown
      */
     public abstract long getCreationDate();
-
-    public abstract void setCreationDate(long millis);
 
     /**
      * @return The time the file was last accessed in millis UTC or -1 if unknown
      */
     public abstract long getAccessedDate();
 
-    public abstract void setAccessedDate(long millis);
-
     /**
      * @return The file permission mask or null if unknown
      */
     public abstract Permission getPermission();
-
-    public abstract void setPermission(Permission permission);
 
     /**
      * @return True if this path denotes a directory or is a symbolic link pointing to a directory
@@ -87,25 +79,25 @@ public interface Attributes {
      */
     public abstract boolean isSymbolicLink();
 
-    public abstract void setSize(long size);
-
-    public abstract void setOwner(String owner);
-
-    public abstract void setGroup(String group);
-
     public abstract String getOwner();
 
     public abstract String getGroup();
 
     public abstract String getChecksum();
 
-    public abstract void setChecksum(String md5);
-
-    public abstract void setStorageClass(String redundancy);
-
-    public abstract String getStorageClass();
-
-    public abstract void setVersionId(String versionId);
-
-    public abstract String getVersionId();
+    /**
+     * @param other
+     * @return True if the checksum matches or the references are equal.
+     * @see #getChecksum()
+     */
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof Attributes) {
+            if(StringUtils.isNotBlank(this.getChecksum()) && StringUtils.isNotBlank(((Attributes) other).getChecksum())) {
+                // Compare by checksum if e.g. supported by S3
+                return this.getChecksum().equals(((Attributes) other).getChecksum());
+            }
+        }
+        return super.equals(other);
+    }
 }
