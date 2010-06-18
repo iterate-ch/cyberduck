@@ -488,8 +488,8 @@ public class InfoController extends ToolbarWindowController {
                 final String identifier = tableColumn.identifier();
                 final BaseVersionOrDeleteMarker version = versions.get(row.intValue());
                 if(identifier.equals(HEADER_VERSIONS_ID_COLUMN)) {
-                    return NSString.stringWithString(StringUtils.isNotBlank(version.getVersionId()) ?
-                            version.getVersionId() : Locale.localizedString("Unknown"));
+                    return NSString.stringWithString("null".equals(version.getVersionId()) ?
+                            Locale.localizedString("Unknown") : version.getVersionId());
                 }
                 if(identifier.equals(HEADER_VERSIONS_SIZE_COLUMN)) {
                     if(version.isDeleteMarker()) {
