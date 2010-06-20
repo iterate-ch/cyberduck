@@ -251,7 +251,7 @@ public class GDPath extends Path {
 
     @Override
     public void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
@@ -304,7 +304,7 @@ public class GDPath extends Path {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes.isDirectory()) {
+        if(attributes().isDirectory()) {
             this.getLocal().mkdir(true);
         }
     }
@@ -334,7 +334,7 @@ public class GDPath extends Path {
             if(check) {
                 this.getSession().check();
             }
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
@@ -344,8 +344,8 @@ public class GDPath extends Path {
                     in = this.getLocal().getInputStream();
                     final String mime = this.getLocal().getMimeType();
                     final MediaStreamSource source = new MediaStreamSource(in, mime,
-                            new DateTime(this.getLocal().getAttributes().getModificationDate()),
-                            this.getLocal().getAttributes().getSize());
+                            new DateTime(this.getLocal().attributes().getModificationDate()),
+                            this.getLocal().attributes().getSize());
                     if(this.exists()) {
                         // First, fetch entry using the resourceId
                         URL url = new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId());
@@ -377,8 +377,8 @@ public class GDPath extends Path {
                         }
                         this.getSession().getClient().insert(new URL(url.toString()), document);
                     }
-                    getStatus().setCurrent(this.getLocal().getAttributes().getSize());
-                    listener.bytesSent(this.getLocal().getAttributes().getSize());
+                    getStatus().setCurrent(this.getLocal().attributes().getSize());
+                    listener.bytesSent(this.getLocal().attributes().getSize());
                     getStatus().setComplete(true);
                 }
                 finally {
@@ -484,24 +484,24 @@ public class GDPath extends Path {
             p.setDocumentUri(entry.getDocumentLink().getHref());
             p.setResourceId(entry.getResourceId());
             // Add unique document ID as checksum
-            p.attributes.setChecksum(entry.getDocId());
+            p.attributes().setChecksum(entry.getDocId());
             if(null != entry.getMediaSource()) {
-                p.attributes.setSize(entry.getMediaSource().getContentLength());
+                p.attributes().setSize(entry.getMediaSource().getContentLength());
             }
             if(entry.getQuotaBytesUsed() > 0) {
-                p.attributes.setSize(entry.getQuotaBytesUsed());
+                p.attributes().setSize(entry.getQuotaBytesUsed());
             }
             final DateTime lastViewed = entry.getLastViewed();
             if(lastViewed != null) {
-                p.attributes.setAccessedDate(lastViewed.getValue());
+                p.attributes().setAccessedDate(lastViewed.getValue());
             }
             LastModifiedBy lastModifiedBy = entry.getLastModifiedBy();
             if(lastModifiedBy != null) {
-                p.attributes.setOwner(lastModifiedBy.getName());
+                p.attributes().setOwner(lastModifiedBy.getName());
             }
             final DateTime updated = entry.getUpdated();
             if(updated != null) {
-                p.attributes.setModificationDate(updated.getValue());
+                p.attributes().setModificationDate(updated.getValue());
             }
 
             childs.add(p);
@@ -511,7 +511,7 @@ public class GDPath extends Path {
 
     @Override
     public String getMimeType() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             final String exportFormat = getExportFormat(this.getDocumentType());
             if(StringUtils.isNotEmpty(exportFormat)) {
                 return getMimeType(exportFormat);
@@ -522,7 +522,7 @@ public class GDPath extends Path {
 
     @Override
     public String getExtension() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             final String exportFormat = getExportFormat(this.getDocumentType());
             if(StringUtils.isNotEmpty(exportFormat)) {
                 return exportFormat;
@@ -533,7 +533,7 @@ public class GDPath extends Path {
 
     @Override
     public String getName() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             final String exportFormat = getExportFormat(this.getDocumentType());
             if(StringUtils.isNotEmpty(exportFormat)) {
                 if(!super.getName().endsWith(exportFormat)) {
@@ -614,10 +614,10 @@ public class GDPath extends Path {
             }
         }
         catch(IOException e) {
-            if(this.attributes.isFile()) {
+            if(this.attributes().isFile()) {
                 this.error("Cannot delete file", e);
             }
-            if(this.attributes.isDirectory()) {
+            if(this.attributes().isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
         }

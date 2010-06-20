@@ -103,11 +103,11 @@ public class DAVPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
-            this.getSession().getClient().setPath(this.attributes.isDirectory() ?
+            this.getSession().getClient().setPath(this.attributes().isDirectory() ?
                     this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
             this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-            attributes.setSize(this.getSession().getClient().getGetContentLength());
+            attributes().setSize(this.getSession().getClient().getGetContentLength());
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
@@ -121,11 +121,11 @@ public class DAVPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
-            this.getSession().getClient().setPath(this.attributes.isDirectory() ?
+            this.getSession().getClient().setPath(this.attributes().isDirectory() ?
                     this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
 
             this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-            attributes.setModificationDate(this.getSession().getClient().getGetLastModified());
+            attributes().setModificationDate(this.getSession().getClient().getGetLastModified());
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
@@ -151,10 +151,10 @@ public class DAVPath extends Path {
             }
         }
         catch(IOException e) {
-            if(this.attributes.isFile()) {
+            if(this.attributes().isFile()) {
                 this.error("Cannot delete file", e);
             }
-            if(this.attributes.isDirectory()) {
+            if(this.attributes().isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
         }
@@ -182,14 +182,14 @@ public class DAVPath extends Path {
                         collection ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 p.setParent(this);
 
-                p.attributes.setOwner(resource.getOwner());
+                p.attributes().setOwner(resource.getOwner());
                 if(resource.getGetLastModified() > 0) {
-                    p.attributes.setModificationDate(resource.getGetLastModified());
+                    p.attributes().setModificationDate(resource.getGetLastModified());
                 }
                 if(resource.getCreationDate() > 0) {
-                    p.attributes.setCreationDate(resource.getCreationDate());
+                    p.attributes().setCreationDate(resource.getCreationDate());
                 }
-                p.attributes.setSize(resource.getGetContentLength());
+                p.attributes().setSize(resource.getGetContentLength());
 
                 childs.add(p);
             }
@@ -259,10 +259,10 @@ public class DAVPath extends Path {
             this.setPath(renamed.getAbsolute());
         }
         catch(IOException e) {
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.error("Cannot rename file", e);
             }
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 this.error("Cannot rename folder", e);
             }
         }
@@ -280,10 +280,10 @@ public class DAVPath extends Path {
             }
         }
         catch(IOException e) {
-            if(this.attributes.isFile()) {
+            if(this.attributes().isFile()) {
                 this.error("Cannot copy file", e);
             }
-            if(this.attributes.isDirectory()) {
+            if(this.attributes().isDirectory()) {
                 this.error("Cannot copy folder", e);
             }
         }
@@ -291,7 +291,7 @@ public class DAVPath extends Path {
 
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
@@ -318,7 +318,7 @@ public class DAVPath extends Path {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes.isDirectory()) {
+        if(attributes().isDirectory()) {
             this.getLocal().mkdir(true);
         }
     }
@@ -329,7 +329,7 @@ public class DAVPath extends Path {
             if(check) {
                 this.getSession().check();
             }
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
@@ -339,8 +339,8 @@ public class DAVPath extends Path {
                     if(status.isResume()) {
                         this.getSession().getClient().addRequestHeader("Content-Range", "bytes "
                                 + status.getCurrent()
-                                + "-" + (this.getLocal().getAttributes().getSize() - 1)
-                                + "/" + this.getLocal().getAttributes().getSize()
+                                + "-" + (this.getLocal().attributes().getSize() - 1)
+                                + "/" + this.getLocal().attributes().getSize()
                         );
                         long skipped = in.skip(status.getCurrent());
                         log.info("Skipping " + skipped + " bytes");
@@ -349,7 +349,7 @@ public class DAVPath extends Path {
                         }
                     }
                     if(!this.getSession().getClient().putMethod(this.getAbsolute(),
-                            new InputStreamRequestEntity(in, this.getLocal().getAttributes().getSize() - status.getCurrent(),
+                            new InputStreamRequestEntity(in, this.getLocal().attributes().getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
                                 @Override
                                 public void writeRequest(OutputStream out) throws IOException {
@@ -364,7 +364,7 @@ public class DAVPath extends Path {
                     IOUtils.closeQuietly(in);
                 }
             }
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 this.mkdir();
             }
         }

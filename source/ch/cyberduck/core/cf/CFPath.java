@@ -130,12 +130,12 @@ public class CFPath extends CloudPath {
                     this.getName()));
 
             if(this.isContainer()) {
-                attributes.setSize(
+                attributes().setSize(
                         this.getSession().getClient().getContainerInfo(this.getContainerName()).getTotalSize()
                 );
             }
-            else if(this.attributes.isFile()) {
-                attributes.setSize(
+            else if(this.attributes().isFile()) {
+                attributes().setSize(
                         Long.valueOf(this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey()).getContentLength())
                 );
             }
@@ -154,7 +154,7 @@ public class CFPath extends CloudPath {
 
             if(!this.isContainer()) {
                 try {
-                    attributes.setModificationDate(
+                    attributes().setModificationDate(
                             ServiceUtils.parseRfc822Date(this.getSession().getClient().getObjectMetaData(this.getContainerName(),
                                     this.getKey()).getLastModified()).getTime()
                     );
@@ -213,8 +213,8 @@ public class CFPath extends CloudPath {
                 for(FilesContainerInfo container : this.getSession().getClient().listContainersInfo()) {
                     Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getName(),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    p.attributes.setSize(container.getTotalSize());
-                    p.attributes.setOwner(this.getSession().getClient().getUserName());
+                    p.attributes().setSize(container.getTotalSize());
+                    p.attributes().setOwner(this.getSession().getClient().getUserName());
 
                     childs.add(p);
                 }
@@ -230,20 +230,20 @@ public class CFPath extends CloudPath {
                                 "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                         if(file.getParent().equals(this)) {
                             file.setParent(this);
-                            if(file.attributes.getType() == Path.FILE_TYPE) {
-                                file.attributes.setSize(object.getSize());
-                                file.attributes.setChecksum(object.getMd5sum());
+                            if(file.attributes().getType() == Path.FILE_TYPE) {
+                                file.attributes().setSize(object.getSize());
+                                file.attributes().setChecksum(object.getMd5sum());
                             }
                             try {
                                 final Date modified = DateParser.parse(object.getLastModified());
                                 if(null != modified) {
-                                    file.attributes.setModificationDate(modified.getTime());
+                                    file.attributes().setModificationDate(modified.getTime());
                                 }
                             }
                             catch(InvalidDateException e) {
                                 log.warn("Not ISO 8601 format:" + e.getMessage());
                             }
-                            file.attributes.setOwner(this.attributes.getOwner());
+                            file.attributes().setOwner(this.attributes().getOwner());
 
                             childs.add(file);
                         }
@@ -263,7 +263,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
@@ -293,7 +293,7 @@ public class CFPath extends CloudPath {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes.isDirectory()) {
+        if(attributes().isDirectory()) {
             this.getLocal().mkdir(true);
         }
     }
@@ -304,13 +304,13 @@ public class CFPath extends CloudPath {
             if(check) {
                 this.getSession().check();
             }
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 // No Content-Range support
                 final Status status = this.getStatus();
                 status.setResume(false);
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
-                String md5sum = this.getLocal().getAttributes().getChecksum();
+                String md5sum = this.getLocal().attributes().getChecksum();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
@@ -318,7 +318,7 @@ public class CFPath extends CloudPath {
                 try {
                     this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
                             new InputStreamRequestEntity(in,
-                                    this.getLocal().getAttributes().getSize() - status.getCurrent(),
+                                    this.getLocal().attributes().getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
 
                                 @Override
@@ -333,7 +333,7 @@ public class CFPath extends CloudPath {
                     IOUtils.closeQuietly(in);
                 }
             }
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 this.mkdir();
             }
         }
@@ -375,7 +375,7 @@ public class CFPath extends CloudPath {
 
                 this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 for(AbstractPath i : this.childs()) {
                     if(!this.getSession().isConnected()) {
                         break;
@@ -388,10 +388,10 @@ public class CFPath extends CloudPath {
             }
         }
         catch(IOException e) {
-            if(this.attributes.isFile()) {
+            if(this.attributes().isFile()) {
                 this.error("Cannot delete file", e);
             }
-            if(this.attributes.isDirectory()) {
+            if(this.attributes().isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
         }
@@ -402,7 +402,7 @@ public class CFPath extends CloudPath {
      */
     @Override
     public Map<String, String> readMetadata() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 final FilesObjectMetaData meta
@@ -418,7 +418,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void writeMetadata(Map<String, String> meta) {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getName(), meta);

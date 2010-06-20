@@ -153,13 +153,13 @@ public class FTPPath extends Path {
                 }
             }
             for(Path child : childs) {
-                if(child.attributes.getType() == Path.SYMBOLIC_LINK_TYPE) {
+                if(child.attributes().getType() == Path.SYMBOLIC_LINK_TYPE) {
                     try {
                         this.getSession().setWorkdir(child);
-                        child.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                        child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                     }
                     catch(FTPException e) {
-                        child.attributes.setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                        child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     }
                 }
             }
@@ -274,41 +274,41 @@ public class FTPPath extends Path {
                         continue;
                     }
                     if("dir".equals(facts.get("type").toLowerCase())) {
-                        parsed.attributes.setType(Path.DIRECTORY_TYPE);
+                        parsed.attributes().setType(Path.DIRECTORY_TYPE);
                     }
                     else if("file".equals(facts.get("type").toLowerCase())) {
-                        parsed.attributes.setType(Path.FILE_TYPE);
+                        parsed.attributes().setType(Path.FILE_TYPE);
                     }
                     else {
                         log.warn("Unsupported type: " + line);
                         continue;
                     }
                     if(facts.containsKey("sizd")) {
-                        parsed.attributes.setSize(Long.parseLong(facts.get("sizd")));
+                        parsed.attributes().setSize(Long.parseLong(facts.get("sizd")));
                     }
                     if(facts.containsKey("size")) {
-                        parsed.attributes.setSize(Long.parseLong(facts.get("size")));
+                        parsed.attributes().setSize(Long.parseLong(facts.get("size")));
                     }
                     if(facts.containsKey("unix.uid")) {
-                        parsed.attributes.setOwner(facts.get("unix.uid"));
+                        parsed.attributes().setOwner(facts.get("unix.uid"));
                     }
                     if(facts.containsKey("unix.owner")) {
-                        parsed.attributes.setOwner(facts.get("unix.owner"));
+                        parsed.attributes().setOwner(facts.get("unix.owner"));
                     }
                     if(facts.containsKey("unix.gid")) {
-                        parsed.attributes.setGroup(facts.get("unix.gid"));
+                        parsed.attributes().setGroup(facts.get("unix.gid"));
                     }
                     if(facts.containsKey("unix.group")) {
-                        parsed.attributes.setGroup(facts.get("unix.group"));
+                        parsed.attributes().setGroup(facts.get("unix.group"));
                     }
                     if(facts.containsKey("unix.mode")) {
-                        parsed.attributes.setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
+                        parsed.attributes().setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
                     }
                     if(facts.containsKey("modify")) {
-                        parsed.attributes.setModificationDate(this.getSession().getClient().parseTimestamp(facts.get("modify")));
+                        parsed.attributes().setModificationDate(this.getSession().getClient().parseTimestamp(facts.get("modify")));
                     }
                     if(facts.containsKey("create")) {
-                        parsed.attributes.setCreationDate(this.getSession().getClient().parseTimestamp(facts.get("create")));
+                        parsed.attributes().setCreationDate(this.getSession().getClient().parseTimestamp(facts.get("create")));
                     }
                     childs.add(parsed);
                 }
@@ -357,17 +357,17 @@ public class FTPPath extends Path {
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
                     parsed.setSymlinkTarget(this.getAbsolute(), f.getLink());
-                    parsed.attributes.setType(Path.SYMBOLIC_LINK_TYPE);
+                    parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE);
                     break;
                 case FTPFile.DIRECTORY_TYPE:
-                    parsed.attributes.setType(Path.DIRECTORY_TYPE);
+                    parsed.attributes().setType(Path.DIRECTORY_TYPE);
                     break;
             }
-            parsed.attributes.setSize(f.getSize());
-            parsed.attributes.setOwner(f.getUser());
-            parsed.attributes.setGroup(f.getGroup());
+            parsed.attributes().setSize(f.getSize());
+            parsed.attributes().setOwner(f.getUser());
+            parsed.attributes().setGroup(f.getGroup());
             if(this.getSession().isPermissionSupported(parser)) {
-                parsed.attributes.setPermission(new Permission(
+                parsed.attributes().setPermission(new Permission(
                         new boolean[][]{
                                 {f.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION),
                                         f.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION),
@@ -386,7 +386,7 @@ public class FTPPath extends Path {
             }
             final Calendar timestamp = f.getTimestamp();
             if(timestamp != null) {
-                parsed.attributes.setModificationDate(timestamp.getTimeInMillis());
+                parsed.attributes().setModificationDate(timestamp.getTimeInMillis());
             }
             childs.add(parsed);
         }
@@ -427,10 +427,10 @@ public class FTPPath extends Path {
             this.setPath(renamed.getAbsolute());
         }
         catch(IOException e) {
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.error("Cannot rename file", e);
             }
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 this.error("Cannot rename folder", e);
             }
         }
@@ -443,7 +443,7 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
@@ -463,13 +463,13 @@ public class FTPPath extends Path {
                 else {
                     throw new FTPException("Transfer type not set");
                 }
-                attributes.setSize(this.getSession().getClient().size(this.getAbsolute()));
+                attributes().setSize(this.getSession().getClient().size(this.getAbsolute()));
             }
-            if(-1 == attributes.getSize()) {
+            if(-1 == attributes().getSize()) {
                 // Read the size from the directory listing
                 final AttributedList<AbstractPath> l = this.getParent().childs();
                 if(l.contains(this)) {
-                    attributes.setSize(l.get(l.indexOf(this)).attributes.getSize());
+                    attributes().setSize(l.get(l.indexOf(this)).attributes().getSize());
                 }
             }
         }
@@ -485,23 +485,23 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
                 // Attempts to query the modification time of files that exist but are unable to be
                 // retrieved may generate an error-response
                 try {
-                    attributes.setModificationDate(this.getSession().getClient().mdtm(this.getAbsolute()));
+                    attributes().setModificationDate(this.getSession().getClient().mdtm(this.getAbsolute()));
                 }
                 catch(FTPException ignore) {
                     // MDTM not supported; ignore
                     log.warn(ignore.getMessage());
                 }
             }
-            if(-1 == attributes.getModificationDate()) {
+            if(-1 == attributes().getModificationDate()) {
                 // Read the timestamp from the directory listing
                 final AttributedList<AbstractPath> l = this.getParent().childs();
                 if(l.contains(this)) {
-                    attributes.setModificationDate(l.get(l.indexOf(this)).attributes.getModificationDate());
+                    attributes().setModificationDate(l.get(l.indexOf(this)).attributes().getModificationDate());
                 }
             }
         }
@@ -521,7 +521,7 @@ public class FTPPath extends Path {
             // Read the permission from the directory listing
             final AttributedList<AbstractPath> l = this.getParent().childs();
             if(l.contains(this)) {
-                attributes.setPermission(l.get(l.indexOf(this)).attributes.getPermission());
+                attributes().setPermission(l.get(l.indexOf(this)).attributes().getPermission());
             }
         }
         catch(IOException e) {
@@ -534,26 +534,26 @@ public class FTPPath extends Path {
         log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
-            if(attributes.isFile() || attributes.isSymbolicLink()) {
+            if(attributes().isFile() || attributes().isSymbolicLink()) {
                 this.getSession().setWorkdir(this.getParent());
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
                 this.getSession().getClient().delete(this.getName());
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 this.getSession().setWorkdir(this);
                 for(AbstractPath file : this.childs()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    if(file.attributes.isFile() || file.attributes.isSymbolicLink()) {
+                    if(file.attributes().isFile() || file.attributes().isSymbolicLink()) {
                         this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                                 file.getName()));
 
                         this.getSession().getClient().delete(file.getName());
                     }
-                    else if(file.attributes.isDirectory()) {
+                    else if(file.attributes().isDirectory()) {
                         file.delete();
                     }
                 }
@@ -565,10 +565,10 @@ public class FTPPath extends Path {
             }
         }
         catch(IOException e) {
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.error("Cannot delete file", e);
             }
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
         }
@@ -583,10 +583,10 @@ public class FTPPath extends Path {
                     this.getName(), owner));
 
             this.getSession().setWorkdir(this.getParent());
-            if(attributes.isFile() && !attributes.isSymbolicLink()) {
+            if(attributes().isFile() && !attributes().isSymbolicLink()) {
                 this.getSession().getClient().site(command + " " + owner + " " + this.getName());
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 this.getSession().getClient().site(command + " " + owner + " " + this.getName());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
@@ -612,10 +612,10 @@ public class FTPPath extends Path {
                     this.getName(), group));
 
             this.getSession().setWorkdir(this.getParent());
-            if(attributes.isFile() && !attributes.isSymbolicLink()) {
+            if(attributes().isFile() && !attributes().isSymbolicLink()) {
                 this.getSession().getClient().site(command + " " + group + " " + this.getName());
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 this.getSession().getClient().site(command + " " + group + " " + this.getName());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
@@ -641,18 +641,18 @@ public class FTPPath extends Path {
                     this.getName(), perm.getOctalString()));
 
             this.getSession().setWorkdir(this.getParent());
-            if(attributes.isFile() && !attributes.isSymbolicLink()) {
+            if(attributes().isFile() && !attributes().isSymbolicLink()) {
                 if(recursive) {
                     // Do not write executable bit for files if not already set when recursively updating directory.
                     // See #1787
                     Permission modified = new Permission(perm);
-                    if(!attributes.getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                    if(!attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
                         modified.getOwnerPermissions()[Permission.EXECUTE] = false;
                     }
-                    if(!attributes.getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                    if(!attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
                         modified.getGroupPermissions()[Permission.EXECUTE] = false;
                     }
-                    if(!attributes.getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                    if(!attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
                         modified.getOtherPermissions()[Permission.EXECUTE] = false;
                     }
                     this.getSession().getClient().site(command + " " + modified.getOctalString() + " " + this.getName());
@@ -660,9 +660,9 @@ public class FTPPath extends Path {
                 else {
                     this.getSession().getClient().site(command + " " + perm.getOctalString() + " " + this.getName());
                 }
-                attributes.setPermission(perm);
+                attributes().setPermission(perm);
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 this.getSession().getClient().site(command + " " + perm.getOctalString() + " " + this.getName());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
@@ -672,7 +672,7 @@ public class FTPPath extends Path {
                         child.writePermissions(perm, recursive);
                     }
                 }
-                attributes.setPermission(perm);
+                attributes().setPermission(perm);
             }
         }
         catch(IOException e) {
@@ -701,7 +701,7 @@ public class FTPPath extends Path {
             if(check) {
                 this.getSession().check();
             }
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
@@ -721,7 +721,7 @@ public class FTPPath extends Path {
                     throw new FTPException("Transfer mode not set");
                 }
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 this.getLocal().mkdir(true);
             }
         }
@@ -740,7 +740,7 @@ public class FTPPath extends Path {
                     this.getStatus().setResume(false);
                 }
             }
-            in = this.getSession().getClient().get(this.getName(), this.getStatus().isResume() ? this.getLocal().getAttributes().getSize() : 0);
+            in = this.getSession().getClient().get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes().getSize() : 0);
             out = this.getLocal().getOutputStream(this.getStatus().isResume());
             this.download(in, out, throttle, listener);
             if(this.getStatus().isComplete()) {
@@ -804,7 +804,7 @@ public class FTPPath extends Path {
             if(check) {
                 this.getSession().check();
             }
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
@@ -826,7 +826,7 @@ public class FTPPath extends Path {
                     throw new FTPException("Transfer mode not set");
                 }
             }
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 this.mkdir();
             }
             if(null != p) {
@@ -842,8 +842,8 @@ public class FTPPath extends Path {
             }
             if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                 log.info("Updating timestamp");
-                this.writeModificationDate(this.getLocal().getAttributes().getModificationDate(),
-                        this.getLocal().getAttributes().getCreationDate());
+                this.writeModificationDate(this.getLocal().attributes().getModificationDate(),
+                        this.getLocal().attributes().getCreationDate());
             }
         }
         catch(IOException e) {

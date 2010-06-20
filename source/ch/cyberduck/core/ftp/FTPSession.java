@@ -149,12 +149,12 @@ public class FTPSession extends Session {
                 return Collections.emptyList();
             }
             for(Path test : list) {
-                if(test.attributes.isFile()) {
+                if(test.attributes().isFile()) {
                     // Read the modify fact which must be UTC
                     long utc = this.getClient().mdtm(test.getAbsolute());
                     // Subtract seconds
                     utc -= utc % 60000;
-                    long local = test.attributes.getModificationDate();
+                    long local = test.attributes().getModificationDate();
                     if(-1 == local) {
                         log.warn("No modification date in directory listing to calculate timezone");
                         continue;
@@ -363,7 +363,7 @@ public class FTPSession extends Session {
         if(null == workdir) {
             workdir = PathFactory.createPath(this, this.getClient().pwd(), Path.DIRECTORY_TYPE);
             if(workdir.isRoot()) {
-                workdir.attributes.setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                workdir.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
             }
         }
         return workdir;
