@@ -118,16 +118,16 @@ public class UploadTransfer extends Transfer {
 
         @Override
         public void prepare(Path p) {
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 // Read file size
-                size += p.getLocal().getAttributes().getSize();
+                size += p.getLocal().attributes().getSize();
                 if(p.getStatus().isResume()) {
-                    transferred += p.attributes.getSize();
+                    transferred += p.attributes().getSize();
                 }
             }
-            if(p.attributes.isDirectory()) {
+            if(p.attributes().isDirectory()) {
                 if(!p.exists()) {
-                    p.cache().put(p, new AttributedList<Path>());
+                    p.cache().put(p.<Object>getReference(), new AttributedList<Path>());
                 }
             }
         }
@@ -157,7 +157,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        if(!cache.containsKey(parent)) {
+        if(!cache.containsKey(parent.<Object>getReference())) {
             if(!parent.getLocal().exists()) {
                 // Cannot fetch file listing of non existant file
                 return AttributedList.emptyList();
@@ -172,9 +172,9 @@ public class UploadTransfer extends Transfer {
                 }
                 childs.add(upload);
             }
-            cache.put(parent, childs);
+            cache.put(parent.<Object>getReference(), childs);
         }
-        return cache.get(parent);
+        return cache.get(parent.<Object>getReference());
     }
 
     @Override
@@ -202,7 +202,7 @@ public class UploadTransfer extends Transfer {
         @Override
         public boolean accept(final Path p) {
             if(super.accept(p)) {
-                if(p.attributes.isDirectory()) {
+                if(p.attributes().isDirectory()) {
                     // Do not attempt to create a directory that already exists
                     return !p.exists();
                 }
@@ -214,13 +214,13 @@ public class UploadTransfer extends Transfer {
         @Override
         public void prepare(final Path p) {
             if(p.exists()) {
-                if(p.attributes.getPermission() == null) {
+                if(p.attributes().getPermission() == null) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         p.readPermission();
                     }
                 }
             }
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 p.getStatus().setResume(false);
             }
             super.prepare(p);
@@ -232,10 +232,10 @@ public class UploadTransfer extends Transfer {
         @Override
         public boolean accept(final Path p) {
             if(super.accept(p)) {
-                if(p.attributes.isDirectory()) {
+                if(p.attributes().isDirectory()) {
                     return !p.exists();
                 }
-                if(p.getStatus().isComplete() || p.getLocal().getAttributes().getSize() == p.attributes.getSize()) {
+                if(p.getStatus().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
                     // No need to resume completed transfers
                     p.getStatus().setComplete(true);
                     return false;
@@ -248,27 +248,27 @@ public class UploadTransfer extends Transfer {
         @Override
         public void prepare(final Path p) {
             if(p.exists()) {
-                if(p.attributes.getSize() == -1) {
+                if(p.attributes().getSize() == -1) {
                     p.readSize();
                 }
-                if(p.attributes.getModificationDate() == -1) {
+                if(p.attributes().getModificationDate() == -1) {
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         p.readTimestamp();
                     }
                 }
-                if(p.attributes.getPermission() == null) {
+                if(p.attributes().getPermission() == null) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         p.readPermission();
                     }
                 }
             }
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 // Append to file if size is not zero
                 final boolean resume = p.exists()
-                        && p.attributes.getSize() > 0;
+                        && p.attributes().getSize() > 0;
                 p.getStatus().setResume(resume);
                 if(p.getStatus().isResume()) {
-                    p.getStatus().setCurrent(p.attributes.getSize());
+                    p.getStatus().setCurrent(p.attributes().getSize());
                 }
             }
             super.prepare(p);
@@ -298,7 +298,7 @@ public class UploadTransfer extends Transfer {
                 }
                 log.info("Changed local name to:" + p.getName());
             }
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 p.getStatus().setResume(false);
             }
             super.prepare(p);
@@ -335,7 +335,7 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path root : this.getRoots()) {
                 if(root.exists()) {
-                    if(root.getLocal().getAttributes().isDirectory()) {
+                    if(root.getLocal().attributes().isDirectory()) {
                         if(0 == this.childs(root).size()) {
                             // Do not prompt for existing empty directories
                             continue;
@@ -374,20 +374,20 @@ public class UploadTransfer extends Transfer {
     protected void _transferImpl(final Path p) {
         Permission permission = null;
         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            permission = p.attributes.getPermission();
+            permission = p.attributes().getPermission();
             if(null == permission) {
                 if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                    if(p.attributes.isFile()) {
+                    if(p.attributes().isFile()) {
                         permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                     }
-                    if(p.attributes.isDirectory()) {
+                    if(p.attributes().isDirectory()) {
                         permission = new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                     }
                 }
                 else {
-                    permission = p.getLocal().getAttributes().getPermission();
+                    permission = p.getLocal().attributes().getPermission();
                 }
             }
         }

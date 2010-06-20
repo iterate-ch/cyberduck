@@ -113,36 +113,36 @@ public class DownloadTransfer extends Transfer {
     private abstract class DownloadTransferFilter extends TransferFilter {
         @Override
         public void prepare(Path p) {
-            if(p.attributes.getSize() == -1) {
+            if(p.attributes().getSize() == -1) {
                 p.readSize();
             }
-            if(p.attributes.getModificationDate() == -1) {
+            if(p.attributes().getModificationDate() == -1) {
                 if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
                     p.readTimestamp();
                 }
             }
-            if(p.attributes.getPermission() == null) {
+            if(p.attributes().getPermission() == null) {
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                     p.readPermission();
                 }
             }
             // Read file size
-            if(p.attributes.isFile()) {
-                if(p.attributes.isSymbolicLink()) {
+            if(p.attributes().isFile()) {
+                if(p.attributes().isSymbolicLink()) {
                     if(null != p.getSymlinkTarget()) {
                         Path symlink = PathFactory.createPath(getSession(), p.getSymlinkTarget(),
                                 Path.FILE_TYPE);
-                        if(symlink.attributes.getSize() == -1) {
+                        if(symlink.attributes().getSize() == -1) {
                             symlink.readSize();
                         }
-                        size += symlink.attributes.getSize();
+                        size += symlink.attributes().getSize();
                     }
                 }
                 else {
-                    size += p.attributes.getSize();
+                    size += p.attributes().getSize();
                 }
                 if(p.getStatus().isResume()) {
-                    transferred += p.getLocal().getAttributes().getSize();
+                    transferred += p.getLocal().attributes().getSize();
                 }
             }
             if(!p.getLocal().getParent().exists()) {
@@ -180,7 +180,7 @@ public class DownloadTransfer extends Transfer {
 
     private final TransferFilter ACTION_OVERWRITE = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
-            if(p.attributes.isDirectory()) {
+            if(p.attributes().isDirectory()) {
                 return !p.getLocal().exists();
             }
             return true;
@@ -188,7 +188,7 @@ public class DownloadTransfer extends Transfer {
 
         @Override
         public void prepare(final Path p) {
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 p.getStatus().setResume(false);
             }
             super.prepare(p);
@@ -197,12 +197,12 @@ public class DownloadTransfer extends Transfer {
 
     private final TransferFilter ACTION_RESUME = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
-            if(p.getStatus().isComplete() || p.getLocal().getAttributes().getSize() == p.attributes.getSize()) {
+            if(p.getStatus().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
                 // No need to resume completed transfers
                 p.getStatus().setComplete(true);
                 return false;
             }
-            if(p.attributes.isDirectory()) {
+            if(p.attributes().isDirectory()) {
                 return !p.getLocal().exists();
             }
             return true;
@@ -210,11 +210,11 @@ public class DownloadTransfer extends Transfer {
 
         @Override
         public void prepare(final Path p) {
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 final boolean resume = p.getLocal().exists()
-                        && p.getLocal().getAttributes().getSize() > 0;
+                        && p.getLocal().attributes().getSize() > 0;
                 p.getStatus().setResume(resume);
-                long skipped = p.getLocal().getAttributes().getSize();
+                long skipped = p.getLocal().attributes().getSize();
                 p.getStatus().setCurrent(skipped);
             }
             super.prepare(p);
@@ -228,10 +228,10 @@ public class DownloadTransfer extends Transfer {
 
         @Override
         public void prepare(final Path p) {
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 p.getStatus().setResume(false);
             }
-            if(p.getLocal().exists() && p.getLocal().getAttributes().getSize() > 0) {
+            if(p.getLocal().exists() && p.getLocal().attributes().getSize() > 0) {
                 final String parent = p.getLocal().getParent().getAbsolute();
                 final String filename = p.getName();
                 int no = 0;
@@ -273,14 +273,14 @@ public class DownloadTransfer extends Transfer {
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path root : this.getRoots()) {
                 if(root.getLocal().exists()) {
-                    if(root.getLocal().getAttributes().isDirectory()) {
+                    if(root.getLocal().attributes().isDirectory()) {
                         if(0 == root.getLocal().childs().size()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
-                    if(root.getLocal().getAttributes().isFile()) {
-                        if(root.getLocal().getAttributes().getSize() == 0) {
+                    if(root.getLocal().attributes().isFile()) {
+                        if(root.getLocal().attributes().getSize() == 0) {
                             // Do not prompt for zero sized files
                             continue;
                         }
@@ -326,16 +326,16 @@ public class DownloadTransfer extends Transfer {
             log.info("Updating permissions");
             Permission perm;
             if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")
-                    && p.attributes.isFile()) {
+                    && p.attributes().isFile()) {
                 perm = new Permission(
                         Preferences.instance().getInteger("queue.download.permissions.file.default")
                 );
             }
             else {
-                perm = p.attributes.getPermission();
+                perm = p.attributes().getPermission();
             }
             if(null != perm) {
-                if(p.attributes.isDirectory()) {
+                if(p.attributes().isDirectory()) {
                     perm.getOwnerPermissions()[Permission.WRITE] = true;
                     perm.getOwnerPermissions()[Permission.EXECUTE] = true;
                 }
@@ -344,11 +344,11 @@ public class DownloadTransfer extends Transfer {
         }
         if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
             log.info("Updating timestamp");
-            if(-1 == p.attributes.getModificationDate()) {
+            if(-1 == p.attributes().getModificationDate()) {
                 p.readTimestamp();
             }
-            if(p.attributes.getModificationDate() != -1) {
-                long timestamp = p.attributes.getModificationDate();
+            if(p.attributes().getModificationDate() != -1) {
+                long timestamp = p.attributes().getModificationDate();
                 p.getLocal().writeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
             }
         }

@@ -217,9 +217,9 @@ public class SyncTransfer extends Transfer {
             final Comparison comparison = this.compare(child);
             // Updating default skip settings for actual transfer
             if(COMPARISON_EQUAL.equals(comparison)) {
-                skipped = child.attributes.isFile();
+                skipped = child.attributes().isFile();
             }
-            else if(child.attributes.isFile()) {
+            else if(child.attributes().isFile()) {
                 if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
                     skipped = this.getAction().equals(ACTION_UPLOAD);
                 }
@@ -332,7 +332,7 @@ public class SyncTransfer extends Transfer {
         log.debug("compare:" + p);
         Comparison result = COMPARISON_EQUAL;
         if(p.getLocal().exists() && p.exists()) {
-            if(p.attributes.isFile()) {
+            if(p.attributes().isFile()) {
                 result = this.compareTimestamp(p);
             }
         }
@@ -353,20 +353,20 @@ public class SyncTransfer extends Transfer {
      */
     private Comparison compareSize(Path p) {
         log.debug("compareSize:" + p);
-        if(p.attributes.getSize() == -1) {
+        if(p.attributes().getSize() == -1) {
             p.readSize();
         }
         //fist make sure both files are larger than 0 bytes
-        if(p.attributes.getSize() == 0 && p.getLocal().getAttributes().getSize() == 0) {
+        if(p.attributes().getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
             return COMPARISON_EQUAL;
         }
-        if(p.attributes.getSize() == 0) {
+        if(p.attributes().getSize() == 0) {
             return COMPARISON_LOCAL_NEWER;
         }
-        if(p.getLocal().getAttributes().getSize() == 0) {
+        if(p.getLocal().attributes().getSize() == 0) {
             return COMPARISON_REMOTE_NEWER;
         }
-        if(p.attributes.getSize() == p.getLocal().getAttributes().getSize()) {
+        if(p.attributes().getSize() == p.getLocal().attributes().getSize()) {
             return COMPARISON_EQUAL;
         }
         //different file size - further comparison check
@@ -379,12 +379,12 @@ public class SyncTransfer extends Transfer {
      */
     private Comparison compareTimestamp(Path p) {
         log.debug("compareTimestamp:" + p);
-        if(p.attributes.getModificationDate() == -1 || p instanceof FTPPath) {
+        if(p.attributes().getModificationDate() == -1 || p instanceof FTPPath) {
             // Make sure we have a UTC timestamp
             p.readTimestamp();
         }
-        final Calendar remote = this.asCalendar(p.attributes.getModificationDate(), Calendar.SECOND);
-        final Calendar local = this.asCalendar(p.getLocal().getAttributes().getModificationDate(), Calendar.SECOND);
+        final Calendar remote = this.asCalendar(p.attributes().getModificationDate(), Calendar.SECOND);
+        final Calendar local = this.asCalendar(p.getLocal().attributes().getModificationDate(), Calendar.SECOND);
         if(local.before(remote)) {
             return COMPARISON_REMOTE_NEWER;
         }

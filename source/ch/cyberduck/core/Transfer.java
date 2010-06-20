@@ -350,6 +350,13 @@ public abstract class Transfer implements Serializable {
      */
     public abstract TransferAction action(final boolean resumeRequested, final boolean reloadRequested);
 
+    /**
+     * Lookup the path by reference in the session cache
+     *
+     * @param r
+     * @return
+     * @see ch.cyberduck.core.Cache#lookup(PathReference)
+     */
     public Path lookup(PathReference r) {
         return session.cache().lookup(r);
     }
@@ -388,7 +395,7 @@ public abstract class Transfer implements Serializable {
      */
     public void setSelected(Path item, final boolean selected) {
         item.getStatus().setSelected(selected);
-        if(item.attributes.isDirectory()) {
+        if(item.attributes().isDirectory()) {
             if(item.isCached()) {
                 for(Path child : this.childs(item)) {
                     this.setSelected(child, selected);
@@ -428,7 +435,7 @@ public abstract class Transfer implements Serializable {
             return;
         }
 
-        if(p.attributes.isDirectory()) {
+        if(p.attributes().isDirectory()) {
             p.getStatus().reset();
             boolean failure = false;
             final AttributedList<Path> childs = this.childs(p);
@@ -437,14 +444,14 @@ public abstract class Transfer implements Serializable {
             }
             for(Path child : childs) {
                 this.transfer(child, filter);
-                if(child.attributes.isFile() && !child.getStatus().isComplete()) {
+                if(child.attributes().isFile() && !child.getStatus().isComplete()) {
                     failure = true;
                 }
             }
             if(!failure) {
                 p.getStatus().setComplete(true);
             }
-            session.cache().remove(p);
+            session.cache().remove(p.getReference());
         }
     }
 
@@ -535,7 +542,7 @@ public abstract class Transfer implements Serializable {
             filter.prepare(p);
         }
 
-        if(p.attributes.isDirectory()) {
+        if(p.attributes().isDirectory()) {
             // Call recursively for all childs
             for(Path child : this.childs(p)) {
                 this.prepare(child, filter);
@@ -567,6 +574,10 @@ public abstract class Transfer implements Serializable {
         }
     }
 
+    /**
+     * @return The cache of the underlying session
+     * @see Session#cache()
+     */
     public Cache<Path> cache() {
         return session.cache();
     }
