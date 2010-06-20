@@ -31,14 +31,12 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.S3ObjectsChunk;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GrantAndPermission;
 import org.jets3t.service.acl.GroupGrantee;
-import org.jets3t.service.model.BaseVersionOrDeleteMarker;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.S3Owner;
+import org.jets3t.service.model.*;
 import org.jets3t.service.utils.ObjectUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -114,7 +112,7 @@ public class S3HPath extends CloudPath {
 
     @Override
     public boolean exists() {
-        if(attributes.isDirectory()) {
+        if(attributes().isDirectory()) {
             if(this.isContainer()) {
                 try {
                     return this.getSession().getClient().isBucketAccessible(this.getContainerName());
@@ -133,6 +131,11 @@ public class S3HPath extends CloudPath {
         return super.exists();
     }
 
+    /**
+     * Object details not contained in standard listing.
+     *
+     * @see #getDetails()
+     */
     protected S3Object _details;
 
     /**
@@ -140,19 +143,30 @@ public class S3HPath extends CloudPath {
      * @throws S3ServiceException
      */
     protected S3Object getDetails() throws IOException, S3ServiceException {
+        final String container = this.getContainerName();
         if(null == _details || !_details.isMetadataComplete()) {
             try {
-                _details = this.getSession().getClient().getObjectDetails(
-                        this.getSession().getBucket(this.getContainerName()), this.getKey());
+                if(this.getSession().isVersioning(container)) {
+                    _details = this.getSession().getClient().getVersionedObjectDetails(this.attributes().getVersionId(),
+                            container, this.getKey());
+                }
+                else {
+                    _details = this.getSession().getClient().getObjectDetails(container, this.getKey());
+                }
             }
             catch(S3ServiceException e) {
-                // Anonymous services can only get a publicly-readable object's details
-                log.error(e.getXmlMessage());
+                if(e.getResponseCode() == 403) {
+                    // Anonymous services can only get a publicly-readable object's details
+                    log.warn("Cannot read object details:" + e.getMessage());
+                }
+                else {
+                    throw e;
+                }
             }
         }
         if(null == _details) {
             log.warn("Cannot read object details.");
-            return new S3Object(this.getSession().getBucket(this.getContainerName()), this.getKey());
+            return new S3Object(this.getSession().getBucket(container), this.getKey());
         }
         return _details;
     }
@@ -162,12 +176,15 @@ public class S3HPath extends CloudPath {
      *
      * @return
      */
-    public List<BaseVersionOrDeleteMarker> getVersions() {
-        if(this.attributes.isFile()) {
+    public List<Path> getVersions() {
+        if(this.attributes().isFile()) {
             try {
-                return Arrays.asList(
-                        this.getSession().getClient().getObjectVersions(this.getContainerName(), this.getKey())
-                );
+                final String container = this.getContainerName();
+                if(this.getSession().isVersioning(container)) {
+                    final S3Bucket bucket = this.getSession().getBucket(container);
+                    return this.getVersions(bucket, Arrays.asList(
+                            this.getSession().getClient().getObjectVersions(container, this.getKey())));
+                }
             }
             catch(S3ServiceException e) {
                 this.error("Listing directory failed", e);
@@ -180,55 +197,18 @@ public class S3HPath extends CloudPath {
     }
 
     /**
-     * Versioning support. Download a specific version of this object.
-     *
-     * @param versionId
-     */
-    public void download(String versionId) {
-        if(this.attributes.isFile()) {
-            OutputStream out = null;
-            InputStream in = null;
-            try {
-                final S3Object object = this.getSession().getClient().getVersionedObject(versionId,
-                        this.getContainerName(), this.getKey());
-
-                in = object.getDataInputStream();
-                out = this.getLocal().getOutputStream(this.getStatus().isResume());
-                this.download(in, out, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                        new AbstractStreamListener());
-            }
-            catch(S3ServiceException e) {
-                this.error("Download failed", e);
-            }
-            catch(IOException e) {
-                this.error("Download failed", e);
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
-        }
-    }
-
-    /**
      * Versioning support. Copy a previous version of the object into the same bucket.
      * The copied object becomes the latest version of that object and all object versions are preserved.
-     *
-     * @param versionId
      */
-    public void revert(String versionId) {
-        if(this.attributes.isFile()) {
+    public void revert() {
+        if(this.attributes().isFile()) {
             try {
-                if(StringUtils.isBlank(versionId)) {
-                    log.error("Cannot revert to version ID that is null");
-                    return;
-                }
                 final S3Object destination = new S3Object(this.getKey());
                 // Keep same storage class
-                destination.setStorageClass(this.attributes.getStorageClass());
+                destination.setStorageClass(this.attributes().getStorageClass());
                 // Apply non standard ACL
                 destination.setAcl(this.getDetails().getAcl());
-                this.getSession().getClient().copyVersionedObject(versionId,
+                this.getSession().getClient().copyVersionedObject(this.attributes().getVersionId(),
                         this.getContainerName(), this.getKey(), this.getContainerName(), destination, false);
             }
             catch(S3ServiceException e) {
@@ -246,7 +226,7 @@ public class S3HPath extends CloudPath {
      * @param versionId
      */
     public void delete(String versionId) {
-        if(this.attributes.isFile()) {
+        if(this.attributes().isFile()) {
             try {
                 if(StringUtils.isBlank(versionId)) {
                     log.error("Cannot revert to version ID that is null");
@@ -289,23 +269,30 @@ public class S3HPath extends CloudPath {
             if(credentials.isAnonymousLogin()) {
                 return AccessControlList.REST_CANNED_PRIVATE;
             }
-            final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
+            final String container = this.getContainerName();
             if(this.isContainer()) {
+                final S3Bucket bucket = this.getSession().getBucket(container);
                 if(null == bucket.getAcl()) {
                     // This method can be performed by anonymous services, but can only succeed if the
                     // bucket's existing ACL already allows write access by the anonymous user.
                     // In general, you can only access the ACL of a bucket if the ACL already in place
                     // for that bucket (in S3) allows you to do so.
-                    bucket.setAcl(this.getSession().getClient().getBucketAcl(bucket));
+                    bucket.setAcl(this.getSession().getClient().getBucketAcl(container));
                 }
                 return bucket.getAcl();
             }
-            else if(attributes.isFile()) {
+            else if(attributes().isFile()) {
                 final S3Object details = this.getDetails();
                 if(null == details.getAcl()) {
-                    // This method can be performed by anonymous services, but can only succeed if the
-                    // object's existing ACL already allows read access by the anonymous user.
-                    details.setAcl(this.getSession().getClient().getObjectAcl(bucket, this.getKey()));
+                    if(this.getSession().isVersioning(container)) {
+                        details.setAcl(this.getSession().getClient().getVersionedObjectAcl(this.attributes().getVersionId(),
+                                container, this.getKey()));
+                    }
+                    else {
+                        // This method can be performed by anonymous services, but can only succeed if the
+                        // object's existing ACL already allows read access by the anonymous user.
+                        details.setAcl(this.getSession().getClient().getObjectAcl(container, this.getKey()));
+                    }
                 }
                 return details.getAcl();
             }
@@ -387,7 +374,7 @@ public class S3HPath extends CloudPath {
 
     @Override
     public Map<String, String> readMetadata() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 final S3Object target = this.getDetails();
@@ -405,7 +392,7 @@ public class S3HPath extends CloudPath {
 
     @Override
     public void writeMetadata(Map<String, String> meta) {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 final S3Object target = this.getDetails();
@@ -424,7 +411,7 @@ public class S3HPath extends CloudPath {
 
     @Override
     public void readChecksum() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
@@ -432,11 +419,11 @@ public class S3HPath extends CloudPath {
 
                 final S3Object details = this.getDetails();
                 if(StringUtils.isNotEmpty(details.getMd5HashAsHex())) {
-                    attributes.setChecksum(details.getMd5HashAsHex());
+                    attributes().setChecksum(details.getMd5HashAsHex());
                 }
                 else {
                     log.debug("Setting ETag Header as checksum for:" + this.toString());
-                    attributes.setChecksum(details.getETag());
+                    attributes().setChecksum(details.getETag());
                 }
             }
             catch(S3ServiceException e) {
@@ -450,14 +437,14 @@ public class S3HPath extends CloudPath {
 
     @Override
     public void readSize() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
                 final S3Object details = this.getDetails();
-                attributes.setSize(details.getContentLength());
+                attributes().setSize(details.getContentLength());
             }
             catch(S3ServiceException e) {
                 this.error("Cannot read file attributes", e);
@@ -470,14 +457,14 @@ public class S3HPath extends CloudPath {
 
     @Override
     public void readTimestamp() {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
                 final S3Object details = this.getDetails();
-                attributes.setModificationDate(details.getLastModifiedDate().getTime());
+                attributes().setModificationDate(details.getLastModifiedDate().getTime());
             }
             catch(S3ServiceException e) {
                 this.error("Cannot read file attributes", e);
@@ -494,7 +481,7 @@ public class S3HPath extends CloudPath {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                     this.getName()));
-            attributes.setPermission(this.readPermissions(this.readAcl().getGrants()));
+            attributes().setPermission(this.readPermissions(this.readAcl().getGrants()));
         }
         catch(S3ServiceException e) {
             this.error("Cannot read file attributes", e);
@@ -543,7 +530,7 @@ public class S3HPath extends CloudPath {
 
     @Override
     public void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
-        if(attributes.isFile()) {
+        if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
@@ -555,8 +542,22 @@ public class S3HPath extends CloudPath {
 
                 final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
 
-                in = this.getSession().getClient().getObject(bucket, this.getKey(), null, null, null, null,
-                        this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
+                if(StringUtils.isNotBlank(attributes().getVersionId())) {
+                    in = this.getSession().getClient().getVersionedObject(attributes().getVersionId(), bucket, this.getKey(),
+                            null, // ifModifiedSince
+                            null, // ifUnmodifiedSince
+                            null, // ifMatch
+                            null, // ifNoneMatch
+                            this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
+                }
+                else {
+                    in = this.getSession().getClient().getObject(bucket, this.getKey(),
+                            null, // ifModifiedSince
+                            null, // ifUnmodifiedSince
+                            null, // ifMatch
+                            null, // ifNoneMatch
+                            this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
+                }
                 out = this.getLocal().getOutputStream(this.getStatus().isResume());
                 this.download(in, out, throttle, listener);
             }
@@ -571,7 +572,7 @@ public class S3HPath extends CloudPath {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes.isDirectory()) {
+        if(attributes().isDirectory()) {
             this.getLocal().mkdir(true);
         }
     }
@@ -583,7 +584,7 @@ public class S3HPath extends CloudPath {
             if(check) {
                 this.getSession().check();
             }
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
                 S3Object object;
@@ -619,7 +620,7 @@ public class S3HPath extends CloudPath {
                 try {
                     this.getSession().getClient().pubObjectWithRequestEntityImpl(
                             this.getContainerName(), object, new InputStreamRequestEntity(in,
-                                    this.getLocal().attributes.getSize() - status.getCurrent(),
+                                    this.getLocal().attributes().getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
 
                                 @Override
@@ -632,7 +633,7 @@ public class S3HPath extends CloudPath {
                     IOUtils.closeQuietly(in);
                 }
             }
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 this.mkdir();
             }
         }
@@ -670,16 +671,17 @@ public class S3HPath extends CloudPath {
                     Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     if(null != bucket.getOwner()) {
-                        p.attributes.setOwner(bucket.getOwner().getDisplayName());
+                        p.attributes().setOwner(bucket.getOwner().getDisplayName());
                     }
                     if(null != bucket.getCreationDate()) {
-                        p.attributes.setCreationDate(bucket.getCreationDate().getTime());
+                        p.attributes().setCreationDate(bucket.getCreationDate().getTime());
                     }
                     childs.add(p);
                 }
             }
             else {
-                final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
+                final String container = this.getContainerName();
+                final S3Bucket bucket = this.getSession().getBucket(container);
                 // Keys can be listed by prefix. By choosing a common prefix
                 // for the names of related keys and marking these keys with
                 // a special character that delimits hierarchy, you can use the list
@@ -698,64 +700,76 @@ public class S3HPath extends CloudPath {
                 // element in the CommonPrefixes collection. These rolled-up keys are
                 // not returned elsewhere in the response.
                 final String delimiter = Path.DELIMITER;
-                // Null if listing is complete
-                String priorLastKey = null;
-                do {
-                    // Read directory listing in chunks. List results are always returned
-                    // in lexicographic (alphabetical) order.
-                    S3ObjectsChunk chunk = this.getSession().getClient().listObjectsChunked(
-                            bucket.getName(), prefix, delimiter,
-                            BUCKET_LIST_CHUNKING_SIZE, priorLastKey);
+                {
+                    // Null if listing is complete
+                    String priorLastKey = null;
+                    do {
+                        // Read directory listing in chunks. List results are always returned
+                        // in lexicographic (alphabetical) order.
+                        S3ObjectsChunk chunk = this.getSession().getClient().listObjectsChunked(
+                                container, prefix, delimiter,
+                                BUCKET_LIST_CHUNKING_SIZE, priorLastKey);
 
-                    final S3Object[] objects = chunk.getObjects();
-                    for(S3Object object : objects) {
-                        final S3HPath path = (S3HPath) PathFactory.createPath(this.getSession(), bucket.getName(), object.getKey(), Path.FILE_TYPE);
-                        path.setParent(this);
-                        if(path.getAbsolute().equals(this.getAbsolute())) {
-                            // #Workaround for key that end with /. Refer to #3347.
-                            continue;
-                        }
-                        path.attributes.setSize(object.getContentLength());
-                        path.attributes.setModificationDate(object.getLastModifiedDate().getTime());
-                        if(null != bucket.getOwner()) {
-                            path.attributes.setOwner(bucket.getOwner().getDisplayName());
-                            path.attributes.setGroup(bucket.getOwner().getId());
-                        }
-                        if(0 == object.getContentLength()) {
-                            final S3Object details = path.getDetails();
-                            if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
-                                path.attributes.setType(Path.DIRECTORY_TYPE);
+                        final S3Object[] objects = chunk.getObjects();
+                        for(S3Object object : objects) {
+                            final S3HPath path = (S3HPath) PathFactory.createPath(this.getSession(), container,
+                                    object.getKey(), Path.FILE_TYPE);
+                            path.setParent(this);
+                            if(path.getAbsolute().equals(this.getAbsolute())) {
+                                // #Workaround for key that end with /. Refer to #3347.
+                                continue;
                             }
+                            path.attributes().setSize(object.getContentLength());
+                            path.attributes().setModificationDate(object.getLastModifiedDate().getTime());
+                            if(null != bucket.getOwner()) {
+                                path.attributes().setOwner(bucket.getOwner().getDisplayName());
+                                path.attributes().setGroup(bucket.getOwner().getId());
+                            }
+                            if(0 == object.getContentLength()) {
+                                final S3Object details = path.getDetails();
+                                if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
+                                    path.attributes().setType(Path.DIRECTORY_TYPE);
+                                }
+                            }
+                            path.attributes().setStorageClass(object.getStorageClass());
+                            childs.add(path);
                         }
-                        path.attributes.setStorageClass(object.getStorageClass());
-                        // Versioning is enabled if non null.
-                        path.attributes.setVersionId(object.getVersionId());
-                        childs.add(path);
-                    }
 
-                    final String[] prefixes = chunk.getCommonPrefixes();
-                    for(String common : prefixes) {
-                        if(common.equals(Path.DELIMITER)) {
-                            log.warn("Skipping prefix " + common);
-                            continue;
+                        final String[] prefixes = chunk.getCommonPrefixes();
+                        for(String common : prefixes) {
+                            if(common.equals(Path.DELIMITER)) {
+                                log.warn("Skipping prefix " + common);
+                                continue;
+                            }
+                            final Path p = PathFactory.createPath(this.getSession(),
+                                    container, common, Path.DIRECTORY_TYPE);
+                            p.setParent(this);
+                            if(childs.contains(p)) {
+                                continue;
+                            }
+                            if(null != bucket.getOwner()) {
+                                p.attributes().setOwner(bucket.getOwner().getDisplayName());
+                                p.attributes().setGroup(bucket.getOwner().getId());
+                            }
+                            p.attributes().setPermission(DEFAULT_FOLDER_PERMISSION);
+                            childs.add(p);
                         }
-                        final Path p = PathFactory.createPath(this.getSession(),
-                                bucket.getName(), common, Path.DIRECTORY_TYPE);
-                        p.setParent(this);
-                        if(childs.contains(p)) {
-                            continue;
-                        }
-                        if(null != bucket.getOwner()) {
-                            p.attributes.setOwner(bucket.getOwner().getDisplayName());
-                            p.attributes.setGroup(bucket.getOwner().getId());
-                        }
-                        p.attributes.setPermission(DEFAULT_FOLDER_PERMISSION);
-                        childs.add(p);
-                    }
 
-                    priorLastKey = chunk.getPriorLastKey();
+                        priorLastKey = chunk.getPriorLastKey();
+                    }
+                    while(priorLastKey != null && !getStatus().isCanceled());
                 }
-                while(priorLastKey != null && !getStatus().isCanceled());
+                if(this.getSession().isVersioning(container)) {
+                    String priorLastKey = null;
+                    String priorLastVersionId = null;
+                    do {
+                        final VersionOrDeleteMarkersChunk chunk = this.getSession().getClient().listVersionedObjectsChunked(
+                                container, prefix, delimiter,
+                                BUCKET_LIST_CHUNKING_SIZE, priorLastKey, priorLastVersionId, true);
+                        childs.addAll(this.getVersions(bucket, Arrays.asList(chunk.getItems())));
+                    }
+                    while(priorLastKey != null && !getStatus().isCanceled());
+                }
             }
             this.getSession().setWorkdir(this);
         }
@@ -768,6 +782,52 @@ public class S3HPath extends CloudPath {
             this.error("Listing directory failed", e);
         }
         return childs;
+    }
+
+    private List<Path> getVersions(S3Bucket bucket, List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
+            throws IOException, S3ServiceException {
+        Collections.sort(versionOrDeleteMarkers, new Comparator<BaseVersionOrDeleteMarker>() {
+            public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
+                return o2.getLastModified().compareTo(o1.getLastModified());
+            }
+        });
+        final List<Path> versions = new ArrayList<Path>();
+        for(BaseVersionOrDeleteMarker object : versionOrDeleteMarkers) {
+            if(object.isLatest()) {
+                // Latest version already in default listing
+                continue;
+            }
+            if(object.isDeleteMarker()) {
+                continue;
+            }
+            final S3HPath path = (S3HPath) PathFactory.createPath(this.getSession(),
+                    bucket.getName(), object.getKey(), Path.FILE_TYPE);
+            path.setParent(this);
+            if(path.getAbsolute().equals(this.getAbsolute())) {
+                // #Workaround for key that end with /. Refer to #3347.
+                continue;
+            }
+            final S3Version version = (S3Version) object;
+            if(0 == version.getSize()) {
+                final S3Object details = path.getDetails();
+                if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
+                    // No need for versioning delimiters
+                    continue;
+                }
+            }
+            path.attributes().setSize(version.getSize());
+            path.attributes().setModificationDate(version.getLastModified().getTime());
+            if(null != bucket.getOwner()) {
+                path.attributes().setOwner(bucket.getOwner().getDisplayName());
+                path.attributes().setGroup(bucket.getOwner().getId());
+            }
+            path.attributes().setStorageClass(version.getStorageClass());
+            // Versioning is enabled if non null.
+            path.attributes().setVersionId(version.getVersionId());
+            path.attributes().setDuplicate(true);
+            versions.add(path);
+        }
+        return versions;
     }
 
     /**
@@ -825,7 +885,7 @@ public class S3HPath extends CloudPath {
                     this.getName(), perm.getOctalString()));
 
             this.writePermissions(this.getAccessControlList(perm), recursive);
-            if(attributes.isDirectory()) {
+            if(attributes().isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
                         if(!this.getSession().isConnected()) {
@@ -835,7 +895,7 @@ public class S3HPath extends CloudPath {
                     }
                 }
             }
-            attributes.setPermission(perm);
+            attributes().setPermission(perm);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
@@ -854,10 +914,10 @@ public class S3HPath extends CloudPath {
             if(this.isContainer()) {
                 this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
             }
-            else if(attributes.isFile()) {
+            else if(attributes().isFile()) {
                 this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
                         if(!this.getSession().isConnected()) {
@@ -934,13 +994,13 @@ public class S3HPath extends CloudPath {
         log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
                 this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 for(AbstractPath i : this.childs()) {
                     if(!this.getSession().isConnected()) {
                         break;
@@ -956,18 +1016,18 @@ public class S3HPath extends CloudPath {
             }
         }
         catch(S3ServiceException e) {
-            if(this.attributes.isFile()) {
+            if(this.attributes().isFile()) {
                 this.error("Cannot delete file", e);
             }
-            if(this.attributes.isDirectory()) {
+            if(this.attributes().isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
         }
         catch(IOException e) {
-            if(this.attributes.isFile()) {
+            if(this.attributes().isFile()) {
                 this.error("Cannot delete file", e);
             }
-            if(this.attributes.isDirectory()) {
+            if(this.attributes().isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
         }
@@ -980,20 +1040,20 @@ public class S3HPath extends CloudPath {
      */
     @Override
     public boolean isRenameSupported() {
-        return !attributes.isVolume();
+        return !attributes().isVolume();
     }
 
     @Override
     public void rename(AbstractPath renamed) {
         try {
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
 
                 final S3Object destination = new S3Object(((S3HPath) renamed).getKey());
                 // Keep same storage class
-                destination.setStorageClass(this.attributes.getStorageClass());
+                destination.setStorageClass(this.attributes().getStorageClass());
                 // Apply non standard ACL
                 destination.setAcl(this.getDetails().getAcl());
                 // Moving the object retaining the metadata of the original.
@@ -1001,59 +1061,59 @@ public class S3HPath extends CloudPath {
                         destination, false);
                 this.setPath(renamed.getAbsolute());
             }
-            else if(attributes.isVolume()) {
+            else if(attributes().isVolume()) {
                 // Renaming buckets is not currently supported by S3
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 for(AbstractPath i : this.childs()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
                     i.rename(PathFactory.createPath(this.getSession(), renamed.getAbsolute(),
-                            i.getName(), i.attributes.getType()));
+                            i.getName(), i.attributes().getType()));
                 }
             }
         }
         catch(S3ServiceException e) {
-            this.error(this.attributes.isFile() ? "Cannot rename file" : "Cannot rename folder", e);
+            this.error(this.attributes().isFile() ? "Cannot rename file" : "Cannot rename folder", e);
         }
         catch(IOException e) {
-            this.error(this.attributes.isFile() ? "Cannot rename file" : "Cannot rename folder", e);
+            this.error(this.attributes().isFile() ? "Cannot rename file" : "Cannot rename folder", e);
         }
     }
 
     @Override
     public void copy(AbstractPath copy) {
         try {
-            if(attributes.isFile()) {
+            if(attributes().isFile()) {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
                 S3Object destination = new S3Object(((S3HPath) copy).getKey());
                 // Keep same storage class
-                destination.setStorageClass(copy.attributes.getStorageClass());
+                destination.setStorageClass(((PathAttributes) copy.attributes()).getStorageClass());
                 // Apply non standard ACL
                 destination.setAcl(this.getDetails().getAcl());
                 // Copying object applying the metadata of the original
                 this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                         ((S3HPath) copy).getContainerName(), destination, false);
             }
-            else if(attributes.isDirectory()) {
+            else if(attributes().isDirectory()) {
                 for(AbstractPath i : this.childs()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
                     i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                            i.getName(), i.attributes.getType()));
+                            i.getName(), i.attributes().getType()));
                 }
             }
         }
         catch(S3ServiceException e) {
-            this.error(this.attributes.isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+            this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
         }
         catch(IOException e) {
-            this.error(this.attributes.isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+            this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
         }
     }
 

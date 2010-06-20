@@ -95,12 +95,16 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * Exposing protected methods
      */
     public static class CustomRestS3Service extends RestS3Service {
-        public CustomRestS3Service(AWSCredentials awsCredentials, String invokingApplicationDescription, CredentialsProvider credentialsProvider, Jets3tProperties jets3tProperties, HostConfiguration hostConfig) throws S3ServiceException {
+        public CustomRestS3Service(AWSCredentials awsCredentials, String invokingApplicationDescription,
+                                   CredentialsProvider credentialsProvider,
+                                   Jets3tProperties jets3tProperties,
+                                   HostConfiguration hostConfig) throws S3ServiceException {
             super(awsCredentials, invokingApplicationDescription, credentialsProvider, jets3tProperties, hostConfig);
         }
 
         @Override
-        public void pubObjectWithRequestEntityImpl(String bucketName, S3Object object, RequestEntity requestEntity) throws S3ServiceException {
+        public void pubObjectWithRequestEntityImpl(String bucketName, S3Object object,
+                                                   RequestEntity requestEntity) throws S3ServiceException {
             super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
         }
     }
@@ -244,32 +248,53 @@ public class S3HSession extends HTTPSession implements CloudSession {
     }
 
     /**
+     * Set to false if permission error response indicates this
+     * feature is not implemented.
+     */
+    private boolean bucketLocationSupported;
+
+    public boolean isBucketLocationSupported() {
+        return bucketLocationSupported;
+    }
+
+    protected void setBucketLocationSupported(boolean bucketLocationSupported) {
+        this.bucketLocationSupported = bucketLocationSupported;
+    }
+
+    /**
      * Bucket geographical location
      *
      * @return
      */
     public String getLocation(final String container) {
-        try {
-            final S3Bucket bucket = this.getBucket(container);
-            if(bucket.isLocationKnown()) {
-                return bucket.getLocation();
+        if(this.isBucketLocationSupported()) {
+            try {
+                final S3Bucket bucket = this.getBucket(container);
+                if(bucket.isLocationKnown()) {
+                    return bucket.getLocation();
+                }
+                if(this.getHost().getCredentials().isAnonymousLogin()) {
+                    log.info("Anonymous cannot access bucket location");
+                    return null;
+                }
+                this.check();
+                final String location = this.getClient().getBucketLocation(bucket.getName());
+                if(StringUtils.isBlank(location)) {
+                    return "US"; //Default location US is null
+                }
+                return location;
             }
-            if(this.getHost().getCredentials().isAnonymousLogin()) {
-                log.info("Anonymous cannot access bucket location");
-                return null;
+            catch(S3ServiceException e) {
+                if(e.getResponseCode() == 403) {
+                    log.warn("Bucket location not supported:" + e.getMessage());
+                    this.setBucketLocationSupported(false);
+                    return null;
+                }
+                this.error("Cannot read file attributes", e);
             }
-            this.check();
-            final String location = this.getClient().getBucketLocation(bucket.getName());
-            if(StringUtils.isBlank(location)) {
-                return "US"; //Default location US is null
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
             }
-            return location;
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
         }
         return null;
     }
@@ -484,8 +509,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @throws CloudFrontServiceException CloudFront failure details
      * @returann
      */
-    protected DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution
-    ) throws CloudFrontServiceException {
+    protected DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution) throws CloudFrontServiceException {
         if(distribution.isStreamingDistribution()) {
             return this.createCloudFrontService().getStreamingDistributionConfig(distribution.getId());
         }
@@ -496,8 +520,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @param distribution A distribution (the distribution must be disabled and deployed first)
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public void deleteDistribution(final org.jets3t.service.model.cloudfront.Distribution distribution
-    ) throws CloudFrontServiceException {
+    public void deleteDistribution(final org.jets3t.service.model.cloudfront.Distribution distribution) throws CloudFrontServiceException {
         if(distribution.isStreamingDistribution()) {
             this.createCloudFrontService().deleteStreamingDistribution(distribution.getId());
         }
@@ -553,6 +576,9 @@ public class S3HSession extends HTTPSession implements CloudSession {
             log.info("Anonymous cannot read distribution");
             return new Distribution();
         }
+        if(this.getSupportedDistributionMethods().size() == 0) {
+            return new Distribution();
+        }
         try {
             this.check();
             for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container, method)) {
@@ -570,7 +596,8 @@ public class S3HSession extends HTTPSession implements CloudSession {
         catch(CloudFrontServiceException e) {
             if(e.getResponseCode() == 403) {
                 log.warn("Invalid CloudFront account:" + e.getMessage());
-                return new Distribution();
+                this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
+                return new Distribution(false, null, Locale.localizedString("Unknown"));
             }
             this.error("Cannot read file attributes", e);
         }
@@ -591,6 +618,9 @@ public class S3HSession extends HTTPSession implements CloudSession {
     public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot write distribution");
+            return;
+        }
+        if(this.getSupportedDistributionMethods().size() == 0) {
             return;
         }
         try {
@@ -628,23 +658,43 @@ public class S3HSession extends HTTPSession implements CloudSession {
         return Locale.localizedString("Amazon CloudFront", "S3");
     }
 
+    private List<Distribution.Method> distributionMethods
+            = Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
+
     public List<Distribution.Method> getSupportedDistributionMethods() {
-        return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
+        return distributionMethods;
     }
 
-    public List<String> getSupportedStorageClasses() {
-        return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+    private void setSupportedDistributionMethods(List<Distribution.Method> distributionMethods) {
+        this.distributionMethods = distributionMethods;
     }
+
+    private List<String> storageClasses
+            = Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+
+    public List<String> getSupportedStorageClasses() {
+        return storageClasses;
+    }
+
+    private void setSupportedStorageClasses(List<String> storageClasses) {
+        this.storageClasses = storageClasses;
+    }
+
+    /**
+     * Set to false if permission error response indicates this
+     * feature is not implemented.
+     */
+    private boolean loggingSupported = true;
 
     /**
      * @return True if the service supports bucket logging.
      */
     public boolean isLoggingSupported() {
-        return true;
+        return loggingSupported;
     }
 
-    public boolean isVersioningSupported() {
-        return true;
+    protected void setLoggingSupported(boolean loggingSupported) {
+        this.loggingSupported = loggingSupported;
     }
 
     /**
@@ -652,22 +702,29 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @return True if the bucket logging status is enabled.
      */
     public boolean isLogging(final String container) {
-        try {
-            if(this.getHost().getCredentials().isAnonymousLogin()) {
-                log.info("Anonymous cannot access logging status");
-                return false;
-            }
-            this.check();
+        if(this.isLoggingSupported()) {
+            try {
+                if(this.getHost().getCredentials().isAnonymousLogin()) {
+                    log.info("Anonymous cannot access logging status");
+                    return false;
+                }
+                this.check();
 
-            final S3BucketLoggingStatus status
-                    = this.getClient().getBucketLoggingStatus(container);
-            return status.isLoggingEnabled();
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                final S3BucketLoggingStatus status
+                        = this.getClient().getBucketLoggingStatus(container);
+                return status.isLoggingEnabled();
+            }
+            catch(S3ServiceException e) {
+                if(e.getResponseCode() == 403) {
+                    log.warn("Bucket logging not supported:" + e.getMessage());
+                    this.setLoggingSupported(false);
+                    return false;
+                }
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
         return false;
     }
@@ -677,41 +734,77 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @param enabled
      */
     public void setLogging(final String container, final boolean enabled) {
-        // Logging target bucket
-        final S3BucketLoggingStatus loggingStatus = new S3BucketLoggingStatus();
-        if(enabled) {
-            loggingStatus.setTargetBucketName(container);
-            loggingStatus.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
-        }
-        try {
-            this.check();
-            this.getClient().setBucketLoggingStatus(container, loggingStatus, true);
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot write file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot write file attributes", e);
+        if(this.isLoggingSupported()) {
+            // Logging target bucket
+            final S3BucketLoggingStatus loggingStatus = new S3BucketLoggingStatus();
+            if(enabled) {
+                loggingStatus.setTargetBucketName(container);
+                loggingStatus.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
+            }
+            try {
+                this.check();
+                this.getClient().setBucketLoggingStatus(container, loggingStatus, true);
+            }
+            catch(S3ServiceException e) {
+                if(e.getResponseCode() == 403) {
+                    log.warn("Bucket logging not supported:" + e.getMessage());
+                    this.setLoggingSupported(false);
+                    return;
+                }
+                this.error("Cannot write file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
+            }
         }
     }
+
+    /**
+     * Set to false if permission error response indicates this
+     * feature is not implemented.
+     */
+    private boolean versioningSupported = true;
+
+    /**
+     * @return True if the service supports object versioning.
+     */
+    public boolean isVersioningSupported() {
+        return versioningSupported;
+    }
+
+    /**
+     * @param versioningSupported
+     */
+    protected void setVersioningSupported(boolean versioningSupported) {
+        this.versioningSupported = versioningSupported;
+    }
+
+    private S3BucketVersioningStatus versioningStatus;
 
     /**
      * @param container The bucket name
      * @return
      */
     public boolean isVersioning(final String container) {
-        try {
-            this.check();
-
-            final S3BucketVersioningStatus status
-                    = this.getClient().getBucketVersioningStatus(container);
-            return status.isVersioningEnabled();
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+        if(this.isVersioningSupported()) {
+            if(null == versioningStatus) {
+                try {
+                    this.check();
+                    versioningStatus = this.getClient().getBucketVersioningStatus(container);
+                }
+                catch(S3ServiceException e) {
+                    if(e.getResponseCode() == 403) {
+                        log.warn("Bucket versioning not supported:" + e.getMessage());
+                        this.setVersioningSupported(false);
+                        return false;
+                    }
+                    this.error("Cannot read file attributes", e);
+                }
+                catch(IOException e) {
+                    this.error("Cannot read file attributes", e);
+                }
+            }
+            return versioningStatus.isVersioningEnabled();
         }
         return false;
     }
@@ -722,17 +815,11 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @param enabled
      */
     public void setVersioning(final String container, boolean mfa, boolean enabled) {
-        try {
-            this.check();
-            if(enabled) {
-                if(mfa) {
-                    this.getClient().enableBucketVersioningWithMFA(container);
-                }
-                else {
-                    this.getClient().enableBucketVersioning(container);
-                }
-            }
-            else {
+        if(this.isVersioningSupported()) {
+            try {
+                this.check();
+                String multiFactorSerialNumber = null;
+                String multiFactorAuthCode = null;
                 if(mfa) {
                     final Credentials credentials = this.getHost().getCredentials();
                     credentials.setUsername(Preferences.instance().getProperty("s3.mfa.serialnumber"));
@@ -741,21 +828,38 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     this.getLoginController().prompt(this.getHost(),
                             Locale.localizedString("Provide additional login credentials", "Credentials"),
                             Locale.localizedString("Multi-Factor Authentication", "S3"));
-                    String multiFactorSerialNumber = credentials.getUsername();
-                    String multiFactorAuthCode = credentials.getPassword();
-                    this.getClient().suspendBucketVersioningWithMFA(container,
-                            multiFactorSerialNumber, multiFactorAuthCode);
+                    multiFactorSerialNumber = credentials.getUsername();
+                    multiFactorAuthCode = credentials.getPassword();
+                }
+                if(enabled) {
+                    if(mfa) {
+                        this.getClient().enableBucketVersioningWithMFA(container,
+                                multiFactorSerialNumber, multiFactorAuthCode);
+                    }
+                    else {
+                        this.getClient().enableBucketVersioning(container);
+                    }
                 }
                 else {
-                    this.getClient().suspendBucketVersioning(container);
+                    if(mfa) {
+                        this.getClient().suspendBucketVersioningWithMFA(container,
+                                multiFactorSerialNumber, multiFactorAuthCode);
+                    }
+                    else {
+                        this.getClient().suspendBucketVersioning(container);
+                    }
                 }
             }
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot write file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot write file attributes", e);
+            catch(S3ServiceException e) {
+                if(e.getResponseCode() == 403) {
+                    log.warn("Bucket versioning not supported:" + e.getMessage());
+                    this.setVersioningSupported(false);
+                }
+                this.error("Cannot write file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
+            }
         }
     }
 
@@ -764,20 +868,40 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @return True if MFA is required to delete objects in this bucket.
      */
     public boolean isMultiFactorAuthentication(final String container) {
-        try {
-            this.check();
+        if(this.isVersioningSupported()) {
+            try {
+                this.check();
 
-            final S3BucketVersioningStatus status = this.getClient().getBucketVersioningStatus(
-                    container);
-            return status.isMultiFactorAuthDeleteRequired();
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                final S3BucketVersioningStatus status = this.getClient().getBucketVersioningStatus(
+                        container);
+                return status.isMultiFactorAuthDeleteRequired();
+            }
+            catch(S3ServiceException e) {
+                if(e.getResponseCode() == 403) {
+                    log.warn("Bucket versioning not supported:" + e.getMessage());
+                    this.setVersioningSupported(false);
+                }
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
         return false;
+    }
+
+    /**
+     * Set to false if permission error response indicates this
+     * feature is not implemented.
+     */
+    private boolean requesterPaysSupported = true;
+
+    public boolean isRequesterPaysSupported() {
+        return requesterPaysSupported;
+    }
+
+    protected void setRequesterPaysSupported(boolean requesterPaysSupported) {
+        this.requesterPaysSupported = requesterPaysSupported;
     }
 
     /**
@@ -785,15 +909,17 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @param enabled
      */
     public void setRequesterPays(final String container, boolean enabled) {
-        try {
-            this.check();
-            this.getClient().setRequesterPaysBucket(container, enabled);
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot write file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot write file attributes", e);
+        if(this.isRequesterPaysSupported()) {
+            try {
+                this.check();
+                this.getClient().setRequesterPaysBucket(container, enabled);
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot write file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
+            }
         }
     }
 
@@ -802,15 +928,17 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @return
      */
     public boolean isRequesterPays(final String container) {
-        try {
-            this.check();
-            return this.getClient().isRequesterPaysBucket(container);
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+        if(this.isRequesterPaysSupported()) {
+            try {
+                this.check();
+                return this.getClient().isRequesterPaysBucket(container);
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
         return false;
     }
