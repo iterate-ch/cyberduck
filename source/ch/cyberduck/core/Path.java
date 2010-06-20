@@ -48,11 +48,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     private static Logger log = Logger.getLogger(Path.class);
 
     /**
-     *
-     */
-    private PathReference reference;
-
-    /**
      * The absolute remote path
      */
     private String path;
@@ -62,7 +57,10 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     private Local local;
 
-    private Status status;
+    /**
+     * 
+     */
+    private Status status = new Status();
 
     /**
      * A compiled representation of a regular expression.
@@ -160,11 +158,16 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
+     * Attributes denoting this path
      */
-    {
-        attributes = new PathAttributes();
-        status = new Status();
+    private PathAttributes attributes;
+
+    @Override
+    public PathAttributes attributes() {
+        if(null == attributes) {
+            attributes = new PathAttributes();
+        }
+        return attributes;
     }
 
     /**
@@ -175,7 +178,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     protected Path(String parent, String name, int type) {
         this.setPath(parent, name);
-        this.attributes.setType(type);
+        this.attributes().setType(type);
     }
 
     /**
@@ -185,7 +188,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     protected Path(String path, int type) {
         this.setPath(path);
-        this.attributes.setType(type);
+        this.attributes().setType(type);
     }
 
     /**
@@ -198,8 +201,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     protected Path(Path parent, final Local local) {
         this.setPath(parent, local);
-        this.attributes.setType(
-                local.getAttributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+        this.attributes().setType(
+                local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
     }
 
     /**
@@ -296,6 +299,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         return null;
     }
 
+    @Override
+    public abstract AttributedList<Path> list();
+
     /**
      * Accessability for #getSession.cache()
      *
@@ -370,28 +376,13 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * Default implementation returning a reference to self. You can override this
-     * if you need a different strategy to compare hashcode and equality for caching
-     * in a model.
-     *
-     * @return
-     */
-    @Override
-    public <T> PathReference<T> getReference() {
-        if(null == reference) {
-            reference = PathReferenceFactory.createPathReference(this);
-        }
-        return reference;
-    }
-
-    /**
      * Set the local equivalent of this path
      *
      * @param file Send <code>null</code> to reset the local path to the default value
      */
     public void setLocal(Local file) {
         if(null != file) {
-            if(file.getAttributes().isSymbolicLink()) {
+            if(file.attributes().isSymbolicLink()) {
                 if(null != file.getSymlinkTarget()) {
                     /**
                      * A canonical pathname is both absolute and unique.  The precise
@@ -428,18 +419,18 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return the file type for the extension of this file provided by launch services
      */
     public String kind() {
-        if(this.attributes.isSymbolicLink()) {
-            if(this.attributes.isFile()) {
+        if(this.attributes().isSymbolicLink()) {
+            if(this.attributes().isFile()) {
                 return Locale.localizedString("Symbolic Link (File)");
             }
-            if(this.attributes.isDirectory()) {
+            if(this.attributes().isDirectory()) {
                 return Locale.localizedString("Symbolic Link (Folder)");
             }
         }
-        if(this.attributes.isFile()) {
+        if(this.attributes().isFile()) {
             return this.getLocal().kind();
         }
-        if(this.attributes.isDirectory()) {
+        if(this.attributes().isDirectory()) {
             return Locale.localizedString("Folder");
         }
         return Locale.localizedString("Unknown");
@@ -569,7 +560,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
         // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
         // overhead when transferring a large amount of files
-        final boolean updateIcon = attributes.getSize() > Status.MEGA * 5;
+        final boolean updateIcon = attributes().getSize() > Status.MEGA * 5;
         // Set the first progress icon
         this.getLocal().setIcon(0);
 
@@ -598,7 +589,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 else {
                     l.bytesReceived(bytes);
                     if(updateIcon) {
-                        int fraction = (int) (getStatus().getCurrent() / attributes.getSize() * 10);
+                        int fraction = (int) (getStatus().getCurrent() / attributes().getSize() * 10);
                         // An integer between 0 and 9
                         if(fraction > step) {
                             // Another 10 percent of the file has been transferred
@@ -694,10 +685,9 @@ public abstract class Path extends AbstractPath implements Serializable {
             return false;
         }
         if(other instanceof Path) {
-            //BUG: returns the wrong result on case-insensitive systems, e.g. NT!
-            return this.getAbsolute().equals(((Path) other).getAbsolute());
+            return this.getReference().equals(((Path) other).<Object>getReference());
         }
-        return this.getAbsolute().equals(other.toString());
+        return false;
     }
 
     /**

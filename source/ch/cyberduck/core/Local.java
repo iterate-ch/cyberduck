@@ -43,7 +43,8 @@ public abstract class Local extends AbstractPath {
      */
     private LocalAttributes attributes;
 
-    public LocalAttributes getAttributes() {
+    @Override
+    public LocalAttributes attributes() {
         if(null == attributes) {
             attributes = new LocalAttributes();
         }
@@ -51,38 +52,12 @@ public abstract class Local extends AbstractPath {
     }
 
     /**
-     * 
+     *
      */
     public class LocalAttributes extends Attributes {
-        /**
-         * @return Always null
-         */
-        @Override
-        public String getOwner() {
-            return Locale.localizedString("Unknown");
-        }
-
-        /**
-         * @return Always null
-         */
-        @Override
-        public String getGroup() {
-            return Locale.localizedString("Unknown");
-        }
-
         @Override
         public long getModificationDate() {
             return _impl.lastModified();
-        }
-
-        @Override
-        public long getCreationDate() {
-            return this.getModificationDate();
-        }
-
-        @Override
-        public long getAccessedDate() {
-            return this.getModificationDate();
         }
 
         @Override
@@ -288,7 +263,7 @@ public abstract class Local extends AbstractPath {
      * @return the file type for the extension of this file provided by launch services
      */
     public String kind() {
-        if(this.getAttributes().isDirectory()) {
+        if(this.attributes().isDirectory()) {
             return Locale.localizedString("Folder");
         }
         final String extension = this.getExtension();
@@ -305,15 +280,6 @@ public abstract class Local extends AbstractPath {
 
     public String getAbbreviatedPath() {
         return this.getAbsolute();
-    }
-
-    /**
-     * @param <T>
-     * @return Always null
-     */
-    @Override
-    public <T> PathReference<T> getReference() {
-        return null;
     }
 
     @Override
@@ -367,19 +333,6 @@ public abstract class Local extends AbstractPath {
             log.warn("Write modification date failed:" + this.getAbsolute());
         }
     }
-
-//    @Override
-//    public void writePermissions(Permission perm, boolean recursive) {
-//        if(!_impl.setReadable(perm.getOwnerPermissions()[Permission.READ], !perm.getOtherPermissions()[Permission.READ])) {
-//            log.warn("Write permissions failed:" + this.getAbsolute());
-//        }
-//        if(!_impl.setWritable(perm.getOwnerPermissions()[Permission.WRITE], !perm.getOtherPermissions()[Permission.WRITE])) {
-//            log.warn("Write permissions failed:" + this.getAbsolute());
-//        }
-//        if(!_impl.setExecutable(perm.getOwnerPermissions()[Permission.EXECUTE], !perm.getOtherPermissions()[Permission.EXECUTE])) {
-//            log.warn("Write permissions failed:" + this.getAbsolute());
-//        }
-//    }
 
     @Override
     public void rename(AbstractPath renamed) {

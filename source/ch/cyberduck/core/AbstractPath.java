@@ -43,11 +43,6 @@ public abstract class AbstractPath {
      */
     public static final String HOME = "~";
 
-    /**
-     * Attributes denoting this path
-     */
-    public PathAttributes attributes;
-
     public static final int FILE_TYPE = 1;
     public static final int DIRECTORY_TYPE = 2;
     public static final int SYMBOLIC_LINK_TYPE = 4;
@@ -58,11 +53,17 @@ public abstract class AbstractPath {
      * @see ch.cyberduck.core.Cache
      */
     public boolean isCached() {
-        return this.cache().containsKey(this)
-                && !this.cache().get(this).attributes().isDirty();
+        return this.cache().containsKey(this.<Object>getReference())
+                && !this.cache().get(this.<Object>getReference()).attributes().isDirty();
     }
 
     public abstract <T extends AbstractPath> Cache<T> cache();
+
+    /**
+     * 
+     * @return
+     */
+    public abstract Attributes attributes();
 
     /**
      * Clear cached listing
@@ -70,12 +71,31 @@ public abstract class AbstractPath {
      * @throws NullPointerException if session is not initialized
      */
     public void invalidate() {
-        if(attributes.isDirectory()) {
-            this.cache().get(this).attributes().setDirty(true);
+        if(this.attributes().isDirectory()) {
+            this.cache().get(this.<Object>getReference()).attributes().setDirty(true);
         }
     }
 
-    public abstract <T> PathReference<T> getReference();
+    /**
+     *
+     */
+    private PathReference reference;
+
+    /**
+     * Default implementation returning a reference to self. You can override this
+     * if you need a different strategy to compare hashcode and equality for caching
+     * in a model.
+     *
+     * @return Reference to the path to be used in table models an file listing
+     *         cache.
+     * @see ch.cyberduck.core.Cache#lookup(PathReference)
+     */
+    public <T> PathReference<T> getReference() {
+        if(null == reference) {
+            reference = PathReferenceFactory.createPathReference(this);
+        }
+        return reference;
+    }
 
     public abstract String toURL();
 
@@ -121,9 +141,9 @@ public abstract class AbstractPath {
      */
     public <T extends AbstractPath> AttributedList<T> childs(Comparator<T> comparator, PathFilter<T> filter) {
         if(!this.isCached()) {
-            this.cache().put(this, this.list());
+            this.cache().put(this.<Object>getReference(), this.list());
         }
-        return this.<T>cache().get((T) this, comparator, filter);
+        return this.<T>cache().get(this.getReference(), comparator, filter);
     }
 
     /**
@@ -338,7 +358,7 @@ public abstract class AbstractPath {
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
     public String getSymlinkTarget() {
-        if(this.attributes.isSymbolicLink()) {
+        if(this.attributes().isSymbolicLink()) {
             return this.symbolic;
         }
         return null;
@@ -407,7 +427,7 @@ public abstract class AbstractPath {
      * @return true if executable for user, group and world
      */
     public boolean isExecutable() {
-        final Permission perm = attributes.getPermission();
+        final Permission perm = this.attributes().getPermission();
         if(null == perm) {
             log.warn("Unknown permissions");
             return true;
@@ -421,7 +441,7 @@ public abstract class AbstractPath {
      * @return true if readable for user, group and world
      */
     public boolean isReadable() {
-        final Permission perm = attributes.getPermission();
+        final Permission perm = this.attributes().getPermission();
         if(null == perm) {
             log.warn("Unknown permissions");
             return true;
@@ -435,7 +455,7 @@ public abstract class AbstractPath {
      * @return true if writable for user, group and world
      */
     public boolean isWritable() {
-        final Permission perm = attributes.getPermission();
+        final Permission perm = this.attributes().getPermission();
         if(null == perm) {
             log.warn("Unknown permissions");
             return true;
