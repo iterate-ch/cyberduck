@@ -230,21 +230,21 @@ public abstract class TransferPromptController extends SheetController implement
                     localURLField.setHidden(false);
 
                     if(p.getLocal().exists()) {
-                        if(p.getLocal().getAttributes().getSize() == -1) {
+                        if(p.getLocal().attributes().getSize() == -1) {
                             localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
                             localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    Status.getSizeAsString(p.getLocal().getAttributes().getSize()),
+                                    Status.getSizeAsString(p.getLocal().attributes().getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         localSizeField.setHidden(false);
-                        if(p.getLocal().getAttributes().getModificationDate() == -1) {
+                        if(p.getLocal().attributes().getModificationDate() == -1) {
                             localModificationField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
                             localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    DateFormatter.getLongFormat(p.getLocal().getAttributes().getModificationDate()),
+                                    DateFormatter.getLongFormat(p.getLocal().attributes().getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         localModificationField.setHidden(false);
@@ -260,21 +260,21 @@ public abstract class TransferPromptController extends SheetController implement
                     remoteURLField.setHidden(false);
 
                     if(p.exists()) {
-                        if(p.attributes.getSize() == -1) {
+                        if(p.attributes().getSize() == -1) {
                             remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
                             remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    Status.getSizeAsString(p.attributes.getSize()),
+                                    Status.getSizeAsString(p.attributes().getSize()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         remoteSizeField.setHidden(false);
-                        if(p.attributes.getModificationDate() == -1) {
+                        if(p.attributes().getModificationDate() == -1) {
                             remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
                         }
                         else {
                             remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    DateFormatter.getLongFormat(p.attributes.getModificationDate()),
+                                    DateFormatter.getLongFormat(p.attributes().getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         remoteModificationField.setHidden(false);

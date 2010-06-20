@@ -105,7 +105,7 @@ public abstract class Editor {
             @Override
             public void cleanup() {
                 if(edited.getStatus().isComplete()) {
-                    final Permission permissions = edited.getLocal().getAttributes().getPermission();
+                    final Permission permissions = edited.getLocal().attributes().getPermission();
                     if(null != permissions) {
                         permissions.getOwnerPermissions()[Permission.READ] = true;
                         permissions.getOwnerPermissions()[Permission.WRITE] = true;

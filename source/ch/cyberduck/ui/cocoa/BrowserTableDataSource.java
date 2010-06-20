@@ -105,7 +105,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // a multitude of unecessary threads
             if(!isLoadingListingInBackground.contains(path)) {
                 if(path.isCached()) {
-                    return path.cache().get(path, controller.getComparator(), controller.getFileFilter());
+                    return path.cache().get(path.getReference(), controller.getComparator(), controller.getFileFilter());
                 }
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
@@ -134,7 +134,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                 });
             }
-            return path.cache().get(path, controller.getComparator(), controller.getFileFilter());
+            return path.cache().get(path.getReference(), controller.getComparator(), controller.getFileFilter());
         }
     }
 
@@ -151,7 +151,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(identifier.equals(FILENAME_COLUMN)) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = PathFactory.createPath(controller.getSession(),
-                        item.getParent().getAbsolute(), value.toString(), item.attributes.getType());
+                        item.getParent().getAbsolute(), value.toString(), item.attributes().getType());
                 controller.renamePath(item, renamed);
             }
         }
@@ -185,26 +185,26 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(SIZE_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes.getSize()),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
-                if(item.attributes.getModificationDate() != -1) {
-                    return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(DateFormatter.getShortFormat(item.attributes.getModificationDate()),
+                if(item.attributes().getModificationDate() != -1) {
+                    return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(DateFormatter.getShortFormat(item.attributes().getModificationDate()),
                             TableCellAttributes.browserFontLeftAlignment()));
                 }
                 return tableViewCache.put(item, identifier, UNKNOWN_STRING);
             }
             if(identifier.equals(OWNER_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getOwner(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes().getOwner(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(GROUP_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes.getGroup(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes().getGroup(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {
-                Permission permission = item.attributes.getPermission();
+                Permission permission = item.attributes().getPermission();
                 if(null == permission) {
                     return tableViewCache.put(item, identifier, UNKNOWN_STRING);
                 }
@@ -296,9 +296,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard.getFiles(controller.getSession())) {
                         Path original = PathFactory.createPath(controller.getSession(),
-                                next.getAbsolute(), next.attributes.getType());
+                                next.getAbsolute(), next.attributes().getType());
                         Path renamed = PathFactory.createPath(controller.getSession(),
-                                destination.getAbsolute(), original.getName(), next.attributes.getType());
+                                destination.getAbsolute(), original.getName(), next.attributes().getType());
                         files.put(original, renamed);
                     }
                     pasteboard.clear();
@@ -327,7 +327,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public NSUInteger validateDrop(NSTableView view, Path destination, NSInteger row, NSDraggingInfo info) {
         if(controller.isMounted()) {
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                if(destination.attributes.isDirectory()) {
+                if(destination.attributes().isDirectory()) {
                     this.setDropRowAndDropOperation(view, destination, row);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
@@ -358,7 +358,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // Do not allow dragging onto myself
                     return NSDraggingInfo.NSDragOperationNone;
                 }
-                if(next.attributes.isDirectory() && destination.isChild(next)) {
+                if(next.attributes().isDirectory() && destination.isChild(next)) {
                     // Do not allow dragging a directory into its own containing items
                     return NSDraggingInfo.NSDragOperationNone;
                 }
@@ -368,7 +368,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             log.debug("Operation Mask:" + info.draggingSourceOperationMask().intValue());
-            if(destination.attributes.isDirectory()) {
+            if(destination.attributes().isDirectory()) {
                 this.setDropRowAndDropOperation(view, destination, row);
                 if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                     return NSDraggingInfo.NSDragOperationCopy;
@@ -388,7 +388,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             // entire table view to be highlighted rather than a specific row.
             view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
         }
-        else if(destination.attributes.isDirectory()) {
+        else if(destination.attributes().isDirectory()) {
             log.debug("setDropRowAndDropOperation:" + row.intValue());
             view.setDropRow(row, NSTableView.NSTableViewDropOn);
         }
@@ -409,7 +409,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     if(null == path) {
                         continue;
                     }
-                    if(path.attributes.isFile()) {
+                    if(path.attributes().isFile()) {
                         if(StringUtils.isNotEmpty(path.getExtension())) {
                             fileTypes.addObject(NSString.stringWithString(path.getExtension()));
                         }
@@ -417,7 +417,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                             fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeRegular));
                         }
                     }
-                    else if(path.attributes.isDirectory()) {
+                    else if(path.attributes().isDirectory()) {
                         fileTypes.addObject(NSString.stringWithString("'fldr'")); //NSFileTypeForHFSTypeCode('fldr')
                     }
                     else {
@@ -479,10 +479,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 promisedDragNames.addObject(NSString.stringWithString(p.getLocal().getName()));
             }
             if(promisedPaths.size() == 1) {
-                if(promisedPaths.get(0).attributes.isFile()) {
+                if(promisedPaths.get(0).attributes().isFile()) {
                     promisedPaths.get(0).getLocal().touch();
                 }
-                if(promisedPaths.get(0).attributes.isDirectory()) {
+                if(promisedPaths.get(0).attributes().isDirectory()) {
                     promisedPaths.get(0).getLocal().mkdir();
                 }
             }

@@ -72,7 +72,7 @@ public class FolderController extends FileController {
                         }
                     }
                 }
-                folder.cache().put(folder, AttributedList.<Path>emptyList());
+                folder.cache().put(folder.getReference(), AttributedList.<Path>emptyList());
                 folder.getParent().invalidate();
             }
 

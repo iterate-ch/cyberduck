@@ -77,7 +77,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
             if(0 == draggingColumn || 1 == draggingColumn) {
                 if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
                     Path p = this.childs(this.controller.workdir()).get(row.intValue());
-                    if(p.attributes.isDirectory()) {
+                    if(p.attributes().isDirectory()) {
                         destination = p;
                     }
                 }
@@ -137,10 +137,10 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
 //            Path promisedDragPath = childs.get(index.intValue());
 //            promisedDragPath.setLocal(LocalFactory.createLocalLocal(dropDestination.path(), promisedDragPath.getName()));
 //            if(rowIndexes.count().intValue() == 1) {
-//                if(promisedDragPath.attributes.isFile()) {
+//                if(promisedDragPath.attributes().isFile()) {
 //                    promisedDragPath.getLocal().touch();
 //                }
-//                if(promisedDragPath.attributes.isDirectory()) {
+//                if(promisedDragPath.attributes().isDirectory()) {
 //                    promisedDragPath.getLocal().mkdir();
 //                }
 //            }

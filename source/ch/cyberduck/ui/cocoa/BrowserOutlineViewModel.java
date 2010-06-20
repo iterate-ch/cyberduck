@@ -73,7 +73,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == path) {
             return false;
         }
-        return path.attributes.isDirectory();
+        return path.attributes().isDirectory();
     }
 
     /**
@@ -160,7 +160,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 if(null != destination) {
                     // Dragging over file or folder
                     final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation()).intValue();
-                    if(0 == draggingColumn && destination.attributes.isDirectory()) {
+                    if(0 == draggingColumn && destination.attributes().isDirectory()) {
                         // Drop target is directory
                         outlineView.setDropItem(destination.<NSObject>getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
                         return super.validateDrop(outlineView, destination, row, draggingInfo);

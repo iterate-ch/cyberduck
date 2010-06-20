@@ -75,10 +75,10 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected abstract static class PromptFilter implements PathFilter<Path> {
         public boolean accept(Path file) {
             if(file.exists()) {
-                if(file.attributes.getSize() == -1) {
+                if(file.attributes().getSize() == -1) {
                     file.readSize();
                 }
-                if(file.attributes.getModificationDate() == -1) {
+                if(file.attributes().getModificationDate() == -1) {
                     file.readTimestamp();
                 }
             }
@@ -112,7 +112,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             final Path path = this.lookup(item);
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
             transfer.setSelected(path, state == NSCell.NSOnState);
-            if(path.attributes.isDirectory()) {
+            if(path.attributes().isDirectory()) {
                 outlineView.setNeedsDisplay(true);
             }
         }
@@ -143,8 +143,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             // Check first if it hasn't been already requested so we don't spawn
             // a multitude of unecessary threads
             if(!isLoadingListingInBackground.contains(path)) {
-                if(transfer.cache().containsKey(path)) {
-                    return transfer.cache().get(path, new NullComparator<Path>(), filter());
+                if(transfer.cache().containsKey(path.getReference())) {
+                    return transfer.cache().get(path.getReference(), new NullComparator<Path>(), filter());
                 }
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
@@ -176,7 +176,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                     }
                 });
             }
-            return transfer.cache().get(path, new NullComparator<Path>(), filter());
+            return transfer.cache().get(path.getReference(), new NullComparator<Path>(), filter());
         }
     }
 
@@ -209,7 +209,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return false;
         }
-        return this.lookup(item).attributes.isDirectory();
+        return this.lookup(item).attributes().isDirectory();
     }
 
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {

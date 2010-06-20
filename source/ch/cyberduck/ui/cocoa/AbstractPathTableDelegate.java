@@ -37,8 +37,8 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
      */
     public String tooltip(Path p) {
         return p.getAbsolute() + "\n"
-                + Status.getSizeAsString(p.attributes.getSize()) + "\n"
-                + DateFormatter.getLongFormat(p.attributes.getModificationDate());
+                + Status.getSizeAsString(p.attributes().getSize()) + "\n"
+                + DateFormatter.getLongFormat(p.attributes().getModificationDate());
     }
 
     @Override
@@ -80,14 +80,14 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
 
         @Override
         public int compare(Path p1, Path p2) {
-            if((p1.attributes.isDirectory() && p2.attributes.isDirectory())
-                    || p1.attributes.isFile() && p2.attributes.isFile()) {
+            if((p1.attributes().isDirectory() && p2.attributes().isDirectory())
+                    || p1.attributes().isFile() && p2.attributes().isFile()) {
                 if(ascending) {
                     return impl.compare(p1.kind(), p2.kind());
                 }
                 return -impl.compare(p1.kind(), p2.kind());
             }
-            if(p1.attributes.isFile()) {
+            if(p1.attributes().isFile()) {
                 return ascending ? 1 : -1;
             }
             return ascending ? -1 : 1;
@@ -126,10 +126,10 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
 
         @Override
         public int compare(Path p1, Path p2) {
-            if(p1.attributes.getSize() > p2.attributes.getSize()) {
+            if(p1.attributes().getSize() > p2.attributes().getSize()) {
                 return ascending ? 1 : -1;
             }
-            else if(p1.attributes.getSize() < p2.attributes.getSize()) {
+            else if(p1.attributes().getSize() < p2.attributes().getSize()) {
                 return ascending ? -1 : 1;
             }
             return 0;
@@ -148,11 +148,11 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
 
         @Override
         public int compare(Path p1, Path p2) {
-            long d1 = p1.attributes.getModificationDate();
+            long d1 = p1.attributes().getModificationDate();
             if(-1 == d1) {
                 return 0;
             }
-            long d2 = p2.attributes.getModificationDate();
+            long d2 = p2.attributes().getModificationDate();
             if(-1 == d2) {
                 return 0;
             }
@@ -179,9 +179,9 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
         @Override
         public int compare(Path p1, Path p2) {
             if(ascending) {
-                return p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+                return p1.attributes().getOwner().compareToIgnoreCase(p2.attributes().getOwner());
             }
-            return -p1.attributes.getOwner().compareToIgnoreCase(p2.attributes.getOwner());
+            return -p1.attributes().getOwner().compareToIgnoreCase(p2.attributes().getOwner());
         }
 
         public String toString() {
@@ -198,9 +198,9 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
         @Override
         public int compare(Path p1, Path p2) {
             if(ascending) {
-                return p1.attributes.getGroup().compareToIgnoreCase(p2.attributes.getGroup());
+                return p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
             }
-            return -p1.attributes.getGroup().compareToIgnoreCase(p2.attributes.getGroup());
+            return -p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
         }
 
         public String toString() {
@@ -216,11 +216,11 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
 
         @Override
         public int compare(Path p1, Path p2) {
-            Permission perm1 = p1.attributes.getPermission();
+            Permission perm1 = p1.attributes().getPermission();
             if(null == perm1) {
                 perm1 = Permission.EMPTY;
             }
-            Permission perm2 = p2.attributes.getPermission();
+            Permission perm2 = p2.attributes().getPermission();
             if(null == perm2) {
                 perm2 = Permission.EMPTY;
             }

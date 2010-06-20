@@ -65,7 +65,7 @@ public class SyncPromptModel extends TransferPromptModel {
         if(identifier.equals(SIZE_COLUMN)) {
             SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
             return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
-                    compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes.getSize() : item.getLocal().getAttributes().getSize()),
+                    compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
                     TableCellAttributes.browserFontRightAlignment());
         }
         if(identifier.equals(SYNC_COLUMN)) {
@@ -79,14 +79,14 @@ public class SyncPromptModel extends TransferPromptModel {
             return null;
         }
         if(identifier.equals(WARNING_COLUMN)) {
-            if(item.attributes.isFile()) {
+            if(item.attributes().isFile()) {
                 if(item.exists()) {
-                    if(item.attributes.getSize() == 0) {
+                    if(item.attributes().getSize() == 0) {
                         return ALERT_ICON;
                     }
                 }
                 if(item.getLocal().exists()) {
-                    if(item.getLocal().getAttributes().getSize() == 0) {
+                    if(item.getLocal().attributes().getSize() == 0) {
                         return ALERT_ICON;
                     }
                 }

@@ -60,7 +60,7 @@ public class GotoController extends SheetController {
 
         private final PathFilter<Path> filter = new PathFilter<Path>() {
             public boolean accept(Path p) {
-                return p.attributes.isDirectory();
+                return p.attributes().isDirectory();
             }
         };
 

@@ -251,8 +251,8 @@ public class IconCache {
      * @return
      */
     public NSImage iconForPath(final Path item, Integer size) {
-        if(item.attributes.isSymbolicLink()) {
-            if(item.attributes.isDirectory()) {
+        if(item.attributes().isSymbolicLink()) {
+            if(item.attributes().isDirectory()) {
                 final NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
                 folder.lockFocus();
                 NSImage f = FOLDER_ICON;
@@ -275,21 +275,21 @@ public class IconCache {
             symlink.unlockFocus();
             return symlink;
         }
-        if(item.attributes.isFile()) {
-            if(StringUtils.isEmpty(item.getExtension()) && null != item.attributes.getPermission()) {
+        if(item.attributes().isFile()) {
+            if(StringUtils.isEmpty(item.getExtension()) && null != item.attributes().getPermission()) {
                 if(item.isExecutable()) {
                     return this.iconForName("executable.tiff", size);
                 }
             }
             return this.iconForExtension(item.getExtension(), size);
         }
-        if(item.attributes.isVolume()) {
+        if(item.attributes().isVolume()) {
             return this.iconForName(item.getHost().getProtocol().disk(), size);
         }
-        if(item.attributes.isDirectory()) {
-            if(overlayFolderImage && null != item.attributes.getPermission()) {
+        if(item.attributes().isDirectory()) {
+            if(overlayFolderImage && null != item.attributes().getPermission()) {
                 if(!item.isExecutable()
-                        || (item.isCached() && !item.cache().get(item).attributes().isReadable())) {
+                        || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
                     return this.iconForFolder("PrivateFolderBadgeIcon.icns", size);
                 }
                 if(!item.isReadable()) {
