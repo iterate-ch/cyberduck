@@ -803,10 +803,6 @@ public class S3HPath extends CloudPath {
             final S3HPath path = (S3HPath) PathFactory.createPath(this.getSession(),
                     bucket.getName(), object.getKey(), Path.FILE_TYPE);
             path.setParent(this);
-            if(path.getAbsolute().equals(this.getAbsolute())) {
-                // #Workaround for key that end with /. Refer to #3347.
-                continue;
-            }
             final S3Version version = (S3Version) object;
             if(0 == version.getSize()) {
                 final S3Object details = path.getDetails();
