@@ -45,6 +45,12 @@ public class HiddenFilesPathFilter<E extends AbstractPath> implements PathFilter
         if(null == HIDDEN_PATTERN) {
             return true;
         }
-        return !HIDDEN_PATTERN.matcher(file.getName()).matches();
+        if(HIDDEN_PATTERN.matcher(file.getName()).matches()) {
+            return false;
+        }
+        if(file.attributes().isDuplicate()) {
+            return false;
+        }
+        return true;
     }
 }
