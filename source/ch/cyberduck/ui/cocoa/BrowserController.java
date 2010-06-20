@@ -148,6 +148,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     /**
      * Hide files beginning with '.'
+     *
+     * @see ch.cyberduck.core.HiddenFilesPathFilter#accept(ch.cyberduck.core.AbstractPath)
      */
     private boolean showHiddenFiles;
 
@@ -164,6 +166,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
+    /**
+     * No file filter.
+     */
+    private static final PathFilter<Path> NULL_FILTER = new NullPathFilter<Path>();
+
+    /**
+     * Filter hidden files.
+     */
+    private static final PathFilter<Path> HIDDEN_FILTER = new HiddenFilesPathFilter<Path>();
+
     protected PathFilter<Path> getFileFilter() {
         return this.filenameFilter;
     }
@@ -173,11 +185,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(StringUtils.isBlank(searchString)) {
             this.searchField.setStringValue("");
             // Revert to the last used default filter
-            if(this.getShowHiddenFiles()) {
-                this.filenameFilter = new NullPathFilter<Path>();
+            if(this.isShowHiddenFiles()) {
+                this.filenameFilter = NULL_FILTER;
             }
             else {
-                this.filenameFilter = new HiddenFilesPathFilter<Path>();
+                this.filenameFilter = HIDDEN_FILTER;
             }
         }
         else {
@@ -188,7 +200,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         // Matching filename
                         return true;
                     }
-                    if(file.attributes.isDirectory() && getSelectedBrowserView() == browserOutlineView) {
+                    if(file.attributes().isDirectory() && getSelectedBrowserView() == browserOutlineView) {
                         // #471. Expanded item childs may match search string
                         return file.isCached();
                     }
@@ -199,18 +211,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.reloadData(true);
     }
 
+    /**
+     * @param showHidden
+     */
     public void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
-            this.filenameFilter = new NullPathFilter<Path>();
+            this.filenameFilter = NULL_FILTER;
             this.showHiddenFiles = true;
         }
         else {
-            this.filenameFilter = new HiddenFilesPathFilter<Path>();
+            this.filenameFilter = HIDDEN_FILTER;
             this.showHiddenFiles = false;
         }
     }
 
-    public boolean getShowHiddenFiles() {
+    /**
+     * @return
+     */
+    public boolean isShowHiddenFiles() {
         return this.showHiddenFiles;
     }
 
@@ -532,7 +550,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(null == selected) {
             return null;
         }
-        if(selected.attributes.isFile()) {
+        if(selected.attributes().isFile()) {
             return selected.getLocal();
         }
         return null;
@@ -794,7 +812,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(QuickLookFactory.instance().isAvailable()) {
                 final Collection<Path> downloads = new Collection<Path>();
                 for(Path path : selected) {
-                    if(!path.attributes.isFile()) {
+                    if(!path.attributes().isFile()) {
                         continue;
                     }
                     final Local folder = LocalFactory.createLocal(new File(Preferences.instance().getProperty("tmp.dir"),
@@ -897,7 +915,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                     if(this.isCanceled()) {
                                         break;
                                     }
-                                    if(p.attributes.getPermission() == null) {
+                                    if(p.attributes().getPermission() == null) {
                                         p.readPermission();
                                     }
                                 }
@@ -966,7 +984,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         QuickLookFactory.instance().didEndQuickLook();
     }
 
-    // setting appearance attributes
+    // setting appearance attributes()
     final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
 
     private BrowserOutlineViewModel browserOutlineModel;
@@ -982,7 +1000,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
-        // setting appearance attributes
+        // setting appearance attributes()
         this._updateBrowserAttributes(browserOutlineView);
         // selection properties
         browserOutlineView.setAllowsMultipleSelection(true);
@@ -1017,15 +1035,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == item) {
                     return;
                 }
+                final Path path = lookup(new OutlinePathReference(item));
+                if(null == path) {
+                    return;
+                }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    final Path path = lookup(new OutlinePathReference(item));
-                    if(null == path) {
-                        return;
-                    }
                     cell.setEditable(path.isRenameSupported());
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
-                if(!BrowserController.this.isConnected()) {
+                if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
                     cell.setTextColor(NSColor.disabledControlTextColor());
                 }
                 else {
@@ -1102,7 +1120,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 NSPasteboard.FilenamesPboardType, //accept files dragged from the Finder for uploading
                 NSPasteboard.FilesPromisePboardType //accept file promises made myself but then interpret them as TransferPasteboardType
         ));
-        // setting appearance attributes
+        // setting appearance attributes()
         this._updateBrowserAttributes(browserListView);
         // selection properties
         browserListView.setAllowsMultipleSelection(true);
@@ -1131,12 +1149,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final String identifier = tableColumn.identifier();
+                final Path path = browserListModel.childs(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    final Path item = browserListModel.childs(BrowserController.this.workdir()).get(row.intValue());
-                    cell.setEditable(item.isRenameSupported());
+                    cell.setEditable(path.isRenameSupported());
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!BrowserController.this.isConnected()) {// || CDBrowserController.this.activityRunning) {
+                    if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
                         cell.setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {
@@ -1410,7 +1428,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.bookmarkTable.setRowHeight(new CGFloat(70));
         }
 
-        // setting appearance attributes
+        // setting appearance attributes()
         this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
         this.bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
 
@@ -1577,7 +1595,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Host item;
         if(this.isMounted()) {
             Path selected = this.getSelectedPath();
-            if(null == selected || !selected.attributes.isDirectory()) {
+            if(null == selected || !selected.attributes().isDirectory()) {
                 selected = this.workdir();
             }
             item = new Host(this.session.getHost().getAsDictionary());
@@ -1869,7 +1887,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     public void updateStatusLabel() {
-        String label = Locale.localizedString("Disconnected", "Status");
+        String label = null;
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
             label = this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks");
         }
@@ -1878,14 +1896,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(this.isConnected()) {
                     label = this.getSelectedBrowserView().numberOfRows() + " " + Locale.localizedString("Files");
                 }
+                else {
+                    label = Locale.localizedString("Disconnected", "Status");
+                }
             }
         }
         this.updateStatusLabel(label);
     }
 
     public void updateStatusLabel(String label) {
-        // Update the status label at the bottom of the browser window
-        statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
+        if(StringUtils.isNotBlank(label)) {
+            // Update the status label at the bottom of the browser window
+            statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
+        }
     }
 
     @Outlet
@@ -1964,7 +1987,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void newBrowserButtonClicked(final ID sender) {
         Path selected = this.getSelectedPath();
-        if(null == selected || !selected.attributes.isDirectory()) {
+        if(null == selected || !selected.attributes().isDirectory()) {
             selected = this.workdir();
         }
         BrowserController c = MainController.newDocument(true);
@@ -2296,7 +2319,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
     private boolean isEditable(final Path selected) {
-        if(selected.attributes.isFile()) {
+        if(selected.attributes().isFile()) {
             if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
                 return true;
             }
@@ -2471,15 +2494,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void syncButtonClicked(final ID sender) {
         final Path selection;
         if(this.getSelectionCount() == 1 &&
-                this.getSelectedPath().attributes.isDirectory()) {
+                this.getSelectedPath().attributes().isDirectory()) {
             selection = this.getSelectedPath();
         }
         else {
             selection = this.workdir();
         }
         syncPanel = NSOpenPanel.openPanel();
-        syncPanel.setCanChooseDirectories(selection.attributes.isDirectory());
-        syncPanel.setCanChooseFiles(selection.attributes.isFile());
+        syncPanel.setCanChooseDirectories(selection.attributes().isDirectory());
+        syncPanel.setCanChooseFiles(selection.attributes().isFile());
         syncPanel.setCanCreateDirectories(true);
         syncPanel.setAllowsMultipleSelection(false);
         syncPanel.setMessage(Locale.localizedString("Synchronize")
@@ -2497,7 +2520,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(sheet.filenames().count().intValue() > 0) {
                 final Path selection;
                 if(this.getSelectionCount() == 1 &&
-                        this.getSelectedPath().attributes.isDirectory()) {
+                        this.getSelectedPath().attributes().isDirectory()) {
                     selection = PathFactory.createPath(getTransferSession(), this.getSelectedPath().getAsDictionary());
                 }
                 else {
@@ -2549,7 +2572,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(null == destination) {
                 destination = workdir();
             }
-            else if(!destination.attributes.isDirectory()) {
+            else if(!destination.attributes().isDirectory()) {
                 destination = destination.getParent();
             }
             // selected files on the local filesystem
@@ -2717,10 +2740,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(null == selected) {
             return;
         }
-        if(selected.attributes.isDirectory()) {
+        if(selected.attributes().isDirectory()) {
             this.setWorkdir(selected);
         }
-        else if(selected.attributes.isFile() || this.getSelectionCount() > 1) {
+        else if(selected.attributes().isFile() || this.getSelectionCount() > 1) {
             if(Preferences.instance().getBoolean("browser.doubleclick.edit")) {
                 this.editButtonClicked(null);
             }
@@ -2830,7 +2853,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         Path parent = this.workdir();
         if(this.getSelectionCount() == 1) {
             Path selected = this.getSelectedPath();
-            if(selected.attributes.isDirectory()) {
+            if(selected.attributes().isDirectory()) {
                 parent = selected;
             }
             else {
@@ -2839,9 +2862,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         for(final Path next : pasteboard.getFiles(this.getSession())) {
             Path current = PathFactory.createPath(getSession(),
-                    next.getAbsolute(), next.attributes.getType());
+                    next.getAbsolute(), next.attributes().getType());
             Path renamed = PathFactory.createPath(getSession(),
-                    parent.getAbsolute(), current.getName(), next.attributes.getType());
+                    parent.getAbsolute(), current.getName(), next.attributes().getType());
             files.put(current, renamed);
         }
         pasteboard.clear();
@@ -2908,7 +2931,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         String workdir = null;
         if(this.getSelectionCount() == 1) {
             Path selected = this.getSelectedPath();
-            if(selected.attributes.isDirectory()) {
+            if(selected.attributes().isDirectory()) {
                 workdir = selected.getAbsolute();
             }
         }
@@ -3021,7 +3044,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param path
      * @return Null if not mounted or lookup fails
      */
-    public Path lookup(OutlinePathReference path) {
+    public Path lookup(PathReference path) {
         if(this.isMounted()) {
             return this.getSession().cache().lookup(path);
         }
@@ -3760,7 +3783,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == selected) {
                     return false;
                 }
-                return selected.attributes.isFile();
+                return selected.attributes().isFile();
             }
             return false;
         }
@@ -3795,7 +3818,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == selected) {
                     return false;
                 }
-                return !selected.attributes.isVolume();
+                return !selected.attributes().isVolume();
             }
             return false;
         }
@@ -3805,7 +3828,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == selected) {
                     return false;
                 }
-                return !selected.attributes.isVolume();
+                return !selected.attributes().isVolume();
             }
             return false;
         }
@@ -3849,7 +3872,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 if(this.getSelectionCount() > 0) {
                     for(Path selected : this.getSelectedPaths()) {
-                        if(selected.attributes.isFile() && Archive.isArchive(selected.getName())) {
+                        if(selected.attributes().isFile() && Archive.isArchive(selected.getName())) {
                             // At least one file selected is already an archive. No distinct action possible
                             return false;
                         }
@@ -3866,7 +3889,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 if(this.getSelectionCount() > 0) {
                     for(Path selected : this.getSelectedPaths()) {
-                        if(selected.attributes.isDirectory()) {
+                        if(selected.attributes().isDirectory()) {
                             return false;
                         }
                         if(!Archive.isArchive(selected.getName())) {
@@ -3911,7 +3934,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             String editor = null;
             final Path selected = this.getSelectedPath();
             if(null != selected) {
-                if(selected.attributes.isFile()) {
+                if(selected.attributes().isFile()) {
                     // Choose editor for selected file
                     editor = EditorFactory.defaultEditor(selected.getLocal());
                 }
