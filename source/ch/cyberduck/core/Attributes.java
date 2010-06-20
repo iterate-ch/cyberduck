@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -49,12 +51,16 @@ public abstract class Attributes {
     /**
      * @return The time the file was created in millis UTC or -1 if unknown
      */
-    public abstract long getCreationDate();
+    public long getCreationDate() {
+        return this.getModificationDate();
+    }
 
     /**
      * @return The time the file was last accessed in millis UTC or -1 if unknown
      */
-    public abstract long getAccessedDate();
+    public long getAccessedDate() {
+        return this.getModificationDate();
+    }
 
     /**
      * @return The file permission mask or null if unknown
@@ -79,11 +85,42 @@ public abstract class Attributes {
      */
     public abstract boolean isSymbolicLink();
 
-    public abstract String getOwner();
+    public String getOwner() {
+        return Locale.localizedString("Unknown");
+    }
 
-    public abstract String getGroup();
+    public String getGroup() {
+        return Locale.localizedString("Unknown");
+    }
 
     public abstract String getChecksum();
+
+    /**
+     * A version identifiying a particular revision of a file
+     * with the same path.
+     *
+     * @return Version Identifier
+     */
+    public String getVersionId() {
+        return null;
+    }
+
+    /**
+     * If the path should not be displayed in a browser by default unless the user
+     * explicitly chooses to show hidden files.
+     *
+     * @return True if hidden by default.
+     */
+    public boolean isDuplicate() {
+        return false;
+    }
+
+    /**
+     * @return The revision number of the file.
+     */
+    public String getRevision() {
+        return Locale.localizedString("Unknown");
+    }
 
     /**
      * @param other
@@ -93,9 +130,9 @@ public abstract class Attributes {
     @Override
     public boolean equals(Object other) {
         if(other instanceof Attributes) {
-            if(StringUtils.isNotBlank(this.getChecksum()) && StringUtils.isNotBlank(((Attributes) other).getChecksum())) {
-                // Compare by checksum if e.g. supported by S3
-                return this.getChecksum().equals(((Attributes) other).getChecksum());
+            if(StringUtils.isNotBlank(this.getVersionId()) && StringUtils.isNotBlank(((PathAttributes) other).getVersionId())) {
+                // Compare by version ID if e.g. supported by S3
+                return this.getVersionId().equals(((PathAttributes) other).getVersionId());
             }
         }
         return super.equals(other);

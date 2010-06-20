@@ -24,7 +24,6 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -64,7 +63,12 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Should be hidden in the browser by default.
      */
-    private boolean hidden;
+    private boolean duplicate;
+
+    /**
+     * Revision number
+     */
+    private String revision;
 
     public PathAttributes() {
         super();
@@ -235,38 +239,51 @@ public class PathAttributes extends Attributes implements Serializable {
         this.checksum = checksum;
     }
 
+    /**
+     * @return Storage redundancy identifier.
+     */
     public String getStorageClass() {
         return storageClass;
     }
 
+    /**
+     * @param redundancy Storage redundancy identifier.
+     */
     public void setStorageClass(String redundancy) {
         this.storageClass = redundancy;
     }
 
+    /**
+     * @return Unique version identifier
+     */
+    @Override
     public String getVersionId() {
         return versionId;
     }
 
+    /**
+     * Set a unique version identifier for the revision of a file.
+     *
+     * @param versionId Revision
+     */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
     }
 
-    public boolean isHidden() {
-        return hidden;
-    }
-
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
-    }
-
+    /**
+     * @return True if hidden by default
+     */
     @Override
-    public boolean equals(Object other) {
-        if(other instanceof PathAttributes) {
-            if(StringUtils.isNotBlank(this.getVersionId()) && StringUtils.isNotBlank(((PathAttributes) other).getVersionId())) {
-                // Compare by version ID if e.g. supported by S3
-                return this.getVersionId().equals(((PathAttributes) other).getVersionId());
-            }
-        }
-        return super.equals(other);
+    public boolean isDuplicate() {
+        return duplicate;
+    }
+
+    /**
+     * Attribute to mark a file as hidden by default in addition to a filename convention.
+     *
+     * @param duplicate
+     */
+    public void setDuplicate(boolean duplicate) {
+        this.duplicate = duplicate;
     }
 }
