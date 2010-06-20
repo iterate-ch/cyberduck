@@ -34,7 +34,7 @@ public class Cache<E extends AbstractPath> {
     /**
      *
      */
-    private Map<String, AttributedList<E>> _impl = Collections.<String, AttributedList<E>>synchronizedMap(new LRUMap(
+    private Map<PathReference, AttributedList<E>> _impl = Collections.<PathReference, AttributedList<E>>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("browser.cache.size")
     ) {
         @Override
@@ -45,76 +45,56 @@ public class Cache<E extends AbstractPath> {
     });
 
     /**
-     * @param path Absolute path
-     * @return
+     * Lookup a path by reference in the cache. Expensive as its parent directory must be
+     * evaluated first.
+     *
+     * @param reference A child object of a cached directory listing in the cache
+     * @return Null if the path is no more cached.
+     * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
-    public E lookup(PathReference path) {
-        final AttributedList<E> childs = this.get(Path.getParent(path.toString()));
-        final E found = childs.get(path);
-        if(null == found) {
-            log.warn("Lookup failed for " + path + " in cache");
-            return null;
+    public E lookup(PathReference reference) {
+        for(AttributedList list : _impl.values()) {
+            final AbstractPath path = list.get(reference);
+            if(null == path) {
+                continue;
+            }
+            return (E) path;
         }
-        return found;
+        log.warn("Lookup failed for " + reference + " in cache");
+        return null;
     }
 
     /**
-     * @param path Absolute path
-     * @return True if the directory listing for this path is cached
-     */
-    public boolean containsKey(E path) {
-        return this.containsKey(path.getAbsolute());
-    }
-
-    /**
-     * @param path Absolute path
+     * @param reference Absolute path
      * @return True if the directory listing of this path is cached
      */
-    public boolean containsKey(String path) {
-        return _impl.containsKey(path);
+    public boolean containsKey(PathReference reference) {
+        return _impl.containsKey(reference);
     }
 
     /**
      * Remove the cached directory listing for this path
      *
-     * @param path Absolute path
+     * @param reference Reference to the path in cache.
      * @return The previuosly cached directory listing
      */
-    public AttributedList<E> remove(E path) {
-        return _impl.remove(path.getAbsolute());
+    public AttributedList<E> remove(PathReference reference) {
+        return _impl.remove(reference);
     }
 
     /**
      * Get the childs of this path using the last sorting and filter used
      *
-     * @param path Absolute path
+     * @param reference Reference to the path in cache.
      * @return An empty list if no cached file listing is available
      */
-    public AttributedList<E> get(E path) {
-        return this.get(path.getAbsolute());
-    }
-
-    /**
-     * @param path Absolute path
-     * @return An empty list if no cached file listing is available
-     */
-    public AttributedList<E> get(String path) {
-        final AttributedList<E> childs = _impl.get(path);
+    public AttributedList<E> get(PathReference reference) {
+        final AttributedList<E> childs = _impl.get(reference);
         if(null == childs) {
-            log.warn("No cache for " + path);
+            log.warn("No cache for " + reference);
             return AttributedList.emptyList();
         }
         return childs;
-    }
-
-    /**
-     * @param path       Absolute path
-     * @param comparator
-     * @param filter
-     * @return An empty list if no cached file listing is available
-     */
-    public AttributedList<E> get(final E path, final Comparator<E> comparator, final PathFilter<E> filter) {
-        return this.get(path.getAbsolute(), comparator, filter);
     }
 
     /**
@@ -127,7 +107,7 @@ public class Cache<E extends AbstractPath> {
      *          If the caller is iterating of the cache himself
      *          and requests a new filter here.
      */
-    public AttributedList<E> get(final String path, final Comparator<E> comparator, final PathFilter<E> filter) {
+    public AttributedList<E> get(PathReference path, Comparator<E> comparator, PathFilter<E> filter) {
         AttributedList<E> childs = _impl.get(path);
         if(null == childs) {
             log.warn("No cache for " + path);
@@ -145,7 +125,7 @@ public class Cache<E extends AbstractPath> {
         }
         if(needsFiltering) {
             // Add previously hidden files to childs
-            final Set<E> hidden = childs.attributes().getHidden();
+            final List<E> hidden = childs.attributes().getHidden();
             childs.addAll(hidden);
             // Clear the previously set of hidden files
             hidden.clear();
@@ -175,7 +155,7 @@ public class Cache<E extends AbstractPath> {
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
     private void sort(AttributedList<E> childs, Comparator comparator) {
-        // Because AttributedList is a CopyOnWriteArrayList we can not use Collections.sort
+        // Because AttributedList is a CopyOnWriteArrayList we cannot use Collections#sort
         AbstractPath[] sorted = childs.toArray(new AbstractPath[childs.size()]);
         Arrays.sort(sorted, (Comparator<AbstractPath>) comparator);
         for(int j = 0; j < sorted.length; j++) {
@@ -184,12 +164,12 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     * @param path   Absolute path
+     * @param reference Reference to the path in cache.
      * @param childs
      * @return
      */
-    public AttributedList<E> put(E path, AttributedList<E> childs) {
-        return _impl.put(path.getAbsolute(), childs);
+    public AttributedList<E> put(PathReference reference, AttributedList<E> childs) {
+        return _impl.put(reference, childs);
     }
 
     /**

@@ -18,22 +18,37 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @version $Id$
  */
 public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList<E> {
+    protected static Logger log = Logger.getLogger(Cache.class);
 
-    //primary attributes
+    /**
+     * The filter to apply to the directory listing
+     * excluding files from display.
+     */
     protected static final String FILTER = "FILTER";
+
+    /**
+     * Sort the file listing using this comparator.
+     */
     protected static final String COMPARATOR = "COMPARATOR";
 
+    /**
+     * Hidden attribute holds a list of hidden files.
+     */
     protected static final String HIDDEN = "HIDDEN";
 
     /**
-     * file listing has changed; the cached version should be superseded
+     * The cached version should be superseded
+     * with an updated listing.
      */
     private static final String INVALID = "INVALID";
 
@@ -42,17 +57,23 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      */
     private static final String READABLE = "READABLE";
 
-    private Attributes<E> attributes;
+    /**
+     * Metadata of file listing
+     */
+    private Attributes<E> attributes
+            = new Attributes<E>();
 
     /**
      * Initialize an attributed list with default attributes
      */
     public AttributedList() {
-        this.attributes = new Attributes<E>();
+        this(Collections.<E>emptyList());
     }
 
+    /**
+     * @param collection
+     */
     public AttributedList(java.util.Collection<E> collection) {
-        this.attributes = new Attributes<E>();
         this.addAll(collection);
     }
 
@@ -80,6 +101,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         }
 
         // Preserves singleton property
+
         private Object readResolve() {
             return EMPTY_LIST;
         }
@@ -92,37 +114,50 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * @see BrowserComparator
      */
     public class Attributes<E> extends HashMap<String, Object> {
+
         /**
          * Initialize with default values
+         *
+         * @see ch.cyberduck.core.NullComparator
+         * @see ch.cyberduck.core.NullPathFilter
          */
         public Attributes() {
-            this.put(FILTER, new NullPathFilter());
-            this.put(COMPARATOR, new NullComparator<E>());
-            this.put(HIDDEN, new HashSet());
-            this.put(INVALID, Boolean.FALSE);
-            this.put(READABLE, Boolean.TRUE);
+            this(new NullComparator<E>(), new NullPathFilter());
         }
 
+        /**
+         * @param comparator
+         * @param filter
+         */
         public Attributes(Comparator<E> comparator, PathFilter filter) {
             this.put(COMPARATOR, comparator);
             this.put(FILTER, filter);
-            this.put(HIDDEN, new HashSet());
+            this.put(HIDDEN, new ArrayList());
             this.put(INVALID, Boolean.FALSE);
             this.put(READABLE, Boolean.TRUE);
         }
 
+        /**
+         * @param child
+         */
         public void addHidden(E child) {
-            ((Set<E>) this.get(HIDDEN)).add(child);
+            ((List<E>) this.get(HIDDEN)).add(child);
         }
 
-        public Set<E> getHidden() {
-            return (Set<E>) this.get(HIDDEN);
+        /**
+         * @return
+         */
+        public List<E> getHidden() {
+            return (List<E>) this.get(HIDDEN);
         }
 
         public void setReadable(boolean readable) {
             this.put(READABLE, readable);
         }
 
+        /**
+         * @return True if the readable attribute is set to <code>Boolean.TRUE</code>.
+         */
         public boolean isReadable() {
             return this.get(READABLE).equals(Boolean.TRUE);
         }
@@ -135,6 +170,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         public void setDirty(boolean dirty) {
             this.put(INVALID, dirty);
             if(dirty) {
+                // Reset readable attribute.
                 this.put(READABLE, Boolean.TRUE);
             }
         }
@@ -151,22 +187,36 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         return attributes;
     }
 
-    private Map<PathReference, E> references = new HashMap<PathReference, E>();
+    /**
+     * Additional key,value table to lookup paths by reference
+     */
+    private Map<PathReference, E> references
+            = new ConcurrentHashMap<PathReference, E>();
 
     @Override
     public boolean add(E path) {
-        references.put(path.getReference(), path);
+        final AbstractPath previous = references.put(path.getReference(), path);
+        if(null != previous) {
+            log.warn("Replacing " + previous + " with " + path + " in file listing.");
+        }
         return super.add(path);
     }
 
     @Override
     public boolean addAll(java.util.Collection<? extends E> c) {
-        for(E item : c) {
-            references.put(item.getReference(), item);
+        for(E path : c) {
+            final AbstractPath previous = references.put(path.getReference(), path);
+            if(null != previous) {
+                log.warn("Replacing " + previous + " with " + path + " in file listing.");
+            }
         }
         return super.addAll(c);
     }
 
+    /**
+     * @param reference
+     * @return
+     */
     public E get(PathReference reference) {
         return references.get(reference);
     }
