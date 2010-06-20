@@ -36,8 +36,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.acl.*;
-import org.jets3t.service.model.BaseVersionOrDeleteMarker;
-import org.jets3t.service.model.S3Version;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
@@ -283,7 +281,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        ((S3HPath) next).attributes.setStorageClass(sender.selectedItem().representedObject());
+                        ((S3HPath) next).attributes().setStorageClass(sender.selectedItem().representedObject());
                         // Copy item in place to write new attributes
                         next.copy(next);
                     }
@@ -446,15 +444,10 @@ public class InfoController extends ToolbarWindowController {
     /**
      * S3 versioning model
      */
-    private List<BaseVersionOrDeleteMarker> versions
-            = new ArrayList<BaseVersionOrDeleteMarker>();
+    private List<Path> versions
+            = new ArrayList<Path>();
 
-    public void setVersions(List<BaseVersionOrDeleteMarker> versions) {
-        Collections.sort(versions, new Comparator<BaseVersionOrDeleteMarker>() {
-            public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
-                return o2.getLastModified().compareTo(o1.getLastModified());
-            }
-        });
+    public void setVersions(List<Path> versions) {
         this.versions = versions;
         this.versionsTable.reloadData();
     }
@@ -462,7 +455,7 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSTableView versionsTable;
     private ListDataSource versionsTableModel;
-    private AbstractTableDelegate<BaseVersionOrDeleteMarker> versionsTableDelegate;
+    private AbstractTableDelegate<Path> versionsTableDelegate;
 
     public static final String HEADER_VERSIONS_ID_COLUMN = "ID";
     public static final String HEADER_VERSIONS_SIZE_COLUMN = "SIZE";
@@ -486,25 +479,22 @@ public class InfoController extends ToolbarWindowController {
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 final String identifier = tableColumn.identifier();
-                final BaseVersionOrDeleteMarker version = versions.get(row.intValue());
+                final Path version = versions.get(row.intValue());
                 if(identifier.equals(HEADER_VERSIONS_ID_COLUMN)) {
-                    return NSString.stringWithString("null".equals(version.getVersionId()) ?
-                            Locale.localizedString("Unknown") : version.getVersionId());
+                    return NSString.stringWithString("null".equals(version.attributes().getVersionId()) ?
+                            Locale.localizedString("Unknown") : version.attributes().getVersionId());
                 }
                 if(identifier.equals(HEADER_VERSIONS_SIZE_COLUMN)) {
-                    if(version.isDeleteMarker()) {
-                        return NSString.stringWithString(Locale.localizedString("Unknown"));
-                    }
-                    return NSString.stringWithString(Status.getSizeAsString(((S3Version) version).getSize()));
+                    return NSString.stringWithString(Status.getSizeAsString(version.attributes().getSize()));
                 }
                 if(identifier.equals(HEADER_VERSIONS_MODIFIED_COLUMN)) {
                     return NSString.stringWithString(
-                            DateFormatter.getShortFormat(version.getLastModified().getTime()));
+                            DateFormatter.getShortFormat(version.attributes().getModificationDate()));
                 }
                 return null;
             }
         }).id());
-        this.versionsTable.setDelegate((versionsTableDelegate = new AbstractTableDelegate<BaseVersionOrDeleteMarker>() {
+        this.versionsTable.setDelegate((versionsTableDelegate = new AbstractTableDelegate<Path>() {
             public void enterKeyPressed(ID sender) {
                 ;
             }
@@ -524,8 +514,8 @@ public class InfoController extends ToolbarWindowController {
                 return this.tooltip(versions.get(row.intValue()));
             }
 
-            public String tooltip(BaseVersionOrDeleteMarker v) {
-                return v.getKey();
+            public String tooltip(Path v) {
+                return v.getName();
             }
 
             @Override
@@ -536,25 +526,10 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void selectionDidChange(NSNotification notification) {
                 boolean enable = versionsTable.numberOfSelectedRows().intValue() == 1;
-                if(enable) {
-                    final BaseVersionOrDeleteMarker version = versions.get(versionsTable.selectedRow().intValue());
-                    enable = !version.isDeleteMarker();
-                }
                 for(int i = 0; i < versionGearButton.numberOfItems().intValue(); i++) {
                     versionGearButton.itemAtIndex(new NSInteger(i)).setEnabled(enable);
                 }
                 versionDeleteButton.setEnabled(enable);
-            }
-
-            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
-                                                                     NSTableColumn c, NSInteger row) {
-                final BaseVersionOrDeleteMarker version = versions.get(row.intValue());
-                if(version.isDeleteMarker()) {
-                    cell.setTextColor(NSColor.disabledControlTextColor());
-                }
-                else {
-                    cell.setTextColor(NSColor.controlTextColor());
-                }
             }
 
             @Override
@@ -577,7 +552,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void versionDeleteButtonClicked(ID sender) {
-        final List<BaseVersionOrDeleteMarker> deleted = new ArrayList<BaseVersionOrDeleteMarker>();
+        final List<Path> deleted = new ArrayList<Path>();
         NSIndexSet iterator = versionsTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             deleted.add(versions.get(index.intValue()));
@@ -586,12 +561,8 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
 
                 public void run() {
-                    for(Path next : files) {
-                        for(BaseVersionOrDeleteMarker version : deleted) {
-                            if(version.getKey().equals(next.getName())) {
-                                ((S3HPath) next).delete(version.getVersionId());
-                            }
-                        }
+                    for(Path next : deleted) {
+                        controller.deletePath(next);
                     }
                 }
 
@@ -631,7 +602,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void versionDownloadButtonClicked(ID sender) {
-        final List<BaseVersionOrDeleteMarker> downloads = new ArrayList<BaseVersionOrDeleteMarker>();
+        final List<Path> downloads = new ArrayList<Path>();
         NSIndexSet iterator = versionsTable.selectedRowIndexes();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             downloads.add(versions.get(index.intValue()));
@@ -640,13 +611,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
 
                 public void run() {
-                    for(Path next : files) {
-                        for(BaseVersionOrDeleteMarker version : downloads) {
-                            if(version.getKey().equals(next.getName())) {
-                                ((S3HPath) next).download(version.getVersionId());
-                            }
-                        }
-                    }
+                    controller.transfer(new DownloadTransfer(downloads));
                 }
 
                 @Override
@@ -664,16 +629,12 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void versionRevertButtonClicked(ID sender) {
-        final BaseVersionOrDeleteMarker version = versions.get(versionsTable.selectedRow().intValue());
+        final Path version = versions.get(versionsTable.selectedRow().intValue());
         if(this.toggleVersionsSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
 
                 public void run() {
-                    for(Path next : files) {
-                        if(version.getKey().equals(next.getName())) {
-                            ((S3HPath) next).revert(version.getVersionId());
-                        }
-                    }
+                    ((S3HPath) version).revert();
                 }
 
                 @Override
@@ -1634,7 +1595,7 @@ public class InfoController extends ToolbarWindowController {
             this.updateField(pathField, path, TRUNCATE_MIDDLE_ATTRIBUTES);
             pathField.setToolTip(path);
             groupField.setStringValue(count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    file.attributes.getGroup());
+                    file.attributes().getGroup());
             if(count > 1) {
                 kindField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                 checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -1646,15 +1607,16 @@ public class InfoController extends ToolbarWindowController {
                 modifiedField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
-                if(-1 == file.attributes.getModificationDate()) {
+                if(-1 == file.attributes().getModificationDate()) {
                     this.updateField(modifiedField, Locale.localizedString("Unknown"));
                 }
                 else {
-                    this.updateField(modifiedField, DateFormatter.getLongFormat(file.attributes.getModificationDate()), TRUNCATE_MIDDLE_ATTRIBUTES);
+                    this.updateField(modifiedField, DateFormatter.getLongFormat(file.attributes().getModificationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES);
                 }
             }
             this.updateField(ownerField, count > 1 ? "(" + Locale.localizedString("Multiple files") + ")" :
-                    file.attributes.getOwner(), TRUNCATE_MIDDLE_ATTRIBUTES);
+                    file.attributes().getOwner(), TRUNCATE_MIDDLE_ATTRIBUTES);
 
             if(count > 1) {
                 iconImageView.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
@@ -1709,7 +1671,7 @@ public class InfoController extends ToolbarWindowController {
                         if(this.isCanceled()) {
                             break;
                         }
-                        if(null == next.attributes.getPermission()) {
+                        if(null == next.attributes().getPermission()) {
                             // Read permission of every selected path
                             next.readPermission();
                         }
@@ -1720,7 +1682,7 @@ public class InfoController extends ToolbarWindowController {
                 public void cleanup() {
                     Permission permission = null;
                     for(Path next : files) {
-                        permission = next.attributes.getPermission();
+                        permission = next.attributes().getPermission();
                         if(null != permission) {
                             updateCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
                             updateCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
@@ -1811,11 +1773,11 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        if(-1 == next.attributes.getSize()) {
+                        if(-1 == next.attributes().getSize()) {
                             next.readSize();
                         }
-                        if(-1 < next.attributes.getSize()) {
-                            size += next.attributes.getSize();
+                        if(-1 < next.attributes().getSize()) {
+                            size += next.attributes().getSize();
                         }
                     }
                 }
@@ -1851,7 +1813,7 @@ public class InfoController extends ToolbarWindowController {
 
                     public void run() {
                         for(Path file : files) {
-                            if(null == file.attributes.getChecksum()) {
+                            if(null == file.attributes().getChecksum()) {
                                 file.readChecksum();
                             }
                         }
@@ -1860,11 +1822,11 @@ public class InfoController extends ToolbarWindowController {
                     @Override
                     public void cleanup() {
                         for(Path file : files) {
-                            if(StringUtils.isEmpty(file.attributes.getChecksum())) {
+                            if(StringUtils.isEmpty(file.attributes().getChecksum())) {
                                 updateField(checksumField, Locale.localizedString("Unknown"));
                             }
                             else {
-                                updateField(checksumField, file.attributes.getChecksum());
+                                updateField(checksumField, file.attributes().getChecksum());
                             }
                         }
                         toggleSizeSettings(true);
@@ -1900,7 +1862,7 @@ public class InfoController extends ToolbarWindowController {
         }
         for(Path file : files) {
             bucketLoggingButton.setEnabled(stop && enable && logging);
-            storageClassPopup.setEnabled(stop && enable && file.attributes.isFile());
+            storageClassPopup.setEnabled(stop && enable && file.attributes().isFile());
         }
         if(stop) {
             s3Progress.stopAnimation(null);
@@ -1932,11 +1894,11 @@ public class InfoController extends ToolbarWindowController {
             }
             else {
                 for(Path file : files) {
-                    if(file.attributes.isFile()) {
+                    if(file.attributes().isFile()) {
                         final S3HPath s3 = (S3HPath) file;
                         bucketLoggingButton.setToolTip(
                                 s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
-                        final String redundancy = s3.attributes.getStorageClass();
+                        final String redundancy = s3.attributes().getStorageClass();
                         if(StringUtils.isNotEmpty(redundancy)) {
                             storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                             storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
@@ -2037,9 +1999,9 @@ public class InfoController extends ToolbarWindowController {
             enable = ((S3HSession) controller.getSession()).isVersioningSupported();
         }
         for(Path file : files) {
-            versionsTable.setEnabled(stop && enable && file.attributes.isFile());
-            versionGearButton.setEnabled(stop && enable && file.attributes.isFile());
-            versionDeleteButton.setEnabled(stop && enable && file.attributes.isFile());
+            versionsTable.setEnabled(stop && enable && file.attributes().isFile());
+            versionGearButton.setEnabled(stop && enable && file.attributes().isFile());
+            versionDeleteButton.setEnabled(stop && enable && file.attributes().isFile());
         }
         bucketVersioningButton.setEnabled(stop && enable);
         bucketMfaButton.setEnabled(stop && enable && bucketVersioningButton.state() == NSCell.NSOnState);
@@ -2065,7 +2027,7 @@ public class InfoController extends ToolbarWindowController {
                 final Credentials credentials = file.getHost().getCredentials();
                 enable = enable && !credentials.isAnonymousLogin();
                 enable = enable && file instanceof CloudPath;
-                enable = enable && file.attributes.isFile();
+                enable = enable && file.attributes().isFile();
             }
         }
         metadataTable.setEnabled(stop && enable);
@@ -2145,11 +2107,11 @@ public class InfoController extends ToolbarWindowController {
      * Read versions in the background
      */
     private void initVersions() {
-        this.setVersions(Collections.<BaseVersionOrDeleteMarker>emptyList());
+        this.setVersions(Collections.<Path>emptyList());
         if(this.toggleVersionsSettings(false)) {
             this.setGrants(Collections.<GrantAndPermission>emptyList());
             controller.background(new BrowserBackgroundAction(controller) {
-                private List<BaseVersionOrDeleteMarker> updated = new ArrayList<BaseVersionOrDeleteMarker>();
+                private List<Path> updated = new ArrayList<Path>();
                 private boolean versioning = false;
                 private boolean mfa = false;
 
@@ -2207,7 +2169,7 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     final Path renamed = PathFactory.createPath(controller.getSession(),
-                            current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes.getType());
+                            current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes().getType());
                     controller.renamePath(current, renamed);
                 }
             }
@@ -2224,7 +2186,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             boolean change = false;
             for(Path file : files) {
-                if(!file.attributes.getPermission().equals(permission)) {
+                if(!file.attributes().getPermission().equals(permission)) {
                     change = true;
                 }
             }
@@ -2282,7 +2244,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        if(recursive || !next.attributes.getPermission().equals(permission)) {
+                        if(recursive || !next.attributes().getPermission().equals(permission)) {
                             next.writePermissions(permission, recursive);
                         }
                         if(!controller.isConnected()) {
@@ -2326,7 +2288,7 @@ public class InfoController extends ToolbarWindowController {
         }
         recursiveCheckbox.setEnabled(stop && enable);
         for(Path next : files) {
-            if(next.attributes.isFile()) {
+            if(next.attributes().isFile()) {
                 recursiveCheckbox.setState(NSCell.NSOffState);
                 recursiveCheckbox.setEnabled(false);
                 break;
@@ -2529,14 +2491,14 @@ public class InfoController extends ToolbarWindowController {
                  * @warn Potentially lengthy operation
                  */
                 private double calculateSize(AbstractPath p) {
-                    if(p.attributes.isDirectory()) {
+                    if(p.attributes().isDirectory()) {
                         long size = 0;
                         for(AbstractPath next : p.childs()) {
                             size += this.calculateSize(next);
                         }
-                        p.attributes.setSize(size);
+                        ((PathAttributes) p.attributes()).setSize(size);
                     }
-                    return p.attributes.getSize();
+                    return p.attributes().getSize();
                 }
 
                 @Override
@@ -2555,7 +2517,7 @@ public class InfoController extends ToolbarWindowController {
     private boolean toggleSizeSettings(final boolean stop) {
         sizeButton.setEnabled(false);
         for(Path next : files) {
-            if(next.attributes.isDirectory()) {
+            if(next.attributes().isDirectory()) {
                 sizeButton.setEnabled(stop);
                 break;
             }
