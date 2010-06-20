@@ -104,7 +104,7 @@ public abstract class Editor {
 
             @Override
             public void cleanup() {
-                if(edited.getStatus().isComplete()) {
+                if(edited.status().isComplete()) {
                     final Permission permissions = edited.getLocal().attributes().getPermission();
                     if(null != permissions) {
                         permissions.getOwnerPermissions()[Permission.READ] = true;
@@ -168,7 +168,7 @@ public abstract class Editor {
         log.debug("save");
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
-                edited.getStatus().reset();
+                edited.status().reset();
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer upload = new UploadTransfer(edited) {
@@ -192,7 +192,7 @@ public abstract class Editor {
 
             @Override
             public void cleanup() {
-                if(edited.getStatus().isComplete()) {
+                if(edited.status().isComplete()) {
                     if(Editor.this.isDeferredDelete()) {
                         Editor.this.delete();
                     }

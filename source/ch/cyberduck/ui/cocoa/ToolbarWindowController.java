@@ -156,7 +156,9 @@ public abstract class ToolbarWindowController extends WindowController implement
     private Map<String, NSToolbarItem> cache
             = new HashMap<String, NSToolbarItem>();
 
-    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar,
+                                                                                 final String itemIdentifier,
+                                                                                 boolean flag) {
         if(!cache.containsKey(itemIdentifier)) {
             cache.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
         }

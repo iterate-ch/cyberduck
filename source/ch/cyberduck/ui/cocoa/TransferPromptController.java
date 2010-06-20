@@ -306,7 +306,7 @@ public abstract class TransferPromptController extends SheetController implement
                 final String identifier = tableColumn.identifier();
                 final Path path = browserModel.lookup(item);
                 if(identifier.equals(TransferPromptModel.INCLUDE_COLUMN)) {
-                    cell.setEnabled(!path.getStatus().isSkipped());
+                    cell.setEnabled(!path.status().isSkipped());
                 }
                 if(identifier.equals(TransferPromptModel.FILENAME_COLUMN)) {
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(IconCache.instance().iconForPath(path, 16));

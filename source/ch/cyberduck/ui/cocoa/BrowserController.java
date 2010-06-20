@@ -838,7 +838,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 }
                                 if(!download.getLocal().exists()) {
                                     download.download(true);
-                                    if(download.getStatus().isComplete()) {
+                                    if(download.status().isComplete()) {
                                         previews.add(download.getLocal());
                                     }
                                     else {

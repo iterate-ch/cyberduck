@@ -123,7 +123,7 @@ public class ODBEditor extends Editor {
      * Called by the native editor when the file has been closed
      */
     public void didCloseFile() {
-        if(!edited.getStatus().isComplete()) {
+        if(!edited.status().isComplete()) {
             this.setDeferredDelete(true);
         }
         else {
