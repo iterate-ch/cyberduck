@@ -184,10 +184,47 @@ public class FinderLocal extends Local {
             return (long) (Rococoa.cast(date, NSDate.class).timeIntervalSince1970() * 1000);
         }
 
+        @Override
+        public String getOwner() {
+            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
+            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
+            // if the link points to a nonexistent file, this method returns null. If flag is false,
+            // the attributes of the symbolic link are returned.
+            if(null == fileAttributes) {
+                log.error("No such file:" + getAbsolute());
+                return super.getOwner();
+            }
+            NSObject owner = fileAttributes.objectForKey(NSFileManager.NSFileOwnerAccountName);
+            if(null == owner) {
+                // Returns an entry’s value given its key, or null if no value is associated with key.
+                log.error("No such file:" + getAbsolute());
+                return super.getOwner();
+            }
+            return owner.toString();
+        }
+
+        @Override
+        public String getGroup() {
+            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
+            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
+            // if the link points to a nonexistent file, this method returns null. If flag is false,
+            // the attributes of the symbolic link are returned.
+            if(null == fileAttributes) {
+                log.error("No such file:" + getAbsolute());
+                return super.getGroup();
+            }
+            NSObject group = fileAttributes.objectForKey(NSFileManager.NSFileGroupOwnerAccountName);
+            if(null == group) {
+                // Returns an entry’s value given its key, or null if no value is associated with key.
+                log.error("No such file:" + getAbsolute());
+                return super.getGroup();
+            }
+            return group.toString();
+        }
     }
 
     @Override
-    public LocalAttributes getAttributes() {
+    public LocalAttributes attributes() {
         if(null == attributes) {
             attributes = new FinderLocalAttributes();
         }
@@ -199,7 +236,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public String kind() {
-        if(this.getAttributes().isFile()) {
+        if(this.attributes().isFile()) {
             // Native file type mapping
             final String kind = kind(this.getExtension());
             if(StringUtils.isEmpty(kind)) {
