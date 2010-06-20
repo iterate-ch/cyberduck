@@ -171,6 +171,9 @@ public class GDPath extends Path {
 
     public String getDocumentType() {
         if(null == documentType) {
+            if(attributes().isDirectory()) {
+                return DOCUMENT_FOLDER_TYPE;
+            }
             // Arbitrary file type not converted to Google Docs.
             return DOCUMENT_FILE_TYPE;
         }
