@@ -496,11 +496,11 @@ public class SFTPPath extends Path {
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     SFTPv3FileHandle handle = this.getSession().sftp().openFileRO(this.getAbsolute());
                     in = new SFTPInputStream(handle);
-                    if(getStatus().isResume()) {
-                        log.info("Skipping " + getStatus().getCurrent() + " bytes");
-                        final long skipped = in.skip(getStatus().getCurrent());
-                        if(skipped < getStatus().getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.getStatus().getCurrent());
+                    if(status().isResume()) {
+                        log.info("Skipping " + status().getCurrent() + " bytes");
+                        final long skipped = in.skip(status().getCurrent());
+                        if(skipped < status().getCurrent()) {
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
                         }
                     }
                 }
@@ -509,7 +509,7 @@ public class SFTPPath extends Path {
                     scp.setCharset(this.getSession().getEncoding());
                     in = scp.get(this.getAbsolute());
                 }
-                out = this.getLocal().getOutputStream(this.getStatus().isResume());
+                out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener);
             }
             else if(attributes().isDirectory()) {
@@ -541,7 +541,7 @@ public class SFTPPath extends Path {
             if(attributes().isFile()) {
                 in = this.getLocal().getInputStream();
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                    if(getStatus().isResume() && this.exists()) {
+                    if(status().isResume() && this.exists()) {
                         handle = this.getSession().sftp().openFileRWAppend(this.getAbsolute());
                     }
                     else {
@@ -564,11 +564,11 @@ public class SFTPPath extends Path {
                         }
                     }
                     out = new SFTPOutputStream(handle);
-                    if(getStatus().isResume()) {
-                        long skipped = ((SFTPOutputStream) out).skip(getStatus().getCurrent());
+                    if(status().isResume()) {
+                        long skipped = ((SFTPOutputStream) out).skip(status().getCurrent());
                         log.info("Skipping " + skipped + " bytes");
-                        if(skipped < this.getStatus().getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.getStatus().getCurrent());
+                        if(skipped < this.status().getCurrent()) {
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
                         }
                     }
                 }

@@ -298,16 +298,16 @@ public class DAVPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                if(this.getStatus().isResume()) {
-                    this.getSession().getClient().addRequestHeader("Range", "bytes=" + this.getStatus().getCurrent() + "-");
+                if(this.status().isResume()) {
+                    this.getSession().getClient().addRequestHeader("Range", "bytes=" + this.status().getCurrent() + "-");
                 }
                 this.getSession().getClient().addRequestHeader("Accept-Encoding", "gzip");
                 in = this.getSession().getClient().getMethodData(this.getAbsolute());
                 // Content-Range header in response not found
                 if(!this.getSession().getClient().isResume()) {
-                    this.getStatus().setResume(false);
+                    this.status().setResume(false);
                 }
-                out = this.getLocal().getOutputStream(this.getStatus().isResume());
+                out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener);
             }
             catch(IOException e) {
@@ -335,7 +335,7 @@ public class DAVPath extends Path {
 
                 final InputStream in = this.getLocal().getInputStream();
                 try {
-                    final Status status = this.getStatus();
+                    final Status status = this.status();
                     if(status.isResume()) {
                         this.getSession().getClient().addRequestHeader("Content-Range", "bytes "
                                 + status.getCurrent()

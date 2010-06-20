@@ -277,7 +277,7 @@ public class CFPath extends CloudPath {
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
-                final Status status = this.getStatus();
+                final Status status = this.status();
                 status.setResume(false);
                 out = this.getLocal().getOutputStream(status.isResume());
                 if(null == out) {
@@ -306,7 +306,7 @@ public class CFPath extends CloudPath {
             }
             if(attributes().isFile()) {
                 // No Content-Range support
-                final Status status = this.getStatus();
+                final Status status = this.status();
                 status.setResume(false);
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));

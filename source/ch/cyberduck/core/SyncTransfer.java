@@ -227,7 +227,7 @@ public class SyncTransfer extends Transfer {
                     skipped = this.getAction().equals(ACTION_DOWNLOAD);
                 }
             }
-            child.getStatus().setSkipped(skipped);
+            child.status().setSkipped(skipped);
         }
         return new AttributedList<Path>(childs);
     }

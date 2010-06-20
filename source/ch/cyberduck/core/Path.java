@@ -60,7 +60,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * 
      */
-    private Status status = new Status();
+    private Status status;
 
     /**
      * A compiled representation of a regular expression.
@@ -127,10 +127,10 @@ public abstract class Path extends AbstractPath implements Serializable {
             this.attributes = new PathAttributes(attributesObj);
         }
         if(dict.stringForKey("Complete") != null) {
-            this.getStatus().setComplete(true);
+            this.status().setComplete(true);
         }
         if(dict.stringForKey("Skipped") != null) {
-            this.getStatus().setSkipped(true);
+            this.status().setSkipped(true);
         }
     }
 
@@ -148,10 +148,10 @@ public abstract class Path extends AbstractPath implements Serializable {
             dict.setStringForKey(this.getSymlinkTarget(), "Symlink");
         }
         dict.setObjectForKey((PathAttributes) attributes, "Attributes");
-        if(this.getStatus().isComplete()) {
+        if(this.status().isComplete()) {
             dict.setStringForKey(String.valueOf(true), "Complete");
         }
-        if(this.getStatus().isSkipped()) {
+        if(this.status().isSkipped()) {
             dict.setStringForKey(String.valueOf(true), "Skipped");
         }
         return dict.<S>getSerialized();
@@ -282,7 +282,10 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return
      */
-    public Status getStatus() {
+    public Status status() {
+        if(null == status) {
+            status = new Status();
+        }
         return status;
     }
 
@@ -532,11 +535,11 @@ public abstract class Path extends AbstractPath implements Serializable {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                 this.getName()));
 
-        if(getStatus().isResume()) {
-            long skipped = in.skip(getStatus().getCurrent());
+        if(status().isResume()) {
+            long skipped = in.skip(status().getCurrent());
             log.info("Skipping " + skipped + " bytes");
-            if(skipped < getStatus().getCurrent()) {
-                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + getStatus().getCurrent());
+            if(skipped < status().getCurrent()) {
+                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status().getCurrent());
             }
         }
         this.transfer(in, new ThrottledOutputStream(out, throttle), l);
@@ -589,7 +592,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 else {
                     l.bytesReceived(bytes);
                     if(updateIcon) {
-                        int fraction = (int) (getStatus().getCurrent() / attributes().getSize() * 10);
+                        int fraction = (int) (status().getCurrent() / attributes().getSize() * 10);
                         // An integer between 0 and 9
                         if(fraction > step) {
                             // Another 10 percent of the file has been transferred
@@ -611,19 +614,19 @@ public abstract class Path extends AbstractPath implements Serializable {
     private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
         final int chunksize = Preferences.instance().getInteger("connection.chunksize");
         byte[] chunk = new byte[chunksize];
-        long bytesTransferred = getStatus().getCurrent();
-        while(!getStatus().isCanceled()) {
+        long bytesTransferred = status().getCurrent();
+        while(!status().isCanceled()) {
             int read = in.read(chunk, 0, chunksize);
             listener.bytesReceived(read);
             if(-1 == read) {
                 // End of file
-                getStatus().setComplete(true);
+                status().setComplete(true);
                 break;
             }
             out.write(chunk, 0, read);
             listener.bytesSent(read);
             bytesTransferred += read;
-            getStatus().setCurrent(bytesTransferred);
+            status().setCurrent(bytesTransferred);
         }
         out.flush();
     }

@@ -121,7 +121,7 @@ public class UploadTransfer extends Transfer {
             if(p.attributes().isFile()) {
                 // Read file size
                 size += p.getLocal().attributes().getSize();
-                if(p.getStatus().isResume()) {
+                if(p.status().isResume()) {
                     transferred += p.attributes().getSize();
                 }
             }
@@ -221,7 +221,7 @@ public class UploadTransfer extends Transfer {
                 }
             }
             if(p.attributes().isFile()) {
-                p.getStatus().setResume(false);
+                p.status().setResume(false);
             }
             super.prepare(p);
         }
@@ -235,9 +235,9 @@ public class UploadTransfer extends Transfer {
                 if(p.attributes().isDirectory()) {
                     return !p.exists();
                 }
-                if(p.getStatus().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
+                if(p.status().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
                     // No need to resume completed transfers
-                    p.getStatus().setComplete(true);
+                    p.status().setComplete(true);
                     return false;
                 }
                 return true;
@@ -266,9 +266,9 @@ public class UploadTransfer extends Transfer {
                 // Append to file if size is not zero
                 final boolean resume = p.exists()
                         && p.attributes().getSize() > 0;
-                p.getStatus().setResume(resume);
-                if(p.getStatus().isResume()) {
-                    p.getStatus().setCurrent(p.attributes().getSize());
+                p.status().setResume(resume);
+                if(p.status().isResume()) {
+                    p.status().setCurrent(p.attributes().getSize());
                 }
             }
             super.prepare(p);
@@ -299,7 +299,7 @@ public class UploadTransfer extends Transfer {
                 log.info("Changed local name to:" + p.getName());
             }
             if(p.attributes().isFile()) {
-                p.getStatus().setResume(false);
+                p.status().setResume(false);
             }
             super.prepare(p);
         }

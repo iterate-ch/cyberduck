@@ -141,7 +141,7 @@ public class DownloadTransfer extends Transfer {
                 else {
                     size += p.attributes().getSize();
                 }
-                if(p.getStatus().isResume()) {
+                if(p.status().isResume()) {
                     transferred += p.getLocal().attributes().getSize();
                 }
             }
@@ -189,7 +189,7 @@ public class DownloadTransfer extends Transfer {
         @Override
         public void prepare(final Path p) {
             if(p.attributes().isFile()) {
-                p.getStatus().setResume(false);
+                p.status().setResume(false);
             }
             super.prepare(p);
         }
@@ -197,9 +197,9 @@ public class DownloadTransfer extends Transfer {
 
     private final TransferFilter ACTION_RESUME = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
-            if(p.getStatus().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
+            if(p.status().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
                 // No need to resume completed transfers
-                p.getStatus().setComplete(true);
+                p.status().setComplete(true);
                 return false;
             }
             if(p.attributes().isDirectory()) {
@@ -213,9 +213,9 @@ public class DownloadTransfer extends Transfer {
             if(p.attributes().isFile()) {
                 final boolean resume = p.getLocal().exists()
                         && p.getLocal().attributes().getSize() > 0;
-                p.getStatus().setResume(resume);
+                p.status().setResume(resume);
                 long skipped = p.getLocal().attributes().getSize();
-                p.getStatus().setCurrent(skipped);
+                p.status().setCurrent(skipped);
             }
             super.prepare(p);
         }
@@ -229,7 +229,7 @@ public class DownloadTransfer extends Transfer {
         @Override
         public void prepare(final Path p) {
             if(p.attributes().isFile()) {
-                p.getStatus().setResume(false);
+                p.status().setResume(false);
             }
             if(p.getLocal().exists() && p.getLocal().attributes().getSize() > 0) {
                 final String parent = p.getLocal().getParent().getAbsolute();

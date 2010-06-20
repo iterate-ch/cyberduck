@@ -294,7 +294,7 @@ public class GDPath extends Path {
                     if(null == in) {
                         throw new IOException("Unable opening data stream");
                     }
-                    out = this.getLocal().getOutputStream(this.getStatus().isResume());
+                    out = this.getLocal().getOutputStream(this.status().isResume());
                     if(null == out) {
                         throw new IOException("Unable opening data stream");
                     }
@@ -375,7 +375,7 @@ public class GDPath extends Path {
 
                         this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                                 this.getName()));
-                        getStatus().setResume(false);
+                        status().setResume(false);
 
                         String feed = ((GDPath) this.getParent()).getFolderFeed();
                         StringBuilder url = new StringBuilder(feed);
@@ -389,9 +389,9 @@ public class GDPath extends Path {
                         }
                         this.getSession().getClient().insert(new URL(url.toString()), document);
                     }
-                    getStatus().setCurrent(this.getLocal().attributes().getSize());
+                    status().setCurrent(this.getLocal().attributes().getSize());
                     listener.bytesSent(this.getLocal().attributes().getSize());
-                    getStatus().setComplete(true);
+                    status().setComplete(true);
                 }
                 finally {
                     IOUtils.closeQuietly(in);

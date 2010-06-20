@@ -374,7 +374,7 @@ public abstract class Transfer implements Serializable {
      * @return True if the path is not skipped when transferring
      */
     public boolean isIncluded(Path item) {
-        return item.getStatus().isSelected() && !item.getStatus().isSkipped();
+        return item.status().isSelected() && !item.status().isSkipped();
     }
 
     /**
@@ -384,7 +384,7 @@ public abstract class Transfer implements Serializable {
      * @return True if selectable
      */
     public boolean isSelectable(Path item) {
-        return !item.getStatus().isSkipped();
+        return !item.status().isSkipped();
     }
 
     /**
@@ -394,7 +394,7 @@ public abstract class Transfer implements Serializable {
      * @param selected
      */
     public void setSelected(Path item, final boolean selected) {
-        item.getStatus().setSelected(selected);
+        item.status().setSelected(selected);
         if(item.attributes().isDirectory()) {
             if(item.isCached()) {
                 for(Path child : this.childs(item)) {
@@ -415,7 +415,7 @@ public abstract class Transfer implements Serializable {
      */
     private void transfer(final Path p, final TransferFilter filter) {
         if(!this.isIncluded(p)) {
-            p.getStatus().setComplete(true);
+            p.status().setComplete(true);
             return;
         }
 
@@ -426,7 +426,7 @@ public abstract class Transfer implements Serializable {
         if(filter.accept(p)) {
             this.fireWillTransferPath(p);
             _current = p;
-            p.getStatus().reset();
+            p.status().reset();
             _transferImpl(p);
             this.fireDidTransferPath(p);
         }
@@ -436,7 +436,7 @@ public abstract class Transfer implements Serializable {
         }
 
         if(p.attributes().isDirectory()) {
-            p.getStatus().reset();
+            p.status().reset();
             boolean failure = false;
             final AttributedList<Path> childs = this.childs(p);
             if(!childs.attributes().isReadable()) {
@@ -444,12 +444,12 @@ public abstract class Transfer implements Serializable {
             }
             for(Path child : childs) {
                 this.transfer(child, filter);
-                if(child.attributes().isFile() && !child.getStatus().isComplete()) {
+                if(child.attributes().isFile() && !child.status().isComplete()) {
                     failure = true;
                 }
             }
             if(!failure) {
-                p.getStatus().setComplete(true);
+                p.status().setComplete(true);
             }
             session.cache().remove(p.getReference());
         }
@@ -656,7 +656,7 @@ public abstract class Transfer implements Serializable {
     public void cancel() {
         log.debug("cancel:" + this.toString());
         if(_current != null) {
-            _current.getStatus().setCanceled();
+            _current.status().setCanceled();
         }
         if(this.isCanceled()) {
             // Called prevously; now force
@@ -698,10 +698,10 @@ public abstract class Transfer implements Serializable {
      */
     public boolean isComplete() {
         for(Path root : this.roots) {
-            if(root.getStatus().isSkipped()) {
+            if(root.status().isSkipped()) {
                 continue;
             }
-            if(!root.getStatus().isComplete()) {
+            if(!root.status().isComplete()) {
                 return false;
             }
         }

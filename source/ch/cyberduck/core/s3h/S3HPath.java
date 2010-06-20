@@ -548,7 +548,7 @@ public class S3HPath extends CloudPath {
                             null, // ifUnmodifiedSince
                             null, // ifMatch
                             null, // ifNoneMatch
-                            this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
+                            this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
                 }
                 else {
                     in = this.getSession().getClient().getObject(bucket, this.getKey(),
@@ -556,9 +556,9 @@ public class S3HPath extends CloudPath {
                             null, // ifUnmodifiedSince
                             null, // ifMatch
                             null, // ifNoneMatch
-                            this.getStatus().isResume() ? this.getStatus().getCurrent() : null, null).getDataInputStream();
+                            this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
                 }
-                out = this.getLocal().getOutputStream(this.getStatus().isResume());
+                out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener);
             }
             catch(S3ServiceException e) {
@@ -612,7 +612,7 @@ public class S3HPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                final Status status = this.getStatus();
+                final Status status = this.status();
                 // No Content-Range support
                 status.setResume(false);
 
@@ -757,7 +757,7 @@ public class S3HPath extends CloudPath {
 
                         priorLastKey = chunk.getPriorLastKey();
                     }
-                    while(priorLastKey != null && !getStatus().isCanceled());
+                    while(priorLastKey != null && !status().isCanceled());
                 }
                 if(this.getSession().isVersioning(container)) {
                     String priorLastKey = null;
@@ -768,7 +768,7 @@ public class S3HPath extends CloudPath {
                                 BUCKET_LIST_CHUNKING_SIZE, priorLastKey, priorLastVersionId, true);
                         childs.addAll(this.getVersions(bucket, Arrays.asList(chunk.getItems())));
                     }
-                    while(priorLastKey != null && !getStatus().isCanceled());
+                    while(priorLastKey != null && !status().isCanceled());
                 }
             }
             this.getSession().setWorkdir(this);

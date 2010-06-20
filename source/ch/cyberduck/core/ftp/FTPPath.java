@@ -735,20 +735,20 @@ public class FTPPath extends Path {
         OutputStream out = null;
         try {
             this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
-            if(this.getStatus().isResume()) {
+            if(this.status().isResume()) {
                 if(!this.getSession().getClient().isFeatureSupported("REST STREAM")) {
-                    this.getStatus().setResume(false);
+                    this.status().setResume(false);
                 }
             }
-            in = this.getSession().getClient().get(this.getName(), this.getStatus().isResume() ? this.getLocal().attributes().getSize() : 0);
-            out = this.getLocal().getOutputStream(this.getStatus().isResume());
+            in = this.getSession().getClient().get(this.getName(), this.status().isResume() ? this.getLocal().attributes().getSize() : 0);
+            out = this.getLocal().getOutputStream(this.status().isResume());
             this.download(in, out, throttle, listener);
-            if(this.getStatus().isComplete()) {
+            if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().validateTransfer();
             }
-            if(this.getStatus().isCanceled()) {
+            if(this.status().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().abor();
@@ -780,12 +780,12 @@ public class FTPPath extends Path {
             out = new FromNetASCIIOutputStream(this.getLocal().getOutputStream(false),
                     lineSeparator);
             this.download(in, out, throttle, listener);
-            if(this.getStatus().isComplete()) {
+            if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().validateTransfer();
             }
-            if(this.getStatus().isCanceled()) {
+            if(this.status().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().abor();
@@ -857,14 +857,14 @@ public class FTPPath extends Path {
         try {
             this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
             in = this.getLocal().getInputStream();
-            out = this.getSession().getClient().put(this.getName(), this.getStatus().isResume());
+            out = this.getSession().getClient().put(this.getName(), this.status().isResume());
             this.upload(out, in, throttle, listener);
-            if(getStatus().isComplete()) {
+            if(status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().validateTransfer();
             }
-            if(getStatus().isCanceled()) {
+            if(status().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().abor();
@@ -883,14 +883,14 @@ public class FTPPath extends Path {
             this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
             in = new ToNetASCIIInputStream(this.getLocal().getInputStream());
             out = new ToNetASCIIOutputStream(this.getSession().getClient().put(this.getName(),
-                    this.getStatus().isResume()));
+                    this.status().isResume()));
             this.upload(out, in, throttle, listener);
-            if(this.getStatus().isComplete()) {
+            if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().validateTransfer();
             }
-            if(getStatus().isCanceled()) {
+            if(status().isCanceled()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
                 this.getSession().getClient().abor();
