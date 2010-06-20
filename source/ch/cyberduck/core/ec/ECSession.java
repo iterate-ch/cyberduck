@@ -81,44 +81,12 @@ public class ECSession extends S3Session {
     }
 
     @Override
-    public String getLocation(String container) {
-        return null;
-    }
-
-    @Override
-    public boolean isVersioning(String container) {
+    public boolean isBucketLocationSupported() {
         return false;
     }
 
     @Override
-    public boolean isMultiFactorAuthentication(String container) {
+    public boolean isRequesterPaysSupported() {
         return false;
-    }
-
-    @Override
-    public boolean isRequesterPays(String container) {
-        return false;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public Distribution readDistribution(String container, Distribution.Method method) {
-        return new Distribution();
-    }
-
-    /**
-     * Amazon CloudFront Extension
-     *
-     * @param enabled
-     * @param method
-     * @param cnames
-     * @param logging
-     */
-    @Override
-    public void writeDistribution(final boolean enabled, String container, Distribution.Method method,
-                                  final String[] cnames, boolean logging) {
-        ;
     }
 }

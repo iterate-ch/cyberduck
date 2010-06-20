@@ -79,42 +79,8 @@ public class GSSession extends S3Session {
         return Locale.localizedString("US", "S3");
     }
 
-    /**
-     * Not supported
-     *
-     * @param container
-     * @param method
-     * @return
-     * @throws UnsupportedOperationException
-     */
-    @Override
-    public Distribution readDistribution(String container, Distribution.Method method) {
-        return new Distribution();
-    }
-
-    /**
-     * Not supported
-     *
-     * @param enabled
-     * @param container
-     * @param method
-     * @param cnames
-     * @param logging
-     * @throws UnsupportedOperationException
-     */
-    @Override
-    public void writeDistribution(final boolean enabled, String container, Distribution.Method method,
-                                  final String[] cnames, boolean logging) {
-        ;
-    }
-
     @Override
     public boolean isLoggingSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isLogging(String container) {
         return false;
     }
 
@@ -124,17 +90,7 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public boolean isVersioning(String container) {
-        return false;
-    }
-
-    @Override
-    public boolean isMultiFactorAuthentication(String container) {
-        return false;
-    }
-
-    @Override
-    public boolean isRequesterPays(String container) {
+    public boolean isRequesterPaysSupported() {
         return false;
     }
 }
