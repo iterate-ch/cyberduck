@@ -19,11 +19,14 @@ package ch.cyberduck.ui.cocoa.model;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.PathReferenceFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Mapper between path references returned from the outline view model and its internal
@@ -37,20 +40,41 @@ public class OutlinePathReference extends PathReference<NSObject> {
 
     private int hashcode;
 
-    public OutlinePathReference(Path path) {
-        String absolute = path.getAbsolute();
-        this.reference = NSString.stringWithString(absolute);
-        this.hashcode = absolute.hashCode();
+    /**
+     * @param path
+     */
+    private OutlinePathReference(AbstractPath path) {
+        final StringBuilder reference = new StringBuilder(path.getAbsolute()).append(Path.DELIMITER);
+        if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
+            reference.append("-").append(path.attributes().getVersionId());
+        }
+        this.reference = NSString.stringWithString(reference.toString());
+        this.hashcode = reference.toString().hashCode();
     }
 
-    public OutlinePathReference(NSObject absolute) {
-        this.reference = absolute;
-        this.hashcode = absolute.toString().hashCode();
+    /**
+     * @param reference
+     */
+    public OutlinePathReference(NSObject reference) {
+        this.reference = reference;
+        this.hashcode = reference.toString().hashCode();
     }
 
     @Override
     public NSObject unique() {
         return reference;
+    }
+
+    /**
+     * Comparing the hashcode.
+     *
+     * @param other
+     * @return
+     * @see #hashCode()
+     */
+    @Override
+    public boolean equals(Object other) {
+        return super.equals(other);
     }
 
     @Override
@@ -65,14 +89,8 @@ public class OutlinePathReference extends PathReference<NSObject> {
         }
 
         @Override
-        protected <T, P> PathReference<T> create(P param) {
-            if(param instanceof NSObject) {
-                return (PathReference<T>) new OutlinePathReference((NSObject) param);
-            }
-            if(param instanceof Path) {
-                return (PathReference<T>) new OutlinePathReference((Path) param);
-            }
-            throw new RuntimeException("No support for parameter type " + param.getClass().getName());
+        protected <T> PathReference<T> create(AbstractPath param) {
+            return (PathReference<T>) new OutlinePathReference(param);
         }
     }
 
