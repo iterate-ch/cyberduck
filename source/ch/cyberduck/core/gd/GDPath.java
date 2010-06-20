@@ -158,7 +158,11 @@ public class GDPath extends Path {
     public String getExportUri() {
         if(StringUtils.isBlank(exportUri)) {
             log.warn("Refetching Export URI for " + this.toString());
-            exportUri = ((GDPath) this.getParent().childs().get(this.getReference())).getExportUri();
+            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
+            if(null == cached) {
+                return null;
+            }
+            exportUri = cached.getExportUri();
         }
         return exportUri;
     }
@@ -189,7 +193,11 @@ public class GDPath extends Path {
     public String getResourceId() {
         if(StringUtils.isBlank(resourceId)) {
             log.warn("Refetching Resource ID for " + this.toString());
-            resourceId = ((GDPath) this.getParent().childs().get(this.getReference())).getResourceId();
+            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
+            if(null == cached) {
+                return null;
+            }
+            resourceId = cached.getResourceId();
         }
         return resourceId;
     }
@@ -203,7 +211,11 @@ public class GDPath extends Path {
     public String getDocumentUri() {
         if(StringUtils.isBlank(documentUri)) {
             log.warn("Refetching Document URI for " + this.toString());
-            documentUri = ((GDPath) this.getParent().childs().get(this.getReference())).getDocumentUri();
+            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
+            if(null == cached) {
+                return null;
+            }
+            documentUri = cached.getDocumentUri();
         }
         return documentUri;
     }
