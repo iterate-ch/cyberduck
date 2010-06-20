@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * A sortable list with a map to lookup values by key.
+ *
  * @version $Id$
  */
 public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList<E> {
@@ -219,6 +221,27 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      */
     public E get(PathReference reference) {
         return references.get(reference);
+    }
+
+    public boolean contains(PathReference reference) {
+        return references.containsKey(reference);
+    }
+
+    /**
+     * The CopyOnWriteArrayList iterator does not support remove but the sort implementation
+     * makes use of it. Provide our own implementation here to circumvent.
+     *
+     * @param comparator
+     * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
+     * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
+     */
+    public void sort(Comparator comparator) {
+        // Because AttributedList is a CopyOnWriteArrayList we cannot use Collections#sort
+        AbstractPath[] sorted = this.toArray(new AbstractPath[this.size()]);
+        Arrays.sort(sorted, (Comparator<AbstractPath>) comparator);
+        for(int j = 0; j < sorted.length; j++) {
+            this.set(j, (E) sorted[j]);
+        }
     }
 
     @Override

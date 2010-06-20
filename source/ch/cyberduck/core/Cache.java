@@ -118,7 +118,7 @@ public class Cache<E extends AbstractPath> {
         if(needsSorting) {
             // Do not sort when the list has not been filtered yet
             if(!needsFiltering) {
-                this.sort(childs, comparator);
+                childs.sort(comparator);
             }
             // Saving last sorting comparator
             childs.attributes().put(AttributedList.COMPARATOR, comparator);
@@ -140,27 +140,9 @@ public class Cache<E extends AbstractPath> {
             // Saving last filter
             childs.attributes().put(AttributedList.FILTER, filter);
             // Sort again because the list has changed
-            this.sort(childs, comparator);
+            childs.sort(comparator);
         }
         return childs;
-    }
-
-    /**
-     * The CopyOnWriteArrayList iterator does not support remove but the sort implementation
-     * makes use of it. Provide our own implementation here to circumvent.
-     *
-     * @param childs
-     * @param comparator
-     * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
-     * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
-     */
-    private void sort(AttributedList<E> childs, Comparator comparator) {
-        // Because AttributedList is a CopyOnWriteArrayList we cannot use Collections#sort
-        AbstractPath[] sorted = childs.toArray(new AbstractPath[childs.size()]);
-        Arrays.sort(sorted, (Comparator<AbstractPath>) comparator);
-        for(int j = 0; j < sorted.length; j++) {
-            childs.set(j, (E) sorted[j]);
-        }
     }
 
     /**
