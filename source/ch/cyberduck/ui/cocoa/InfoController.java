@@ -654,8 +654,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Grant editing model.
      */
-    private List<GrantAndPermission> grants
-            = new ArrayList<GrantAndPermission>();
+    private List<GrantAndPermission> grants = new ArrayList<GrantAndPermission>();
 
     /**
      * Replace current metadata model. Will reload the table view.
@@ -737,7 +736,11 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     if(c.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
-                        grant.setPermission(org.jets3t.service.acl.Permission.parsePermission(value.toString()));
+                        final int index = grants.indexOf(grant);
+                        GrantAndPermission update = new GrantAndPermission(
+                                grant.getGrantee(), org.jets3t.service.acl.Permission.parsePermission(value.toString()));
+                        grants.remove(grant);
+                        grants.add(index, update);
                         if(StringUtils.isNotBlank(grant.getGrantee().getIdentifier())) {
                             aclInputDidEndEditing();
                         }
@@ -1349,6 +1352,7 @@ public class InfoController extends ToolbarWindowController {
         this.setFiles(files);
     }
 
+    private static final String TOOLBAR_ITEM_GENERAL = "general";
     private static final String TOOLBAR_ITEM_PERMISSIONS = "permissions";
     private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
     private static final String TOOLBAR_ITEM_CLOUD = "cloud";
