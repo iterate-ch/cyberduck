@@ -2421,6 +2421,29 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Action
+    public void revertFileButtonClicked(final ID sender) {
+        final Path selected = this.getSelectedPath();
+        this.background(new BrowserBackgroundAction(this) {
+            public void run() {
+                if(this.isCanceled()) {
+                    return;
+                }
+                selected.revert();
+            }
+
+            @Override
+            public String getActivity() {
+                return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), "");
+            }
+
+            @Override
+            public void cleanup() {
+                reloadData(false);
+            }
+        });
+    }
+
+    @Action
     public void deleteFileButtonClicked(final ID sender) {
         this.deletePaths(this.getSelectedPaths());
     }
@@ -2543,7 +2566,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     *
      * @param downloads
      * @param downloadfolder
      */
@@ -3790,10 +3812,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
-            return this.isMounted() && this.workdir().isMkdirSupported();
+            return this.isMounted() && this.getSession().isCreateFolderFolderSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
-            return this.isMounted();
+            return this.isMounted() && this.getSession().isCreateFileSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
@@ -3817,6 +3839,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("deleteFileButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
+        }
+        else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
+            if(this.isMounted() && this.getSelectionCount() == 1) {
+                final Path selected = this.getSelectedPath();
+                if(null == selected) {
+                    return false;
+                }
+                return selected.isRevertSupported();
+            }
+            return false;
         }
         else if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
             return this.isMounted();

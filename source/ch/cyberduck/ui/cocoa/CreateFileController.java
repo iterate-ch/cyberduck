@@ -18,15 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -67,30 +67,7 @@ public class CreateFileController extends FileController {
                     LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), filename));
 
             public void run() {
-                int no = 0;
-                while(file.getLocal().exists()) {
-                    no++;
-                    String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
-                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                        proposal += "." + FilenameUtils.getExtension(filename);
-                    }
-                    file.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), proposal));
-                }
-                file.getLocal().touch();
-                TransferOptions options = new TransferOptions();
-                options.closeSession = false;
-                try {
-                    UploadTransfer upload = new UploadTransfer(file);
-                    upload.start(new TransferPrompt() {
-                        public TransferAction prompt() {
-                            return TransferAction.ACTION_OVERWRITE;
-                        }
-                    }, options);
-                    file.getParent().invalidate();
-                }
-                finally {
-                    file.getLocal().delete(false);
-                }
+                file.touch(false);
                 if(file.exists()) {
                     if(edit) {
                         Editor editor = EditorFactory.createEditor(c, file);

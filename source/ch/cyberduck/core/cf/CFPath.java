@@ -343,24 +343,25 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void mkdir(boolean recursive) {
-        log.debug("mkdir:" + this.getName());
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
+    public void mkdir() {
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                        this.getName()));
 
-            if(this.isContainer()) {
-                // Create container at top level
-                this.getSession().getClient().createContainer(this.getName());
+                if(this.isContainer()) {
+                    // Create container at top level
+                    this.getSession().getClient().createContainer(this.getName());
+                }
+                else {
+                    // Create virtual directory
+                    this.getSession().getClient().createFullPath(this.getContainerName(), this.getKey());
+                }
             }
-            else {
-                // Create virtual directory
-                this.getSession().getClient().createFullPath(this.getContainerName(), this.getKey());
+            catch(IOException e) {
+                this.error("Cannot create folder", e);
             }
-        }
-        catch(IOException e) {
-            this.error("Cannot create folder", e);
         }
     }
 

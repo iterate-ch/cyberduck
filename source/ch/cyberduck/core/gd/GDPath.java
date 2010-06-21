@@ -575,19 +575,21 @@ public class GDPath extends Path {
     }
 
     @Override
-    public void mkdir(boolean recursive) {
-        try {
-            DocumentListEntry folder = new FolderEntry();
-            folder.setTitle(new PlainTextConstruct(this.getName()));
+    public void mkdir() {
+        if(this.attributes().isDirectory()) {
             try {
-                this.getSession().getClient().insert(new URL(this.getFolderFeed()), folder);
+                DocumentListEntry folder = new FolderEntry();
+                folder.setTitle(new PlainTextConstruct(this.getName()));
+                try {
+                    this.getSession().getClient().insert(new URL(this.getFolderFeed()), folder);
+                }
+                catch(ServiceException e) {
+                    throw new IOException(e.getMessage());
+                }
             }
-            catch(ServiceException e) {
-                throw new IOException(e.getMessage());
+            catch(IOException e) {
+                this.error("Cannot create folder", e);
             }
-        }
-        catch(IOException e) {
-            this.error("Cannot create folder", e);
         }
     }
 

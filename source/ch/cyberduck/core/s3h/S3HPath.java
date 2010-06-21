@@ -196,10 +196,16 @@ public class S3HPath extends CloudPath {
         return Collections.emptyList();
     }
 
+    @Override
+    public boolean isRevertSupported() {
+        return true;
+    }
+
     /**
      * Versioning support. Copy a previous version of the object into the same bucket.
      * The copied object becomes the latest version of that object and all object versions are preserved.
      */
+    @Override
     public void revert() {
         if(this.attributes().isFile()) {
             try {
@@ -794,43 +800,39 @@ public class S3HPath extends CloudPath {
 
     @Override
     public void mkdir() {
-        log.debug("mkdir:" + this.getName());
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                        this.getName()));
 
-            if(this.isContainer()) {
-                // Create bucket
-                if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
-                    this.error("Bucket name is not DNS compatible");
-                    return;
+                if(this.isContainer()) {
+                    // Create bucket
+                    if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
+                        this.error("Bucket name is not DNS compatible");
+                        return;
+                    }
+                    this.getSession().getClient().createBucket(this.getName(),
+                            Preferences.instance().getProperty("s3.location"));
+                    this.getSession().getBuckets(true);
                 }
-                this.getSession().getClient().createBucket(this.getName(),
-                        Preferences.instance().getProperty("s3.location"));
-                this.getSession().getBuckets(true);
+                else {
+                    final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
+                    S3Object object = new S3Object(bucket, this.getKey());
+                    // Set object explicitly to private access by default.
+                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+                    object.setContentLength(0);
+                    object.setContentType(MIMETYPE_DIRECTORY);
+                    this.getSession().getClient().putObject(bucket, object);
+                }
             }
-            else {
-                final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
-                S3Object object = new S3Object(bucket, this.getKey());
-                // Set object explicitly to private access by default.
-                object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
-                object.setContentLength(0);
-                object.setContentType(MIMETYPE_DIRECTORY);
-                this.getSession().getClient().putObject(bucket, object);
+            catch(S3ServiceException e) {
+                this.error("Cannot create folder", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot create folder", e);
             }
         }
-        catch(S3ServiceException e) {
-            this.error("Cannot create folder", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot create folder", e);
-        }
-    }
-
-    @Override
-    public void mkdir(boolean recursive) {
-        this.mkdir();
     }
 
     @Override

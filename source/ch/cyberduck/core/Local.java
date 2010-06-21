@@ -144,10 +144,18 @@ public abstract class Local extends AbstractPath {
 
     protected File _impl;
 
+    /**
+     * @param parent
+     * @param name
+     */
     public Local(Local parent, String name) {
         this(parent.getAbsolute(), name);
     }
 
+    /**
+     * @param parent
+     * @param name
+     */
     public Local(String parent, String name) {
         if(!Path.DELIMITER.equals(name)) {
             name = name.replace('/', ':');
@@ -156,10 +164,16 @@ public abstract class Local extends AbstractPath {
         this.setPath(parent, name);
     }
 
+    /**
+     * @param path
+     */
     public Local(String path) {
         this.setPath(path);
     }
 
+    /**
+     * @param path
+     */
     public Local(File path) {
         this.setPath(path.getAbsolutePath());
     }
@@ -176,11 +190,24 @@ public abstract class Local extends AbstractPath {
 
     /**
      * Creates a new file and sets its resource fork to feature a custom progress icon
-     *
-     * @return
      */
-    public boolean touch() {
+    @Override
+    public void touch(boolean recursive) {
         if(!this.exists()) {
+            if(this.attributes().isFile()) {
+                if(recursive) {
+                    if(!this.getParent().exists()) {
+                        this.getParent().touch(recursive);
+                    }
+                }
+                this.touch();
+            }
+        }
+    }
+
+    @Override
+    public void touch() {
+        if(this.attributes().isFile()) {
             try {
                 if(_impl.createNewFile()) {
                     this.setIcon(0);
@@ -190,7 +217,29 @@ public abstract class Local extends AbstractPath {
                 log.error(e.getMessage());
             }
         }
-        return false;
+    }
+
+    @Override
+    public void mkdir(boolean recursive) {
+        if(this.attributes().isDirectory()) {
+            if(recursive) {
+                if(_impl.mkdirs()) {
+                    log.info("Created directory " + this.getAbsolute());
+                }
+            }
+            else {
+                this.mkdir();
+            }
+        }
+    }
+
+    @Override
+    public void mkdir() {
+        if(this.attributes().isDirectory()) {
+            if(_impl.mkdir()) {
+                log.warn("Created directory " + this.getAbsolute());
+            }
+        }
     }
 
     /**
@@ -311,20 +360,6 @@ public abstract class Local extends AbstractPath {
     @Override
     public void setPath(String name) {
         _impl = new File(Path.normalize(name));
-    }
-
-    @Override
-    public void mkdir(boolean recursive) {
-        if(recursive) {
-            if(_impl.mkdirs()) {
-                log.info("Created directory " + this.getAbsolute());
-            }
-        }
-        else {
-            if(_impl.mkdir()) {
-                log.warn("Created directory " + this.getAbsolute());
-            }
-        }
     }
 
     @Override

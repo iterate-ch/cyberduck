@@ -317,14 +317,17 @@ public class FinderLocal extends Local {
      * path if <code>local.symboliclink.resolve</code is true
      */
     @Override
-    public boolean touch() {
-        if(!Preferences.instance().getBoolean("local.symboliclink.resolve")) {
-            if(StringUtils.isNotEmpty(this.getSymlinkTarget())) {
-                return NSFileManager.defaultManager().createSymbolicLinkAtPath_withDestinationPath_error(this.getAbsolute(),
-                        this.getSymlinkTarget(), null);
+    public void touch(boolean recursive) {
+        if(this.attributes().isFile()) {
+            if(!Preferences.instance().getBoolean("local.symboliclink.resolve")) {
+                if(StringUtils.isNotEmpty(this.getSymlinkTarget())) {
+                    NSFileManager.defaultManager().createSymbolicLinkAtPath_withDestinationPath_error(this.getAbsolute(),
+                            this.getSymlinkTarget(), null);
+                    return;
+                }
             }
         }
-        return super.touch();
+        super.touch(recursive);
     }
 
     /**

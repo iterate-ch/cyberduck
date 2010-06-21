@@ -166,23 +166,19 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void mkdir(boolean recursive) {
-        log.debug("mkdir:" + this.getName());
-        try {
-            if(recursive) {
-                if(!this.getParent().exists()) {
-                    this.getParent().mkdir(recursive);
-                }
-            }
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
+    public void mkdir() {
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                        this.getName()));
 
-            Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-            this.getSession().sftp().mkdir(this.getAbsolute(), perm.getOctalNumber());
-        }
-        catch(IOException e) {
-            this.error("Cannot create folder", e);
+                Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                this.getSession().sftp().mkdir(this.getAbsolute(), perm.getOctalNumber());
+            }
+            catch(IOException e) {
+                this.error("Cannot create folder", e);
+            }
         }
     }
 
@@ -513,7 +509,7 @@ public class SFTPPath extends Path {
                 this.download(in, out, throttle, listener);
             }
             else if(attributes().isDirectory()) {
-                this.getLocal().mkdir(true);
+                this.getLocal().touch(true);
             }
         }
         catch(IOException e) {

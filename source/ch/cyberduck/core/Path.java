@@ -28,6 +28,7 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -58,7 +59,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     private Local local;
 
     /**
-     * 
+     *
      */
     private Status status;
 
@@ -444,6 +445,73 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @throws ConnectionCanceledException If the connection has been closed already
      */
     public abstract Session getSession() throws ConnectionCanceledException;
+
+    @Override
+    public void mkdir(boolean recursive) {
+        if(recursive) {
+            final Path parent = this.getParent();
+            if(!parent.exists()) {
+                parent.touch(recursive);
+            }
+        }
+        this.mkdir();
+    }
+
+    @Override
+    public void touch(boolean recursive) {
+        if(recursive) {
+            final AbstractPath parent = this.getLocal().getParent();
+            if(!parent.exists()) {
+                parent.touch(recursive);
+            }
+        }
+        this.touch();
+    }
+
+    /**
+     * Upload an empty file.
+     */
+    @Override
+    public void touch() {
+        if(this.attributes.isFile()) {
+            int no = 0;
+            final String filename = this.getLocal().getName();
+            while(this.getLocal().exists()) {
+                no++;
+                String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
+                if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                    proposal += "." + FilenameUtils.getExtension(filename);
+                }
+                this.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), proposal));
+            }
+            this.getLocal().touch(true);
+            TransferOptions options = new TransferOptions();
+            options.closeSession = false;
+            try {
+                UploadTransfer upload = new UploadTransfer(this);
+                upload.start(new TransferPrompt() {
+                    public TransferAction prompt() {
+                        return TransferAction.ACTION_OVERWRITE;
+                    }
+                }, options);
+                this.getParent().invalidate();
+            }
+            finally {
+                this.getLocal().delete(false);
+            }
+        }
+    }
+
+    public boolean isRevertSupported() {
+        return false;
+    }
+
+    /**
+     * Versioning support.
+     */
+    public void revert() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Download with no bandwidth limit

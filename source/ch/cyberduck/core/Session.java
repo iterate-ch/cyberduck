@@ -164,7 +164,6 @@ public abstract class Session {
     }
 
     /**
-     * 
      * @return
      */
     public LoginController getLoginController() {
@@ -320,6 +319,22 @@ public abstract class Session {
             throw new ConnectionCanceledException();
         }
         this.workdir = workdir;
+    }
+
+    /**
+     * @return True if making directories is possible.
+     * @see Path#mkdir()
+     */
+    public boolean isCreateFolderFolderSupported(Path workdir) {
+        return true;
+    }
+
+    /**
+     * @return True if creating an empty file is possible.
+     * @see Path#touch()
+     */
+    public boolean isCreateFileSupported(Path workdir) {
+        return true;
     }
 
     /**

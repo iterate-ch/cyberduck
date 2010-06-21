@@ -466,6 +466,11 @@ public class S3HSession extends HTTPSession implements CloudSession {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public boolean isCreateFileSupported(Path workdir) {
+        return !workdir.isRoot();
+    }
+
     /**
      * Amazon CloudFront Extension to create a new distribution configuration
      * *

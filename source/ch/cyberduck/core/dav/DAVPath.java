@@ -202,27 +202,22 @@ public class DAVPath extends Path {
     }
 
     @Override
-    public void mkdir(boolean recursive) {
-        log.debug("mkdir:" + this.getName());
-        try {
-            if(recursive) {
-                if(!this.getParent().exists()) {
-                    this.getParent().mkdir(recursive);
+    public void mkdir() {
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                        this.getName()));
+
+                this.getSession().getClient().setContentType("text/xml");
+                if(!this.getSession().getClient().mkcolMethod(this.getAbsolute())) {
+                    throw new IOException(this.getSession().getClient().getStatusMessage());
                 }
             }
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
-                    this.getName()));
-
-            this.getSession().getClient().setContentType("text/xml");
-            if(!this.getSession().getClient().mkcolMethod(this.getAbsolute())) {
-                throw new IOException(this.getSession().getClient().getStatusMessage());
+            catch(IOException e) {
+                this.error("Cannot create folder", e);
             }
         }
-        catch(IOException e) {
-            this.error("Cannot create folder", e);
-        }
-
     }
 
     @Override
@@ -319,7 +314,7 @@ public class DAVPath extends Path {
             }
         }
         if(attributes().isDirectory()) {
-            this.getLocal().mkdir(true);
+            this.getLocal().touch(true);
         }
     }
 

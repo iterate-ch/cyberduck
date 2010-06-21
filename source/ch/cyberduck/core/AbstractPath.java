@@ -60,7 +60,6 @@ public abstract class AbstractPath {
     public abstract <T extends AbstractPath> Cache<T> cache();
 
     /**
-     * 
      * @return
      */
     public abstract Attributes attributes();
@@ -364,15 +363,27 @@ public abstract class AbstractPath {
         return null;
     }
 
-    public boolean isMkdirSupported() {
-        return true;
-    }
-
-    public void mkdir() {
-        this.mkdir(false);
-    }
+    /**
+     * Create a new empty file.
+     */
+    public abstract void touch();
 
     /**
+     * Create a new empty file.
+     *
+     * @param recursive Create intermediate directories as required.  If this option is
+     *                  not specified, the full path prefix of each operand must already exist
+     */
+    public abstract void touch(boolean recursive);
+
+    /**
+     * Create a new folder.
+     */
+    public abstract void mkdir();
+
+    /**
+     * Create a new folder.
+     *
      * @param recursive Create intermediate directories as required.  If this option is
      *                  not specified, the full path prefix of each operand must already exist
      */
