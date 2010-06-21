@@ -147,7 +147,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(StringUtils.isNotBlank(this.getSymlinkTarget())) {
             dict.setStringForKey(this.getSymlinkTarget(), "Symlink");
         }
-        dict.setObjectForKey((PathAttributes) attributes, "Attributes");
+        dict.setObjectForKey(attributes, "Attributes");
         if(this.status().isComplete()) {
             dict.setStringForKey(String.valueOf(true), "Complete");
         }
