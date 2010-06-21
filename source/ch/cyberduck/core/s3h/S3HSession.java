@@ -833,6 +833,11 @@ public class S3HSession extends HTTPSession implements CloudSession {
         return versioningSupported;
     }
 
+    @Override
+    public boolean isRevertSupported() {
+        return this.isVersioningSupported();
+    }
+
     /**
      * @param versioningSupported
      */

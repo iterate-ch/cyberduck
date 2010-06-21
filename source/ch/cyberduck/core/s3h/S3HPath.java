@@ -196,11 +196,6 @@ public class S3HPath extends CloudPath {
         return Collections.emptyList();
     }
 
-    @Override
-    public boolean isRevertSupported() {
-        return true;
-    }
-
     /**
      * Versioning support. Copy a previous version of the object into the same bucket.
      * The copied object becomes the latest version of that object and all object versions are preserved.

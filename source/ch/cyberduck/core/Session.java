@@ -337,6 +337,10 @@ public abstract class Session {
         return true;
     }
 
+    public boolean isRevertSupported() {
+        return false;
+    }
+
     /**
      * Send a 'no operation' command
      *

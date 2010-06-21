@@ -502,10 +502,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
-    public boolean isRevertSupported() {
-        return false;
-    }
-
     /**
      * Versioning support.
      */

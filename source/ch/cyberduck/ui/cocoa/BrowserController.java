@@ -3842,11 +3842,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
-                final Path selected = this.getSelectedPath();
-                if(null == selected) {
-                    return false;
-                }
-                return selected.isRevertSupported();
+                return this.getSession().isRevertSupported();
             }
             return false;
         }
