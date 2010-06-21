@@ -823,6 +823,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 if(mfa) {
                     final Credentials credentials = this.getHost().getCredentials();
                     credentials.setUsername(Preferences.instance().getProperty("s3.mfa.serialnumber"));
+                    credentials.setPassword(null);
                     credentials.setUseKeychain(false);
                     // Prompt for MFA credentials.
                     this.getLoginController().prompt(this.getHost(),
