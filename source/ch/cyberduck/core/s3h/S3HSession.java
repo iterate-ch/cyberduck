@@ -751,33 +751,39 @@ public class S3HSession extends HTTPSession implements CloudSession {
     }
 
     /**
+     * Cache versioning status result.
+     */
+    private Map<String, S3BucketLoggingStatus> loggingStatus
+            = new HashMap<String, S3BucketLoggingStatus>();
+
+    /**
      * @param container The bucket name
      * @return True if the bucket logging status is enabled.
      */
     public boolean isLogging(final String container) {
         if(this.isLoggingSupported()) {
-            try {
-                if(this.getHost().getCredentials().isAnonymousLogin()) {
-                    log.info("Anonymous cannot access logging status");
-                    return false;
+            if(!loggingStatus.containsKey(container)) {
+                try {
+                    if(this.getHost().getCredentials().isAnonymousLogin()) {
+                        log.info("Anonymous cannot access logging status");
+                        return false;
+                    }
+                    this.check();
+                    loggingStatus.put(container, this.getClient().getBucketLoggingStatus(container));
                 }
-                this.check();
-
-                final S3BucketLoggingStatus status
-                        = this.getClient().getBucketLoggingStatus(container);
-                return status.isLoggingEnabled();
-            }
-            catch(S3ServiceException e) {
-                if(this.isPermissionFailure(e)) {
-                    log.warn("Bucket logging not supported:" + e.getMessage());
-                    this.setLoggingSupported(false);
-                    return false;
+                catch(S3ServiceException e) {
+                    if(this.isPermissionFailure(e)) {
+                        log.warn("Bucket logging not supported:" + e.getMessage());
+                        this.setLoggingSupported(false);
+                        return false;
+                    }
+                    this.error("Cannot read file attributes", e);
                 }
-                this.error("Cannot read file attributes", e);
+                catch(IOException e) {
+                    this.error("Cannot read file attributes", e);
+                }
             }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
-            }
+            return loggingStatus.get(container).isLoggingEnabled();
         }
         return false;
     }
@@ -788,15 +794,14 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     public void setLogging(final String container, final boolean enabled) {
         if(this.isLoggingSupported()) {
-            // Logging target bucket
-            final S3BucketLoggingStatus loggingStatus = new S3BucketLoggingStatus();
-            if(enabled) {
-                loggingStatus.setTargetBucketName(container);
-                loggingStatus.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
-            }
             try {
+                // Logging target bucket
+                final S3BucketLoggingStatus status = new S3BucketLoggingStatus(container, null);
+                if(enabled) {
+                    status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
+                }
                 this.check();
-                this.getClient().setBucketLoggingStatus(container, loggingStatus, true);
+                this.getClient().setBucketLoggingStatus(container, status, true);
             }
             catch(S3ServiceException e) {
                 if(this.isPermissionFailure(e)) {
@@ -808,6 +813,9 @@ public class S3HSession extends HTTPSession implements CloudSession {
             }
             catch(IOException e) {
                 this.error("Cannot write file attributes", e);
+            }
+            finally {
+                loggingStatus.remove(container);
             }
         }
     }
@@ -835,7 +843,8 @@ public class S3HSession extends HTTPSession implements CloudSession {
     /**
      * Cache versioning status result.
      */
-    private S3BucketVersioningStatus versioningStatus;
+    private Map<String, S3BucketVersioningStatus> versioningStatus
+            = new HashMap<String, S3BucketVersioningStatus>();
 
     /**
      * @param container The bucket name
@@ -843,10 +852,10 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     public boolean isVersioning(final String container) {
         if(this.isVersioningSupported()) {
-            if(null == versioningStatus) {
+            if(!versioningStatus.containsKey(container)) {
                 try {
                     this.check();
-                    versioningStatus = this.getClient().getBucketVersioningStatus(container);
+                    versioningStatus.put(container, this.getClient().getBucketVersioningStatus(container));
                 }
                 catch(S3ServiceException e) {
                     if(this.isPermissionFailure(e)) {
@@ -860,7 +869,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     this.error("Cannot read file attributes", e);
                 }
             }
-            return versioningStatus.isVersioningEnabled();
+            return versioningStatus.get(container).isVersioningEnabled();
         }
         return false;
     }
@@ -871,7 +880,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      */
     public boolean isMultiFactorAuthentication(final String container) {
         if(this.isVersioning(container)) {
-            return versioningStatus.isMultiFactorAuthDeleteRequired();
+            return versioningStatus.get(container).isMultiFactorAuthDeleteRequired();
         }
         return false;
     }
@@ -918,7 +927,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 this.error("Cannot write file attributes", e);
             }
             finally {
-                versioningStatus = null;
+                versioningStatus.remove(container);
             }
         }
     }
