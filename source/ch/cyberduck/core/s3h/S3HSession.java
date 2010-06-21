@@ -115,10 +115,13 @@ public class S3HSession extends HTTPSession implements CloudSession {
     protected Jets3tProperties configuration = new Jets3tProperties();
 
     protected void configure() {
-        if(host.getHostname().endsWith(host.getProtocol().getDefaultHostname())) {
+        if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())
+                && host.getHostname().endsWith(host.getProtocol().getDefaultHostname())) {
+            // The user specified a DNS bucket endpoint. Connect to the default hostname instead.
             configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
         }
         else {
+            // Standard configuration
             configuration.setProperty("s3service.s3-endpoint", host.getHostname());
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
