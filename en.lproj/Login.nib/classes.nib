@@ -20,8 +20,10 @@
 				<string>NSButton</string>
 				<key>keychainCheckbox</key>
 				<string>NSButton</string>
-				<key>passField</key>
+				<key>passwordField</key>
 				<string>NSSecureTextField</string>
+				<key>passwordLabel</key>
+				<string>id</string>
 				<key>pkCheckbox</key>
 				<string>NSButton</string>
 				<key>pkLabel</key>
@@ -30,8 +32,10 @@
 				<string>NSTextField</string>
 				<key>titleField</key>
 				<string>NSTextField</string>
-				<key>userField</key>
+				<key>usernameField</key>
 				<string>NSTextField</string>
+				<key>usernameLabel</key>
+				<string>id</string>
 				<key>window</key>
 				<string>NSWindow</string>
 			</dict>

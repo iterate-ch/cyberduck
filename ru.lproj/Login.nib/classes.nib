@@ -9,12 +9,14 @@
     OUTLETS =     {
         anonymousCheckbox = NSButton;
         keychainCheckbox = NSButton;
-        passField = NSSecureTextField;
+        passwordField = NSSecureTextField;
+        passwordLabel = id;
         pkCheckbox = NSButton;
         pkLabel = NSTextField;
         textField = NSTextField;
         titleField = NSTextField;
-        userField = NSTextField;
+        usernameField = NSTextField;
+        usernameLabel = id;
         window = NSWindow;
     };
     SUPERCLASS = NSObject;
