@@ -51,7 +51,7 @@ public class TransferCollection extends Collection<Transfer> {
             = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Queue.plist");
 
     static {
-        QUEUE_FILE.getParent().mkdir();
+        QUEUE_FILE.getParent().mkdir(true);
     }
 
     @Override
