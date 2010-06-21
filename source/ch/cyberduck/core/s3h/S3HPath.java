@@ -155,7 +155,7 @@ public class S3HPath extends CloudPath {
                 }
             }
             catch(S3ServiceException e) {
-                if(e.getResponseCode() == 403) {
+                if(this.getSession().isPermissionFailure(e)) {
                     // Anonymous services can only get a publicly-readable object's details
                     log.warn("Cannot read object details:" + e.getMessage());
                 }

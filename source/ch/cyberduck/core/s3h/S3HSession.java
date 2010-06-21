@@ -288,7 +288,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 return location;
             }
             catch(S3ServiceException e) {
-                if(e.getResponseCode() == 403) {
+                if(this.isPermissionFailure(e)) {
                     log.warn("Bucket location not supported:" + e.getMessage());
                     this.setBucketLocationSupported(false);
                     return null;
@@ -398,12 +398,32 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @param e
      * @return True if the error code of the S3 exception is a login failure
      */
-    private boolean isLoginFailure(S3ServiceException e) {
+    protected boolean isLoginFailure(S3ServiceException e) {
         if(null == e.getS3ErrorCode()) {
             return false;
         }
         return e.getS3ErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
                 || e.getS3ErrorCode().equals("SignatureDoesNotMatch"); // Invalid Secret Key
+    }
+
+    /**
+     * Parse the service exception for a 403 HTTP error response.
+     *
+     * @param e
+     * @return True if generic permission issue.
+     */
+    protected boolean isPermissionFailure(S3ServiceException e) {
+        return e.getResponseCode() == 403;
+    }
+
+    /**
+     * Parse the service exception for a 403 HTTP error response.
+     *
+     * @param e
+     * @return True if generic permission issue.
+     */
+    protected boolean isPermissionFailure(CloudFrontServiceException e) {
+        return e.getResponseCode() == 403;
     }
 
     @Override
@@ -622,7 +642,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
             }
         }
         catch(CloudFrontServiceException e) {
-            if(e.getResponseCode() == 403) {
+            if(this.isPermissionFailure(e)) {
                 log.warn("Invalid CloudFront account:" + e.getMessage());
                 this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
                 return new Distribution(false, null, Locale.localizedString("Unknown"));
@@ -743,7 +763,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 return status.isLoggingEnabled();
             }
             catch(S3ServiceException e) {
-                if(e.getResponseCode() == 403) {
+                if(this.isPermissionFailure(e)) {
                     log.warn("Bucket logging not supported:" + e.getMessage());
                     this.setLoggingSupported(false);
                     return false;
@@ -774,7 +794,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 this.getClient().setBucketLoggingStatus(container, loggingStatus, true);
             }
             catch(S3ServiceException e) {
-                if(e.getResponseCode() == 403) {
+                if(this.isPermissionFailure(e)) {
                     log.warn("Bucket logging not supported:" + e.getMessage());
                     this.setLoggingSupported(false);
                     return;
@@ -824,7 +844,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     versioningStatus = this.getClient().getBucketVersioningStatus(container);
                 }
                 catch(S3ServiceException e) {
-                    if(e.getResponseCode() == 403) {
+                    if(this.isPermissionFailure(e)) {
                         log.warn("Bucket versioning not supported:" + e.getMessage());
                         this.setVersioningSupported(false);
                         return false;
@@ -883,7 +903,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 }
             }
             catch(S3ServiceException e) {
-                if(e.getResponseCode() == 403) {
+                if(this.isPermissionFailure(e)) {
                     log.warn("Bucket versioning not supported:" + e.getMessage());
                     this.setVersioningSupported(false);
                 }
