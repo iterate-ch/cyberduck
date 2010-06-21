@@ -368,6 +368,31 @@ public class S3HSession extends HTTPSession implements CloudSession {
     }
 
     /**
+     * Prompt for MFA credentials
+     *
+     * @return MFA one time authentication password.
+     */
+    protected Credentials mfa() throws ConnectionCanceledException {
+        Credentials credentials = new Credentials(
+                Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
+            @Override
+            public String getUsernamePlaceholder() {
+                return Locale.localizedString("MFA Serial Number", "S3");
+            }
+
+            @Override
+            public String getPasswordPlaceholder() {
+                return Locale.localizedString("MFA Authentication Code", "S3");
+            }
+        };
+        // Prompt for MFA credentials.
+        this.getLoginController().prompt(this.getHost(),
+                Locale.localizedString("Provide additional login credentials", "Credentials"),
+                Locale.localizedString("Multi-Factor Authentication", "S3"));
+        return credentials;
+    }
+
+    /**
      * Check for Invalid Access ID or Invalid Secret Key
      *
      * @param e
@@ -782,6 +807,9 @@ public class S3HSession extends HTTPSession implements CloudSession {
         this.versioningSupported = versioningSupported;
     }
 
+    /**
+     * Cache versioning status result.
+     */
     private S3BucketVersioningStatus versioningStatus;
 
     /**
@@ -814,6 +842,17 @@ public class S3HSession extends HTTPSession implements CloudSession {
 
     /**
      * @param container The bucket name
+     * @return True if MFA is required to delete objects in this bucket.
+     */
+    public boolean isMultiFactorAuthentication(final String container) {
+        if(this.isVersioning(container)) {
+            return versioningStatus.isMultiFactorAuthDeleteRequired();
+        }
+        return false;
+    }
+
+    /**
+     * @param container The bucket name
      * @param mfa
      * @param enabled
      */
@@ -821,33 +860,22 @@ public class S3HSession extends HTTPSession implements CloudSession {
         if(this.isVersioningSupported()) {
             try {
                 this.check();
-                String multiFactorSerialNumber = null;
-                String multiFactorAuthCode = null;
                 if(mfa) {
-                    final Credentials credentials = this.getHost().getCredentials();
-                    credentials.setUsername(Preferences.instance().getProperty("s3.mfa.serialnumber"));
-                    credentials.setPassword(null);
-                    credentials.setUseKeychain(false);
-                    // Prompt for MFA credentials.
-                    this.getLoginController().prompt(this.getHost(),
-                            Locale.localizedString("Provide additional login credentials", "Credentials"),
-                            Locale.localizedString("Multi-Factor Authentication", "S3"));
-                    multiFactorSerialNumber = credentials.getUsername();
-                    multiFactorAuthCode = credentials.getPassword();
-                }
-                if(enabled) {
-                    if(mfa) {
+                    final Credentials credentials = this.mfa();
+                    String multiFactorSerialNumber = credentials.getUsername();
+                    String multiFactorAuthCode = credentials.getPassword();
+                    if(enabled) {
                         this.getClient().enableBucketVersioningWithMFA(container,
                                 multiFactorSerialNumber, multiFactorAuthCode);
                     }
                     else {
-                        this.getClient().enableBucketVersioning(container);
+                        this.getClient().suspendBucketVersioningWithMFA(container,
+                                multiFactorSerialNumber, multiFactorAuthCode);
                     }
                 }
                 else {
-                    if(mfa) {
-                        this.getClient().suspendBucketVersioningWithMFA(container,
-                                multiFactorSerialNumber, multiFactorAuthCode);
+                    if(enabled) {
+                        this.getClient().enableBucketVersioning(container);
                     }
                     else {
                         this.getClient().suspendBucketVersioning(container);
@@ -864,34 +892,10 @@ public class S3HSession extends HTTPSession implements CloudSession {
             catch(IOException e) {
                 this.error("Cannot write file attributes", e);
             }
-        }
-    }
-
-    /**
-     * @param container The bucket name
-     * @return True if MFA is required to delete objects in this bucket.
-     */
-    public boolean isMultiFactorAuthentication(final String container) {
-        if(this.isVersioningSupported()) {
-            try {
-                this.check();
-
-                final S3BucketVersioningStatus status = this.getClient().getBucketVersioningStatus(
-                        container);
-                return status.isMultiFactorAuthDeleteRequired();
-            }
-            catch(S3ServiceException e) {
-                if(e.getResponseCode() == 403) {
-                    log.warn("Bucket versioning not supported:" + e.getMessage());
-                    this.setVersioningSupported(false);
-                }
-                this.error("Cannot read file attributes", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+            finally {
+                versioningStatus = null;
             }
         }
-        return false;
     }
 
     /**

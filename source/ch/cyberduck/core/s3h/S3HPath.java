@@ -210,51 +210,13 @@ public class S3HPath extends CloudPath {
                 destination.setAcl(this.getDetails().getAcl());
                 this.getSession().getClient().copyVersionedObject(this.attributes().getVersionId(),
                         this.getContainerName(), this.getKey(), this.getContainerName(), destination, false);
+                this.getParent().invalidate();
             }
             catch(S3ServiceException e) {
                 this.error("Cannot revert file", e);
             }
             catch(IOException e) {
                 this.error("Cannot revert file", e);
-            }
-        }
-    }
-
-    /**
-     * Versioning support. Delete a version using MFA if enabled.
-     *
-     * @param versionId
-     */
-    public void delete(String versionId) {
-        if(this.attributes().isFile()) {
-            try {
-                if(StringUtils.isBlank(versionId)) {
-                    log.error("Cannot revert to version ID that is null");
-                    return;
-                }
-                if(this.getSession().isMultiFactorAuthentication(this.getContainerName())) {
-                    final Credentials credentials = this.getSession().getHost().getCredentials();
-                    credentials.setUsername(Preferences.instance().getProperty("s3.mfa.serialnumber"));
-                    credentials.setUseKeychain(false);
-                    // Prompt for MFA credentials.
-                    this.getSession().getLoginController().prompt(this.getSession().getHost(),
-                            Locale.localizedString("Provide additional login credentials", "Credentials"),
-                            Locale.localizedString("Multi-Factor Authentication", "S3"));
-                    this.getSession().getClient().deleteVersionedObjectWithMFA(versionId,
-                            credentials.getUsername(),
-                            credentials.getPassword(),
-                            this.getContainerName(), this.getKey());
-                }
-                else {
-                    this.getSession().getClient().deleteVersionedObject(versionId, this.getContainerName(),
-                            this.getKey());
-                }
-            }
-            catch(S3ServiceException e) {
-                this.error("Cannot delete file", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot delete file", e);
             }
         }
     }
@@ -990,24 +952,25 @@ public class S3HPath extends CloudPath {
         log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
+            final String container = this.getContainerName();
+            final String key = this.getKey();
             if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
-
-                this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
+                delete(container, key, this.attributes().getVersionId());
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath i : this.childs()) {
+                for(AbstractPath child : this.childs()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    i.delete();
+                    child.delete();
                 }
                 if(this.isContainer()) {
-                    this.getSession().getClient().deleteBucket(this.getContainerName());
+                    this.getSession().getClient().deleteBucket(container);
                 }
                 else {
-                    this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
+                    this.delete(container, key, this.attributes().getVersionId());
                 }
             }
         }
@@ -1026,6 +989,31 @@ public class S3HPath extends CloudPath {
             if(this.attributes().isDirectory()) {
                 this.error("Cannot delete folder", e);
             }
+        }
+    }
+
+    /**
+     * @param container
+     * @param key
+     * @param version
+     * @throws ConnectionCanceledException
+     * @throws S3ServiceException
+     */
+    private void delete(String container, String key, String version) throws ConnectionCanceledException, S3ServiceException {
+        if(this.getSession().isVersioning(container)) {
+            if(this.getSession().isMultiFactorAuthentication(container)) {
+                final Credentials credentials = this.getSession().mfa();
+                this.getSession().getClient().deleteVersionedObjectWithMFA(version,
+                        credentials.getUsername(),
+                        credentials.getPassword(),
+                        container, key);
+            }
+            else {
+                this.getSession().getClient().deleteVersionedObject(version, container, key);
+            }
+        }
+        else {
+            this.getSession().getClient().deleteObject(this.getContainerName(), key);
         }
     }
 
