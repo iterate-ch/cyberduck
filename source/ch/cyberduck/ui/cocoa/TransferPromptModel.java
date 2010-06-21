@@ -36,7 +36,9 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -52,7 +54,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     /**
      * The root nodes to be included in the prompt dialog
      */
-    protected final List<Path> roots = new Collection<Path>();
+    protected final AttributedList<Path> roots
+            = new AttributedList<Path>();
 
     /**
      *
@@ -90,11 +93,11 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param reference
      * @return
      */
-    protected Path lookup(NSObject reference) {
+    protected Path lookup(PathReference reference) {
         if(roots.contains(reference)) {
-            return roots.get(roots.indexOf(reference));
+            return roots.get(reference);
         }
-        return transfer.lookup(new OutlinePathReference(reference));
+        return transfer.lookup(reference);
     }
 
     protected static final String INCLUDE_COLUMN = "INCLUDE";
@@ -109,7 +112,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                                                                  final NSTableColumn tableColumn, NSObject item) {
         String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            final Path path = this.lookup(item);
+            final Path path = this.lookup(new OutlinePathReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
             transfer.setSelected(path, state == NSCell.NSOnState);
             if(path.attributes().isDirectory()) {
@@ -209,21 +212,21 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return false;
         }
-        return this.lookup(item).attributes().isDirectory();
+        return this.lookup(new OutlinePathReference(item)).attributes().isDirectory();
     }
 
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(null == item) {
             return new NSInteger(roots.size());
         }
-        return new NSInteger(this.childs(this.lookup(item)).size());
+        return new NSInteger(this.childs(this.lookup(new OutlinePathReference(item))).size());
     }
 
     public NSObject outlineView_child_ofItem(final NSOutlineView view, NSInteger index, NSObject item) {
         if(null == item) {
             return roots.get(index.intValue()).<NSObject>getReference().unique();
         }
-        final AttributedList<Path> childs = this.childs(this.lookup(item));
+        final AttributedList<Path> childs = this.childs(this.lookup(new OutlinePathReference(item)));
         if(childs.isEmpty()) {
             return null;
         }
@@ -234,6 +237,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return null;
         }
-        return this.objectValueForItem(this.lookup(item), tableColumn.identifier());
+        return this.objectValueForItem(this.lookup(new OutlinePathReference(item)), tableColumn.identifier());
     }
 }

@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.CDOutlineCell;
 
@@ -190,7 +191,7 @@ public abstract class TransferPromptController extends SheetController implement
         this.browserView = view;
         this.browserView.setHeaderView(null);
         this.browserView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
-                        NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
+                NSFont.systemFontOfSize(Preferences.instance().getFloat("browser.font.size"))).intValue() + 2));
         this.browserView.setDataSource(this.browserModel.id());
         this.browserView.setDelegate((this.browserViewDelegate = new AbstractPathTableDelegate() {
 
@@ -223,7 +224,8 @@ public abstract class TransferPromptController extends SheetController implement
                     localModificationField.setStringValue("");
                 }
                 else {
-                    final Path p = browserModel.lookup(browserView.itemAtRow(browserView.selectedRow()));
+                    final Path p = browserModel.lookup(new OutlinePathReference(
+                            browserView.itemAtRow(browserView.selectedRow())));
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -294,7 +296,7 @@ public abstract class TransferPromptController extends SheetController implement
             public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
                                                                        NSTableColumn tableColumn,
                                                                        NSInteger row) {
-                final Path p = browserModel.lookup(browserView.itemAtRow(row));
+                final Path p = browserModel.lookup(new OutlinePathReference(browserView.itemAtRow(row)));
                 return p.getName();
             }
 
@@ -304,7 +306,7 @@ public abstract class TransferPromptController extends SheetController implement
                     return;
                 }
                 final String identifier = tableColumn.identifier();
-                final Path path = browserModel.lookup(item);
+                final Path path = browserModel.lookup(new OutlinePathReference(item));
                 if(identifier.equals(TransferPromptModel.INCLUDE_COLUMN)) {
                     cell.setEnabled(!path.status().isSkipped());
                 }
