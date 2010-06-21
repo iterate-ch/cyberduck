@@ -49,7 +49,8 @@ public class Host implements Serializable {
      * @see Protocol#FTP_TLS
      * @see Protocol#SFTP
      */
-    private Protocol protocol;
+    private Protocol protocol
+            = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
     /**
      * The port number to connect to
      *
@@ -62,6 +63,20 @@ public class Host implements Serializable {
     private String hostname
             = Preferences.instance().getProperty("connection.hostname.default");
     /**
+     * The credentials to authenticate with
+     */
+    private Credentials credentials = new Credentials() {
+        @Override
+        public String getPasswordPlaceholder() {
+            return Host.this.getProtocol().getUsernamePlaceholder();
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Host.this.getProtocol().getPasswordPlaceholder();
+        }
+    };
+    /**
      * IDN normalized hostname
      */
     private String punycode;
@@ -73,10 +88,6 @@ public class Host implements Serializable {
      * The initial working directory if any
      */
     private String defaultpath;
-    /**
-     * The credentials to authenticate with
-     */
-    private Credentials credentials = new Credentials();
     /**
      * The character encoding to use for file listings
      */

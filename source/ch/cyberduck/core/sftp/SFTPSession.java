@@ -278,7 +278,7 @@ public class SFTPSession extends Session {
         log.debug("loginUsingKBIAuthentication" +
                 "make:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
-            InteractiveLogic il = new InteractiveLogic(credentials);
+            InteractiveLogic il = new InteractiveLogic();
             return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(), il);
         }
         return false;
@@ -290,11 +290,6 @@ public class SFTPSession extends Session {
      */
     private class InteractiveLogic implements InteractiveCallback {
         private int promptCount = 0;
-        private Credentials credentials;
-
-        public InteractiveLogic(final Credentials credentials) {
-            this.credentials = credentials;
-        }
 
         /**
          * The callback may be invoked several times, depending on how
@@ -307,15 +302,24 @@ public class SFTPSession extends Session {
             if(0 == promptCount) {
                 log.debug("First callback returning provided credentials");
                 promptCount++;
-                return new String[]{this.credentials.getPassword()};
+                return new String[]{host.getCredentials().getPassword()};
             }
             String[] response = new String[numPrompts];
             for(int i = 0; i < numPrompts; i++) {
-                this.credentials.setPassword(null);
-                this.credentials.setUseKeychain(false);
+                Credentials credentials = new Credentials(host.getCredentials().getUsername(), null, false) {
+                    @Override
+                    public String getUsernamePlaceholder() {
+                        return host.getProtocol().getUsernamePlaceholder();
+                    }
+
+                    @Override
+                    public String getPasswordPlaceholder() {
+                        return Locale.localizedString("One-time password", "Credentials");
+                    }
+                };
                 SFTPSession.this.login.prompt(SFTPSession.this.getHost(),
                         Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i]);
-                response[i] = this.credentials.getPassword();
+                response[i] = credentials.getPassword();
                 promptCount++;
             }
             return response;

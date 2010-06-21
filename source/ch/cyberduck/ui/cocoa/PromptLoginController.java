@@ -31,12 +31,12 @@ import org.rococoa.ID;
 /**
  * @version $Id$
  */
-public class LoginController extends AbstractLoginController implements ch.cyberduck.core.LoginController {
-    private static Logger log = Logger.getLogger(LoginController.class);
+public class PromptLoginController extends AbstractLoginController {
+    private static Logger log = Logger.getLogger(PromptLoginController.class);
 
     private WindowController parent;
 
-    public LoginController(final WindowController parent) {
+    public PromptLoginController(final WindowController parent) {
         this.parent = parent;
     }
 
@@ -58,6 +58,20 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             }
 
             @Outlet
+            private NSTextField userLabel;
+
+            public void setUserLabel(NSTextField userLabel) {
+                this.userLabel = userLabel;
+            }
+
+            @Outlet
+            private NSTextField passwordLabel;
+
+            public void setPasswordLabel(NSTextField passwordLabel) {
+                this.passwordLabel = passwordLabel;
+            }
+
+            @Outlet
             private NSTextField titleField;
 
             public void setTitleField(NSTextField titleField) {
@@ -66,20 +80,20 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             }
 
             @Outlet
-            private NSTextField userField;
+            private NSTextField usernameField;
 
-            public void setUserField(NSTextField userField) {
-                this.userField = userField;
-                this.updateField(this.userField, credentials.getUsername());
-                this.userField.cell().setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
+            public void setUsernameField(NSTextField usernameField) {
+                this.usernameField = usernameField;
+                this.updateField(this.usernameField, credentials.getUsername());
+                this.usernameField.cell().setPlaceholderString(credentials.getUsernamePlaceholder());
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("userFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
-                        this.userField);
+                        this.usernameField);
             }
 
             public void userFieldTextDidChange(NSNotification notification) {
-                credentials.setUsername(userField.stringValue());
+                credentials.setUsername(usernameField.stringValue());
                 this.update();
             }
 
@@ -92,22 +106,20 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             }
 
             @Outlet
-            private NSSecureTextField passField;
+            private NSSecureTextField passwordField;
 
-            public void setPassField(NSSecureTextField passField) {
-                this.passField = passField;
-                this.updateField(this.passField, credentials.getPassword());
-                this.passField.cell().setPlaceholderString(
-                        host.getProtocol().getPasswordPlaceholder()
-                );
+            public void setPasswordField(NSSecureTextField passwordField) {
+                this.passwordField = passwordField;
+                this.updateField(this.passwordField, credentials.getPassword());
+                this.passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
                 NSNotificationCenter.defaultCenter().addObserver(this.id(),
                         Foundation.selector("passFieldTextDidChange:"),
                         NSControl.NSControlTextDidChangeNotification,
-                        this.passField);
+                        this.passwordField);
             }
 
             public void passFieldTextDidChange(NSNotification notification) {
-                credentials.setPassword(passField.stringValue());
+                credentials.setPassword(passwordField.stringValue());
             }
 
             @Outlet
@@ -147,8 +159,8 @@ public class LoginController extends AbstractLoginController implements ch.cyber
                     credentials.setUsername(Preferences.instance().getProperty("connection.login.name"));
                     credentials.setPassword(null);
                 }
-                this.updateField(this.userField, credentials.getUsername());
-                this.updateField(this.passField, credentials.getPassword());
+                this.updateField(this.usernameField, credentials.getUsername());
+                this.updateField(this.passwordField, credentials.getPassword());
                 this.update();
             }
 
@@ -206,8 +218,8 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             }
 
             private void update() {
-                this.userField.setEnabled(!credentials.isAnonymousLogin());
-                this.passField.setEnabled(!credentials.isAnonymousLogin());
+                this.usernameField.setEnabled(!credentials.isAnonymousLogin());
+                this.passwordField.setEnabled(!credentials.isAnonymousLogin());
                 this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
                 this.pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
@@ -231,8 +243,8 @@ public class LoginController extends AbstractLoginController implements ch.cyber
             public void callback(final int returncode) {
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
                     this.window().endEditingFor(null);
-                    credentials.setUsername(userField.stringValue());
-                    credentials.setPassword(passField.stringValue());
+                    credentials.setUsername(usernameField.stringValue());
+                    credentials.setPassword(passwordField.stringValue());
                 }
             }
         };

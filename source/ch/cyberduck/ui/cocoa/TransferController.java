@@ -630,7 +630,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(
                             new HostKeyController(TransferController.this));
                 }
-                transfer.getSession().setLoginController(new LoginController(TransferController.this));
+                transfer.getSession().setLoginController(new PromptLoginController(TransferController.this));
 
                 return super.prepare();
             }

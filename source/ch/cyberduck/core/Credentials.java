@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class Credentials {
+public abstract class Credentials {
     private static Logger log = Logger.getLogger(Credentials.class);
 
     /**
@@ -84,6 +84,9 @@ public class Credentials {
         this.password = password;
     }
 
+    /**
+     * @return The login identification
+     */
     public String getUsername() {
         return this.user;
     }
@@ -92,6 +95,9 @@ public class Credentials {
         this.user = user;
     }
 
+    /**
+     * @return The login secret
+     */
     public String getPassword() {
         if(StringUtils.isEmpty(password)) {
             if(this.isAnonymousLogin()) {
@@ -178,4 +184,8 @@ public class Credentials {
         user = null;
         password = null;
     }
+
+    public abstract String getUsernamePlaceholder();
+
+    public abstract String getPasswordPlaceholder();
 }
