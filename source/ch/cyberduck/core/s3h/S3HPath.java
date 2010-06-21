@@ -443,7 +443,7 @@ public class S3HPath extends CloudPath {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                     this.getName()));
-            attributes().setPermission(this.readPermissions(this.readAcl().getGrants()));
+            attributes().setPermission(this.readPermissions(this.readAcl().getGrantAndPermissions()));
         }
         catch(S3ServiceException e) {
             this.error("Cannot read file attributes", e);
@@ -457,7 +457,7 @@ public class S3HPath extends CloudPath {
      * @param grants
      * @return
      */
-    private Permission readPermissions(Set<GrantAndPermission> grants) throws IOException, S3ServiceException {
+    private Permission readPermissions(GrantAndPermission[] grants) throws IOException, S3ServiceException {
         boolean[][] p = new boolean[3][3];
         final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
         for(GrantAndPermission grant : grants) {
