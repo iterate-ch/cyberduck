@@ -54,7 +54,7 @@ public abstract class AbstractPath {
      */
     public boolean isCached() {
         return this.cache().containsKey(this.<Object>getReference())
-                && !this.cache().get(this.<Object>getReference()).attributes().isDirty();
+                && !this.cache().get(this.<Object>getReference()).attributes().isInvalid();
     }
 
     public abstract <T extends AbstractPath> Cache<T> cache();
@@ -72,7 +72,7 @@ public abstract class AbstractPath {
      */
     public void invalidate() {
         if(this.attributes().isDirectory()) {
-            this.cache().get(this.<Object>getReference()).attributes().setDirty(true);
+            this.cache().get(this.<Object>getReference()).attributes().setInvalid(true);
         }
     }
 

@@ -113,15 +113,15 @@ public class Cache<E extends AbstractPath> {
             log.warn("No cache for " + path);
             return AttributedList.emptyList();
         }
-        boolean needsSorting = !childs.attributes().get(AttributedList.COMPARATOR).equals(comparator);
-        boolean needsFiltering = !childs.attributes().get(AttributedList.FILTER).equals(filter);
+        boolean needsSorting = !childs.attributes().getComparator().equals(comparator);
+        boolean needsFiltering = !childs.attributes().getFilter().equals(filter);
         if(needsSorting) {
             // Do not sort when the list has not been filtered yet
             if(!needsFiltering) {
                 childs.sort(comparator);
             }
             // Saving last sorting comparator
-            childs.attributes().put(AttributedList.COMPARATOR, comparator);
+            childs.attributes().setComparator(comparator);
         }
         if(needsFiltering) {
             // Add previously hidden files to childs
@@ -138,7 +138,7 @@ public class Cache<E extends AbstractPath> {
                 }
             }
             // Saving last filter
-            childs.attributes().put(AttributedList.FILTER, filter);
+            childs.attributes().setFilter(filter);
             // Sort again because the list has changed
             childs.sort(comparator);
         }

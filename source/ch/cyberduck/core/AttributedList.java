@@ -32,32 +32,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList<E> {
     protected static Logger log = Logger.getLogger(Cache.class);
 
-    /**
-     * The filter to apply to the directory listing
-     * excluding files from display.
-     */
-    protected static final String FILTER = "FILTER";
-
-    /**
-     * Sort the file listing using this comparator.
-     */
-    protected static final String COMPARATOR = "COMPARATOR";
-
-    /**
-     * Hidden attribute holds a list of hidden files.
-     */
-    protected static final String HIDDEN = "HIDDEN";
-
-    /**
-     * The cached version should be superseded
-     * with an updated listing.
-     */
-    private static final String INVALID = "INVALID";
-
-    /**
-     * file listing is not readable; permission issue
-     */
-    private static final String READABLE = "READABLE";
 
     /**
      * Metadata of file listing
@@ -115,7 +89,34 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * @see PathFilter
      * @see BrowserComparator
      */
-    public class Attributes<E> extends HashMap<String, Object> {
+    public class Attributes<E> {
+
+        /**
+         * Sort the file listing using this comparator.
+         */
+        private Comparator<E> comparator;
+
+        /**
+         * The filter to apply to the directory listing
+         * excluding files from display.
+         */
+        private PathFilter filter;
+
+        /**
+         * Hidden attribute holds a list of hidden files.
+         */
+        private List<E> hidden = new ArrayList<E>();
+
+        /**
+         * The cached version should be superseded
+         * with an updated listing.
+         */
+        private boolean invalid = false;
+
+        /**
+         * File listing is not readable; permission issue
+         */
+        private boolean readable = true;
 
         /**
          * Initialize with default values
@@ -132,36 +133,49 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
          * @param filter
          */
         public Attributes(Comparator<E> comparator, PathFilter filter) {
-            this.put(COMPARATOR, comparator);
-            this.put(FILTER, filter);
-            this.put(HIDDEN, new ArrayList());
-            this.put(INVALID, Boolean.FALSE);
-            this.put(READABLE, Boolean.TRUE);
+            this.comparator = comparator;
+            this.filter = filter;
+        }
+
+        public Comparator<E> getComparator() {
+            return comparator;
+        }
+
+        public void setComparator(Comparator<E> comparator) {
+            this.comparator = comparator;
+        }
+
+        public PathFilter getFilter() {
+            return filter;
+        }
+
+        public void setFilter(PathFilter filter) {
+            this.filter = filter;
         }
 
         /**
          * @param child
          */
         public void addHidden(E child) {
-            ((List<E>) this.get(HIDDEN)).add(child);
+            hidden.add(child);
         }
 
         /**
          * @return
          */
         public List<E> getHidden() {
-            return (List<E>) this.get(HIDDEN);
+            return hidden;
         }
 
         public void setReadable(boolean readable) {
-            this.put(READABLE, readable);
+            this.readable = readable;
         }
 
         /**
          * @return True if the readable attribute is set to <code>Boolean.TRUE</code>.
          */
         public boolean isReadable() {
-            return this.get(READABLE).equals(Boolean.TRUE);
+            return readable;
         }
 
         /**
@@ -169,22 +183,27 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
          *
          * @param dirty
          */
-        public void setDirty(boolean dirty) {
-            this.put(INVALID, dirty);
+        public void setInvalid(boolean dirty) {
+            this.invalid = dirty;
             if(dirty) {
                 // Reset readable attribute.
-                this.put(READABLE, Boolean.TRUE);
+                readable = true;
             }
         }
 
         /**
          * @return true if the listing should be superseded
          */
-        public boolean isDirty() {
-            return this.get(INVALID).equals(Boolean.TRUE);
+        public boolean isInvalid() {
+            return invalid;
         }
     }
 
+    /**
+     * Metadata of the list.
+     *
+     * @return
+     */
     public Attributes<E> attributes() {
         return attributes;
     }
@@ -244,9 +263,11 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         }
     }
 
+    /**
+     * Clear the list and all references.
+     */
     @Override
     public void clear() {
-        attributes.clear();
         references.clear();
         super.clear();
     }
