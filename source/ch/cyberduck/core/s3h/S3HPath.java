@@ -502,10 +502,9 @@ public class S3HPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                         this.getName()));
 
-                final S3Bucket bucket = this.getSession().getBucket(this.getContainerName());
-
                 if(StringUtils.isNotBlank(attributes().getVersionId())) {
-                    in = this.getSession().getClient().getVersionedObject(attributes().getVersionId(), bucket, this.getKey(),
+                    in = this.getSession().getClient().getVersionedObject(attributes().getVersionId(),
+                            this.getContainerName(), this.getKey(),
                             null, // ifModifiedSince
                             null, // ifUnmodifiedSince
                             null, // ifMatch
@@ -513,7 +512,7 @@ public class S3HPath extends CloudPath {
                             this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
                 }
                 else {
-                    in = this.getSession().getClient().getObject(bucket, this.getKey(),
+                    in = this.getSession().getClient().getObject(this.getContainerName(), this.getKey(),
                             null, // ifModifiedSince
                             null, // ifUnmodifiedSince
                             null, // ifMatch

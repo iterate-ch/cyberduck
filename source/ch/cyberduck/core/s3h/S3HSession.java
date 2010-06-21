@@ -281,7 +281,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     return null;
                 }
                 this.check();
-                final String location = this.getClient().getBucketLocation(bucket.getName());
+                final String location = this.getClient().getBucketLocation(container);
                 if(StringUtils.isBlank(location)) {
                     return "US"; //Default location US is null
                 }
