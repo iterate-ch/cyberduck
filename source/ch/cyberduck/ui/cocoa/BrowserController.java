@@ -2449,13 +2449,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             final Session session = getTransferSession();
             final List<Path> roots = new Collection<Path>();
-            for(Path selected : getSelectedPaths()) {
-                Path path = PathFactory.createPath(session, selected.getAsDictionary());
-                path.setLocal(LocalFactory.createLocal(sheet.filename(), path.getLocal().getName()));
-                roots.add(path);
-            }
-            final Transfer q = new DownloadTransfer(roots);
-            transfer(q);
+            final Local downloadfolder = LocalFactory.createLocal(sheet.filename());
+            this.download(this.getSelectedPaths(), downloadfolder);
         }
         lastSelectedDownloadDirectory = sheet.filename();
         downloadToPanel = null;
@@ -2535,11 +2530,34 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void downloadButtonClicked(final ID sender) {
+        this.download(this.getSelectedPaths());
+    }
+
+    /**
+     * Download to default download directory.
+     *
+     * @param downloads
+     */
+    public void download(List<Path> downloads) {
+        this.download(downloads, null);
+    }
+
+    /**
+     *
+     * @param downloads
+     * @param downloadfolder
+     */
+    public void download(List<Path> downloads, Local downloadfolder) {
         final Session session = this.getTransferSession();
         final List<Path> roots = new Collection<Path>();
-        for(Path selected : this.getSelectedPaths()) {
+        for(Path selected : downloads) {
             Path path = PathFactory.createPath(session, selected.getAsDictionary());
-            path.setLocal(null);
+            if(null == downloadfolder) {
+                path.setLocal(null);
+            }
+            else {
+                path.setLocal(LocalFactory.createLocal(downloadfolder, path.getName()));
+            }
             roots.add(path);
         }
         final Transfer q = new DownloadTransfer(roots);
@@ -3234,7 +3252,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(
                     new HostKeyController(this));
         }
-        this.session.setLoginController(new LoginController(this));
+        this.session.setLoginController(new PromptLoginController(this));
         this.setWorkdir(null);
         this.setEncoding(this.session.getEncoding());
         this.session.addProgressListener(new ProgressListener() {

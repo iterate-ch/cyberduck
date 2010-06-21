@@ -611,7 +611,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
 
                 public void run() {
-                    controller.transfer(new DownloadTransfer(downloads));
+                    controller.download(downloads);
                 }
 
                 @Override
