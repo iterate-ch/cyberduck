@@ -113,11 +113,11 @@ public abstract class Protocol {
     }
 
     public String getUsernamePlaceholder() {
-        return "";
+        return Locale.localizedString("Username", "Credentials");
     }
 
     public String getPasswordPlaceholder() {
-        return "";
+        return Locale.localizedString("Password", "Credentials");
     }
 
     public String getDefaultHostname() {
