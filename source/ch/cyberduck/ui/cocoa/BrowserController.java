@@ -2316,6 +2316,31 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     /**
      * @param selected
+     */
+    public void revertPath(final Path selected) {
+        this.background(new BrowserBackgroundAction(this) {
+            public void run() {
+                if(this.isCanceled()) {
+                    return;
+                }
+                selected.revert();
+            }
+
+            @Override
+            public String getActivity() {
+                return MessageFormat.format(Locale.localizedString("Reverting {0}", "Status"),
+                        selected.getName());
+            }
+
+            @Override
+            public void cleanup() {
+                reloadData(false);
+            }
+        });
+    }
+
+    /**
+     * @param selected
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
     private boolean isEditable(final Path selected) {
@@ -2422,25 +2447,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void revertFileButtonClicked(final ID sender) {
-        final Path selected = this.getSelectedPath();
-        this.background(new BrowserBackgroundAction(this) {
-            public void run() {
-                if(this.isCanceled()) {
-                    return;
-                }
-                selected.revert();
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), "");
-            }
-
-            @Override
-            public void cleanup() {
-                reloadData(false);
-            }
-        });
+        this.revertPath(this.getSelectedPath());
     }
 
     @Action

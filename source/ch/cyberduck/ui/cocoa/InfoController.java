@@ -607,47 +607,14 @@ public class InfoController extends ToolbarWindowController {
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             downloads.add(versions.get(index.intValue()));
         }
-        if(this.toggleVersionsSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-
-                public void run() {
-                    controller.download(downloads);
-                }
-
-                @Override
-                public void cleanup() {
-                    toggleVersionsSettings(true);
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"), "");
-                }
-            });
-        }
+        controller.download(downloads);
     }
 
     @Action
     public void versionRevertButtonClicked(ID sender) {
         final Path version = versions.get(versionsTable.selectedRow().intValue());
         if(this.toggleVersionsSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-
-                public void run() {
-                    ((S3HPath) version).revert();
-                }
-
-                @Override
-                public void cleanup() {
-                    toggleVersionsSettings(true);
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Reverting {0}", "Status"),
-                            files.get(0).getName());
-                }
-            });
+            controller.revertPath(version);
         }
     }
 
