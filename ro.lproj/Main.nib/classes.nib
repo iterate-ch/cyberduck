@@ -57,6 +57,7 @@
         quicklookButtonClicked = id;
         reloadButtonClicked = id;
         renameFileButtonClicked = id;
+        revertFileButtonClicked = id;
         searchButtonClicked = id;
         sendCustomCommandClicked = id;
         showActivityWindowClicked = id;

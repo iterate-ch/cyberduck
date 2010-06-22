@@ -65,6 +65,8 @@
 				<string>id</string>
 				<key>renameFileButtonClicked</key>
 				<string>id</string>
+				<key>revertFileButtonClicked</key>
+				<string>id</string>
 				<key>searchButtonClicked</key>
 				<string>id</string>
 				<key>sendCustomCommandClicked</key>
