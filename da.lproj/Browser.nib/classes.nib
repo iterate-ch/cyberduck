@@ -74,6 +74,7 @@
         openBrowserButtonClicked = id;
         reloadButtonClicked = id;
         renameFileButtonClicked = id;
+        revertFileButtonClicked = id;
         syncButtonClicked = id;
         unarchiveButtonClicked = id;
         uploadButtonClicked = id;

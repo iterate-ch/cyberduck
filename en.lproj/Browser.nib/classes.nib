@@ -45,6 +45,8 @@
 				<string>id</string>
 				<key>renameFileButtonClicked</key>
 				<string>id</string>
+				<key>revertFileButtonClicked</key>
+				<string>id</string>
 				<key>syncButtonClicked</key>
 				<string>id</string>
 				<key>unarchiveButtonClicked</key>
