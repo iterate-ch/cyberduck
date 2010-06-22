@@ -12,6 +12,8 @@ Changelog. Last modified: $Date$
 - [Feature] Display file versions in Info panel (S3)
 - [Feature] Revert to previous version (S3)
 - [Feature] Download previous version (S3)
+- [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
+- [Bugfix] Improved interoperability with Dunkel Cloud Storage (S3)
 
 3.5.1 (Jun-15-2010) [http://trac.cyberduck.ch/milestone/3.5.1]
 - [Bugfix] Crash opening Info window (#4536)
