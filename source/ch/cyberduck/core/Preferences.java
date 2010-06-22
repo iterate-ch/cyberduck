@@ -194,7 +194,7 @@ public abstract class Preferences {
         defaults.put("protocol.idisk.enable", String.valueOf(true));
         defaults.put("protocol.s3.enable", String.valueOf(false));
         defaults.put("protocol.s3.tls.enable", String.valueOf(true));
-        defaults.put("protocol.s3.eucalyptus.enable", String.valueOf(false));
+        defaults.put("protocol.s3.eucalyptus.enable", String.valueOf(true));
         defaults.put("protocol.cf.enable", String.valueOf(true));
         defaults.put("protocol.gdocs.enable", String.valueOf(true));
         defaults.put("protocol.gstorage.tls.enable", String.valueOf(true));
