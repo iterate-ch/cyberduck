@@ -254,7 +254,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * Set to false if permission error response indicates this
      * feature is not implemented.
      */
-    private boolean bucketLocationSupported;
+    private boolean bucketLocationSupported = true;
 
     public boolean isBucketLocationSupported() {
         return bucketLocationSupported;
