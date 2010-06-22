@@ -204,15 +204,6 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSProgressIndicator versionsProgress;
-
-    public void setVersionsProgress(final NSProgressIndicator p) {
-        this.versionsProgress = p;
-        this.versionsProgress.setDisplayedWhenStopped(false);
-        this.versionsProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
-    }
-
-    @Outlet
     private NSProgressIndicator metadataProgress;
 
     public void setMetadataProgress(final NSProgressIndicator p) {
@@ -281,7 +272,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        ((S3HPath) next).attributes().setStorageClass(sender.selectedItem().representedObject());
+                        next.attributes().setStorageClass(sender.selectedItem().representedObject());
                         // Copy item in place to write new attributes
                         next.copy(next);
                     }
@@ -339,7 +330,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
-        if(this.toggleVersionsSettings(false)) {
+        if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
@@ -352,7 +343,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
-                    toggleVersionsSettings(true);
+                    toggleS3Settings(true);
                 }
             });
         }
@@ -368,7 +359,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
-        if(this.toggleVersionsSettings(false)) {
+        if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
@@ -382,7 +373,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
-                    toggleVersionsSettings(true);
+                    toggleS3Settings(true);
                 }
             });
         }
@@ -439,183 +430,6 @@ public class InfoController extends ToolbarWindowController {
         this.distributionCnameUrlField = t;
         this.distributionCnameUrlField.setAllowsEditingTextAttributes(true);
         this.distributionCnameUrlField.setSelectable(true);
-    }
-
-    /**
-     * S3 versioning model
-     */
-    private List<Path> versions
-            = new ArrayList<Path>();
-
-    public void setVersions(List<Path> versions) {
-        this.versions = versions;
-        this.versionsTable.reloadData();
-    }
-
-    @Outlet
-    private NSTableView versionsTable;
-    private ListDataSource versionsTableModel;
-    private AbstractTableDelegate<Path> versionsTableDelegate;
-
-    public static final String HEADER_VERSIONS_ID_COLUMN = "ID";
-    public static final String HEADER_VERSIONS_SIZE_COLUMN = "SIZE";
-    public static final String HEADER_VERSIONS_MODIFIED_COLUMN = "MODIFIED";
-
-    public void setVersionsTable(final NSTableView t) {
-        this.versionsTable = t;
-        this.versionsTable.setDataSource((versionsTableModel = new ListDataSource() {
-            /**
-             * @param view
-             */
-            public NSInteger numberOfRowsInTableView(NSTableView view) {
-                return new NSInteger(versions.size());
-            }
-
-            /**
-             * @param view
-             * @param tableColumn
-             * @param row
-             */
-            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
-                                                                    NSInteger row) {
-                final String identifier = tableColumn.identifier();
-                final Path version = versions.get(row.intValue());
-                if(identifier.equals(HEADER_VERSIONS_ID_COLUMN)) {
-                    return NSString.stringWithString("null".equals(version.attributes().getVersionId()) ?
-                            Locale.localizedString("Unknown") : version.attributes().getVersionId());
-                }
-                if(identifier.equals(HEADER_VERSIONS_SIZE_COLUMN)) {
-                    return NSString.stringWithString(Status.getSizeAsString(version.attributes().getSize()));
-                }
-                if(identifier.equals(HEADER_VERSIONS_MODIFIED_COLUMN)) {
-                    return NSString.stringWithString(
-                            DateFormatter.getShortFormat(version.attributes().getModificationDate()));
-                }
-                return null;
-            }
-        }).id());
-        this.versionsTable.setDelegate((versionsTableDelegate = new AbstractTableDelegate<Path>() {
-            public void enterKeyPressed(ID sender) {
-                ;
-            }
-
-            @Override
-            public void tableRowDoubleClicked(ID sender) {
-                ;
-            }
-
-            public void deleteKeyPressed(final ID sender) {
-                versionDeleteButtonClicked(sender);
-            }
-
-            public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
-                                                                                      ID rect, NSTableColumn c,
-                                                                                      NSInteger row, NSPoint mouseLocation) {
-                return this.tooltip(versions.get(row.intValue()));
-            }
-
-            public String tooltip(Path v) {
-                return v.getName();
-            }
-
-            @Override
-            public void tableColumnClicked(NSTableView view, NSTableColumn c) {
-                ;
-            }
-
-            @Override
-            public void selectionDidChange(NSNotification notification) {
-                boolean enable = versionsTable.numberOfSelectedRows().intValue() == 1;
-                for(int i = 0; i < versionGearButton.numberOfItems().intValue(); i++) {
-                    versionGearButton.itemAtIndex(new NSInteger(i)).setEnabled(enable);
-                }
-                versionDeleteButton.setEnabled(enable);
-            }
-
-            @Override
-            protected boolean isTypeSelectSupported() {
-                return false;
-            }
-        }).id());
-    }
-
-    @Outlet
-    private NSButton versionDeleteButton;
-
-    public void setVersionDeleteButton(NSButton b) {
-        this.versionDeleteButton = b;
-        // Only enable upon selection change
-        this.versionDeleteButton.setEnabled(false);
-        this.versionDeleteButton.setAction(Foundation.selector("versionDeleteButtonClicked:"));
-        this.versionDeleteButton.setTarget(this.id());
-    }
-
-    @Action
-    public void versionDeleteButtonClicked(ID sender) {
-        final List<Path> deleted = new ArrayList<Path>();
-        NSIndexSet iterator = versionsTable.selectedRowIndexes();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            deleted.add(versions.get(index.intValue()));
-        }
-        if(this.toggleVersionsSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-
-                public void run() {
-                    for(Path next : deleted) {
-                        controller.deletePath(next);
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    versions.removeAll(deleted);
-                    setVersions(versions);
-                    toggleVersionsSettings(true);
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), "");
-                }
-            });
-        }
-    }
-
-    @Outlet
-    private NSPopUpButton versionGearButton;
-
-    public void setVersionGearButton(NSPopUpButton b) {
-        this.versionGearButton = b;
-        this.versionGearButton.setAutoenablesItems(false);
-        this.versionGearButton.setTarget(this.id());
-        this.versionGearButton.addItemWithTitle("");
-        this.versionGearButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
-
-        this.versionGearButton.addItemWithTitle(Locale.localizedString("Revert Version", "S3"));
-        this.versionGearButton.lastItem().setAction(Foundation.selector("versionRevertButtonClicked:"));
-        this.versionGearButton.lastItem().setTarget(this.id());
-
-        this.versionGearButton.addItemWithTitle(Locale.localizedString("Download Version", "S3"));
-        this.versionGearButton.lastItem().setAction(Foundation.selector("versionDownloadButtonClicked:"));
-        this.versionGearButton.lastItem().setTarget(this.id());
-    }
-
-    @Action
-    public void versionDownloadButtonClicked(ID sender) {
-        final List<Path> downloads = new ArrayList<Path>();
-        NSIndexSet iterator = versionsTable.selectedRowIndexes();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            downloads.add(versions.get(index.intValue()));
-        }
-        controller.download(downloads);
-    }
-
-    @Action
-    public void versionRevertButtonClicked(ID sender) {
-        final Path version = versions.get(versionsTable.selectedRow().intValue());
-        if(this.toggleVersionsSettings(false)) {
-            controller.revertPath(version);
-        }
     }
 
     /**
@@ -874,7 +688,7 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     for(Path next : files) {
                         AccessControlList acl = new AccessControlList();
-                        acl.grantAllPermissions(new HashSet<GrantAndPermission>(grants));
+                        acl.grantAllPermissions(grants.toArray(new GrantAndPermission[grants.size()]));
                         ((S3HPath) next).writePermissions(acl, true);
                     }
                 }
@@ -1272,16 +1086,21 @@ public class InfoController extends ToolbarWindowController {
     }
 
     public static class Factory {
-        private static Map<List<Path>, InfoController> open = new HashMap<List<Path>, InfoController>();
+        private static Map<BrowserController, InfoController> open
+                = new HashMap<BrowserController, InfoController>();
 
         public static InfoController create(final BrowserController controller, final List<Path> files) {
-            if(open.containsKey(files)) {
-                return open.get(files);
+            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+                if(open.containsKey(controller)) {
+                    final InfoController c = open.get(controller);
+                    c.setFiles(files);
+                    return c;
+                }
             }
             final InfoController c = new InfoController(controller, files) {
                 @Override
                 public void windowWillClose(NSNotification notification) {
-                    Factory.open.remove(files);
+                    Factory.open.remove(controller);
                     super.windowWillClose(notification);
                 }
             };
@@ -1292,8 +1111,16 @@ public class InfoController extends ToolbarWindowController {
                     controller.getSession().removeConnectionListener(this);
                 }
             });
-            open.put(files, c);
+            open.put(controller, c);
             return c;
+        }
+
+        /**
+         * @param controller
+         * @return Null if the browser does not have an Info window.
+         */
+        public static InfoController get(final BrowserController controller) {
+            return open.get(controller);
         }
     }
 
@@ -1323,7 +1150,6 @@ public class InfoController extends ToolbarWindowController {
     private static final String TOOLBAR_ITEM_PERMISSIONS = "permissions";
     private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
     private static final String TOOLBAR_ITEM_CLOUD = "cloud";
-    private static final String TOOLBAR_ITEM_VERSIONS = "versions";
 
     @Override
     protected void setSelectedTab(int tab) {
@@ -1346,9 +1172,6 @@ public class InfoController extends ToolbarWindowController {
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             // Give icon and label of the given session
             item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
-        }
-        else if(itemIdentifier.equals(TOOLBAR_ITEM_VERSIONS)) {
-            item.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
             item.setImage(IconCache.iconNamed("NSUserAccounts", 32));
@@ -1393,26 +1216,12 @@ public class InfoController extends ToolbarWindowController {
             // Not enabled if not a cloud session
             return false;
         }
-        if(itemIdentifier.equals(TOOLBAR_ITEM_VERSIONS)) {
-            if(session instanceof S3HSession) {
-                return ((S3HSession) session).isVersioningSupported();
-            }
-            // Not enabled if not a S3 session
-            return false;
-        }
         return true;
     }
 
     @Override
     public String getTitle(NSTabViewItem item) {
         return item.label() + " – " + this.getName();
-    }
-
-    @Outlet
-    private NSView panelVersions;
-
-    public void setPanelVersions(NSView panelVersions) {
-        this.panelVersions = panelVersions;
     }
 
     @Outlet
@@ -1454,7 +1263,14 @@ public class InfoController extends ToolbarWindowController {
         return "Info";
     }
 
+    /**
+     * 
+     * @param files
+     */
     public void setFiles(List<Path> files) {
+        if(files.isEmpty()) {
+            return;
+        }
         // Initialized before with a different file set
         boolean update = !this.files.isEmpty();
         this.files = files;
@@ -1471,7 +1287,6 @@ public class InfoController extends ToolbarWindowController {
         // Read permissions
         this.initPermissions();
         this.initAcl();
-        this.initVersions();
         if(!update) {
             this.initDistribution();
         }
@@ -1529,7 +1344,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     protected List<NSView> getPanels() {
-        return Arrays.asList(panelGeneral, panelPermissions, panelDistribution, panelCloud, panelVersions);
+        return Arrays.asList(panelGeneral, panelPermissions, panelDistribution, panelCloud);
     }
 
     private String getName() {
@@ -1819,20 +1634,25 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      */
     private boolean toggleS3Settings(final boolean stop) {
+        final Session session = controller.getSession();
         // Amazon S3 only
-        boolean enable = true;
-        for(Path file : files) {
-            final Credentials credentials = file.getHost().getCredentials();
-            enable = enable && !credentials.isAnonymousLogin();
-            enable = enable && file instanceof S3HPath;
+        boolean enable = session instanceof S3HSession;
+        if(enable) {
+            final Credentials credentials = session.getHost().getCredentials();
+            enable = !credentials.isAnonymousLogin();
         }
         boolean logging = false;
+        boolean versioning = false;
         if(enable) {
-            S3HSession s = (S3HSession) controller.getSession();
-            logging = s.isLoggingSupported();
+            logging = ((S3HSession) session).isLoggingSupported();
+            versioning = ((S3HSession) session).isVersioningSupported();
         }
         for(Path file : files) {
-            bucketLoggingButton.setEnabled(stop && enable && logging);
+            final boolean container = ((S3HPath) file).isContainer();
+            bucketVersioningButton.setEnabled(stop && enable && versioning && container);
+            bucketMfaButton.setEnabled(stop && enable && versioning && container
+                    && bucketVersioningButton.state() == NSCell.NSOnState);
+            bucketLoggingButton.setEnabled(stop && enable && logging && container);
             storageClassPopup.setEnabled(stop && enable && file.attributes().isFile());
         }
         if(stop) {
@@ -1896,6 +1716,8 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 private String location = null;
                 private boolean logging = false;
+                private boolean versioning = false;
+                private boolean mfa = false;
 
                 public void run() {
                     for(Path file : files) {
@@ -1903,6 +1725,10 @@ public class InfoController extends ToolbarWindowController {
                         final String container = ((S3HPath) file).getContainerName();
                         location = s.getLocation(container);
                         logging = s.isLogging(container);
+                        versioning = s.isVersioning(container);
+                        if(versioning) {
+                            mfa = s.isMultiFactorAuthentication(container);
+                        }
                     }
                 }
 
@@ -1912,6 +1738,9 @@ public class InfoController extends ToolbarWindowController {
                     if(StringUtils.isNotBlank(location)) {
                         bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                     }
+                    bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
+                    bucketMfaButton.setEnabled(versioning);
+                    bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
                     toggleS3Settings(true);
                 }
 
@@ -1947,40 +1776,6 @@ public class InfoController extends ToolbarWindowController {
         }
         else if(enable) {
             aclProgress.startAnimation(null);
-        }
-        return enable;
-    }
-
-    /**
-     * Toggle settings before and after update
-     *
-     * @param stop Enable controls and stop progress spinner
-     * @return True if progress animation has started and settings are toggled
-     */
-    private boolean toggleVersionsSettings(final boolean stop) {
-        boolean enable = this.numberOfFiles() == 1;
-        if(enable) {
-            for(Path file : files) {
-                final Credentials credentials = file.getHost().getCredentials();
-                enable = enable && !credentials.isAnonymousLogin();
-                enable = enable && file instanceof S3HPath;
-            }
-        }
-        if(enable) {
-            enable = ((S3HSession) controller.getSession()).isVersioningSupported();
-        }
-        for(Path file : files) {
-            versionsTable.setEnabled(stop && enable && file.attributes().isFile());
-            versionGearButton.setEnabled(stop && enable && file.attributes().isFile());
-            versionDeleteButton.setEnabled(stop && enable && file.attributes().isFile());
-        }
-        bucketVersioningButton.setEnabled(stop && enable);
-        bucketMfaButton.setEnabled(stop && enable && bucketVersioningButton.state() == NSCell.NSOnState);
-        if(stop) {
-            versionsProgress.stopAnimation(null);
-        }
-        else if(enable) {
-            versionsProgress.startAnimation(null);
         }
         return enable;
     }
@@ -2055,7 +1850,7 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        updated.addAll(((S3HPath) next).readAcl().getGrants());
+                        updated.addAll(Arrays.asList(((S3HPath) next).readAcl().getGrantAndPermissions()));
                     }
                 }
 
@@ -2068,48 +1863,6 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                            files.get(0).getName());
-                }
-            });
-        }
-    }
-
-    /**
-     * Read versions in the background
-     */
-    private void initVersions() {
-        this.setVersions(Collections.<Path>emptyList());
-        if(this.toggleVersionsSettings(false)) {
-            this.setGrants(Collections.<GrantAndPermission>emptyList());
-            controller.background(new BrowserBackgroundAction(controller) {
-                private List<Path> updated = new ArrayList<Path>();
-                private boolean versioning = false;
-                private boolean mfa = false;
-
-                public void run() {
-                    for(Path file : files) {
-                        updated.addAll(((S3HPath) file).getVersions());
-                        final S3HSession s = (S3HSession) controller.getSession();
-                        final String container = ((S3HPath) file).getContainerName();
-                        versioning = s.isVersioning(container);
-                        if(versioning) {
-                            mfa = s.isMultiFactorAuthentication(container);
-                        }
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
-                    bucketMfaButton.setEnabled(versioning);
-                    bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
-                    setVersions(updated);
-                    toggleVersionsSettings(true);
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                             files.get(0).getName());
                 }
             });
@@ -2292,20 +2045,19 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleDistributionSettings(final boolean stop) {
         // Not all cloud providers support different distributions
-        boolean enable = controller.getSession() instanceof CloudSession;
-        final Credentials credentials = controller.getSession().getHost().getCredentials();
+        final Session session = controller.getSession();
+        boolean enable = session instanceof CloudSession;
+        final Credentials credentials = session.getHost().getCredentials();
         enable = enable && !credentials.isAnonymousLogin();
         if(enable) {
-            enable = ((CloudSession) controller.getSession()).getSupportedDistributionMethods().size() > 0;
+            enable = ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
         }
 
         distributionEnableButton.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);
-        for(Path file : files) {
-            // Amazon S3 only
-            distributionCnameField.setEnabled(stop && enable && file instanceof S3HPath);
-        }
+        // Amazon S3 only
+        distributionCnameField.setEnabled(stop && enable && session instanceof S3HSession);
         distributionDeliveryPopup.setEnabled(stop && enable);
         if(stop) {
             distributionProgress.stopAnimation(null);

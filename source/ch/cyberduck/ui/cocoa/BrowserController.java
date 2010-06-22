@@ -906,33 +906,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         @Override
         public void selectionDidChange(NSNotification notification) {
             final Collection<Path> selected = getSelectedPaths();
-            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                if(inspector != null && inspector.isVisible()) {
-                    if(selected.size() > 0) {
-                        background(new BrowserBackgroundAction(BrowserController.this) {
-                            public void run() {
-                                for(Path p : selected) {
-                                    if(this.isCanceled()) {
-                                        break;
-                                    }
-                                    if(p.attributes().getPermission() == null) {
-                                        p.readPermission();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void cleanup() {
-                                if(inspector != null) {
-                                    inspector.setFiles(selected);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
             if(QuickLookFactory.instance().isOpen()) {
                 this.updateQuickLookSelection(selected);
+            }
+            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
+                InfoController c = InfoController.Factory.get(BrowserController.this);
+                if(null == c) {
+                    return;
+                }
+                c.setFiles(selected);
             }
         }
 
@@ -2423,25 +2405,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return selected.toHttpURL();
     }
 
-    private InfoController inspector;
-
     @Action
     public void infoButtonClicked(final ID sender) {
         if(this.getSelectionCount() > 0) {
             final List<Path> selected = this.getSelectedPaths();
-            if(Preferences.instance().getBoolean("browser.info.isInspector")) {
-                if(null == inspector || null == inspector.window()) {
-                    inspector = InfoController.Factory.create(BrowserController.this, selected);
-                }
-                else {
-                    inspector.setFiles(selected);
-                }
-                inspector.window().makeKeyAndOrderFront(null);
-            }
-            else {
-                InfoController c = InfoController.Factory.create(BrowserController.this, selected);
-                c.window().makeKeyAndOrderFront(null);
-            }
+            InfoController c = InfoController.Factory.create(BrowserController.this, selected);
+            c.window().makeKeyAndOrderFront(null);
         }
     }
 
@@ -3483,8 +3452,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public void cleanup() {
-                inspector = null;
-
                 // Clear the cache on the main thread to make sure the browser model is not in an invalid state
                 session.cache().clear();
                 session.getHost().getCredentials().setPassword(null);
