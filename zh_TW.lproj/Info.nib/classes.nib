@@ -48,7 +48,6 @@
         panelDistribution = NSView;
         panelGeneral = NSView;
         panelPermissions = NSView;
-        panelVersions = id;
         pathField = id;
         permissionProgress = id;
         permissionsField = id;
@@ -61,10 +60,6 @@
         sizeProgress = id;
         storageClassPopup = NSPopUpButton;
         tabView = id;
-        versionDeleteButton = id;
-        versionGearButton = id;
-        versionsProgress = id;
-        versionsTable = id;
         webUrlField = id;
         window = id;
     };

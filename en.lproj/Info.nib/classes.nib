@@ -104,8 +104,6 @@
 				<string>NSView</string>
 				<key>panelPermissions</key>
 				<string>NSView</string>
-				<key>panelVersions</key>
-				<string>id</string>
 				<key>pathField</key>
 				<string>id</string>
 				<key>permissionProgress</key>
@@ -129,14 +127,6 @@
 				<key>storageClassPopup</key>
 				<string>NSPopUpButton</string>
 				<key>tabView</key>
-				<string>id</string>
-				<key>versionDeleteButton</key>
-				<string>id</string>
-				<key>versionGearButton</key>
-				<string>id</string>
-				<key>versionsProgress</key>
-				<string>id</string>
-				<key>versionsTable</key>
 				<string>id</string>
 				<key>webUrlField</key>
 				<string>id</string>
