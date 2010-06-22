@@ -1264,7 +1264,6 @@ public class InfoController extends ToolbarWindowController {
     }
 
     /**
-     * 
      * @param files
      */
     public void setFiles(List<Path> files) {
@@ -1648,7 +1647,10 @@ public class InfoController extends ToolbarWindowController {
             versioning = ((S3HSession) session).isVersioningSupported();
         }
         for(Path file : files) {
-            final boolean container = ((S3HPath) file).isContainer();
+            boolean container = false;
+            if(enable) {
+                container = ((CloudPath) file).isContainer();
+            }
             bucketVersioningButton.setEnabled(stop && enable && versioning && container);
             bucketMfaButton.setEnabled(stop && enable && versioning && container
                     && bucketVersioningButton.state() == NSCell.NSOnState);
