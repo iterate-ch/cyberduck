@@ -51,16 +51,12 @@ public abstract class Attributes {
     /**
      * @return The time the file was created in millis UTC or -1 if unknown
      */
-    public long getCreationDate() {
-        return this.getModificationDate();
-    }
+    public abstract long getCreationDate();
 
     /**
      * @return The time the file was last accessed in millis UTC or -1 if unknown
      */
-    public long getAccessedDate() {
-        return this.getModificationDate();
-    }
+    public abstract long getAccessedDate();
 
     /**
      * @return The file permission mask or null if unknown
@@ -99,10 +95,10 @@ public abstract class Attributes {
      * A version identifiying a particular revision of a file
      * with the same path.
      *
-     * @return Version Identifier
+     * @return Version Identifier or null if not versioned.
      */
     public String getVersionId() {
-        return null;
+        return Locale.localizedString("Unknown");
     }
 
     /**
@@ -116,7 +112,7 @@ public abstract class Attributes {
     }
 
     /**
-     * @return The revision number of the file.
+     * @return The incrementing revision number of the file.
      */
     public String getRevision() {
         return Locale.localizedString("Unknown");

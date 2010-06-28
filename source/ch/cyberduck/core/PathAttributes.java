@@ -36,28 +36,58 @@ public class PathAttributes extends Attributes implements Serializable {
 
     /**
      * The file length
+     *
+     * @see Path#readSize()
      */
     private long size = -1;
+
     /**
-     * The file modification date
+     * The file modification date in milliseconds
      */
     private long modified = -1;
+    /**
+     * Last accessed timestamp in millliseconds
+     */
     private long accessed = -1;
+    /**
+     * When this file was originally created in milliseconds
+     */
     private long created = -1;
     private String owner;
     private String group;
+
     /**
      * The file type
      */
     private int type = Path.FILE_TYPE;
 
-    protected Permission permission;
+    /**
+     * @see ch.cyberduck.core.Path#readPermission()
+     */
+    private Permission permission = Permission.EMPTY;
+
+    /**
+     * @see ch.cyberduck.core.Path#readAcl() ()
+     */
+    private Acl acl = Acl.EMPTY;
+
+    /**
+     *
+     */
     private String checksum;
 
     /**
      * Redundany level if available
+     *
+     * @see ch.cyberduck.core.cloud.CloudSession#getSupportedStorageClasses()
      */
     private String storageClass;
+
+    /**
+     * Unique identifier for a given version of a file.
+     *
+     * @see ch.cyberduck.core.s3h.S3HSession#isVersioningSupported()
+     */
     private String versionId;
 
     /**
@@ -68,7 +98,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Revision number
      */
-    private String revision;
+    private int revision;
 
     public PathAttributes() {
         super();
@@ -170,6 +200,14 @@ public class PathAttributes extends Attributes implements Serializable {
         return this.permission;
     }
 
+    public Acl getAcl() {
+        return acl;
+    }
+
+    public void setAcl(Acl acl) {
+        this.acl = acl;
+    }
+
     public void setType(int type) {
         this.type = type;
     }
@@ -268,6 +306,15 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     public void setVersionId(String versionId) {
         this.versionId = versionId;
+    }
+
+    public void setRevision(int revision) {
+        this.revision = revision;
+    }
+
+    @Override
+    public String getRevision() {
+        return String.valueOf(revision);
     }
 
     /**
