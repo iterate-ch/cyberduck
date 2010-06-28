@@ -98,23 +98,31 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     * @param path       Absolute path
-     * @param comparator Sorting comparator to apply the the file listing
+     * @param reference       Absolute path
+     * @param comparator Sorting comparator to apply the the file listing. If null the list
+     *                   is returned as is from the last used comparator
      * @param filter     Path filter to apply. All files that don't match are moved to the
-     *                   hidden attribute of the attributed list.
+     *                   hidden attribute of the attributed list. If null the list is returned
+     *                   with the last filter applied.
      * @return An empty list if no cached file listing is available
      * @throws ConcurrentModificationException
      *          If the caller is iterating of the cache himself
      *          and requests a new filter here.
      */
-    public AttributedList<E> get(PathReference path, Comparator<E> comparator, PathFilter<E> filter) {
-        AttributedList<E> childs = _impl.get(path);
+    public AttributedList<E> get(PathReference reference, Comparator<E> comparator, PathFilter<E> filter) {
+        AttributedList<E> childs = _impl.get(reference);
         if(null == childs) {
-            log.warn("No cache for " + path);
+            log.warn("No cache for " + reference);
             return AttributedList.emptyList();
         }
-        boolean needsSorting = !childs.attributes().getComparator().equals(comparator);
-        boolean needsFiltering = !childs.attributes().getFilter().equals(filter);
+        boolean needsSorting = false;
+        if(null != comparator) {
+            needsSorting = !childs.attributes().getComparator().equals(comparator);
+        }
+        boolean needsFiltering = false;
+        if(null != filter) {
+            needsFiltering = !childs.attributes().getFilter().equals(filter);
+        }
         if(needsSorting) {
             // Do not sort when the list has not been filtered yet
             if(!needsFiltering) {
