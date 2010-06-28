@@ -18,7 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.SystemConfigurationProxy;
+import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
@@ -74,6 +77,7 @@ public class MainApplication {
                 Keychain.register();
                 SystemConfigurationProxy.register();
                 SystemConfigurationReachability.register();
+                UserDefaultsDateFormatter.register();
 
                 DeprecatedQuickLook.register();
                 QuartzQuickLook.register();
@@ -86,7 +90,7 @@ public class MainApplication {
                 log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
                 log.info("Encoding " + System.getProperty("file.encoding"));
             }
-            
+
             final MainController c = new MainController();
 
             // Must implement NSApplicationDelegate protocol

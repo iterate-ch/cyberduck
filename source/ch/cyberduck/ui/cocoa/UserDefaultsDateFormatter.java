@@ -18,17 +18,30 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.DateFormatter;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
-import ch.cyberduck.ui.cocoa.foundation.NSTimeZone;
 
 import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
-public class DateFormatter {
-    private static Logger log = Logger.getLogger(DateFormatter.class);
+public class UserDefaultsDateFormatter implements DateFormatter {
+    private static Logger log = Logger.getLogger(UserDefaultsDateFormatter.class);
+
+    public static void register() {
+        DateFormatterFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends DateFormatterFactory {
+        @Override
+        protected DateFormatter create() {
+            return new UserDefaultsDateFormatter();
+        }
+    }
 
     /**
      * TimeDateFormatString set in the system preferences
@@ -72,11 +85,14 @@ public class DateFormatter {
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
      */
-    public static String getShortFormat(final long milliseconds) {
+    public String getShortFormat(final long milliseconds) {
+        if(-1 == milliseconds) {
+            return Locale.localizedString("Unknown");
+        }
         return shortDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
-    public static String getMediumFormat(final long milliseconds) {
+    public String getMediumFormat(final long milliseconds) {
         return mediumDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
@@ -86,7 +102,10 @@ public class DateFormatter {
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
-    public static String getLongFormat(final long milliseconds) {
+    public String getLongFormat(final long milliseconds) {
+        if(-1 == milliseconds) {
+            return Locale.localizedString("Unknown");
+        }
         return longDateFormatter.stringFromDate(toDate(milliseconds));
     }
 }
