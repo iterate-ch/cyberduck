@@ -54,10 +54,51 @@ public abstract class Local extends AbstractPath {
     /**
      *
      */
+    public class LocalPermission extends Permission {
+        @Override
+        public boolean isReadable() {
+            return _impl.canRead();
+        }
+
+        @Override
+        public boolean isWritable() {
+            return _impl.canWrite();
+        }
+
+        @Override
+        public boolean isExecutable() {
+            return true;
+        }
+
+        @Override
+        public String toString() {
+            return Locale.localizedString("Unknown");
+        }
+    }
+
+    /**
+     *
+     */
     public class LocalAttributes extends Attributes {
         @Override
         public long getModificationDate() {
             return _impl.lastModified();
+        }
+
+        /**
+         * @return The modification date instead.
+         */
+        @Override
+        public long getCreationDate() {
+            return this.getModificationDate();
+        }
+
+        /**
+         * @return The modification date instead.
+         */
+        @Override
+        public long getAccessedDate() {
+            return this.getModificationDate();
         }
 
         @Override
@@ -79,7 +120,7 @@ public abstract class Local extends AbstractPath {
 
         @Override
         public Permission getPermission() {
-            return null;
+            return new LocalPermission();
         }
 
         @Override
@@ -176,16 +217,6 @@ public abstract class Local extends AbstractPath {
      */
     public Local(File path) {
         this.setPath(path.getAbsolutePath());
-    }
-
-    @Override
-    public boolean isReadable() {
-        return _impl.canRead();
-    }
-
-    @Override
-    public boolean isWritable() {
-        return _impl.canWrite();
     }
 
     /**
@@ -368,6 +399,9 @@ public abstract class Local extends AbstractPath {
             log.warn("Write modification date failed:" + this.getAbsolute());
         }
     }
+
+    @Override
+    public abstract void writePermissions(Permission perm, boolean recursive);
 
     @Override
     public void rename(AbstractPath renamed) {

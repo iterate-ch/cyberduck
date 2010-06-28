@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -37,8 +38,35 @@ public class Permission implements Serializable {
 
     private static final int EMPTY_MASK = 0;
 
-    public static final Permission EMPTY
-            = new Permission(EMPTY_MASK);
+    /**
+     *
+     */
+    public static final Permission EMPTY = new Permission() {
+        @Override
+        public boolean isExecutable() {
+            return true;
+        }
+
+        @Override
+        public boolean isReadable() {
+            return true;
+        }
+
+        @Override
+        public boolean isWritable() {
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o == this;
+        }
+
+        @Override
+        public String toString() {
+            return Locale.localizedString("Unknown");
+        }
+    };
 
     public <T> Permission(T dict) {
         this.init(dict);
@@ -97,6 +125,10 @@ public class Permission implements Serializable {
     private boolean[] group = new boolean[3];
     private boolean[] other = new boolean[3];
 
+    public Permission() {
+        this(Permission.EMPTY_MASK);
+    }
+
     /**
      * Copy
      *
@@ -125,7 +157,6 @@ public class Permission implements Serializable {
         this.owner = this.getOwnerPermissions(mask);
         this.group = this.getGroupPermissions(mask);
         this.other = this.getOtherPermissions(mask);
-//		log.debug("Permission:"+this.toString());
     }
 
     /**
@@ -151,7 +182,6 @@ public class Permission implements Serializable {
         this.other[READ] = p[OTHER][READ];
         this.other[WRITE] = p[OTHER][WRITE];
         this.other[EXECUTE] = p[OTHER][EXECUTE];
-//		log.debug("Permission:"+this.toString());
     }
 
     /**
@@ -252,7 +282,6 @@ public class Permission implements Serializable {
                 this.other = new boolean[]{true, true, true};
                 break;
         }
-//		log.debug("Permission:"+this.toString());
     }
 
     /**
@@ -387,12 +416,41 @@ public class Permission implements Serializable {
         return read + write + execute;
     }
 
+    public boolean isExecutable() {
+        return this.getOwnerPermissions()[Permission.EXECUTE]
+                || this.getGroupPermissions()[Permission.EXECUTE]
+                || this.getOtherPermissions()[Permission.EXECUTE];
+    }
+
+    /**
+     * @return true if readable for user, group and world
+     */
+    public boolean isReadable() {
+        return this.getOwnerPermissions()[Permission.READ]
+                || this.getGroupPermissions()[Permission.READ]
+                || this.getOtherPermissions()[Permission.READ];
+    }
+
+    /**
+     * @return true if writable for user, group and world
+     */
+    public boolean isWritable() {
+        return this.getOwnerPermissions()[Permission.WRITE]
+                || this.getGroupPermissions()[Permission.WRITE]
+                || this.getOtherPermissions()[Permission.WRITE];
+    }
+
+    @Override
     public int hashCode() {
         return this.getOctalNumber();
     }
 
+    @Override
     public boolean equals(Object o) {
-        if((o != null) && (o instanceof Permission)) {
+        if(null == o) {
+            return false;
+        }
+        if(o instanceof Permission) {
             Permission other = (Permission) o;
             return this.getOctalNumber() == other.getOctalNumber();
         }

@@ -19,18 +19,20 @@ package ch.cyberduck.ui.cocoa.model;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSUInteger;
+
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
 import java.util.*;
@@ -130,6 +132,35 @@ public class FinderLocal extends Local {
      */
     private native String resolveAlias(String absolute);
 
+    /**
+     * Executable, readable and writable flags based on <code>NSFileManager</code>.
+     */
+    private class FinderLocalPermission extends Permission {
+        public FinderLocalPermission(int octal) {
+            super(octal);
+        }
+
+        @Override
+        public boolean isExecutable() {
+            return NSFileManager.defaultManager().isExecutableFileAtPath(FinderLocal.this.getAbsolute());
+        }
+
+        @Override
+        public boolean isReadable() {
+            return NSFileManager.defaultManager().isReadableFileAtPath(FinderLocal.this.getAbsolute());
+        }
+
+        @Override
+        public boolean isWritable() {
+            return NSFileManager.defaultManager().isWritableFileAtPath(FinderLocal.this.getAbsolute());
+        }
+    }
+
+    /**
+     * Extending attributes with <code>NSFileManager</code>.
+     *
+     * @see ch.cyberduck.ui.cocoa.foundation.NSFileManager
+     */
     private FinderLocalAttributes attributes;
 
     /**
@@ -152,7 +183,7 @@ public class FinderLocal extends Local {
                 }
                 NSNumber posix = Rococoa.cast(object, NSNumber.class);
                 String posixString = Integer.toString(posix.intValue() & 0177777, 8);
-                return new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
+                return new FinderLocalPermission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
             }
             catch(NumberFormatException e) {
                 log.error(e.getMessage());
@@ -182,6 +213,11 @@ public class FinderLocal extends Local {
                 return -1;
             }
             return (long) (Rococoa.cast(date, NSDate.class).timeIntervalSince1970() * 1000);
+        }
+
+        @Override
+        public long getAccessedDate() {
+            return -1;
         }
 
         @Override
@@ -240,7 +276,7 @@ public class FinderLocal extends Local {
             // Native file type mapping
             final String kind = kind(this.getExtension());
             if(StringUtils.isEmpty(kind)) {
-                return ch.cyberduck.core.i18n.Locale.localizedString("Unknown");
+                return Locale.localizedString("Unknown");
             }
             return kind;
         }
@@ -557,20 +593,5 @@ public class FinderLocal extends Local {
     @Override
     public String toURL() {
         return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
-    }
-
-    @Override
-    public boolean isExecutable() {
-        return NSFileManager.defaultManager().isExecutableFileAtPath(this.getAbsolute());
-    }
-
-    @Override
-    public boolean isReadable() {
-        return NSFileManager.defaultManager().isReadableFileAtPath(this.getAbsolute());
-    }
-
-    @Override
-    public boolean isWritable() {
-        return NSFileManager.defaultManager().isWritableFileAtPath(this.getAbsolute());
     }
 }

@@ -113,7 +113,7 @@ public abstract class AbstractPath {
      * @see #list()
      */
     public <T extends AbstractPath> AttributedList<T> childs() {
-        return this.childs(new NullPathFilter<T>());
+        return this.childs(null);
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class AbstractPath {
      * @see #list()
      */
     public <T extends AbstractPath> AttributedList<T> childs(PathFilter<T> filter) {
-        return this.childs(new NullComparator<T>(), filter);
+        return this.childs(null, filter);
     }
 
     /**
@@ -389,19 +389,11 @@ public abstract class AbstractPath {
      */
     public abstract void mkdir(boolean recursive);
 
-    public boolean isWritePermissionsSupported() {
-        return true;
-    }
-
     /**
      * @param perm      The permissions to apply
      * @param recursive Include subdirectories and files
      */
     public abstract void writePermissions(Permission perm, boolean recursive);
-
-    public boolean isWriteModificationDateSupported() {
-        return true;
-    }
 
     /**
      * @param millis Milliseconds since 1970
@@ -433,46 +425,4 @@ public abstract class AbstractPath {
      * @param copy
      */
     public abstract void copy(AbstractPath copy);
-
-    /**
-     * @return true if executable for user, group and world
-     */
-    public boolean isExecutable() {
-        final Permission perm = this.attributes().getPermission();
-        if(null == perm) {
-            log.warn("Unknown permissions");
-            return true;
-        }
-        return perm.getOwnerPermissions()[Permission.EXECUTE]
-                || perm.getGroupPermissions()[Permission.EXECUTE]
-                || perm.getOtherPermissions()[Permission.EXECUTE];
-    }
-
-    /**
-     * @return true if readable for user, group and world
-     */
-    public boolean isReadable() {
-        final Permission perm = this.attributes().getPermission();
-        if(null == perm) {
-            log.warn("Unknown permissions");
-            return true;
-        }
-        return perm.getOwnerPermissions()[Permission.READ]
-                || perm.getGroupPermissions()[Permission.READ]
-                || perm.getOtherPermissions()[Permission.READ];
-    }
-
-    /**
-     * @return true if writable for user, group and world
-     */
-    public boolean isWritable() {
-        final Permission perm = this.attributes().getPermission();
-        if(null == perm) {
-            log.warn("Unknown permissions");
-            return true;
-        }
-        return perm.getOwnerPermissions()[Permission.WRITE]
-                || perm.getGroupPermissions()[Permission.WRITE]
-                || perm.getOtherPermissions()[Permission.WRITE];
-    }
 }
