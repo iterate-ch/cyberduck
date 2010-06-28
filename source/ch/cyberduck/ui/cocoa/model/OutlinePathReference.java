@@ -45,7 +45,7 @@ public class OutlinePathReference extends PathReference<NSObject> {
      */
     private OutlinePathReference(AbstractPath path) {
         final StringBuilder reference = new StringBuilder(path.getAbsolute()).append(Path.DELIMITER);
-        if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
+        if(path.attributes().isDuplicate()) {
             reference.append("-").append(path.attributes().getVersionId());
         }
         this.reference = NSString.stringWithString(reference.toString());
@@ -63,18 +63,6 @@ public class OutlinePathReference extends PathReference<NSObject> {
     @Override
     public NSObject unique() {
         return reference;
-    }
-
-    /**
-     * Comparing the hashcode.
-     *
-     * @param other
-     * @return
-     * @see #hashCode()
-     */
-    @Override
-    public boolean equals(Object other) {
-        return super.equals(other);
     }
 
     @Override
