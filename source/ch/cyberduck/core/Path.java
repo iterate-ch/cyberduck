@@ -159,19 +159,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * Attributes denoting this path
-     */
-    private PathAttributes attributes;
-
-    @Override
-    public PathAttributes attributes() {
-        if(null == attributes) {
-            attributes = new PathAttributes();
-        }
-        return attributes;
-    }
-
-    /**
      * A remote path where nothing is known about a local equivalent.
      *
      * @param parent the absolute directory
@@ -245,39 +232,39 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     private Path parent;
 
-    @Override
-    public Path getParent() {
-        return this.getParent(true);
-    }
-
     /**
-     * @param create Create if not cached. Otherwise may return null
      * @return My parent directory
      */
-    public Path getParent(final boolean create) {
+    @Override
+    public Path getParent() {
         if(null == parent) {
-            if(create) {
-                if(this.isRoot()) {
-                    return this;
-                }
-                String parent = getParent(this.getAbsolute());
-                try {
-                    if(DELIMITER.equals(parent)) {
-                        this.parent = PathFactory.createPath(this.getSession(), DELIMITER,
-                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    }
-                    else {
-                        this.parent = PathFactory.createPath(this.getSession(), parent,
-                                Path.DIRECTORY_TYPE);
-                    }
-                }
-                catch(ConnectionCanceledException e) {
-                    log.error(e.getMessage());
-                    return null;
-                }
+            if(this.isRoot()) {
+                return this;
+            }
+            String parent = getParent(this.getAbsolute());
+            if(DELIMITER.equals(parent)) {
+                this.parent = PathFactory.createPath(this.getSession(), DELIMITER,
+                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            }
+            else {
+                this.parent = PathFactory.createPath(this.getSession(), parent,
+                        Path.DIRECTORY_TYPE);
             }
         }
         return this.parent;
+    }
+
+    /**
+     * Attributes denoting this path
+     */
+    private PathAttributes attributes;
+
+    @Override
+    public PathAttributes attributes() {
+        if(null == attributes) {
+            attributes = new PathAttributes();
+        }
+        return attributes;
     }
 
     /**
@@ -294,13 +281,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return Null if the connection has been closed
      */
     public Host getHost() {
-        try {
-            return this.getSession().getHost();
-        }
-        catch(ConnectionCanceledException e) {
-            this.error(e.getMessage(), e);
-        }
-        return null;
+        return this.getSession().getHost();
     }
 
     @Override
@@ -313,13 +294,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public Cache<Path> cache() {
-        try {
-            return this.getSession().cache();
-        }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
-        }
-        return new Cache<Path>();
+        return this.getSession().cache();
     }
 
     public void writeOwner(String owner, boolean recursive) {
@@ -331,7 +306,8 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * No checksum calculation by default. Might be supported by specific provider implementation.
+     * No checksum calculation by default. Might be supported by specific
+     * provider implementation.
      */
     public void readChecksum() {
         ;
@@ -357,6 +333,28 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see Attributes#getPermission()
      */
     public abstract void readPermission();
+
+    @Override
+    public abstract void writePermissions(Permission perm, boolean recursive);
+
+    public boolean isAclSupported() {
+        return false;
+    }
+
+    /**
+     * @param acl       The permissions to apply
+     * @param recursive Include subdirectories and files
+     */
+    public void writeAcl(Acl acl, boolean recursive) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     *
+     */
+    public void readAcl() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * @return the path relative to its parent directory
@@ -444,7 +442,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The session this path uses to send commands
      * @throws ConnectionCanceledException If the connection has been closed already
      */
-    public abstract Session getSession() throws ConnectionCanceledException;
+    public abstract Session getSession();
 
     @Override
     public void mkdir(boolean recursive) {
@@ -564,20 +562,15 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener The stream listener to notify about bytes received and sent
      */
     public void upload(BandwidthThrottle throttle, StreamListener listener) {
-        this.upload(throttle, listener, null);
-    }
-
-    public void upload(BandwidthThrottle throttle, StreamListener listener, Permission p) {
-        this.upload(throttle, listener, p, false);
+        this.upload(throttle, listener, false);
     }
 
     /**
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
-     * @param p        The permission to set after uploading or null
      * @param check    Check for open connection and open if needed before transfer
      */
-    protected abstract void upload(BandwidthThrottle throttle, StreamListener listener, Permission p, boolean check);
+    protected abstract void upload(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
     /**
      * Will copy from in to out. Will attempt to skip Status#getCurrent
@@ -837,11 +830,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see Session#error(Path,String,Throwable)
      */
     protected void error(String message, Throwable throwable) {
-        try {
-            this.getSession().error(this, message, throwable);
-        }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
-        }
+        this.getSession().error(this, message, throwable);
     }
 }
