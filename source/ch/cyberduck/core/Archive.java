@@ -174,20 +174,14 @@ public abstract class Archive {
         if(files.size() == 0) {
             return null;
         }
-        try {
-            if(files.size() == 1) {
-                return PathFactory.createPath(files.get(0).getSession(), files.get(0).getParent().getAbsolute(),
-                        files.get(0).getName() + "." + this.getIdentifier(),
-                        Path.FILE_TYPE);
-            }
+        if(files.size() == 1) {
             return PathFactory.createPath(files.get(0).getSession(), files.get(0).getParent().getAbsolute(),
-                    Locale.localizedString("Archive", "Archive") + "." + this.getIdentifier(),
+                    files.get(0).getName() + "." + this.getIdentifier(),
                     Path.FILE_TYPE);
         }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
-        }
-        return null;
+        return PathFactory.createPath(files.get(0).getSession(), files.get(0).getParent().getAbsolute(),
+                Locale.localizedString("Archive", "Archive") + "." + this.getIdentifier(),
+                Path.FILE_TYPE);
     }
 
     /**
@@ -196,15 +190,10 @@ public abstract class Archive {
      */
     public List<Path> getExpanded(final List<Path> files) {
         final List<Path> expanded = new ArrayList<Path>();
-        try {
-            for(Path file : files) {
-                expanded.add(PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
-                        StringUtils.remove(file.getName(), "." + this.getIdentifier()),
-                        Path.FILE_TYPE));
-            }
-        }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
+        for(Path file : files) {
+            expanded.add(PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
+                    StringUtils.remove(file.getName(), "." + this.getIdentifier()),
+                    Path.FILE_TYPE));
         }
         return expanded;
     }
