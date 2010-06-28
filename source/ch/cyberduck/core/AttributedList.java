@@ -255,6 +255,9 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
     public void sort(Comparator comparator) {
+        if(null == comparator) {
+            return;
+        }
         // Because AttributedList is a CopyOnWriteArrayList we cannot use Collections#sort
         AbstractPath[] sorted = this.toArray(new AbstractPath[this.size()]);
         Arrays.sort(sorted, (Comparator<AbstractPath>) comparator);
