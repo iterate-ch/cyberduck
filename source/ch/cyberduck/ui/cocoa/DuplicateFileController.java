@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 
@@ -54,7 +55,8 @@ public class DuplicateFileController extends FileController {
         final Path selected = ((BrowserController) parent).getSelectedPath();
         StringBuilder proposal = new StringBuilder();
         proposal.append(FilenameUtils.getBaseName(selected.getName()));
-        proposal.append(" (").append(DateFormatter.getShortFormat(System.currentTimeMillis()).replace('/', ':')).append(")");
+        proposal.append(" (").append(DateFormatterFactory.instance().getShortFormat(
+                System.currentTimeMillis()).replace('/', ':')).append(")");
         if(StringUtils.isNotEmpty(selected.getExtension())) {
             proposal.append(".").append(selected.getExtension());
         }

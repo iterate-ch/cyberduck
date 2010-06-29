@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
@@ -29,9 +30,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
@@ -187,7 +189,7 @@ public class ProgressController extends BundleController {
             // Do not display any progress text when transfer is stopped
             final Date timestamp = transfer.getTimestamp();
             if(null != timestamp) {
-                messageText = DateFormatter.getLongFormat(timestamp.getTime());
+                messageText = DateFormatterFactory.instance().getLongFormat(timestamp.getTime());
             }
         }
         if(messageText != null) {

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -32,14 +33,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSPoint;
-import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSSize;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -62,10 +60,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public static final String KIND_COLUMN = "KIND";
     // virtual column to implement quick look
     protected static final String LOCAL_COLUMN = "LOCAL";
-
-    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
-            Locale.localizedString("Unknown"),
-            TableCellAttributes.browserFontLeftAlignment());
 
     /**
      * Container for all paths currently being listed in the background
@@ -173,7 +167,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             return null;
         }
         if(log.isDebugEnabled()) {
-            log.debug("objectValueForItem:"+item.getAbsolute());
+            log.debug("objectValueForItem:" + item.getAbsolute());
         }
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
@@ -181,42 +175,44 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return tableViewCache.put(item, identifier, this.iconForPath(item));
             }
             if(identifier.equals(FILENAME_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getDisplayName(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        item.getDisplayName(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(SIZE_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes().getSize()),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        Status.getSizeAsString(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
-                if(item.attributes().getModificationDate() != -1) {
-                    return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(DateFormatter.getShortFormat(item.attributes().getModificationDate()),
-                            TableCellAttributes.browserFontLeftAlignment()));
-                }
-                return tableViewCache.put(item, identifier, UNKNOWN_STRING);
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        DateFormatterFactory.instance().getShortFormat(item.attributes().getModificationDate()),
+                        TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(OWNER_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes().getOwner(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        item.attributes().getOwner(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(GROUP_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.attributes().getGroup(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        item.attributes().getGroup(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(PERMISSIONS_COLUMN)) {
                 Permission permission = item.attributes().getPermission();
-                if(null == permission) {
-                    return tableViewCache.put(item, identifier, UNKNOWN_STRING);
-                }
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(permission.toString(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        permission.toString(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(KIND_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.kind(),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        item.kind(),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(LOCAL_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSString.stringWithString(item.getLocal().getAbsolute()));
+                return tableViewCache.put(item, identifier, NSString.stringWithString(
+                        item.getLocal().getAbsolute()));
             }
             throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
@@ -473,7 +469,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(null != dropDestination) {
             final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
             final List<Path> promisedPaths = pasteboard.getFiles(controller.getTransferSession());
-            for(Path p: promisedPaths) {
+            for(Path p : promisedPaths) {
                 p.setLocal(LocalFactory.createLocal(dropDestination.path(), p.getName()));
                 // Add to returned path names
                 promisedDragNames.addObject(NSString.stringWithString(p.getLocal().getName()));

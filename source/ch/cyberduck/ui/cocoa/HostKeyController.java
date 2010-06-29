@@ -55,7 +55,7 @@ public class HostKeyController extends ProxyController implements ServerHostKeyV
             f.getParent().mkdir(true);
             f.touch();
         }
-        if(f.isReadable()) {
+        if(f.attributes().getPermission().isReadable()) {
             try {
                 this.database = new KnownHosts(f.getAbsolute());
             }
@@ -83,7 +83,7 @@ public class HostKeyController extends ProxyController implements ServerHostKeyV
                                 + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
                         Locale.localizedString("Allow"), // default button
                         Locale.localizedString("Deny"), // alternate button
-                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ?
+                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).attributes().getPermission().isWritable() ?
                                 Locale.localizedString("Always") : null //other button
                 );
                 SheetController c = new AlertController(parent, alert) {
@@ -116,7 +116,7 @@ public class HostKeyController extends ProxyController implements ServerHostKeyV
                                 + Locale.localizedString("Do you want to allow the host access?"),
                         Locale.localizedString("Allow"), // defaultbutton
                         Locale.localizedString("Deny"), //alternative button
-                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).isWritable() ? Locale.localizedString("Always") : null //other button
+                        LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).attributes().getPermission().isWritable() ? Locale.localizedString("Always") : null //other button
                 );
                 SheetController c = new AlertController(parent, alert) {
                     public void callback(final int returncode) {

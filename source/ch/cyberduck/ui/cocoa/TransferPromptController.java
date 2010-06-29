@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
@@ -29,13 +30,14 @@ import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.CDOutlineCell;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
+
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 
@@ -246,7 +248,7 @@ public abstract class TransferPromptController extends SheetController implement
                         }
                         else {
                             localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    DateFormatter.getLongFormat(p.getLocal().attributes().getModificationDate()),
+                                    DateFormatterFactory.instance().getLongFormat(p.getLocal().attributes().getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         localModificationField.setHidden(false);
@@ -276,7 +278,7 @@ public abstract class TransferPromptController extends SheetController implement
                         }
                         else {
                             remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    DateFormatter.getLongFormat(p.attributes().getModificationDate()),
+                                    DateFormatterFactory.instance().getLongFormat(p.attributes().getModificationDate()),
                                     TRUNCATE_MIDDLE_ATTRIBUTES));
                         }
                         remoteModificationField.setHidden(false);

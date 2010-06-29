@@ -19,6 +19,7 @@
 package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +39,7 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     public String tooltip(Path p) {
         return p.getAbsolute() + "\n"
                 + Status.getSizeAsString(p.attributes().getSize()) + "\n"
-                + DateFormatter.getLongFormat(p.attributes().getModificationDate());
+                + DateFormatterFactory.instance().getLongFormat(p.attributes().getModificationDate());
     }
 
     @Override
@@ -216,18 +217,10 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
 
         @Override
         public int compare(Path p1, Path p2) {
-            Permission perm1 = p1.attributes().getPermission();
-            if(null == perm1) {
-                perm1 = Permission.EMPTY;
-            }
-            Permission perm2 = p2.attributes().getPermission();
-            if(null == perm2) {
-                perm2 = Permission.EMPTY;
-            }
-            if(perm1.getOctalNumber() > perm2.getOctalNumber()) {
+            if(p1.attributes().getPermission().getOctalNumber() > p2.attributes().getPermission().getOctalNumber()) {
                 return ascending ? 1 : -1;
             }
-            else if(perm1.getOctalNumber() < perm2.getOctalNumber()) {
+            else if(p1.attributes().getPermission().getOctalNumber() < p2.attributes().getPermission().getOctalNumber()) {
                 return ascending ? -1 : 1;
             }
             return 0;
