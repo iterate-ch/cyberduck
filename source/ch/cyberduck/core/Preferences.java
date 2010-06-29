@@ -505,6 +505,13 @@ public abstract class Preferences {
 
         defaults.put("s3.mfa.serialnumber", "");
 
+        defaults.put("s3.listing.chunksize", String.valueOf(1000));
+
+        /**
+         * Show revisions as hidden files in browser
+         */
+        defaults.put("s3.revisions.enable", String.valueOf(true));
+
         /**
          * A prefix to apply to log file names
          */
@@ -548,6 +555,11 @@ public abstract class Preferences {
 
         defaults.put("google.docs.upload.convert", String.valueOf(true));
         defaults.put("google.docs.upload.ocr", String.valueOf(false));
+
+        /**
+         * Show revisions as hidden files in browser
+         */
+        defaults.put("google.docs.revisions.enable", String.valueOf(true));
 
         /**
          * NTLM Windows Domain
