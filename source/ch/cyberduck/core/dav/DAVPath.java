@@ -129,15 +129,8 @@ public class DAVPath extends Path {
         }
     }
 
-
-    @Override
-    public void readUnixPermission() {
-        ;
-    }
-
     @Override
     public void delete() {
-        log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
@@ -218,6 +211,11 @@ public class DAVPath extends Path {
     }
 
     @Override
+    public void readUnixPermission() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void writeUnixPermission(Permission perm, boolean recursive) {
         throw new UnsupportedOperationException();
     }
@@ -229,7 +227,6 @@ public class DAVPath extends Path {
 
     @Override
     public void rename(AbstractPath renamed) {
-        log.debug("rename:" + renamed);
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
@@ -300,13 +297,10 @@ public class DAVPath extends Path {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes().isDirectory()) {
-            this.getLocal().touch(true);
-        }
     }
 
     @Override
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
             if(check) {
                 this.getSession().check();
