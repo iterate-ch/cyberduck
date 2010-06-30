@@ -400,6 +400,12 @@ public class FTPPath extends Path {
 
                 this.getSession().setWorkdir(this.getParent());
                 this.getSession().getClient().mkdir(this.getName());
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                        this.writeUnixPermission(new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
+                    }
+                }
             }
             catch(IOException e) {
                 this.error("Cannot create folder", e);

@@ -64,14 +64,6 @@ public class FolderController extends FileController {
 
             public void run() {
                 folder.mkdir(false);
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        if(folder.isWritePermissionsSupported()) {
-                            folder.writePermissions(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")),
-                                    false);
-                        }
-                    }
-                }
                 folder.cache().put(folder.getReference(), AttributedList.<Path>emptyList());
                 folder.getParent().invalidate();
             }
