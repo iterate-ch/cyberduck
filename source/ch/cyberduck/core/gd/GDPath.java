@@ -255,7 +255,7 @@ public class GDPath extends Path {
 
     @Override
     public void readSize() {
-        throw new UnsupportedOperationException();
+        ;
     }
 
     @Override
