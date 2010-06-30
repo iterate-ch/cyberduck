@@ -21,7 +21,6 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
-import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.*;
@@ -46,7 +45,7 @@ import java.util.List;
  *
  * @version $Id$
  */
-public class CFSession extends HTTPSession implements SSLSession, CloudSession {
+public class CFSession extends CloudSession implements SSLSession {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     static {
@@ -139,7 +138,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         this.getTrustManager().setHostname(URI.create(this.getClient().getAuthenticationURL()).getHost());
         if(!this.getClient().login()) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(host,
+            this.login.fail(credentials,
                     Locale.localizedString("Login with username and password", "Credentials"));
             this.login();
         }
@@ -192,6 +191,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
      * @param cnames  Currently ignored
      * @param logging
      */
+    @Override
     public void writeDistribution(boolean enabled, String container, Distribution.Method method, String[] cnames, boolean logging) {
         final AbstractX509TrustManager trust = this.getTrustManager();
         try {
@@ -231,6 +231,7 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         }
     }
 
+    @Override
     public Distribution readDistribution(String container, Distribution.Method method) {
         if(null != container) {
             final AbstractX509TrustManager trust = this.getTrustManager();
@@ -264,14 +265,17 @@ public class CFSession extends HTTPSession implements SSLSession, CloudSession {
         return new Distribution();
     }
 
+    @Override
     public String getDistributionServiceName() {
         return Locale.localizedString("Limelight Content", "Mosso");
     }
 
+    @Override
     public List<Distribution.Method> getSupportedDistributionMethods() {
         return Arrays.asList(Distribution.DOWNLOAD);
     }
 
+    @Override
     public List<String> getSupportedStorageClasses() {
         return Collections.emptyList();
     }
