@@ -234,7 +234,7 @@ public class AbstractTestCase extends TestCase {
         }
 
         @Override
-        public void writePermissions(Permission perm, boolean recursive) {
+        public void writeUnixPermission(Permission perm, boolean recursive) {
             throw new UnsupportedOperationException();
         }
 

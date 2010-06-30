@@ -109,7 +109,7 @@ public abstract class Editor {
                     if(null != permissions) {
                         permissions.getOwnerPermissions()[Permission.READ] = true;
                         permissions.getOwnerPermissions()[Permission.WRITE] = true;
-                        edited.getLocal().writePermissions(permissions, false);
+                        edited.getLocal().writeUnixPermission(permissions, false);
                     }
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     Editor.this.edit();

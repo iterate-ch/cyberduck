@@ -62,7 +62,7 @@ public class PathAttributes extends Attributes implements Serializable {
     private int type = Path.FILE_TYPE;
 
     /**
-     * @see ch.cyberduck.core.Path#readPermission()
+     * @see ch.cyberduck.core.Path#readUnixPermission()
      */
     private Permission permission = Permission.EMPTY;
 
