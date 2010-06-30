@@ -124,12 +124,7 @@ public abstract class Transfer implements Serializable {
      */
     public Transfer(List<Path> roots) {
         this.setRoots(roots);
-        try {
-            this.session = this.getRoot().getSession();
-        }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
-        }
+        this.session = this.getRoot().getSession();
         this.init();
     }
 

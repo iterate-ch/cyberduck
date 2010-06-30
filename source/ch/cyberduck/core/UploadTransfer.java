@@ -216,7 +216,7 @@ public class UploadTransfer extends Transfer {
             if(p.exists()) {
                 if(p.attributes().getPermission() == null) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        p.readPermission();
+                        p.readUnixPermission();
                     }
                 }
             }
@@ -258,7 +258,7 @@ public class UploadTransfer extends Transfer {
                 }
                 if(p.attributes().getPermission() == null) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        p.readPermission();
+                        p.readUnixPermission();
                     }
                 }
             }
@@ -372,31 +372,19 @@ public class UploadTransfer extends Transfer {
 
     @Override
     protected void _transferImpl(final Path p) {
-        Permission permission = null;
-        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-            permission = p.attributes().getPermission();
-            if(null == permission) {
-                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                    if(p.attributes().isFile()) {
-                        permission = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                    }
-                    if(p.attributes().isDirectory()) {
-                        permission = new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                    }
+        if(p.attributes().isFile()) {
+            p.upload(bandwidth, new AbstractStreamListener() {
+                @Override
+                public void bytesSent(long bytes) {
+                    transferred += bytes;
                 }
-                else {
-                    permission = p.getLocal().attributes().getPermission();
-                }
+            });
+        }
+        else if(p.attributes().isDirectory()) {
+            if(p.getSession().isCreateFileSupported(p)) {
+                p.mkdir();
             }
         }
-        p.upload(bandwidth, new AbstractStreamListener() {
-            @Override
-            public void bytesSent(long bytes) {
-                transferred += bytes;
-            }
-        }, permission);
     }
 
     @Override

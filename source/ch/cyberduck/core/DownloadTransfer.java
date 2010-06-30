@@ -123,7 +123,7 @@ public class DownloadTransfer extends Transfer {
             }
             if(p.attributes().getPermission() == null) {
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                    p.readPermission();
+                    p.readUnixPermission();
                 }
             }
             // Read file size
@@ -339,7 +339,7 @@ public class DownloadTransfer extends Transfer {
                     perm.getOwnerPermissions()[Permission.WRITE] = true;
                     perm.getOwnerPermissions()[Permission.EXECUTE] = true;
                 }
-                p.getLocal().writePermissions(perm, false);
+                p.getLocal().writeUnixPermission(perm, false);
             }
         }
         if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
@@ -349,7 +349,7 @@ public class DownloadTransfer extends Transfer {
             }
             if(p.attributes().getModificationDate() != -1) {
                 long timestamp = p.attributes().getModificationDate();
-                p.getLocal().writeModificationDate(timestamp/*, this.getHost().getTimezone()*/);
+                p.getLocal().writeTimestamp(timestamp/*, this.getHost().getTimezone()*/);
             }
         }
     }
