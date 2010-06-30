@@ -27,8 +27,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -66,7 +67,6 @@ public abstract class Editor {
     }
 
     /**
-     *
      * @return The transfer action for edited file
      */
     protected TransferAction getAction() {
@@ -106,11 +106,10 @@ public abstract class Editor {
             public void cleanup() {
                 if(edited.status().isComplete()) {
                     final Permission permissions = edited.getLocal().attributes().getPermission();
-                    if(null != permissions) {
-                        permissions.getOwnerPermissions()[Permission.READ] = true;
-                        permissions.getOwnerPermissions()[Permission.WRITE] = true;
-                        edited.getLocal().writeUnixPermission(permissions, false);
-                    }
+                    // Update local permissions to make sure the file is readable and writable for editing.
+                    permissions.getOwnerPermissions()[Permission.READ] = true;
+                    permissions.getOwnerPermissions()[Permission.WRITE] = true;
+                    edited.getLocal().writeUnixPermission(permissions, false);
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     Editor.this.edit();
                 }
