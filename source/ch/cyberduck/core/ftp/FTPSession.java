@@ -350,7 +350,7 @@ public class FTPSession extends Session {
         }
         catch(FTPException e) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(host, e.getMessage());
+            this.login.fail(credentials, e.getMessage());
             this.login();
         }
     }

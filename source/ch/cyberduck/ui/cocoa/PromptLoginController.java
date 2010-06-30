@@ -40,10 +40,8 @@ public class PromptLoginController extends AbstractLoginController {
         this.parent = parent;
     }
 
-    public void prompt(final Host host, final String reason, final String message)
+    public void prompt(final Credentials credentials, final boolean publickeyoption, final String reason, final String message)
             throws LoginCanceledException {
-
-        final Credentials credentials = host.getCredentials();
 
         SheetController c = new SheetController(parent) {
             @Override
@@ -222,7 +220,7 @@ public class PromptLoginController extends AbstractLoginController {
                 this.passwordField.setEnabled(!credentials.isAnonymousLogin());
                 this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
-                this.pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
+                this.pkCheckbox.setEnabled(publickeyoption);
                 if(credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
                     this.updateField(this.pkLabel, credentials.getIdentity().toURL());

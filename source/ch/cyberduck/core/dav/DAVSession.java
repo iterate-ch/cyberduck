@@ -127,7 +127,6 @@ public class DAVSession extends HTTPSession {
     @Override
     public void setLoginController(final LoginController c) {
         this.login = new LoginController() {
-
             public void check(Host host) throws LoginCanceledException {
                 final Credentials credentials = host.getCredentials();
                 if(!credentials.isValid()) {
@@ -147,12 +146,16 @@ public class DAVSession extends HTTPSession {
                 c.success(host);
             }
 
-            public void fail(Host host, String reason) throws LoginCanceledException {
-                c.fail(host, reason);
+            public void fail(Credentials credentials, String reason) throws LoginCanceledException {
+                c.fail(credentials, reason);
             }
 
-            public void prompt(Host host, String reason, String message) throws LoginCanceledException {
-                c.prompt(host, reason, message);
+            public void prompt(Credentials credentials, String reason, String message) throws LoginCanceledException {
+                c.prompt(credentials, reason, message);
+            }
+
+            public void prompt(Credentials credentials, boolean publickeyoption, String reason, String message) throws LoginCanceledException {
+                c.prompt(credentials, publickeyoption, reason, message);
             }
         };
     }
@@ -189,7 +192,7 @@ public class DAVSession extends HTTPSession {
                         else {
                             // authstate.isAuthAttempted() && authscheme.isComplete()
                             // Already tried and failed.
-                            login.fail(DAVSession.this.getHost(), realm.toString());
+                            login.fail(credentials, realm.toString());
                         }
 
                         message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
@@ -258,6 +261,16 @@ public class DAVSession extends HTTPSession {
     @Override
     protected void noop() throws IOException {
         ;
+    }
+
+    @Override
+    public boolean isUnixPermissionsSupported() {
+        return false;
+    }
+
+    @Override
+    public boolean isTimestampSupported() {
+        return false;
     }
 
     @Override

@@ -29,6 +29,11 @@ import org.apache.log4j.Logger;
 public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
+    public void prompt(Credentials credentials, String reason, String message)
+            throws LoginCanceledException {
+        this.prompt(credentials, false, reason, message);
+    }
+
     /**
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
@@ -50,11 +55,12 @@ public abstract class AbstractLoginController implements LoginController {
     public void check(final Host host, String message)
             throws LoginCanceledException {
 
+        final Credentials credentials = host.getCredentials();
+
         StringBuilder reason = new StringBuilder();
         if(StringUtils.isNotBlank(message)) {
             reason.append(message).append(". ");
         }
-        final Credentials credentials = host.getCredentials();
         if(credentials.isPublicKeyAuthentication()) {
             return;
         }
@@ -65,7 +71,7 @@ public abstract class AbstractLoginController implements LoginController {
                     String passFromKeychain = this.find(host);
                     if(StringUtils.isBlank(passFromKeychain)) {
                         reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                        this.prompt(host, title, reason.toString());
+                        this.prompt(credentials, title, reason.toString());
                     }
                     else {
                         credentials.setPassword(passFromKeychain);
@@ -74,12 +80,12 @@ public abstract class AbstractLoginController implements LoginController {
                 }
                 else {
                     reason.append(Locale.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
-                    this.prompt(host, title, reason.toString());
+                    this.prompt(credentials, title, reason.toString());
                 }
             }
             else {
                 reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                this.prompt(host, title, reason.toString());
+                this.prompt(credentials, title, reason.toString());
             }
         }
     }
@@ -88,8 +94,8 @@ public abstract class AbstractLoginController implements LoginController {
         this.save(host);
     }
 
-    public void fail(final Host host, final String reason) throws LoginCanceledException {
-        this.prompt(host, Locale.localizedString("Login failed", "Credentials"), reason);
+    public void fail(Credentials credentials, final String reason) throws LoginCanceledException {
+        this.prompt(credentials, Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
     /**

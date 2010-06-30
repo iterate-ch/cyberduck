@@ -30,7 +30,6 @@ public interface LoginController {
     void check(Host host) throws LoginCanceledException;
 
     /**
-     *
      * @param host
      * @param reason
      * @throws LoginCanceledException
@@ -44,23 +43,34 @@ public interface LoginController {
      *
      * @param host
      */
-    void success(final Host host);
+    void success(Host host);
 
     /**
      * Call this to allow the user to reenter the new login credentials.
      * A concrete sublcass could eg. display a panel.
      *
-     * @param host
+     * @param credentials
      * @param reason
      */
-    void fail(Host host, String reason) throws LoginCanceledException;
+    void fail(Credentials credentials, String reason) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
      * A concrete sublcass could eg. display a panel.
      *
-     * @param host
-     * @param message Any additional information why the login failed.
+     * @param credentials
+     * @param message     Any additional information why the login failed.
+     * @param reason
+     * @throws LoginCanceledException
      */
-    void prompt(Host host, String reason, String message) throws LoginCanceledException;
+    void prompt(Credentials credentials, String reason, String message) throws LoginCanceledException;
+
+    /**
+     * @param credentials
+     * @param publickeyoption Enable public key authentication for SSH <code>publickey</code authentication method.
+     * @param reason
+     * @param message
+     * @throws LoginCanceledException
+     */
+    void prompt(Credentials credentials, boolean publickeyoption, String reason, String message) throws LoginCanceledException;
 }

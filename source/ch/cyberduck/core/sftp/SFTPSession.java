@@ -195,7 +195,7 @@ public class SFTPSession extends Session {
             }
         }
         this.message(Locale.localizedString("Login failed", "Credentials"));
-        this.login.fail(host,
+        this.login.fail(credentials,
                 Locale.localizedString("Login with username and password", "Credentials"));
         this.login();
     }
@@ -219,7 +219,7 @@ public class SFTPSession extends Session {
                 if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
                     passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
-                        login.prompt(host,
+                        login.prompt(credentials, true,
                                 Locale.localizedString("Private key password protected", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
@@ -239,7 +239,7 @@ public class SFTPSession extends Session {
                 catch(IOException e) {
                     if(e.getCause() instanceof PEMDecryptException) {
                         this.message(Locale.localizedString("Login failed", "Credentials"));
-                        this.login.fail(host, e.getCause().getMessage());
+                        this.login.fail(credentials, e.getCause().getMessage());
                         this.login();
                     }
                     else {
@@ -316,7 +316,7 @@ public class SFTPSession extends Session {
                         return Locale.localizedString("One-time password", "Credentials");
                     }
                 };
-                SFTPSession.this.login.prompt(SFTPSession.this.getHost(),
+                SFTPSession.this.login.prompt(credentials,
                         Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i]);
                 response[i] = credentials.getPassword();
                 promptCount++;
