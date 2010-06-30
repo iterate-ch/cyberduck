@@ -394,14 +394,14 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public void writeModificationDate(long millis) {
+    public void writeTimestamp(long millis) {
         if(!_impl.setLastModified(millis)) {
             log.warn("Write modification date failed:" + this.getAbsolute());
         }
     }
 
     @Override
-    public abstract void writePermissions(Permission perm, boolean recursive);
+    public abstract void writeUnixPermission(Permission perm, boolean recursive);
 
     @Override
     public void rename(AbstractPath renamed) {

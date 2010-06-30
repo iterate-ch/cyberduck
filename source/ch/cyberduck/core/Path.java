@@ -324,22 +324,18 @@ public abstract class Path extends AbstractPath implements Serializable {
      * Read the modification date of the file
      *
      * @see Attributes#getModificationDate()
+     * @see ch.cyberduck.core.Session#isTimestampSupported()
      */
     public abstract void readTimestamp();
+
 
     /**
      * Read the file permission of the file
      *
      * @see Attributes#getPermission()
+     * @see Session#isUnixPermissionsSupported()
      */
-    public abstract void readPermission();
-
-    @Override
-    public abstract void writePermissions(Permission perm, boolean recursive);
-
-    public boolean isAclSupported() {
-        return false;
-    }
+    public abstract void readUnixPermission();
 
     /**
      * @param acl       The permissions to apply

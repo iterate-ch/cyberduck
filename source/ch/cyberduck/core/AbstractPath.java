@@ -392,13 +392,15 @@ public abstract class AbstractPath {
     /**
      * @param perm      The permissions to apply
      * @param recursive Include subdirectories and files
+     * @see Session#isUnixPermissionsSupported()
      */
-    public abstract void writePermissions(Permission perm, boolean recursive);
+    public abstract void writeUnixPermission(Permission perm, boolean recursive);
 
     /**
      * @param millis Milliseconds since 1970
+     * @see ch.cyberduck.core.Session#isTimestampSupported()
      */
-    public abstract void writeModificationDate(long millis);
+    public abstract void writeTimestamp(long millis);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file
