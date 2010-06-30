@@ -116,6 +116,9 @@ public class ProxyController extends AbstractController {
      *                 the message is delivered and processed immediately.
      */
     public void invoke(final MainAction runnable, final boolean wait) {
+        if(!runnable.isValid()) {
+            return;
+        }
         if(log.isDebugEnabled()) {
             log.debug("invoke:" + runnable);
         }

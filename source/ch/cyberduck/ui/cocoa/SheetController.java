@@ -18,15 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.AppKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +141,7 @@ public abstract class SheetController extends WindowController implements SheetC
                 this.beginSheetImpl();
                 return;
             }
-            invoke(new WindowMainAction(parent) {
+            invoke(new DefaultMainAction() {
                 public void run() {
                     //Invoke again on main thread
                     beginSheetImpl();
