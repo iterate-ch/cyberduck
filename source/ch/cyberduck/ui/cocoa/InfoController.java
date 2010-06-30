@@ -153,13 +153,13 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSButton recursiveCheckbox;
+    private NSButton recursiveButton;
 
-    public void setRecursiveCheckbox(NSButton b) {
-        this.recursiveCheckbox = b;
-        this.recursiveCheckbox.setState(NSCell.NSOffState);
-        this.recursiveCheckbox.setTarget(this.id());
-        this.recursiveCheckbox.setAction(Foundation.selector("permissionSelectionChanged:"));
+    public void setRecursiveButton(NSButton b) {
+        this.recursiveButton = b;
+        this.recursiveButton.setState(NSCell.NSOffState);
+        this.recursiveButton.setTarget(this.id());
+        this.recursiveButton.setAction(Foundation.selector("recursiveButtonClicked:"));
     }
 
     @Outlet
@@ -1941,7 +1941,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             if(change) {
-                this.changePermissions(permission);
+                this.changePermissions(permission, false);
             }
         }
     }
@@ -1958,11 +1958,17 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Action
+    public void recursiveButtonClicked(final NSButton sender) {
+        this.changePermissions(this.getPermissionFromCheckboxes(),
+                recursiveButton.state() == NSCell.NSOnState);
+    }
+
+    @Action
     public void permissionSelectionChanged(final NSButton sender) {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
         }
-        this.changePermissions(this.getPermissionFromCheckboxes());
+        this.changePermissions(this.getPermissionFromCheckboxes(), false);
     }
 
     private Permission getPermissionFromCheckboxes() {
@@ -1986,10 +1992,9 @@ public class InfoController extends ToolbarWindowController {
     /**
      * @param permission
      */
-    private void changePermissions(final Permission permission) {
+    private void changePermissions(final Permission permission, final boolean recursive) {
         // Write altered permissions to the server
         if(this.togglePermissionSettings(false)) {
-            final boolean recursive = recursiveCheckbox.state() == NSCell.NSOnState;
             // send the changes to the remote host
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
@@ -2028,11 +2033,11 @@ public class InfoController extends ToolbarWindowController {
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.isUnixPermissionsSupported();
-        recursiveCheckbox.setEnabled(stop && enable);
+        recursiveButton.setEnabled(stop && enable);
         for(Path next : files) {
             if(next.attributes().isFile()) {
-                recursiveCheckbox.setState(NSCell.NSOffState);
-                recursiveCheckbox.setEnabled(false);
+                recursiveButton.setState(NSCell.NSOffState);
+                recursiveButton.setEnabled(false);
                 break;
             }
         }
