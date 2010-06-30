@@ -118,6 +118,37 @@ public class UploadTransfer extends Transfer {
 
         @Override
         public void prepare(Path p) {
+            if(getSession().isUnixPermissionsSupported()) {
+                if(p.exists()) {
+                    // Do not overwrite permissions for existing files.
+                    if(p.attributes().getPermission().equals(Permission.EMPTY)) {
+                        p.readUnixPermission();
+                    }
+                }
+                else if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                    if(p.attributes().isFile()) {
+                        p.attributes().setPermission(new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.file.default")));
+                    }
+                    if(p.attributes().isDirectory()) {
+                        p.attributes().setPermission(new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
+                    }
+                }
+                else {
+                    // Read permissions from local file
+                    p.attributes().setPermission(p.getLocal().attributes().getPermission());
+                }
+            }
+            if(getSession().isTimestampSupported()) {
+                if(p.exists()) {
+                    if(p.attributes().getModificationDate() == -1) {
+                        if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                            p.readTimestamp();
+                        }
+                    }
+                }
+            }
             if(p.attributes().isFile()) {
                 // Read file size
                 size += p.getLocal().attributes().getSize();
@@ -131,6 +162,7 @@ public class UploadTransfer extends Transfer {
                 }
             }
         }
+
     }
 
     private final PathFilter<Local> childFilter = new PathFilter<Local>() {
@@ -213,13 +245,6 @@ public class UploadTransfer extends Transfer {
 
         @Override
         public void prepare(final Path p) {
-            if(p.exists()) {
-                if(p.attributes().getPermission() == null) {
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        p.readUnixPermission();
-                    }
-                }
-            }
             if(p.attributes().isFile()) {
                 p.status().setResume(false);
             }
@@ -251,21 +276,10 @@ public class UploadTransfer extends Transfer {
                 if(p.attributes().getSize() == -1) {
                     p.readSize();
                 }
-                if(p.attributes().getModificationDate() == -1) {
-                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        p.readTimestamp();
-                    }
-                }
-                if(p.attributes().getPermission() == null) {
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        p.readUnixPermission();
-                    }
-                }
             }
             if(p.attributes().isFile()) {
                 // Append to file if size is not zero
-                final boolean resume = p.exists()
-                        && p.attributes().getSize() > 0;
+                final boolean resume = p.exists() && p.attributes().getSize() > 0;
                 p.status().setResume(resume);
                 if(p.status().isResume()) {
                     p.status().setCurrent(p.attributes().getSize());
