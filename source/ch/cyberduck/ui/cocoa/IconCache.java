@@ -26,12 +26,13 @@ import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
-import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
+
+import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -276,8 +277,8 @@ public class IconCache {
             return symlink;
         }
         if(item.attributes().isFile()) {
-            if(StringUtils.isEmpty(item.getExtension()) && null != item.attributes().getPermission()) {
-                if(item.isExecutable()) {
+            if(StringUtils.isEmpty(item.getExtension())) {
+                if(item.attributes().getPermission().isExecutable()) {
                     return this.iconForName("executable.tiff", size);
                 }
             }
@@ -287,17 +288,17 @@ public class IconCache {
             return this.iconForName(item.getHost().getProtocol().disk(), size);
         }
         if(item.attributes().isDirectory()) {
-            if(overlayFolderImage && null != item.attributes().getPermission()) {
-                if(!item.isExecutable()
+            if(overlayFolderImage) {
+                if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
                     return this.iconForFolder("PrivateFolderBadgeIcon.icns", size);
                 }
-                if(!item.isReadable()) {
-                    if(item.isWritable()) {
+                if(!item.attributes().getPermission().isReadable()) {
+                    if(item.attributes().getPermission().isWritable()) {
                         return this.iconForFolder("DropFolderBadgeIcon.icns", size);
                     }
                 }
-                if(!item.isWritable()) {
+                if(!item.attributes().getPermission().isWritable()) {
                     return this.iconForFolder("ReadOnlyFolderBadgeIcon.icns", size);
                 }
             }
