@@ -18,12 +18,19 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.http.HTTPSession;
+
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public interface CloudSession {
+public abstract class CloudSession extends HTTPSession {
+
+    protected CloudSession(Host h) {
+        super(h);
+    }
 
     /**
      * @param enabled
@@ -50,5 +57,24 @@ public interface CloudSession {
      */
     public abstract String getDistributionServiceName();
 
+    /**
+     * @return List of redundancy level options. Empty list
+     *         no storage options are available.
+     */
     public abstract List<String> getSupportedStorageClasses();
+
+    /**
+     * Use ACL support.
+     *
+     * @return Always returning false because permissions should be set using ACLs
+     */
+    @Override
+    public boolean isUnixPermissionsSupported() {
+        return false;
+    }
+
+    @Override
+    public boolean isTimestampSupported() {
+        return false;
+    }
 }
