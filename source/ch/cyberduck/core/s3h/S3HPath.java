@@ -166,31 +166,6 @@ public class S3HPath extends CloudPath {
     }
 
     /**
-     * Versioning support. List all available version markers for this object.
-     *
-     * @return
-     */
-    public List<Path> getVersions() {
-        if(this.attributes().isFile()) {
-            try {
-                final String container = this.getContainerName();
-                if(this.getSession().isVersioning(container)) {
-                    final S3Bucket bucket = this.getSession().getBucket(container);
-                    return this.getVersions(bucket, Arrays.asList(
-                            this.getSession().getClient().getObjectVersions(container, this.getKey())));
-                }
-            }
-            catch(S3ServiceException e) {
-                this.error("Listing directory failed", e);
-            }
-            catch(IOException e) {
-                this.error("Listing directory failed", e);
-            }
-        }
-        return Collections.emptyList();
-    }
-
-    /**
      * Versioning support. Copy a previous version of the object into the same bucket.
      * The copied object becomes the latest version of that object and all object versions are preserved.
      */
