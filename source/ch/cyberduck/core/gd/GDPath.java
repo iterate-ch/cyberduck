@@ -28,23 +28,26 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.DocumentQuery;
 import com.google.gdata.client.GoogleAuthTokenFactory;
+import com.google.gdata.client.Service;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.DateTime;
-import com.google.gdata.data.Link;
-import com.google.gdata.data.MediaContent;
-import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.docs.DocumentEntry;
-import com.google.gdata.data.docs.DocumentListEntry;
-import com.google.gdata.data.docs.DocumentListFeed;
-import com.google.gdata.data.docs.FolderEntry;
+import com.google.gdata.data.*;
+import com.google.gdata.data.acl.AclEntry;
+import com.google.gdata.data.acl.AclFeed;
+import com.google.gdata.data.acl.AclRole;
+import com.google.gdata.data.acl.AclScope;
+import com.google.gdata.data.docs.*;
 import com.google.gdata.data.extensions.LastModifiedBy;
+import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.MediaStreamSource;
 import com.google.gdata.util.ContentType;
+import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.ServiceException;
 
+import javax.mail.MessagingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +55,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -155,6 +160,9 @@ public class GDPath extends Path {
      */
     private String exportUri;
 
+    /**
+     * @return Download URL without export format.
+     */
     public String getExportUri() {
         if(StringUtils.isBlank(exportUri)) {
             log.warn("Refetching Export URI for " + this.toString());
@@ -191,14 +199,6 @@ public class GDPath extends Path {
     private String resourceId;
 
     public String getResourceId() {
-        if(StringUtils.isBlank(resourceId)) {
-            log.warn("Refetching Resource ID for " + this.toString());
-            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
-            if(null == cached) {
-                return null;
-            }
-            resourceId = cached.getResourceId();
-        }
         return resourceId;
     }
 
@@ -208,15 +208,10 @@ public class GDPath extends Path {
 
     private String documentUri;
 
+    /**
+     * @return The URL to the document editable in the web browser
+     */
     public String getDocumentUri() {
-        if(StringUtils.isBlank(documentUri)) {
-            log.warn("Refetching Document URI for " + this.toString());
-            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
-            if(null == cached) {
-                return null;
-            }
-            documentUri = cached.getDocumentUri();
-        }
         return documentUri;
     }
 
@@ -229,31 +224,115 @@ public class GDPath extends Path {
         return StringUtils.removeStart(this.getResourceId(), this.getDocumentType() + ":");
     }
 
-    protected String getFolderFeed() {
+    protected URL getFolderFeed() throws MalformedURLException {
         if(this.isRoot()) {
-            return "https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents";
+            return new URL("https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents");
         }
         else if(StringUtils.isNotBlank(this.getResourceId())) {
-            return "https://docs.google.com/feeds/default/private/full/folder%3A"
-                    + this.getDocumentId() + "/contents";
+            return new URL("https://docs.google.com/feeds/default/private/full/folder%3A"
+                    + this.getDocumentId() + "/contents");
         }
         log.warn("Missing Resource ID for " + this.toString());
-        return "https://docs.google.com/feeds/default/private/full/";
+        return new URL("https://docs.google.com/feeds/default/private/full/");
+    }
+
+    protected URL getAclFeed() throws MalformedURLException {
+        if(StringUtils.isNotBlank(this.getResourceId())) {
+            return new URL("https://docs.google.com/feeds/default/private/full/"
+                    + this.getResourceId() + "/acl");
+        }
+        log.warn("Missing Resource ID for " + this.toString());
+        return null;
+    }
+
+    public URL getRevisionsFeed() throws MalformedURLException {
+        if(StringUtils.isNotBlank(this.getResourceId())) {
+            return new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId() + "/revisions");
+        }
+        log.warn("Missing Resource ID for " + this.toString());
+        return null;
     }
 
     @Override
     public void readSize() {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void readTimestamp() {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void readUnixPermission() {
-        ;
+    public void readAcl() {
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
+                    this.getName()));
+            try {
+                Acl acl = new Acl();
+                AclFeed feed = this.getSession().getClient().getFeed(this.getAclFeed(), AclFeed.class);
+                for(AclEntry entry : feed.getEntries()) {
+                    AclScope scope = entry.getScope();
+                    AclScope.Type type = scope.getType();
+                    AclRole role = entry.getRole();
+                    if(type.equals(AclScope.Type.DEFAULT)) {
+                        acl.addAll(new Acl.CanonicalUser(scope.getValue()), new Acl.Role(role.getValue()));
+                    }
+                    if(type.equals(AclScope.Type.USER)) {
+                        acl.addAll(new Acl.CanonicalUser(scope.getValue()), new Acl.Role(role.getValue()));
+                    }
+                    if(type.equals(AclScope.Type.DOMAIN)) {
+                        acl.addAll(new Acl.DomainUser(scope.getValue()), new Acl.Role(role.getValue()));
+                    }
+                    if(type.equals(AclScope.Type.GROUP)) {
+                        acl.addAll(new Acl.GroupUser(scope.getValue()), new Acl.Role(role.getValue()));
+                    }
+                }
+                this.attributes().setAcl(acl);
+            }
+            catch(ServiceException e) {
+                throw new IOException(e.getMessage());
+            }
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+    }
+
+    @Override
+    public void writeAcl(Acl acl, boolean recursive) {
+        for(Acl.User user : acl.keySet()) {
+            AclScope scope;
+            if(user.isEmailIdentifier()) {
+                scope = new AclScope(AclScope.Type.USER, user.getIdentifier());
+            }
+            else if(user.isGroupIdentifier()) {
+                scope = new AclScope(AclScope.Type.GROUP, user.getIdentifier());
+            }
+            else if(user.isDomainIdentifier()) {
+                scope = new AclScope(AclScope.Type.DOMAIN, user.getIdentifier());
+            }
+            else {
+                scope = new AclScope(AclScope.Type.DEFAULT, user.getIdentifier());
+            }
+            for(Acl.Role role : acl.get(user)) {
+                AclEntry entry = new AclEntry();
+                entry.setScope(scope);
+                entry.setRole(new AclRole(role.getName()));
+                try {
+                    try {
+                        this.getSession().getClient().insert(this.getAclFeed(), entry);
+                    }
+                    catch(ServiceException e) {
+                        throw new IOException(e.getMessage());
+                    }
+                }
+                catch(IOException e) {
+                    this.error("Cannot change permissions", e);
+                }
+            }
+        }
     }
 
     @Override
@@ -316,9 +395,6 @@ public class GDPath extends Path {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes().isDirectory()) {
-            this.getLocal().mkdir(true);
-        }
     }
 
     /**
@@ -351,6 +427,7 @@ public class GDPath extends Path {
 
                 File upload = new File(this.getLocal().getAbsolute());
                 InputStream in = null;
+                OutputStream out = null;
                 try {
                     in = this.getLocal().getInputStream();
                     final String mime = this.getLocal().getMimeType();
@@ -376,7 +453,7 @@ public class GDPath extends Path {
                                 this.getName()));
                         status().setResume(false);
 
-                        String feed = ((GDPath) this.getParent()).getFolderFeed();
+                        String feed = ((GDPath) this.getParent()).getFolderFeed().toExternalForm();
                         StringBuilder url = new StringBuilder(feed);
                         if(this.isOcrSupported()) {
                             // Image file type
@@ -386,14 +463,37 @@ public class GDPath extends Path {
                             // Convertible to Google Docs file type
                             url.append("?convert=").append(Preferences.instance().getProperty("google.docs.upload.convert"));
                         }
-                        this.getSession().getClient().insert(new URL(url.toString()), document);
+                        Service.GDataRequest request = null;
+                        try {
+                            // Write as MIME multipart containing the entry and media.  Use the
+                            // content type from the multipart since this contains auto-generated
+                            // boundary attributes.
+                            MediaMultipart multipart = new MediaMultipart(document, document.getMediaSource());
+                            request = this.getSession().getClient().createRequest(
+                                    Service.GDataRequest.RequestType.INSERT, new URL(url.toString()),
+                                    new ContentType(multipart.getContentType()));
+                            out = request.getRequestStream();
+                            multipart.writeTo(out);
+
+                            this.upload(out, in, throttle, listener);
+
+                            // Parse response for HTTP error message.
+                            request.execute();
+                        }
+                        catch(MessagingException e) {
+                            throw new ServiceException(
+                                    CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
+                        }
+                        finally {
+                            if(request != null) {
+                                request.end();
+                            }
+                        }
                     }
-                    status().setCurrent(this.getLocal().attributes().getSize());
-                    listener.bytesSent(this.getLocal().attributes().getSize());
-                    status().setComplete(true);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
                 }
             }
         }
@@ -417,6 +517,8 @@ public class GDPath extends Path {
      * @return True if the document, spreadsheet or presentation format is recognized by Google Docs.
      */
     protected boolean isConversionSupported() {
+        // The convert parameter will be ignored for types that cannot be converted. Therefore we
+        // can always return true.
         return true;
     }
 
@@ -430,7 +532,7 @@ public class GDPath extends Path {
 
             this.getSession().setWorkdir(this);
 
-            childs.addAll(this.list(new DocumentQuery(new URL(this.getFolderFeed()))));
+            childs.addAll(this.list(new DocumentQuery(this.getFolderFeed())));
         }
         catch(ServiceException e) {
             childs.attributes().setReadable(false);
@@ -480,42 +582,83 @@ public class GDPath extends Path {
         }
         while(pager.getEntries().size() > 0);
         this.filter(feed.getEntries());
-        for(final DocumentListEntry entry : feed.getEntries()) {
-            log.debug("Resource:" + entry.getResourceId());
-            final StringBuilder title = new StringBuilder(entry.getTitle().getPlainText());
-            final String type = entry.getType();
-            GDPath p = new GDPath(this.getSession(), title.toString(),
-                    DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-            p.setParent(this);
-            p.setDocumentType(type);
-            if(!entry.getParentLinks().isEmpty()) {
-                p.setPath(entry.getParentLinks().iterator().next().getTitle(), title.toString());
-            }
-            p.setExportUri(((MediaContent) entry.getContent()).getUri());
-            p.setDocumentUri(entry.getDocumentLink().getHref());
-            p.setResourceId(entry.getResourceId());
-            // Add unique document ID as checksum
-            p.attributes().setChecksum(entry.getDocId());
-            if(null != entry.getMediaSource()) {
-                p.attributes().setSize(entry.getMediaSource().getContentLength());
-            }
-            if(entry.getQuotaBytesUsed() > 0) {
-                p.attributes().setSize(entry.getQuotaBytesUsed());
-            }
-            final DateTime lastViewed = entry.getLastViewed();
-            if(lastViewed != null) {
-                p.attributes().setAccessedDate(lastViewed.getValue());
-            }
-            LastModifiedBy lastModifiedBy = entry.getLastModifiedBy();
-            if(lastModifiedBy != null) {
-                p.attributes().setOwner(lastModifiedBy.getName());
-            }
-            final DateTime updated = entry.getUpdated();
-            if(updated != null) {
-                p.attributes().setModificationDate(updated.getValue());
-            }
+        for(final DocumentListEntry documentEntry : feed.getEntries()) {
+            log.debug("Resource:" + documentEntry.getResourceId());
+            final String type = documentEntry.getType();
+            {
+                GDPath path = new GDPath(this.getSession(), documentEntry.getTitle().getPlainText(),
+                        DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                path.setParent(this);
+                path.setDocumentType(type);
+                if(!documentEntry.getParentLinks().isEmpty()) {
+                    path.setPath(documentEntry.getParentLinks().iterator().next().getTitle(), documentEntry.getTitle().getPlainText());
+                }
+                // Download URL
+                path.setExportUri(((OutOfLineContent) documentEntry.getContent()).getUri());
+                // Link to Google Docs Editor
+                path.setDocumentUri(documentEntry.getDocumentLink().getHref());
+                path.setResourceId(documentEntry.getResourceId());
+                // Add unique document ID as checksum
+                path.attributes().setChecksum(documentEntry.getDocId());
+                if(null != documentEntry.getMediaSource()) {
+                    path.attributes().setSize(documentEntry.getMediaSource().getContentLength());
+                }
+                if(documentEntry.getQuotaBytesUsed() > 0) {
+                    path.attributes().setSize(documentEntry.getQuotaBytesUsed());
+                }
+                final DateTime lastViewed = documentEntry.getLastViewed();
+                if(lastViewed != null) {
+                    path.attributes().setAccessedDate(lastViewed.getValue());
+                }
+                LastModifiedBy lastModifiedBy = documentEntry.getLastModifiedBy();
+                if(lastModifiedBy != null) {
+                    path.attributes().setOwner(lastModifiedBy.getName());
+                }
+                final DateTime updated = documentEntry.getUpdated();
+                if(updated != null) {
+                    path.attributes().setModificationDate(updated.getValue());
+                }
+                // Add to listing
+                childs.add(path);
+                if(path.attributes().isFile()) {
+                    // Fetch revisions
+                    if(Preferences.instance().getBoolean("google.docs.revisions.enable")) {
+                        try {
+                            final List<RevisionEntry> revisions = this.getSession().getClient().getFeed(
+                                    path.getRevisionsFeed(), RevisionFeed.class).getEntries();
+                            Collections.sort(revisions, new Comparator<RevisionEntry>() {
+                                public int compare(RevisionEntry o1, RevisionEntry o2) {
+                                    return o1.getUpdated().compareTo(o2.getUpdated());
+                                }
+                            });
+                            int i = 0;
+                            for(RevisionEntry revisionEntry : revisions) {
+                                GDPath revision = new GDPath(this.getSession(), documentEntry.getTitle().getPlainText(),
+                                        DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                                revision.setParent(this);
+                                revision.setDocumentType(type);
+                                revision.setExportUri(((OutOfLineContent) revisionEntry.getContent()).getUri());
 
-            childs.add(p);
+                                final long size = ((OutOfLineContent) revisionEntry.getContent()).getLength();
+                                if(size > 0) {
+                                    revision.attributes().setSize(size);
+                                }
+                                revision.attributes().setOwner(revisionEntry.getModifyingUser().getName());
+                                revision.attributes().setModificationDate(revisionEntry.getUpdated().getValue());
+                                // Versioning is enabled if non null.
+                                revision.attributes().setVersionId(revisionEntry.getVersionId());
+                                revision.attributes().setRevision(++i);
+                                revision.attributes().setDuplicate(true);
+                                // Add to listing
+                                childs.add(revision);
+                            }
+                        }
+                        catch(NotImplementedException e) {
+                            log.error("No revisions available:" + e.getMessage());
+                        }
+                    }
+                }
+            }
         }
         return childs;
     }
@@ -569,7 +712,13 @@ public class GDPath extends Path {
         if(type.equals(DOCUMENT_SPREADSHEET_TYPE)) {
             return Preferences.instance().getProperty("google.docs.export.spreadsheet");
         }
-        log.debug("No output format conversion for document type:" + type);
+        if(type.equals(DOCUMENT_FILE_TYPE)) {
+            // For files not converted to Google Docs.
+            // DOCUMENT_FILE_TYPE
+            log.debug("No output format conversion for document type:" + type);
+            return null;
+        }
+        log.warn("Unknown document type:" + type);
         return null;
     }
 
@@ -580,7 +729,7 @@ public class GDPath extends Path {
                 DocumentListEntry folder = new FolderEntry();
                 folder.setTitle(new PlainTextConstruct(this.getName()));
                 try {
-                    this.getSession().getClient().insert(new URL(this.getFolderFeed()), folder);
+                    this.getSession().getClient().insert(this.getFolderFeed(), folder);
                 }
                 catch(ServiceException e) {
                     throw new IOException(e.getMessage());
@@ -590,6 +739,11 @@ public class GDPath extends Path {
                 this.error("Cannot create folder", e);
             }
         }
+    }
+
+    @Override
+    public void readUnixPermission() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

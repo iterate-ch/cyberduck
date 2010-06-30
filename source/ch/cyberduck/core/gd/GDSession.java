@@ -22,11 +22,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 
 import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.util.AuthenticationException;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -131,7 +134,7 @@ public class GDSession extends Session {
         }
         catch(AuthenticationException e) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(host, e.getMessage());
+            this.login.fail(credentials, e.getMessage());
             this.login();
         }
     }
@@ -174,5 +177,39 @@ public class GDSession extends Session {
     @Override
     public boolean isUploadResumable() {
         return false;
+    }
+
+    @Override
+    public boolean isUnixPermissionsSupported() {
+        return false;
+    }
+
+    @Override
+    public boolean isAclSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isTimestampSupported() {
+        return false;
+    }
+
+    @Override
+    public List<Acl.Role> getAvailableAclRoles() {
+        return Arrays.asList(new Acl.Role(AclRole.OWNER.getValue()), new Acl.Role(AclRole.READER.getValue()),
+                new Acl.Role(AclRole.WRITER.getValue()), new Acl.Role(AclRole.PEEKER.getValue()));
+    }
+
+    @Override
+    public List<Acl.User> getAvailableAclUsers() {
+        //        AclScope.Type.DEFAULT
+        //        AclScope.Type.USER
+        //        AclScope.Type.GROUP
+        //        AclScope.Type.DOMAIN
+        return Arrays.asList(
+                new Acl.CanonicalUser("DEFAULT".toLowerCase()),
+                new Acl.EmailUser("USER".toLowerCase()),
+                new Acl.DomainUser("DOMAIN".toLowerCase()),
+                new Acl.GroupUser("GROUP".toLowerCase()));
     }
 }

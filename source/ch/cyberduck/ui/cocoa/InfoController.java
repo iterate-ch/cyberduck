@@ -20,22 +20,18 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3h.S3HPath;
 import ch.cyberduck.core.s3h.S3HSession;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jets3t.service.Constants;
-import org.jets3t.service.acl.*;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
@@ -43,7 +39,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import com.rackspacecloud.client.cloudfiles.FilesConstants;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -91,6 +88,13 @@ public class InfoController extends ToolbarWindowController {
 
     public void setModifiedField(NSTextField t) {
         this.modifiedField = t;
+    }
+
+    @Outlet
+    private NSTextField createdField;
+
+    public void setCreatedField(NSTextField t) {
+        this.createdField = t;
     }
 
     @Outlet
@@ -435,27 +439,22 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Grant editing model.
      */
-    private List<GrantAndPermission> grants = new ArrayList<GrantAndPermission>();
+    private List<Acl.UserAndRole> acl = new ArrayList<Acl.UserAndRole>();
 
     /**
      * Replace current metadata model. Will reload the table view.
      *
-     * @param grants The updated access control list
+     * @param acl The updated access control list
      */
-    private void setGrants(List<GrantAndPermission> grants) {
-        Collections.sort(grants, new Comparator<GrantAndPermission>() {
-            public int compare(GrantAndPermission o1, GrantAndPermission o2) {
-                return o1.getGrantee().getIdentifier().compareTo(o2.getGrantee().getIdentifier());
-            }
-        });
-        this.grants = grants;
+    private void setAcl(List<Acl.UserAndRole> acl) {
+        this.acl = acl;
         this.aclTable.reloadData();
     }
 
     @Outlet
     private NSTableView aclTable;
     private ListDataSource aclTableModel;
-    private AbstractTableDelegate<GrantAndPermission> aclTableDelegate;
+    private AbstractTableDelegate<Acl.UserAndRole> aclTableDelegate;
 
     public static final String HEADER_ACL_GRANTEE_COLUMN = "GRANTEE";
     public static final String HEADER_ACL_PERMISSION_COLUMN = "PERMISSION";
@@ -470,12 +469,9 @@ public class InfoController extends ToolbarWindowController {
             this.permissionCellPrototype.setCompletes(false);
             this.permissionCellPrototype.setBordered(false);
             this.permissionCellPrototype.setButtonBordered(false);
-            this.permissionCellPrototype.addItemWithObjectValue(
-                    NSString.stringWithString(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));
-            this.permissionCellPrototype.addItemWithObjectValue(
-                    NSString.stringWithString(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
-            this.permissionCellPrototype.addItemWithObjectValue(
-                    NSString.stringWithString(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()));
+            for(Acl.Role permission : controller.getSession().getAvailableAclRoles()) {
+                this.permissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
+            }
         }
         this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(permissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
@@ -483,7 +479,7 @@ public class InfoController extends ToolbarWindowController {
              * @param view
              */
             public NSInteger numberOfRowsInTableView(NSTableView view) {
-                return new NSInteger(grants.size());
+                return new NSInteger(acl.size());
             }
 
             /**
@@ -494,13 +490,12 @@ public class InfoController extends ToolbarWindowController {
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 final String identifier = tableColumn.identifier();
-                final GrantAndPermission grant = grants.get(row.intValue());
+                final Acl.UserAndRole grant = acl.get(row.intValue());
                 if(identifier.equals(HEADER_ACL_GRANTEE_COLUMN)) {
-                    final GranteeInterface grantee = grant.getGrantee();
-                    return NSString.stringWithString(grantee.getIdentifier());
+                    return NSString.stringWithString(grant.getUser().getDisplayName());
                 }
                 if(identifier.equals(HEADER_ACL_PERMISSION_COLUMN)) {
-                    return NSString.stringWithString(grant.getPermission().toString());
+                    return NSString.stringWithString(grant.getRole().getName());
                 }
                 return null;
             }
@@ -509,35 +504,34 @@ public class InfoController extends ToolbarWindowController {
             public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
                                                                     NSTableColumn c, NSInteger row) {
                 if(StringUtils.isNotBlank(value.toString())) {
-                    final GrantAndPermission grant = grants.get(row.intValue());
+                    final Acl.UserAndRole grant = acl.get(row.intValue());
                     if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
-                        grant.getGrantee().setIdentifier(value.toString());
-                        if(StringUtils.isNotBlank(grant.getGrantee().getIdentifier())) {
-                            aclInputDidEndEditing();
+                        grant.getUser().setIdentifier(value.toString());
+                        if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
+                                && StringUtils.isNotBlank(grant.getRole().getName())) {
+                            InfoController.this.aclInputDidEndEditing();
                         }
                     }
                     if(c.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
-                        final int index = grants.indexOf(grant);
-                        GrantAndPermission update = new GrantAndPermission(
-                                grant.getGrantee(), org.jets3t.service.acl.Permission.parsePermission(value.toString()));
-                        grants.remove(grant);
-                        grants.add(index, update);
-                        if(StringUtils.isNotBlank(grant.getGrantee().getIdentifier())) {
-                            aclInputDidEndEditing();
+                        grant.getRole().setName(value.toString());
+                        if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
+                                && StringUtils.isNotBlank(grant.getRole().getName())) {
+                            InfoController.this.aclInputDidEndEditing();
                         }
                     }
                 }
             }
         }).id());
-        this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<GrantAndPermission>() {
+        this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<Acl.UserAndRole>() {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, int row) {
                 if(column.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
-                    final GrantAndPermission grant = grants.get(row);
-                    if(grant.getGrantee() instanceof GroupGrantee) {
-                        // Group Grantee identifier is not editable
-                        return false;
+                    final Acl.UserAndRole grant = acl.get(row);
+                    if(grant.getUser().isEditable()) {
+                        return true;
                     }
+                    // Group Grantee identifier is not editable
+                    return false;
                 }
                 return true;
             }
@@ -558,18 +552,14 @@ public class InfoController extends ToolbarWindowController {
             public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
                                                                                       ID rect, NSTableColumn c,
                                                                                       NSInteger row, NSPoint mouseLocation) {
-                return this.tooltip(grants.get(row.intValue()));
+                return this.tooltip(acl.get(row.intValue()));
             }
 
-            public String tooltip(GrantAndPermission c) {
-                final GranteeInterface grantee = c.getGrantee();
-                if(grantee instanceof CanonicalGrantee) {
-                    final String display = ((CanonicalGrantee) grantee).getDisplayName();
-                    if(StringUtils.isNotEmpty(display)) {
-                        return display;
-                    }
+            public String tooltip(Acl.UserAndRole c) {
+                if(StringUtils.isNotEmpty(c.getUser().getDisplayName())) {
+                    return c.getUser().getDisplayName();
                 }
-                return Locale.localizedString(grantee.getIdentifier(), "S3");
+                return Locale.localizedString(c.getUser().getIdentifier(), "S3");
             }
 
             @Override
@@ -585,20 +575,15 @@ public class InfoController extends ToolbarWindowController {
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
-                final GrantAndPermission grant = grants.get(row.intValue());
-                if(grant.getGrantee() instanceof CanonicalGrantee) {
-                    cell.setPlaceholderString(Locale.localizedString("Canonical User ID", "S3"));
-                }
-                else if(grant.getGrantee() instanceof EmailAddressGrantee) {
-                    cell.setPlaceholderString(Locale.localizedString("Email Address", "S3"));
-                }
+                final Acl.UserAndRole grant = acl.get(row.intValue());
+                cell.setPlaceholderString(grant.getUser().getPlaceholder());
                 if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
-                    if(grant.getGrantee() instanceof GroupGrantee) {
-                        // Group Grantee identifier is not editable
-                        cell.setTextColor(NSColor.disabledControlTextColor());
+                    if(grant.getUser().isEditable()) {
+                        cell.setTextColor(NSColor.controlTextColor());
                     }
                     else {
-                        cell.setTextColor(NSColor.controlTextColor());
+                        // Group Grantee identifier is not editable
+                        cell.setTextColor(NSColor.disabledControlTextColor());
                     }
                 }
             }
@@ -610,6 +595,19 @@ public class InfoController extends ToolbarWindowController {
         }).id());
     }
 
+    private Selector getAclSelector(Acl.User user) {
+        if(user.isDomainIdentifier()) {
+            return Foundation.selector("aclDomainAddButtonClicked:");
+        }
+        if(user.isEmailIdentifier()) {
+            return Foundation.selector("aclEmailAddButtonClicked:");
+        }
+        if(user.isGroupIdentifier()) {
+            return Foundation.selector("aclGroupAddButtonClicked:");
+        }
+        return Foundation.selector("aclCanonicalAddButtonClicked:");
+    }
+
     @Outlet
     private NSPopUpButton aclAddButton;
 
@@ -618,48 +616,50 @@ public class InfoController extends ToolbarWindowController {
         this.aclAddButton.setTarget(this.id());
         this.aclAddButton.addItemWithTitle("");
         this.aclAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
-
-        this.aclAddButton.addItemWithTitle(Locale.localizedString("Canonical User ID", "S3"));
-        this.aclAddButton.lastItem().setAction(Foundation.selector("aclCanonicalAddButtonClicked:"));
-        this.aclAddButton.lastItem().setTarget(this.id());
-
-        this.aclAddButton.addItemWithTitle(Locale.localizedString("Email Address", "S3"));
-        this.aclAddButton.lastItem().setAction(Foundation.selector("aclEmailAddButtonClicked:"));
-        this.aclAddButton.lastItem().setTarget(this.id());
-
-        this.aclAddButton.addItemWithTitle(Locale.localizedString(GroupGrantee.ALL_USERS.getIdentifier(), "S3"));
-        this.aclAddButton.lastItem().setAction(Foundation.selector("aclAllUsersAddButtonClicked:"));
-        this.aclAddButton.lastItem().setTarget(this.id());
+        for(Acl.User user : controller.getSession().getAvailableAclUsers()) {
+            this.aclAddButton.addItemWithTitle(user.getDisplayName());
+            this.aclAddButton.lastItem().setAction(this.getAclSelector(user));
+            this.aclAddButton.lastItem().setTarget(this.id());
+            this.aclAddButton.lastItem().setRepresentedObject(user.getIdentifier());
+        }
     }
 
     @Action
-    public void aclCanonicalAddButtonClicked(ID sender) {
-        this.aclAddButtonClicked(new CanonicalGrantee(""));
+    public void aclCanonicalAddButtonClicked(NSMenuItem sender) {
+        this.aclAddButtonClicked(new Acl.CanonicalUser(sender.representedObject()));
     }
 
     @Action
-    public void aclEmailAddButtonClicked(ID sender) {
-        this.aclAddButtonClicked(new EmailAddressGrantee(""));
+    public void aclDomainAddButtonClicked(NSMenuItem sender) {
+        this.aclAddButtonClicked(new Acl.DomainUser(sender.representedObject()));
     }
 
     @Action
-    public void aclAllUsersAddButtonClicked(ID sender) {
-        this.aclAddButtonClicked(GroupGrantee.ALL_USERS);
+    public void aclEmailAddButtonClicked(NSMenuItem sender) {
+        this.aclAddButtonClicked(new Acl.EmailUser(sender.representedObject()));
+    }
+
+    @Action
+    public void aclGroupAddButtonClicked(NSMenuItem sender) {
+        this.aclAddButtonClicked(new Acl.GroupUser(sender.representedObject()));
+    }
+
+    private void aclAddButtonClicked(Acl.User grantee) {
+        this.aclAddButtonClicked(new Acl.UserAndRole(grantee, new Acl.Role("")));
         this.aclInputDidEndEditing();
     }
 
-    private void aclAddButtonClicked(GranteeInterface grantee) {
-        this.aclAddButtonClicked(grantee, org.jets3t.service.acl.Permission.PERMISSION_READ);
-    }
-
-    private void aclAddButtonClicked(GranteeInterface grantee, org.jets3t.service.acl.Permission permission) {
-        final GrantAndPermission add = new GrantAndPermission(grantee, org.jets3t.service.acl.Permission.parsePermission(
-                permission.toString()));
-        grants.add(add);
-        this.setGrants(grants);
-        int row = grants.indexOf(add);
-        aclTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
-        aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), new NSInteger(row), true);
+    /**
+     * Add to the table, reload data and select inserted row.
+     *
+     * @param acl The acl to insert.
+     */
+    private void aclAddButtonClicked(Acl.UserAndRole acl) {
+        final int index = this.acl.size();
+        this.acl.add(index, acl);
+        this.setAcl(this.acl);
+        aclTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), false);
+        aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), new NSInteger(index), true);
     }
 
     @Outlet
@@ -676,8 +676,8 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void aclRemoveButtonClicked(ID sender) {
         int row = aclTable.selectedRow().intValue();
-        grants.remove(row);
-        this.setGrants(grants);
+        acl.remove(row);
+        this.setAcl(acl);
         this.aclInputDidEndEditing();
     }
 
@@ -687,9 +687,9 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        AccessControlList acl = new AccessControlList();
-                        acl.grantAllPermissions(grants.toArray(new GrantAndPermission[grants.size()]));
-                        ((S3HPath) next).writePermissions(acl, true);
+                        Acl acl = new Acl();
+                        acl.addAll(InfoController.this.acl.toArray(new Acl.UserAndRole[InfoController.this.acl.size()]));
+                        next.writeAcl(acl, true);
                     }
                 }
 
@@ -701,7 +701,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                            files.get(0).getName(), grants);
+                            files.get(0).getName(), acl);
                 }
             });
         }
@@ -860,8 +860,8 @@ public class InfoController extends ToolbarWindowController {
      * Add a custom metadata header. This will be prefixed depending on the service.
      *
      * @param sender
-     * @see Constants#REST_METADATA_PREFIX
-     * @see FilesConstants#X_OBJECT_META
+     * @see org.jets3t.service.Constants#REST_METADATA_PREFIX
+     * @see com.rackspacecloud.client.cloudfiles.FilesConstants#X_OBJECT_META
      */
     @Action
     public void metadataAddCustomClicked(ID sender) {
@@ -1149,7 +1149,8 @@ public class InfoController extends ToolbarWindowController {
     private static final String TOOLBAR_ITEM_GENERAL = "general";
     private static final String TOOLBAR_ITEM_PERMISSIONS = "permissions";
     private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
-    private static final String TOOLBAR_ITEM_CLOUD = "cloud";
+    private static final String TOOLBAR_ITEM_S3 = "s3";
+    private static final String TOOLBAR_ITEM_METADATA = "metadata";
 
     @Override
     protected void setSelectedTab(int tab) {
@@ -1176,17 +1177,15 @@ public class InfoController extends ToolbarWindowController {
         else if(itemIdentifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
             item.setImage(IconCache.iconNamed("NSUserAccounts", 32));
         }
-        else if(itemIdentifier.equals(TOOLBAR_ITEM_CLOUD)) {
-            if(session instanceof CloudSession) {
-                // Give icon and label of the given session
-                item.setLabel(session.getHost().getProtocol().getName());
-                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
-            }
-            else {
-                // Fallback to disabled default cloud provider
-                item.setLabel(Protocol.S3.getName());
-                item.setImage(IconCache.iconNamed(Protocol.S3.disk(), 32));
-            }
+        else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
+            // Currently these settings are only available for Amazon S3
+            item.setLabel(Protocol.S3.getName());
+            item.setImage(IconCache.iconNamed(Protocol.S3.disk(), 32));
+        }
+        else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
+            // Give icon of the given session
+            item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+            item.setImage(IconCache.iconNamed("pencil", 32));
         }
         return super.validateToolbarItem(item);
     }
@@ -1209,7 +1208,14 @@ public class InfoController extends ToolbarWindowController {
             // Not enabled if not a cloud session
             return false;
         }
-        if(itemIdentifier.equals(TOOLBAR_ITEM_CLOUD)) {
+        if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
+            if(session instanceof S3HSession) {
+                return !anonymous;
+            }
+            // Not enabled if not a cloud session
+            return false;
+        }
+        if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
             if(session instanceof CloudSession) {
                 return !anonymous;
             }
@@ -1225,31 +1231,38 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSView panelMetadata;
+
+    public void setPanelMetadata(NSView v) {
+        this.panelMetadata = v;
+    }
+
+    @Outlet
     private NSView panelCloud;
 
-    public void setPanelCloud(NSView panelCloud) {
-        this.panelCloud = panelCloud;
+    public void setPanelCloud(NSView v) {
+        this.panelCloud = v;
     }
 
     @Outlet
     private NSView panelDistribution;
 
-    public void setPanelDistribution(NSView panelDistribution) {
-        this.panelDistribution = panelDistribution;
+    public void setPanelDistribution(NSView v) {
+        this.panelDistribution = v;
     }
 
     @Outlet
     private NSView panelPermissions;
 
-    public void setPanelPermissions(NSView panelPermissions) {
-        this.panelPermissions = panelPermissions;
+    public void setPanelPermissions(NSView v) {
+        this.panelPermissions = v;
     }
 
     @Outlet
     private NSView panelGeneral;
 
-    public void setPanelGeneral(NSView panelGeneral) {
-        this.panelGeneral = panelGeneral;
+    public void setPanelGeneral(NSView v) {
+        this.panelGeneral = v;
     }
 
     @Override
@@ -1277,15 +1290,15 @@ public class InfoController extends ToolbarWindowController {
         // Sum of files
         this.initSize();
         this.initChecksum();
-        // S3 Bucket attributes
-        this.initS3();
-        // HTTP custom headers
-        this.initMetadata();
         // Read HTTP URL
         this.initWebUrl();
         // Read permissions
         this.initPermissions();
         this.initAcl();
+        // S3 Bucket attributes
+        this.initS3();
+        // HTTP custom headers
+        this.initMetadata();
         if(!update) {
             this.initDistribution();
         }
@@ -1343,7 +1356,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     protected List<NSView> getPanels() {
-        return Arrays.asList(panelGeneral, panelPermissions, panelDistribution, panelCloud);
+        return Arrays.asList(panelGeneral, panelPermissions, panelMetadata, panelDistribution, panelCloud);
     }
 
     private String getName() {
@@ -1390,13 +1403,23 @@ public class InfoController extends ToolbarWindowController {
             }
             if(count > 1) {
                 modifiedField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                createdField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
             }
             else {
                 if(-1 == file.attributes().getModificationDate()) {
                     this.updateField(modifiedField, Locale.localizedString("Unknown"));
                 }
                 else {
-                    this.updateField(modifiedField, DateFormatter.getLongFormat(file.attributes().getModificationDate()),
+                    this.updateField(modifiedField, DateFormatterFactory.instance().getLongFormat(
+                            file.attributes().getModificationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES);
+                }
+                if(-1 == file.attributes().getCreationDate()) {
+                    this.updateField(createdField, Locale.localizedString("Unknown"));
+                }
+                else {
+                    this.updateField(createdField, DateFormatterFactory.instance().getLongFormat(
+                            file.attributes().getCreationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES);
                 }
             }
@@ -1456,9 +1479,9 @@ public class InfoController extends ToolbarWindowController {
                         if(this.isCanceled()) {
                             break;
                         }
-                        if(null == next.attributes().getPermission()) {
+                        if(next.attributes().getPermission().equals(Permission.EMPTY)) {
                             // Read permission of every selected path
-                            next.readPermission();
+                            next.readUnixPermission();
                         }
                     }
                 }
@@ -1468,27 +1491,25 @@ public class InfoController extends ToolbarWindowController {
                     Permission permission = null;
                     for(Path next : files) {
                         permission = next.attributes().getPermission();
-                        if(null != permission) {
-                            updateCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
-                            updateCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
-                            updateCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
+                        updateCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
+                        updateCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
+                        updateCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
 
-                            updateCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
-                            updateCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
-                            updateCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
+                        updateCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
+                        updateCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
+                        updateCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
 
-                            updateCheckbox(otherr, permission.getOtherPermissions()[Permission.READ]);
-                            updateCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
-                            updateCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
-                        }
+                        updateCheckbox(otherr, permission.getOtherPermissions()[Permission.READ]);
+                        updateCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
+                        updateCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
                     }
-                    octalField.setStringValue(null == permission ? Locale.localizedString("Unknown") : permission.getOctalString());
+                    octalField.setStringValue(permission.getOctalString());
                     final int count = numberOfFiles();
                     if(count > 1) {
                         permissionsField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                     }
                     else {
-                        permissionsField.setStringValue(null == permission ? Locale.localizedString("Unknown") : permission.toString());
+                        permissionsField.setStringValue(permission.toString());
                     }
                     togglePermissionSettings(true);
                 }
@@ -1666,6 +1687,9 @@ public class InfoController extends ToolbarWindowController {
         return enable;
     }
 
+    /**
+     *
+     */
     private void initS3() {
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
@@ -1728,9 +1752,7 @@ public class InfoController extends ToolbarWindowController {
                         location = s.getLocation(container);
                         logging = s.isLogging(container);
                         versioning = s.isVersioning(container);
-                        if(versioning) {
-                            mfa = s.isMultiFactorAuthentication(container);
-                        }
+                        mfa = s.isMultiFactorAuthentication(container);
                     }
                 }
 
@@ -1764,11 +1786,10 @@ public class InfoController extends ToolbarWindowController {
     private boolean toggleAclSettings(final boolean stop) {
         boolean enable = this.numberOfFiles() == 1;
         if(enable) {
-            for(Path file : files) {
-                final Credentials credentials = file.getHost().getCredentials();
-                enable = enable && !credentials.isAnonymousLogin();
-                enable = enable && file instanceof S3HPath;
-            }
+            final Session session = controller.getSession();
+            final Credentials credentials = session.getHost().getCredentials();
+            enable = enable && !credentials.isAnonymousLogin();
+            enable = enable && session.isAclSupported();
         }
         aclTable.setEnabled(stop && enable);
         aclAddButton.setEnabled(stop && enable);
@@ -1845,20 +1866,23 @@ public class InfoController extends ToolbarWindowController {
      * Read grants in the background
      */
     private void initAcl() {
-        this.setGrants(Collections.<GrantAndPermission>emptyList());
+        this.setAcl(Collections.<Acl.UserAndRole>emptyList());
         if(this.toggleAclSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
-                private List<GrantAndPermission> updated = new ArrayList<GrantAndPermission>();
+                private List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
 
                 public void run() {
                     for(Path next : files) {
-                        updated.addAll(Arrays.asList(((S3HPath) next).readAcl().getGrantAndPermissions()));
+                        if(Acl.EMPTY.equals(next.attributes().getAcl())) {
+                            next.readAcl();
+                        }
+                        updated.addAll(next.attributes().getAcl().asList());
                     }
                 }
 
                 @Override
                 public void cleanup() {
-                    setGrants(updated);
+                    setAcl(updated);
                     toggleAclSettings(true);
                 }
 
@@ -1971,7 +1995,7 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     for(Path next : files) {
                         if(recursive || !next.attributes().getPermission().equals(permission)) {
-                            next.writePermissions(permission, recursive);
+                            next.writeUnixPermission(permission, recursive);
                         }
                         if(!controller.isConnected()) {
                             break;
@@ -2001,17 +2025,9 @@ public class InfoController extends ToolbarWindowController {
      * @return True if controls are enabled for the given protocol in idle state
      */
     private boolean togglePermissionSettings(final boolean stop) {
-        final Credentials credentials = controller.getSession().getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin();
-        boolean cloud = false;
-        for(Path next : files) {
-            if(!next.isWritePermissionsSupported()) {
-                enable = false;
-            }
-            if(next instanceof CloudPath) {
-                cloud = true;
-            }
-        }
+        final Session session = controller.getSession();
+        final Credentials credentials = session.getHost().getCredentials();
+        boolean enable = !credentials.isAnonymousLogin() && session.isUnixPermissionsSupported();
         recursiveCheckbox.setEnabled(stop && enable);
         for(Path next : files) {
             if(next.attributes().isFile()) {
@@ -2021,15 +2037,15 @@ public class InfoController extends ToolbarWindowController {
             }
         }
         octalField.setEnabled(stop && enable);
-        ownerr.setEnabled(!cloud && stop && enable);
-        ownerw.setEnabled(!cloud && stop && enable);
-        ownerx.setEnabled(!cloud && stop && enable);
-        groupr.setEnabled(!cloud && stop && enable);
-        groupw.setEnabled(!cloud && stop && enable);
-        groupx.setEnabled(!cloud && stop && enable);
+        ownerr.setEnabled(stop && enable);
+        ownerw.setEnabled(stop && enable);
+        ownerx.setEnabled(stop && enable);
+        groupr.setEnabled(stop && enable);
+        groupw.setEnabled(stop && enable);
+        groupx.setEnabled(stop && enable);
         otherr.setEnabled(stop && enable);
         otherw.setEnabled(stop && enable);
-        otherx.setEnabled(!cloud && stop && enable);
+        otherx.setEnabled(stop && enable);
         if(stop) {
             permissionProgress.stopAnimation(null);
         }
@@ -2259,9 +2275,36 @@ public class InfoController extends ToolbarWindowController {
     @Override
     @Action
     public void helpButtonClicked(final NSButton sender) {
-        NSWorkspace.sharedWorkspace().openURL(
-                NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                        + "/howto/info")
-        );
+        final String tab = this.getSelectedTab();
+        if(tab.equals(TOOLBAR_ITEM_GENERAL)) {
+            NSWorkspace.sharedWorkspace().openURL(
+                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
+                            + "/howto/info")
+            );
+        }
+        if(tab.equals(TOOLBAR_ITEM_PERMISSIONS)) {
+            NSWorkspace.sharedWorkspace().openURL(
+                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
+                            + "/howto/info")
+            );
+        }
+        if(tab.equals(TOOLBAR_ITEM_METADATA)) {
+            NSWorkspace.sharedWorkspace().openURL(
+                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
+                            + "/howto/s3")
+            );
+        }
+        if(tab.equals(TOOLBAR_ITEM_S3)) {
+            NSWorkspace.sharedWorkspace().openURL(
+                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
+                            + "/howto/s3")
+            );
+        }
+        if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
+            NSWorkspace.sharedWorkspace().openURL(
+                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
+                            + "/howto/cdn")
+            );
+        }
     }
 }

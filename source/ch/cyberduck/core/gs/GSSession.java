@@ -19,10 +19,7 @@ package ch.cyberduck.core.gs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
@@ -92,5 +89,12 @@ public class GSSession extends S3Session {
     @Override
     public boolean isRequesterPaysSupported() {
         return false;
+    }
+
+    @Override
+    public List<Acl.Role> getAvailableAclRoles() {
+        return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
     }
 }

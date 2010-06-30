@@ -22,7 +22,6 @@ package ch.cyberduck.core.s3h;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
-import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -44,6 +43,7 @@ import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3BucketLoggingStatus;
@@ -63,7 +63,7 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class S3HSession extends HTTPSession implements CloudSession {
+public class S3HSession extends CloudSession {
     private static Logger log = Logger.getLogger(S3HSession.class);
 
     static {
@@ -357,7 +357,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
         catch(S3ServiceException e) {
             if(this.isLoginFailure(e)) {
                 this.message(Locale.localizedString("Login failed", "Credentials"));
-                this.login.fail(host,
+                this.login.fail(credentials,
                         Locale.localizedString("Login with username and password", "Credentials"));
                 this.login();
             }
@@ -386,7 +386,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
             }
         };
         // Prompt for MFA credentials.
-        this.getLoginController().prompt(this.getHost(),
+        this.getLoginController().prompt(credentials,
                 Locale.localizedString("Provide additional login credentials", "Credentials"),
                 Locale.localizedString("Multi-Factor Authentication", "S3"));
         return credentials;
@@ -454,6 +454,11 @@ public class S3HSession extends HTTPSession implements CloudSession {
     @Override
     public boolean isUploadResumable() {
         return false;
+    }
+
+    @Override
+    public boolean isAclSupported() {
+        return true;
     }
 
     @Override
@@ -620,10 +625,17 @@ public class S3HSession extends HTTPSession implements CloudSession {
         return cloudfront;
     }
 
+    /**
+     * Cache distribution status result.
+     */
+    private Map<String, Distribution> distributionStatus
+            = new HashMap<String, Distribution>();
+
 
     /**
      * @return
      */
+    @Override
     public Distribution readDistribution(String container, Distribution.Method method) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot read distribution");
@@ -632,30 +644,37 @@ public class S3HSession extends HTTPSession implements CloudSession {
         if(this.getSupportedDistributionMethods().size() == 0) {
             return new Distribution();
         }
-        try {
-            this.check();
-            for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container, method)) {
-                // Retrieve distribution's configuration to access current logging status settings.
-                final DistributionConfig distributionConfig = this.getDistributionConfig(d);
-                // We currently only support one distribution per bucket
-                return new Distribution(d.isEnabled(), d.isDeployed(),
-                        method.getProtocol() + d.getDomainName() + method.getContext(),
-                        Locale.localizedString(d.getStatus(), "S3"),
-                        distributionConfig.getCNAMEs(),
-                        distributionConfig.isLoggingEnabled(),
-                        method);
+        if(!distributionStatus.containsKey(container)) {
+            try {
+                this.check();
+                for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container, method)) {
+                    // Retrieve distribution's configuration to access current logging status settings.
+                    final DistributionConfig distributionConfig = this.getDistributionConfig(d);
+                    // We currently only support one distribution per bucket
+                    final Distribution distribution = new Distribution(d.isEnabled(), d.isDeployed(),
+                            method.getProtocol() + d.getDomainName() + method.getContext(),
+                            Locale.localizedString(d.getStatus(), "S3"),
+                            distributionConfig.getCNAMEs(),
+                            distributionConfig.isLoggingEnabled(),
+                            method);
+                    distributionStatus.put(container, distribution);
+                }
+            }
+            catch(CloudFrontServiceException e) {
+                if(this.isPermissionFailure(e)) {
+                    log.warn("Invalid CloudFront account:" + e.getMessage());
+                    this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
+                }
+                else {
+                    this.error("Cannot read file attributes", e);
+                }
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
             }
         }
-        catch(CloudFrontServiceException e) {
-            if(this.isPermissionFailure(e)) {
-                log.warn("Invalid CloudFront account:" + e.getMessage());
-                this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
-                return new Distribution(false, null, Locale.localizedString("Unknown"));
-            }
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+        if(distributionStatus.containsKey(container)) {
+            return distributionStatus.get(container);
         }
         return new Distribution();
     }
@@ -668,6 +687,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
      * @param cnames
      * @param logging
      */
+    @Override
     public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot write distribution");
@@ -705,8 +725,12 @@ public class S3HSession extends HTTPSession implements CloudSession {
         catch(IOException e) {
             this.error("Cannot write file attributes", e);
         }
+        finally {
+            distributionStatus.clear();
+        }
     }
 
+    @Override
     public String getDistributionServiceName() {
         return Locale.localizedString("Amazon CloudFront", "S3");
     }
@@ -714,6 +738,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
     private List<Distribution.Method> distributionMethods
             = Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
 
+    @Override
     public List<Distribution.Method> getSupportedDistributionMethods() {
         return distributionMethods;
     }
@@ -725,6 +750,7 @@ public class S3HSession extends HTTPSession implements CloudSession {
     private List<String> storageClasses
             = Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
 
+    @Override
     public List<String> getSupportedStorageClasses() {
         return storageClasses;
     }
@@ -775,15 +801,18 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     if(this.isPermissionFailure(e)) {
                         log.warn("Bucket logging not supported:" + e.getMessage());
                         this.setLoggingSupported(false);
-                        return false;
                     }
-                    this.error("Cannot read file attributes", e);
+                    else {
+                        this.error("Cannot read file attributes", e);
+                    }
                 }
                 catch(IOException e) {
                     this.error("Cannot read file attributes", e);
                 }
             }
-            return loggingStatus.get(container).isLoggingEnabled();
+            if(loggingStatus.containsKey(container)) {
+                return loggingStatus.get(container).isLoggingEnabled();
+            }
         }
         return false;
     }
@@ -804,11 +833,6 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 this.getClient().setBucketLoggingStatus(container, status, true);
             }
             catch(S3ServiceException e) {
-                if(this.isPermissionFailure(e)) {
-                    log.warn("Bucket logging not supported:" + e.getMessage());
-                    this.setLoggingSupported(false);
-                    return;
-                }
                 this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
@@ -866,15 +890,18 @@ public class S3HSession extends HTTPSession implements CloudSession {
                     if(this.isPermissionFailure(e)) {
                         log.warn("Bucket versioning not supported:" + e.getMessage());
                         this.setVersioningSupported(false);
-                        return false;
                     }
-                    this.error("Cannot read file attributes", e);
+                    else {
+                        this.error("Cannot read file attributes", e);
+                    }
                 }
                 catch(IOException e) {
                     this.error("Cannot read file attributes", e);
                 }
             }
-            return versioningStatus.get(container).isVersioningEnabled();
+            if(versioningStatus.containsKey(container)) {
+                return versioningStatus.get(container).isVersioningEnabled();
+            }
         }
         return false;
     }
@@ -922,10 +949,6 @@ public class S3HSession extends HTTPSession implements CloudSession {
                 }
             }
             catch(S3ServiceException e) {
-                if(this.isPermissionFailure(e)) {
-                    log.warn("Bucket versioning not supported:" + e.getMessage());
-                    this.setVersioningSupported(false);
-                }
                 this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
@@ -988,5 +1011,22 @@ public class S3HSession extends HTTPSession implements CloudSession {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<Acl.Role> getAvailableAclRoles() {
+        return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ_ACP.toString()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE_ACP.toString()));
+    }
+
+    @Override
+    public List<Acl.User> getAvailableAclUsers() {
+        return Arrays.asList(
+                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
+                new Acl.CanonicalUser(""),
+                new Acl.EmailUser(""));
     }
 }
