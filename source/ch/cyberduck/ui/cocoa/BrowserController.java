@@ -53,14 +53,15 @@ import ch.cyberduck.ui.cocoa.view.CDBookmarkCell;
 import ch.cyberduck.ui.cocoa.view.CDOutlineCell;
 import ch.cyberduck.ui.growl.Growl;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.*;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.sun.jna.ptr.PointerByReference;
 
@@ -1443,7 +1444,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.quickConnectPopup.setTarget(this.id());
         this.quickConnectPopup.setCompletes(true);
         this.quickConnectPopup.setAction(Foundation.selector("quickConnectSelectionChanged:"));
-        this.quickConnectPopup.cell().setSendsActionOnEndEditing(true);
+        // Make sure action is not sent twice.
+        this.quickConnectPopup.cell().setSendsActionOnEndEditing(false);
         this.quickConnectPopup.setUsesDataSource(true);
         this.quickConnectPopup.setDataSource(quickConnectPopupModel.id());
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
@@ -1476,7 +1478,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         input = input.trim();
         // First look for equivalent bookmarks
-        for(Host h : (Iterable<Host>) HostCollection.defaultCollection()) {
+        for(Host h : HostCollection.defaultCollection()) {
             if(h.getNickname().equals(input)) {
                 this.mount(h);
                 return;
@@ -3786,7 +3788,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
-            return this.isMounted() && this.getSession().isCreateFolderFolderSupported(this.workdir());
+            return this.isMounted() && this.getSession().isCreateFolderSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isMounted() && this.getSession().isCreateFileSupported(this.workdir());
