@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3h;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -32,18 +33,14 @@ import org.jets3t.service.S3ObjectsChunk;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
-import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.acl.CanonicalGrantee;
-import org.jets3t.service.acl.GrantAndPermission;
-import org.jets3t.service.acl.GroupGrantee;
+import org.jets3t.service.acl.*;
 import org.jets3t.service.model.*;
-import org.jets3t.service.utils.ObjectUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -103,10 +100,7 @@ public class S3HPath extends CloudPath {
     }
 
     @Override
-    public S3HSession getSession() throws ConnectionCanceledException {
-        if(null == session) {
-            throw new ConnectionCanceledException();
-        }
+    public S3HSession getSession() {
         return session;
     }
 
@@ -226,11 +220,12 @@ public class S3HPath extends CloudPath {
      * @return The ACL of the bucket or object. Return AccessControlList.REST_CANNED_PRIVATE if
      *         reading fails.
      */
-    public AccessControlList readAcl() {
+    @Override
+    public void readAcl() {
         try {
             final Credentials credentials = this.getSession().getHost().getCredentials();
             if(credentials.isAnonymousLogin()) {
-                return AccessControlList.REST_CANNED_PRIVATE;
+                return;
             }
             final String container = this.getContainerName();
             if(this.isContainer()) {
@@ -242,7 +237,7 @@ public class S3HPath extends CloudPath {
                     // for that bucket (in S3) allows you to do so.
                     bucket.setAcl(this.getSession().getClient().getBucketAcl(container));
                 }
-                return bucket.getAcl();
+                this.attributes().setAcl(this.convert(bucket.getAcl()));
             }
             else if(attributes().isFile()) {
                 final S3Object details = this.getDetails();
@@ -257,7 +252,7 @@ public class S3HPath extends CloudPath {
                         details.setAcl(this.getSession().getClient().getObjectAcl(container, this.getKey()));
                     }
                 }
-                return details.getAcl();
+                this.attributes().setAcl(this.convert(details.getAcl()));
             }
         }
         catch(S3ServiceException e) {
@@ -266,7 +261,24 @@ public class S3HPath extends CloudPath {
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-        return AccessControlList.REST_CANNED_PRIVATE;
+    }
+
+    protected Acl convert(final AccessControlList list) {
+        Acl acl = new Acl();
+        for(GrantAndPermission grant : list.getGrantAndPermissions()) {
+            Acl.Role role = new Acl.Role(grant.getPermission().toString());
+            if(grant.getGrantee() instanceof CanonicalGrantee) {
+                acl.addAll(new Acl.CanonicalUser(grant.getGrantee().getIdentifier(),
+                        ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
+            }
+            if(grant.getGrantee() instanceof EmailAddressGrantee) {
+                acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier()), role);
+            }
+            if(grant.getGrantee() instanceof GroupGrantee) {
+                acl.addAll(new Acl.GroupUser(grant.getGrantee().getIdentifier()), role);
+            }
+        }
+        return acl;
     }
 
     /**
@@ -439,59 +451,6 @@ public class S3HPath extends CloudPath {
     }
 
     @Override
-    public void readPermission() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                    this.getName()));
-            attributes().setPermission(this.readPermissions(this.readAcl().getGrantAndPermissions()));
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
-        }
-    }
-
-    /**
-     * @param grants
-     * @return
-     */
-    private Permission readPermissions(GrantAndPermission[] grants) throws IOException, S3ServiceException {
-        boolean[][] p = new boolean[3][3];
-        final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
-        for(GrantAndPermission grant : grants) {
-            final org.jets3t.service.acl.Permission access = grant.getPermission();
-            if(grant.getGrantee().equals(GroupGrantee.ALL_USERS)) {
-                if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
-                    p[Permission.OTHER][Permission.READ] = true;
-                }
-                else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)) {
-                    p[Permission.OTHER][Permission.WRITE] = true;
-                }
-                else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
-                    p[Permission.OTHER][Permission.EXECUTE] = true;
-                }
-            }
-            if(null != owner) {
-                if(grant.getGrantee().getIdentifier().equals(owner.getId())) {
-                    if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_READ)) {
-                        p[Permission.OWNER][Permission.READ] = true;
-                    }
-                    else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_WRITE)) {
-                        p[Permission.OWNER][Permission.WRITE] = true;
-                    }
-                    else if(access.equals(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL)) {
-                        p[Permission.OWNER][Permission.EXECUTE] = true;
-                    }
-                }
-            }
-        }
-        return new Permission(p);
-    }
-
-    @Override
     public void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
@@ -534,33 +493,29 @@ public class S3HPath extends CloudPath {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes().isDirectory()) {
-            this.getLocal().mkdir(true);
-        }
     }
 
     @Override
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener,
-                       final Permission p, final boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
             if(check) {
                 this.getSession().check();
             }
             if(attributes().isFile()) {
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                        this.getName()));
-                S3Object object;
+                S3Object object = new S3Object(this.getKey());
+                object.setContentType(this.getLocal().getMimeType());
+                object.setContentLength(this.getLocal().attributes().getSize());
                 try {
-                    object = ObjectUtils.createObjectForUpload(this.getKey(),
-                            new File(this.getLocal().getAbsolute()),
-                            null, //no encryption
-                            false); //no gzip)
+                    this.getSession().message(MessageFormat.format(
+                            Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+                    object.setMd5Hash(ServiceUtils.computeMD5Hash(this.getLocal().getInputStream()));
                 }
-                catch(Exception e) {
-                    throw new IOException(e.getMessage());
+                catch(NoSuchAlgorithmException e) {
+                    log.error(e.getMessage());
                 }
                 AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
-                if(null != p) {
+                final Permission p = this.attributes().getPermission();
+                if(!p.equals(Permission.EMPTY)) {
                     if(p.getOtherPermissions()[Permission.READ]) {
                         acl = AccessControlList.REST_CANNED_PUBLIC_READ;
                     }
@@ -595,9 +550,6 @@ public class S3HPath extends CloudPath {
                     IOUtils.closeQuietly(in);
                 }
             }
-            if(attributes().isDirectory()) {
-                this.mkdir();
-            }
         }
         catch(S3ServiceException e) {
             this.error("Upload failed", e);
@@ -606,18 +558,6 @@ public class S3HPath extends CloudPath {
             this.error("Upload failed", e);
         }
     }
-
-    private static final Permission DEFAULT_FOLDER_PERMISSION;
-
-    static {
-        boolean[][] access = new boolean[3][3];
-        access[Permission.OWNER][Permission.READ] = true;
-        access[Permission.OWNER][Permission.WRITE] = true;
-        access[Permission.OWNER][Permission.EXECUTE] = true;
-        DEFAULT_FOLDER_PERMISSION = new Permission(access);
-    }
-
-    private static final int BUCKET_LIST_CHUNKING_SIZE = 1000;
 
     @Override
     public AttributedList<Path> list() {
@@ -670,7 +610,7 @@ public class S3HPath extends CloudPath {
                         // in lexicographic (alphabetical) order.
                         S3ObjectsChunk chunk = this.getSession().getClient().listObjectsChunked(
                                 container, prefix, delimiter,
-                                BUCKET_LIST_CHUNKING_SIZE, priorLastKey);
+                                Preferences.instance().getInteger("s3.listing.chunksize"), priorLastKey);
 
                         final S3Object[] objects = chunk.getObjects();
                         for(S3Object object : objects) {
@@ -694,9 +634,9 @@ public class S3HPath extends CloudPath {
                                 }
                             }
                             path.attributes().setStorageClass(object.getStorageClass());
+                            path.attributes().setVersionId(object.getVersionId());
                             childs.add(path);
                         }
-
                         final String[] prefixes = chunk.getCommonPrefixes();
                         for(String common : prefixes) {
                             if(common.equals(Path.DELIMITER)) {
@@ -713,24 +653,25 @@ public class S3HPath extends CloudPath {
                                 p.attributes().setOwner(bucket.getOwner().getDisplayName());
                                 p.attributes().setGroup(bucket.getOwner().getId());
                             }
-                            p.attributes().setPermission(DEFAULT_FOLDER_PERMISSION);
                             childs.add(p);
                         }
-
                         priorLastKey = chunk.getPriorLastKey();
                     }
                     while(priorLastKey != null && !status().isCanceled());
                 }
-                if(this.getSession().isVersioning(container)) {
-                    String priorLastKey = null;
-                    String priorLastVersionId = null;
-                    do {
-                        final VersionOrDeleteMarkersChunk chunk = this.getSession().getClient().listVersionedObjectsChunked(
-                                container, prefix, delimiter,
-                                BUCKET_LIST_CHUNKING_SIZE, priorLastKey, priorLastVersionId, true);
-                        childs.addAll(this.getVersions(bucket, Arrays.asList(chunk.getItems())));
+                if(Preferences.instance().getBoolean("s3.revisions.enable")) {
+                    if(this.getSession().isVersioning(container)) {
+                        String priorLastKey = null;
+                        String priorLastVersionId = null;
+                        do {
+                            final VersionOrDeleteMarkersChunk chunk = this.getSession().getClient().listVersionedObjectsChunked(
+                                    container, prefix, delimiter,
+                                    Preferences.instance().getInteger("s3.listing.chunksize"),
+                                    priorLastKey, priorLastVersionId, true);
+                            childs.addAll(this.getVersions(bucket, Arrays.asList(chunk.getItems())));
+                        }
+                        while(priorLastKey != null && !status().isCanceled());
                     }
-                    while(priorLastKey != null && !status().isCanceled());
                 }
             }
             this.getSession().setWorkdir(this);
@@ -750,10 +691,11 @@ public class S3HPath extends CloudPath {
             throws IOException, S3ServiceException {
         Collections.sort(versionOrDeleteMarkers, new Comparator<BaseVersionOrDeleteMarker>() {
             public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
-                return o2.getLastModified().compareTo(o1.getLastModified());
+                return o1.getLastModified().compareTo(o2.getLastModified());
             }
         });
         final List<Path> versions = new ArrayList<Path>();
+        int i = 0;
         for(BaseVersionOrDeleteMarker object : versionOrDeleteMarkers) {
             if(object.isLatest()) {
                 // Latest version already in default listing
@@ -782,6 +724,7 @@ public class S3HPath extends CloudPath {
             path.attributes().setStorageClass(version.getStorageClass());
             // Versioning is enabled if non null.
             path.attributes().setVersionId(version.getVersionId());
+            path.attributes().setRevision(++i);
             path.attributes().setDuplicate(true);
             versions.add(path);
         }
@@ -831,29 +774,23 @@ public class S3HPath extends CloudPath {
     }
 
     @Override
-    public void writePermissions(Permission perm, boolean recursive) {
-        log.debug("writePermissions:" + perm);
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                    this.getName(), perm.getOctalString()));
-
-            this.writePermissions(this.getAccessControlList(perm), recursive);
-            if(attributes().isDirectory()) {
-                if(recursive) {
-                    for(AbstractPath child : this.childs()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        child.writePermissions(perm, recursive);
-                    }
-                }
+    public void writeAcl(Acl acl, boolean recursive) {
+        AccessControlList list = new AccessControlList();
+        for(Acl.UserAndRole userAndRole : acl.asList()) {
+            if(userAndRole.getUser().isEmailIdentifier()) {
+                list.grantPermission(new EmailAddressGrantee(userAndRole.getUser().getIdentifier()),
+                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
             }
-            attributes().setPermission(perm);
+            else if(userAndRole.getUser().isGroupIdentifier()) {
+                list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
+                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+            }
+            else {
+                list.grantPermission(new CanonicalGrantee(userAndRole.getUser().getIdentifier()),
+                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+            }
         }
-        catch(IOException e) {
-            this.error("Cannot change permissions", e);
-        }
+        this.writeAcl(list, recursive);
     }
 
     /**
@@ -861,7 +798,7 @@ public class S3HPath extends CloudPath {
      *
      * @param acl The updated access control list.
      */
-    public void writePermissions(AccessControlList acl, boolean recursive) {
+    protected void writeAcl(AccessControlList acl, boolean recursive) {
         try {
             final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
             acl.setOwner(owner);
@@ -871,13 +808,13 @@ public class S3HPath extends CloudPath {
             else if(attributes().isFile()) {
                 this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
             }
-            else if(attributes().isDirectory()) {
+            if(attributes().isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
                         if(!this.getSession().isConnected()) {
                             break;
                         }
-                        ((S3HPath) child).writePermissions(acl, recursive);
+                        ((S3HPath) child).writeAcl(acl, recursive);
                     }
                 }
             }
@@ -894,7 +831,7 @@ public class S3HPath extends CloudPath {
      * @param permission The permissions to apply
      * @return The updated access control list.
      */
-    protected AccessControlList getAccessControlList(Permission permission) throws IOException {
+    protected AccessControlList getAccessControlList(final Permission permission) throws IOException {
         final AccessControlList acl = new AccessControlList();
         final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
         acl.setOwner(owner);
@@ -922,30 +859,8 @@ public class S3HPath extends CloudPath {
         return acl;
     }
 
-    /**
-     * Use ACL support.
-     *
-     * @return Always returning false because permissions should be set using ACLs
-     * @see #writePermissions(org.jets3t.service.acl.AccessControlList, boolean)
-     */
-    @Override
-    public boolean isWritePermissionsSupported() {
-        return false;
-    }
-
-    @Override
-    public boolean isWriteModificationDateSupported() {
-        return false;
-    }
-
-    @Override
-    public void writeModificationDate(long millis) {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public void delete() {
-        log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
             final String container = this.getContainerName();
@@ -1113,18 +1028,12 @@ public class S3HPath extends CloudPath {
             return this.createSignedUrl();
         }
         final String key = this.isContainer() ? "" : this.encode(this.getKey());
-        try {
-            if(ServiceUtils.isBucketNameValidDNSName(this.getContainerName())) {
-                return Protocol.S3.getScheme() + "://"
-                        + this.getSession().getHostnameForBucket(this.getContainerName()) + key;
-            }
-            else {
-                return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + key;
-            }
+        if(ServiceUtils.isBucketNameValidDNSName(this.getContainerName())) {
+            return Protocol.S3.getScheme() + "://"
+                    + this.getSession().getHostnameForBucket(this.getContainerName()) + key;
         }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
-            return super.toURL();
+        else {
+            return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + key;
         }
     }
 
@@ -1170,13 +1079,7 @@ public class S3HPath extends CloudPath {
      * @return
      */
     public String createTorrentUrl() {
-        try {
-            return S3Service.createTorrentUrl(
-                    this.getContainerName(), this.getKey(), this.getSession().configuration);
-        }
-        catch(ConnectionCanceledException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        return null;
+        return S3Service.createTorrentUrl(
+                this.getContainerName(), this.getKey(), this.getSession().configuration);
     }
 }

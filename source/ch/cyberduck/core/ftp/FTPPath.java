@@ -100,10 +100,7 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public FTPSession getSession() throws ConnectionCanceledException {
-        if(null == session) {
-            throw new ConnectionCanceledException();
-        }
+    public FTPSession getSession() {
         return session;
     }
 
@@ -412,7 +409,6 @@ public class FTPPath extends Path {
 
     @Override
     public void rename(AbstractPath renamed) {
-        log.debug("rename:" + renamed);
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
@@ -508,7 +504,7 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void readPermission() {
+    public void readUnixPermission() {
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
@@ -527,7 +523,6 @@ public class FTPPath extends Path {
 
     @Override
     public void delete() {
-        log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
             if(attributes().isFile() || attributes().isSymbolicLink()) {
@@ -578,12 +573,11 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                     this.getName(), owner));
 
-            this.getSession().setWorkdir(this.getParent());
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                this.getSession().getClient().site(command + " " + owner + " " + this.getName());
+                this.getSession().getClient().site(command + " " + owner + " " + this.getAbsolute());
             }
             else if(attributes().isDirectory()) {
-                this.getSession().getClient().site(command + " " + owner + " " + this.getName());
+                this.getSession().getClient().site(command + " " + owner + " " + this.getAbsolute());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
                         if(!this.getSession().isConnected()) {
@@ -607,12 +601,11 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
                     this.getName(), group));
 
-            this.getSession().setWorkdir(this.getParent());
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                this.getSession().getClient().site(command + " " + group + " " + this.getName());
+                this.getSession().getClient().site(command + " " + group + " " + this.getAbsolute());
             }
             else if(attributes().isDirectory()) {
-                this.getSession().getClient().site(command + " " + group + " " + this.getName());
+                this.getSession().getClient().site(command + " " + group + " " + this.getAbsolute());
                 if(recursive) {
                     for(AbstractPath child : this.childs()) {
                         if(!this.getSession().isConnected()) {
@@ -629,70 +622,73 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void writePermissions(Permission perm, boolean recursive) {
-        final String command = "CHMOD";
+    public void writeUnixPermission(Permission perm, boolean recursive) {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                    this.getName(), perm.getOctalString()));
-
-            this.getSession().setWorkdir(this.getParent());
-            if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                if(recursive) {
-                    // Do not write executable bit for files if not already set when recursively updating directory.
-                    // See #1787
-                    Permission modified = new Permission(perm);
-                    if(!attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
-                        modified.getOwnerPermissions()[Permission.EXECUTE] = false;
-                    }
-                    if(!attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
-                        modified.getGroupPermissions()[Permission.EXECUTE] = false;
-                    }
-                    if(!attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
-                        modified.getOtherPermissions()[Permission.EXECUTE] = false;
-                    }
-                    this.getSession().getClient().site(command + " " + modified.getOctalString() + " " + this.getName());
-                }
-                else {
-                    this.getSession().getClient().site(command + " " + perm.getOctalString() + " " + this.getName());
-                }
-                attributes().setPermission(perm);
-            }
-            else if(attributes().isDirectory()) {
-                this.getSession().getClient().site(command + " " + perm.getOctalString() + " " + this.getName());
-                if(recursive) {
-                    for(AbstractPath child : this.childs()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        child.writePermissions(perm, recursive);
-                    }
-                }
-                attributes().setPermission(perm);
-            }
+            this.writePermissionsImpl(perm, recursive);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
         }
     }
 
-    @Override
-    public void writeModificationDate(long millis) {
-        try {
-            this.writeModificationDate(millis, millis);
+    private void writePermissionsImpl(Permission perm, boolean recursive) throws IOException {
+        this.getSession().check();
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                this.getName(), perm.getOctalString()));
+
+        if(attributes().isFile() && !attributes().isSymbolicLink()) {
+            if(recursive) {
+                // Do not write executable bit for files if not already set when recursively updating directory.
+                // See #1787
+                Permission modified = new Permission(perm);
+                if(!attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                    modified.getOwnerPermissions()[Permission.EXECUTE] = false;
+                }
+                if(!attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                    modified.getGroupPermissions()[Permission.EXECUTE] = false;
+                }
+                if(!attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                    modified.getOtherPermissions()[Permission.EXECUTE] = false;
+                }
+                this.getSession().getClient().chmod(modified.getOctalString(), this.getAbsolute());
+            }
+            else {
+                this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
+            }
+            attributes().setPermission(perm);
         }
-        catch(IOException e) {
-            log.warn(e.getMessage());
+        else if(attributes().isDirectory()) {
+            this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
+            if(recursive) {
+                for(AbstractPath child : this.childs()) {
+                    if(!this.getSession().isConnected()) {
+                        break;
+                    }
+                    ((FTPPath) child).writePermissionsImpl(perm, recursive);
+                }
+            }
+            attributes().setPermission(perm);
         }
     }
 
-    private void writeModificationDate(long modified, long created) throws IOException {
+    @Override
+    public void writeTimestamp(long millis) {
+        try {
+            this.writeModificationDateImpl(millis, millis);
+        }
+        catch(IOException e) {
+            this.error("Cannot change timestamp", e);
+        }
+    }
+
+    private void writeModificationDateImpl(long modified, long created) throws IOException {
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                this.getName(), modified));
         this.getSession().getClient().mfmt(modified, created, this.getName());
     }
 
     @Override
     public void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
-        log.debug("download:" + this.toString());
         try {
             if(check) {
                 this.getSession().check();
@@ -716,9 +712,6 @@ public class FTPPath extends Path {
                 else {
                     throw new FTPException("Transfer mode not set");
                 }
-            }
-            else if(attributes().isDirectory()) {
-                this.getLocal().touch(true);
             }
         }
         catch(IOException e) {
@@ -794,8 +787,7 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
-        log.debug("upload:" + this.toString());
+    public void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         try {
             if(check) {
                 this.getSession().check();
@@ -822,14 +814,9 @@ public class FTPPath extends Path {
                     throw new FTPException("Transfer mode not set");
                 }
             }
-            if(attributes().isDirectory()) {
-                this.mkdir();
-            }
-            if(null != p) {
+            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                 try {
-                    log.info("Updating permissions:" + p.getOctalString());
-                    this.getSession().getClient().chmod(p.getOctalString(),
-                            this.getName());
+                    this.writePermissionsImpl(this.attributes().getPermission(), false);
                 }
                 catch(FTPException ignore) {
                     //CHMOD not supported; ignore
@@ -837,9 +824,14 @@ public class FTPPath extends Path {
                 }
             }
             if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                log.info("Updating timestamp");
-                this.writeModificationDate(this.getLocal().attributes().getModificationDate(),
-                        this.getLocal().attributes().getCreationDate());
+                try {
+                    this.writeModificationDateImpl(this.getLocal().attributes().getModificationDate(),
+                            this.getLocal().attributes().getCreationDate());
+                }
+                catch(FTPException ignore) {
+                    //MFMT not supported; ignore
+                    log.warn(ignore.getMessage());
+                }
             }
         }
         catch(IOException e) {
@@ -847,7 +839,7 @@ public class FTPPath extends Path {
         }
     }
 
-    private void uploadBinary(final BandwidthThrottle throttle, final StreamListener listener) throws IOException {
+    private void uploadBinary(BandwidthThrottle throttle, StreamListener listener) throws IOException {
         InputStream in = null;
         OutputStream out = null;
         try {

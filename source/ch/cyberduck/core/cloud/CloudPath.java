@@ -18,8 +18,10 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 
 import org.apache.log4j.Logger;
 
@@ -100,4 +102,27 @@ public abstract class CloudPath extends Path {
      * @return The updated headers of the object
      */
     public abstract void writeMetadata(Map<String, String> meta);
+
+    @Override
+    public void writeTimestamp(long millis) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void readTimestamp() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void writeUnixPermission(Permission perm, boolean recursive) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void readUnixPermission() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public abstract AttributedList<Path> list();
 }

@@ -171,7 +171,7 @@ public class SFTPSession extends Session {
 
     @Override
     protected void login(final Credentials credentials) throws IOException {
-        if(host.getCredentials().isPublicKeyAuthentication()) {
+        if(credentials.isPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(credentials)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
@@ -209,9 +209,9 @@ public class SFTPSession extends Session {
      */
     private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
-        if(this.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "publickey")) {
-            final Local identity = host.getCredentials().getIdentity();
-            if(identity.exists()) {
+        if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
+            if(credentials.isPublicKeyAuthentication()) {
+                final Local identity = credentials.getIdentity();
                 // If the private key is passphrase protected then ask for the passphrase
                 CharArrayWriter privatekey = new CharArrayWriter();
                 IOUtils.copy(new FileReader(new File(identity.getAbsolute())), privatekey);
@@ -233,7 +233,7 @@ public class SFTPSession extends Session {
                     passphrase = privatekey.toString();
                 }
                 try {
-                    return this.getClient().authenticateWithPublicKey(host.getCredentials().getUsername(),
+                    return this.getClient().authenticateWithPublicKey(credentials.getUsername(),
                             privatekey.toCharArray(), passphrase);
                 }
                 catch(IOException e) {
@@ -247,7 +247,6 @@ public class SFTPSession extends Session {
                     }
                 }
             }
-            log.error("Key file " + identity.getAbsolute() + " does not exist.");
         }
         return false;
     }
@@ -261,7 +260,7 @@ public class SFTPSession extends Session {
      */
     private boolean loginUsingPasswordAuthentication(final Credentials credentials) throws IOException {
         log.debug("loginUsingPasswordAuthentication:" + credentials);
-        if(this.getClient().isAuthMethodAvailable(host.getCredentials().getUsername(), "password")) {
+        if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "password")) {
             return this.getClient().authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
         }
         return false;

@@ -99,10 +99,7 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public CFSession getSession() throws ConnectionCanceledException {
-        if(null == session) {
-            throw new ConnectionCanceledException();
-        }
+    public CFSession getSession() {
         return session;
     }
 
@@ -168,36 +165,6 @@ public class CFPath extends CloudPath {
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-    }
-
-    @Override
-    public void readPermission() {
-        ;
-    }
-
-    /**
-     * Only content distribution is possible but no fine grained grants
-     *
-     * @return Always false
-     */
-    @Override
-    public boolean isWritePermissionsSupported() {
-        return false;
-    }
-
-    @Override
-    public void writePermissions(Permission perm, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isWriteModificationDateSupported() {
-        return false;
-    }
-
-    @Override
-    public void writeModificationDate(long millis) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -293,13 +260,10 @@ public class CFPath extends CloudPath {
                 IOUtils.closeQuietly(out);
             }
         }
-        if(attributes().isDirectory()) {
-            this.getLocal().mkdir(true);
-        }
     }
 
     @Override
-    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, Permission p, boolean check) {
+    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
             if(check) {
                 this.getSession().check();
@@ -316,6 +280,7 @@ public class CFPath extends CloudPath {
 
                 final InputStream in = this.getLocal().getInputStream();
                 try {
+                    final HashMap<String, String> metadata = new HashMap<String, String>();
                     this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
                             new InputStreamRequestEntity(in,
                                     this.getLocal().attributes().getSize() - status.getCurrent(),
@@ -326,15 +291,12 @@ public class CFPath extends CloudPath {
                                     CFPath.this.upload(out, in, throttle, listener);
                                 }
                             },
-                            new HashMap<String, String>(), md5sum
+                            metadata, md5sum
                     );
                 }
                 finally {
                     IOUtils.closeQuietly(in);
                 }
-            }
-            if(attributes().isDirectory()) {
-                this.mkdir();
             }
         }
         catch(IOException e) {
@@ -367,7 +329,6 @@ public class CFPath extends CloudPath {
 
     @Override
     public void delete() {
-        log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
             if(!this.isContainer()) {
@@ -450,14 +411,8 @@ public class CFPath extends CloudPath {
      */
     @Override
     public String toHttpURL() {
-        final Distribution distribution;
-        try {
-            distribution = this.getSession().readDistribution(this.getContainerName(), Distribution.DOWNLOAD);
-        }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
-            return super.toHttpURL();
-        }
+        final Distribution distribution
+                = this.getSession().readDistribution(this.getContainerName(), Distribution.DOWNLOAD);
         if(null == distribution.getUrl()) {
             return super.toHttpURL();
         }

@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -93,10 +92,7 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public SFTPSession getSession() throws ConnectionCanceledException {
-        if(null == session) {
-            throw new ConnectionCanceledException();
-        }
+    public SFTPSession getSession() {
         return session;
     }
 
@@ -173,8 +169,8 @@ public class SFTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         this.getName()));
 
-                Permission perm = new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                this.getSession().sftp().mkdir(this.getAbsolute(), perm.getOctalNumber());
+                this.getSession().sftp().mkdir(this.getAbsolute(),
+                        new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalNumber());
             }
             catch(IOException e) {
                 this.error("Cannot create folder", e);
@@ -207,7 +203,6 @@ public class SFTPPath extends Path {
 
     @Override
     public void delete() {
-        log.debug("delete:" + this.toString());
         try {
             this.getSession().check();
             if(this.attributes().isFile() || this.attributes().isSymbolicLink()) {
@@ -242,30 +237,16 @@ public class SFTPPath extends Path {
     @Override
     public void readSize() {
         if(this.attributes().isFile()) {
-            SFTPv3FileHandle handle = null;
             try {
                 this.getSession().check();
-                handle = this.getSession().sftp().openFileRO(this.getAbsolute());
-                SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
+                SFTPv3FileAttributes attr = this.getSession().sftp().stat(this.getAbsolute());
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
                 this.attributes().setSize(attr.size);
-                this.getSession().sftp().closeFile(handle);
             }
             catch(IOException e) {
-                // Fail silently
                 this.error("Cannot read file attributes", e);
-            }
-            finally {
-                if(handle != null) {
-                    try {
-                        this.getSession().sftp().closeFile(handle);
-                    }
-                    catch(IOException e) {
-                        ;
-                    }
-                }
             }
         }
     }
@@ -301,7 +282,7 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void readPermission() {
+    public void readUnixPermission() {
         if(this.attributes().isFile()) {
             SFTPv3FileHandle handle = null;
             try {
@@ -338,29 +319,24 @@ public class SFTPPath extends Path {
 
     @Override
     public void writeOwner(String owner, boolean recursive) {
-        log.debug("changeOwner");
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing owner of {0} to {1}", "Status"),
                     this.getName(), owner));
-
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.uid = new Integer(owner);
             this.getSession().sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes().isDirectory()) {
                 if(recursive) {
-                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                    for(AbstractPath child : this.childs()) {
                         if(!this.getSession().isConnected()) {
                             break;
                         }
-                        ((Path) iter.next()).writeOwner(owner, recursive);
+                        ((Path) child).writeOwner(owner, recursive);
                     }
                 }
             }
-        }
-        catch(NumberFormatException e) {
-            this.error("Cannot change owner", e);
         }
         catch(IOException e) {
             this.error("Cannot change owner", e);
@@ -369,7 +345,6 @@ public class SFTPPath extends Path {
 
     @Override
     public void writeGroup(String group, boolean recursive) {
-        log.debug("changeGroup");
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing group of {0} to {1}", "Status"),
@@ -380,17 +355,14 @@ public class SFTPPath extends Path {
             this.getSession().sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes().isDirectory()) {
                 if(recursive) {
-                    for(Iterator iter = this.childs().iterator(); iter.hasNext();) {
+                    for(AbstractPath child : this.childs()) {
                         if(!this.getSession().isConnected()) {
                             break;
                         }
-                        ((Path) iter.next()).writeGroup(group, recursive);
+                        ((Path) child).writeGroup(group, recursive);
                     }
                 }
             }
-        }
-        catch(NumberFormatException e) {
-            this.error("Cannot change group", e);
         }
         catch(IOException e) {
             this.error("Cannot change group", e);
@@ -398,90 +370,81 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void writePermissions(Permission perm, boolean recursive) {
+    public void writeUnixPermission(Permission perm, boolean recursive) {
         try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                    this.getName(), perm.getOctalString()));
-
-            SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            if(recursive && this.attributes().isFile()) {
-                // Do not write executable bit for files if not already set when recursively updating directory.
-                // See #1787
-                Permission modified = new Permission(perm);
-                if(!this.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
-                    modified.getOwnerPermissions()[Permission.EXECUTE] = false;
-                }
-                if(!this.attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
-                    modified.getGroupPermissions()[Permission.EXECUTE] = false;
-                }
-                if(!this.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
-                    modified.getOtherPermissions()[Permission.EXECUTE] = false;
-                }
-                attr.permissions = modified.getOctalNumber();
-            }
-            else {
-                attr.permissions = perm.getOctalNumber();
-            }
-            this.getSession().sftp().setstat(getAbsolute(), attr);
-            attributes().setPermission(perm);
-            if(attributes().isDirectory()) {
-                if(recursive) {
-                    for(AbstractPath child : this.childs()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        child.writePermissions(perm, recursive);
-                    }
-                }
-            }
+            this.writePermissionsImpl(perm, recursive);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
         }
     }
 
-    @Override
-    public void writeModificationDate(long millis) {
-        if(attributes().isFile()) {
-            try {
-                this.writeModificationDate(this.getSession().sftp().openFileRW(this.getAbsolute()), millis);
+    private void writePermissionsImpl(Permission perm, boolean recursive) throws IOException {
+        this.getSession().check();
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                this.getName(), perm.getOctalString()));
+
+        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+        if(recursive && this.attributes().isFile()) {
+            // Do not write executable bit for files if not already set when recursively updating directory.
+            // See #1787
+            Permission modified = new Permission(perm);
+            if(!this.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                modified.getOwnerPermissions()[Permission.EXECUTE] = false;
             }
-            catch(IOException e) {
-                log.warn(e.getMessage());
+            if(!this.attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                modified.getGroupPermissions()[Permission.EXECUTE] = false;
+            }
+            if(!this.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                modified.getOtherPermissions()[Permission.EXECUTE] = false;
+            }
+            attr.permissions = modified.getOctalNumber();
+        }
+        else {
+            attr.permissions = perm.getOctalNumber();
+        }
+        this.getSession().sftp().setstat(getAbsolute(), attr);
+        this.attributes().setPermission(perm);
+        if(this.attributes().isDirectory()) {
+            if(recursive) {
+                for(AbstractPath child : this.childs()) {
+                    if(!this.getSession().isConnected()) {
+                        break;
+                    }
+                    ((SFTPPath) child).writePermissionsImpl(perm, recursive);
+                }
             }
         }
     }
 
-    public void writeModificationDate(SFTPv3FileHandle handle, long millis) throws IOException {
-        if(attributes().isFile()) {
-            log.info("Updating timestamp");
+    @Override
+    public void writeTimestamp(long millis) {
+        if(this.attributes().isFile()) {
+            try {
+                this.writeModificationDateImpl(millis);
+            }
+            catch(IOException e) {
+                this.error("Cannot change timestamp", e);
+            }
+        }
+    }
+
+    private void writeModificationDateImpl(long modified) throws IOException {
+        if(this.attributes().isFile()) {
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                    this.getName(), modified));
             SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-            int t = (int) (millis / 1000);
+            int t = (int) (modified / 1000);
             // We must both set the accessed and modified time
             // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
             attrs.atime = t;
             attrs.mtime = t;
-            try {
-                if(null == handle) {
-                    if(attributes().isFile()) {
-                        handle = this.getSession().sftp().openFileRW(this.getAbsolute());
-                    }
-                }
-                this.getSession().sftp().fsetstat(handle, attrs);
-            }
-            catch(SFTPException e) {
-                // We might not be able to change the attributes if we are
-                // not the owner of the file; but then we still want to proceed as we
-                // might have group write privileges
-                log.warn(e.getMessage());
-            }
+            this.getSession().sftp().setstat(this.getAbsolute(), attrs);
         }
     }
 
     @Override
     public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
-        log.debug("download:" + this.toString());
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -508,9 +471,6 @@ public class SFTPPath extends Path {
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener);
             }
-            else if(attributes().isDirectory()) {
-                this.getLocal().touch(true);
-            }
         }
         catch(IOException e) {
             this.error("Download failed", e);
@@ -522,17 +482,13 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void upload(BandwidthThrottle throttle, StreamListener listener, final Permission p, final boolean check) {
-        log.debug("upload:" + this.toString());
+    public void upload(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         InputStream in = null;
         OutputStream out = null;
         SFTPv3FileHandle handle = null;
         try {
             if(check) {
                 this.getSession().check();
-            }
-            if(attributes().isDirectory()) {
-                this.mkdir();
             }
             if(attributes().isFile()) {
                 in = this.getLocal().getInputStream();
@@ -545,19 +501,18 @@ public class SFTPPath extends Path {
                     }
                     // We do set the permissions here as otherwise we might have an empty mask for
                     // interrupted file transfers
-                    if(null != p) {
-                        try {
-                            log.info("Updating permissions:" + p.getOctalString());
-                            SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                            attr.permissions = p.getOctalNumber();
-                            this.getSession().sftp().fsetstat(handle, attr);
-                        }
-                        catch(SFTPException e) {
-                            // We might not be able to change the attributes if we are
-                            // not the owner of the file; but then we still want to proceed as we
-                            // might have group write privileges
-                            log.warn(e.getMessage());
-                        }
+                    try {
+                        final String octal = this.attributes().getPermission().getOctalString();
+                        log.info("Updating permissions:" + octal);
+                        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+                        attr.permissions = this.attributes().getPermission().getOctalNumber();
+                        this.getSession().sftp().fsetstat(handle, attr);
+                    }
+                    catch(SFTPException e) {
+                        // We might not be able to change the attributes if we are
+                        // not the owner of the file; but then we still want to proceed as we
+                        // might have group write privileges
+                        log.warn(e.getMessage());
                     }
                     out = new SFTPOutputStream(handle);
                     if(status().isResume()) {
@@ -573,13 +528,21 @@ public class SFTPPath extends Path {
                     scp.setCharset(this.getSession().getEncoding());
                     out = scp.put(this.getName(), this.getLocal().attributes().getSize(),
                             this.getParent().getAbsolute(),
-                            "0" + p.getOctalString());
+                            "0" + this.attributes().getPermission().getOctalString());
                 }
+
                 this.upload(out, in, throttle, listener);
-            }
-            if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
+
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    this.writeModificationDate(handle, this.getLocal().attributes().getModificationDate());
+                    try {
+                        this.writeModificationDateImpl(this.getLocal().attributes().getModificationDate());
+                    }
+                    catch(SFTPException e) {
+                        // We might not be able to change the attributes if we are
+                        // not the owner of the file; but then we still want to proceed as we
+                        // might have group write privileges
+                        log.warn(e.getMessage());
+                    }
                 }
             }
         }

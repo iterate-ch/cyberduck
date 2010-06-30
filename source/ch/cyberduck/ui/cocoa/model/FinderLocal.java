@@ -286,7 +286,7 @@ public class FinderLocal extends Local {
     public static native String kind(String extension);
 
     @Override
-    public void writePermissions(final Permission perm, final boolean recursive) {
+    public void writeUnixPermission(final Permission perm, final boolean recursive) {
         new ProxyController().invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
@@ -299,7 +299,7 @@ public class FinderLocal extends Local {
                 }
                 if(attributes().isDirectory() && recursive) {
                     for(AbstractPath child : childs()) {
-                        child.writePermissions(perm, recursive);
+                        child.writeUnixPermission(perm, recursive);
                     }
                 }
             }
@@ -312,7 +312,7 @@ public class FinderLocal extends Local {
      * @param millis Milliseconds since 1970
      */
     @Override
-    public void writeModificationDate(final long millis) {
+    public void writeTimestamp(final long millis) {
         new ProxyController().invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(

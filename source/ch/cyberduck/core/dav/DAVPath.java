@@ -89,10 +89,7 @@ public class DAVPath extends Path {
     }
 
     @Override
-    public DAVSession getSession() throws ConnectionCanceledException {
-        if(null == session) {
-            throw new ConnectionCanceledException();
-        }
+    public DAVSession getSession() {
         return session;
     }
 
@@ -134,7 +131,7 @@ public class DAVPath extends Path {
 
 
     @Override
-    public void readPermission() {
+    public void readUnixPermission() {
         ;
     }
 
@@ -221,22 +218,12 @@ public class DAVPath extends Path {
     }
 
     @Override
-    public boolean isWritePermissionsSupported() {
-        return false;
-    }
-
-    @Override
-    public void writePermissions(Permission perm, boolean recursive) {
+    public void writeUnixPermission(Permission perm, boolean recursive) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isWriteModificationDateSupported() {
-        return false;
-    }
-
-    @Override
-    public void writeModificationDate(long millis) {
+    public void writeTimestamp(long millis) {
         throw new UnsupportedOperationException();
     }
 
@@ -319,7 +306,7 @@ public class DAVPath extends Path {
     }
 
     @Override
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final Permission p, final boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         try {
             if(check) {
                 this.getSession().check();
@@ -358,9 +345,6 @@ public class DAVPath extends Path {
                 finally {
                     IOUtils.closeQuietly(in);
                 }
-            }
-            if(attributes().isDirectory()) {
-                this.mkdir();
             }
         }
         catch(IOException e) {

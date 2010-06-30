@@ -252,12 +252,12 @@ public class GDPath extends Path {
     }
 
     @Override
-    public void readPermission() {
+    public void readUnixPermission() {
         ;
     }
 
     @Override
-    public GDSession getSession() throws ConnectionCanceledException {
+    public GDSession getSession() {
         return session;
     }
 
@@ -337,11 +337,10 @@ public class GDPath extends Path {
      *
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
-     * @param p        The permission to set after uploading or null
      * @param check    Check for open connection and open if needed before transfer
      */
     @Override
-    protected void upload(BandwidthThrottle throttle, StreamListener listener, Permission p, boolean check) {
+    protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         try {
             if(check) {
                 this.getSession().check();
@@ -594,22 +593,12 @@ public class GDPath extends Path {
     }
 
     @Override
-    public boolean isWritePermissionsSupported() {
-        return false;
-    }
-
-    @Override
-    public void writePermissions(Permission perm, boolean recursive) {
+    public void writeUnixPermission(Permission perm, boolean recursive) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isWriteModificationDateSupported() {
-        return false;
-    }
-
-    @Override
-    public void writeModificationDate(long millis) {
+    public void writeTimestamp(long millis) {
         throw new UnsupportedOperationException();
     }
 
