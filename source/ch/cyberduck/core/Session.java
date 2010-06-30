@@ -311,7 +311,10 @@ public abstract class Session {
     }
 
     /**
-     * @param workdir
+     * Set the current working directory for this session. Implementations may
+     * implmeent a change working directory command.
+     *
+     * @param workdir The new working directory.
      * @throws IOException
      */
     public void setWorkdir(Path workdir) throws IOException {
@@ -322,21 +325,53 @@ public abstract class Session {
     }
 
     /**
+     * @param workdir The workdir to create query
      * @return True if making directories is possible.
      * @see Path#mkdir()
      */
-    public boolean isCreateFolderFolderSupported(Path workdir) {
+    public boolean isCreateFolderSupported(Path workdir) {
         return true;
     }
 
     /**
+     * @param workdir The workdir to create query
      * @return True if creating an empty file is possible.
-     * @see Path#touch()
+     * @see ch.cyberduck.core.Path#touch()
      */
     public boolean isCreateFileSupported(Path workdir) {
         return true;
     }
 
+    /**
+     * @return
+     * @see ch.cyberduck.core.Path#writeAcl(Acl, boolean)
+     * @see Path#readAcl()
+     */
+    public boolean isAclSupported() {
+        return false;
+    }
+
+    /**
+     * @return True if UNIX permissions can be read and written.
+     * @see ch.cyberduck.core.Path#writeUnixPermission(Permission, boolean)
+     * @see ch.cyberduck.core.Path#readUnixPermission()
+     */
+    public boolean isUnixPermissionsSupported() {
+        return true;
+    }
+
+    /**
+     * @return True if timestamp of file can be read and written.
+     * @see ch.cyberduck.core.Path#writeTimestamp(long)
+     * @see ch.cyberduck.core.Path#readTimestamp()
+     */
+    public boolean isTimestampSupported() {
+        return true;
+    }
+
+    /**
+     * @return
+     */
     public boolean isRevertSupported() {
         return false;
     }
@@ -357,6 +392,9 @@ public abstract class Session {
         this.close();
     }
 
+    /**
+     * @return True if command execution if supported by the protocol.
+     */
     public boolean isSendCommandSupported() {
         return false;
     }
@@ -365,6 +403,7 @@ public abstract class Session {
      * Sends an arbitrary command to the server
      *
      * @param command
+     * @see #isSendCommandSupported()
      */
     public abstract void sendCommand(String command) throws IOException;
 
@@ -570,6 +609,22 @@ public abstract class Session {
      */
     public boolean isUploadResumable() {
         return true;
+    }
+
+    /**
+     * @return
+     */
+    public List<Acl.User> getAvailableAclUsers() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Roles available for users in a configurable ACL.
+     *
+     * @return A list of role names.
+     */
+    public List<Acl.Role> getAvailableAclRoles() {
+        return Collections.emptyList();
     }
 
     private Set<ProgressListener> progressListeners
