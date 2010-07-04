@@ -43,14 +43,17 @@ public abstract class Growl {
                 }
                 else {
                     current = new Growl() {
+                        @Override
                         public void register() {
                             log.warn("Growl notifications disabled");
                         }
 
+                        @Override
                         public void notify(String title, String description) {
                             log.info(description);
                         }
 
+                        @Override
                         public void notifyWithImage(String title, String description, String image) {
                             log.info(description);
                         }
