@@ -109,7 +109,9 @@ public class GDSession extends Session {
         client = new DocsService(this.getUserAgent());
         client.setReadTimeout(this.timeout());
         client.setConnectTimeout(this.timeout());
-        client.useSsl();
+        if(this.getHost().getProtocol().isSecure()) {
+            client.useSsl();
+        }
 
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
