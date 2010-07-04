@@ -31,6 +31,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @version $Id$
@@ -54,9 +56,11 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactor
                     null);
             return context;
         }
-        catch(Exception e) {
-            log.error(e.getMessage(), e);
-            return null;
+        catch(NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        catch(KeyManagementException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -52,16 +52,16 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
             throws CertificateException {
 
         if(KeychainFactory.instance().isTrusted(this.getHostname(), certs)) {
-            log.info("Certificate trusted in Keychain");
+            log.info("Certificate for " + this.getHostname() + " trusted in Keychain");
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am
             // aware of to read the trust settings for a certificate in the Keychain
             this.acceptCertificate(certs);
-            return;
         }
-        // The certificate has not been trusted
-        throw new CertificateException(
-                Locale.localizedString("No trusted certificate found", "Status"));
+        else {
+            // The certificate has not been trusted
+            throw new CertificateException(
+                    Locale.localizedString("No trusted certificate found", "Status"));
+        }
     }
-
 }
