@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
@@ -201,6 +201,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
             this(identifier, null);
         }
 
+        public CanonicalUser(String identifier, boolean editable) {
+            this(identifier, null, editable);
+        }
+
         public CanonicalUser(String identifier, String displayName) {
             this(identifier, displayName, true);
         }
@@ -259,7 +263,11 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
     public static class GroupUser extends User {
         public GroupUser(String identifier) {
-            super(identifier, false);
+            this(identifier, false);
+        }
+
+        public GroupUser(String identifier, boolean editable) {
+            super(identifier, editable);
         }
 
         @Override
@@ -285,7 +293,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public String getPlaceholder() {
-            return "";
+            return Locale.localizedString(this.getIdentifier(), "S3");
         }
     }
 

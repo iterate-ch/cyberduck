@@ -157,7 +157,6 @@ public class InfoController extends ToolbarWindowController {
 
     public void setRecursiveButton(NSButton b) {
         this.recursiveButton = b;
-        this.recursiveButton.setState(NSCell.NSOffState);
         this.recursiveButton.setTarget(this.id());
         this.recursiveButton.setAction(Foundation.selector("recursiveButtonClicked:"));
     }
@@ -313,6 +312,7 @@ public class InfoController extends ToolbarWindowController {
                         final String container = ((S3HPath) next).getContainerName();
                         ((S3HSession) controller.getSession()).setLogging(container,
                                 bucketLoggingButton.state() == NSCell.NSOnState);
+                        break;
                     }
                 }
 
@@ -342,6 +342,7 @@ public class InfoController extends ToolbarWindowController {
                         ((S3HSession) controller.getSession()).setVersioning(container,
                                 bucketMfaButton.state() == NSCell.NSOnState,
                                 bucketVersioningButton.state() == NSCell.NSOnState);
+                        break;
                     }
                 }
 
@@ -372,6 +373,7 @@ public class InfoController extends ToolbarWindowController {
                                 bucketMfaButton.state() == NSCell.NSOnState,
                                 bucketVersioningButton.state() == NSCell.NSOnState
                         );
+                        break;
                     }
                 }
 
@@ -507,10 +509,6 @@ public class InfoController extends ToolbarWindowController {
                     final Acl.UserAndRole grant = acl.get(row.intValue());
                     if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
                         grant.getUser().setIdentifier(value.toString());
-                        if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
-                                && StringUtils.isNotBlank(grant.getRole().getName())) {
-                            InfoController.this.aclInputDidEndEditing();
-                        }
                     }
                     if(c.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
                         grant.getRole().setName(value.toString());
@@ -575,9 +573,9 @@ public class InfoController extends ToolbarWindowController {
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
-                final Acl.UserAndRole grant = acl.get(row.intValue());
-                cell.setPlaceholderString(grant.getUser().getPlaceholder());
                 if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                    final Acl.UserAndRole grant = acl.get(row.intValue());
+                    cell.setPlaceholderString(grant.getUser().getPlaceholder());
                     if(grant.getUser().isEditable()) {
                         cell.setTextColor(NSColor.controlTextColor());
                     }
@@ -617,7 +615,7 @@ public class InfoController extends ToolbarWindowController {
         this.aclAddButton.addItemWithTitle("");
         this.aclAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
         for(Acl.User user : controller.getSession().getAvailableAclUsers()) {
-            this.aclAddButton.addItemWithTitle(user.getDisplayName());
+            this.aclAddButton.addItemWithTitle(user.getPlaceholder());
             this.aclAddButton.lastItem().setAction(this.getAclSelector(user));
             this.aclAddButton.lastItem().setTarget(this.id());
             this.aclAddButton.lastItem().setRepresentedObject(user.getIdentifier());
@@ -626,7 +624,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void aclCanonicalAddButtonClicked(NSMenuItem sender) {
-        this.aclAddButtonClicked(new Acl.CanonicalUser(sender.representedObject()));
+        this.aclAddButtonClicked(new Acl.CanonicalUser(sender.representedObject(), true));
     }
 
     @Action
@@ -641,12 +639,11 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void aclGroupAddButtonClicked(NSMenuItem sender) {
-        this.aclAddButtonClicked(new Acl.GroupUser(sender.representedObject()));
+        this.aclAddButtonClicked(new Acl.GroupUser(sender.representedObject(), true));
     }
 
     private void aclAddButtonClicked(Acl.User grantee) {
         this.aclAddButtonClicked(new Acl.UserAndRole(grantee, new Acl.Role("")));
-        this.aclInputDidEndEditing();
     }
 
     /**
@@ -1668,14 +1665,10 @@ public class InfoController extends ToolbarWindowController {
             versioning = ((S3HSession) session).isVersioningSupported();
         }
         for(Path file : files) {
-            boolean container = false;
-            if(enable) {
-                container = ((CloudPath) file).isContainer();
-            }
-            bucketVersioningButton.setEnabled(stop && enable && versioning && container);
-            bucketMfaButton.setEnabled(stop && enable && versioning && container
+            bucketVersioningButton.setEnabled(stop && enable && versioning);
+            bucketMfaButton.setEnabled(stop && enable && versioning
                     && bucketVersioningButton.state() == NSCell.NSOnState);
-            bucketLoggingButton.setEnabled(stop && enable && logging && container);
+            bucketLoggingButton.setEnabled(stop && enable && logging);
             storageClassPopup.setEnabled(stop && enable && file.attributes().isFile());
         }
         if(stop) {
