@@ -795,7 +795,9 @@ public class S3HSession extends CloudSession {
                         return false;
                     }
                     this.check();
-                    loggingStatus.put(container, this.getClient().getBucketLoggingStatus(container));
+                    final S3BucketLoggingStatus status
+                            = this.getClient().getBucketLoggingStatus(container);
+                    loggingStatus.put(container, status);
                 }
                 catch(S3ServiceException e) {
                     if(this.isPermissionFailure(e)) {
@@ -884,7 +886,9 @@ public class S3HSession extends CloudSession {
             if(!versioningStatus.containsKey(container)) {
                 try {
                     this.check();
-                    versioningStatus.put(container, this.getClient().getBucketVersioningStatus(container));
+                    final S3BucketVersioningStatus status
+                            = this.getClient().getBucketVersioningStatus(container);
+                    versioningStatus.put(container, status);
                 }
                 catch(S3ServiceException e) {
                     if(this.isPermissionFailure(e)) {
