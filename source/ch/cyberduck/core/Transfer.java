@@ -422,7 +422,7 @@ public abstract class Transfer implements Serializable {
             this.fireWillTransferPath(p);
             _current = p;
             p.status().reset();
-            _transferImpl(p);
+            transfer(p);
             this.fireDidTransferPath(p);
         }
 
@@ -457,7 +457,7 @@ public abstract class Transfer implements Serializable {
      * @see ch.cyberduck.core.Path#download()
      * @see ch.cyberduck.core.Path#upload()
      */
-    protected abstract void _transferImpl(final Path p);
+    protected abstract void transfer(final Path p);
 
     /**
      * @param options

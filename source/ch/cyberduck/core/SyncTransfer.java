@@ -244,13 +244,13 @@ public class SyncTransfer extends Transfer {
      * @see #compare(Path)
      */
     @Override
-    protected void _transferImpl(final Path p) {
+    protected void transfer(final Path p) {
         final Comparison compare = this.compare(p);
         if(compare.equals(COMPARISON_REMOTE_NEWER)) {
-            _delegateDownload._transferImpl(p);
+            _delegateDownload.transfer(p);
         }
         else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
-            _delegateUpload._transferImpl(p);
+            _delegateUpload.transfer(p);
         }
     }
 

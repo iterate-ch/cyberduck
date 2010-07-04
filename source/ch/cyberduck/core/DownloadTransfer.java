@@ -319,7 +319,8 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected void _transferImpl(final Path p) {
+    protected void transfer(final Path p) {
+        final Local local = p.getLocal();
         if(p.attributes().isFile()) {
             p.download(bandwidth, new AbstractStreamListener() {
                 @Override
@@ -329,7 +330,7 @@ public class DownloadTransfer extends Transfer {
             });
         }
         else if(p.attributes().isDirectory()) {
-            p.getLocal().mkdir(true);
+            local.mkdir(true);
         }
         if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
             Permission permission = Permission.EMPTY;
@@ -346,21 +347,24 @@ public class DownloadTransfer extends Transfer {
             else {
                 permission = p.attributes().getPermission();
             }
-            if(!permission.equals(Permission.EMPTY)) {
-                log.info("Updating permissions:" + p.getLocal());
-                if(p.attributes().isDirectory()) {
-                    // Make sure we can write files to directory created.
-                    permission.getOwnerPermissions()[Permission.WRITE] = true;
-                    permission.getOwnerPermissions()[Permission.EXECUTE] = true;
-                }
-                p.getLocal().writeUnixPermission(permission, false);
+            if(p.attributes().isDirectory()) {
+                // Make sure we can write files to directory created.
+                permission.getOwnerPermissions()[Permission.WRITE] = true;
+                permission.getOwnerPermissions()[Permission.EXECUTE] = true;
             }
+            if(p.attributes().isFile()) {
+                // Make sure the owner can always read and write.
+                permission.getOwnerPermissions()[Permission.READ] = true;
+                permission.getOwnerPermissions()[Permission.WRITE] = true;
+            }
+            log.info("Updating permissions:" + local + "," + permission);
+            local.writeUnixPermission(permission, false);
         }
         if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-            log.info("Updating timestamp:" + p.getLocal());
             if(p.attributes().getModificationDate() != -1) {
                 long timestamp = p.attributes().getModificationDate();
-                p.getLocal().writeTimestamp(timestamp/*, this.getHost().getTimezone()*/);
+                log.info("Updating timestamp:" + local + "," + timestamp);
+                local.writeTimestamp(timestamp/*, this.getHost().getTimezone()*/);
             }
         }
     }

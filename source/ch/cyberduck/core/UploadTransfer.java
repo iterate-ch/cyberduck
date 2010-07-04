@@ -385,7 +385,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    protected void _transferImpl(final Path p) {
+    protected void transfer(final Path p) {
         if(p.attributes().isFile()) {
             p.upload(bandwidth, new AbstractStreamListener() {
                 @Override
