@@ -40,6 +40,8 @@
 				<string>id</string>
 				<key>checksumField</key>
 				<string>id</string>
+				<key>createdField</key>
+				<string>id</string>
 				<key>distributionCnameField</key>
 				<string>id</string>
 				<key>distributionCnameUrlField</key>
@@ -102,6 +104,8 @@
 				<string>NSView</string>
 				<key>panelGeneral</key>
 				<string>NSView</string>
+				<key>panelMetadata</key>
+				<string>NSView</string>
 				<key>panelPermissions</key>
 				<string>NSView</string>
 				<key>pathField</key>
@@ -110,7 +114,7 @@
 				<string>id</string>
 				<key>permissionsField</key>
 				<string>id</string>
-				<key>recursiveCheckbox</key>
+				<key>recursiveButton</key>
 				<string>id</string>
 				<key>s3Progress</key>
 				<string>id</string>

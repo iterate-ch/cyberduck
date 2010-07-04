@@ -16,6 +16,7 @@
         bucketMfaButton = id;
         bucketVersioningButton = id;
         checksumField = id;
+        createdField = id;
         distributionCnameField = id;
         distributionCnameUrlField = id;
         distributionDeliveryPopup = id;
@@ -47,11 +48,12 @@
         panelCloud = NSView;
         panelDistribution = NSView;
         panelGeneral = NSView;
+        panelMetadata = NSView;
         panelPermissions = NSView;
         pathField = id;
         permissionProgress = id;
         permissionsField = id;
-        recursiveCheckbox = id;
+        recursiveButton = id;
         s3Progress = id;
         s3PublicUrlField = id;
         s3torrentUrlField = id;
