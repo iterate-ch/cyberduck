@@ -467,7 +467,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public void touch() {
-        if(this.attributes.isFile()) {
+        if(this.attributes().isFile()) {
             int no = 0;
             final String filename = this.getLocal().getName();
             while(this.getLocal().exists()) {
@@ -506,21 +506,21 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * Download with no bandwidth limit
      */
-    public void download() {
+    protected void download() {
         this.download(new AbstractStreamListener());
     }
 
     /**
      * @param check Check for open connection and open if needed before transfer
      */
-    public void download(final boolean check) {
+    protected void download(final boolean check) {
         this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), check);
     }
 
     /**
      * @param listener The stream listener to notify about bytes received and sent
      */
-    public void download(StreamListener listener) {
+    protected void download(StreamListener listener) {
         this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener);
     }
 
@@ -528,7 +528,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
      */
-    public void download(BandwidthThrottle throttle, StreamListener listener) {
+    protected void download(BandwidthThrottle throttle, StreamListener listener) {
         this.download(throttle, listener, false);
     }
 
@@ -537,19 +537,19 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener The stream listener to notify about bytes received and sent
      * @param check    Check for open connection and open if needed before transfer
      */
-    public abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
+    protected abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
     /**
      *
      */
-    public void upload() {
+    protected void upload() {
         this.upload(new AbstractStreamListener());
     }
 
     /**
      * @param listener The stream listener to notify about bytes received and sent
      */
-    public void upload(StreamListener listener) {
+    protected void upload(StreamListener listener) {
         this.upload(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener);
     }
 
@@ -557,7 +557,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
      */
-    public void upload(BandwidthThrottle throttle, StreamListener listener) {
+    protected void upload(BandwidthThrottle throttle, StreamListener listener) {
         this.upload(throttle, listener, false);
     }
 

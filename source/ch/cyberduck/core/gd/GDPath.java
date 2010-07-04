@@ -341,7 +341,7 @@ public class GDPath extends Path {
     }
 
     @Override
-    public void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;

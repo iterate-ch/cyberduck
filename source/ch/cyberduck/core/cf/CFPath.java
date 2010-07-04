@@ -229,7 +229,7 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void download(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
+    protected void download(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;

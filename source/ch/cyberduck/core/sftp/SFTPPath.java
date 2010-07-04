@@ -444,7 +444,7 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
+    protected void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -482,7 +482,7 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    public void upload(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
+    protected void upload(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         InputStream in = null;
         OutputStream out = null;
         SFTPv3FileHandle handle = null;

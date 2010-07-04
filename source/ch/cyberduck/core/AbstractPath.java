@@ -424,7 +424,9 @@ public abstract class AbstractPath {
     public abstract void rename(AbstractPath renamed);
 
     /**
-     * @param copy
+     * Duplicate file
+     *
+     * @param copy Destination
      */
     public abstract void copy(AbstractPath copy);
 }

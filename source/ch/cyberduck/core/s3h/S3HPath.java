@@ -426,7 +426,7 @@ public class S3HPath extends CloudPath {
     }
 
     @Override
-    public void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    protected void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
@@ -471,7 +471,7 @@ public class S3HPath extends CloudPath {
     }
 
     @Override
-    public void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
+    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
             if(check) {
                 this.getSession().check();

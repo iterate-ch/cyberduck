@@ -694,7 +694,7 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         try {
             if(check) {
                 this.getSession().check();
@@ -793,7 +793,7 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         try {
             if(check) {
                 this.getSession().check();
