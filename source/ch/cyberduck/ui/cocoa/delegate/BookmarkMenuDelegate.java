@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostCollection;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.MainController;
@@ -37,7 +37,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
     public BookmarkMenuDelegate() {
-        super(HostCollection.defaultCollection());
+        super(BookmarkCollection.defaultCollection());
     }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
@@ -46,7 +46,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        return new NSInteger(HostCollection.defaultCollection().size() + 9);
+        return new NSInteger(BookmarkCollection.defaultCollection().size() + 9);
         //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
         // 6 is Bonjour with submenu, 7 is sepearator
     }
@@ -64,7 +64,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setImage(IconCache.iconNamed("rendezvous", 16));
         }
         if(index.intValue() > BOOKMARKS_INDEX + 2) {
-            Host h = HostCollection.defaultCollection().get(index.intValue() - (BOOKMARKS_INDEX + 3));
+            Host h = BookmarkCollection.defaultCollection().get(index.intValue() - (BOOKMARKS_INDEX + 3));
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
@@ -77,7 +77,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        final int row = HostCollection.defaultCollection().indexOf(sender.representedObject());
-        controller.mount(HostCollection.defaultCollection().get(row));
+        final int row = BookmarkCollection.defaultCollection().indexOf(sender.representedObject());
+        controller.mount(BookmarkCollection.defaultCollection().get(row));
     }
 }

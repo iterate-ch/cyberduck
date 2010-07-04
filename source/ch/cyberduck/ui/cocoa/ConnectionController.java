@@ -169,11 +169,11 @@ public class ConnectionController extends SheetController {
 
     private static class HostFieldModel extends ProxyController implements NSComboBox.DataSource {
         public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
-            return new NSInteger(HostCollection.defaultCollection().size());
+            return new NSInteger(BookmarkCollection.defaultCollection().size());
         }
 
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(HostCollection.defaultCollection().get(row.intValue()).getNickname());
+            return NSString.stringWithString(BookmarkCollection.defaultCollection().get(row.intValue()).getNickname());
         }
     }
 
@@ -185,7 +185,7 @@ public class ConnectionController extends SheetController {
         }
         input = input.trim();
         // First look for equivalent bookmarks
-        for(Host h : HostCollection.defaultCollection()) {
+        for(Host h : BookmarkCollection.defaultCollection()) {
             if(h.getNickname().equals(input)) {
                 this.hostChanged(h);
                 break;

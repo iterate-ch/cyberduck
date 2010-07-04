@@ -22,7 +22,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class RendezvousCollection extends BookmarkCollection {
+public class RendezvousCollection extends AbstractHostCollection {
 
     private static RendezvousCollection RENDEZVOUS_COLLECTION
             = new RendezvousCollection();

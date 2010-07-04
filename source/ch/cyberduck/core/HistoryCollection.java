@@ -30,7 +30,7 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public class HistoryCollection extends HostCollection {
+public class HistoryCollection extends BookmarkCollection {
     private static Logger log = Logger.getLogger(HistoryCollection.class);
 
     private static HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
@@ -51,6 +51,11 @@ public class HistoryCollection extends HostCollection {
      */
     public HistoryCollection(Local folder) {
         super(folder);
+    }
+
+    @Override
+    protected void setFile(Local folder) {
+        super.setFile(folder);
         folder.mkdir(true);
     }
 

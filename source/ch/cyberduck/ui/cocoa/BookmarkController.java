@@ -530,7 +530,7 @@ public class BookmarkController extends WindowController {
     private BookmarkController(final Host host) {
         this.host = host;
         // Register for bookmark delete event. Will close this window.
-        HostCollection.defaultCollection().addListener(bookmarkCollectionListener);
+        BookmarkCollection.defaultCollection().addListener(bookmarkCollectionListener);
         this.loadBundle();
     }
 
@@ -549,7 +549,7 @@ public class BookmarkController extends WindowController {
     @Override
     protected void invalidate() {
         Preferences.instance().setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
-        HostCollection.defaultCollection().removeListener(bookmarkCollectionListener);
+        BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
     }
 
@@ -708,7 +708,7 @@ public class BookmarkController extends WindowController {
      * Propagates all fields with the properties of this bookmark
      */
     private void itemChanged() {
-        HostCollection.defaultCollection().collectionItemChanged(host);
+        BookmarkCollection.defaultCollection().collectionItemChanged(host);
     }
 
     private void init() {

@@ -57,16 +57,16 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     protected BrowserController controller;
 
-    public BookmarkTableDataSource(BrowserController controller, BookmarkCollection source) {
+    public BookmarkTableDataSource(BrowserController controller, AbstractHostCollection source) {
         this.controller = controller;
         this.setSource(source);
     }
 
-    private BookmarkCollection source = BookmarkCollection.empty();
+    private AbstractHostCollection source = AbstractHostCollection.empty();
 
     private CollectionListener<Host> listener;
 
-    public void setSource(final BookmarkCollection source) {
+    public void setSource(final AbstractHostCollection source) {
         this.source.removeListener(listener); //Remove previous listener
         this.source = source;
         this.source.addListener(listener = new CollectionListener<Host>() {
@@ -137,19 +137,19 @@ public class BookmarkTableDataSource extends ListDataSource {
     /**
      * Subset of the original source
      */
-    private BookmarkCollection filtered;
+    private AbstractHostCollection filtered;
 
     /**
      * @return The filtered collection currently to be displayed within the constraints
      *         given by the comparision with the HostFilter
      * @see HostFilter
      */
-    protected BookmarkCollection getSource() {
+    protected AbstractHostCollection getSource() {
         if(null == filter) {
             return source;
         }
         if(null == filtered) {
-            filtered = new BookmarkCollection() {
+            filtered = new AbstractHostCollection() {
                 @Override
                 public boolean allowsAdd() {
                     return source.allowsAdd();
@@ -319,7 +319,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
         NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         log.debug("tableViewAcceptDrop:" + row);
-        final BookmarkCollection source = this.getSource();
+        final AbstractHostCollection source = this.getSource();
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             // We get a drag from another application e.g. Finder.app proposing some files
             NSArray filesList = Rococoa.cast(draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType), NSArray.class);// get the filenames from pasteboard
