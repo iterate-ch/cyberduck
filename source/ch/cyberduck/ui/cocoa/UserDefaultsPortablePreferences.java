@@ -71,8 +71,9 @@ public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
 
     @Override
     public void save() {
-        Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
-        f.getParent().mkdir();
+        Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey(
+                "application.preferences.path").toString());
+        f.getParent().mkdir(true);
         this.dict.writeToFile(f.getAbsolute());
     }
 }
