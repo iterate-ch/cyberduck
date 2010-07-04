@@ -19,18 +19,25 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Local;
+
+import org.apache.log4j.Logger;
+
 /**
+ * A Donation Key.
+ *
  * @version $Id:$
  */
-public interface License {
+public abstract class AbstractLicense implements License {
+    private static Logger log = Logger.getLogger(AbstractLicense.class);
 
-    /**
-     * @return True if valid license key
-     */
-    boolean verify();
+    private Local file;
 
-    /**
-     * @return The value of the given property in the license file. Null if no property with the given key.
-     */
-    String getValue(String property);
+    protected AbstractLicense(Local file) {
+        this.file = file;
+    }
+
+    protected Local getFile() {
+        return file;
+    }
 }

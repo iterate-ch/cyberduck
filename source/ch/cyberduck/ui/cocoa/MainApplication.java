@@ -22,6 +22,7 @@ import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
+import ch.cyberduck.core.aquaticprime.NativeLicense;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
@@ -64,6 +65,7 @@ public class MainApplication {
                 UserDefaultsPreferences.register();
                 BundleLocale.register();
                 GrowlNative.registerImpl();
+                NativeLicense.register();
 
                 PlistDeserializer.register();
                 PlistSerializer.register();

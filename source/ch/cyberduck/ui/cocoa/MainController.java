@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.License;
+import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -334,7 +335,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return true;
             }
             if("cyberducklicense".equals(f.getExtension())) {
-                final License l = new License(f);
+                final License l = LicenseFactory.create(f);
                 if(l.verify()) {
                     String to = l.getValue("Name");
                     if(StringUtils.isBlank(to)) {
@@ -426,7 +427,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(null == defaultBookmark) {
             return; //No default bookmark given
         }
-        for(Host bookmark : HostCollection.defaultCollection()) {
+        for(Host bookmark : BookmarkCollection.defaultCollection()) {
             if(bookmark.getNickname().equals(defaultBookmark)) {
                 for(BrowserController browser : getBrowsers()) {
                     if(browser.hasSession()) {
@@ -531,7 +532,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         this.background(new AbstractBackgroundAction() {
             public void run() {
-                HostCollection.defaultCollection().load();
+                BookmarkCollection.defaultCollection().load();
             }
 
             @Override
@@ -711,7 +712,7 @@ public class MainController extends BundleController implements NSApplication.De
             // Already displayed
             return NSApplication.NSTerminateNow;
         }
-        final License l = License.find();
+        final License l = LicenseFactory.find();
         if(!l.verify()) {
             final String lastversion = Preferences.instance().getProperty("donate.reminder");
             if(NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
