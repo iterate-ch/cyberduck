@@ -85,7 +85,7 @@ public class FinderLocal extends Local {
         }
 
         @Override
-        protected Local create(java.io.File path) {
+        protected Local create(File path) {
             return new FinderLocal(path);
         }
     }

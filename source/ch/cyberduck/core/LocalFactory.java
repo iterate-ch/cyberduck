@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,9 +65,9 @@ public abstract class LocalFactory extends Factory<Local> {
         return getFactory().create(path);
     }
 
-    protected abstract Local create(java.io.File path);
+    protected abstract Local create(File path);
 
-    public static Local createLocal(java.io.File path) {
+    public static Local createLocal(File path) {
         return getFactory().create(path);
     }
 }

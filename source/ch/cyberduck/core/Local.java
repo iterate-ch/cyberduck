@@ -101,6 +101,12 @@ public abstract class Local extends AbstractPath {
             return this.getModificationDate();
         }
 
+        /**
+         * This is only returning the correct result if the file already exists.
+         *
+         * @return
+         * @see ch.cyberduck.core.Local#exists()
+         */
         @Override
         public int getType() {
             final int t = this.isFile() ? AbstractPath.FILE_TYPE : AbstractPath.DIRECTORY_TYPE;
@@ -128,11 +134,23 @@ public abstract class Local extends AbstractPath {
             return null == _impl.getParent();
         }
 
+        /**
+         * This is only returning the correct result if the file already exists.
+         *
+         * @return
+         * @see ch.cyberduck.core.Local#exists()
+         */
         @Override
         public boolean isDirectory() {
             return _impl.isDirectory();
         }
 
+        /**
+         * This is only returning the correct result if the file already exists.
+         *
+         * @return
+         * @see ch.cyberduck.core.Local#exists()
+         */
         @Override
         public boolean isFile() {
             return _impl.isFile();
@@ -225,51 +243,43 @@ public abstract class Local extends AbstractPath {
     @Override
     public void touch(boolean recursive) {
         if(!this.exists()) {
-            if(this.attributes().isFile()) {
-                if(recursive) {
-                    if(!this.getParent().exists()) {
-                        this.getParent().touch(recursive);
-                    }
+            if(recursive) {
+                if(!this.getParent().exists()) {
+                    this.getParent().touch(recursive);
                 }
-                this.touch();
             }
+            this.touch();
         }
     }
 
     @Override
     public void touch() {
-        if(this.attributes().isFile()) {
-            try {
-                if(_impl.createNewFile()) {
-                    this.setIcon(0);
-                }
+        try {
+            if(_impl.createNewFile()) {
+                this.setIcon(0);
             }
-            catch(IOException e) {
-                log.error(e.getMessage());
-            }
+        }
+        catch(IOException e) {
+            log.error(e.getMessage());
         }
     }
 
     @Override
     public void mkdir(boolean recursive) {
-        if(this.attributes().isDirectory()) {
-            if(recursive) {
-                if(_impl.mkdirs()) {
-                    log.info("Created directory " + this.getAbsolute());
-                }
+        if(recursive) {
+            if(_impl.mkdirs()) {
+                log.info("Created directory " + this.getAbsolute());
             }
-            else {
-                this.mkdir();
-            }
+        }
+        else {
+            this.mkdir();
         }
     }
 
     @Override
     public void mkdir() {
-        if(this.attributes().isDirectory()) {
-            if(_impl.mkdir()) {
-                log.warn("Created directory " + this.getAbsolute());
-            }
+        if(_impl.mkdir()) {
+            log.warn("Created directory " + this.getAbsolute());
         }
     }
 
