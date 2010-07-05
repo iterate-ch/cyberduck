@@ -818,7 +818,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                     final Local folder = LocalFactory.createLocal(new File(Preferences.instance().getProperty("tmp.dir"),
                             path.getParent().getAbsolute()));
-                    folder.mkdir(true);
                     path.setLocal(LocalFactory.createLocal(folder, path.getName()));
                     downloads.add(path);
                 }
@@ -833,21 +832,22 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         };
 
                         public void run() {
-                            for(Path download : downloads) {
-                                if(this.isCanceled()) {
-                                    break;
+                            Transfer transfer = new DownloadTransfer(downloads);
+                            TransferOptions options = new TransferOptions();
+                            options.closeSession = false;
+                            transfer.start(new TransferPrompt() {
+                                public TransferAction prompt() {
+                                    return TransferAction.ACTION_RESUME;
                                 }
-                                if(!download.getLocal().exists()) {
-                                    download.download(true);
+                            }, options);
+                            for(Path download : downloads) {
+                                if(download.getLocal().exists()) {
                                     if(download.status().isComplete()) {
                                         previews.add(download.getLocal());
                                     }
                                     else {
                                         download.getLocal().delete(false);
                                     }
-                                }
-                                else {
-                                    previews.add(download.getLocal());
                                 }
                             }
                         }
