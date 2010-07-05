@@ -6,12 +6,13 @@ Changelog. Last modified: $Date$
 
 3.6 (Jul-15-2010) [http://trac.cyberduck.ch/milestone/3.6]
 - [Feature] Google Storage (Google Storage)
-- [Feature] Edit Access Control List (#3191) (S3, Google Storage)
+- [Feature] Edit Access Control List (#3191) (S3, Google Storage, Google Docs)
 - [Feature] Enable Bucket Versioning (#4511) (S3)
-- [Feature] Enable Bucket Multi-Factor Authentication (#4510) (S3)
-- [Feature] Display file versions in Info panel (S3)
-- [Feature] Revert to previous version (S3)
-- [Feature] Download previous version (S3)
+- [Feature] Enable Bucket Multi-Factor Authentication Delete (#4510) (S3)
+- [Feature] Display previous file versions in browser (S3, Google Docs)
+- [Feature] Download previous file version (S3, Google Docs)
+- [Feature] Revert to previous file version (S3)
+- [Bugfix] Eucalyptus Walrus support enabled by default (S3)
 - [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
 - [Bugfix] Improved interoperability with Dunkel Cloud Storage (S3)
 
