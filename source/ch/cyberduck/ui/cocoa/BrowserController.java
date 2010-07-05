@@ -632,7 +632,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             bookmarkModel.setSource(HistoryCollection.defaultCollection());
         }
         else if(bookmarkButton.state() == NSCell.NSOnState) {
-            bookmarkModel.setSource(HostCollection.defaultCollection());
+            bookmarkModel.setSource(BookmarkCollection.defaultCollection());
         }
         bookmarkTableDelegate.selectionDidChange(null);
         this.setBookmarkFilter(null);
@@ -1305,7 +1305,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
         this.bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(
-                this, HostCollection.defaultCollection())
+                this, BookmarkCollection.defaultCollection())
         ).id());
         this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>() {
             public String tooltip(Host bookmark) {
@@ -1457,16 +1457,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private static class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
         public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
-            return new NSInteger(HostCollection.defaultCollection().size());
+            return new NSInteger(BookmarkCollection.defaultCollection().size());
         }
 
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(HostCollection.defaultCollection().get(row.intValue()).getNickname());
+            return NSString.stringWithString(BookmarkCollection.defaultCollection().get(row.intValue()).getNickname());
         }
     }
 
     public void quickConnectWillPopUp(NSNotification notification) {
-        int size = HostCollection.defaultCollection().size();
+        int size = BookmarkCollection.defaultCollection().size();
         this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? new NSInteger(10) : new NSInteger(size));
     }
 
@@ -1478,7 +1478,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         input = input.trim();
         // First look for equivalent bookmarks
-        for(Host h : HostCollection.defaultCollection()) {
+        for(Host h : BookmarkCollection.defaultCollection()) {
             if(h.getNickname().equals(input)) {
                 this.mount(h);
                 return;
