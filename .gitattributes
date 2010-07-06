@@ -752,13 +752,10 @@ id.lproj/Prompt.strings -text svneol=unset#text/utf-16
 id.lproj/S3.strings -text svneol=unset#text/utf-16
 id.lproj/Status.strings -text svneol=unset#text/utf-16
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
-img/AliasBadgeIcon.icns -text
-img/DropFolderBadgeIcon.icns -text
-img/PrivateFolderBadgeIcon.icns -text
-img/ReadOnlyFolderBadgeIcon.icns -text
 img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
 img/alert.tiff -text svneol=unset#image/tiff
+img/aliasbadge.png -text svneol=unset#image/png
 img/arrowDown.tiff -text svneol=unset#image/tiff
 img/arrowDownBlack.tiff -text svneol=unset#image/tiff
 img/arrowDownBlack16.tiff -text svneol=unset#image/tiff
@@ -796,6 +793,7 @@ img/download6.icns -text
 img/download7.icns -text
 img/download8.icns -text
 img/download9.icns -text
+img/dropfolderbadge.png -text svneol=unset#image/png
 img/edit.tiff -text svneol=unset#image/tiff
 img/editPressed.tiff -text svneol=unset#image/tiff
 img/eject.tiff -text svneol=unset#image/tiff
@@ -819,7 +817,9 @@ img/open.tiff -text svneol=unset#image/tiff
 img/outline.tiff -text svneol=unset#image/tiff
 img/pencil.tiff -text svneol=unset#image/tiff
 img/plus.tiff -text svneol=unset#image/tiff
+img/privatefolderbadge.png -text svneol=unset#image/png
 img/queue.tiff -text svneol=unset#image/tiff
+img/readonlyfolderbadge.png -text svneol=unset#image/png
 img/reload.tiff -text svneol=unset#image/tiff
 img/remove.tiff -text svneol=unset#image/tiff
 img/removePressed.tiff -text svneol=unset#image/tiff

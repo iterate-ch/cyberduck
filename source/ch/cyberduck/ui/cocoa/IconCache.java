@@ -259,7 +259,7 @@ public class IconCache {
                 NSImage f = FOLDER_ICON;
                 f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                         NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                NSImage o = this.iconForName("AliasBadgeIcon.icns");
+                NSImage o = this.iconForName("aliasbadge.png");
                 o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
                         NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
                 folder.unlockFocus();
@@ -270,7 +270,7 @@ public class IconCache {
             NSImage f = this.iconForExtension(item.getExtension(), size);
             f.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-            NSImage o = this.iconForName("AliasBadgeIcon.icns");
+            NSImage o = this.iconForName("aliasbadge.png");
             o.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
             symlink.unlockFocus();
@@ -291,15 +291,15 @@ public class IconCache {
             if(overlayFolderImage) {
                 if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
-                    return this.iconForFolder("PrivateFolderBadgeIcon.icns", size);
+                    return this.iconForFolder("privatefolderbadge.png", size);
                 }
                 if(!item.attributes().getPermission().isReadable()) {
                     if(item.attributes().getPermission().isWritable()) {
-                        return this.iconForFolder("DropFolderBadgeIcon.icns", size);
+                        return this.iconForFolder("dropfolderbadge.png", size);
                     }
                 }
                 if(!item.attributes().getPermission().isWritable()) {
-                    return this.iconForFolder("ReadOnlyFolderBadgeIcon.icns", size);
+                    return this.iconForFolder("readonlyfolderbadge.png", size);
                 }
             }
             return this.iconForFolder(size);
