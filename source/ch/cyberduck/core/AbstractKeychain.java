@@ -1,7 +1,5 @@
 package ch.cyberduck.core;
 
-import java.security.cert.X509Certificate;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -21,10 +19,77 @@ import java.security.cert.X509Certificate;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.security.cert.X509Certificate;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractKeychain {
+    private static Logger log = Logger.getLogger(AbstractKeychain.class);
+
+
+    /**
+     * @param host
+     * @return the password fetched from the keychain or null if it was not found
+     */
+    public String find(final Host host) {
+        if(log.isInfoEnabled()) {
+            log.info("Fetching password from Keychain:" + host);
+        }
+        if(StringUtils.isEmpty(host.getHostname())) {
+            log.warn("No hostname given");
+            return null;
+        }
+        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
+            log.warn("No username given");
+            return null;
+        }
+        final String p = this.getPassword(host.getProtocol().getScheme(), host.getPort(),
+                host.getHostname(), host.getCredentials().getUsername());
+        if(null == p) {
+            if(log.isInfoEnabled()) {
+                log.info("Password not found in Keychain:" + host);
+            }
+        }
+        return p;
+    }
+
+    /**
+     * Adds the password to the login keychain
+     *
+     * @param host
+     * @see ch.cyberduck.core.Host#getCredentials()
+     */
+    protected void save(final Host host) {
+        if(StringUtils.isEmpty(host.getHostname())) {
+            log.warn("No hostname given");
+            return;
+        }
+        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
+            log.warn("No username given");
+            return;
+        }
+        if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
+            log.warn("No password given");
+            return;
+        }
+        if(host.getCredentials().isAnonymousLogin()) {
+            log.info("Do not write anonymous credentials to Keychain");
+            return;
+        }
+        if(!host.getCredentials().usesKeychain()) {
+            log.info("Do not write credentials to Keychain");
+            return;
+        }
+        if(log.isInfoEnabled()) {
+            log.info("Add Password to Keychain:" + host);
+        }
+        this.addPassword(host.getProtocol().getScheme(), host.getPort(),
+                host.getHostname(), host.getCredentials().getUsername(), host.getCredentials().getPassword());
+    }
 
     /**
      * @param protocol

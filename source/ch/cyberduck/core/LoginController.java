@@ -30,16 +30,18 @@ public interface LoginController {
     void check(Host host) throws LoginCanceledException;
 
     /**
+     * Check the credentials for validity and prompt the user for the password if not found
+     * in the login keychain
+     *
      * @param host
-     * @param reason
+     * @param reason The title for the login prompt
      * @throws LoginCanceledException
      */
     void check(Host host, String reason) throws LoginCanceledException;
 
 
     /**
-     * Check the credentials for validity and prompt the user for the password if not found
-     * in the login keychain
+     * Callback upon successful login.
      *
      * @param host
      */
@@ -47,30 +49,23 @@ public interface LoginController {
 
     /**
      * Call this to allow the user to reenter the new login credentials.
-     * A concrete sublcass could eg. display a panel.
+     * A concrete subclass should display a login prompt.
      *
+     * @param protocol    Used to determine login prompt options.
      * @param credentials
      * @param reason
      */
-    void fail(Credentials credentials, String reason) throws LoginCanceledException;
+    void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
-     * A concrete sublcass could eg. display a panel.
+     * A concrete subclass should display a login prompt.
      *
-     * @param credentials
-     * @param message     Any additional information why the login failed.
-     * @param reason
+     * @param protocol    Used to determine login prompt options.
+     * @param credentials The credentials to obtain.
+     * @param reason      The title for the login prompt
+     * @param message     The detail message for the login prompt. Any additional information why the login failed.
      * @throws LoginCanceledException
      */
-    void prompt(Credentials credentials, String reason, String message) throws LoginCanceledException;
-
-    /**
-     * @param credentials
-     * @param publickeyoption Enable public key authentication for SSH <code>publickey</code authentication method.
-     * @param reason
-     * @param message
-     * @throws LoginCanceledException
-     */
-    void prompt(Credentials credentials, boolean publickeyoption, String reason, String message) throws LoginCanceledException;
+    void prompt(Protocol protocol, Credentials credentials, String reason, String message) throws LoginCanceledException;
 }

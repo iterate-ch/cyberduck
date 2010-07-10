@@ -23,10 +23,11 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -40,9 +41,8 @@ public class PromptLoginController extends AbstractLoginController {
         this.parent = parent;
     }
 
-    public void prompt(final Credentials credentials, final boolean publickeyoption, final String reason, final String message)
-            throws LoginCanceledException {
-
+    public void prompt(final Protocol protocol, final Credentials credentials,
+                       final String reason, final String message) throws LoginCanceledException {
         SheetController c = new SheetController(parent) {
             @Override
             protected String getBundleName() {
@@ -53,6 +53,14 @@ public class PromptLoginController extends AbstractLoginController {
             public void awakeFromNib() {
                 this.update();
                 super.awakeFromNib();
+            }
+
+            @Outlet
+            protected NSImageView iconView;
+
+            public void setIconView(NSImageView iconView) {
+                this.iconView = iconView;
+                this.iconView.setImage(IconCache.iconNamed(protocol.disk()));
             }
 
             @Outlet
@@ -182,7 +190,6 @@ public class PromptLoginController extends AbstractLoginController {
 
             @Action
             public void pkCheckboxSelectionChanged(final NSButton sender) {
-                log.debug("pkCheckboxSelectionChanged");
                 if(sender.state() == NSCell.NSOnState) {
                     publicKeyPanel = NSOpenPanel.openPanel();
                     publicKeyPanel.setCanChooseDirectories(false);
@@ -200,7 +207,6 @@ public class PromptLoginController extends AbstractLoginController {
             }
 
             public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-                log.debug("pkSelectionPanelDidEnd");
                 if(returncode == NSPanel.NSOKButton) {
                     NSArray selected = sheet.filenames();
                     final NSEnumerator enumerator = selected.objectEnumerator();
@@ -220,7 +226,7 @@ public class PromptLoginController extends AbstractLoginController {
                 this.passwordField.setEnabled(!credentials.isAnonymousLogin());
                 this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
-                this.pkCheckbox.setEnabled(publickeyoption);
+                this.pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
                 if(credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
                     this.updateField(this.pkLabel, credentials.getIdentity().toURL());

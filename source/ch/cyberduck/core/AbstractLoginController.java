@@ -29,11 +29,6 @@ import org.apache.log4j.Logger;
 public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
-    public void prompt(Credentials credentials, String reason, String message)
-            throws LoginCanceledException {
-        this.prompt(credentials, false, reason, message);
-    }
-
     /**
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
@@ -68,10 +63,10 @@ public abstract class AbstractLoginController implements LoginController {
             final String title = Locale.localizedString("Login with username and password", "Credentials");
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                    String passFromKeychain = this.find(host);
+                    String passFromKeychain = KeychainFactory.instance().find(host);
                     if(StringUtils.isBlank(passFromKeychain)) {
                         reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                        this.prompt(credentials, title, reason.toString());
+                        this.prompt(host.getProtocol(), credentials, title, reason.toString());
                     }
                     else {
                         credentials.setPassword(passFromKeychain);
@@ -80,80 +75,24 @@ public abstract class AbstractLoginController implements LoginController {
                 }
                 else {
                     reason.append(Locale.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
-                    this.prompt(credentials, title, reason.toString());
+                    this.prompt(host.getProtocol(), credentials, title, reason.toString());
                 }
             }
             else {
                 reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                this.prompt(credentials, title, reason.toString());
+                this.prompt(host.getProtocol(), credentials, title, reason.toString());
             }
         }
     }
 
+    /**
+     * @param host
+     */
     public void success(final Host host) {
-        this.save(host);
+        KeychainFactory.instance().save(host);
     }
 
-    public void fail(Credentials credentials, final String reason) throws LoginCanceledException {
-        this.prompt(credentials, Locale.localizedString("Login failed", "Credentials"), reason);
-    }
-
-    /**
-     * @param host
-     * @return the password fetched from the keychain or null if it was not found
-     */
-    public String find(final Host host) {
-        if(log.isInfoEnabled()) {
-            log.info("Fetching password from Keychain:" + host);
-        }
-        if(StringUtils.isEmpty(host.getHostname())) {
-            log.warn("No hostname given");
-            return null;
-        }
-        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
-            log.warn("No username given");
-            return null;
-        }
-        final String p = KeychainFactory.instance().getPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), host.getCredentials().getUsername());
-        if(null == p) {
-            if(log.isInfoEnabled()) {
-                log.info("Password not found in Keychain:" + host);
-            }
-        }
-        return p;
-    }
-
-    /**
-     * Adds the password to the login keychain
-     *
-     * @param host
-     */
-    protected void save(final Host host) {
-        if(StringUtils.isEmpty(host.getHostname())) {
-            log.warn("No hostname given");
-            return;
-        }
-        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
-            log.warn("No username given");
-            return;
-        }
-        if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
-            log.warn("No password given");
-            return;
-        }
-        if(host.getCredentials().isAnonymousLogin()) {
-            log.info("Do not write anonymous credentials to Keychain");
-            return;
-        }
-        if(!host.getCredentials().usesKeychain()) {
-            log.info("Do not write credentials to Keychain");
-            return;
-        }
-        if(log.isInfoEnabled()) {
-            log.info("Add Password to Keychain:" + host);
-        }
-        KeychainFactory.instance().addPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), host.getCredentials().getUsername(), host.getCredentials().getPassword());
+    public void fail(Protocol protocol, Credentials credentials, final String reason) throws LoginCanceledException {
+        this.prompt(protocol, credentials, Locale.localizedString("Login failed", "Credentials"), reason);
     }
 }
