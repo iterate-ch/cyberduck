@@ -1,4 +1,4 @@
-package ch.cyberduck.core.gs;
+package ch.cyberduck.core.gstorage;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -19,7 +19,10 @@ package ch.cyberduck.core.gs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
@@ -39,10 +42,6 @@ import java.util.List;
  * @version $Id$
  */
 public class GSSession extends S3Session {
-
-    static {
-        SessionFactory.addFactory(Protocol.GOOGLESTORAGE_SSL, new Factory());
-    }
 
     public static class Factory extends SessionFactory {
         @Override

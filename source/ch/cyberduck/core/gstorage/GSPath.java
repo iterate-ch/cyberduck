@@ -1,4 +1,4 @@
-package ch.cyberduck.core.gs;
+package ch.cyberduck.core.gstorage;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -33,10 +33,6 @@ import java.io.IOException;
  * @version $Id$
  */
 public class GSPath extends S3Path {
-
-    static {
-        PathFactory.addFactory(Protocol.GOOGLESTORAGE_SSL, new Factory());
-    }
 
     public static class Factory extends PathFactory<GSSession> {
         @Override
