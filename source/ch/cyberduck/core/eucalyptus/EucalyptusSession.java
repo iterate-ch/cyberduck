@@ -1,4 +1,4 @@
-package ch.cyberduck.core.ec;
+package ch.cyberduck.core.eucalyptus;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -18,7 +18,10 @@ package ch.cyberduck.core.ec;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -35,20 +38,16 @@ import java.util.List;
  * @version $Id$
  * @see "http://eucalyptus.cs.ucsb.edu/"
  */
-public class ECSession extends S3Session {
+public class EucalyptusSession extends S3Session {
 
-    static {
-        SessionFactory.addFactory(Protocol.EUCALYPTUS, new Factory());
-    }
-
-    private static class Factory extends SessionFactory {
+    public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
-            return new ECSession(h);
+            return new EucalyptusSession(h);
         }
     }
 
-    protected ECSession(Host h) {
+    public EucalyptusSession(Host h) {
         super(h);
     }
 

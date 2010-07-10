@@ -1,4 +1,4 @@
-package ch.cyberduck.core.ec;
+package ch.cyberduck.core.eucalyptus;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -21,53 +21,48 @@ package ch.cyberduck.core.ec;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.s3.S3Path;
 
 /**
  * @version $Id$
  */
-public class ECPath extends S3Path {
+public class EucalyptusPath extends S3Path {
 
-    static {
-        PathFactory.addFactory(Protocol.EUCALYPTUS, new Factory());
-    }
-
-    private static class Factory extends PathFactory<ECSession> {
+    public static class Factory extends PathFactory<EucalyptusSession> {
         @Override
-        protected Path create(ECSession session, String path, int type) {
-            return new ECPath(session, path, type);
+        protected Path create(EucalyptusSession session, String path, int type) {
+            return new EucalyptusPath(session, path, type);
         }
 
         @Override
-        protected Path create(ECSession session, String parent, String name, int type) {
-            return new ECPath(session, parent, name, type);
+        protected Path create(EucalyptusSession session, String parent, String name, int type) {
+            return new EucalyptusPath(session, parent, name, type);
         }
 
         @Override
-        protected Path create(ECSession session, Path path, Local file) {
-            return new ECPath(session, path, file);
+        protected Path create(EucalyptusSession session, Path path, Local file) {
+            return new EucalyptusPath(session, path, file);
         }
 
         @Override
-        protected <T> Path create(ECSession session, T dict) {
-            return new ECPath(session, dict);
+        protected <T> Path create(EucalyptusSession session, T dict) {
+            return new EucalyptusPath(session, dict);
         }
     }
 
-    protected ECPath(ECSession s, String parent, String name, int type) {
+    protected EucalyptusPath(EucalyptusSession s, String parent, String name, int type) {
         super(s, parent, name, type);
     }
 
-    protected ECPath(ECSession s, String path, int type) {
+    protected EucalyptusPath(EucalyptusSession s, String path, int type) {
         super(s, path, type);
     }
 
-    protected ECPath(ECSession s, Path parent, Local file) {
+    protected EucalyptusPath(EucalyptusSession s, Path parent, Local file) {
         super(s, parent, file);
     }
 
-    protected <T> ECPath(ECSession s, T dict) {
+    protected <T> EucalyptusPath(EucalyptusSession s, T dict) {
         super(s, dict);
     }
 }
