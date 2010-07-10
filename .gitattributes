@@ -1951,8 +1951,6 @@ source/ch/cyberduck/core/cloud/Distribution.java -text
 source/ch/cyberduck/core/dav/DAVPath.java -text
 source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
-source/ch/cyberduck/core/davs/DAVSPath.java -text
-source/ch/cyberduck/core/davs/DAVSSession.java -text
 source/ch/cyberduck/core/eucalyptus/EucalyptusPath.java -text
 source/ch/cyberduck/core/eucalyptus/EucalyptusSession.java -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text

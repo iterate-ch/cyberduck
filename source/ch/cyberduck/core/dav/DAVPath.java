@@ -40,11 +40,7 @@ import java.text.MessageFormat;
 public class DAVPath extends Path {
     private static Logger log = Logger.getLogger(DAVPath.class);
 
-    static {
-        PathFactory.addFactory(Protocol.WEBDAV, new Factory());
-    }
-
-    private static class Factory extends PathFactory<DAVSession> {
+    public static class Factory extends PathFactory<DAVSession> {
         @Override
         protected Path create(DAVSession session, String path, int type) {
             return new DAVPath(session, path, type);

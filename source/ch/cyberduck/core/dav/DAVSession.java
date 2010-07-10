@@ -22,10 +22,12 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
@@ -38,14 +40,10 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class DAVSession extends HTTPSession {
+public class DAVSession extends HTTPSession implements SSLSession {
     private static Logger log = Logger.getLogger(DAVSession.class);
 
-    static {
-        SessionFactory.addFactory(Protocol.WEBDAV, new Factory());
-    }
-
-    private static class Factory extends SessionFactory {
+    public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new DAVSession(h);
@@ -54,7 +52,7 @@ public class DAVSession extends HTTPSession {
 
     private DAVResource DAV;
 
-    protected DAVSession(Host h) {
+    public DAVSession(Host h) {
         super(h);
     }
 
@@ -74,19 +72,53 @@ public class DAVSession extends HTTPSession {
         return DAV;
     }
 
+    private AbstractX509TrustManager trustManager;
+
+    /**
+     * @return
+     */
+    public AbstractX509TrustManager getTrustManager() {
+        if(null == trustManager) {
+            if(Preferences.instance().getBoolean("webdav.tls.acceptAnyCertificate")) {
+                trustManager = new IgnoreX509TrustManager();
+            }
+            else {
+                trustManager = new KeychainX509TrustManager(host.getHostname());
+            }
+        }
+        return trustManager;
+    }
+
     protected void configure() throws IOException {
         final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
         client.getHostConfiguration().getParams().setParameter(
                 "http.useragent", this.getUserAgent()
         );
+        if(host.getProtocol().isSecure()) {
+            client.getHostConfiguration().setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol("https",
+                            (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort()));
+        }
         final Proxy proxy = ProxyFactory.instance();
-        if(proxy.isHTTPProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
-            this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
-            //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
+        if(host.getProtocol().isSecure()) {
+            if(proxy.isHTTPSProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
+                this.getClient().setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+                //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
+            }
+            else {
+                this.getClient().setProxy(null, -1);
+                this.getClient().setProxyCredentials(null);
+            }
         }
         else {
-            this.getClient().setProxy(null, -1);
-            this.getClient().setProxyCredentials(null);
+            if(proxy.isHTTPProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
+                this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+                //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
+            }
+            else {
+                this.getClient().setProxy(null, -1);
+                this.getClient().setProxyCredentials(null);
+            }
         }
         this.getClient().setFollowRedirects(Preferences.instance().getBoolean("webdav.followRedirects"));
     }
@@ -131,7 +163,7 @@ public class DAVSession extends HTTPSession {
                 final Credentials credentials = host.getCredentials();
                 if(!credentials.isValid()) {
                     if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                        credentials.setPassword(((AbstractLoginController) c).find(host));
+                        credentials.setPassword(KeychainFactory.instance().find(host));
                     }
                 }
                 // Do not prompt for credentials yet but in the credentials provider
@@ -146,16 +178,12 @@ public class DAVSession extends HTTPSession {
                 c.success(host);
             }
 
-            public void fail(Credentials credentials, String reason) throws LoginCanceledException {
-                c.fail(credentials, reason);
+            public void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException {
+                c.fail(protocol, credentials, reason);
             }
 
-            public void prompt(Credentials credentials, String reason, String message) throws LoginCanceledException {
-                c.prompt(credentials, reason, message);
-            }
-
-            public void prompt(Credentials credentials, boolean publickeyoption, String reason, String message) throws LoginCanceledException {
-                c.prompt(credentials, publickeyoption, reason, message);
+            public void prompt(Protocol protocol, Credentials credentials, String reason, String message) throws LoginCanceledException {
+                c.prompt(protocol, credentials, reason, message);
             }
         };
     }
@@ -192,7 +220,7 @@ public class DAVSession extends HTTPSession {
                         else {
                             // authstate.isAuthAttempted() && authscheme.isComplete()
                             // Already tried and failed.
-                            login.fail(credentials, realm.toString());
+                            login.fail(host.getProtocol(), credentials, realm.toString());
                         }
 
                         message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
