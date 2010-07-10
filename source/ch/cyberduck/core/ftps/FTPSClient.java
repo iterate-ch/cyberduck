@@ -23,12 +23,12 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
-
 import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
+
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -43,9 +43,8 @@ public class FTPSClient extends FTPClient {
 
     /**
      * @throws IOException
-     * @throws FTPException
      */
-    protected void auth() throws IOException, FTPException {
+    public void auth() throws IOException {
         lastValidReply = control.validateReply(control.sendCommand("AUTH TLS"), "234");
 
         ((FTPSControlSocket) this.control).startHandshake();
@@ -58,16 +57,16 @@ public class FTPSClient extends FTPClient {
      * 1) Clear (requested by 'PROT C')
      * 2) Private (requested by 'PROT P')
      */
-    protected void prot() throws IOException, FTPException {
+    public void prot() throws IOException {
         lastValidReply = control.validateReply(control.sendCommand("PBSZ 0"), "200");
         try {
             lastValidReply = control.validateReply(control.sendCommand("PROT "
                     + Preferences.instance().getProperty("ftp.tls.datachannel")), "200");
         }
-        catch (FTPException e) {
+        catch(FTPException e) {
             log.warn("No data channel security: " + e.getMessage());
             ((FTPSControlSocket) this.control).setUseDataConnectionSecurity(false);
-            if (Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError")) {
+            if(Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError")) {
                 throw new IOException("The data channel could not be secured: " + e.getMessage());
             }
         }

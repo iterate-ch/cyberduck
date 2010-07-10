@@ -22,7 +22,12 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
+import ch.cyberduck.core.ftps.FTPSClient;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.Configurable;
@@ -43,14 +48,10 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class FTPSession extends Session {
+public class FTPSession extends Session implements SSLSession {
     private static Logger log = Logger.getLogger(FTPSession.class);
 
-    static {
-        SessionFactory.addFactory(Protocol.FTP, new Factory());
-    }
-
-    private static class Factory extends SessionFactory {
+    public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new FTPSession(h);
@@ -60,7 +61,7 @@ public class FTPSession extends Session {
     private FTPClient FTP;
     protected FTPFileEntryParser parser;
 
-    protected FTPSession(Host h) {
+    public FTPSession(Host h) {
         super(h);
     }
 
@@ -70,6 +71,23 @@ public class FTPSession extends Session {
             throw new ConnectionCanceledException();
         }
         return FTP;
+    }
+
+    private AbstractX509TrustManager trustManager;
+
+    /**
+     * @return
+     */
+    public AbstractX509TrustManager getTrustManager() {
+        if(null == trustManager) {
+            if(Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
+                trustManager = new IgnoreX509TrustManager();
+            }
+            else {
+                trustManager = new KeychainX509TrustManager(host.getHostname());
+            }
+        }
+        return trustManager;
     }
 
     @Override
@@ -287,10 +305,6 @@ public class FTPSession extends Session {
         }
     };
 
-    protected FTPClient configure() {
-        return new FTPClient(this.getEncoding(), messageListener);
-    }
-
     protected void configure(FTPClient client) throws IOException {
         client.setTimeout(this.timeout());
         client.setStatListSupportedEnabled(Preferences.instance().getBoolean("ftp.sendStatListCommand"));
@@ -310,7 +324,13 @@ public class FTPSession extends Session {
         this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
                 host.getProtocol().getName(), host.getHostname()));
 
-        this.configure(FTP = this.configure());
+        if(this.getHost().getProtocol().isSecure()) {
+            FTP = new FTPSClient(this.getEncoding(), messageListener, this.getTrustManager());
+        }
+        else {
+            FTP = new FTPClient(this.getEncoding(), messageListener);
+        }
+        this.configure(FTP);
 
         this.getClient().connect(host.getHostname(true), host.getPort());
         if(!this.isConnected()) {
@@ -342,15 +362,31 @@ public class FTPSession extends Session {
 
     }
 
+    /**
+     * AUTH command status flag.
+     */
+    private boolean auth = true;
+
     @Override
     protected void login(final Credentials credentials) throws IOException {
         try {
-            this.getClient().login(credentials.getUsername(), credentials.getPassword());
+            final FTPClient client = this.getClient();
+            if(this.getHost().getProtocol().isSecure() && auth) {
+                // Only send AUTH before the first login attempt
+                ((FTPSClient) client).auth();
+                auth = false;
+            }
+
+            client.login(credentials.getUsername(), credentials.getPassword());
             this.message(Locale.localizedString("Login successful", "Credentials"));
+
+            if(this.getHost().getProtocol().isSecure()) {
+                ((FTPSClient) client).prot();
+            }
         }
         catch(FTPException e) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(credentials, e.getMessage());
+            this.login.fail(host.getProtocol(), credentials, e.getMessage());
             this.login();
         }
     }
