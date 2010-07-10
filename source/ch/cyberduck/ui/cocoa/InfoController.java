@@ -24,8 +24,8 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.s3h.S3HPath;
-import ch.cyberduck.core.s3h.S3HSession;
+import ch.cyberduck.core.s3.S3Path;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
@@ -309,8 +309,8 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        final String container = ((S3HPath) next).getContainerName();
-                        ((S3HSession) controller.getSession()).setLogging(container,
+                        final String container = ((S3Path) next).getContainerName();
+                        ((S3Session) controller.getSession()).setLogging(container,
                                 bucketLoggingButton.state() == NSCell.NSOnState);
                         break;
                     }
@@ -338,8 +338,8 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        final String container = ((S3HPath) next).getContainerName();
-                        ((S3HSession) controller.getSession()).setVersioning(container,
+                        final String container = ((S3Path) next).getContainerName();
+                        ((S3Session) controller.getSession()).setVersioning(container,
                                 bucketMfaButton.state() == NSCell.NSOnState,
                                 bucketVersioningButton.state() == NSCell.NSOnState);
                         break;
@@ -368,8 +368,8 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        final String container = ((S3HPath) next).getContainerName();
-                        ((S3HSession) controller.getSession()).setVersioning(container,
+                        final String container = ((S3Path) next).getContainerName();
+                        ((S3Session) controller.getSession()).setVersioning(container,
                                 bucketMfaButton.state() == NSCell.NSOnState,
                                 bucketVersioningButton.state() == NSCell.NSOnState
                         );
@@ -1175,9 +1175,16 @@ public class InfoController extends ToolbarWindowController {
             item.setImage(IconCache.iconNamed("NSUserAccounts", 32));
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
-            // Currently these settings are only available for Amazon S3
-            item.setLabel(Protocol.S3.getName());
-            item.setImage(IconCache.iconNamed(Protocol.S3.disk(), 32));
+            if(session instanceof S3Session) {
+                // Set icon of cloud service provider
+                item.setLabel(session.getHost().getProtocol().getName());
+                item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
+            }
+            else {
+                // Currently these settings are only available for Amazon S3
+                item.setLabel(Protocol.S3.getName());
+                item.setImage(IconCache.iconNamed(Protocol.S3.disk(), 32));
+            }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
             // Give icon of the given session
@@ -1206,7 +1213,7 @@ public class InfoController extends ToolbarWindowController {
             return false;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
-            if(session instanceof S3HSession) {
+            if(session instanceof S3Session) {
                 return !anonymous;
             }
             // Not enabled if not a cloud session
@@ -1653,7 +1660,7 @@ public class InfoController extends ToolbarWindowController {
     private boolean toggleS3Settings(final boolean stop) {
         final Session session = controller.getSession();
         // Amazon S3 only
-        boolean enable = session instanceof S3HSession;
+        boolean enable = session instanceof S3Session;
         if(enable) {
             final Credentials credentials = session.getHost().getCredentials();
             enable = !credentials.isAnonymousLogin();
@@ -1661,8 +1668,8 @@ public class InfoController extends ToolbarWindowController {
         boolean logging = false;
         boolean versioning = false;
         if(enable) {
-            logging = ((S3HSession) session).isLoggingSupported();
-            versioning = ((S3HSession) session).isVersioningSupported();
+            logging = ((S3Session) session).isLoggingSupported();
+            versioning = ((S3Session) session).isVersioningSupported();
         }
         for(Path file : files) {
             bucketVersioningButton.setEnabled(stop && enable && versioning);
@@ -1705,7 +1712,7 @@ public class InfoController extends ToolbarWindowController {
             else {
                 for(Path file : files) {
                     if(file.attributes().isFile()) {
-                        final S3HPath s3 = (S3HPath) file;
+                        final S3Path s3 = (S3Path) file;
                         bucketLoggingButton.setToolTip(
                                 s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
                         final String redundancy = s3.attributes().getStorageClass();
@@ -1740,8 +1747,8 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path file : files) {
-                        final S3HSession s = (S3HSession) controller.getSession();
-                        final String container = ((S3HPath) file).getContainerName();
+                        final S3Session s = (S3Session) controller.getSession();
+                        final String container = ((S3Path) file).getContainerName();
                         location = s.getLocation(container);
                         logging = s.isLogging(container);
                         versioning = s.isVersioning(container);
@@ -2073,7 +2080,7 @@ public class InfoController extends ToolbarWindowController {
         distributionLoggingButton.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);
         // Amazon S3 only
-        distributionCnameField.setEnabled(stop && enable && session instanceof S3HSession);
+        distributionCnameField.setEnabled(stop && enable && session instanceof S3Session);
         distributionDeliveryPopup.setEnabled(stop && enable);
         if(stop) {
             distributionProgress.stopAnimation(null);
