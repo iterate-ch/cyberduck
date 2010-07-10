@@ -8,6 +8,7 @@
     LANGUAGE = ObjC;
     OUTLETS =     {
         anonymousCheckbox = NSButton;
+        iconView = id;
         keychainCheckbox = NSButton;
         passwordField = NSSecureTextField;
         passwordLabel = id;

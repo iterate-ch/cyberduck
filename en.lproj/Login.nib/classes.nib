@@ -18,6 +18,8 @@
 			<dict>
 				<key>anonymousCheckbox</key>
 				<string>NSButton</string>
+				<key>iconView</key>
+				<string>id</string>
 				<key>keychainCheckbox</key>
 				<string>NSButton</string>
 				<key>passwordField</key>
