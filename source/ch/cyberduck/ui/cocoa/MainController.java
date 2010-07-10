@@ -557,17 +557,6 @@ public class MainController extends BundleController implements NSApplication.De
         });
         Rendezvous.instance().addListener(new RendezvousListener() {
             public void serviceResolved(final String identifier, final String hostname) {
-                if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
-                    try {
-                        if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
-                            log.info("Supressed Rendezvous notification for " + hostname);
-                            return;
-                        }
-                    }
-                    catch(UnknownHostException e) {
-                        ; //Ignore
-                    }
-                }
                 invoke(new DefaultMainAction() {
                     public void run() {
                         Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
