@@ -1,4 +1,4 @@
-package ch.cyberduck.core.gd;
+package ch.cyberduck.core.gdocs;
 
 /*
  *  Copyright (c) 2010 David Kocher. All rights reserved.
@@ -38,10 +38,6 @@ import java.util.logging.Logger;
 public class GDSession extends Session {
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(GDSession.class);
 
-    static {
-        SessionFactory.addFactory(Protocol.GDOCS, new Factory());
-    }
-
     public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
@@ -51,7 +47,7 @@ public class GDSession extends Session {
 
     private DocsService client;
 
-    protected GDSession(Host h) {
+    public GDSession(Host h) {
         super(h);
     }
 
@@ -136,7 +132,7 @@ public class GDSession extends Session {
         }
         catch(AuthenticationException e) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(credentials, e.getMessage());
+            this.login.fail(host.getProtocol(), credentials, e.getMessage());
             this.login();
         }
     }
