@@ -31,7 +31,6 @@
 		4719A6040BD964780068CCFD /* connection.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4719A6030BD964780068CCFD /* connection.tiff */; };
 		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
 		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
-		47215AA707FC9A3E00451725 /* login.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47215AA607FC9A3E00451725 /* login.tiff */; };
 		4725794C11DD7FD6009DD748 /* readonlyfolderbadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4725794811DD7FD6009DD748 /* readonlyfolderbadge.png */; };
 		4725794D11DD7FD6009DD748 /* dropfolderbadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4725794911DD7FD6009DD748 /* dropfolderbadge.png */; };
 		4725794E11DD7FD6009DD748 /* aliasbadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4725794A11DD7FD6009DD748 /* aliasbadge.png */; };
@@ -528,7 +527,6 @@
 		471B4907102C66600059687D /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
 		471D2C5405A2505600675163 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		47215AA607FC9A3E00451725 /* login.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = login.tiff; sourceTree = "<group>"; };
 		4725396810F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Alert.nib; sourceTree = "<group>"; };
 		4725396B10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		4725396E10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sr; path = sr.lproj/Browser.nib; sourceTree = "<group>"; };
@@ -1764,7 +1762,6 @@
 				4709E81A0F864B16005A06CE /* sync.tiff */,
 				4739D3990F8268B700D2782A /* upload.tiff */,
 				4739D39A0F8268B700D2782A /* download.tiff */,
-				47215AA607FC9A3E00451725 /* login.tiff */,
 				477839310BA1BE8E0037E145 /* statusGreen.tiff */,
 				477839320BA1BE8E0037E145 /* statusRed.tiff */,
 				477839330BA1BE8E0037E145 /* statusYellow.tiff */,
@@ -2404,7 +2401,6 @@
 				4749576607EDED4E00B34D53 /* list.tiff in Resources */,
 				47FF630407F34E6100C0BDB9 /* gear.tiff in Resources */,
 				476C7C1907F5A2A700CF6032 /* File.nib in Resources */,
-				47215AA707FC9A3E00451725 /* login.tiff in Resources */,
 				47FD44A70801DCE200716715 /* queue.tiff in Resources */,
 				47FD45720801ED1D00716715 /* browser.tiff in Resources */,
 				47FD45740801ED1D00716715 /* general.tiff in Resources */,
