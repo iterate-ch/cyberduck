@@ -50,11 +50,7 @@ import java.util.*;
 public class CFPath extends CloudPath {
     private static Logger log = Logger.getLogger(CFPath.class);
 
-    static {
-        PathFactory.addFactory(Protocol.CLOUDFILES, new Factory());
-    }
-
-    private static class Factory extends PathFactory<CFSession> {
+    public static class Factory extends PathFactory<CFSession> {
         @Override
         protected Path create(CFSession session, String path, int type) {
             return new CFPath(session, path, type);

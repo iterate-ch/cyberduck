@@ -19,33 +19,20 @@ package ch.cyberduck.core.me;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.davs.DAVSSession;
+import ch.cyberduck.core.dav.DAVSession;
 
 /**
  * @version $Id$
  */
-public class MESession extends DAVSSession {
+public class MESession extends DAVSession {
 
-    static {
-        SessionFactory.addFactory(Protocol.IDISK, new Factory());
-    }
-
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new MESession(h);
-        }
-    }
-
-    protected MESession(Host h) {
+    public MESession(Host h) {
         super(h);
     }
 
     /**
      * Prefixing user agent with "WebDAVFS". Fix for #4435.
+     *
      * @return
      */
     @Override

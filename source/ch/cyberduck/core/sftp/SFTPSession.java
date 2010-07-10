@@ -41,11 +41,7 @@ import java.text.MessageFormat;
 public class SFTPSession extends Session {
     private static Logger log = Logger.getLogger(SFTPSession.class);
 
-    static {
-        SessionFactory.addFactory(Protocol.SFTP, new Factory());
-    }
-
-    private static class Factory extends SessionFactory {
+    public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new SFTPSession(h);
@@ -54,7 +50,7 @@ public class SFTPSession extends Session {
 
     private Connection SSH;
 
-    private SFTPSession(Host h) {
+    public SFTPSession(Host h) {
         super(h);
     }
 
@@ -195,7 +191,7 @@ public class SFTPSession extends Session {
             }
         }
         this.message(Locale.localizedString("Login failed", "Credentials"));
-        this.login.fail(credentials,
+        this.login.fail(host.getProtocol(), credentials,
                 Locale.localizedString("Login with username and password", "Credentials"));
         this.login();
     }
@@ -219,7 +215,7 @@ public class SFTPSession extends Session {
                 if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
                     passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
-                        login.prompt(credentials, true,
+                        login.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Private key password protected", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
@@ -239,7 +235,7 @@ public class SFTPSession extends Session {
                 catch(IOException e) {
                     if(e.getCause() instanceof PEMDecryptException) {
                         this.message(Locale.localizedString("Login failed", "Credentials"));
-                        this.login.fail(credentials, e.getCause().getMessage());
+                        this.login.fail(host.getProtocol(), credentials, e.getCause().getMessage());
                         this.login();
                     }
                     else {
@@ -316,7 +312,7 @@ public class SFTPSession extends Session {
                         return Locale.localizedString("One-time password", "Credentials");
                     }
                 };
-                SFTPSession.this.login.prompt(credentials,
+                SFTPSession.this.login.prompt(host.getProtocol(), credentials,
                         Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i]);
                 response[i] = credentials.getPassword();
                 promptCount++;

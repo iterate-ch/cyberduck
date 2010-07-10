@@ -18,13 +18,30 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.cf.CFPath;
+import ch.cyberduck.core.cf.CFSession;
+import ch.cyberduck.core.dav.DAVPath;
+import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.eucalyptus.EucalyptusPath;
+import ch.cyberduck.core.eucalyptus.EucalyptusSession;
+import ch.cyberduck.core.ftp.FTPPath;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.gdocs.GDPath;
+import ch.cyberduck.core.gdocs.GDSession;
+import ch.cyberduck.core.gstorage.GSPath;
+import ch.cyberduck.core.gstorage.GSSession;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.me.MEPath;
+import ch.cyberduck.core.me.MESession;
+import ch.cyberduck.core.s3.S3Path;
+import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.sftp.SFTPPath;
+import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +51,8 @@ public abstract class Protocol {
     private static Logger log = Logger.getLogger(Protocol.class);
 
     /**
+     * Must be unique across all available protocols.
+     *
      * @return The identifier for this protocol which is the scheme by default
      */
     public String getIdentifier() {
@@ -577,12 +596,12 @@ public abstract class Protocol {
     public static final Protocol CLOUDFILES = new Protocol() {
         @Override
         public String getName() {
-            return "Cloud Files";
+            return Locale.localizedString("Cloud Files", "Mosso");
         }
 
         @Override
         public String getDescription() {
-            return "Rackspace Cloud Files";
+            return Locale.localizedString("Rackspace Cloud Files", "Mosso");
         }
 
         @Override
@@ -631,15 +650,15 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol GDOCS = new Protocol() {
+    public static final Protocol GDOCS_SSL = new Protocol() {
         @Override
         public String getName() {
-            return "Google Docs";
+            return Locale.localizedString("Google Docs");
         }
 
         @Override
         public String getDescription() {
-            return Locale.localizedString("Google Docs");
+            return this.getName();
         }
 
         @Override
@@ -765,49 +784,83 @@ public abstract class Protocol {
         }
     };
 
-    private static List<Protocol> enabled = new ArrayList<Protocol>();
-
     static {
         if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
-            enabled.add(FTP);
+            SessionFactory.addFactory(
+                    Protocol.FTP, new FTPSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.FTP, new FTPPath.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.ftp.tls.enable")) {
-            enabled.add(FTP_TLS);
+            SessionFactory.addFactory(
+                    Protocol.FTP_TLS, new FTPSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.FTP_TLS, new FTPPath.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.sftp.enable")) {
-            enabled.add(SFTP);
+            SessionFactory.addFactory(
+                    Protocol.SFTP, new SFTPSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.SFTP, new SFTPPath.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.webdav.enable")) {
-            enabled.add(WEBDAV);
+            SessionFactory.addFactory(
+                    Protocol.WEBDAV, new DAVSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.WEBDAV, new DAVPath.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.webdav.tls.enable")) {
-            enabled.add(WEBDAV_SSL);
+            SessionFactory.addFactory(
+                    Protocol.WEBDAV_SSL, new DAVSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.WEBDAV_SSL, new DAVPath.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.idisk.enable")) {
-            enabled.add(IDISK);
+            SessionFactory.addFactory(
+                    Protocol.IDISK, new MESession.Factory());
+            PathFactory.addFactory(
+                    Protocol.IDISK, new MEPath.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.s3.tls.enable")) {
-            enabled.add(S3_SSL);
+            SessionFactory.addFactory(
+                    Protocol.S3_SSL, new S3Session.Factory());
+            PathFactory.addFactory(
+                    Protocol.S3_SSL, new S3Path.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.s3.enable")) {
-            enabled.add(S3);
-        }
-        if(Preferences.instance().getBoolean("protocol.s3.eucalyptus.enable")) {
-            enabled.add(EUCALYPTUS);
-        }
-        if(Preferences.instance().getBoolean("protocol.cf.enable")) {
-            enabled.add(CLOUDFILES);
-        }
-        if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
-            enabled.add(GDOCS);
+            SessionFactory.addFactory(
+                    Protocol.S3, new S3Session.Factory());
+            PathFactory.addFactory(
+                    Protocol.S3, new S3Path.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.gstorage.tls.enable")) {
-            enabled.add(GOOGLESTORAGE_SSL);
+            SessionFactory.addFactory(
+                    Protocol.GOOGLESTORAGE_SSL, new GSSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.GOOGLESTORAGE_SSL, new GSPath.Factory());
+        }
+        if(Preferences.instance().getBoolean("protocol.s3.eucalyptus.enable")) {
+            SessionFactory.addFactory(
+                    Protocol.EUCALYPTUS, new EucalyptusSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.EUCALYPTUS, new EucalyptusPath.Factory());
+        }
+        if(Preferences.instance().getBoolean("protocol.cf.enable")) {
+            SessionFactory.addFactory(
+                    Protocol.CLOUDFILES, new CFSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.CLOUDFILES, new CFPath.Factory());
+        }
+        if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
+            SessionFactory.addFactory(
+                    Protocol.GDOCS_SSL, new GDSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.GDOCS_SSL, new GDPath.Factory());
         }
     }
 
     public static List<Protocol> getKnownProtocols() {
-        return enabled;
+        return SessionFactory.getRegisteredProtocols();
     }
 
     /**
@@ -815,7 +868,7 @@ public abstract class Protocol {
      * @return The standard protocol for this port number
      */
     public static Protocol getDefaultProtocol(int port) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : Protocol.getKnownProtocols()) {
             if(protocol.getDefaultPort() == port) {
                 return protocol;
             }
@@ -830,13 +883,14 @@ public abstract class Protocol {
      * @return
      */
     public static Protocol forName(final String identifier) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : Protocol.getKnownProtocols()) {
             if(protocol.getIdentifier().equals(identifier)) {
                 return protocol;
             }
         }
         log.fatal("Unknown protocol:" + identifier);
-        return Protocol.forScheme(identifier);
+        return Protocol.forName(
+                Preferences.instance().getProperty("connection.protocol.default"));
     }
 
     /**
@@ -844,7 +898,7 @@ public abstract class Protocol {
      * @return
      */
     public static Protocol forScheme(final String scheme) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : Protocol.getKnownProtocols()) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
                 if(protocol.getSchemes()[k].equals(scheme)) {
                     return protocol;
@@ -862,7 +916,7 @@ public abstract class Protocol {
      */
     public static boolean isURL(String str) {
         if(StringUtils.isNotBlank(str)) {
-            for(Protocol protocol : getKnownProtocols()) {
+            for(Protocol protocol : Protocol.getKnownProtocols()) {
                 String[] schemes = protocol.getSchemes();
                 for(String scheme : schemes) {
                     if(str.startsWith(scheme + "://")) {

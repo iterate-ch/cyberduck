@@ -26,7 +26,8 @@ public abstract class PathFactory<S extends Session> {
     /**
      * Registered factories
      */
-    private static Map<Protocol, PathFactory> factories = new HashMap<Protocol, PathFactory>();
+    private static Map<Protocol, PathFactory> factories
+            = new HashMap<Protocol, PathFactory>();
 
     protected abstract Path create(S session, String path, int type);
 
@@ -38,6 +39,7 @@ public abstract class PathFactory<S extends Session> {
 
     /**
      * Register new factory
+     *
      * @param protocol
      * @param f
      */
@@ -46,53 +48,43 @@ public abstract class PathFactory<S extends Session> {
     }
 
     /**
-     * @param parent The parent directory
-     * @param name   The pathname relative the the parent directory
+     * @param session
+     * @param parent  The parent directory
+     * @param name    The pathname relative the the parent directory
+     * @param type
+     * @return
      */
     public static Path createPath(Session session, String parent, String name, int type) {
-        loadClass(session.getHost().getProtocol());
         return (factories.get(session.getHost().getProtocol())).create(session, parent, name, type);
     }
 
     /**
-     * @param path The absolute pathname
+     * @param session
+     * @param path    The absolute pathname
+     * @param type
+     * @return
      */
     public static Path createPath(Session session, String path, int type) {
-        loadClass(session.getHost().getProtocol());
         return (factories.get(session.getHost().getProtocol())).create(session, path, type);
     }
 
     /**
-     * @param parent The parent directory
-     * @param file   The local counterpart of this path
+     * @param session
+     * @param parent  The parent directory
+     * @param file    The local counterpart of this path
+     * @return
      */
     public static Path createPath(Session session, Path parent, Local file) {
-        loadClass(session.getHost().getProtocol());
         return (factories.get(session.getHost().getProtocol())).create(session, parent, file);
     }
 
     /**
-     * @param dict Creates a path reading its properties from the dictionary
+     * @param session
+     * @param dict    Creates a path reading its properties from the dictionary
+     * @param <T>
+     * @return
      */
     public static <T> Path createPath(Session session, T dict) {
-        loadClass(session.getHost().getProtocol());
         return (factories.get(session.getHost().getProtocol())).create(session, dict);
-    }
-
-    private static void loadClass(Protocol protocol) {
-        if(!factories.containsKey(protocol)) {
-            try {
-                // Load dynamically
-                Class.forName("ch.cyberduck.core." + protocol.getIdentifier() + "."
-                        + protocol.getIdentifier().toUpperCase() + "Path");
-            }
-            catch(ClassNotFoundException e) {
-                throw new RuntimeException("No class for type: " + protocol);
-            }
-            // See if it was put in:
-            if(!factories.containsKey(protocol)) {
-                throw new RuntimeException("No class for type: " + protocol);
-            }
-        }
     }
 }

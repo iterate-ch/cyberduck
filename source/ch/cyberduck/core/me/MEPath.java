@@ -21,19 +21,14 @@ package ch.cyberduck.core.me;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.davs.DAVSPath;
+import ch.cyberduck.core.dav.DAVPath;
 
 /**
  * @version $Id$
  */
-public class MEPath extends DAVSPath {
+public class MEPath extends DAVPath {
 
-    static {
-        PathFactory.addFactory(Protocol.IDISK, new Factory());
-    }
-
-    private static class Factory extends PathFactory<MESession> {
+    public static class Factory extends PathFactory<MESession> {
         @Override
         protected Path create(MESession session, String path, int type) {
             return new MEPath(session, path, type);

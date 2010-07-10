@@ -48,11 +48,7 @@ import java.util.List;
 public class CFSession extends CloudSession implements SSLSession {
     private static Logger log = Logger.getLogger(CFSession.class);
 
-    static {
-        SessionFactory.addFactory(Protocol.CLOUDFILES, new Factory());
-    }
-
-    private static class Factory extends SessionFactory {
+    public static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new CFSession(h);
@@ -67,27 +63,18 @@ public class CFSession extends CloudSession implements SSLSession {
     public AbstractX509TrustManager getTrustManager() {
         if(null == trustManager) {
             if(Preferences.instance().getBoolean("cf.tls.acceptAnyCertificate")) {
-                this.setTrustManager(new IgnoreX509TrustManager());
+                trustManager = new IgnoreX509TrustManager();
             }
             else {
-                this.setTrustManager(new KeychainX509TrustManager(host.getHostname()));
+                trustManager = new KeychainX509TrustManager(host.getHostname());
             }
         }
         return trustManager;
     }
 
-    /**
-     * Override the default ignoring trust manager
-     *
-     * @param trustManager
-     */
-    private void setTrustManager(AbstractX509TrustManager trustManager) {
-        this.trustManager = trustManager;
-    }
-
     private FilesClient CF;
 
-    protected CFSession(Host h) {
+    public CFSession(Host h) {
         super(h);
     }
 
@@ -138,7 +125,7 @@ public class CFSession extends CloudSession implements SSLSession {
         this.getTrustManager().setHostname(URI.create(this.getClient().getAuthenticationURL()).getHost());
         if(!this.getClient().login()) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(credentials,
+            this.login.fail(host.getProtocol(), credentials,
                     Locale.localizedString("Login with username and password", "Credentials"));
             this.login();
         }

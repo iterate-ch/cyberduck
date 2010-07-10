@@ -43,11 +43,7 @@ import java.util.List;
 public class SFTPPath extends Path {
     private static Logger log = Logger.getLogger(SFTPPath.class);
 
-    static {
-        PathFactory.addFactory(Protocol.SFTP, new Factory());
-    }
-
-    private static class Factory extends PathFactory<SFTPSession> {
+    public static class Factory extends PathFactory<SFTPSession> {
         @Override
         protected Path create(SFTPSession session, String path, int type) {
             return new SFTPPath(session, path, type);

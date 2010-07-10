@@ -18,35 +18,42 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class SessionFactory {
 
-    private static Map<Protocol, SessionFactory> factories = new HashMap<Protocol, SessionFactory>();
+    private static Map<Protocol, SessionFactory> factories
+            = new HashMap<Protocol, SessionFactory>();
+
+    /**
+     * Ordered list of supported protocols.
+     */
+    private static List<Protocol> protocols
+            = new ArrayList<Protocol>();
 
     protected abstract Session create(Host h);
 
     public static void addFactory(Protocol protocol, SessionFactory f) {
+        protocols.add(protocol);
         factories.put(protocol, f);
     }
 
+    /**
+     * @param h
+     * @return
+     */
     public static Session createSession(Host h) {
-        final Protocol protocol = h.getProtocol();
-        if (!factories.containsKey(protocol)) {
-            try {
-                // Load dynamically
-                Class.forName("ch.cyberduck.core." + protocol.getIdentifier() + "." 
-                        + protocol.getIdentifier().toUpperCase() + "Session");
-            }
-            catch (ClassNotFoundException e) {
-                throw new RuntimeException("No class for type: " + protocol);
-            }
-            // See if it was put in:
-            if (!factories.containsKey(protocol)) {
-                throw new RuntimeException("No class for type: " + protocol);
-            }
-        }
-        return (factories.get(protocol)).create(h);
+        return factories.get(h.getProtocol()).create(h);
     }
+
+    /**
+     * @return Available protocols for the user to choose from.
+     */
+    public static List<Protocol> getRegisteredProtocols() {
+        return protocols;
+    }
+
 }
