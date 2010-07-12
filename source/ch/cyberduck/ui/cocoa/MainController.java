@@ -106,7 +106,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         final Host h = Host.parse(url);
         if(StringUtils.isNotEmpty(h.getDefaultPath())) {
-            if(!h.getDefaultPath().endsWith(Path.DELIMITER)) {
+            if(!h.getDefaultPath().endsWith(String.valueOf(Path.DELIMITER))) {
                 final Session s = SessionFactory.createSession(h);
                 final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
                 if(StringUtils.isNotBlank(p.getExtension())) {
