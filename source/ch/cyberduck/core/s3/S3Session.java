@@ -331,22 +331,17 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     @Override
-    protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
+    protected void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }
         this.fireConnectionWillOpenEvent();
-
-        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                host.getProtocol().getName(), host.getHostname()));
 
         // Configure connection options
         this.configure();
 
         // Prompt the login credentials first
         this.login();
-        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                host.getProtocol().getName()));
         this.fireConnectionDidOpenEvent();
     }
 

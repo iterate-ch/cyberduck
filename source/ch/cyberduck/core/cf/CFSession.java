@@ -87,14 +87,12 @@ public class CFSession extends CloudSession implements SSLSession {
     }
 
     @Override
-    protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
+    protected void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }
         this.CF = new FilesClient();
         this.fireConnectionWillOpenEvent();
-        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                host.getProtocol().getName(), host.getHostname()));
 
         this.getClient().setConnectionTimeOut(this.timeout());
         final HostConfiguration config = new StickyHostConfiguration();
@@ -112,8 +110,6 @@ public class CFSession extends CloudSession implements SSLSession {
         // Prompt the login credentials first
         this.login();
 
-        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                host.getProtocol().getName()));
         this.fireConnectionDidOpenEvent();
 
     }

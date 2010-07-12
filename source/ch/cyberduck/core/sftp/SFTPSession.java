@@ -123,14 +123,11 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    protected void connect() throws IOException, ConnectionCanceledException, LoginCanceledException {
+    protected void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }
         this.fireConnectionWillOpenEvent();
-
-        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                host.getProtocol().getName(), host.getHostname()));
 
         SSH = new Connection(this.getHostname(), host.getPort());
 
@@ -139,8 +136,6 @@ public class SFTPSession extends Session {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                host.getProtocol().getName()));
         this.login();
         if(!this.getClient().isAuthenticationComplete()) {
             throw new LoginCanceledException();

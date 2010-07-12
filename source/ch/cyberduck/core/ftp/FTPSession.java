@@ -321,9 +321,6 @@ public class FTPSession extends Session implements SSLSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                host.getProtocol().getName(), host.getHostname()));
-
         if(this.getHost().getProtocol().isSecure()) {
             FTP = new FTPSClient(this.getEncoding(), messageListener, this.getTrustManager());
         }
@@ -336,8 +333,6 @@ public class FTPSession extends Session implements SSLSession {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                host.getProtocol().getName()));
         this.login();
         this.fireConnectionDidOpenEvent();
         if("UTF-8".equals(this.getEncoding())) {

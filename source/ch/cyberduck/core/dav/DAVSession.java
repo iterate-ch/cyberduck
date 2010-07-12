@@ -130,9 +130,6 @@ public class DAVSession extends HTTPSession implements SSLSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
-                host.getProtocol().getName(), host.getHostname()));
-
         WebdavResource.setDefaultAction(WebdavResource.NOACTION);
 
         this.DAV = new DAVResource(host);
@@ -145,9 +142,6 @@ public class DAVSession extends HTTPSession implements SSLSession {
         this.login();
 
         WebdavResource.setDefaultAction(WebdavResource.BASIC);
-
-        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
-                host.getProtocol().getName()));
 
         if(null == this.getClient().getResourceType() || !this.getClient().getResourceType().isCollection()) {
             throw new IOException("Listing directory failed");

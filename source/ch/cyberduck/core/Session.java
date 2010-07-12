@@ -149,7 +149,7 @@ public abstract class Session {
      * @throws IOException
      * @throws LoginCanceledException
      */
-    protected abstract void connect() throws IOException, ConnectionCanceledException, LoginCanceledException;
+    protected abstract void connect() throws IOException;
 
     public LoginController login;
 
@@ -519,6 +519,8 @@ public abstract class Session {
         // Try to resolve the hostname first
         resolver.resolve();
         // The IP address could successfully be determined
+        this.message(MessageFormat.format(Locale.localizedString("Opening {0} connection to {1}", "Status"),
+                host.getProtocol().getName(), host.getHostname()));
     }
 
     protected Resolver getResolver() {
@@ -537,6 +539,8 @@ public abstract class Session {
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidOpen();
         }
+        this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
+                host.getProtocol().getName()));
     }
 
     /**
