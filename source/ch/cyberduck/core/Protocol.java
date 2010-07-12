@@ -31,8 +31,8 @@ import ch.cyberduck.core.gdocs.GDSession;
 import ch.cyberduck.core.gstorage.GSPath;
 import ch.cyberduck.core.gstorage.GSSession;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.me.MEPath;
-import ch.cyberduck.core.me.MESession;
+import ch.cyberduck.core.idisk.IDiskPath;
+import ch.cyberduck.core.idisk.IDiskSession;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPPath;
@@ -817,9 +817,9 @@ public abstract class Protocol {
         }
         if(Preferences.instance().getBoolean("protocol.idisk.enable")) {
             SessionFactory.addFactory(
-                    Protocol.IDISK, new MESession.Factory());
+                    Protocol.IDISK, new IDiskSession.Factory());
             PathFactory.addFactory(
-                    Protocol.IDISK, new MEPath.Factory());
+                    Protocol.IDISK, new IDiskPath.Factory());
         }
         if(Preferences.instance().getBoolean("protocol.s3.tls.enable")) {
             SessionFactory.addFactory(
