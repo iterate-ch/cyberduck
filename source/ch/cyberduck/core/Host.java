@@ -365,8 +365,8 @@ public class Host implements Serializable {
             begin += hostname.length() + 1;
             try {
                 String portString;
-                if(input.indexOf('/', begin) != -1) {
-                    portString = input.substring(begin, input.indexOf('/', begin));
+                if(input.indexOf(Path.DELIMITER, begin) != -1) {
+                    portString = input.substring(begin, input.indexOf(Path.DELIMITER, begin));
                     begin += portString.length();
                     try {
                         path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
@@ -384,8 +384,8 @@ public class Host implements Serializable {
                 log.warn("Invalid port number given");
             }
         }
-        else if(input.indexOf('/', begin) != -1) {
-            cut = input.indexOf('/', begin);
+        else if(input.indexOf(Path.DELIMITER, begin) != -1) {
+            cut = input.indexOf(Path.DELIMITER, begin);
             hostname = input.substring(begin, cut);
             begin += hostname.length();
             try {
