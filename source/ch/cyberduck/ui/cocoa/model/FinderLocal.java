@@ -43,7 +43,7 @@ import java.util.*;
 public class FinderLocal extends Local {
     private static Logger log = Logger.getLogger(FinderLocal.class);
 
-    public FinderLocal(ch.cyberduck.core.Local parent, String name) {
+    public FinderLocal(Local parent, String name) {
         super(parent, name);
     }
 
