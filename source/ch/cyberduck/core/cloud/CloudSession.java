@@ -77,4 +77,20 @@ public abstract class CloudSession extends HTTPSession {
     public boolean isTimestampSupported() {
         return false;
     }
+
+    /**
+     * @param hostname
+     * @return
+     */
+    protected String getContainerForHostname(String hostname) {
+        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
+            return null;
+        }
+        // Bucket name is available in URL's host name.
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+            // Bucket name is available as S3 subdomain
+            return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
+        }
+        return null;
+    }
 }

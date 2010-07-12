@@ -190,22 +190,6 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     /**
-     * @param hostname
-     * @return
-     */
-    protected String getBucketForHostname(String hostname) {
-        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
-            return null;
-        }
-        // Bucket name is available in URL's host name.
-        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
-            // Bucket name is available as S3 subdomain
-            return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
-        }
-        return null;
-    }
-
-    /**
      * Caching the uses's buckets
      */
     private Map<String, S3Bucket> buckets = new HashMap<String, S3Bucket>();
@@ -221,7 +205,7 @@ public class S3Session extends CloudSession implements SSLSession {
             if(host.getCredentials().isAnonymousLogin()) {
                 log.info("Anonymous cannot list buckets");
                 // Listing buckets not supported for thirdparty buckets
-                String bucketname = this.getBucketForHostname(host.getHostname());
+                String bucketname = this.getContainerForHostname(host.getHostname());
                 if(null == bucketname) {
                     if(StringUtils.isNotBlank(host.getDefaultPath())) {
                         Path d = PathFactory.createPath(this, host.getDefaultPath(), AbstractPath.DIRECTORY_TYPE);
@@ -238,9 +222,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 if(!this.getClient().isBucketAccessible(bucketname)) {
                     throw new IOException("Bucket not accessible: " + bucketname);
                 }
-                final S3Path thirdparty = (S3Path) PathFactory.createPath(this, bucketname,
-                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                buckets.put(thirdparty.getContainerName(), new S3Bucket(thirdparty.getContainerName()));
+                buckets.put(bucketname, new S3Bucket(bucketname));
             }
             else {
                 if(this.getHost().getProtocol().isSecure()) {
