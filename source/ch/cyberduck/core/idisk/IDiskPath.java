@@ -1,21 +1,22 @@
-package ch.cyberduck.core.me;
+package ch.cyberduck.core.idisk;
 
 /*
- *  Copyright (c) 2008 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.Local;
@@ -26,43 +27,43 @@ import ch.cyberduck.core.dav.DAVPath;
 /**
  * @version $Id$
  */
-public class MEPath extends DAVPath {
+public class IDiskPath extends DAVPath {
 
-    public static class Factory extends PathFactory<MESession> {
+    public static class Factory extends PathFactory<IDiskSession> {
         @Override
-        protected Path create(MESession session, String path, int type) {
-            return new MEPath(session, path, type);
+        protected Path create(IDiskSession session, String path, int type) {
+            return new IDiskPath(session, path, type);
         }
 
         @Override
-        protected Path create(MESession session, String parent, String name, int type) {
-            return new MEPath(session, parent, name, type);
+        protected Path create(IDiskSession session, String parent, String name, int type) {
+            return new IDiskPath(session, parent, name, type);
         }
 
         @Override
-        protected Path create(MESession session, Path path, Local file) {
-            return new MEPath(session, path, file);
+        protected Path create(IDiskSession session, Path path, Local file) {
+            return new IDiskPath(session, path, file);
         }
 
         @Override
-        protected <T> Path create(MESession session, T dict) {
-            return new MEPath(session, dict);
+        protected <T> Path create(IDiskSession session, T dict) {
+            return new IDiskPath(session, dict);
         }
     }
 
-    protected MEPath(MESession s, String parent, String name, int type) {
+    protected IDiskPath(IDiskSession s, String parent, String name, int type) {
         super(s, parent, name, type);
     }
 
-    protected MEPath(MESession s, String path, int type) {
+    protected IDiskPath(IDiskSession s, String path, int type) {
         super(s, path, type);
     }
 
-    protected MEPath(MESession s, Path parent, Local file) {
+    protected IDiskPath(IDiskSession s, Path parent, Local file) {
         super(s, parent, file);
     }
 
-    protected <T> MEPath(MESession s, T dict) {
+    protected <T> IDiskPath(IDiskSession s, T dict) {
         super(s, dict);
     }
 
