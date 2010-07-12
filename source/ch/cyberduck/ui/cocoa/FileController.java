@@ -90,7 +90,7 @@ public abstract class FileController extends SheetController {
 
     @Override
     protected boolean validateInput() {
-        if(StringUtils.contains(filenameField.stringValue(), '/')) {
+        if(StringUtils.contains(filenameField.stringValue(), Path.DELIMITER)) {
             return false;
         }
         if(StringUtils.isNotBlank(filenameField.stringValue())) {

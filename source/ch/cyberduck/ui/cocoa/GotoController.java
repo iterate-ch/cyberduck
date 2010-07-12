@@ -22,9 +22,11 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+
+import org.rococoa.cocoa.foundation.NSInteger;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Comparator;
 
@@ -110,7 +112,7 @@ public class GotoController extends SheetController {
     protected void gotoFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
         final Path dir = PathFactory.createPath(this.getSession(), workdir.getAsDictionary());
-        if(filename.charAt(0) != '/') {
+        if(filename.charAt(0) != Path.DELIMITER) {
             dir.setPath(workdir.getAbsolute(), filename);
         }
         else {

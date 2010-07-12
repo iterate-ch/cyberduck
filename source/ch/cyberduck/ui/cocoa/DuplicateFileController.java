@@ -56,7 +56,7 @@ public class DuplicateFileController extends FileController {
         StringBuilder proposal = new StringBuilder();
         proposal.append(FilenameUtils.getBaseName(selected.getName()));
         proposal.append(" (").append(DateFormatterFactory.instance().getShortFormat(
-                System.currentTimeMillis()).replace('/', ':')).append(")");
+                System.currentTimeMillis()).replace(Path.DELIMITER, ':')).append(")");
         if(StringUtils.isNotEmpty(selected.getExtension())) {
             proposal.append(".").append(selected.getExtension());
         }
