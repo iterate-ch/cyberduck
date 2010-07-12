@@ -1203,7 +1203,7 @@ public class InfoController extends ToolbarWindowController {
                 // Anonymous never has the right to updated permissions
                 return false;
             }
-            return session.isAclSupported() && session.isUnixPermissionsSupported();
+            return session.isAclSupported() || session.isUnixPermissionsSupported();
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(anonymous) {
