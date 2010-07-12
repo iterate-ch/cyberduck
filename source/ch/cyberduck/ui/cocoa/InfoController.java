@@ -1199,8 +1199,11 @@ public class InfoController extends ToolbarWindowController {
         final Session session = controller.getSession();
         final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
         if(itemIdentifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            // Anonymous never has the right to updated permissions
-            return !anonymous;
+            if(anonymous) {
+                // Anonymous never has the right to updated permissions
+                return false;
+            }
+            return session.isAclSupported() && session.isUnixPermissionsSupported();
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(anonymous) {
