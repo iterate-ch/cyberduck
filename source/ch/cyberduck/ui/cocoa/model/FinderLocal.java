@@ -101,6 +101,15 @@ public class FinderLocal extends Local {
         }
     }
 
+    @Override
+    public void setPath(String parent, String name) {
+        if(!String.valueOf(this.getPathDelimiter()).equals(name)) {
+            // See trac #933
+            name = name.replace(this.getPathDelimiter(), ':');
+        }
+        super.setPath(parent, name);        
+    }
+
     /**
      * @return Name of the file as displayed in the Finder. E.g. a ':' is replaced with '/'.
      */

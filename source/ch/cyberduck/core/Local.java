@@ -216,10 +216,6 @@ public abstract class Local extends AbstractPath {
      * @param name
      */
     public Local(String parent, String name) {
-        if(!Path.DELIMITER.equals(name)) {
-            name = name.replace('/', ':');
-        }
-        // See trac #933
         this.setPath(parent, name);
     }
 
@@ -235,6 +231,11 @@ public abstract class Local extends AbstractPath {
      */
     public Local(File path) {
         this.setPath(path.getAbsolutePath());
+    }
+
+    @Override
+    public char getPathDelimiter() {
+        return '/';
     }
 
     /**
