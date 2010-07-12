@@ -233,9 +233,9 @@ public abstract class Session {
         }
         Path home;
         if(directory != null) {
-            if(directory.startsWith(Path.DELIMITER) || directory.equals(this.workdir().getName())) {
+            if(directory.startsWith(String.valueOf(Path.DELIMITER)) || directory.equals(this.workdir().getName())) {
                 home = PathFactory.createPath(this, directory,
-                        directory.equals(Path.DELIMITER) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+                        directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
             }
             else if(directory.startsWith(Path.HOME)) {
                 // relative path to the home directory
@@ -305,7 +305,7 @@ public abstract class Session {
             throw new ConnectionCanceledException();
         }
         if(null == workdir) {
-            workdir = PathFactory.createPath(this, Path.DELIMITER, Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            workdir = PathFactory.createPath(this, String.valueOf(Path.DELIMITER), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         }
         return workdir;
     }

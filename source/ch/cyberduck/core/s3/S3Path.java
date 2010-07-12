@@ -572,7 +572,7 @@ public class S3Path extends CloudPath {
                 // occurrence of the delimiter will be rolled up into a single result
                 // element in the CommonPrefixes collection. These rolled-up keys are
                 // not returned elsewhere in the response.
-                final String delimiter = Path.DELIMITER;
+                final String delimiter = String.valueOf(Path.DELIMITER);
                 {
                     // Null if listing is complete
                     String priorLastKey = null;
@@ -610,7 +610,7 @@ public class S3Path extends CloudPath {
                         }
                         final String[] prefixes = chunk.getCommonPrefixes();
                         for(String common : prefixes) {
-                            if(common.equals(Path.DELIMITER)) {
+                            if(common.equals(String.valueOf(Path.DELIMITER))) {
                                 log.warn("Skipping prefix " + common);
                                 continue;
                             }
