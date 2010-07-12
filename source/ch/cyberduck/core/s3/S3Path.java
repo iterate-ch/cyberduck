@@ -469,10 +469,10 @@ public class S3Path extends CloudPath {
     @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
-            if(check) {
-                this.getSession().check();
-            }
             if(attributes().isFile()) {
+                if(check) {
+                    this.getSession().check();
+                }
                 S3Object object = new S3Object(this.getKey());
                 object.setContentType(this.getLocal().getMimeType());
                 object.setContentLength(this.getLocal().attributes().getSize());

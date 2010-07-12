@@ -791,10 +791,10 @@ public class FTPPath extends Path {
     @Override
     protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         try {
-            if(check) {
-                this.getSession().check();
-            }
             if(attributes().isFile()) {
+                if(check) {
+                    this.getSession().check();
+                }
                 this.getSession().setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
@@ -815,24 +815,24 @@ public class FTPPath extends Path {
                 else {
                     throw new FTPException("Transfer mode not set");
                 }
-            }
-            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                try {
-                    this.writePermissionsImpl(this.attributes().getPermission(), false);
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    try {
+                        this.writePermissionsImpl(this.attributes().getPermission(), false);
+                    }
+                    catch(FTPException ignore) {
+                        //CHMOD not supported; ignore
+                        log.warn(ignore.getMessage());
+                    }
                 }
-                catch(FTPException ignore) {
-                    //CHMOD not supported; ignore
-                    log.warn(ignore.getMessage());
-                }
-            }
-            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                try {
-                    this.writeModificationDateImpl(this.getLocal().attributes().getModificationDate(),
-                            this.getLocal().attributes().getCreationDate());
-                }
-                catch(FTPException ignore) {
-                    //MFMT not supported; ignore
-                    log.warn(ignore.getMessage());
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    try {
+                        this.writeModificationDateImpl(this.getLocal().attributes().getModificationDate(),
+                                this.getLocal().attributes().getCreationDate());
+                    }
+                    catch(FTPException ignore) {
+                        //MFMT not supported; ignore
+                        log.warn(ignore.getMessage());
+                    }
                 }
             }
         }

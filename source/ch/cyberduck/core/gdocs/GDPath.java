@@ -1,21 +1,22 @@
 package ch.cyberduck.core.gdocs;
 
 /*
- *  Copyright (c) 2010 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
@@ -414,10 +415,10 @@ public class GDPath extends Path {
     @Override
     protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         try {
-            if(check) {
-                this.getSession().check();
-            }
             if(attributes().isFile()) {
+                if(check) {
+                    this.getSession().check();
+                }
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 

@@ -298,10 +298,10 @@ public class DAVPath extends Path {
     @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
-            if(check) {
-                this.getSession().check();
-            }
             if(attributes().isFile()) {
+                if(check) {
+                    this.getSession().check();
+                }
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 

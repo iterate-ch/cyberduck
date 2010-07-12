@@ -261,10 +261,10 @@ public class CFPath extends CloudPath {
     @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
-            if(check) {
-                this.getSession().check();
-            }
             if(attributes().isFile()) {
+                if(check) {
+                    this.getSession().check();
+                }
                 // No Content-Range support
                 final Status status = this.status();
                 status.setResume(false);

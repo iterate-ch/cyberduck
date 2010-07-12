@@ -483,10 +483,10 @@ public class SFTPPath extends Path {
         OutputStream out = null;
         SFTPv3FileHandle handle = null;
         try {
-            if(check) {
-                this.getSession().check();
-            }
             if(attributes().isFile()) {
+                if(check) {
+                    this.getSession().check();
+                }
                 in = this.getLocal().getInputStream();
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     if(status().isResume() && this.exists()) {
