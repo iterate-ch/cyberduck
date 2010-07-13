@@ -1290,8 +1290,6 @@ public class InfoController extends ToolbarWindowController {
         if(files.isEmpty()) {
             return;
         }
-        // Initialized before with a different file set
-        boolean update = !this.files.isEmpty();
         this.files = files;
         this.initGeneral();
         // Sum of files
@@ -1306,9 +1304,7 @@ public class InfoController extends ToolbarWindowController {
         this.initS3();
         // HTTP custom headers
         this.initMetadata();
-        if(!update) {
-            this.initDistribution();
-        }
+        this.initDistribution();
     }
 
     private static NSPoint cascadedWindowPoint;

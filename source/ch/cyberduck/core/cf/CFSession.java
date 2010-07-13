@@ -36,9 +36,7 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -169,6 +167,12 @@ public class CFSession extends CloudSession implements SSLSession {
     }
 
     /**
+     * Cache distribution status result.
+     */
+    private Map<String, Distribution> distributionStatus
+            = new HashMap<String, Distribution>();
+
+    /**
      * @param enabled Enable content distribution for the container
      * @param method
      * @param cnames  Currently ignored
@@ -211,26 +215,28 @@ public class CFSession extends CloudSession implements SSLSession {
             catch(ConnectionCanceledException e) {
                 log.error(e.getMessage());
             }
+            distributionStatus.clear();
         }
     }
 
     @Override
     public Distribution readDistribution(String container, Distribution.Method method) {
-        if(null != container) {
+        if(!distributionStatus.containsKey(container)) {
             final AbstractX509TrustManager trust = this.getTrustManager();
             try {
                 this.check();
                 trust.setHostname(URI.create(this.getClient().getCdnManagementURL()).getHost());
                 try {
                     final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
-                    return new Distribution(info.isEnabled(), info.getCdnURL(),
+                    final Distribution distribution = new Distribution(info.isEnabled(), info.getCdnURL(),
                             info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                             info.getRetainLogs());
+                    distributionStatus.put(container, distribution);
                 }
                 catch(FilesException e) {
                     log.warn(e.getMessage());
                     // Not found.
-                    return new Distribution(false, null, Locale.localizedString("CDN Disabled", "Mosso"));
+                    distributionStatus.put(container, new Distribution(false, null, Locale.localizedString("CDN Disabled", "Mosso")));
                 }
             }
             catch(IOException e) {
@@ -244,6 +250,9 @@ public class CFSession extends CloudSession implements SSLSession {
                     log.error(e.getMessage());
                 }
             }
+        }
+        if(distributionStatus.containsKey(container)) {
+            return distributionStatus.get(container);
         }
         return new Distribution();
     }
