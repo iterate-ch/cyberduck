@@ -754,6 +754,7 @@ id.lproj/Status.strings -text svneol=unset#text/utf-16
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
 img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
+img/advanced.tiff -text
 img/alert.tiff -text svneol=unset#image/tiff
 img/aliasbadge.png -text svneol=unset#image/png
 img/arrowDown.tiff -text svneol=unset#image/tiff
