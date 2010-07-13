@@ -395,7 +395,7 @@ public class UploadTransfer extends Transfer {
             });
         }
         else if(p.attributes().isDirectory()) {
-            if(p.getSession().isCreateFileSupported(p)) {
+            if(p.getSession().isCreateFolderSupported(p)) {
                 p.mkdir();
             }
         }
