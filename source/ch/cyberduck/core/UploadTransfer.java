@@ -399,6 +399,7 @@ public class UploadTransfer extends Transfer {
                 p.mkdir();
             }
         }
+        p.attributes().clear();
     }
 
     @Override

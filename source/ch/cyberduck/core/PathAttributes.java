@@ -53,6 +53,7 @@ public class PathAttributes extends Attributes implements Serializable {
      * When this file was originally created in milliseconds
      */
     private long created = -1;
+
     private String owner;
     private String group;
 
@@ -86,7 +87,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Unique identifier for a given version of a file.
      *
-     * @see ch.cyberduck.core.s3h.S3HSession#isVersioningSupported()
+     * @see ch.cyberduck.core.s3.S3Session#isVersioningSupported()
      */
     private String versionId;
 
@@ -332,5 +333,17 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     public void setDuplicate(boolean duplicate) {
         this.duplicate = duplicate;
+    }
+
+    /**
+     *
+     */
+    public void clear() {
+        this.setModificationDate(-1);
+        this.setCreationDate(-1);
+        this.setAccessedDate(-1);
+        this.setSize(-1);
+        this.setPermission(Permission.EMPTY);
+        this.setAcl(Acl.EMPTY);
     }
 }
