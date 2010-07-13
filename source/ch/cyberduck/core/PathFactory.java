@@ -55,7 +55,7 @@ public abstract class PathFactory<S extends Session> {
      * @return
      */
     public static Path createPath(Session session, String parent, String name, int type) {
-        return (factories.get(session.getHost().getProtocol())).create(session, parent, name, type);
+        return factories.get(session.getHost().getProtocol()).create(session, parent, name, type);
     }
 
     /**
@@ -65,7 +65,7 @@ public abstract class PathFactory<S extends Session> {
      * @return
      */
     public static Path createPath(Session session, String path, int type) {
-        return (factories.get(session.getHost().getProtocol())).create(session, path, type);
+        return factories.get(session.getHost().getProtocol()).create(session, path, type);
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class PathFactory<S extends Session> {
      * @return
      */
     public static Path createPath(Session session, Path parent, Local file) {
-        return (factories.get(session.getHost().getProtocol())).create(session, parent, file);
+        return factories.get(session.getHost().getProtocol()).create(session, parent, file);
     }
 
     /**
@@ -85,6 +85,6 @@ public abstract class PathFactory<S extends Session> {
      * @return
      */
     public static <T> Path createPath(Session session, T dict) {
-        return (factories.get(session.getHost().getProtocol())).create(session, dict);
+        return factories.get(session.getHost().getProtocol()).create(session, dict);
     }
 }
