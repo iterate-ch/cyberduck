@@ -206,7 +206,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 log.info("Anonymous cannot list buckets");
                 // Listing buckets not supported for thirdparty buckets
                 String bucketname = this.getContainerForHostname(host.getHostname());
-                if(null == bucketname) {
+                if(StringUtils.isEmpty(bucketname)) {
                     if(StringUtils.isNotBlank(host.getDefaultPath())) {
                         Path d = PathFactory.createPath(this, host.getDefaultPath(), AbstractPath.DIRECTORY_TYPE);
                         while(!d.getParent().isRoot()) {
@@ -215,7 +215,7 @@ public class S3Session extends CloudSession implements SSLSession {
                         bucketname = d.getName();
                     }
                 }
-                if(null == bucketname) {
+                if(StringUtils.isEmpty(bucketname)) {
                     log.error("No bucket name given in hostname or default path");
                     return Collections.emptyList();
                 }
@@ -229,8 +229,19 @@ public class S3Session extends CloudSession implements SSLSession {
                     // List all operation
                     this.getTrustManager().setHostname(host.getHostname());
                 }
-                for(S3Bucket bucket : this.getClient().listAllBuckets()) {
-                    buckets.put(bucket.getName(), bucket);
+                // If bucketname is specified in hostname, try to connect to this particular bucket only.
+                String bucketname = this.getContainerForHostname(host.getHostname());
+                if(StringUtils.isNotEmpty(bucketname)) {
+                    if(!this.getClient().isBucketAccessible(bucketname)) {
+                        throw new IOException("Bucket not accessible: " + bucketname);
+                    }
+                    buckets.put(bucketname, new S3Bucket(bucketname));
+                }
+                else {
+                    // List all buckets owned
+                    for(S3Bucket bucket : this.getClient().listAllBuckets()) {
+                        buckets.put(bucket.getName(), bucket);
+                    }
                 }
             }
         }
