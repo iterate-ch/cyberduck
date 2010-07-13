@@ -779,6 +779,7 @@ img/clean.tiff -text svneol=unset#image/tiff
 img/cleanAll.tiff -text svneol=unset#image/tiff
 img/column.tiff -text svneol=unset#image/tiff
 img/connect.tiff -text svneol=unset#image/tiff
+img/connection-secure.tiff -text
 img/connection.tiff -text svneol=unset#image/tiff
 img/dav-icon.png -text svneol=unset#image/png
 img/dav.icns -text
