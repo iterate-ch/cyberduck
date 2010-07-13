@@ -504,7 +504,7 @@ public class S3Path extends CloudPath {
                 // No Content-Range support
                 status.setResume(false);
 
-                final InputStream in = object.getDataInputStream();
+                final InputStream in = this.getLocal().getInputStream();
                 try {
                     this.getSession().getClient().pubObjectWithRequestEntityImpl(
                             this.getContainerName(), object, new InputStreamRequestEntity(in,
