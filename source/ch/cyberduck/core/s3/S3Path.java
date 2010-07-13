@@ -324,7 +324,7 @@ public class S3Path extends CloudPath {
             try {
                 this.getSession().check();
                 final S3Object target = this.getDetails();
-                return target.getModifiableMetadata();
+                return new HashMap<String,String>(target.getModifiableMetadata());
             }
             catch(S3ServiceException e) {
                 this.error("Cannot read file attributes", e);
