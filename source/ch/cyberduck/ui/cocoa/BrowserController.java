@@ -1900,7 +1900,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setSecurityLabel(NSButton securityLabel) {
         this.securityLabel = securityLabel;
-        this.securityLabel.setImage(IconCache.iconNamed("unlocked.tiff"));
         this.securityLabel.setEnabled(false);
         this.securityLabel.setTarget(this.id());
         this.securityLabel.setAction(Foundation.selector("securityLabelClicked:"));
@@ -3314,7 +3313,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         }
                         window.setDocumentEdited(false);
 
-                        securityLabel.setImage(IconCache.iconNamed("unlocked.tiff"));
+                        securityLabel.setImage(null);
                         securityLabel.setEnabled(false);
 
                         updateStatusLabel();
