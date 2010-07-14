@@ -25,13 +25,14 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -259,7 +260,8 @@ public class BookmarkController extends WindowController {
 
                 public void run() {
                     // Default favicon location
-                    final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(host.getWebURL() + "/favicon.ico"));
+                    final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(host.getWebURL()
+                            + "/favicon.ico"));
                     if(null == data) {
                         return;
                     }
@@ -272,6 +274,11 @@ public class BookmarkController extends WindowController {
                         return;
                     }
                     webUrlImage.setImage(favicon);
+                }
+
+                @Override
+                public Object lock() {
+                    return BookmarkController.this;
                 }
             });
         }
@@ -685,11 +692,13 @@ public class BookmarkController extends WindowController {
     public void nicknameInputDidChange(final NSNotification sender) {
         host.setNickname(nicknameField.stringValue());
         this.itemChanged();
+        this.init();
     }
 
     public void usernameInputDidChange(final NSNotification sender) {
         host.getCredentials().setUsername(usernameField.stringValue());
         this.itemChanged();
+        this.init();
     }
 
     public void webURLInputDidChange(final NSNotification sender) {
@@ -764,8 +773,9 @@ public class BookmarkController extends WindowController {
             pkLabel.setTextColor(NSColor.disabledControlTextColor());
         }
         webURLField.setEnabled(host.getProtocol().isWebUrlConfigurable());
-        webUrlImage.setToolTip(host.getWebURL());
-        this.updateField(webURLField, host.getWebURL());
+        final String webURL = host.getWebURL();
+        webUrlImage.setToolTip(webURL);
+        this.updateField(webURLField, host.getDefaultWebURL().equals(webURL) ? null : webURL);
         this.updateField(commentField, host.getComment());
         this.timezonePopup.setEnabled(!host.getProtocol().isUTCTimezone());
         if(null == host.getTimezone()) {
