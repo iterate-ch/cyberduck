@@ -1268,7 +1268,7 @@ lib/Sparkle.framework/Versions/A/Resources/zh_TW.lproj/Sparkle.strings -text svn
 lib/Sparkle.framework/Versions/A/Sparkle -text
 lib/Sparkle.framework/Versions/Current -text
 lib/activation-1.1.1.jar -text
-lib/asm-3.2.jar -text
+lib/asm-3.3.jar -text
 lib/backport-util-concurrent-3.1.jar -text
 lib/cglib-2.2.jar -text
 lib/cloudfiles-1.5.3.jar -text
