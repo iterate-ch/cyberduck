@@ -24,6 +24,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,10 +50,7 @@ import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.ServiceException;
 
 import javax.mail.MessagingException;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -165,6 +163,7 @@ public class GDPath extends Path {
             log.warn("Refetching Export URI for " + this.toString());
             final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
             if(null == cached) {
+                log.error("Missing Export URI for " + this.toString());
                 return null;
             }
             exportUri = cached.getExportUri();
@@ -196,6 +195,15 @@ public class GDPath extends Path {
     private String resourceId;
 
     public String getResourceId() {
+        if(StringUtils.isBlank(resourceId)) {
+            log.warn("Refetching Resource ID for " + this.toString());
+            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
+            if(null == cached) {
+                log.error("Missing Resource ID for " + this.toString());
+                return null;
+            }
+            resourceId = cached.getResourceId();
+        }
         return resourceId;
     }
 
@@ -221,33 +229,30 @@ public class GDPath extends Path {
         return StringUtils.removeStart(this.getResourceId(), this.getDocumentType() + ":");
     }
 
+    /**
+     * @return Includes the protocol and hostname only
+     */
+    protected StringBuilder getFeed() {
+        return new StringBuilder(this.getSession().getHost().getProtocol().getScheme()).append("://").append(
+                this.getSession().getHost().getHostname());
+    }
+
     protected URL getFolderFeed() throws MalformedURLException {
+        final StringBuilder feed = this.getFeed();
         if(this.isRoot()) {
-            return new URL("https://docs.google.com/feeds/default/private/full/folder%3Aroot/contents");
+            return new URL(feed.append("/feeds/default/private/full/folder%3Aroot/contents").toString());
         }
-        else if(StringUtils.isNotBlank(this.getResourceId())) {
-            return new URL("https://docs.google.com/feeds/default/private/full/folder%3A"
-                    + this.getDocumentId() + "/contents");
-        }
-        log.warn("Missing Resource ID for " + this.toString());
-        return new URL("https://docs.google.com/feeds/default/private/full/");
+        return new URL(feed.append("/feeds/default/private/full/folder%3A").append(this.getDocumentId()).append("/contents").toString());
     }
 
     protected URL getAclFeed() throws MalformedURLException {
-        if(StringUtils.isNotBlank(this.getResourceId())) {
-            return new URL("https://docs.google.com/feeds/default/private/full/"
-                    + this.getResourceId() + "/acl");
-        }
-        log.warn("Missing Resource ID for " + this.toString());
-        return null;
+        final StringBuilder feed = this.getFeed();
+        return new URL(feed.append("/feeds/default/private/full/").append(this.getResourceId()).append("/acl").toString());
     }
 
     public URL getRevisionsFeed() throws MalformedURLException {
-        if(StringUtils.isNotBlank(this.getResourceId())) {
-            return new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId() + "/revisions");
-        }
-        log.warn("Missing Resource ID for " + this.toString());
-        return null;
+        final StringBuilder feed = this.getFeed();
+        return new URL(feed.append("/feeds/default/private/full/").append(this.getResourceId()).append("/revisions").toString());
     }
 
     @Override
@@ -329,6 +334,7 @@ public class GDPath extends Path {
                     this.error("Cannot change permissions", e);
                 }
             }
+            this.attributes().clear(false, false, true);
         }
     }
 
@@ -422,13 +428,11 @@ public class GDPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                File upload = new File(this.getLocal().getAbsolute());
                 InputStream in = null;
                 OutputStream out = null;
                 try {
-                    in = this.getLocal().getInputStream();
                     final String mime = this.getLocal().getMimeType();
-                    final MediaStreamSource source = new MediaStreamSource(in, mime,
+                    final MediaStreamSource source = new MediaStreamSource(this.getLocal().getInputStream(), mime,
                             new DateTime(this.getLocal().attributes().getModificationDate()),
                             this.getLocal().attributes().getSize());
                     if(this.exists()) {
@@ -465,15 +469,29 @@ public class GDPath extends Path {
                             // Write as MIME multipart containing the entry and media.  Use the
                             // content type from the multipart since this contains auto-generated
                             // boundary attributes.
-                            MediaMultipart multipart = new MediaMultipart(document, document.getMediaSource());
+                            final MediaMultipart multipart = new MediaMultipart(document, document.getMediaSource());
                             request = this.getSession().getClient().createRequest(
                                     Service.GDataRequest.RequestType.INSERT, new URL(url.toString()),
                                     new ContentType(multipart.getContentType()));
                             out = request.getRequestStream();
-                            multipart.writeTo(out);
 
+                            final PipedOutputStream pipe = new PipedOutputStream();
+                            in = new PipedInputStream(pipe);
+                            ThreadPool.instance().execute(new Runnable() {
+                                public void run() {
+                                    try {
+                                        multipart.writeTo(pipe);
+                                        pipe.close();
+                                    }
+                                    catch(IOException e) {
+                                        log.error(e.getMessage());
+                                    }
+                                    catch(MessagingException e) {
+                                        log.error(e.getMessage());
+                                    }
+                                }
+                            });
                             this.upload(out, in, throttle, listener);
-
                             // Parse response for HTTP error message.
                             request.execute();
                         }
@@ -726,7 +744,7 @@ public class GDPath extends Path {
                 DocumentListEntry folder = new FolderEntry();
                 folder.setTitle(new PlainTextConstruct(this.getName()));
                 try {
-                    this.getSession().getClient().insert(this.getFolderFeed(), folder);
+                    this.getSession().getClient().insert(((GDPath) this.getParent()).getFolderFeed(), folder);
                 }
                 catch(ServiceException e) {
                     throw new IOException(e.getMessage());
