@@ -24,12 +24,13 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -594,6 +595,17 @@ public class ConnectionController extends SheetController {
                 NSURL.URLWithString(Preferences.instance().getProperty("website.help")
                         + "/" + protocol.getIdentifier())
         );
+    }
+
+    @Override
+    protected boolean validateInput() {
+        if(StringUtils.isBlank(hostField.stringValue())) {
+            return false;
+        }
+        if(StringUtils.isBlank(usernameField.stringValue())) {
+            return false;
+        }
+        return true;
     }
 
     public void callback(final int returncode) {
