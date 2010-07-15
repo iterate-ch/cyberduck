@@ -339,11 +339,26 @@ public class PathAttributes extends Attributes implements Serializable {
      *
      */
     public void clear() {
-        this.setModificationDate(-1);
-        this.setCreationDate(-1);
-        this.setAccessedDate(-1);
-        this.setSize(-1);
-        this.setPermission(Permission.EMPTY);
-        this.setAcl(Acl.EMPTY);
+        this.clear(true, true, true);
+    }
+
+    /**
+     * @param timestamp   Clear modification, creation and last access date
+     * @param size        Clear content length
+     * @param permissions Clear permissions and ACLs
+     */
+    public void clear(boolean timestamp, boolean size, boolean permissions) {
+        if(timestamp) {
+            this.setModificationDate(-1);
+            this.setCreationDate(-1);
+            this.setAccessedDate(-1);
+        }
+        if(size) {
+            this.setSize(-1);
+        }
+        if(permissions) {
+            this.setPermission(Permission.EMPTY);
+            this.setAcl(Acl.EMPTY);
+        }
     }
 }

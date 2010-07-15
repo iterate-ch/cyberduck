@@ -657,7 +657,6 @@ public class FTPPath extends Path {
             else {
                 this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
             }
-            attributes().setPermission(perm);
         }
         else if(attributes().isDirectory()) {
             this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
@@ -669,8 +668,8 @@ public class FTPPath extends Path {
                     ((FTPPath) child).writePermissionsImpl(perm, recursive);
                 }
             }
-            attributes().setPermission(perm);
         }
+        this.attributes().clear(false, false, true);
     }
 
     @Override
@@ -687,6 +686,7 @@ public class FTPPath extends Path {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), modified));
         this.getSession().getClient().mfmt(modified, created, this.getName());
+        this.attributes().clear(true, false, false);
     }
 
     @Override

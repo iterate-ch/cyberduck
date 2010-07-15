@@ -400,7 +400,6 @@ public class SFTPPath extends Path {
             attr.permissions = perm.getOctalNumber();
         }
         this.getSession().sftp().setstat(getAbsolute(), attr);
-        this.attributes().setPermission(perm);
         if(this.attributes().isDirectory()) {
             if(recursive) {
                 for(AbstractPath child : this.childs()) {
@@ -411,6 +410,7 @@ public class SFTPPath extends Path {
                 }
             }
         }
+        this.attributes().clear(false, false, true);
     }
 
     @Override
@@ -436,6 +436,7 @@ public class SFTPPath extends Path {
             attrs.atime = t;
             attrs.mtime = t;
             this.getSession().sftp().setstat(this.getAbsolute(), attrs);
+            this.attributes().clear(true, false, false);
         }
     }
 

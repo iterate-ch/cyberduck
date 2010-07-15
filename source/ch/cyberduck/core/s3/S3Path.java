@@ -789,6 +789,7 @@ public class S3Path extends CloudPath {
                     }
                 }
             }
+            this.attributes().clear(false, false, true);
         }
         catch(S3ServiceException e) {
             this.error("Cannot change permissions", e);
