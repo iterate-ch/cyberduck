@@ -30,6 +30,7 @@ import com.enterprisedt.net.ftp.FTPNullReplyException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.security.cert.CertificateException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Timer;
@@ -85,6 +86,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         // Do not report an error when the action was canceled intentionally
         Throwable cause = exception.getCause();
         if(cause instanceof ConnectionCanceledException) {
+            log.warn(cause.getMessage());
+            // Do not report as failed if instanceof ConnectionCanceledException
+            return;
+        }
+        if(cause instanceof CertificateException) {
             log.warn(cause.getMessage());
             // Do not report as failed if instanceof ConnectionCanceledException
             return;
