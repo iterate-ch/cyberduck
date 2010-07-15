@@ -20,17 +20,19 @@ package ch.cyberduck.core.http;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpHost;
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class StickyHostConfiguration extends HostConfiguration {
+    private static Logger log = Logger.getLogger(StickyHostConfiguration.class);
 
     public StickyHostConfiguration() {
         super();
     }
 
-    public StickyHostConfiguration(HostConfiguration config) {
+    private StickyHostConfiguration(HostConfiguration config) {
         super(config);
     }
 
@@ -66,6 +68,7 @@ public class StickyHostConfiguration extends HostConfiguration {
                 return oldProtocol; // Retain it.
             }
         }
+        log.warn("No cached protocol for:" + scheme);
         return org.apache.commons.httpclient.protocol.Protocol.getProtocol(scheme);
     }
 }

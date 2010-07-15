@@ -18,10 +18,16 @@ package ch.cyberduck.core.http;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ResolveCanceledException;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.SSLSession;
 
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpVersion;
+import org.apache.commons.httpclient.params.HostParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
@@ -32,7 +38,7 @@ import java.net.UnknownHostException;
 /**
  * @version $Id$
  */
-public abstract class HTTPSession extends Session {
+public abstract class HTTPSession extends Session implements SSLSession {
 
     private Appender appender = new AppenderSkeleton() {
 
@@ -62,6 +68,40 @@ public abstract class HTTPSession extends Session {
 
     protected HTTPSession(Host h) {
         super(h);
+    }
+
+    /**
+     * Create a sticky host configuration with a socket factory for the given scheme
+     *
+     * @return A host configuration initialized with the hostname, port and socket factory.
+     */
+    protected HostConfiguration getHostConfiguration() {
+        final HostConfiguration configuration = new StickyHostConfiguration();
+        final Proxy proxy = ProxyFactory.instance();
+        if(this.getHost().getProtocol().isSecure()) {
+            // Configuration with custom socket factory using the trust manager
+            configuration.setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+            );
+            if(proxy.isHTTPSProxyEnabled()) {
+                configuration.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+            }
+        }
+        else {
+            configuration.setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            new DefaultProtocolSocketFactory(), host.getPort())
+            );
+            if(proxy.isHTTPProxyEnabled()) {
+                configuration.setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+            }
+        }
+        final HostParams parameters = configuration.getParams();
+        parameters.setParameter(HttpMethodParams.USER_AGENT, this.getUserAgent());
+        parameters.setParameter(HttpMethodParams.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+        parameters.setParameter(HttpMethodParams.SO_TIMEOUT, this.timeout());
+        return configuration;
     }
 
     @Override

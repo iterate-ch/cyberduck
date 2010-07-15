@@ -93,15 +93,7 @@ public class CFSession extends CloudSession implements SSLSession {
         this.fireConnectionWillOpenEvent();
 
         this.getClient().setConnectionTimeOut(this.timeout());
-        final HostConfiguration config = new StickyHostConfiguration();
-        config.setHost(host.getHostname(), host.getPort(),
-                new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                        (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
-        );
-        final Proxy proxy = ProxyFactory.instance();
-        if(proxy.isHTTPSProxyEnabled()) {
-            config.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
-        }
+        final HostConfiguration config = this.getHostConfiguration();
         this.getClient().setHostConfiguration(config);
         this.getClient().setUserAgent(this.getUserAgent());
 

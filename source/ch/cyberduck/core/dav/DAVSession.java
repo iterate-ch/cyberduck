@@ -22,12 +22,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTPSession;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.*;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
@@ -91,14 +93,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
 
     protected void configure() throws IOException {
         final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
-        client.getHostConfiguration().getParams().setParameter(
-                "http.useragent", this.getUserAgent()
-        );
-        if(host.getProtocol().isSecure()) {
-            client.getHostConfiguration().setHost(host.getHostname(), host.getPort(),
-                    new org.apache.commons.httpclient.protocol.Protocol("https",
-                            (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort()));
-        }
+        client.setHostConfiguration(this.getHostConfiguration());
         final Proxy proxy = ProxyFactory.instance();
         if(host.getProtocol().isSecure()) {
             if(proxy.isHTTPSProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {

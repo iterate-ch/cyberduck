@@ -340,20 +340,7 @@ public class S3Session extends CloudSession implements SSLSession {
 
     @Override
     protected void login(final Credentials credentials) throws IOException {
-        final HostConfiguration configuration = new StickyHostConfiguration();
-        if(this.getHost().getProtocol().isSecure()) {
-            configuration.setHost(host.getHostname(), host.getPort(),
-                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
-            );
-        }
-        else {
-            configuration.setHost(host.getHostname(), host.getPort(),
-                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            new DefaultProtocolSocketFactory(), host.getPort())
-            );
-        }
-        this.login(credentials, configuration);
+        this.login(credentials, this.getHostConfiguration());
     }
 
     /**
