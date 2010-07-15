@@ -465,15 +465,13 @@ public class InfoController extends ToolbarWindowController {
 
     public void setAclTable(final NSTableView t) {
         this.aclTable = t;
-        {
-            this.permissionCellPrototype.setFont(NSFont.systemFontOfSize(NSFont.smallSystemFontSize()));
-            this.permissionCellPrototype.setControlSize(NSCell.NSSmallControlSize);
-            this.permissionCellPrototype.setCompletes(false);
-            this.permissionCellPrototype.setBordered(false);
-            this.permissionCellPrototype.setButtonBordered(false);
-            for(Acl.Role permission : controller.getSession().getAvailableAclRoles()) {
-                this.permissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
-            }
+        this.permissionCellPrototype.setFont(NSFont.systemFontOfSize(NSFont.smallSystemFontSize()));
+        this.permissionCellPrototype.setControlSize(NSCell.NSSmallControlSize);
+        this.permissionCellPrototype.setCompletes(false);
+        this.permissionCellPrototype.setBordered(false);
+        this.permissionCellPrototype.setButtonBordered(false);
+        for(Acl.Role permission : controller.getSession().getAvailableAclRoles()) {
+            this.permissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
         }
         this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(permissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
@@ -1783,13 +1781,9 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     private boolean toggleAclSettings(final boolean stop) {
-        boolean enable = this.numberOfFiles() == 1;
-        if(enable) {
-            final Session session = controller.getSession();
-            final Credentials credentials = session.getHost().getCredentials();
-            enable = enable && !credentials.isAnonymousLogin();
-            enable = enable && session.isAclSupported();
-        }
+        final Session session = controller.getSession();
+        final Credentials credentials = session.getHost().getCredentials();
+        boolean enable = !credentials.isAnonymousLogin() && session.isAclSupported();
         aclTable.setEnabled(stop && enable);
         aclAddButton.setEnabled(stop && enable);
         aclRemoveButton.setEnabled(stop && enable);
@@ -1875,7 +1869,12 @@ public class InfoController extends ToolbarWindowController {
                         if(Acl.EMPTY.equals(next.attributes().getAcl())) {
                             next.readAcl();
                         }
-                        updated.addAll(next.attributes().getAcl().asList());
+                        for(Acl.UserAndRole acl: next.attributes().getAcl().asList()) {
+                            if(updated.contains(acl)) {
+                                continue;
+                            }
+                            updated.add(acl);
+                        }
                     }
                 }
 
