@@ -28,7 +28,6 @@ import com.google.gdata.util.AuthenticationException;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Handler;
