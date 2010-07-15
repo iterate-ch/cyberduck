@@ -175,7 +175,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         @Override
         public boolean equals(Object obj) {
             if(obj instanceof User) {
-                return identifier.equals(obj.toString());
+                return identifier.equals(((User) obj).getIdentifier());
             }
             return false;
         }
@@ -323,7 +323,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         @Override
         public boolean equals(Object obj) {
             if(obj instanceof Role) {
-                return name.equals(obj.toString());
+                return name.equals(((Role) obj).getName());
             }
             return false;
         }
