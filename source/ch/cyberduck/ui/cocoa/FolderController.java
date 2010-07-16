@@ -64,8 +64,6 @@ public class FolderController extends FileController {
 
             public void run() {
                 folder.mkdir(false);
-                folder.cache().put(folder.getReference(), AttributedList.<Path>emptyList());
-                folder.getParent().invalidate();
             }
 
             @Override

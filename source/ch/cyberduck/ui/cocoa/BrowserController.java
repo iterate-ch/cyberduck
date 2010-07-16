@@ -2278,7 +2278,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         break;
                     }
                     file.delete();
-                    file.getParent().invalidate();
                     if(!isConnected()) {
                         break;
                     }
@@ -2392,7 +2391,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void openBrowserButtonClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(this.getSelectedPathWebUrl()));
+        final String url = this.getSelectedPathWebUrl();
+        if(StringUtils.isNotBlank(url)) {
+            NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
+        }
+        else {
+            AppKitFunctions.instance.NSBeep();
+        }
     }
 
     protected String getSelectedPathWebUrl() {
@@ -2935,10 +2940,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void copyWebURLButtonClicked(final ID sender) {
-        NSPasteboard pboard = NSPasteboard.generalPasteboard();
-        pboard.declareTypes(NSArray.arrayWithObject(NSPasteboard.StringPboardType), null);
-        if(!pboard.setString_forType(this.getSelectedPathWebUrl(), NSPasteboard.StringPboardType)) {
-            log.error("Error writing URL to NSPasteboard.StringPboardType.");
+        final String url = this.getSelectedPathWebUrl();
+        if(StringUtils.isNotBlank(url)) {
+            NSPasteboard pboard = NSPasteboard.generalPasteboard();
+            pboard.declareTypes(NSArray.arrayWithObject(NSPasteboard.StringPboardType), null);
+            if(!pboard.setString_forType(url, NSPasteboard.StringPboardType)) {
+                log.error("Error writing URL to NSPasteboard.StringPboardType.");
+            }
+        }
+        else {
+            AppKitFunctions.instance.NSBeep();
         }
     }
 
