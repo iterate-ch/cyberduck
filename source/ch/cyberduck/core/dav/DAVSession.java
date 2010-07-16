@@ -301,6 +301,8 @@ public class DAVSession extends HTTPSession implements SSLSession {
             super.error(path, message, new HttpException(
                     HttpStatus.getStatusText(((HttpException) e).getReasonCode())));
         }
-        super.error(path, message, e);
+        else {
+            super.error(path, message, e);
+        }
     }
 }
