@@ -390,8 +390,16 @@
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
-                <include name="ch/cyberduck/ui/**/*.class"/>
+                <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
                 <include name="org/rococoa/**/*.class"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${build}/ui.jar"
+             update="yes"
+             manifest="${build}/MANIFEST.MF">
+            <fileset dir="${build.classes}/">
+                <include name="ch/cyberduck/ui/*.class"/>
+                <include name="ch/cyberduck/ui/growl/*.class"/>
             </fileset>
         </jar>
         <jar jarfile="${build}/core.jar"
@@ -403,6 +411,7 @@
                 <include name="org/w3c/**/*.class"/>
                 <include name="ch/ethz/ssh2/**/*.class"/>
                 <include name="org/spearce/jgit/**/*.class"/>
+                <include name="org/soyatec/**/*.class"/>
                 <include name="com/enterprisedt/**/*.class"/>
                 <include name="com/barbarysoftware/**/*.class"/>
             </fileset>
