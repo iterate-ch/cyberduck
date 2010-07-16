@@ -67,12 +67,12 @@ public class Host implements Serializable {
      */
     private Credentials credentials = new Credentials() {
         @Override
-        public String getPasswordPlaceholder() {
+        public String getUsernamePlaceholder() {
             return Host.this.getProtocol().getUsernamePlaceholder();
         }
 
         @Override
-        public String getUsernamePlaceholder() {
+        public String getPasswordPlaceholder() {
             return Host.this.getProtocol().getPasswordPlaceholder();
         }
     };
