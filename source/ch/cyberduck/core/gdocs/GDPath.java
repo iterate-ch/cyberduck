@@ -370,9 +370,6 @@ public class GDPath extends Path {
                         throw new IOException("Unable opening data stream");
                     }
                     out = this.getLocal().getOutputStream(this.status().isResume());
-                    if(null == out) {
-                        throw new IOException("Unable opening data stream");
-                    }
                     this.download(in, out, throttle, listener);
                 }
                 finally {

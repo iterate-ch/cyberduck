@@ -243,9 +243,6 @@ public class CFPath extends CloudPath {
                 final Status status = this.status();
                 status.setResume(false);
                 out = this.getLocal().getOutputStream(status.isResume());
-                if(null == out) {
-                    throw new IOException("Unable opening data stream");
-                }
                 this.download(in, out, throttle, listener);
             }
             catch(IOException e) {
