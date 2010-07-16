@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.sftp.SFTPException;
 import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
@@ -167,6 +168,10 @@ public class SFTPPath extends Path {
 
                 this.getSession().sftp().mkdir(this.getAbsolute(),
                         new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalNumber());
+
+                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Cannot create folder", e);
@@ -186,6 +191,8 @@ public class SFTPPath extends Path {
             }
             this.getSession().sftp().mv(this.getAbsolute(), renamed.getAbsolute());
             this.setPath(renamed.getAbsolute());
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(this.attributes().isFile()) {
@@ -219,6 +226,8 @@ public class SFTPPath extends Path {
 
                 this.getSession().sftp().rmdir(this.getAbsolute());
             }
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(this.attributes().isFile()) {
@@ -428,7 +437,7 @@ public class SFTPPath extends Path {
     private void writeModificationDateImpl(long modified) throws IOException {
         if(this.attributes().isFile()) {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                    this.getName(), modified));
+                    this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
             SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
             int t = (int) (modified / 1000);
             // We must both set the accessed and modified time

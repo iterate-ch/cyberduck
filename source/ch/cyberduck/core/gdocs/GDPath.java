@@ -98,10 +98,6 @@ public class GDPath extends Path {
         if(documentTypeObj != null) {
             this.setDocumentType(documentTypeObj);
         }
-        String documentUriObj = dict.stringForKey("DocumentUri");
-        if(documentUriObj != null) {
-            this.setDocumentUri(documentUriObj);
-        }
         super.init(dict);
     }
 
@@ -115,9 +111,6 @@ public class GDPath extends Path {
         }
         if(documentType != null) {
             dict.setStringForKey(documentType, "DocumentType");
-        }
-        if(documentUri != null) {
-            dict.setStringForKey(documentUri, "DocumentUri");
         }
         return super.<S>getAsDictionary(dict);
     }
@@ -150,6 +143,23 @@ public class GDPath extends Path {
         this.session = s;
     }
 
+    private String documentType;
+
+    public String getDocumentType() {
+        if(null == documentType) {
+            if(attributes().isDirectory()) {
+                return DOCUMENT_FOLDER_TYPE;
+            }
+            // Arbitrary file type not converted to Google Docs.
+            return DOCUMENT_FILE_TYPE;
+        }
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        this.documentType = documentType;
+    }
+
     /**
      * Unique identifier
      */
@@ -173,23 +183,6 @@ public class GDPath extends Path {
 
     public void setExportUri(String exportUri) {
         this.exportUri = exportUri;
-    }
-
-    private String documentType;
-
-    public String getDocumentType() {
-        if(null == documentType) {
-            if(attributes().isDirectory()) {
-                return DOCUMENT_FOLDER_TYPE;
-            }
-            // Arbitrary file type not converted to Google Docs.
-            return DOCUMENT_FILE_TYPE;
-        }
-        return documentType;
-    }
-
-    public void setDocumentType(String documentType) {
-        this.documentType = documentType;
     }
 
     private String resourceId;
@@ -224,7 +217,7 @@ public class GDPath extends Path {
         this.documentUri = documentUri;
     }
 
-    public String getDocumentId() {
+    private String getDocumentId() {
         // Removing document type from resourceId gives us the documentId
         return StringUtils.removeStart(this.getResourceId(), this.getDocumentType() + ":");
     }
@@ -493,7 +486,13 @@ public class GDPath extends Path {
                             });
                             this.upload(out, in, throttle, listener);
                             // Parse response for HTTP error message.
-                            request.execute();
+                            try {
+                                request.execute();
+                            }
+                            catch(ServiceException e) {
+                                this.status().setComplete(false);
+                                throw e;
+                            }
                         }
                         catch(MessagingException e) {
                             throw new ServiceException(
@@ -749,6 +748,9 @@ public class GDPath extends Path {
                 catch(ServiceException e) {
                     throw new IOException(e.getMessage());
                 }
+                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Cannot create folder", e);
@@ -784,6 +786,8 @@ public class GDPath extends Path {
             catch(MalformedURLException e) {
                 throw new IOException(e.getMessage());
             }
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(this.attributes().isFile()) {

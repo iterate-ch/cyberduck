@@ -135,6 +135,8 @@ public class DAVPath extends Path {
             if(!this.getSession().getClient().deleteMethod(this.getAbsolute())) {
                 throw new IOException(this.getSession().getClient().getStatusMessage());
             }
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(this.attributes().isFile()) {
@@ -199,6 +201,9 @@ public class DAVPath extends Path {
                 if(!this.getSession().getClient().mkcolMethod(this.getAbsolute())) {
                     throw new IOException(this.getSession().getClient().getStatusMessage());
                 }
+                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Cannot create folder", e);

@@ -176,6 +176,7 @@ public class S3Path extends CloudPath {
                 destination.setAcl(this.getDetails().getAcl());
                 this.getSession().getClient().copyVersionedObject(this.attributes().getVersionId(),
                         this.getContainerName(), this.getKey(), this.getContainerName(), destination, false);
+                // The directory listing is no more current
                 this.getParent().invalidate();
             }
             catch(S3ServiceException e) {
@@ -734,6 +735,9 @@ public class S3Path extends CloudPath {
                     object.setContentType(MIMETYPE_DIRECTORY);
                     this.getSession().getClient().putObject(bucket, object);
                 }
+                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(S3ServiceException e) {
                 this.error("Cannot create folder", e);
@@ -856,6 +860,8 @@ public class S3Path extends CloudPath {
                     this.delete(container, key, this.attributes().getVersionId());
                 }
             }
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(S3ServiceException e) {
             if(this.attributes().isFile()) {

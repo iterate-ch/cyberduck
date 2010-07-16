@@ -21,6 +21,7 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.*;
+import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPFile;
@@ -402,6 +403,9 @@ public class FTPPath extends Path {
                                 Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
                     }
                 }
+                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Cannot create folder", e);
@@ -556,6 +560,8 @@ public class FTPPath extends Path {
 
                 this.getSession().getClient().rmdir(this.getName());
             }
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(attributes().isFile()) {
@@ -684,7 +690,7 @@ public class FTPPath extends Path {
 
     private void writeModificationDateImpl(long modified, long created) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                this.getName(), modified));
+                this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         this.getSession().getClient().mfmt(modified, created, this.getName());
         this.attributes().clear(true, false, false);
     }

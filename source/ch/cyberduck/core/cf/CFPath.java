@@ -316,6 +316,9 @@ public class CFPath extends CloudPath {
                     // Create virtual directory
                     this.getSession().getClient().createFullPath(this.getContainerName(), this.getKey());
                 }
+                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Cannot create folder", e);
@@ -344,6 +347,8 @@ public class CFPath extends CloudPath {
                     this.getSession().getClient().deleteContainer(this.getContainerName());
                 }
             }
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(this.attributes().isFile()) {
