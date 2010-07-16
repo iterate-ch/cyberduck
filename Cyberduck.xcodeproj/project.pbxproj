@@ -168,6 +168,9 @@
 		477A11190FD08EAB00BAD4AD /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 477FA95A0E9A7826009E7857 /* UKSystemInfo.m */; };
 		477BEA3E11AEB1B40058BA31 /* google-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 477BEA3D11AEB1B40058BA31 /* google-icon.png */; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
+		4783C6F511EC62B6006D9FAD /* azure-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4783C6F411EC62B6006D9FAD /* azure-icon.png */; };
+		4783C6F811EC62C4006D9FAD /* connection-secure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4783C6F611EC62C4006D9FAD /* connection-secure.tiff */; };
+		4783C6F911EC62C4006D9FAD /* connection.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4783C6F711EC62C4006D9FAD /* connection.tiff */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4786CB6C0E253B800029848F /* Error.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB660E253B800029848F /* Error.nib */; };
 		4786CB6D0E253B800029848F /* Activity.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB670E253B800029848F /* Activity.nib */; };
@@ -983,6 +986,9 @@
 		477FA9590E9A7826009E7857 /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKSystemInfo.h; sourceTree = "<group>"; };
 		477FA95A0E9A7826009E7857 /* UKSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKSystemInfo.m; sourceTree = "<group>"; };
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
+		4783C6F411EC62B6006D9FAD /* azure-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "azure-icon.png"; sourceTree = "<group>"; };
+		4783C6F611EC62C4006D9FAD /* connection-secure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "connection-secure.tiff"; sourceTree = "<group>"; };
+		4783C6F711EC62C4006D9FAD /* connection.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = connection.tiff; sourceTree = "<group>"; };
 		478426F30F9F75900068BA2E /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/License.strings; sourceTree = "<group>"; };
 		478427070F9F75D70068BA2E /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/License.strings; sourceTree = "<group>"; };
 		478427080F9F75DB0068BA2E /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = zh_CN.lproj/License.strings; sourceTree = "<group>"; };
@@ -1637,6 +1643,7 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4741653C06C4FC3F00AC0BD2 /* img */,
 				4786CB660E253B800029848F /* Error.nib */,
 				4786CB670E253B800029848F /* Activity.nib */,
 				4786CB680E253B800029848F /* Transcript.nib */,
@@ -1650,7 +1657,6 @@
 				470168320EED9EB7005E2CCF /* Mosso.strings */,
 				47B6072E0DA420880068282C /* Keychain.strings */,
 				47E9875E0D689A280077733F /* S3.strings */,
-				4741653C06C4FC3F00AC0BD2 /* img */,
 				47FC190A099FB8AF0082431D /* Crash.strings */,
 				479C4229097AB2BB00DDE88A /* Credits.rtf */,
 				47A88FB90B931D9C00DB9D87 /* Configuration.strings */,
@@ -1687,7 +1693,8 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
-				47C4E87610584D710001F618 /* bookmark.png */,
+				4783C6F611EC62C4006D9FAD /* connection-secure.tiff */,
+				4783C6F711EC62C4006D9FAD /* connection.tiff */,
 				4717BE100F3096FD00BB4496 /* s3.icns */,
 				4717BE110F3096FD00BB4496 /* ftp.icns */,
 				4717BE120F3096FD00BB4496 /* dav.icns */,
@@ -1701,7 +1708,9 @@
 				47F73AC80F93721B0054C930 /* s3-icon.png */,
 				47D31BFD1013AD19006423B2 /* eucalyptus-icon.png */,
 				477BEA3D11AEB1B40058BA31 /* google-icon.png */,
+				4783C6F411EC62B6006D9FAD /* azure-icon.png */,
 				47D327A30F0829EC00619C38 /* rendezvous.tiff */,
+				47C4E87610584D710001F618 /* bookmark.png */,
 				47D327C40F096E6C00619C38 /* site.tiff */,
 				4717E0191146657200F095D2 /* language.tiff */,
 				479982810D26DA8200DB5353 /* executable.tiff */,
@@ -2480,6 +2489,9 @@
 				4725794D11DD7FD6009DD748 /* dropfolderbadge.png in Resources */,
 				4725794E11DD7FD6009DD748 /* aliasbadge.png in Resources */,
 				4725794F11DD7FD6009DD748 /* privatefolderbadge.png in Resources */,
+				4783C6F511EC62B6006D9FAD /* azure-icon.png in Resources */,
+				4783C6F811EC62C4006D9FAD /* connection-secure.tiff in Resources */,
+				4783C6F911EC62C4006D9FAD /* connection.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
