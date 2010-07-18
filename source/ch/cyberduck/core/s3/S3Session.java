@@ -34,7 +34,6 @@ import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -400,6 +399,8 @@ public class S3Session extends CloudSession implements SSLSession {
         this.getLoginController().prompt(host.getProtocol(), credentials,
                 Locale.localizedString("Provide additional login credentials", "Credentials"),
                 Locale.localizedString("Multi-Factor Authentication", "S3"));
+
+        Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;
     }
 
