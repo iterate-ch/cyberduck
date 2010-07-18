@@ -684,7 +684,7 @@ public class InfoController extends ToolbarWindowController {
                     for(Path next : files) {
                         Acl acl = new Acl();
                         acl.addAll(InfoController.this.acl.toArray(new Acl.UserAndRole[InfoController.this.acl.size()]));
-                        next.writeAcl(acl, true);
+                        next.writeAcl(acl, false);
                     }
                 }
 
