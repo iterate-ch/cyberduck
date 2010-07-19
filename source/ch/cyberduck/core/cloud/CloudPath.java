@@ -125,4 +125,11 @@ public abstract class CloudPath extends Path {
 
     @Override
     public abstract AttributedList<Path> list();
+
+    /**
+     * @return A signed URL with a limited validity over time.
+     */
+    public String createSignedUrl() {
+        return this.toHttpURL();
+    }
 }
