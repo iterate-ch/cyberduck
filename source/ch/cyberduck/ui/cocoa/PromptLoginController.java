@@ -26,7 +26,6 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -41,8 +40,9 @@ public class PromptLoginController extends AbstractLoginController {
         this.parent = parent;
     }
 
+    @Override
     public void prompt(final Protocol protocol, final Credentials credentials,
-                       final String reason, final String message) throws LoginCanceledException {
+                       final String title, final String reason) throws LoginCanceledException {
         SheetController c = new SheetController(parent) {
             @Override
             protected String getBundleName() {
@@ -82,7 +82,7 @@ public class PromptLoginController extends AbstractLoginController {
 
             public void setTitleField(NSTextField titleField) {
                 this.titleField = titleField;
-                this.updateField(this.titleField, Locale.localizedString(reason, "Credentials"));
+                this.updateField(this.titleField, Locale.localizedString(title, "Credentials"));
             }
 
             @Outlet
@@ -108,7 +108,7 @@ public class PromptLoginController extends AbstractLoginController {
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                this.updateField(this.textField, Locale.localizedString(message, "Credentials"));
+                this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
             }
 
             @Outlet
@@ -241,7 +241,7 @@ public class PromptLoginController extends AbstractLoginController {
 
             @Override
             protected boolean validateInput() {
-                return StringUtils.isNotEmpty(credentials.getUsername());
+                return credentials.validate(protocol);
             }
 
             public void callback(final int returncode) {

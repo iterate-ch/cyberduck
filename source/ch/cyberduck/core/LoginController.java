@@ -25,27 +25,11 @@ public interface LoginController {
      * in the login keychain
      *
      * @param host
+     * @param title  The title for the login prompt
+     * @param reason The detail message for the login prompt. Any additional information about the domain.
      * @throws LoginCanceledException
      */
-    void check(Host host) throws LoginCanceledException;
-
-    /**
-     * Check the credentials for validity and prompt the user for the password if not found
-     * in the login keychain
-     *
-     * @param host
-     * @param reason The title for the login prompt
-     * @throws LoginCanceledException
-     */
-    void check(Host host, String reason) throws LoginCanceledException;
-
-
-    /**
-     * Callback upon successful login.
-     *
-     * @param host
-     */
-    void success(Host host);
+    void check(Host host, String title, String reason) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -53,7 +37,16 @@ public interface LoginController {
      *
      * @param protocol    Used to determine login prompt options.
      * @param credentials
-     * @param reason
+     */
+    void fail(Protocol protocol, Credentials credentials) throws LoginCanceledException;
+
+    /**
+     * Call this to allow the user to reenter the new login credentials.
+     * A concrete subclass should display a login prompt.
+     *
+     * @param protocol    Used to determine login prompt options.
+     * @param credentials
+     * @param reason      The detail message for the login prompt. Any additional information why the login failed.
      */
     void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException;
 
@@ -63,9 +56,9 @@ public interface LoginController {
      *
      * @param protocol    Used to determine login prompt options.
      * @param credentials The credentials to obtain.
-     * @param reason      The title for the login prompt
-     * @param message     The detail message for the login prompt. Any additional information why the login failed.
+     * @param title       The title for the login prompt
+     * @param reason      The detail message for the login prompt. Any additional information why the login failed.
      * @throws LoginCanceledException
      */
-    void prompt(Protocol protocol, Credentials credentials, String reason, String message) throws LoginCanceledException;
+    void prompt(Protocol protocol, Credentials credentials, String title, String reason) throws LoginCanceledException;
 }

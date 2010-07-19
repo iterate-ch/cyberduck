@@ -151,7 +151,7 @@ public abstract class Session {
      */
     protected abstract void connect() throws IOException;
 
-    public LoginController login;
+    private LoginController login;
 
     /**
      * Sets the callback to ask for login credentials
@@ -176,7 +176,7 @@ public abstract class Session {
      * @throws IOException
      */
     protected void login() throws IOException {
-        login.check(host);
+        login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
 
         final Credentials credentials = host.getCredentials();
         this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
@@ -187,7 +187,7 @@ public abstract class Session {
             throw new ConnectionCanceledException();
         }
 
-        login.success(host);
+        KeychainFactory.instance().save(host);
     }
 
     /**

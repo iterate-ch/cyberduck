@@ -198,6 +198,7 @@ public abstract class Preferences {
         defaults.put("protocol.cf.enable", String.valueOf(true));
         defaults.put("protocol.gdocs.enable", String.valueOf(true));
         defaults.put("protocol.gstorage.tls.enable", String.valueOf(true));
+        defaults.put("protocol.azure.tls.enable", String.valueOf(false));
 
         /**
          * Normalize path names

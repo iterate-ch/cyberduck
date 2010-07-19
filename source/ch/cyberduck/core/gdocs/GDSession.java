@@ -127,7 +127,7 @@ public class GDSession extends Session {
         }
         catch(AuthenticationException e) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(host.getProtocol(), credentials, e.getMessage());
+            this.getLoginController().fail(host.getProtocol(), credentials, e.getMessage());
             this.login();
         }
     }

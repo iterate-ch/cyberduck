@@ -170,11 +170,11 @@ public abstract class Credentials {
     }
 
     /**
-     * @return
+     * @param protocol The protocol to verify against.
+     * @return True if the login credential are valid for the given protocol.
      */
-    public boolean isValid() {
-        return StringUtils.isNotEmpty(this.getUsername())
-                && this.getPassword() != null;
+    public boolean validate(Protocol protocol) {
+        return protocol.validate(this);
     }
 
     /**

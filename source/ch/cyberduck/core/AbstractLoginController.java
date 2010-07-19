@@ -33,21 +33,11 @@ public abstract class AbstractLoginController implements LoginController {
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
      *
-     * @param host See Host#getCredentials
-     * @throws LoginCanceledException
-     */
-    public void check(final Host host) throws LoginCanceledException {
-        this.check(host, null);
-    }
-
-    /**
-     * Check the credentials for validity and prompt the user for the password if not found
-     * in the login keychain
-     *
      * @param host    See Host#getCredentials
      * @param message Additional message displayed in the password prompt
+     * @throws LoginCanceledException
      */
-    public void check(final Host host, String message)
+    public void check(final Host host, String title, String message)
             throws LoginCanceledException {
 
         final Credentials credentials = host.getCredentials();
@@ -59,13 +49,14 @@ public abstract class AbstractLoginController implements LoginController {
         if(credentials.isPublicKeyAuthentication()) {
             return;
         }
-        if(!credentials.isValid()) {
-            final String title = Locale.localizedString("Login with username and password", "Credentials");
+        if(!credentials.validate(host.getProtocol())) {
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     String passFromKeychain = KeychainFactory.instance().find(host);
                     if(StringUtils.isBlank(passFromKeychain)) {
-                        reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+                        reason.append(Locale.localizedString(
+                                "No login credentials could be found in the Keychain", "Credentials")).append(".");
+                        ;
                         this.prompt(host.getProtocol(), credentials, title, reason.toString());
                     }
                     else {
@@ -74,25 +65,40 @@ public abstract class AbstractLoginController implements LoginController {
                     }
                 }
                 else {
-                    reason.append(Locale.localizedString("The use of the Keychain is disabled in the Preferences", "Credentials"));
+                    reason.append(Locale.localizedString(
+                            "The use of the Keychain is disabled in the Preferences", "Credentials")).append(".");
+                    ;
                     this.prompt(host.getProtocol(), credentials, title, reason.toString());
                 }
             }
             else {
-                reason.append(Locale.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+                reason.append(Locale.localizedString(
+                        "No login credentials could be found in the Keychain", "Credentials")).append(".");
+                ;
                 this.prompt(host.getProtocol(), credentials, title, reason.toString());
             }
         }
     }
 
-    /**
-     * @param host
-     */
-    public void success(final Host host) {
-        KeychainFactory.instance().save(host);
+    public void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException {
+        this.prompt(protocol, credentials,
+                Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
-    public void fail(Protocol protocol, Credentials credentials, final String reason) throws LoginCanceledException {
-        this.prompt(protocol, credentials, Locale.localizedString("Login failed", "Credentials"), reason);
+    /**
+     * Display login failure with a prompt to enter the username and password.
+     *
+     * @param protocol
+     * @param credentials
+     * @throws LoginCanceledException
+     */
+    public void fail(Protocol protocol, Credentials credentials)
+            throws LoginCanceledException {
+        this.prompt(protocol, credentials,
+                Locale.localizedString("Login failed", "Credentials"),
+                Locale.localizedString("Login with username and password", "Credentials"));
     }
+
+    public abstract void prompt(Protocol protocol, Credentials credentials, String title, String reason)
+            throws LoginCanceledException;
 }

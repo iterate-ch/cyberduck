@@ -1,32 +1,31 @@
 package ch.cyberduck.core.cf;
 
 /*
- *  Copyright (c) 2008 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
-import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
 import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
@@ -111,8 +110,7 @@ public class CFSession extends CloudSession implements SSLSession {
         this.getTrustManager().setHostname(URI.create(this.getClient().getAuthenticationURL()).getHost());
         if(!this.getClient().login()) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.login.fail(host.getProtocol(), credentials,
-                    Locale.localizedString("Login with username and password", "Credentials"));
+            this.getLoginController().fail(host.getProtocol(), credentials);
             this.login();
         }
         this.getTrustManager().setHostname(URI.create(this.getClient().getStorageURL()).getHost());

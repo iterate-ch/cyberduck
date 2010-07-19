@@ -63,7 +63,7 @@ public abstract class AbstractKeychain {
      * @param host
      * @see ch.cyberduck.core.Host#getCredentials()
      */
-    protected void save(final Host host) {
+    public void save(final Host host) {
         if(StringUtils.isEmpty(host.getHostname())) {
             log.warn("No hostname given");
             return;

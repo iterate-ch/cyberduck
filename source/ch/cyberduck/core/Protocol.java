@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.azure.AzurePath;
+import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.cf.CFPath;
 import ch.cyberduck.core.cf.CFSession;
 import ch.cyberduck.core.dav.DAVPath;
@@ -144,6 +146,17 @@ public abstract class Protocol {
     }
 
     /**
+     * Check login credentials for validity for this protocol.
+     *
+     * @param credentials
+     * @return
+     */
+    public boolean validate(Credentials credentials) {
+        return StringUtils.isNotBlank(credentials.getUsername())
+                && StringUtils.isNotBlank(credentials.getPassword());
+    }
+
+    /**
      * @return The default port this protocol connects to
      */
     public abstract int getDefaultPort();
@@ -226,6 +239,17 @@ public abstract class Protocol {
         @Override
         public boolean isConnectModeConfigurable() {
             return true;
+        }
+
+        /**
+         * Allows empty string for password.
+         * @param credentials
+         * @return
+         */
+        @Override
+        public boolean validate(Credentials credentials) {
+            return StringUtils.isNotBlank(credentials.getUsername())
+                    && null != credentials.getPassword();
         }
     };
 
@@ -784,6 +808,68 @@ public abstract class Protocol {
         }
     };
 
+    public static final Protocol AZURE_SSL = new Protocol() {
+        @Override
+        public String getName() {
+            return "Windows Azure Cloud Storage";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Windows Azure Cloud Storage";
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "azure";
+        }
+
+        @Override
+        public String disk() {
+            return FTP_TLS.disk();
+        }
+
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public boolean isHostnameConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getDefaultHostname() {
+            return "blob.core.windows.net";
+        }
+
+        @Override
+        public String getScheme() {
+            return "https";
+        }
+
+        @Override
+        public int getDefaultPort() {
+            return 443;
+        }
+
+        @Override
+        public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("Public Storage Account Name", "Azure");
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("Primary Access Key", "Azure");
+        }
+    };
+
     static {
         if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
             SessionFactory.addFactory(
@@ -856,6 +942,12 @@ public abstract class Protocol {
                     Protocol.GDOCS_SSL, new GDSession.Factory());
             PathFactory.addFactory(
                     Protocol.GDOCS_SSL, new GDPath.Factory());
+        }
+        if(Preferences.instance().getBoolean("protocol.azure.tls.enable")) {
+            SessionFactory.addFactory(
+                    Protocol.AZURE_SSL, new AzureSession.Factory());
+            PathFactory.addFactory(
+                    Protocol.AZURE_SSL, new AzurePath.Factory());
         }
     }
 

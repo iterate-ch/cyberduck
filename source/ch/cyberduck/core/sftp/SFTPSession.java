@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.io.*;
-import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -177,17 +176,27 @@ public class SFTPSession extends Session {
             return;
         }
         if(this.getClient().isAuthenticationPartialSuccess()) {
-            credentials.clear();
-            login.check(host, Locale.localizedString("Partial authentication success", "Credentials")
-                    + ". " + Locale.localizedString("Provide additional login credentials", "Credentials") + ".");
-            if(this.loginUsingKBIAuthentication(credentials)) {
+            Credentials additional = new Credentials(credentials.getUsername(), null, false) {
+                @Override
+                public String getUsernamePlaceholder() {
+                    return credentials.getUsernamePlaceholder();
+                }
+
+                @Override
+                public String getPasswordPlaceholder() {
+                    return credentials.getPasswordPlaceholder();
+                }
+            };
+            this.getLoginController().prompt(host.getProtocol(), additional,
+                    Locale.localizedString("Partial authentication success", "Credentials"),
+                    Locale.localizedString("Provide additional login credentials", "Credentials") + ".");
+            if(this.loginUsingKBIAuthentication(additional)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
             }
         }
         this.message(Locale.localizedString("Login failed", "Credentials"));
-        this.login.fail(host.getProtocol(), credentials,
-                Locale.localizedString("Login with username and password", "Credentials"));
+        this.getLoginController().fail(host.getProtocol(), credentials);
         this.login();
     }
 
@@ -210,7 +219,7 @@ public class SFTPSession extends Session {
                 if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
                     passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
-                        login.prompt(host.getProtocol(), credentials,
+                        this.getLoginController().prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Private key password protected", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
@@ -230,7 +239,8 @@ public class SFTPSession extends Session {
                 catch(IOException e) {
                     if(e.getCause() instanceof PEMDecryptException) {
                         this.message(Locale.localizedString("Login failed", "Credentials"));
-                        this.login.fail(host.getProtocol(), credentials, e.getCause().getMessage());
+                        this.getLoginController().fail(host.getProtocol(), credentials,
+                                e.getCause().getMessage());
                         this.login();
                     }
                     else {
@@ -307,7 +317,7 @@ public class SFTPSession extends Session {
                         return Locale.localizedString("One-time password", "Credentials");
                     }
                 };
-                SFTPSession.this.login.prompt(host.getProtocol(), credentials,
+                SFTPSession.this.getLoginController().prompt(host.getProtocol(), credentials,
                         Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i]);
                 response[i] = credentials.getPassword();
                 promptCount++;

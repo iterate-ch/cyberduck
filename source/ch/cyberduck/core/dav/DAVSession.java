@@ -146,35 +146,19 @@ public class DAVSession extends HTTPSession implements SSLSession {
     }
 
     @Override
-    public void setLoginController(final LoginController c) {
-        this.login = new LoginController() {
-            public void check(Host host) throws LoginCanceledException {
-                final Credentials credentials = host.getCredentials();
-                if(!credentials.isValid()) {
-                    if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                        credentials.setPassword(KeychainFactory.instance().find(host));
-                    }
-                }
-                // Do not prompt for credentials yet but in the credentials provider
-                // below upon request with the given authentication scheme realm
-            }
+    protected void login() throws IOException {
+        // Do not prompt for credentials yet but in the credentials provider
+        // below upon request with the given authentication scheme realm
 
-            public void check(Host host, String reason) throws LoginCanceledException {
-                c.check(host, reason);
-            }
+        final Credentials credentials = host.getCredentials();
+        this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
+                credentials.getUsername()));
+        this.login(credentials);
 
-            public void success(Host host) {
-                c.success(host);
-            }
-
-            public void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException {
-                c.fail(protocol, credentials, reason);
-            }
-
-            public void prompt(Protocol protocol, Credentials credentials, String reason, String message) throws LoginCanceledException {
-                c.prompt(protocol, credentials, reason, message);
-            }
-        };
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
+        }
+        KeychainFactory.instance().save(host);
     }
 
     @Override
@@ -182,7 +166,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
         try {
             final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
 
-            if(credentials.isValid()) {
+            if(credentials.validate(host.getProtocol())) {
                 // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
                 this.getClient().setCredentials(
                         new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
@@ -203,13 +187,16 @@ public class DAVSession extends HTTPSession implements SSLSession {
                         if(StringUtils.isNotBlank(authscheme.getRealm())) {
                             realm.append(" ").append(authscheme.getRealm());
                         }
+                        final LoginController lc = getLoginController();
                         if(0 == retry) {
-                            login.check(host, realm.toString());
+                            lc.check(host,
+                                    Locale.localizedString("Login with username and password", "Credentials"),
+                                    realm.toString());
                         }
                         else {
                             // authstate.isAuthAttempted() && authscheme.isComplete()
                             // Already tried and failed.
-                            login.fail(host.getProtocol(), credentials, realm.toString());
+                            lc.fail(host.getProtocol(), credentials, realm.toString());
                         }
 
                         message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),

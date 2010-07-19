@@ -367,8 +367,7 @@ public class S3Session extends CloudSession implements SSLSession {
         catch(S3ServiceException e) {
             if(this.isLoginFailure(e)) {
                 this.message(Locale.localizedString("Login failed", "Credentials"));
-                this.login.fail(host.getProtocol(), credentials,
-                        Locale.localizedString("Login with username and password", "Credentials"));
+                this.getLoginController().fail(host.getProtocol(), credentials);
                 this.login();
             }
             else {

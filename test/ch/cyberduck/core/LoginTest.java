@@ -30,7 +30,7 @@ public class LoginTest extends AbstractTestCase {
     public LoginTest(String name) {
         super(name);
     }
-    
+
     private static class TestCredentials extends Credentials {
 
         public TestCredentials() {
@@ -58,35 +58,35 @@ public class LoginTest extends AbstractTestCase {
 
     public void testLoginReasonable() {
         Credentials credentials = new TestCredentials("guest", "changeme");
-        assertTrue(credentials.isValid());
+        assertTrue(credentials.validate(Protocol.FTP));
     }
 
     public void testLoginWithoutUsername() {
         Credentials credentials = new TestCredentials(null,
                 Preferences.instance().getProperty("connection.login.anon.pass"));
-        assertFalse(credentials.isValid());
+        assertFalse(credentials.validate(Protocol.FTP));
     }
 
     public void testLoginWithoutPass() {
         Credentials credentials = new TestCredentials("guest", null);
-        assertFalse(credentials.isValid());
+        assertFalse(credentials.validate(Protocol.FTP));
     }
 
     public void testLoginWithoutEmptyPass() {
         Credentials credentials = new TestCredentials("guest", "");
-        assertTrue(credentials.isValid());
+        assertTrue(credentials.validate(Protocol.FTP));
     }
 
     public void testLoginAnonymous1() {
         Credentials credentials = new TestCredentials(Preferences.instance().getProperty("connection.login.anon.name"),
                 Preferences.instance().getProperty("connection.login.anon.pass"));
-        assertTrue(credentials.isValid());
+        assertTrue(credentials.validate(Protocol.FTP));
     }
 
     public void testLoginAnonymous2() {
         Credentials credentials = new TestCredentials(Preferences.instance().getProperty("connection.login.anon.name"),
                 null);
-        assertTrue(credentials.isValid());
+        assertTrue(credentials.validate(Protocol.FTP));
     }
 
     /**
@@ -95,7 +95,7 @@ public class LoginTest extends AbstractTestCase {
     public void testLogin1204() {
         Credentials credentials = new TestCredentials("cyberduck.login",
                 "1seCret");
-        assertTrue(credentials.isValid());
+        assertTrue(credentials.validate(Protocol.FTP));
         assertEquals("cyberduck.login", credentials.getUsername());
         assertEquals("1seCret", credentials.getPassword());
     }
