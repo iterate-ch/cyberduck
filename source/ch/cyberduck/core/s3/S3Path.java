@@ -680,6 +680,10 @@ public class S3Path extends CloudPath {
                     bucket.getName(), object.getKey(), Path.FILE_TYPE);
             path.setParent(this);
             final S3Version version = (S3Version) object;
+            // Versioning is enabled if non null.
+            path.attributes().setVersionId(version.getVersionId());
+            path.attributes().setRevision(++i);
+            path.attributes().setDuplicate(true);
             if(0 == version.getSize()) {
                 final S3Object details = path.getDetails();
                 if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
@@ -694,10 +698,6 @@ public class S3Path extends CloudPath {
                 path.attributes().setGroup(bucket.getOwner().getId());
             }
             path.attributes().setStorageClass(version.getStorageClass());
-            // Versioning is enabled if non null.
-            path.attributes().setVersionId(version.getVersionId());
-            path.attributes().setRevision(++i);
-            path.attributes().setDuplicate(true);
             versions.add(path);
         }
         return versions;
