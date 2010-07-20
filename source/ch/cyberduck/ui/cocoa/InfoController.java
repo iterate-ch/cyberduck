@@ -465,6 +465,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setAclTable(final NSTableView t) {
         this.aclTable = t;
+        this.aclTable.setAllowsMultipleSelection(true);
         this.permissionCellPrototype.setFont(NSFont.systemFontOfSize(NSFont.smallSystemFontSize()));
         this.permissionCellPrototype.setControlSize(NSCell.NSSmallControlSize);
         this.permissionCellPrototype.setCompletes(false);
@@ -639,8 +640,10 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void aclRemoveButtonClicked(ID sender) {
-        int row = aclTable.selectedRow().intValue();
-        acl.remove(row);
+        NSIndexSet iterator = aclTable.selectedRowIndexes();
+        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+            acl.remove(index.intValue());
+        }
         this.setAcl(acl);
         this.aclInputDidEndEditing();
     }
@@ -698,6 +701,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setMetadataTable(final NSTableView t) {
         this.metadataTable = t;
+        this.metadataTable.setAllowsMultipleSelection(true);
         this.metadataTable.setDataSource((metadataTableModel = new ListDataSource() {
             /**
              * @param view
