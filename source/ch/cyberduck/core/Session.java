@@ -623,6 +623,16 @@ public abstract class Session {
     }
 
     /**
+     *
+     * @param readable
+     * @param writable
+     * @return
+     */
+    public Acl getPublicAcl(boolean readable, boolean writable) {
+        return Acl.EMPTY;
+    };
+
+    /**
      * Roles available for users in a configurable ACL.
      *
      * @return A list of role names.

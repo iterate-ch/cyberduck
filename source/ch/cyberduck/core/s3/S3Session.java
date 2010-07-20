@@ -1039,9 +1039,38 @@ public class S3Session extends CloudSession implements SSLSession {
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        return Arrays.asList(
-                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
+        final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
+                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false),
                 new Acl.CanonicalUser(""),
-                new Acl.EmailUser(""));
+                new Acl.EmailUser("")));
+        for(final S3Bucket container : buckets.values()) {
+            final Acl.CanonicalUser owner = new Acl.CanonicalUser(container.getOwner().getId(), container.getOwner().getDisplayName(), false) {
+                @Override
+                public String getPlaceholder() {
+                    return container.getOwner().getDisplayName();
+                }
+            };
+            if(users.contains(owner)) {
+                continue;
+            }
+            users.add(owner);
+        }
+        return users;
+    }
+
+    @Override
+    public Acl getPublicAcl(boolean readable, boolean writable) {
+        Acl acl = new Acl();
+        acl.addAll(new Acl.CanonicalUser(this.getHost().getCredentials().getUsername()),
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()));
+        if(readable) {
+            acl.addAll(new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
+                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));
+        }
+        if(writable) {
+            acl.addAll(new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
+                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
+        }
+        return acl;
     }
 }

@@ -325,7 +325,7 @@ public class S3Path extends CloudPath {
             try {
                 this.getSession().check();
                 final S3Object target = this.getDetails();
-                return new HashMap<String,String>(target.getModifiableMetadata());
+                return new HashMap<String, String>(target.getModifiableMetadata());
             }
             catch(S3ServiceException e) {
                 this.error("Cannot read file attributes", e);
@@ -485,17 +485,22 @@ public class S3Path extends CloudPath {
                 catch(NoSuchAlgorithmException e) {
                     log.error(e.getMessage());
                 }
-                AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
-                final Permission p = this.attributes().getPermission();
-                if(!p.equals(Permission.EMPTY)) {
-                    if(p.getOtherPermissions()[Permission.READ]) {
-                        acl = AccessControlList.REST_CANNED_PUBLIC_READ;
-                    }
-                    if(p.getOtherPermissions()[Permission.WRITE]) {
-                        acl = AccessControlList.REST_CANNED_PUBLIC_READ_WRITE;
-                    }
+                Acl acl = this.attributes().getAcl();
+                if(Acl.EMPTY.equals(acl)) {
+                    // Owner gets FULL_CONTROL. No one else has access rights (default).
+                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
                 }
-                object.setAcl(acl);
+                else if(acl.equals(this.getSession().getPublicAcl(true, false))) {
+                    // Owner gets FULL_CONTROL and the anonymous principal is granted READ access
+                    object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
+                }
+                else if(acl.equals(this.getSession().getPublicAcl(true, true))) {
+                    // Owner gets FULL_CONTROL, the anonymous principal is granted READ and WRITE access
+                    object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE);
+                }
+                else {
+                    object.setAcl(this.convert(acl));
+                }
                 object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
 
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
@@ -517,6 +522,10 @@ public class S3Path extends CloudPath {
                                     S3Path.this.upload(out, in, throttle, listener);
                                 }
                             });
+                }
+                catch(S3ServiceException e) {
+                    this.status().setComplete(false);
+                    throw e;
                 }
                 finally {
                     IOUtils.closeQuietly(in);
@@ -750,7 +759,21 @@ public class S3Path extends CloudPath {
 
     @Override
     public void writeAcl(Acl acl, boolean recursive) {
+        try {
+            this.writeAcl(this.convert(acl), recursive);
+        }
+        catch(S3ServiceException e) {
+            this.error("Cannot change permissions", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot change permissions", e);
+        }
+    }
+
+    private AccessControlList convert(Acl acl) throws IOException {
         AccessControlList list = new AccessControlList();
+        final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
+        list.setOwner(owner);
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(userAndRole.getUser().isEmailIdentifier()) {
                 list.grantPermission(new EmailAddressGrantee(userAndRole.getUser().getIdentifier()),
@@ -765,7 +788,7 @@ public class S3Path extends CloudPath {
                         org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
             }
         }
-        this.writeAcl(list, recursive);
+        return list;
     }
 
     /**
@@ -773,34 +796,24 @@ public class S3Path extends CloudPath {
      *
      * @param acl The updated access control list.
      */
-    protected void writeAcl(AccessControlList acl, boolean recursive) {
-        try {
-            final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
-            acl.setOwner(owner);
-            if(this.isContainer()) {
-                this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
-            }
-            else if(attributes().isFile()) {
-                this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
-            }
-            if(attributes().isDirectory()) {
-                if(recursive) {
-                    for(AbstractPath child : this.childs()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        ((S3Path) child).writeAcl(acl, recursive);
+    protected void writeAcl(AccessControlList acl, boolean recursive) throws IOException, S3ServiceException {
+        if(this.isContainer()) {
+            this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
+        }
+        else if(attributes().isFile()) {
+            this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
+        }
+        if(attributes().isDirectory()) {
+            if(recursive) {
+                for(AbstractPath child : this.childs()) {
+                    if(!this.getSession().isConnected()) {
+                        break;
                     }
+                    ((S3Path) child).writeAcl(acl, recursive);
                 }
             }
-            this.attributes().clear(false, false, true);
         }
-        catch(S3ServiceException e) {
-            this.error("Cannot change permissions", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot change permissions", e);
-        }
+        this.attributes().clear(false, false, true);
     }
 
     /**
@@ -1015,6 +1028,11 @@ public class S3Path extends CloudPath {
         }
     }
 
+    @Override
+    public String createSignedUrl() {
+        return this.createSignedUrl(Preferences.instance().getInteger("s3.url.expire.seconds"));
+    }
+
     /**
      * Query String Authentication generates a signed URL string that will grant
      * access to an S3 resource (bucket or object)
@@ -1022,7 +1040,7 @@ public class S3Path extends CloudPath {
      *
      * @return
      */
-    public String createSignedUrl() {
+    public String createSignedUrl(int expiry) {
         try {
             if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
                 log.info("Anonymous cannot create signed URL");
@@ -1030,9 +1048,8 @@ public class S3Path extends CloudPath {
             }
             this.getSession().check();
             // Determine expiry time for URL
-            int secondsFromNow = Preferences.instance().getInteger("s3.url.expire.seconds");
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.SECOND, secondsFromNow);
+            cal.add(Calendar.SECOND, expiry);
             long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
 
             // Generate URL
