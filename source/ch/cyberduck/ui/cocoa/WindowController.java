@@ -20,17 +20,16 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -254,8 +253,15 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Action
     public void helpButtonClicked(final NSButton sender) {
-        NSWorkspace.sharedWorkspace().openURL(
-                NSURL.URLWithString(Preferences.instance().getProperty("website.help"))
-        );
+        this.openUrl(Preferences.instance().getProperty("website.help"));
+    }
+
+    /**
+     * Open URL with default web browser.
+     *
+     * @param url
+     */
+    protected void openUrl(String url) {
+        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
     }
 }
