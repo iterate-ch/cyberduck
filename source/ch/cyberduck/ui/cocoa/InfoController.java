@@ -471,7 +471,8 @@ public class InfoController extends ToolbarWindowController {
         this.permissionCellPrototype.setBordered(false);
         this.permissionCellPrototype.setButtonBordered(false);
         for(Acl.Role permission : controller.getSession().getAvailableAclRoles()) {
-            this.permissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
+            this.permissionCellPrototype.addItemWithObjectValue(
+                    NSString.stringWithString(permission.getName()));
         }
         this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(permissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
@@ -552,10 +553,7 @@ public class InfoController extends ToolbarWindowController {
             }
 
             public String tooltip(Acl.UserAndRole c) {
-                if(StringUtils.isNotEmpty(c.getUser().getDisplayName())) {
-                    return c.getUser().getDisplayName();
-                }
-                return Locale.localizedString(c.getUser().getIdentifier(), "S3");
+                return c.getUser().getIdentifier();
             }
 
             @Override
@@ -591,19 +589,6 @@ public class InfoController extends ToolbarWindowController {
         }).id());
     }
 
-    private Selector getAclSelector(Acl.User user) {
-        if(user.isDomainIdentifier()) {
-            return Foundation.selector("aclDomainAddButtonClicked:");
-        }
-        if(user.isEmailIdentifier()) {
-            return Foundation.selector("aclEmailAddButtonClicked:");
-        }
-        if(user.isGroupIdentifier()) {
-            return Foundation.selector("aclGroupAddButtonClicked:");
-        }
-        return Foundation.selector("aclCanonicalAddButtonClicked:");
-    }
-
     @Outlet
     private NSPopUpButton aclAddButton;
 
@@ -614,34 +599,18 @@ public class InfoController extends ToolbarWindowController {
         this.aclAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
         for(Acl.User user : controller.getSession().getAvailableAclUsers()) {
             this.aclAddButton.addItemWithTitle(user.getPlaceholder());
-            this.aclAddButton.lastItem().setAction(this.getAclSelector(user));
+            this.aclAddButton.lastItem().setAction(Foundation.selector("aclAddButtonClicked:"));
             this.aclAddButton.lastItem().setTarget(this.id());
-            this.aclAddButton.lastItem().setRepresentedObject(user.getIdentifier());
+            this.aclAddButton.lastItem().setRepresentedObject(user.getPlaceholder());
         }
     }
 
-    @Action
-    public void aclCanonicalAddButtonClicked(NSMenuItem sender) {
-        this.aclAddButtonClicked(new Acl.CanonicalUser(sender.representedObject(), true));
-    }
-
-    @Action
-    public void aclDomainAddButtonClicked(NSMenuItem sender) {
-        this.aclAddButtonClicked(new Acl.DomainUser(sender.representedObject()));
-    }
-
-    @Action
-    public void aclEmailAddButtonClicked(NSMenuItem sender) {
-        this.aclAddButtonClicked(new Acl.EmailUser(sender.representedObject()));
-    }
-
-    @Action
-    public void aclGroupAddButtonClicked(NSMenuItem sender) {
-        this.aclAddButtonClicked(new Acl.GroupUser(sender.representedObject(), true));
-    }
-
-    private void aclAddButtonClicked(Acl.User grantee) {
-        this.aclAddButtonClicked(new Acl.UserAndRole(grantee, new Acl.Role("")));
+    public void aclAddButtonClicked(NSMenuItem sender) {
+        for(Acl.User grantee : controller.getSession().getAvailableAclUsers()) {
+            if(sender.representedObject().equals(grantee.getPlaceholder())) {
+                this.aclAddButtonClicked(new Acl.UserAndRole(grantee, new Acl.Role("")));
+            }
+        }
     }
 
     /**
@@ -1786,7 +1755,8 @@ public class InfoController extends ToolbarWindowController {
         boolean enable = !credentials.isAnonymousLogin() && session.isAclSupported();
         aclTable.setEnabled(stop && enable);
         aclAddButton.setEnabled(stop && enable);
-        aclRemoveButton.setEnabled(stop && enable);
+        boolean selection = aclTable.selectedRowIndexes().count().intValue() > 0;
+        aclRemoveButton.setEnabled(stop && enable && selection);
         if(stop) {
             aclProgress.stopAnimation(null);
         }
@@ -1814,7 +1784,8 @@ public class InfoController extends ToolbarWindowController {
         }
         metadataTable.setEnabled(stop && enable);
         metadataAddButton.setEnabled(stop && enable);
-        metadataRemoveButton.setEnabled(stop && enable);
+        boolean selection = metadataTable.selectedRowIndexes().count().intValue() > 0;
+        metadataRemoveButton.setEnabled(stop && enable && selection);
         if(stop) {
             metadataProgress.stopAnimation(null);
         }
@@ -1869,7 +1840,7 @@ public class InfoController extends ToolbarWindowController {
                         if(Acl.EMPTY.equals(next.attributes().getAcl())) {
                             next.readAcl();
                         }
-                        for(Acl.UserAndRole acl: next.attributes().getAcl().asList()) {
+                        for(Acl.UserAndRole acl : next.attributes().getAcl().asList()) {
                             if(updated.contains(acl)) {
                                 continue;
                             }
@@ -2280,34 +2251,24 @@ public class InfoController extends ToolbarWindowController {
     public void helpButtonClicked(final NSButton sender) {
         final String tab = this.getSelectedTab();
         if(tab.equals(TOOLBAR_ITEM_GENERAL)) {
-            NSWorkspace.sharedWorkspace().openURL(
-                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                            + "/howto/info")
-            );
+            this.openUrl(Preferences.instance().getProperty("website.help")
+                    + "/howto/info");
         }
         if(tab.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            NSWorkspace.sharedWorkspace().openURL(
-                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                            + "/howto/info")
-            );
+            this.openUrl(Preferences.instance().getProperty("website.help")
+                    + "/howto/info");
         }
         if(tab.equals(TOOLBAR_ITEM_METADATA)) {
-            NSWorkspace.sharedWorkspace().openURL(
-                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                            + "/howto/s3")
-            );
+            this.openUrl(Preferences.instance().getProperty("website.help")
+                    + "/howto/s3");
         }
         if(tab.equals(TOOLBAR_ITEM_S3)) {
-            NSWorkspace.sharedWorkspace().openURL(
-                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                            + "/howto/s3")
-            );
+            this.openUrl(Preferences.instance().getProperty("website.help")
+                    + "/howto/s3");
         }
         if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            NSWorkspace.sharedWorkspace().openURL(
-                    NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                            + "/howto/cdn")
-            );
+            this.openUrl(Preferences.instance().getProperty("website.help")
+                    + "/howto/cdn");
         }
     }
 }
