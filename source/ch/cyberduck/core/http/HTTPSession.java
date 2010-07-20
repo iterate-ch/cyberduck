@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
@@ -56,7 +57,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
 
         @Override
         protected void append(LoggingEvent event) {
-            final String m = event.getMessage().toString();
+            final String m = StringUtils.remove(event.getMessage().toString(), "[\\r][\\n]");
             if(m.startsWith(IN)) {
                 HTTPSession.this.log(false, m.substring(IN.length() + 1, m.length() - 1));
             }
@@ -106,13 +107,19 @@ public abstract class HTTPSession extends Session implements SSLSession {
 
     @Override
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
+        // For 3.x
         Logger.getLogger("httpclient.wire.header").addAppender(appender);
+        // For HTTP Components 4
+        Logger.getLogger("org.apache.http.headers").addAppender(appender);
         super.fireConnectionWillOpenEvent();
     }
 
     @Override
     protected void fireConnectionWillCloseEvent() {
+        // For 3.x
         Logger.getLogger("httpclient.wire.header").removeAppender(appender);
+        // For HTTP Components 4
+        Logger.getLogger("org.apache.http.headers").removeAppender(appender);
         super.fireConnectionWillCloseEvent();
     }
 }
