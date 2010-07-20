@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.util;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
@@ -47,11 +48,12 @@ public class HyperlinkAttributedStringFactory {
         // make the text appear in blue
         value.addAttributeInRange(NSMutableAttributedString.ForegroundColorAttributeName,
                 NSColor.blueColor(), range);
-
+        // system font
+        value.addAttributeInRange(NSMutableAttributedString.FontAttributeName,
+                NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), range);
         // next make the text appear with an underline
         value.addAttributeInRange(NSMutableAttributedString.UnderlineStyleAttributeName,
                 NSNumber.numberWithInt(NSMutableAttributedString.SingleUnderlineStyle), range);
-
         value.endEditing();
         return value;
     }
