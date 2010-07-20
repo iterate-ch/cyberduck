@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.S3ServiceException;
+import org.soyatec.windows.azure.error.StorageServerException;
 
 import com.enterprisedt.net.ftp.FTPException;
 import com.rackspacecloud.client.cloudfiles.FilesException;
@@ -180,6 +181,9 @@ public class ErrorController extends BundleController {
                         buffer.append(" ").append(status.getReasonPhrase());
                     }
                 }
+            }
+            if(cause instanceof StorageServerException) {
+                buffer.delete(buffer.indexOf("\r\n"), buffer.length());
             }
         }
         String message = buffer.toString();

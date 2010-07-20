@@ -1,0 +1,638 @@
+package ch.cyberduck.core.azure;
+
+/*
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
+ *
+ * http://cyberduck.ch/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
+ */
+
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.cloud.CloudSession;
+import ch.cyberduck.core.cloud.Distribution;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpStatus;
+import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.soyatec.windows.azure.authenticate.IAccessPolicy;
+import org.soyatec.windows.azure.authenticate.SharedKeyCredentials;
+import org.soyatec.windows.azure.authenticate.StorageAccountInfo;
+import org.soyatec.windows.azure.blob.*;
+import org.soyatec.windows.azure.blob.internal.*;
+import org.soyatec.windows.azure.constants.HeaderValues;
+import org.soyatec.windows.azure.constants.XmlElementNames;
+import org.soyatec.windows.azure.error.StorageErrorCode;
+import org.soyatec.windows.azure.error.StorageException;
+import org.soyatec.windows.azure.error.StorageServerException;
+import org.soyatec.windows.azure.internal.AccessPolicy;
+import org.soyatec.windows.azure.internal.OutParameter;
+import org.soyatec.windows.azure.internal.ResourceUriComponents;
+import org.soyatec.windows.azure.internal.SignedIdentifier;
+import org.soyatec.windows.azure.internal.constants.*;
+import org.soyatec.windows.azure.util.HttpUtilities;
+import org.soyatec.windows.azure.util.NameValueCollection;
+import org.soyatec.windows.azure.util.TimeSpan;
+import org.soyatec.windows.azure.util.xml.XPathQueryHelper;
+import org.soyatec.windows.azure.util.xml.XmlUtil;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.concurrent.Callable;
+
+/**
+ * @version $Id:$
+ */
+public class AzureSession extends CloudSession implements SSLSession {
+    private static Logger log = Logger.getLogger(AzureSession.class);
+
+    public static class Factory extends SessionFactory {
+        @Override
+        protected Session create(Host h) {
+            return new AzureSession(h);
+        }
+    }
+
+    protected AzureSession(Host h) {
+        super(h);
+    }
+
+    @Override
+    public void writeDistribution(boolean enabled, String container, Distribution.Method method, String[] cnames, boolean logging) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Distribution readDistribution(String container, Distribution.Method method) {
+        return new Distribution();
+    }
+
+    @Override
+    public List<Distribution.Method> getSupportedDistributionMethods() {
+        return Arrays.asList(Distribution.DOWNLOAD);
+    }
+
+    @Override
+    public String getDistributionServiceName() {
+        return "Windows Azure CDN";
+    }
+
+    @Override
+    public List<String> getSupportedStorageClasses() {
+        return Collections.emptyList();
+    }
+
+    public AbstractX509TrustManager getTrustManager() {
+        return new IgnoreX509TrustManager();
+    }
+
+    private BlobStorageRest client;
+
+    @Override
+    protected BlobStorageRest getClient() throws ConnectionCanceledException {
+        if(null == client) {
+            throw new ConnectionCanceledException();
+        }
+        return client;
+    }
+
+    @Override
+    protected void connect() throws IOException {
+        if(this.isConnected()) {
+            return;
+        }
+        this.fireConnectionWillOpenEvent();
+        // Prompt the login credentials first
+        this.login();
+        this.fireConnectionDidOpenEvent();
+    }
+
+    @Override
+    protected void login(Credentials credentials) throws IOException {
+        // http://*.blob.core.windows.net
+        client = (BlobStorageRest) BlobStorage.create(new StorageAccountInfo(
+                URI.create(host.getProtocol().getScheme() + "://" + host.getHostname()),
+                false,
+                credentials.getUsername(),
+                credentials.getPassword()
+        ));
+        client.setTimeout(TimeSpan.fromMilliseconds(this.timeout()));
+        try {
+            this.getContainers(true);
+        }
+        catch(StorageServerException e) {
+            if(this.isLoginFailure(e)) {
+                this.message(Locale.localizedString("Login failed", "Credentials"));
+                this.getLoginController().fail(host.getProtocol(), credentials);
+                this.login();
+            }
+            else {
+                throw new IOException(e.getCause().getMessage());
+            }
+        }
+    }
+
+    /**
+     * Check for Invalid Access ID or Invalid Secret Key
+     *
+     * @param e
+     * @return True if the error code of the S3 exception is a login failure
+     */
+    protected boolean isLoginFailure(StorageServerException e) {
+        if(403 == e.getStatusCode()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void close() {
+        try {
+            if(this.isConnected()) {
+                this.fireConnectionWillCloseEvent();
+            }
+        }
+        finally {
+            // No logout required
+            client = null;
+            this.fireConnectionDidCloseEvent();
+        }
+    }
+
+    /**
+     * Caching the uses's buckets
+     */
+    private Map<String, AzureContainer> containers = new HashMap<String, AzureContainer>();
+
+    /**
+     * Extending REST container to support IO Streams for GET and PUT.
+     */
+    protected class AzureContainer extends BlobContainerRest {
+        public AzureContainer(String containerName, Timestamp lastModified)
+                throws ConnectionCanceledException {
+            super(getClient().getBaseUri(), getClient().isUsePathStyleUris(), getClient().getAccountName(), containerName,
+                    getClient().getBase64Key(), lastModified, getClient().getTimeout(), getClient().getRetryPolicy());
+        }
+
+        /**
+         * Create a new blob or overwrite an existing blob.
+         *
+         * @throws StorageException
+         */
+        public boolean createBlob(BlobProperties blobProperties,
+                                  HttpEntity entity, boolean overwrite)
+                throws StorageException {
+            try {
+                return putBlobImpl(blobProperties, entity,
+                        overwrite, null);
+            }
+            catch(Exception e) {
+                throw HttpUtilities.translateWebException(e);
+            }
+        }
+
+        private boolean putBlobImpl(final BlobProperties blobProperties,
+                                    final HttpEntity entity,
+                                    final boolean overwrite, final String eTag)
+                throws Exception {
+            // If the blob is large, we should use blocks to upload it in pieces.
+            // This will ensure that a broken connection will only impact a single
+            // piece
+            boolean retval;
+            IRetryPolicy policy = RetryPolicies.noRetry();
+            retval = (Boolean) policy.execute(new Callable<Boolean>() {
+                public Boolean call() throws Exception {
+                    return uploadData(blobProperties, overwrite,
+                            eTag, entity);
+                }
+
+            });
+            return retval;
+        }
+
+        private boolean uploadData(BlobProperties blobProperties,
+                                   boolean overwrite, String eTag,
+                                   HttpEntity entity)
+                throws Exception {
+            boolean retval;
+            ResourceUriComponents uriComponents = new ResourceUriComponents(
+                    getAccountName(), getContainerName(), blobProperties.getName());
+            URI blobUri = HttpUtilities.createRequestUri(getBaseUri(), this
+                    .isUsePathStyleUris(), getAccountName(), getContainerName(),
+                    blobProperties.getName(), getTimeout(), new NameValueCollection(),
+                    uriComponents);
+
+            HttpRequest request = createHttpRequestForPutBlob(blobUri,
+                    HttpMethod.Put, blobProperties, overwrite, eTag);
+
+            SharedKeyCredentials credentials = getClient().getCredentials();
+            credentials.signRequest(request, uriComponents);
+            ((HttpEntityEnclosingRequest) request).setEntity(entity);
+            HttpWebResponse response = HttpUtilities.getResponse(request);
+            if(response.getStatusCode() == HttpStatus.SC_CREATED) {
+                retval = true;
+            }
+            else if(!overwrite
+                    && (response.getStatusCode() == HttpStatus.SC_PRECONDITION_FAILED || response
+                    .getStatusCode() == HttpStatus.SC_NOT_MODIFIED)) {
+                retval = false;
+            }
+            else {
+                retval = false;
+                HttpUtilities.processUnexpectedStatusCode(response);
+            }
+
+            blobProperties.setLastModifiedTime(response.getLastModified());
+            blobProperties.setETag(response.getHeader(HeaderNames.ETag));
+            return retval;
+        }
+
+        private HttpRequest createHttpRequestForPutBlob(URI blobUri, String httpMethod,
+                                                        IBlobProperties blobProperties,
+                                                        boolean overwrite, String eTag) {
+            HttpRequest request = HttpUtilities.createHttpRequestWithCommonHeaders(
+                    blobUri, httpMethod, getTimeout());
+            if(blobProperties.getContentEncoding() != null) {
+                request.addHeader(HeaderNames.ContentEncoding, blobProperties
+                        .getContentEncoding());
+            }
+            if(blobProperties.getContentLanguage() != null) {
+                request.addHeader(HeaderNames.ContentLanguage, blobProperties
+                        .getContentLanguage());
+            }
+            if(blobProperties.getContentType() != null) {
+                request.addHeader(HeaderNames.ContentType, blobProperties
+                        .getContentType());
+            }
+            if(eTag != null) {
+                request.addHeader(HeaderNames.IfMatch, eTag);
+            }
+
+            if(blobProperties.getMetadata() != null
+                    && blobProperties.getMetadata().size() > 0) {
+                HttpUtilities.addMetadataHeaders(request, blobProperties
+                        .getMetadata());
+            }
+            if(!overwrite) {
+                request.addHeader(HeaderNames.IfNoneMatch, "*");
+            }
+            return request;
+        }
+
+        /**
+         * @param blobName
+         * @return
+         * @throws StorageException
+         */
+        public InputStream getBlob(final String blobName)
+                throws StorageException {
+            try {
+                HttpWebResponse response = getBlobImpl(HttpMethod.Get,
+                        blobName, null, new OutParameter<Boolean>(false));
+                return response.getStream();
+            }
+            catch(Exception e) {
+                throw HttpUtilities.translateWebException(e);
+            }
+        }
+
+        private HttpWebResponse getBlobImpl(final String httpMethod, final String blobName,
+                                            final String oldETag,
+                                            OutParameter<Boolean> modified) {
+            final HttpWebResponse[] httpWebResponses = new HttpWebResponse[1];
+            final OutParameter<Boolean> localModified = new OutParameter<Boolean>(true);
+            // Reset the stop flag
+            stopFetchProgress(Boolean.FALSE);
+
+            modified.setValue(localModified.getValue());
+
+            IRetryPolicy rp = RetryPolicies.noRetry();
+            final long originalPosition = 0;
+            rp.execute(new Callable<Object>() {
+                public Object call() throws Exception {
+                    HttpWebResponse response = downloadData(httpMethod, blobName,
+                            oldETag, null, 0, 0, new NameValueCollection(),
+                            localModified);
+                    httpWebResponses[0] = response;
+                    return response;
+                }
+            });
+            modified.setValue(localModified.getValue());
+            return httpWebResponses[0];
+        }
+
+        private HttpWebResponse downloadData(String httpMethod, String blobName,
+                                             String eTagIfNoneMatch, String eTagIfMatch, long offset,
+                                             long length, NameValueCollection nvc,
+                                             OutParameter<Boolean> localModified) throws StorageException, ConnectionCanceledException {
+            ResourceUriComponents uriComponents = new ResourceUriComponents(
+                    getAccountName(), getContainerName(), blobName);
+            URI blobUri = HttpUtilities.createRequestUri(getBaseUri(),
+                    isUsePathStyleUris(), getAccountName(), getContainerName(),
+                    blobName, getTimeout(), nvc, uriComponents);
+            HttpRequest request = createHttpRequestForGetBlob(blobUri, httpMethod,
+                    eTagIfNoneMatch, eTagIfMatch);
+
+            if(offset != 0 || length != 0) {
+                // Use the blob storage custom header for range since the standard
+                // HttpWebRequest.
+                // AddRange accepts only 32 bit integers and so does not work for
+                // large blobs.
+                String rangeHeaderValue = MessageFormat
+                        .format(HeaderValues.RangeHeaderFormat, offset, offset
+                                + length - 1);
+                request.addHeader(HeaderNames.StorageRange, rangeHeaderValue);
+            }
+
+            final SharedKeyCredentials credentials = getClient().getCredentials();
+            credentials.signRequest(request, uriComponents);
+            BlobProperties blobProperties;
+
+            try {
+                HttpWebResponse response = HttpUtilities.getResponse(request);
+                if(response.getStatusCode() == HttpStatus.SC_OK
+                        || response.getStatusCode() == HttpStatus.SC_PARTIAL_CONTENT) {
+
+                    return response;
+                }
+                else {
+                    HttpUtilities.processUnexpectedStatusCode(response);
+                    return null;
+                }
+            }
+            catch(Exception we) {
+                throw HttpUtilities.translateWebException(we);
+            }
+        }
+
+        private HttpRequest createHttpRequestForGetBlob(URI blobUri,
+                                                        String httpMethod, String tagIfNoneMatch, String tagIfMatch) {
+            HttpRequest request = HttpUtilities.createHttpRequestWithCommonHeaders(
+                    blobUri, httpMethod, getTimeout());
+            if(tagIfNoneMatch != null) {
+                request.addHeader(HeaderNames.IfNoneMatch, tagIfNoneMatch);
+            }
+            if(tagIfMatch != null) {
+                request.addHeader(HeaderNames.IfMatch, tagIfMatch);
+            }
+            return request;
+        }
+
+        @Override
+        public ContainerAccessControl getContainerAccessControl()
+                throws StorageException {
+            ContainerAccessControl accessControl;
+            try {
+                accessControl = (ContainerAccessControl) getRetryPolicy().execute(
+                        new Callable<ContainerAccessControl>() {
+                            public ContainerAccessControl call() throws Exception {
+                                NameValueCollection queryParams = new NameValueCollection();
+                                queryParams.put(QueryParams.QueryParamComp,
+                                        CompConstants.Acl);
+                                // New version container ACL
+                                queryParams.put(QueryParams.QueryRestType,
+                                        CompConstants.Container);
+
+                                ResourceUriComponents uriComponents = new ResourceUriComponents(
+                                        getAccountName(), getContainerName(), null);
+                                URI uri = HttpUtilities.createRequestUri(
+                                        getBaseUri(), isUsePathStyleUris(),
+                                        getAccountName(), getContainerName(), null,
+                                        getTimeout(), queryParams, uriComponents);
+                                HttpRequest request = HttpUtilities
+                                        .createHttpRequestWithCommonHeaders(uri,
+                                                HttpMethod.Get, getTimeout());
+                                request.addHeader(HeaderNames.ApiVersion,
+                                        XmsVersion.VERSION_2009_07_17);
+
+                                getClient().getCredentials().signRequest(request, uriComponents);
+                                HttpWebResponse response = HttpUtilities
+                                        .getResponse(request);
+                                if(response.getStatusCode() == HttpStatus.SC_OK) {
+                                    String acl = response
+                                            .getHeader(HeaderNames.PublicAccess);
+                                    boolean publicAcl = false;
+                                    if(acl != null) {
+                                        publicAcl = Boolean.parseBoolean(acl);
+                                        List<SignedIdentifier> identifiers = getSignedIdentifiersFromResponse(response);
+                                        ContainerAccessControl aclEntity;
+                                        if(identifiers != null
+                                                && identifiers.size() > 0) {
+                                            aclEntity = new ContainerAccessControl(publicAcl);
+                                            aclEntity.setSigendIdentifiers(identifiers);
+                                        }
+                                        else {
+                                            aclEntity = publicAcl ? IContainerAccessControl.Public
+                                                    : IContainerAccessControl.Private;
+                                        }
+                                        return aclEntity;
+                                    }
+                                    else {
+                                        throw new StorageServerException(
+                                                StorageErrorCode.ServiceBadResponse,
+                                                "The server did not respond with expected container access control header",
+                                                response.getStatusCode(), null);
+                                    }
+                                }
+                                else {
+                                    HttpUtilities.processUnexpectedStatusCode(response);
+                                    return null;
+                                }
+                            }
+
+                        });
+            }
+            catch(Exception e) {
+                throw HttpUtilities.translateWebException(e);
+
+            }
+            return accessControl;
+        }
+
+        @SuppressWarnings("unchecked")
+        private List<SignedIdentifier> getSignedIdentifiersFromResponse(
+                HttpWebResponse response) {
+            InputStream stream = response.getStream();
+            if(stream == null) {
+                return Collections.EMPTY_LIST;
+            }
+            try {
+                Document doc = XmlUtil.load(stream,
+                        "Container access control parsed error.");
+                List selectNodes = doc
+                        .selectNodes(XPathQueryHelper.SignedIdentifierListQuery);
+                List<SignedIdentifier> result = new ArrayList<SignedIdentifier>();
+                if(selectNodes.size() > 0) {
+                    for(Object selectNode : selectNodes) {
+                        Element element = (Element) selectNode;
+                        SignedIdentifier identifier = new SignedIdentifier();
+                        identifier
+                                .setId(XPathQueryHelper
+                                        .loadSingleChildStringValue(
+                                        element,
+                                        XmlElementNames.ContainerSignedIdentifierId,
+                                        true));
+                        IAccessPolicy policy = new AccessPolicy();
+                        Element accesPlocy = (Element) element
+                                .selectSingleNode(XmlElementNames.ContainerAccessPolicyName);
+                        if(accesPlocy != null && accesPlocy.hasContent()) {
+                            String start = XPathQueryHelper
+                                    .loadSingleChildStringValue(
+                                            accesPlocy,
+                                            XmlElementNames.ContainerAccessPolicyStart,
+                                            true);
+                            if(StringUtils.isNotEmpty(start)) {
+                                policy.setStart(new DateTime(start));
+                            }
+                            String end = XPathQueryHelper
+                                    .loadSingleChildStringValue(
+                                            accesPlocy,
+                                            XmlElementNames.ContainerAccessPolicyExpiry,
+                                            true);
+                            if(StringUtils.isNotEmpty(end)) {
+                                policy.setExpiry(new DateTime(end));
+                            }
+                            policy.setPermission(SharedAccessPermissions
+                                    .valueOf(XPathQueryHelper
+                                    .loadSingleChildStringValue(
+                                    accesPlocy,
+                                    XmlElementNames.ContainerAccessPolicyPermission,
+                                    true)));
+                            identifier.setPolicy(policy);
+                        }
+                        result.add(identifier);
+                    }
+                }
+                return result;
+            }
+            catch(Exception e) {
+                // For dev local storage, Container access control may have no
+                // detail.
+                org.soyatec.windows.azure.util.Logger.error("Parse container accesss control error", e);
+                return Collections.EMPTY_LIST;
+            }
+        }
+    }
+
+    /**
+     * @param reload
+     * @return
+     */
+    protected List<AzureContainer> getContainers(boolean reload) throws IOException, StorageServerException {
+        if(containers.isEmpty() || reload) {
+            containers.clear();
+            for(final IBlobContainer container : this.getClient().listBlobContainers()) {
+                containers.put(container.getContainerName(), new AzureContainer(
+                        container.getContainerName(), container.getLastModifiedTime())
+                );
+            }
+        }
+        return new ArrayList<AzureContainer>(containers.values());
+    }
+
+    /**
+     * @param bucketname
+     * @return
+     * @throws IOException
+     */
+    protected AzureContainer getContainer(final String bucketname) throws IOException {
+        try {
+            for(AzureContainer container : this.getContainers(false)) {
+                if(container.getContainerName().equals(bucketname)) {
+                    return container;
+                }
+            }
+        }
+        catch(StorageServerException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        log.warn("Bucket not found with name:" + bucketname);
+        return new AzureContainer("$root", null);
+    }
+
+    @Override
+    protected void noop() throws IOException {
+        ;
+    }
+
+    @Override
+    public void sendCommand(String command) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isAclSupported() {
+        return true;
+    }
+
+    @Override
+    public List<Acl.User> getAvailableAclUsers() {
+        return Arrays.asList(AzurePath.PUBLIC_ACL.getUser());
+//        List<Acl.User> l = new ArrayList<Acl.User>();
+//        l.add(new Acl.CanonicalUser(""));
+//        l.add(AzurePath.PUBLIC_ACL.getUser());
+//        return l;
+    }
+
+    @Override
+    public Acl getPublicAcl(boolean readable, boolean writable) {
+        Acl acl = new Acl();
+        if(readable) {
+            acl.addAll(AzurePath.PUBLIC_ACL.getUser(), AzurePath.PUBLIC_ACL.getRole());
+        }
+        return acl;
+    }
+
+    /**
+     * Valid permissions values are read (r), write (w), delete (d) and list (l).
+     *
+     * @return
+     */
+    @Override
+    public List<Acl.Role> getAvailableAclRoles() {
+        return Arrays.asList(AzurePath.PUBLIC_ACL.getRole());
+//        return Arrays.asList(new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RL)),
+//                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RW)),
+//                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RWL)),
+//                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RWDL)));
+    }
+
+    @Override
+    public boolean isDownloadResumable() {
+        return false;
+    }
+
+    @Override
+    public boolean isUploadResumable() {
+        return false;
+    }
+
+    @Override
+    public boolean isCreateFileSupported(Path workdir) {
+        return !workdir.isRoot();
+    }
+}

@@ -1281,6 +1281,7 @@ lib/commons-lang-2.4.jar -text
 lib/commons-logging-1.1.1.jar -text
 lib/commons-net-1.5.0-dev.jar -text
 lib/dns_sd.jar -text
+lib/dom4j-1.6.1.jar -text
 lib/ext/junit-4.6.jar -text
 lib/gdata-client-1.0.jar -text
 lib/gdata-client-meta-1.0.jar -text
@@ -1291,10 +1292,13 @@ lib/gdata-media-1.0.jar -text
 lib/gdata-spreadsheet-3.0.jar -text
 lib/gdata-spreadsheet-meta-3.0.jar -text
 lib/google-collect-1.0.jar -text
+lib/httpclient-4.0.1.jar -text
+lib/httpcore-4.0.1.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/jakarta-slide-webdavlib-2.2-dev.jar -text
 lib/java-xmlbuilder-1.jar -text
+lib/jaxen-1.1.1.jar -text
 lib/jdom-1.1.jar -text
 lib/jets3t-0.7.4.jar -text
 lib/jna-3.2.2.jar -text
