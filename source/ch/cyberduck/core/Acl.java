@@ -161,7 +161,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         }
 
         public String getDisplayName() {
-            return this.getIdentifier();
+            return Locale.localizedString(this.getIdentifier(), "S3");
         }
 
         public String getIdentifier() {
@@ -309,6 +309,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public String getName() {
             return name;
+        }
+
+        public String getDisplayName() {
+            return Locale.localizedString(this.getName(), "S3");
         }
 
         public void setName(String name) {
