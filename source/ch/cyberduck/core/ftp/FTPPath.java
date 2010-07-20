@@ -399,7 +399,7 @@ public class FTPPath extends Path {
                 this.getSession().getClient().mkdir(this.getName());
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        this.writeUnixPermission(new Permission(
+                        this.writeUnixPermissionsImpl(new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
                     }
                 }
@@ -632,15 +632,15 @@ public class FTPPath extends Path {
     @Override
     public void writeUnixPermission(Permission perm, boolean recursive) {
         try {
-            this.writePermissionsImpl(perm, recursive);
+            this.getSession().check();
+            this.writeUnixPermissionsImpl(perm, recursive);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
         }
     }
 
-    private void writePermissionsImpl(Permission perm, boolean recursive) throws IOException {
-        this.getSession().check();
+    private void writeUnixPermissionsImpl(Permission perm, boolean recursive) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                 this.getName(), perm.getOctalString()));
 
@@ -671,7 +671,7 @@ public class FTPPath extends Path {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    ((FTPPath) child).writePermissionsImpl(perm, recursive);
+                    ((FTPPath) child).writeUnixPermissionsImpl(perm, recursive);
                 }
             }
         }
@@ -823,7 +823,7 @@ public class FTPPath extends Path {
                 }
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     try {
-                        this.writePermissionsImpl(this.attributes().getPermission(), false);
+                        this.writeUnixPermissionsImpl(this.attributes().getPermission(), false);
                     }
                     catch(FTPException ignore) {
                         //CHMOD not supported; ignore

@@ -377,6 +377,7 @@ public class SFTPPath extends Path {
     @Override
     public void writeUnixPermission(Permission perm, boolean recursive) {
         try {
+            this.getSession().check();
             this.writePermissionsImpl(perm, recursive);
         }
         catch(IOException e) {
@@ -385,7 +386,6 @@ public class SFTPPath extends Path {
     }
 
     private void writePermissionsImpl(Permission perm, boolean recursive) throws IOException {
-        this.getSession().check();
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                 this.getName(), perm.getOctalString()));
 
