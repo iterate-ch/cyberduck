@@ -6,10 +6,10 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
-    <logger name="httpclient.wire.content" additivity="false">
-        <level value="error"/>
-    </logger>
     <logger name="httpclient.wire.header" additivity="false">
+        <level value="debug"/>
+    </logger>
+    <logger name="org.apache.http.headers" additivity="false">
         <level value="debug"/>
     </logger>
     <root>

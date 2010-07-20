@@ -59,10 +59,10 @@ public abstract class HTTPSession extends Session implements SSLSession {
         protected void append(LoggingEvent event) {
             final String m = StringUtils.remove(event.getMessage().toString(), "[\\r][\\n]");
             if(m.startsWith(IN)) {
-                HTTPSession.this.log(false, m.substring(IN.length() + 1, m.length() - 1));
+                HTTPSession.this.log(false, StringUtils.remove(event.getMessage().toString(), IN));
             }
             else if(m.startsWith(OUT)) {
-                HTTPSession.this.log(true, m.substring(OUT.length() + 1, m.length() - 1));
+                HTTPSession.this.log(true, StringUtils.remove(event.getMessage().toString(), OUT));
             }
         }
     };
