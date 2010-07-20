@@ -322,6 +322,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     public NSUInteger validateDrop(NSTableView view, Path destination, NSInteger row, NSDraggingInfo info) {
         if(controller.isMounted()) {
+            if(!controller.getSession().isCreateFileSupported(destination)) {
+                return NSDraggingInfo.NSDragOperationNone;
+            }
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(destination.attributes().isDirectory()) {
                     this.setDropRowAndDropOperation(view, destination, row);
