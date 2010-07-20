@@ -140,6 +140,33 @@ public class UploadTransfer extends Transfer {
                     p.attributes().setPermission(p.getLocal().attributes().getPermission());
                 }
             }
+            if(getSession().isAclSupported()) {
+                if(p.exists()) {
+                    // Do not overwrite permissions for existing files.
+                    if(p.attributes().getAcl().equals(Acl.EMPTY)) {
+                        p.readAcl();
+                    }
+                }
+                else {
+                    Permission perm = Permission.EMPTY;
+                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                        if(p.attributes().isFile()) {
+                            perm = new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                        }
+                        if(p.attributes().isDirectory()) {
+                            perm = new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                        }
+                    }
+                    else {
+                        // Read permissions from local file
+                        perm = p.getLocal().attributes().getPermission();
+                    }
+                    p.attributes().setAcl(getSession().getPublicAcl(perm.getOtherPermissions()[Permission.READ],
+                            perm.getOtherPermissions()[Permission.WRITE]));
+                }
+            }
             if(getSession().isTimestampSupported()) {
                 if(p.exists()) {
                     if(p.attributes().getModificationDate() == -1) {
