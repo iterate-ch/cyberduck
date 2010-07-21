@@ -58,7 +58,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         final Path path = roots.get(index.intValue());
         item.setTitle(path.getName());
         if(path.getLocal().exists()) {
@@ -73,7 +73,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
         item.setRepresentedObject(path.getLocal().getAbsolute());
         item.setImage(IconCache.instance().iconForPath(path, 16));
-        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
+        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
     public void reveal(final NSMenuItem sender) {

@@ -27,9 +27,10 @@ import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -54,9 +55,12 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         return new NSInteger(1);
     }
 
+    /**
+     * @return False if no more updates needed.
+     */
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
-        if(shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
+        if(cancel) {
             return false;
         }
         final int size = HistoryCollection.defaultCollection().size();
@@ -66,9 +70,10 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setAction(null);
             item.setImage(null);
             item.setEnabled(false);
+            // No more menu updates.
             return false;
         }
-        if(index.intValue() < size) {
+        else if(index.intValue() < size) {
             Host h = HistoryCollection.defaultCollection().get(index.intValue());
             item.setTitle(h.getNickname());
             item.setAction(Foundation.selector("historyMenuItemClicked:"));
@@ -76,21 +81,22 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setTarget(this.id());
             item.setEnabled(true);
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
-            return !shouldCancel;
         }
-        if(index.intValue() == size) {
-            menu.removeItemAtIndex(index);
-            menu.insertItem_atIndex(NSMenuItem.separatorItem(), index);
-            return !shouldCancel;
+        else if(index.intValue() == size) {
+            // How to change an existing item to a separator item?
+            item.setTitle("");
+            item.setTarget(null);
+            item.setAction(null);
+            item.setImage(null);
+            item.setEnabled(false);
         }
-        if(index.intValue() == size + 1) {
+        else if(index.intValue() == size + 1) {
             item.setTitle(Locale.localizedString("Clear Menu"));
             item.setAction(Foundation.selector("clearMenuItemClicked:"));
             item.setTarget(this.id());
             item.setEnabled(true);
-            return !shouldCancel;
         }
-        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
+        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
     public void historyMenuItemClicked(NSMenuItem sender) {

@@ -22,8 +22,9 @@ import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
-import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -48,18 +49,28 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
      * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
      */
-    public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
-        return this.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
+    public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
+        return this.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+    /**
+     * @param menu
+     * @param item
+     * @param index
+     * @param cancel Set to YES if, due to some user action, the menu no longer needs to be
+     *               displayed before all the menu items have been updated. You can ignore this flag, return YES,
+     *               and continue; or you can save your work (to save time the next time your delegate is called)
+     *               and return NO to stop the updating.
+     * @return
+     */
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(log.isDebugEnabled()) {
             log.debug("menuUpdateItemAtIndex:" + index.intValue());
         }
         if(index.intValue() == this.numberOfItemsInMenu(menu).intValue() - 1) {
             this.setNeedsUpdate(false);
         }
-        return !shouldCancel;
+        return !cancel;
     }
 
     /**
@@ -77,15 +88,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
         return !update;
     }
 
-    public void menuWillOpen(NSMenu menu) {
-//        if(log.isDebugEnabled()) {
-//            log.debug("menuWillOpen:" + menu);
-//        }
-    }
-
-    public void menuDidClose(NSMenu menu) {
-//        if(log.isDebugEnabled()) {
-//            log.debug("menuDidClose:" + menu);
-//        }
+    protected NSMenuItem seperator() {
+        return NSMenuItem.separatorItem();
     }
 }

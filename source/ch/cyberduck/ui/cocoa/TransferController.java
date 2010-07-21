@@ -242,7 +242,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         }
 
         @Override
-        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean shouldCancel) {
+        public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger i, boolean cancel) {
             log.debug("menuUpdateItemAtIndex:" + item);
             if(item.representedObject() != null) {
                 final int selected = transferTable.numberOfSelectedRows().intValue();
@@ -271,7 +271,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     }
                 }
             }
-            return super.menuUpdateItemAtIndex(menu, item, i, shouldCancel);
+            return super.menuUpdateItemAtIndex(menu, item, i, cancel);
         }
     }
 

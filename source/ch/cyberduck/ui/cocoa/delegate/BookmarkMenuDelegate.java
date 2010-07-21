@@ -54,7 +54,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final int BOOKMARKS_INDEX = 6;
 
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(index.intValue() == BOOKMARKS_INDEX) {
             item.setEnabled(true);
             item.setImage(IconCache.iconNamed("history", 16));
@@ -71,7 +71,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setAction(Foundation.selector("bookmarkMenuItemClicked:"));
             item.setRepresentedObject(h.getNickname());
         }
-        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
+        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {

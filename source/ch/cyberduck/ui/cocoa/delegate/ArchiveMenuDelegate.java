@@ -40,11 +40,11 @@ public class ArchiveMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         final Archive archive = Archive.getKnownArchives()[index.intValue()];
         item.setRepresentedObject(archive.getIdentifier());
         item.setTitle(archive.getIdentifier());
         item.setAction(Foundation.selector("archiveMenuClicked:"));
-        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
+        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 }

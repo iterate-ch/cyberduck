@@ -56,11 +56,12 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
     }
 
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(Rendezvous.instance().numberOfServices() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
             item.setEnabled(false);
-            return !shouldCancel;
+            // No more menu updates.
+            return false;
         }
         else {
             final String title = Rendezvous.instance().getDisplayedName(index.intValue());
@@ -72,7 +73,7 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
             item.setAction(Foundation.selector("rendezvousMenuClicked:"));
             item.setRepresentedObject(h.getNickname());
         }
-        return !shouldCancel;
+        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
     public void rendezvousMenuClicked(NSMenuItem sender) {

@@ -78,7 +78,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel) {
+    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         final Local selected = this.getSelectedFile();
         final Map<String, String> editors = EditorFactory.getInstalledEditors(selected);
         if(editors.size() == 0) {
@@ -107,6 +107,6 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
             item.setImage(IconCache.iconNamed("pencil.tiff"));
         }
         item.setAction(Foundation.selector("editMenuClicked:"));
-        return super.menuUpdateItemAtIndex(menu, item, index, shouldCancel);
+        return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 }
