@@ -24,7 +24,6 @@ import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
-import org.rococoa.internal.OperationBatcher;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,7 +35,6 @@ public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
 
     /**
-     *
      * @param runnable The action to execute
      */
     public void invoke(MainAction runnable) {
@@ -63,7 +61,7 @@ public abstract class AbstractController implements Controller {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
                 synchronized(runnable.lock()) {
-                    final OperationBatcher autorelease = AbstractController.this.getBatcher();
+                    final ActionOperationBatcher autorelease = AbstractController.this.getBatcher();
                     if(log.isDebugEnabled()) {
                         log.debug("Acquired lock for background runnable:" + runnable);
                     }
@@ -100,7 +98,6 @@ public abstract class AbstractController implements Controller {
     private static ScheduledExecutorService timerPool;
 
     /**
-     *
      * @return
      */
     protected ScheduledExecutorService getTimerPool() {
@@ -110,26 +107,15 @@ public abstract class AbstractController implements Controller {
         return timerPool;
     }
 
-    /**
-     * Placeholder implementation
-     */
-    private final OperationBatcher b = new OperationBatcher(0) {
-        @Override
-        protected void operation() {
-            ;
-        }
-
-        @Override
-        protected void reset() {
-            ;
-        }
-    };
-
-    protected OperationBatcher getBatcher() {
+    protected ActionOperationBatcher getBatcher() {
         return this.getBatcher(1);
     }
 
-    protected OperationBatcher getBatcher(int size) {
-        return b;
+    protected ActionOperationBatcher getBatcher(int size) {
+        return new ActionOperationBatcher() {
+            public void operate() {
+                ;
+            }
+        };
     }
 }
