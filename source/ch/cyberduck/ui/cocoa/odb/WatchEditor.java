@@ -21,8 +21,8 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TransferAction;
-import ch.cyberduck.core.io.FileWatcher;
-import ch.cyberduck.core.io.FileWatcherListener;
+import ch.cyberduck.ui.cocoa.io.FileWatcher;
+import ch.cyberduck.ui.cocoa.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 

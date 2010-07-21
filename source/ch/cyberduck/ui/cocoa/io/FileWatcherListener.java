@@ -1,4 +1,4 @@
-package ch.cyberduck.core.io;
+package ch.cyberduck.ui.cocoa.io;
 
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
