@@ -44,7 +44,7 @@ public abstract class Local extends AbstractPath {
     private LocalAttributes attributes;
 
     @Override
-    public LocalAttributes attributes() {
+    public Attributes attributes() {
         if(null == attributes) {
             attributes = new LocalAttributes();
         }
