@@ -106,10 +106,11 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
 
     @Override
     public void clear() {
-        for(E o : this) {
-            this.collectionItemRemoved(o);
+        for(Iterator<E> iter = this.iterator(); iter.hasNext();) {
+            E next = iter.next();
+            iter.remove();
+            this.collectionItemRemoved(next);
         }
-        super.clear();
     }
 
     /**
