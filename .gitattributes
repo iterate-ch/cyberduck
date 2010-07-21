@@ -56,6 +56,7 @@ ca.lproj/Alert.nib/info.nib -text
 ca.lproj/Alert.nib/keyedobjects.nib -text
 ca.lproj/Alert.strings -text svneol=unset#text/utf-16
 ca.lproj/Archive.strings -text svneol=unset#text/utf-16
+ca.lproj/Azure.strings -text svneol=unset#text/utf-16
 ca.lproj/Bookmark.nib/keyedobjects.nib -text
 ca.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ca.lproj/Browser.nib/keyedobjects.nib -text
@@ -105,6 +106,7 @@ cs.lproj/Alert.nib/info.nib -text
 cs.lproj/Alert.nib/keyedobjects.nib -text
 cs.lproj/Alert.strings -text svneol=unset#text/utf-16
 cs.lproj/Archive.strings -text svneol=unset#text/utf-16
+cs.lproj/Azure.strings -text svneol=unset#text/utf-16
 cs.lproj/Bookmark.nib/keyedobjects.nib -text
 cs.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 cs.lproj/Browser.nib/keyedobjects.nib -text
@@ -154,6 +156,7 @@ cy.lproj/Alert.nib/info.nib -text
 cy.lproj/Alert.nib/keyedobjects.nib -text
 cy.lproj/Alert.strings -text svneol=unset#text/utf-16
 cy.lproj/Archive.strings -text svneol=unset#text/utf-16
+cy.lproj/Azure.strings -text svneol=unset#text/utf-16
 cy.lproj/Bookmark.nib/keyedobjects.nib -text
 cy.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 cy.lproj/Browser.nib/keyedobjects.nib -text
@@ -206,6 +209,7 @@ da.lproj/Alert.nib/info.nib -text
 da.lproj/Alert.nib/keyedobjects.nib -text
 da.lproj/Alert.strings -text svneol=unset#text/utf-16
 da.lproj/Archive.strings -text svneol=unset#text/utf-16
+da.lproj/Azure.strings -text svneol=unset#text/utf-16
 da.lproj/Bookmark.nib/keyedobjects.nib -text
 da.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 da.lproj/Browser.nib/keyedobjects.nib -text
@@ -255,6 +259,7 @@ de.lproj/Alert.nib/info.nib -text
 de.lproj/Alert.nib/keyedobjects.nib -text
 de.lproj/Alert.strings -text svneol=unset#text/utf-16
 de.lproj/Archive.strings -text svneol=unset#text/utf-16
+de.lproj/Azure.strings -text svneol=unset#text/utf-16
 de.lproj/Bookmark.nib/keyedobjects.nib -text
 de.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 de.lproj/Browser.nib/keyedobjects.nib -text
@@ -304,6 +309,7 @@ el.lproj/Alert.nib/info.nib -text
 el.lproj/Alert.nib/keyedobjects.nib -text
 el.lproj/Alert.strings -text svneol=unset#text/utf-16
 el.lproj/Archive.strings -text svneol=unset#text/utf-16
+el.lproj/Azure.strings -text svneol=unset#text/utf-16
 el.lproj/Bookmark.nib/classes.nib -text
 el.lproj/Bookmark.nib/info.nib -text
 el.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -384,6 +390,7 @@ en.lproj/Alert.nib/info.nib -text
 en.lproj/Alert.nib/keyedobjects.nib -text
 en.lproj/Alert.strings -text svneol=unset#text/utf-16
 en.lproj/Archive.strings -text svneol=unset#text/utf-16
+en.lproj/Azure.strings -text svneol=unset#text/utf-16
 en.lproj/Bookmark.nib/keyedobjects.nib -text
 en.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 en.lproj/Browser.nib/keyedobjects.nib -text
@@ -433,6 +440,7 @@ es.lproj/Alert.nib/info.nib -text
 es.lproj/Alert.nib/keyedobjects.nib -text
 es.lproj/Alert.strings -text svneol=unset#text/utf-16
 es.lproj/Archive.strings -text svneol=unset#text/utf-16
+es.lproj/Azure.strings -text svneol=unset#text/utf-16
 es.lproj/Bookmark.nib/keyedobjects.nib -text
 es.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 es.lproj/Browser.nib/keyedobjects.nib -text
@@ -482,6 +490,7 @@ fi.lproj/Alert.nib/info.nib -text
 fi.lproj/Alert.nib/keyedobjects.nib -text
 fi.lproj/Alert.strings -text svneol=unset#text/utf-16
 fi.lproj/Archive.strings -text svneol=unset#text/utf-16
+fi.lproj/Azure.strings -text svneol=unset#text/utf-16
 fi.lproj/Bookmark.nib/keyedobjects.nib -text
 fi.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 fi.lproj/Browser.nib/keyedobjects.nib -text
@@ -531,6 +540,7 @@ fr.lproj/Alert.nib/info.nib -text
 fr.lproj/Alert.nib/keyedobjects.nib -text
 fr.lproj/Alert.strings -text svneol=unset#text/utf-16
 fr.lproj/Archive.strings -text svneol=unset#text/utf-16
+fr.lproj/Azure.strings -text svneol=unset#text/utf-16
 fr.lproj/Bookmark.nib/keyedobjects.nib -text
 fr.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 fr.lproj/Browser.nib/keyedobjects.nib -text
@@ -580,6 +590,7 @@ he.lproj/Alert.nib/info.nib -text
 he.lproj/Alert.nib/keyedobjects.nib -text
 he.lproj/Alert.strings -text svneol=unset#text/utf-16
 he.lproj/Archive.strings -text svneol=unset#text/utf-16
+he.lproj/Azure.strings -text svneol=unset#text/utf-16
 he.lproj/Bookmark.nib/classes.nib -text
 he.lproj/Bookmark.nib/info.nib -text
 he.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -659,6 +670,7 @@ hu.lproj/Alert.nib/info.nib -text
 hu.lproj/Alert.nib/keyedobjects.nib -text
 hu.lproj/Alert.strings -text svneol=unset#text/utf-16
 hu.lproj/Archive.strings -text svneol=unset#text/utf-16
+hu.lproj/Azure.strings -text svneol=unset#text/utf-16
 hu.lproj/Bookmark.nib/keyedobjects.nib -text
 hu.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 hu.lproj/Browser.nib/keyedobjects.nib -text
@@ -708,6 +720,7 @@ id.lproj/Alert.nib/info.nib -text
 id.lproj/Alert.nib/keyedobjects.nib -text
 id.lproj/Alert.strings -text svneol=unset#text/utf-16
 id.lproj/Archive.strings -text svneol=unset#text/utf-16
+id.lproj/Azure.strings -text svneol=unset#text/utf-16
 id.lproj/Bookmark.nib/keyedobjects.nib -text
 id.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 id.lproj/Browser.nib/keyedobjects.nib -text
@@ -849,6 +862,7 @@ it.lproj/Alert.nib/info.nib -text
 it.lproj/Alert.nib/keyedobjects.nib -text
 it.lproj/Alert.strings -text svneol=unset#text/utf-16
 it.lproj/Archive.strings -text svneol=unset#text/utf-16
+it.lproj/Azure.strings -text svneol=unset#text/utf-16
 it.lproj/Bookmark.nib/keyedobjects.nib -text
 it.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 it.lproj/Browser.nib/keyedobjects.nib -text
@@ -898,6 +912,7 @@ ja.lproj/Alert.nib/info.nib -text
 ja.lproj/Alert.nib/keyedobjects.nib -text
 ja.lproj/Alert.strings -text svneol=unset#text/utf-16
 ja.lproj/Archive.strings -text svneol=unset#text/utf-16
+ja.lproj/Azure.strings -text svneol=unset#text/utf-16
 ja.lproj/Bookmark.nib/keyedobjects.nib -text
 ja.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ja.lproj/Browser.nib/keyedobjects.nib -text
@@ -948,6 +963,7 @@ ka.lproj/Alert.nib/info.nib -text
 ka.lproj/Alert.nib/keyedobjects.nib -text
 ka.lproj/Alert.strings -text svneol=unset#text/utf-16
 ka.lproj/Archive.strings -text svneol=unset#text/utf-16
+ka.lproj/Azure.strings -text svneol=unset#text/utf-16
 ka.lproj/Bookmark.nib/classes.nib -text
 ka.lproj/Bookmark.nib/info.nib -text
 ka.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -1027,6 +1043,7 @@ ko.lproj/Alert.nib/info.nib -text
 ko.lproj/Alert.nib/keyedobjects.nib -text
 ko.lproj/Alert.strings -text svneol=unset#text/utf-16
 ko.lproj/Archive.strings -text svneol=unset#text/utf-16
+ko.lproj/Azure.strings -text svneol=unset#text/utf-16
 ko.lproj/Bookmark.nib/keyedobjects.nib -text
 ko.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ko.lproj/Browser.nib/keyedobjects.nib -text
@@ -1315,6 +1332,7 @@ lv.lproj/Alert.nib/info.nib -text
 lv.lproj/Alert.nib/keyedobjects.nib -text
 lv.lproj/Alert.strings -text svneol=unset#text/utf-16
 lv.lproj/Archive.strings -text svneol=unset#text/utf-16
+lv.lproj/Azure.strings -text svneol=unset#text/utf-16
 lv.lproj/Bookmark.nib/classes.nib -text
 lv.lproj/Bookmark.nib/info.nib -text
 lv.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -1394,6 +1412,7 @@ nl.lproj/Alert.nib/info.nib -text
 nl.lproj/Alert.nib/keyedobjects.nib -text
 nl.lproj/Alert.strings -text svneol=unset#text/utf-16
 nl.lproj/Archive.strings -text svneol=unset#text/utf-16
+nl.lproj/Azure.strings -text svneol=unset#text/utf-16
 nl.lproj/Bookmark.nib/keyedobjects.nib -text
 nl.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 nl.lproj/Browser.nib/keyedobjects.nib -text
@@ -1443,6 +1462,7 @@ no.lproj/Alert.nib/info.nib -text
 no.lproj/Alert.nib/keyedobjects.nib -text
 no.lproj/Alert.strings -text svneol=unset#text/utf-16
 no.lproj/Archive.strings -text svneol=unset#text/utf-16
+no.lproj/Azure.strings -text svneol=unset#text/utf-16
 no.lproj/Bookmark.nib/keyedobjects.nib -text
 no.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 no.lproj/Browser.nib/keyedobjects.nib -text
@@ -1492,6 +1512,7 @@ pl.lproj/Alert.nib/info.nib -text
 pl.lproj/Alert.nib/keyedobjects.nib -text
 pl.lproj/Alert.strings -text svneol=unset#text/utf-16
 pl.lproj/Archive.strings -text svneol=unset#text/utf-16
+pl.lproj/Azure.strings -text svneol=unset#text/utf-16
 pl.lproj/Bookmark.nib/keyedobjects.nib -text
 pl.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 pl.lproj/Browser.nib/keyedobjects.nib -text
@@ -1542,6 +1563,7 @@ pt_BR.lproj/Alert.nib/info.nib -text
 pt_BR.lproj/Alert.nib/keyedobjects.nib -text
 pt_BR.lproj/Alert.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Archive.strings -text svneol=unset#text/utf-16
+pt_BR.lproj/Azure.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Bookmark.nib/classes.nib -text
 pt_BR.lproj/Bookmark.nib/info.nib -text
 pt_BR.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -1623,6 +1645,7 @@ pt_PT.lproj/Alert.nib/info.nib -text
 pt_PT.lproj/Alert.nib/keyedobjects.nib -text
 pt_PT.lproj/Alert.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Archive.strings -text svneol=unset#text/utf-16
+pt_PT.lproj/Azure.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Bookmark.nib/keyedobjects.nib -text
 pt_PT.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Browser.nib/keyedobjects.nib -text
@@ -1690,6 +1713,7 @@ ro.lproj/Alert.nib/info.nib -text
 ro.lproj/Alert.nib/keyedobjects.nib -text
 ro.lproj/Alert.strings -text svneol=unset#text/utf-16
 ro.lproj/Archive.strings -text svneol=unset#text/utf-16
+ro.lproj/Azure.strings -text svneol=unset#text/utf-16
 ro.lproj/Bookmark.nib/classes.nib -text
 ro.lproj/Bookmark.nib/info.nib -text
 ro.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -1769,6 +1793,7 @@ ru.lproj/Alert.nib/info.nib -text
 ru.lproj/Alert.nib/keyedobjects.nib -text
 ru.lproj/Alert.strings -text svneol=unset#text/utf-16
 ru.lproj/Archive.strings -text svneol=unset#text/utf-16
+ru.lproj/Azure.strings -text svneol=unset#text/utf-16
 ru.lproj/Bookmark.nib/keyedobjects.nib -text
 ru.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 ru.lproj/Browser.nib/keyedobjects.nib -text
@@ -1818,6 +1843,7 @@ sk.lproj/Alert.nib/info.nib -text
 sk.lproj/Alert.nib/keyedobjects.nib -text
 sk.lproj/Alert.strings -text svneol=unset#text/utf-16
 sk.lproj/Archive.strings -text svneol=unset#text/utf-16
+sk.lproj/Azure.strings -text svneol=unset#text/utf-16
 sk.lproj/Bookmark.nib/keyedobjects.nib -text
 sk.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 sk.lproj/Browser.nib/keyedobjects.nib -text
@@ -1867,6 +1893,7 @@ sl.lproj/Alert.nib/info.nib -text
 sl.lproj/Alert.nib/keyedobjects.nib -text
 sl.lproj/Alert.strings -text svneol=unset#text/utf-16
 sl.lproj/Archive.strings -text svneol=unset#text/utf-16
+sl.lproj/Azure.strings -text svneol=unset#text/utf-16
 sl.lproj/Bookmark.nib/classes.nib -text
 sl.lproj/Bookmark.nib/info.nib -text
 sl.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -1994,6 +2021,7 @@ sr.lproj/Alert.nib/info.nib -text
 sr.lproj/Alert.nib/keyedobjects.nib -text
 sr.lproj/Alert.strings -text svneol=unset#text/utf-16
 sr.lproj/Archive.strings -text svneol=unset#text/utf-16
+sr.lproj/Azure.strings -text svneol=unset#text/utf-16
 sr.lproj/Bookmark.nib/classes.nib -text
 sr.lproj/Bookmark.nib/info.nib -text
 sr.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -2073,6 +2101,7 @@ sv.lproj/Alert.nib/info.nib -text
 sv.lproj/Alert.nib/keyedobjects.nib -text
 sv.lproj/Alert.strings -text svneol=unset#text/utf-16
 sv.lproj/Archive.strings -text svneol=unset#text/utf-16
+sv.lproj/Azure.strings -text svneol=unset#text/utf-16
 sv.lproj/Bookmark.nib/keyedobjects.nib -text
 sv.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 sv.lproj/Browser.nib/keyedobjects.nib -text
@@ -2122,6 +2151,7 @@ th.lproj/Alert.nib/info.nib -text
 th.lproj/Alert.nib/keyedobjects.nib -text
 th.lproj/Alert.strings -text svneol=unset#text/utf-16
 th.lproj/Archive.strings -text svneol=unset#text/utf-16
+th.lproj/Azure.strings -text svneol=unset#text/utf-16
 th.lproj/Bookmark.nib/classes.nib -text
 th.lproj/Bookmark.nib/info.nib -text
 th.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -2201,6 +2231,7 @@ tr.lproj/Alert.nib/info.nib -text
 tr.lproj/Alert.nib/keyedobjects.nib -text
 tr.lproj/Alert.strings -text svneol=unset#text/utf-16
 tr.lproj/Archive.strings -text svneol=unset#text/utf-16
+tr.lproj/Azure.strings -text svneol=unset#text/utf-16
 tr.lproj/Bookmark.nib/classes.nib -text
 tr.lproj/Bookmark.nib/info.nib -text
 tr.lproj/Bookmark.nib/keyedobjects.nib -text
@@ -2400,6 +2431,7 @@ zh_CN.lproj/Alert.nib/info.nib -text
 zh_CN.lproj/Alert.nib/keyedobjects.nib -text
 zh_CN.lproj/Alert.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Archive.strings -text svneol=unset#text/utf-16
+zh_CN.lproj/Azure.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_CN.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Browser.nib/keyedobjects.nib -text
@@ -2449,6 +2481,7 @@ zh_TW.lproj/Alert.nib/info.nib -text
 zh_TW.lproj/Alert.nib/keyedobjects.nib -text
 zh_TW.lproj/Alert.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Archive.strings -text svneol=unset#text/utf-16
+zh_TW.lproj/Azure.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Bookmark.nib/keyedobjects.nib -text
 zh_TW.lproj/Bookmark.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Browser.nib/keyedobjects.nib -text
