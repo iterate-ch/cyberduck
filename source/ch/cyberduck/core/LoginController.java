@@ -61,4 +61,20 @@ public interface LoginController {
      * @throws LoginCanceledException
      */
     void prompt(Protocol protocol, Credentials credentials, String title, String reason) throws LoginCanceledException;
+
+    /**
+     * Call this to allow the user to reenter the new login credentials.
+     * A concrete subclass should display a login prompt.
+     *
+     * @param protocol        Used to determine login prompt options.
+     * @param credentials     The credentials to obtain.
+     * @param title           The title for the login prompt
+     * @param reason          The detail message for the login prompt. Any additional information why the login failed.
+     * @param enableKeychain  Enable checkbox to save password in keychain
+     * @param enablePublicKey Enable public key authentication checkbox
+     * @throws LoginCanceledException
+     */
+    void prompt(final Protocol protocol, final Credentials credentials,
+                final String title, final String reason,
+                final boolean enableKeychain, final boolean enablePublicKey) throws LoginCanceledException;
 }

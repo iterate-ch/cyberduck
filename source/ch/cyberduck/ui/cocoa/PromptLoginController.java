@@ -42,7 +42,8 @@ public class PromptLoginController extends AbstractLoginController {
 
     @Override
     public void prompt(final Protocol protocol, final Credentials credentials,
-                       final String title, final String reason) throws LoginCanceledException {
+                       final String title, final String reason,
+                       final boolean enableKeychain, final boolean enablePublicKey) throws LoginCanceledException {
         SheetController c = new SheetController(parent) {
             @Override
             protected String getBundleName() {
@@ -133,11 +134,11 @@ public class PromptLoginController extends AbstractLoginController {
 
             public void setKeychainCheckbox(NSButton keychainCheckbox) {
                 this.keychainCheckbox = keychainCheckbox;
+                this.keychainCheckbox.setTarget(this.id());
+                this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
                 this.keychainCheckbox.setEnabled(Preferences.instance().getBoolean("connection.login.useKeychain"));
                 this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
                         && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
-                this.keychainCheckbox.setTarget(this.id());
-                this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
             }
 
             public void keychainCheckboxClicked(final NSButton sender) {
@@ -224,9 +225,15 @@ public class PromptLoginController extends AbstractLoginController {
             private void update() {
                 this.usernameField.setEnabled(!credentials.isAnonymousLogin());
                 this.passwordField.setEnabled(!credentials.isAnonymousLogin());
-                this.keychainCheckbox.setEnabled(!credentials.isAnonymousLogin());
+                {
+                    boolean enable = enableKeychain && !credentials.isAnonymousLogin();
+                    this.keychainCheckbox.setEnabled(enable);
+                    if(!enable) {
+                        this.keychainCheckbox.setState(NSCell.NSOffState);
+                    }
+                }
                 this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
-                this.pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
+                this.pkCheckbox.setEnabled(enablePublicKey);
                 if(credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
                     this.updateField(this.pkLabel, credentials.getIdentity().toURL());

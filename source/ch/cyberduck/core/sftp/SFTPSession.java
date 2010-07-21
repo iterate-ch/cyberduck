@@ -189,7 +189,7 @@ public class SFTPSession extends Session {
             };
             this.getLoginController().prompt(host.getProtocol(), additional,
                     Locale.localizedString("Partial authentication success", "Credentials"),
-                    Locale.localizedString("Provide additional login credentials", "Credentials") + ".");
+                    Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false);
             if(this.loginUsingKBIAuthentication(additional)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
@@ -318,7 +318,7 @@ public class SFTPSession extends Session {
                     }
                 };
                 SFTPSession.this.getLoginController().prompt(host.getProtocol(), credentials,
-                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i]);
+                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], false, false);
                 response[i] = credentials.getPassword();
                 promptCount++;
             }

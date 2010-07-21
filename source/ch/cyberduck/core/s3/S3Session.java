@@ -397,7 +397,7 @@ public class S3Session extends CloudSession implements SSLSession {
         // Prompt for MFA credentials.
         this.getLoginController().prompt(host.getProtocol(), credentials,
                 Locale.localizedString("Provide additional login credentials", "Credentials"),
-                Locale.localizedString("Multi-Factor Authentication", "S3"));
+                Locale.localizedString("Multi-Factor Authentication", "S3"), false, false);
 
         Preferences.instance().setProperty("s3.mfa.serialnumber", credentials.getUsername());
         return credentials;

@@ -99,6 +99,12 @@ public abstract class AbstractLoginController implements LoginController {
                 Locale.localizedString("Login with username and password", "Credentials"));
     }
 
-    public abstract void prompt(Protocol protocol, Credentials credentials, String title, String reason)
-            throws LoginCanceledException;
+    public void prompt(final Protocol protocol, final Credentials credentials,
+                       final String title, final String reason) throws LoginCanceledException {
+        this.prompt(protocol, credentials, title, reason, true, protocol.equals(Protocol.SFTP));
+    }
+
+    public abstract void prompt(Protocol protocol, Credentials credentials,
+                                String title, String reason,
+                                boolean enableKeychain, boolean enablePublicKey) throws LoginCanceledException;
 }
