@@ -35,6 +35,7 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.*;
 import org.jets3t.service.model.*;
+import org.jets3t.service.utils.Mimetypes;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
@@ -610,7 +611,7 @@ public class S3Path extends CloudPath {
                             }
                             if(0 == object.getContentLength()) {
                                 final S3Object details = path.getDetails();
-                                if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
+                                if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
                                     path.attributes().setType(Path.DIRECTORY_TYPE);
                                 }
                             }
@@ -695,7 +696,7 @@ public class S3Path extends CloudPath {
             path.attributes().setDuplicate(true);
             if(0 == version.getSize()) {
                 final S3Object details = path.getDetails();
-                if(MIMETYPE_DIRECTORY.equals(details.getContentType())) {
+                if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
                     // No need for versioning delimiters
                     continue;
                 }
@@ -711,11 +712,6 @@ public class S3Path extends CloudPath {
         }
         return versions;
     }
-
-    /**
-     * Mimetype used to indicate that an S3 object actually represents a directory on the local file system.
-     */
-    private final static String MIMETYPE_DIRECTORY = "application/x-directory";
 
     @Override
     public void mkdir() {
@@ -741,7 +737,7 @@ public class S3Path extends CloudPath {
                     // Set object explicitly to private access by default.
                     object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
                     object.setContentLength(0);
-                    object.setContentType(MIMETYPE_DIRECTORY);
+                    object.setContentType(Mimetypes.MIMETYPE_JETS3T_DIRECTORY);
                     this.getSession().getClient().putObject(bucket, object);
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
