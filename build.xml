@@ -392,6 +392,7 @@
             <fileset dir="${build.classes}/">
                 <include name="ch/cyberduck/ui/cocoa/**/*.class"/>
                 <include name="org/rococoa/**/*.class"/>
+                <include name="com/barbarysoftware/**/*.class"/>
             </fileset>
         </jar>
         <jar jarfile="${build}/ui.jar"
@@ -413,7 +414,6 @@
                 <include name="org/spearce/jgit/**/*.class"/>
                 <include name="org/soyatec/**/*.class"/>
                 <include name="com/enterprisedt/**/*.class"/>
-                <include name="com/barbarysoftware/**/*.class"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="cloudfiles.properties"/>
