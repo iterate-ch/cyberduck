@@ -1780,7 +1780,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleMetadataSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        boolean enable = this.numberOfFiles() == 1;
+        boolean enable = this.numberOfFiles() > 0;
         if(enable) {
             for(Path file : files) {
                 final Credentials credentials = file.getHost().getCredentials();
