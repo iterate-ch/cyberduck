@@ -221,7 +221,10 @@ public class CFSession extends CloudSession implements SSLSession {
                     final Distribution distribution = new Distribution(info.isEnabled(), info.getCdnURL(),
                             info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                             info.getRetainLogs());
-                    distributionStatus.put(container, distribution);
+                    if(distribution.isDeployed()) {
+                        distributionStatus.put(container, distribution);
+                    }
+                    return distribution;
                 }
                 catch(FilesException e) {
                     log.warn(e.getMessage());

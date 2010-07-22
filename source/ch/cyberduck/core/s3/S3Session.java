@@ -670,7 +670,10 @@ public class S3Session extends CloudSession implements SSLSession {
                             distributionConfig.getCNAMEs(),
                             distributionConfig.isLoggingEnabled(),
                             method);
-                    distributionStatus.put(container, distribution);
+                    if(distribution.isDeployed()) {
+                        distributionStatus.put(container, distribution);
+                    }
+                    return distribution;
                 }
             }
             catch(CloudFrontServiceException e) {
