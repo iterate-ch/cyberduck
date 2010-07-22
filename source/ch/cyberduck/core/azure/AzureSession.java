@@ -65,7 +65,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzureSession extends CloudSession implements SSLSession {
     private static Logger log = Logger.getLogger(AzureSession.class);
@@ -93,7 +93,7 @@ public class AzureSession extends CloudSession implements SSLSession {
 
     @Override
     public List<Distribution.Method> getSupportedDistributionMethods() {
-        return Arrays.asList(Distribution.DOWNLOAD);
+        return Collections.emptyList();
     }
 
     @Override
@@ -614,7 +614,7 @@ public class AzureSession extends CloudSession implements SSLSession {
      */
     @Override
     public List<Acl.Role> getAvailableAclRoles() {
-        return Arrays.asList(AzurePath.PUBLIC_ACL.getRole());
+        return Arrays.asList(AzurePath.PUBLIC_ACL.getRole(), AzurePath.PRIVATE_ACL.getRole());
 //        return Arrays.asList(new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RL)),
 //                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RW)),
 //                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RWL)),
@@ -630,6 +630,7 @@ public class AzureSession extends CloudSession implements SSLSession {
     public boolean isUploadResumable() {
         return false;
     }
+
 
     @Override
     public boolean isCreateFileSupported(Path workdir) {

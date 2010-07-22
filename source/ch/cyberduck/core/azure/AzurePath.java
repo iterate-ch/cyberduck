@@ -43,7 +43,7 @@ import java.text.MessageFormat;
 import java.util.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AzurePath extends CloudPath {
     private static Logger log = Logger.getLogger(AzurePath.class);
@@ -189,11 +189,19 @@ public class AzurePath extends CloudPath {
             new Acl.Role("public")
     );
 
+    public static final Acl.UserAndRole PRIVATE_ACL = new Acl.UserAndRole(
+            new Acl.CanonicalUser("anonymous", Locale.localizedString("Anonymous", "Azure"), false) {
+                @Override
+                public String getPlaceholder() {
+                    return this.getDisplayName();
+                }
+            },
+            new Acl.Role("private")
+    );
+
     protected Acl convert(final ContainerAccessControl list) {
         Acl acl = new Acl();
-        if(list.isPublic()) {
-            acl.addAll(PUBLIC_ACL);
-        }
+        acl.addAll(list.isPublic()? PUBLIC_ACL : PRIVATE_ACL);
 //        for(ISignedIdentifier identifier : list.getSigendIdentifiers()) {
 //            acl.addAll(new Acl.UserAndRole(new Acl.CanonicalUser(identifier.getId(), false),
 //                    new Acl.Role(SharedAccessPermissions.toString(identifier.getPolicy().getPermission()))));
