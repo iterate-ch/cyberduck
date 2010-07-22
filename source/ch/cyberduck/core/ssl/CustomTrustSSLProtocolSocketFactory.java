@@ -40,15 +40,13 @@ import java.security.NoSuchAlgorithmException;
 public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactory {
     private static Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
-    private SSLContext sslcontext = null;
-
-    private X509TrustManager trustManager;
+    private SSLContext context;
 
     public CustomTrustSSLProtocolSocketFactory(X509TrustManager trustManager) {
-        this.trustManager = trustManager;
+        this.context = this.createCustomSSLContext(trustManager);
     }
 
-    private SSLContext createCustomSSLContext() {
+    private SSLContext createCustomSSLContext(X509TrustManager trustManager) {
         try {
             SSLContext context = SSLContext.getInstance("SSL");
             context.init(null, new TrustManager[]{trustManager}, null);
@@ -62,39 +60,36 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactor
         }
     }
 
-    private SSLContext getSSLContext() {
-        if(null == this.sslcontext) {
-            this.sslcontext = this.createCustomSSLContext();
-        }
-        return this.sslcontext;
+    public SSLContext getSSLContext() {
+        return context;
     }
 
     @Override
     public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort)
             throws IOException, UnknownHostException {
 
-        return this.getSSLContext().getSocketFactory().createSocket(host, port, clientHost, clientPort);
+        return context.getSocketFactory().createSocket(host, port, clientHost, clientPort);
     }
 
     @Override
     public Socket createSocket(String host, int port, InetAddress localAddress, int localPort, HttpConnectionParams params)
             throws IOException, UnknownHostException, ConnectTimeoutException {
 
-        return this.getSSLContext().getSocketFactory().createSocket(host, port, localAddress, localPort);
+        return context.getSocketFactory().createSocket(host, port, localAddress, localPort);
     }
 
     @Override
     public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-        return this.getSSLContext().getSocketFactory().createSocket(host, port);
+        return context.getSocketFactory().createSocket(host, port);
     }
 
     @Override
     public Socket createSocket(Socket socket, String host, int port, boolean autoClose)
             throws IOException, UnknownHostException {
-        return this.getSSLContext().getSocketFactory().createSocket(socket, host, port, autoClose);
+        return context.getSocketFactory().createSocket(socket, host, port, autoClose);
     }
 
     public ServerSocket createServerSocket(int port) throws IOException {
-        return getSSLContext().getServerSocketFactory().createServerSocket(port);
+        return context.getServerSocketFactory().createServerSocket(port);
     }
 }
