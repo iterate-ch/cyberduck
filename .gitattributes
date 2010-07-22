@@ -1314,7 +1314,7 @@ lib/httpcore-4.0.1.jar -text
 lib/icu4j-3.6.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/jakarta-slide-webdavlib-2.2-dev.jar -text
-lib/java-xmlbuilder-1.jar -text
+lib/java-xmlbuilder-0.4.jar -text
 lib/jaxen-1.1.1.jar -text
 lib/jdom-1.1.jar -text
 lib/jets3t-0.7.4.jar -text
