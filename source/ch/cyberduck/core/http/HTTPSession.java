@@ -57,7 +57,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
 
         @Override
         protected void append(LoggingEvent event) {
-            final String m = StringUtils.remove(event.getMessage().toString(), "[\\r][\\n]");
+            final String m = StringUtils.remove(StringUtils.remove(event.getMessage().toString(), "[\\r][\\n]"), "\"");
             if(m.startsWith(IN)) {
                 HTTPSession.this.log(false, StringUtils.remove(m, IN));
             }
