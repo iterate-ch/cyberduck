@@ -99,6 +99,6 @@ public abstract class CloudSession extends HTTPSession {
      * @return
      */
     protected String getHostnameForContainer(String container) {
-        return container + this.getHost().getHostname(true);
+        return container + "." + this.getHost().getHostname(true);
     }
 }
