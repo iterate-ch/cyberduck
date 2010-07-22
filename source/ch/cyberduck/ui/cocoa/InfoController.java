@@ -1114,7 +1114,7 @@ public class InfoController extends ToolbarWindowController {
         this.setFiles(files);
     }
 
-    private static final String TOOLBAR_ITEM_GENERAL = "general";
+    private static final String TOOLBAR_ITEM_GENERAL = "info";
     private static final String TOOLBAR_ITEM_PERMISSIONS = "permissions";
     private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
     private static final String TOOLBAR_ITEM_S3 = "s3";
@@ -2264,11 +2264,11 @@ public class InfoController extends ToolbarWindowController {
         }
         if(tab.equals(TOOLBAR_ITEM_METADATA)) {
             this.openUrl(Preferences.instance().getProperty("website.help")
-                    + "/howto/s3");
+                    + "/howto/" + controller.getSession().getHost().getProtocol().getIdentifier());
         }
         if(tab.equals(TOOLBAR_ITEM_S3)) {
             this.openUrl(Preferences.instance().getProperty("website.help")
-                    + "/howto/s3");
+                    + "/howto/" + controller.getSession().getHost().getProtocol().getIdentifier());
         }
         if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             this.openUrl(Preferences.instance().getProperty("website.help")
