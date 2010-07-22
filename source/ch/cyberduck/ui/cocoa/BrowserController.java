@@ -1023,7 +1023,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     return;
                 }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(path.isRenameSupported());
+                    cell.setEditable(getSession().isRenameSupported(path));
                     (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
                 if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -1134,7 +1134,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.childs(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
-                    cell.setEditable(path.isRenameSupported());
+                    cell.setEditable(getSession().isRenameSupported(path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
@@ -3819,7 +3819,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == selected) {
                     return false;
                 }
-                return selected.isRenameSupported();
+                return getSession().isRenameSupported(selected);
             }
             return false;
         }

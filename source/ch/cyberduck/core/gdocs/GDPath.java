@@ -796,16 +796,6 @@ public class GDPath extends Path {
         }
     }
 
-    /**
-     * Renaming is not currently supported
-     *
-     * @return Always false
-     */
-    @Override
-    public boolean isRenameSupported() {
-        return false;
-    }
-
     @Override
     public void rename(AbstractPath renamed) {
         throw new UnsupportedOperationException();

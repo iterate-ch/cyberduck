@@ -372,7 +372,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
-                if(destination.isRenameSupported()) {
+                if(controller.getSession().isRenameSupported(destination)) {
                     return NSDraggingInfo.NSDragOperationMove;
                 }
             }

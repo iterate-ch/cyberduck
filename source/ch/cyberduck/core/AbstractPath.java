@@ -288,10 +288,6 @@ public abstract class AbstractPath {
         return this.childs().size() == 0;
     }
 
-    public boolean isRenameSupported() {
-        return true;
-    }
-
     /**
      * @param renamed Must be an absolute path
      */

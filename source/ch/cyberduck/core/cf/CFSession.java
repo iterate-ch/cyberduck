@@ -157,6 +157,16 @@ public class CFSession extends CloudSession implements SSLSession {
     }
 
     /**
+     * Renaming is not currently supported
+     *
+     * @return Always false
+     */
+    @Override
+    public boolean isRenameSupported(Path file) {
+        return false;
+    }
+
+    /**
      * Cache distribution status result.
      */
     private Map<String, Distribution> distributionStatus

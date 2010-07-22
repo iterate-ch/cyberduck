@@ -489,6 +489,16 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     /**
+     * Renaming buckets is not currently supported by S3
+     *
+     * @return True if directory placeholder or object
+     */
+    @Override
+    public boolean isRenameSupported(Path file) {
+        return !file.attributes().isVolume();
+    }
+
+    /**
      * Amazon CloudFront Extension to create a new distribution configuration
      * *
      *

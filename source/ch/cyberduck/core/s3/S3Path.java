@@ -915,16 +915,6 @@ public class S3Path extends CloudPath {
         }
     }
 
-    /**
-     * Renaming buckets is not currently supported by S3
-     *
-     * @return True if directory placeholder or object
-     */
-    @Override
-    public boolean isRenameSupported() {
-        return !attributes().isVolume();
-    }
-
     @Override
     public void rename(AbstractPath renamed) {
         try {

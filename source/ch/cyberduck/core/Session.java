@@ -342,6 +342,10 @@ public abstract class Session {
         return true;
     }
 
+    public boolean isRenameSupported(Path file) {
+        return true;
+    }
+
     /**
      * @return
      * @see ch.cyberduck.core.Path#writeAcl(Acl, boolean)
