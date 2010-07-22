@@ -81,8 +81,10 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 if(file.attributes().getSize() == -1) {
                     file.readSize();
                 }
-                if(file.attributes().getModificationDate() == -1) {
-                    file.readTimestamp();
+                if(file.getSession().isTimestampSupported()) {
+                    if(file.attributes().getModificationDate() == -1) {
+                        file.readTimestamp();
+                    }
                 }
             }
             return true;

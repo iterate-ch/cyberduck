@@ -379,9 +379,11 @@ public class SyncTransfer extends Transfer {
      */
     private Comparison compareTimestamp(Path p) {
         log.debug("compareTimestamp:" + p);
-        if(p.attributes().getModificationDate() == -1 || p instanceof FTPPath) {
-            // Make sure we have a UTC timestamp
-            p.readTimestamp();
+        if(p.getSession().isTimestampSupported()) {
+            if(p.attributes().getModificationDate() == -1 || p instanceof FTPPath) {
+                // Make sure we have a UTC timestamp
+                p.readTimestamp();
+            }
         }
         final Calendar remote = this.asCalendar(p.attributes().getModificationDate(), Calendar.SECOND);
         final Calendar local = this.asCalendar(p.getLocal().attributes().getModificationDate(), Calendar.SECOND);

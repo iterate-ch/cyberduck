@@ -117,75 +117,75 @@ public class UploadTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(Path p) {
-            if(getSession().isUnixPermissionsSupported()) {
-                if(p.exists()) {
+        public void prepare(Path file) {
+            if(file.getSession().isUnixPermissionsSupported()) {
+                if(file.exists()) {
                     // Do not overwrite permissions for existing files.
-                    if(p.attributes().getPermission().equals(Permission.EMPTY)) {
-                        p.readUnixPermission();
+                    if(file.attributes().getPermission().equals(Permission.EMPTY)) {
+                        file.readUnixPermission();
                     }
                 }
                 else if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                    if(p.attributes().isFile()) {
-                        p.attributes().setPermission(new Permission(
+                    if(file.attributes().isFile()) {
+                        file.attributes().setPermission(new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.file.default")));
                     }
-                    if(p.attributes().isDirectory()) {
-                        p.attributes().setPermission(new Permission(
+                    if(file.attributes().isDirectory()) {
+                        file.attributes().setPermission(new Permission(
                                 Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
                     }
                 }
                 else {
                     // Read permissions from local file
-                    p.attributes().setPermission(p.getLocal().attributes().getPermission());
+                    file.attributes().setPermission(file.getLocal().attributes().getPermission());
                 }
             }
-            if(getSession().isAclSupported()) {
-                if(p.exists()) {
+            if(file.getSession().isAclSupported()) {
+                if(file.exists()) {
                     // Do not overwrite permissions for existing files.
-                    if(p.attributes().getAcl().equals(Acl.EMPTY)) {
-                        p.readAcl();
+                    if(file.attributes().getAcl().equals(Acl.EMPTY)) {
+                        file.readAcl();
                     }
                 }
                 else {
                     Permission perm = Permission.EMPTY;
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        if(p.attributes().isFile()) {
+                        if(file.attributes().isFile()) {
                             perm = new Permission(
                                     Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                         }
-                        if(p.attributes().isDirectory()) {
+                        if(file.attributes().isDirectory()) {
                             perm = new Permission(
                                     Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
                         }
                     }
                     else {
                         // Read permissions from local file
-                        perm = p.getLocal().attributes().getPermission();
+                        perm = file.getLocal().attributes().getPermission();
                     }
-                    p.attributes().setAcl(getSession().getPublicAcl(perm.getOtherPermissions()[Permission.READ],
+                    file.attributes().setAcl(file.getSession().getPublicAcl(perm.getOtherPermissions()[Permission.READ],
                             perm.getOtherPermissions()[Permission.WRITE]));
                 }
             }
-            if(getSession().isTimestampSupported()) {
-                if(p.exists()) {
-                    if(p.attributes().getModificationDate() == -1) {
+            if(file.getSession().isTimestampSupported()) {
+                if(file.exists()) {
+                    if(file.attributes().getModificationDate() == -1) {
                         if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                            p.readTimestamp();
+                            file.readTimestamp();
                         }
                     }
                 }
             }
-            if(p.attributes().isFile()) {
+            if(file.attributes().isFile()) {
                 // Read file size
-                size += p.getLocal().attributes().getSize();
-                if(p.status().isResume()) {
-                    transferred += p.attributes().getSize();
+                size += file.getLocal().attributes().getSize();
+                if(file.status().isResume()) {
+                    transferred += file.attributes().getSize();
                 }
             }
-            if(p.attributes().isDirectory()) {
-                if(!p.exists()) {
-                    p.cache().put(p.<Object>getReference(), new AttributedList<Path>());
+            if(file.attributes().isDirectory()) {
+                if(!file.exists()) {
+                    file.cache().put(file.<Object>getReference(), new AttributedList<Path>());
                 }
             }
         }
@@ -271,11 +271,11 @@ public class UploadTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(final Path p) {
-            if(p.attributes().isFile()) {
-                p.status().setResume(false);
+        public void prepare(final Path file) {
+            if(file.attributes().isFile()) {
+                file.status().setResume(false);
             }
-            super.prepare(p);
+            super.prepare(file);
         }
 
     };
@@ -298,21 +298,21 @@ public class UploadTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(final Path p) {
-            if(p.exists()) {
-                if(p.attributes().getSize() == -1) {
-                    p.readSize();
+        public void prepare(final Path file) {
+            if(file.exists()) {
+                if(file.attributes().getSize() == -1) {
+                    file.readSize();
                 }
             }
-            if(p.attributes().isFile()) {
+            if(file.attributes().isFile()) {
                 // Append to file if size is not zero
-                final boolean resume = p.exists() && p.attributes().getSize() > 0;
-                p.status().setResume(resume);
-                if(p.status().isResume()) {
-                    p.status().setCurrent(p.attributes().getSize());
+                final boolean resume = file.exists() && file.attributes().getSize() > 0;
+                file.status().setResume(resume);
+                if(file.status().isResume()) {
+                    file.status().setCurrent(file.attributes().getSize());
                 }
             }
-            super.prepare(p);
+            super.prepare(file);
         }
     };
 
@@ -324,25 +324,25 @@ public class UploadTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(final Path p) {
-            if(p.exists()) {
-                final String parent = p.getParent().getAbsolute();
-                final String filename = p.getName();
+        public void prepare(final Path file) {
+            if(file.exists()) {
+                final String parent = file.getParent().getAbsolute();
+                final String filename = file.getName();
                 int no = 0;
-                while(p.exists()) { // Do not use cached value of exists!
+                while(file.exists()) { // Do not use cached value of exists!
                     no++;
                     String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }
-                    p.setPath(parent, proposal);
+                    file.setPath(parent, proposal);
                 }
-                log.info("Changed local name to:" + p.getName());
+                log.info("Changed local name to:" + file.getName());
             }
-            if(p.attributes().isFile()) {
-                p.status().setResume(false);
+            if(file.attributes().isFile()) {
+                file.status().setResume(false);
             }
-            super.prepare(p);
+            super.prepare(file);
         }
     };
 

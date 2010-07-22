@@ -112,29 +112,29 @@ public class DownloadTransfer extends Transfer {
      */
     private abstract class DownloadTransferFilter extends TransferFilter {
         @Override
-        public void prepare(Path p) {
-            if(p.attributes().getSize() == -1) {
-                p.readSize();
+        public void prepare(Path file) {
+            if(file.attributes().getSize() == -1) {
+                file.readSize();
             }
-            if(getSession().isTimestampSupported()) {
-                if(p.attributes().getModificationDate() == -1) {
+            if(file.getSession().isTimestampSupported()) {
+                if(file.attributes().getModificationDate() == -1) {
                     if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-                        p.readTimestamp();
+                        file.readTimestamp();
                     }
                 }
             }
-            if(getSession().isUnixPermissionsSupported()) {
+            if(file.getSession().isUnixPermissionsSupported()) {
                 if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
-                    if(p.attributes().getPermission().equals(Permission.EMPTY)) {
-                        p.readUnixPermission();
+                    if(file.attributes().getPermission().equals(Permission.EMPTY)) {
+                        file.readUnixPermission();
                     }
                 }
             }
             // Read file size
-            if(p.attributes().isFile()) {
-                if(p.attributes().isSymbolicLink()) {
-                    if(null != p.getSymlinkTarget()) {
-                        Path symlink = PathFactory.createPath(getSession(), p.getSymlinkTarget(),
+            if(file.attributes().isFile()) {
+                if(file.attributes().isSymbolicLink()) {
+                    if(null != file.getSymlinkTarget()) {
+                        Path symlink = PathFactory.createPath(file.getSession(), file.getSymlinkTarget(),
                                 Path.FILE_TYPE);
                         if(symlink.attributes().getSize() == -1) {
                             symlink.readSize();
@@ -143,15 +143,15 @@ public class DownloadTransfer extends Transfer {
                     }
                 }
                 else {
-                    size += p.attributes().getSize();
+                    size += file.attributes().getSize();
                 }
-                if(p.status().isResume()) {
-                    transferred += p.getLocal().attributes().getSize();
+                if(file.status().isResume()) {
+                    transferred += file.getLocal().attributes().getSize();
                 }
             }
-            if(!p.getLocal().getParent().exists()) {
+            if(!file.getLocal().getParent().exists()) {
                 // Create download folder if missing
-                p.getLocal().getParent().mkdir(true);
+                file.getLocal().getParent().mkdir(true);
             }
         }
     }
@@ -191,11 +191,11 @@ public class DownloadTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(final Path p) {
-            if(p.attributes().isFile()) {
-                p.status().setResume(false);
+        public void prepare(final Path file) {
+            if(file.attributes().isFile()) {
+                file.status().setResume(false);
             }
-            super.prepare(p);
+            super.prepare(file);
         }
     };
 
@@ -213,15 +213,15 @@ public class DownloadTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(final Path p) {
-            if(p.attributes().isFile()) {
-                final boolean resume = p.getLocal().exists()
-                        && p.getLocal().attributes().getSize() > 0;
-                p.status().setResume(resume);
-                long skipped = p.getLocal().attributes().getSize();
-                p.status().setCurrent(skipped);
+        public void prepare(final Path file) {
+            if(file.attributes().isFile()) {
+                final boolean resume = file.getLocal().exists()
+                        && file.getLocal().attributes().getSize() > 0;
+                file.status().setResume(resume);
+                long skipped = file.getLocal().attributes().getSize();
+                file.status().setCurrent(skipped);
             }
-            super.prepare(p);
+            super.prepare(file);
         }
     };
 
@@ -231,25 +231,25 @@ public class DownloadTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(final Path p) {
-            if(p.attributes().isFile()) {
-                p.status().setResume(false);
+        public void prepare(final Path file) {
+            if(file.attributes().isFile()) {
+                file.status().setResume(false);
             }
-            if(p.getLocal().exists() && p.getLocal().attributes().getSize() > 0) {
-                final String parent = p.getLocal().getParent().getAbsolute();
-                final String filename = p.getName();
+            if(file.getLocal().exists() && file.getLocal().attributes().getSize() > 0) {
+                final String parent = file.getLocal().getParent().getAbsolute();
+                final String filename = file.getName();
                 int no = 0;
-                while(p.getLocal().exists()) {
+                while(file.getLocal().exists()) {
                     no++;
                     String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                         proposal += "." + FilenameUtils.getExtension(filename);
                     }
-                    p.setLocal(LocalFactory.createLocal(parent, proposal));
+                    file.setLocal(LocalFactory.createLocal(parent, proposal));
                 }
-                log.info("Changed local name to:" + p.getLocal().getName());
+                log.info("Changed local name to:" + file.getLocal().getName());
             }
-            super.prepare(p);
+            super.prepare(file);
         }
     };
 
