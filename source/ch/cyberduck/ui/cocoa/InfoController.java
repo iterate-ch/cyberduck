@@ -1628,6 +1628,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      */
     private boolean toggleS3Settings(final boolean stop) {
+        this.window().endEditingFor(null);
         final Session session = controller.getSession();
         // Amazon S3 only
         boolean enable = session instanceof S3Session;
@@ -1754,6 +1755,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     private boolean toggleAclSettings(final boolean stop) {
+        this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.isAclSupported();
@@ -1777,6 +1779,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if progress animation has started and settings are toggled
      */
     private boolean toggleMetadataSettings(final boolean stop) {
+        this.window().endEditingFor(null);
         boolean enable = this.numberOfFiles() == 1;
         if(enable) {
             for(Path file : files) {
@@ -2003,6 +2006,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if controls are enabled for the given protocol in idle state
      */
     private boolean togglePermissionSettings(final boolean stop) {
+        this.window().endEditingFor(null);
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.isUnixPermissionsSupported();
@@ -2040,6 +2044,7 @@ public class InfoController extends ToolbarWindowController {
      * @return True if controls are enabled for the given protocol in idle state
      */
     private boolean toggleDistributionSettings(final boolean stop) {
+        this.window().endEditingFor(null);
         // Not all cloud providers support different distributions
         final Session session = controller.getSession();
         boolean enable = session instanceof CloudSession;
@@ -2234,6 +2239,7 @@ public class InfoController extends ToolbarWindowController {
      * @return
      */
     private boolean toggleSizeSettings(final boolean stop) {
+        this.window().endEditingFor(null);
         sizeButton.setEnabled(false);
         for(Path next : files) {
             if(next.attributes().isDirectory()) {
