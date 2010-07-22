@@ -48,7 +48,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         // This constructor can be used when tunneling SSL through a proxy or when negotiating the
         // use of SSL over an existing socket. The host and port refer to the logical peer destination.
         // This socket is configured using the socket options established for this factory.
-        this.controlSock = new CustomTrustSSLProtocolSocketFactory(this.trustManager).createSocket(this.controlSock,
+        this.controlSock = new CustomTrustSSLProtocolSocketFactory(trustManager).createSocket(this.controlSock,
                 this.controlSock.getInetAddress().getHostName(),
                 this.controlSock.getPort(),
                 true); //close the underlying socket when this socket is closed
