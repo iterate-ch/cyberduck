@@ -41,19 +41,6 @@ public abstract class Local extends AbstractPath {
     /**
      *
      */
-    private LocalAttributes attributes;
-
-    @Override
-    public Attributes attributes() {
-        if(null == attributes) {
-            attributes = new LocalAttributes();
-        }
-        return attributes;
-    }
-
-    /**
-     *
-     */
     public class LocalPermission extends Permission {
         @Override
         public boolean isReadable() {
@@ -231,6 +218,11 @@ public abstract class Local extends AbstractPath {
      */
     public Local(File path) {
         this.setPath(path.getAbsolutePath());
+    }
+
+    @Override
+    public Attributes attributes() {
+        return new LocalAttributes();
     }
 
     @Override
