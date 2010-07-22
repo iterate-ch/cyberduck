@@ -522,6 +522,8 @@ public abstract class Preferences {
         final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(MONTH));
 
+        defaults.put("azure.tls.acceptAnyCertificate", String.valueOf(false));
+
         defaults.put("webdav.followRedirects", String.valueOf(true));
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
 

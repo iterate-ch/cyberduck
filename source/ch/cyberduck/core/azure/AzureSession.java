@@ -23,21 +23,28 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpStatus;
+import org.apache.http.*;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.soyatec.windows.azure.authenticate.IAccessPolicy;
 import org.soyatec.windows.azure.authenticate.SharedKeyCredentials;
-import org.soyatec.windows.azure.authenticate.StorageAccountInfo;
 import org.soyatec.windows.azure.blob.*;
 import org.soyatec.windows.azure.blob.internal.*;
 import org.soyatec.windows.azure.constants.HeaderValues;
@@ -98,7 +105,7 @@ public class AzureSession extends CloudSession implements SSLSession {
 
     @Override
     public String getDistributionServiceName() {
-        return "Windows Azure CDN";
+        return Locale.localizedString("Windows Azure CDN", "Azure");
     }
 
     @Override
@@ -106,18 +113,77 @@ public class AzureSession extends CloudSession implements SSLSession {
         return Collections.emptyList();
     }
 
+    private AbstractX509TrustManager trustManager;
+
     public AbstractX509TrustManager getTrustManager() {
-        return new IgnoreX509TrustManager();
+        if(null == trustManager) {
+            if(Preferences.instance().getBoolean("azure.tls.acceptAnyCertificate")) {
+                trustManager = new IgnoreX509TrustManager();
+            }
+            else {
+                trustManager = new KeychainX509TrustManager(
+                        this.getHostnameForContainer(this.getHost().getCredentials().getUsername()));
+            }
+        }
+        return trustManager;
     }
 
-    private BlobStorageRest client;
+    private AzureStorageClient client;
 
     @Override
-    protected BlobStorageRest getClient() throws ConnectionCanceledException {
+    protected AzureStorageClient getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }
         return client;
+    }
+
+    /**
+     *
+     */
+    protected class AzureStorageClient extends BlobStorageRest {
+        public AzureStorageClient(URI baseUri, String accountName, String base64Key) {
+            super(baseUri, false, accountName, base64Key);
+        }
+
+        private HttpClient http;
+
+        /**
+         * @return HTTP client configured with custom HTTP parameters and trust manager.
+         */
+        public HttpClient getHttp() {
+            if(null == http) {
+                http = new DefaultHttpClient() {
+                    @Override
+                    protected HttpParams createHttpParams() {
+                        final HttpParams params = new BasicHttpParams();
+                        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+                        HttpProtocolParams.setUseExpectContinue(params, true);
+                        HttpConnectionParams.setTcpNoDelay(params, true);
+                        HttpConnectionParams.setSocketBufferSize(params, 8192);
+                        HttpProtocolParams.setUserAgent(params, getUserAgent());
+                        return params;
+                    }
+
+                    @Override
+                    protected ClientConnectionManager createClientConnectionManager() {
+                        SchemeRegistry registry = new SchemeRegistry();
+                        if(host.getProtocol().isSecure()) {
+                            registry.register(
+                                    new Scheme(host.getProtocol().getScheme(),
+                                            new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
+                                                    getTrustManager()).getSSLContext()), host.getPort()));
+                        }
+                        else {
+                            registry.register(
+                                    new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
+                        }
+                        return new SingleClientConnManager(this.getParams(), registry);
+                    }
+                };
+            }
+            return http;
+        }
     }
 
     @Override
@@ -134,12 +200,9 @@ public class AzureSession extends CloudSession implements SSLSession {
     @Override
     protected void login(Credentials credentials) throws IOException {
         // http://*.blob.core.windows.net
-        client = (BlobStorageRest) BlobStorage.create(new StorageAccountInfo(
-                URI.create(host.getProtocol().getScheme() + "://" + host.getHostname()),
-                false,
+        client = new AzureStorageClient(URI.create(host.getProtocol().getScheme() + "://" + host.getHostname()),
                 credentials.getUsername(),
-                credentials.getPassword()
-        ));
+                credentials.getPassword());
         client.setTimeout(TimeSpan.fromMilliseconds(this.timeout()));
         try {
             this.getContainers(true);
@@ -204,11 +267,10 @@ public class AzureSession extends CloudSession implements SSLSession {
          * @throws StorageException
          */
         public boolean createBlob(BlobProperties blobProperties,
-                                  HttpEntity entity, boolean overwrite)
+                                  HttpEntity entity)
                 throws StorageException {
             try {
-                return putBlobImpl(blobProperties, entity,
-                        overwrite, null);
+                return putBlobImpl(blobProperties, entity);
             }
             catch(Exception e) {
                 throw HttpUtilities.translateWebException(e);
@@ -216,27 +278,20 @@ public class AzureSession extends CloudSession implements SSLSession {
         }
 
         private boolean putBlobImpl(final BlobProperties blobProperties,
-                                    final HttpEntity entity,
-                                    final boolean overwrite, final String eTag)
+                                    final HttpEntity entity)
                 throws Exception {
-            // If the blob is large, we should use blocks to upload it in pieces.
-            // This will ensure that a broken connection will only impact a single
-            // piece
             boolean retval;
             IRetryPolicy policy = RetryPolicies.noRetry();
             retval = (Boolean) policy.execute(new Callable<Boolean>() {
                 public Boolean call() throws Exception {
-                    return uploadData(blobProperties, overwrite,
-                            eTag, entity);
+                    return uploadData(blobProperties, entity);
                 }
 
             });
             return retval;
         }
 
-        private boolean uploadData(BlobProperties blobProperties,
-                                   boolean overwrite, String eTag,
-                                   HttpEntity entity)
+        private boolean uploadData(BlobProperties blobProperties, HttpEntity entity)
                 throws Exception {
             boolean retval;
             ResourceUriComponents uriComponents = new ResourceUriComponents(
@@ -247,19 +302,14 @@ public class AzureSession extends CloudSession implements SSLSession {
                     uriComponents);
 
             HttpRequest request = createHttpRequestForPutBlob(blobUri,
-                    HttpMethod.Put, blobProperties, overwrite, eTag);
+                    HttpMethod.Put, blobProperties);
 
             SharedKeyCredentials credentials = getClient().getCredentials();
             credentials.signRequest(request, uriComponents);
             ((HttpEntityEnclosingRequest) request).setEntity(entity);
-            HttpWebResponse response = HttpUtilities.getResponse(request);
+            HttpWebResponse response = new HttpWebResponse(getClient().getHttp().execute((HttpUriRequest) request));
             if(response.getStatusCode() == HttpStatus.SC_CREATED) {
                 retval = true;
-            }
-            else if(!overwrite
-                    && (response.getStatusCode() == HttpStatus.SC_PRECONDITION_FAILED || response
-                    .getStatusCode() == HttpStatus.SC_NOT_MODIFIED)) {
-                retval = false;
             }
             else {
                 retval = false;
@@ -272,8 +322,7 @@ public class AzureSession extends CloudSession implements SSLSession {
         }
 
         private HttpRequest createHttpRequestForPutBlob(URI blobUri, String httpMethod,
-                                                        IBlobProperties blobProperties,
-                                                        boolean overwrite, String eTag) {
+                                                        IBlobProperties blobProperties) {
             HttpRequest request = HttpUtilities.createHttpRequestWithCommonHeaders(
                     blobUri, httpMethod, getTimeout());
             if(blobProperties.getContentEncoding() != null) {
@@ -288,17 +337,10 @@ public class AzureSession extends CloudSession implements SSLSession {
                 request.addHeader(HeaderNames.ContentType, blobProperties
                         .getContentType());
             }
-            if(eTag != null) {
-                request.addHeader(HeaderNames.IfMatch, eTag);
-            }
-
             if(blobProperties.getMetadata() != null
                     && blobProperties.getMetadata().size() > 0) {
                 HttpUtilities.addMetadataHeaders(request, blobProperties
                         .getMetadata());
-            }
-            if(!overwrite) {
-                request.addHeader(HeaderNames.IfNoneMatch, "*");
             }
             return request;
         }
@@ -312,7 +354,7 @@ public class AzureSession extends CloudSession implements SSLSession {
                 throws StorageException {
             try {
                 HttpWebResponse response = getBlobImpl(HttpMethod.Get,
-                        blobName, null, new OutParameter<Boolean>(false));
+                        blobName, new OutParameter<Boolean>(false));
                 return response.getStream();
             }
             catch(Exception e) {
@@ -321,7 +363,6 @@ public class AzureSession extends CloudSession implements SSLSession {
         }
 
         private HttpWebResponse getBlobImpl(final String httpMethod, final String blobName,
-                                            final String oldETag,
                                             OutParameter<Boolean> modified) {
             final HttpWebResponse[] httpWebResponses = new HttpWebResponse[1];
             final OutParameter<Boolean> localModified = new OutParameter<Boolean>(true);
@@ -335,7 +376,7 @@ public class AzureSession extends CloudSession implements SSLSession {
             rp.execute(new Callable<Object>() {
                 public Object call() throws Exception {
                     HttpWebResponse response = downloadData(httpMethod, blobName,
-                            oldETag, null, 0, 0, new NameValueCollection(),
+                            0, 0, new NameValueCollection(),
                             localModified);
                     httpWebResponses[0] = response;
                     return response;
@@ -346,7 +387,7 @@ public class AzureSession extends CloudSession implements SSLSession {
         }
 
         private HttpWebResponse downloadData(String httpMethod, String blobName,
-                                             String eTagIfNoneMatch, String eTagIfMatch, long offset,
+                                             long offset,
                                              long length, NameValueCollection nvc,
                                              OutParameter<Boolean> localModified) throws StorageException, ConnectionCanceledException {
             ResourceUriComponents uriComponents = new ResourceUriComponents(
@@ -354,8 +395,7 @@ public class AzureSession extends CloudSession implements SSLSession {
             URI blobUri = HttpUtilities.createRequestUri(getBaseUri(),
                     isUsePathStyleUris(), getAccountName(), getContainerName(),
                     blobName, getTimeout(), nvc, uriComponents);
-            HttpRequest request = createHttpRequestForGetBlob(blobUri, httpMethod,
-                    eTagIfNoneMatch, eTagIfMatch);
+            HttpRequest request = createHttpRequestForGetBlob(blobUri, httpMethod);
 
             if(offset != 0 || length != 0) {
                 // Use the blob storage custom header for range since the standard
@@ -373,7 +413,7 @@ public class AzureSession extends CloudSession implements SSLSession {
             BlobProperties blobProperties;
 
             try {
-                HttpWebResponse response = HttpUtilities.getResponse(request);
+                HttpWebResponse response = new HttpWebResponse(getClient().getHttp().execute((HttpUriRequest) request));
                 if(response.getStatusCode() == HttpStatus.SC_OK
                         || response.getStatusCode() == HttpStatus.SC_PARTIAL_CONTENT) {
 
@@ -390,16 +430,9 @@ public class AzureSession extends CloudSession implements SSLSession {
         }
 
         private HttpRequest createHttpRequestForGetBlob(URI blobUri,
-                                                        String httpMethod, String tagIfNoneMatch, String tagIfMatch) {
-            HttpRequest request = HttpUtilities.createHttpRequestWithCommonHeaders(
+                                                        String httpMethod) {
+            return HttpUtilities.createHttpRequestWithCommonHeaders(
                     blobUri, httpMethod, getTimeout());
-            if(tagIfNoneMatch != null) {
-                request.addHeader(HeaderNames.IfNoneMatch, tagIfNoneMatch);
-            }
-            if(tagIfMatch != null) {
-                request.addHeader(HeaderNames.IfMatch, tagIfMatch);
-            }
-            return request;
         }
 
         @Override
@@ -430,8 +463,7 @@ public class AzureSession extends CloudSession implements SSLSession {
                                         XmsVersion.VERSION_2009_07_17);
 
                                 getClient().getCredentials().signRequest(request, uriComponents);
-                                HttpWebResponse response = HttpUtilities
-                                        .getResponse(request);
+                                HttpWebResponse response = new HttpWebResponse(getClient().getHttp().execute((HttpUriRequest) request));
                                 if(response.getStatusCode() == HttpStatus.SC_OK) {
                                     String acl = response
                                             .getHeader(HeaderNames.PublicAccess);

@@ -201,7 +201,7 @@ public class AzurePath extends CloudPath {
 
     protected Acl convert(final ContainerAccessControl list) {
         Acl acl = new Acl();
-        acl.addAll(list.isPublic()? PUBLIC_ACL : PRIVATE_ACL);
+        acl.addAll(list.isPublic() ? PUBLIC_ACL : PRIVATE_ACL);
 //        for(ISignedIdentifier identifier : list.getSigendIdentifiers()) {
 //            acl.addAll(new Acl.UserAndRole(new Acl.CanonicalUser(identifier.getId(), false),
 //                    new Acl.Role(SharedAccessPermissions.toString(identifier.getPolicy().getPermission()))));
@@ -420,7 +420,7 @@ public class AzurePath extends CloudPath {
                     AzureSession.AzureContainer container = this.getSession().getContainer(this.getContainerName());
                     final BlobProperties properties = new BlobProperties(this.getKey());
                     properties.setContentType(this.getLocal().getMimeType());
-                    container.createBlob(properties, new HttpEntity() {
+                    boolean blob = container.createBlob(properties, new HttpEntity() {
                         public boolean isRepeatable() {
                             return false;
                         }
@@ -456,7 +456,10 @@ public class AzurePath extends CloudPath {
                         public void consumeContent() throws IOException {
                             ;
                         }
-                    }, !status.isResume());
+                    });
+                    if(!blob) {
+                        this.status().setComplete(false);
+                    }
                 }
                 finally {
                     IOUtils.closeQuietly(in);
