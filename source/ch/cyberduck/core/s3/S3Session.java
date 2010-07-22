@@ -183,7 +183,8 @@ public class S3Session extends CloudSession implements SSLSession {
      * @param bucket
      * @return
      */
-    public String getHostnameForBucket(String bucket) {
+    @Override
+    protected String getHostnameForContainer(String bucket) {
         return ServiceUtils.generateS3HostnameForBucket(bucket,
                 configuration.getBoolProperty("s3service.disable-dns-buckets", false), this.getHost().getHostname());
     }
@@ -258,7 +259,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 if(bucket.getName().equals(bucketname)) {
                     if(this.getHost().getProtocol().isSecure()) {
                         // We now connect to bucket subdomain
-                        this.getTrustManager().setHostname(this.getHostnameForBucket(bucket.getName()));
+                        this.getTrustManager().setHostname(this.getHostnameForContainer(bucket.getName()));
                     }
                     return bucket;
                 }
@@ -506,7 +507,7 @@ public class S3Session extends CloudSession implements SSLSession {
         final long reference = System.currentTimeMillis();
         if(method.equals(Distribution.STREAMING)) {
             return this.createCloudFrontService().createStreamingDistribution(
-                    this.getHostnameForBucket(bucket),
+                    this.getHostnameForContainer(bucket),
                     String.valueOf(reference), // Caller reference - a unique string value
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
@@ -515,7 +516,7 @@ public class S3Session extends CloudSession implements SSLSession {
             );
         }
         return this.createCloudFrontService().createDistribution(
-                this.getHostnameForBucket(bucket),
+                this.getHostnameForContainer(bucket),
                 String.valueOf(reference), // Caller reference - a unique string value
                 cnames, // CNAME aliases for distribution
                 new Date(reference).toString(), // Comment
@@ -620,7 +621,8 @@ public class S3Session extends CloudSession implements SSLSession {
                 final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
                 hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
                         new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
+                                (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(
+                                        new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
                 );
             }
             catch(URIException e) {
@@ -711,7 +713,7 @@ public class S3Session extends CloudSession implements SSLSession {
             LoggingStatus l = null;
             if(logging) {
                 l = new LoggingStatus(
-                        this.getHostnameForBucket(container),
+                        this.getHostnameForContainer(container),
                         Preferences.instance().getProperty("cloudfront.logging.prefix"));
             }
             this.check();

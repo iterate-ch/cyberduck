@@ -1017,7 +1017,7 @@ public class S3Path extends CloudPath {
         final String key = this.isContainer() ? "" : this.encode(this.getKey());
         if(ServiceUtils.isBucketNameValidDNSName(this.getContainerName())) {
             return Protocol.S3.getScheme() + "://"
-                    + this.getSession().getHostnameForBucket(this.getContainerName()) + key;
+                    + this.getSession().getHostnameForContainer(this.getContainerName()) + key;
         }
         else {
             return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + key;
