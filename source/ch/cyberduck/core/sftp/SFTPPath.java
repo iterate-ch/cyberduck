@@ -125,7 +125,7 @@ public class SFTPPath extends Path {
                     if(f.attributes.isSymlink()) {
                         try {
                             String target = this.getSession().sftp().readLink(p.getAbsolute());
-                            if(!target.startsWith("/")) {
+                            if(!target.startsWith(String.valueOf(Path.DELIMITER))) {
                                 target = Path.normalize(this.getAbsolute() + Path.DELIMITER + target);
                             }
                             p.setSymlinkTarget(target);
@@ -138,7 +138,7 @@ public class SFTPPath extends Path {
                             }
                         }
                         catch(IOException e) {
-                            log.warn("Cannot read symbolic link target of " + p.getAbsolute() + ":" + e.getMessage());
+                            log.error("Cannot read symbolic link target of " + p.getAbsolute() + ":" + e.getMessage());
                             p.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                         }
                     }
