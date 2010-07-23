@@ -832,8 +832,8 @@ public class FTPPath extends Path {
                 }
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     try {
-                        this.writeModificationDateImpl(this.getLocal().attributes().getModificationDate(),
-                                this.getLocal().attributes().getCreationDate());
+                        this.writeModificationDateImpl(this.attributes().getModificationDate(),
+                                this.attributes().getCreationDate());
                     }
                     catch(FTPException ignore) {
                         //MFMT not supported; ignore
