@@ -345,6 +345,9 @@ public class GDPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
+                        this.getName()));
+
                 MediaContent mc = new MediaContent();
                 StringBuilder uri = new StringBuilder(this.getExportUri());
                 final String type = this.getDocumentType();
@@ -423,8 +426,8 @@ public class GDPath extends Path {
                 try {
                     final String mime = this.getLocal().getMimeType();
                     final MediaStreamSource source = new MediaStreamSource(this.getLocal().getInputStream(), mime,
-                            new DateTime(this.getLocal().attributes().getModificationDate()),
-                            this.getLocal().attributes().getSize());
+                            new DateTime(this.attributes().getModificationDate()),
+                            this.attributes().getSize());
                     if(this.exists()) {
                         // First, fetch entry using the resourceId
                         URL url = new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId());
@@ -737,6 +740,10 @@ public class GDPath extends Path {
     public void mkdir() {
         if(this.attributes().isDirectory()) {
             try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
+                        this.getName()));
+
                 DocumentListEntry folder = new FolderEntry();
                 folder.setTitle(new PlainTextConstruct(this.getName()));
                 try {
@@ -774,6 +781,10 @@ public class GDPath extends Path {
     public void delete() {
         try {
             try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                        this.getName()));
+
                 session.getClient().delete(
                         new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId()), "*");
             }
@@ -799,6 +810,31 @@ public class GDPath extends Path {
     @Override
     public void rename(AbstractPath renamed) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void touch() {
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                        this.getName()));
+
+                DocumentListEntry file = new DocumentEntry();
+                file.setTitle(new PlainTextConstruct(this.getName()));
+                try {
+                    this.getSession().getClient().insert(((GDPath) this.getParent()).getFolderFeed(), file);
+                }
+                catch(ServiceException e) {
+                    throw new IOException(e.getMessage());
+                }
+                // The directory listing is no more current
+                this.getParent().invalidate();
+            }
+            catch(IOException e) {
+                this.error("Cannot create file", e);
+            }
+        }
     }
 
     @Override
