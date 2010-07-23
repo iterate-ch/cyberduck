@@ -115,6 +115,15 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             }
         }
+        for(BrowserController controller : MainController.getBrowsers()) {
+            if(controller.isMounted()) {
+                if(controller.getSession().getHost().toURL().equals(h.toURL())) {
+                    // Handle browser window already connected to the same host. #4215
+                    controller.window().makeKeyAndOrderFront(null);
+                    return;
+                }
+            }
+        }
         BrowserController doc = newDocument();
         doc.mount(h);
     }
