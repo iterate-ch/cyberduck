@@ -743,7 +743,13 @@ public class FTPPath extends Path {
             if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                this.getSession().getClient().validateTransfer();
+                try {
+                    this.getSession().getClient().validateTransfer();
+                }
+                catch(FTPException e) {
+                    this.status().setComplete(false);
+                    throw e;
+                }
             }
             if(this.status().isCanceled()) {
                 IOUtils.closeQuietly(in);
@@ -780,7 +786,13 @@ public class FTPPath extends Path {
             if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                this.getSession().getClient().validateTransfer();
+                try {
+                    this.getSession().getClient().validateTransfer();
+                }
+                catch(FTPException e) {
+                    this.status().setComplete(false);
+                    throw e;
+                }
             }
             if(this.status().isCanceled()) {
                 IOUtils.closeQuietly(in);
@@ -858,7 +870,13 @@ public class FTPPath extends Path {
             if(status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                this.getSession().getClient().validateTransfer();
+                try {
+                    this.getSession().getClient().validateTransfer();
+                }
+                catch(FTPException e) {
+                    this.status().setComplete(false);
+                    throw e;
+                }
             }
             if(status().isCanceled()) {
                 IOUtils.closeQuietly(in);
@@ -884,7 +902,13 @@ public class FTPPath extends Path {
             if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
-                this.getSession().getClient().validateTransfer();
+                try {
+                    this.getSession().getClient().validateTransfer();
+                }
+                catch(FTPException e) {
+                    this.status().setComplete(false);
+                    throw e;
+                }
             }
             if(status().isCanceled()) {
                 IOUtils.closeQuietly(in);
