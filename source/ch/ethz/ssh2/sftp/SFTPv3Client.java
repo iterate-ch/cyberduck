@@ -1019,6 +1019,36 @@ public class SFTPv3Client
 	}
 
     /**
+     * Open the file for reading.
+     */
+    public static final int SSH_FXF_READ = 0x00000001;
+    /**
+     * Open the file for writing.  If both this and SSH_FXF_READ are
+     * specified, the file is opened for both reading and writing.
+     */
+    public static final int SSH_FXF_WRITE = 0x00000002;
+    /**
+     * Force all writes to append data at the end of the file.
+     */
+    public static final int SSH_FXF_APPEND = 0x00000004;
+    /**
+     * If this flag is specified, then a new file will be created if one
+     * does not alread exist (if O_TRUNC is specified, the new file will
+     * be truncated to zero length if it previously exists).
+     */
+    public static final int SSH_FXF_CREAT = 0x00000008;
+    /**
+     * Forces an existing file with the same name to be truncated to zero
+     * length when creating a file by specifying SSH_FXF_CREAT.
+     * SSH_FXF_CREAT MUST also be specified if this flag is used.
+     */
+    public static final int SSH_FXF_TRUNC = 0x00000010;
+    /**
+     * Causes the request to fail if the named file already exists.
+     */
+    public static final int SSH_FXF_EXCL = 0x00000020;
+
+    /**
 	 * Open a file for reading.
 	 * 
 	 * @param fileName See the {@link SFTPv3Client comment} for the class for more details.
@@ -1027,7 +1057,7 @@ public class SFTPv3Client
 	 */
 	public SFTPv3FileHandle openFileRO(String fileName) throws IOException
 	{
-		return openFile(fileName, 0x00000001, null); // SSH_FXF_READ	
+		return openFile(fileName, SSH_FXF_READ, null);
 	}
 
 	/**
@@ -1039,7 +1069,7 @@ public class SFTPv3Client
 	 */
 	public SFTPv3FileHandle openFileRW(String fileName) throws IOException
 	{
-		return openFile(fileName, 0x00000003, null); // SSH_FXF_READ | SSH_FXF_WRITE
+		return openFile(fileName, SSH_FXF_READ | SSH_FXF_WRITE, null);
 	}
 
 	/**
@@ -1058,7 +1088,26 @@ public class SFTPv3Client
 	 */
 	public SFTPv3FileHandle openFileRWAppend(String fileName) throws IOException
 	{
-		return openFile(fileName, 0x00000007, null); // SSH_FXF_READ | SSH_FXF_WRITE | SSH_FXF_APPEND
+		return openFile(fileName, SSH_FXF_READ | SSH_FXF_WRITE | SSH_FXF_APPEND, null);
+	}
+
+    /**
+     * Open a file in append mode. The SFTP v3 draft says nothing but assuming normal POSIX
+     * behavior, all writes will be appendend to the end of the file, no matter which offset
+     * one specifies.
+     * <p>
+     * A side note for the curious: OpenSSH does an lseek() to the specified writing offset before each write(),
+     * even for writes to files opened in O_APPEND mode. However, bear in mind that when working
+     * in the O_APPEND mode, each write() includes an implicit lseek() to the end of the file
+     * (well, this is what the newsgroups say).
+     *
+     * @param fileName See the {@link SFTPv3Client comment} for the class for more details.
+     * @return a SFTPv3FileHandle handle
+     * @throws IOException
+     */
+	public SFTPv3FileHandle openFileWAppend(String fileName) throws IOException
+	{
+		return openFile(fileName, SSH_FXF_WRITE | SSH_FXF_APPEND, null);
 	}
 
 	/**
@@ -1090,11 +1139,11 @@ public class SFTPv3Client
 	 */
 	public SFTPv3FileHandle createFile(String fileName, SFTPv3FileAttributes attr) throws IOException
 	{
-		return openFile(fileName, 0x00000008 | 0x00000003, attr); // SSH_FXF_CREAT | SSH_FXF_READ | SSH_FXF_WRITE
+		return openFile(fileName, SSH_FXF_CREAT | SSH_FXF_READ | SSH_FXF_WRITE, attr);
 	}
 
 	/**
-	 * Create a file (truncate it if it already exists) and open it for reading and writing.
+	 * Create a file (truncate it if it already exists) and open it for writing.
 	 * Same as {@link #createFileTruncate(String, SFTPv3FileAttributes) createFileTruncate(fileName, null)}.
 	 * 
 	 * @param fileName See the {@link SFTPv3Client comment} for the class for more details.
@@ -1107,7 +1156,7 @@ public class SFTPv3Client
 	}
 
 	/**
-	 * reate a file (truncate it if it already exists) and open it for reading and writing.
+	 * reate a file (truncate it if it already exists) and open it for writing.
 	 * You can specify the default attributes of the file (the server may or may
 	 * not respect your wishes).
 	 * 
@@ -1122,7 +1171,7 @@ public class SFTPv3Client
 	 */
 	public SFTPv3FileHandle createFileTruncate(String fileName, SFTPv3FileAttributes attr) throws IOException
 	{
-		return openFile(fileName, 0x00000018 | 0x00000003, attr); // SSH_FXF_CREAT | SSH_FXF_TRUNC | SSH_FXF_READ | SSH_FXF_WRITE
+		return openFile(fileName, SSH_FXF_CREAT | SSH_FXF_TRUNC | SSH_FXF_WRITE, attr);
 	}
 
 	private byte[] createAttrs(SFTPv3FileAttributes attr)
@@ -1173,7 +1222,7 @@ public class SFTPv3Client
 		return tw.getBytes();
 	}
 
-	private SFTPv3FileHandle openFile(String fileName, int flags, SFTPv3FileAttributes attr) throws IOException
+	public SFTPv3FileHandle openFile(String fileName, int flags, SFTPv3FileAttributes attr) throws IOException
 	{
 		int req_id = generateNextRequestID();
 

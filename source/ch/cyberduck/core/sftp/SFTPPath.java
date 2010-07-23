@@ -24,10 +24,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.sftp.SFTPException;
-import ch.ethz.ssh2.sftp.SFTPv3DirectoryEntry;
-import ch.ethz.ssh2.sftp.SFTPv3FileAttributes;
-import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
+import ch.ethz.ssh2.sftp.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -440,8 +437,7 @@ public class SFTPPath extends Path {
                     this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
             SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
             int t = (int) (modified / 1000);
-            // We must both set the accessed and modified time
-            // See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+            // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
             attrs.atime = t;
             attrs.mtime = t;
             this.getSession().sftp().setstat(this.getAbsolute(), attrs);
@@ -499,26 +495,42 @@ public class SFTPPath extends Path {
                 }
                 in = this.getLocal().getInputStream();
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                    if(status().isResume() && this.exists()) {
-                        handle = this.getSession().sftp().openFileRWAppend(this.getAbsolute());
-                    }
-                    else {
-                        handle = this.getSession().sftp().createFileTruncate(this.getAbsolute());
-                    }
-                    // We do set the permissions here as otherwise we might have an empty mask for
-                    // interrupted file transfers
                     try {
-                        final String octal = this.attributes().getPermission().getOctalString();
-                        log.info("Updating permissions:" + octal);
-                        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                        attr.permissions = this.attributes().getPermission().getOctalNumber();
-                        this.getSession().sftp().fsetstat(handle, attr);
+                        SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+                        if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                            int t = (int) (this.attributes().getModificationDate() / 1000);
+                            // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+                            attrs.atime = t;
+                            attrs.mtime = t;
+                        }
+                        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                            // We do set the permissions here as otherwise we might have an empty mask for
+                            // interrupted file transfers
+                            attrs.permissions = this.attributes().getPermission().getOctalNumber();
+                        }
+                        if(status().isResume() && this.exists()) {
+                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                                    SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, attrs);
+                        }
+                        else {
+                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                                    SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, attrs);
+                        }
                     }
                     catch(SFTPException e) {
                         // We might not be able to change the attributes if we are
                         // not the owner of the file; but then we still want to proceed as we
                         // might have group write privileges
                         log.warn(e.getMessage());
+
+                        if(status().isResume() && this.exists()) {
+                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                                    SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
+                        }
+                        else {
+                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                                    SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
+                        }
                     }
                     out = new SFTPOutputStream(handle);
                     if(status().isResume()) {
@@ -538,18 +550,6 @@ public class SFTPPath extends Path {
                 }
 
                 this.upload(out, in, throttle, listener);
-
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    try {
-                        this.writeModificationDateImpl(this.getLocal().attributes().getModificationDate());
-                    }
-                    catch(SFTPException e) {
-                        // We might not be able to change the attributes if we are
-                        // not the owner of the file; but then we still want to proceed as we
-                        // might have group write privileges
-                        log.warn(e.getMessage());
-                    }
-                }
             }
         }
         catch(IOException e) {
@@ -565,6 +565,27 @@ public class SFTPPath extends Path {
             }
             catch(IOException e) {
                 log.error(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void touch() {
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                        this.getName()));
+
+                SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+                attr.permissions = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default")).getOctalNumber();
+                this.getSession().sftp().createFile(this.getAbsolute(), attr);
+
+                // The directory listing is no more current
+                this.getParent().invalidate();
+            }
+            catch(IOException e) {
+                this.error("Cannot create file", e);
             }
         }
     }
