@@ -302,10 +302,12 @@ public class S3Session extends CloudSession implements SSLSession {
                     return null;
                 }
                 this.check();
-                final String location = this.getClient().getBucketLocation(container);
+                String location = this.getClient().getBucketLocation(container);
                 if(StringUtils.isBlank(location)) {
-                    return "US"; //Default location US is null
+                    location = "US"; //Default location US is null
                 }
+                // Cache location
+                bucket.setLocation(location);
                 return location;
             }
             catch(S3ServiceException e) {
