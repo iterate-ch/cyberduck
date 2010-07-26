@@ -356,19 +356,13 @@ public class FTPSession extends Session implements SSLSession {
 
     }
 
-    /**
-     * AUTH command status flag.
-     */
-    private boolean auth = true;
-
     @Override
     protected void login(final Credentials credentials) throws IOException {
         try {
             final FTPClient client = this.getClient();
-            if(this.getHost().getProtocol().isSecure() && auth) {
+            if(this.getHost().getProtocol().isSecure()) {
                 // Only send AUTH before the first login attempt
                 ((FTPSClient) client).auth();
-                auth = false;
             }
 
             client.login(credentials.getUsername(), credentials.getPassword());
