@@ -381,6 +381,7 @@ public class CFPath extends CloudPath {
             try {
                 this.getSession().check();
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getName(), meta);
+                this.attributes().clear(false, false, false, true);
             }
             catch(IOException e) {
                 this.error("Cannot write file attributes", e);
