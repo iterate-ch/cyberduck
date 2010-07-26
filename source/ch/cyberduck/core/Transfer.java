@@ -325,6 +325,13 @@ public abstract class Transfer implements Serializable {
          * @see PathFilter#accept(AbstractPath)
          */
         public abstract void prepare(Path p);
+
+        /**
+         * Post processing.
+         *
+         * @param p
+         */
+        public abstract void complete(Path p);
     }
 
     /**
@@ -419,10 +426,16 @@ public abstract class Transfer implements Serializable {
         }
 
         if(filter.accept(p)) {
+            // Notification
             this.fireWillTransferPath(p);
             _current = p;
+            // Reset transfer status
             p.status().reset();
+            // Transfer
             transfer(p);
+            // Post process of file
+            filter.complete(p);
+            // Notification
             this.fireDidTransferPath(p);
         }
 

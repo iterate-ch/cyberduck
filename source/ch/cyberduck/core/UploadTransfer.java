@@ -171,7 +171,8 @@ public class UploadTransfer extends Transfer {
                             perm = file.getLocal().attributes().getPermission();
                         }
                     }
-                    file.attributes().setAcl(file.getSession().getPublicAcl(perm.getOtherPermissions()[Permission.READ],
+                    file.attributes().setAcl(file.getSession().getPublicAcl(file.getContainerName(),
+                            perm.getOtherPermissions()[Permission.READ],
                             perm.getOtherPermissions()[Permission.WRITE]));
                 }
             }
@@ -205,6 +206,14 @@ public class UploadTransfer extends Transfer {
                     file.cache().put(file.<Object>getReference(), new AttributedList<Path>());
                 }
             }
+        }
+
+        /**
+         * Post process
+         */
+        @Override
+        public void complete(Path p) {
+            ;
         }
 
     }

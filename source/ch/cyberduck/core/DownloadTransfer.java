@@ -154,6 +154,11 @@ public class DownloadTransfer extends Transfer {
                 file.getLocal().getParent().mkdir(true);
             }
         }
+
+        @Override
+        public void complete(Path p) {
+            ;
+        }
     }
 
     private final PathFilter<Path> childFilter = new PathFilter<Path>() {

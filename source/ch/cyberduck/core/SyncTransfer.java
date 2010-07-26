@@ -191,6 +191,11 @@ public class SyncTransfer extends Transfer {
             }
             return false;
         }
+
+        @Override
+        public void complete(Path p) {
+            ;
+        }
     };
 
     @Override
