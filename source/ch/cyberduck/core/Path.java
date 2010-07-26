@@ -331,6 +331,10 @@ public abstract class Path extends AbstractPath implements Serializable {
         return normalized;
     }
 
+    public String getContainerName() {
+        return String.valueOf(Path.DELIMITER);
+    }
+
     /**
      * Reference to the parent created lazily if needed
      */
