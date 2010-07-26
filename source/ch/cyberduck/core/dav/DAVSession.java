@@ -79,6 +79,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
     /**
      * @return
      */
+    @Override
     public AbstractX509TrustManager getTrustManager() {
         if(null == trustManager) {
             if(Preferences.instance().getBoolean("webdav.tls.acceptAnyCertificate")) {

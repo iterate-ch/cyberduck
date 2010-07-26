@@ -57,6 +57,7 @@ public class CFSession extends CloudSession implements SSLSession {
     /**
      * @return
      */
+    @Override
     public AbstractX509TrustManager getTrustManager() {
         if(null == trustManager) {
             if(Preferences.instance().getBoolean("cf.tls.acceptAnyCertificate")) {
