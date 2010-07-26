@@ -567,7 +567,6 @@ public class InfoController extends ToolbarWindowController {
                 aclRemoveButton.setEnabled(aclTable.numberOfSelectedRows().intValue() > 0);
             }
 
-
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
                 if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
@@ -724,6 +723,9 @@ public class InfoController extends ToolbarWindowController {
                 }
                 if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
                     final String value = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
+                    if(StringUtils.isBlank(value)) {
+                        return null;
+                    }
                     return NSString.stringWithString(StringUtils.isNotEmpty(value) ? value : "");
                 }
                 return null;
@@ -791,6 +793,16 @@ public class InfoController extends ToolbarWindowController {
             @Override
             protected boolean isTypeSelectSupported() {
                 return false;
+            }
+
+            public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
+                                                                     NSTableColumn c, NSInteger row) {
+                if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
+                    final String value = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
+                    if(StringUtils.isBlank(value)) {
+                        cell.setPlaceholderString(Locale.localizedString("Multiple files"));
+                    }
+                }
             }
         }).id());
     }
@@ -942,16 +954,25 @@ public class InfoController extends ToolbarWindowController {
     private void metadataInputDidEndEditing() {
         if(toggleMetadataSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
-
                 public void run() {
                     for(Path next : files) {
-                        ((CloudPath) next).writeMetadata(metadata);
+                        Map<String, String> updated = new HashMap<String, String>(metadata);
+                        for(String key : updated.keySet()) {
+                            // Prune metadata from entries which are unique to a single file.
+                            // For example md5-hash
+                            if(StringUtils.isBlank(updated.get(key))) {
+                                // Reset with previous value
+                                updated.put(key, next.attributes().getMetadata().get(key));
+                            }
+                        }
+                        ((CloudPath) next).writeMetadata(updated);
                     }
                 }
 
                 @Override
                 public void cleanup() {
                     toggleMetadataSettings(true);
+                    initMetadata();
                 }
 
                 @Override
@@ -1593,7 +1614,7 @@ public class InfoController extends ToolbarWindowController {
 
                     public void run() {
                         for(Path file : files) {
-                            if(null == file.attributes().getChecksum()) {
+                            if(StringUtils.isBlank(file.attributes().getChecksum())) {
                                 file.readChecksum();
                             }
                         }
@@ -1602,7 +1623,7 @@ public class InfoController extends ToolbarWindowController {
                     @Override
                     public void cleanup() {
                         for(Path file : files) {
-                            if(StringUtils.isEmpty(file.attributes().getChecksum())) {
+                            if(StringUtils.isBlank(file.attributes().getChecksum())) {
                                 updateField(checksumField, Locale.localizedString("Unknown"));
                             }
                             else {
@@ -1814,7 +1835,21 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     for(Path next : files) {
                         // Reading HTTP headers custom metadata
-                        updated.putAll(((CloudPath) next).readMetadata());
+                        if(next.attributes().getMetadata().isEmpty()) {
+                            ((CloudPath) next).readMetadata();
+                        }
+                        final Map<String, String> metadata = next.attributes().getMetadata();
+                        for(String key : metadata.keySet()) {
+                            // Prune metadata from entries which are unique to a single file.
+                            // For example md5-hash
+                            if(updated.containsKey(key)) {
+                                log.info("Nullify " + key + " from metadata because value is not equal for multiple files.");
+                                updated.put(key, null);
+                            }
+                            else {
+                                updated.put(key, metadata.get(key));
+                            }
+                        }
                     }
                 }
 
