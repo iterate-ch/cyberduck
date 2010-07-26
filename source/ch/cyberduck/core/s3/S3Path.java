@@ -346,7 +346,7 @@ public class S3Path extends CloudPath {
                 target.replaceAllMetadata(meta);
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
                 target.setMetadataComplete(false);
-                this.attributes().clear(false, false, false, false);
+                this.attributes().clear(false, false, false, true);
             }
             catch(S3ServiceException e) {
                 this.error("Cannot write file attributes", e);
