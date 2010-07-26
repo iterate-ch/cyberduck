@@ -90,6 +90,7 @@ public class S3Session extends CloudSession implements SSLSession {
     /**
      * @return
      */
+    @Override
     public AbstractX509TrustManager getTrustManager() {
         if(null == trustManager) {
             if(Preferences.instance().getBoolean("s3.tls.acceptAnyCertificate")) {
@@ -1076,10 +1077,20 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     @Override
-    public Acl getPublicAcl(boolean readable, boolean writable) {
-        Acl acl = new Acl();
-        acl.addAll(new Acl.CanonicalUser(this.getHost().getCredentials().getUsername()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()));
+    public Acl getPrivateAcl(String container) {
+        for(final S3Bucket bucket : buckets.values()) {
+            if(bucket.getName().equals(container)) {
+                return new Acl(new Acl.CanonicalUser(bucket.getOwner().getId()),
+                        new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()));
+            }
+        }
+        log.warn("No such container:" + container);
+        return new Acl();
+    }
+
+    @Override
+    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
+        Acl acl = this.getPrivateAcl(container);
         if(readable) {
             acl.addAll(new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
                     new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));

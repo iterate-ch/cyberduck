@@ -626,13 +626,17 @@ public abstract class Session {
         return Collections.emptyList();
     }
 
+    public Acl getPrivateAcl(String container) {
+        return Acl.EMPTY;
+    }
+
     /**
      *
-     * @param readable
-     * @param writable
-     * @return
+     * @param container
+     *@param readable
+     * @param writable   @return
      */
-    public Acl getPublicAcl(boolean readable, boolean writable) {
+    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
         return Acl.EMPTY;
     };
 
