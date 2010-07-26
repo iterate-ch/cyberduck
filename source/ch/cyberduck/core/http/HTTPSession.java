@@ -19,8 +19,7 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpVersion;
@@ -29,6 +28,17 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
@@ -69,6 +79,44 @@ public abstract class HTTPSession extends Session implements SSLSession {
 
     protected HTTPSession(Host h) {
         super(h);
+    }
+
+    protected DefaultHttpClient createClient() {
+        return new DefaultHttpClient() {
+            @Override
+            protected HttpParams createHttpParams() {
+                final HttpParams params = new BasicHttpParams();
+                HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
+                HttpProtocolParams.setUseExpectContinue(params, true);
+                HttpConnectionParams.setTcpNoDelay(params, true);
+                HttpConnectionParams.setSocketBufferSize(params, 8192);
+                HttpProtocolParams.setUserAgent(params, getUserAgent());
+                return params;
+            }
+
+            @Override
+            protected ClientConnectionManager createClientConnectionManager() {
+                SchemeRegistry registry = new SchemeRegistry();
+                if(host.getProtocol().isSecure()) {
+                    registry.register(
+                            new Scheme(host.getProtocol().getScheme(),
+                                    new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
+                                            getTrustManager()).getSSLContext()), host.getPort()));
+                }
+                else {
+                    registry.register(
+                            new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
+                }
+                return new SingleClientConnManager(this.getParams(), registry);
+            }
+        };
+    }
+
+    /**
+     * @return
+     */
+    public AbstractX509TrustManager getTrustManager() {
+        return new IgnoreX509TrustManager();
     }
 
     /**

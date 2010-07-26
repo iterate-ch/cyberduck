@@ -29,17 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -115,6 +104,7 @@ public class AzureSession extends CloudSession implements SSLSession {
 
     private AbstractX509TrustManager trustManager;
 
+    @Override
     public AbstractX509TrustManager getTrustManager() {
         if(null == trustManager) {
             if(Preferences.instance().getBoolean("azure.tls.acceptAnyCertificate")) {
@@ -153,34 +143,7 @@ public class AzureSession extends CloudSession implements SSLSession {
          */
         public HttpClient getHttp() {
             if(null == http) {
-                http = new DefaultHttpClient() {
-                    @Override
-                    protected HttpParams createHttpParams() {
-                        final HttpParams params = new BasicHttpParams();
-                        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-                        HttpProtocolParams.setUseExpectContinue(params, true);
-                        HttpConnectionParams.setTcpNoDelay(params, true);
-                        HttpConnectionParams.setSocketBufferSize(params, 8192);
-                        HttpProtocolParams.setUserAgent(params, getUserAgent());
-                        return params;
-                    }
-
-                    @Override
-                    protected ClientConnectionManager createClientConnectionManager() {
-                        SchemeRegistry registry = new SchemeRegistry();
-                        if(host.getProtocol().isSecure()) {
-                            registry.register(
-                                    new Scheme(host.getProtocol().getScheme(),
-                                            new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
-                                                    getTrustManager()).getSSLContext()), host.getPort()));
-                        }
-                        else {
-                            registry.register(
-                                    new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
-                        }
-                        return new SingleClientConnManager(this.getParams(), registry);
-                    }
-                };
+                http = createClient();
             }
             return http;
         }
@@ -631,7 +594,12 @@ public class AzureSession extends CloudSession implements SSLSession {
     }
 
     @Override
-    public Acl getPublicAcl(boolean readable, boolean writable) {
+    public Acl getPrivateAcl(String container) {
+        return new Acl();
+    }
+
+    @Override
+    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
         Acl acl = new Acl();
         if(readable) {
             acl.addAll(AzurePath.PUBLIC_ACL.getUser(), AzurePath.PUBLIC_ACL.getRole());
