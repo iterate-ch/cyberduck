@@ -95,7 +95,7 @@ public abstract class CloudPath extends Path {
     /**
      * @return Modifiable HTTP header metatdata key and values
      */
-    public abstract Map<String, String> readMetadata();
+    public abstract void readMetadata();
 
     /**
      * @param meta Modifiable HTTP header metatdata key and values

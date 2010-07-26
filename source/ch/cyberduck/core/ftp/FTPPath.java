@@ -675,7 +675,7 @@ public class FTPPath extends Path {
                 }
             }
         }
-        this.attributes().clear(false, false, true);
+        this.attributes().clear(false, false, true, false);
     }
 
     @Override
@@ -692,7 +692,7 @@ public class FTPPath extends Path {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         this.getSession().getClient().mfmt(modified, created, this.getName());
-        this.attributes().clear(true, false, false);
+        this.attributes().clear(true, false, false, false);
     }
 
     @Override

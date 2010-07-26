@@ -327,7 +327,7 @@ public class GDPath extends Path {
                     this.error("Cannot change permissions", e);
                 }
             }
-            this.attributes().clear(false, false, true);
+            this.attributes().clear(false, false, true, false);
         }
     }
 
@@ -781,6 +781,10 @@ public class GDPath extends Path {
     public void delete() {
         try {
             try {
+                if(this.attributes().isDuplicate()) {
+                    log.warn("Cannot delete revision " + this.attributes().getRevision());
+                    return;
+                }
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));

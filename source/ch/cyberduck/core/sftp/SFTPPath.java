@@ -416,7 +416,7 @@ public class SFTPPath extends Path {
                 }
             }
         }
-        this.attributes().clear(false, false, true);
+        this.attributes().clear(false, false, true, false);
     }
 
     @Override
@@ -441,7 +441,7 @@ public class SFTPPath extends Path {
             attrs.atime = t;
             attrs.mtime = t;
             this.getSession().sftp().setstat(this.getAbsolute(), attrs);
-            this.attributes().clear(true, false, false);
+            this.attributes().clear(true, false, false, false);
         }
     }
 

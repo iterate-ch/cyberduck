@@ -361,19 +361,18 @@ public class CFPath extends CloudPath {
      * @return Modifiable HTTP header metatdata key and values
      */
     @Override
-    public Map<String, String> readMetadata() {
+    public void readMetadata() {
         if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 final FilesObjectMetaData meta
                         = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getName());
-                return meta.getMetaData();
+                this.attributes().setMetadata(meta.getMetaData());
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
             }
         }
-        return Collections.emptyMap();
     }
 
     @Override

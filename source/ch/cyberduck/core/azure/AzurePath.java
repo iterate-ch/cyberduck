@@ -98,7 +98,7 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    public Map<String, String> readMetadata() {
+    public void readMetadata() {
         try {
             this.getSession().check();
 
@@ -106,24 +106,25 @@ public class AzurePath extends CloudPath {
             if(this.isContainer()) {
                 final IContainerProperties properties = container.getContainerProperties();
                 if(null == properties.getMetadata()) {
-                    return Collections.emptyMap();
+                    log.warn("No container properties for " + this.getAbsolute());
+                    return;
                 }
                 Map<String, String> metadata = new HashMap<String, String>();
                 for(Object key : properties.getMetadata().keySet()) {
                     metadata.put(key.toString(), properties.getMetadata().getSingleValue(key.toString()));
                 }
-                return metadata;
+                this.attributes().setMetadata(metadata);
             }
             else {
                 final IBlobProperties properties = container.getBlobProperties(this.getKey());
                 if(null == properties.getMetadata()) {
-                    return Collections.emptyMap();
+                    log.warn("No blob properties for " + this.getAbsolute());
                 }
                 Map<String, String> metadata = new HashMap<String, String>();
                 for(Object key : properties.getMetadata().keySet()) {
                     metadata.put(key.toString(), properties.getMetadata().getSingleValue(key.toString()));
                 }
-                return metadata;
+                this.attributes().setMetadata(metadata);
             }
         }
         catch(StorageException e) {
@@ -132,7 +133,6 @@ public class AzurePath extends CloudPath {
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-        return Collections.emptyMap();
     }
 
     @Override
@@ -152,6 +152,7 @@ public class AzurePath extends CloudPath {
                 properties.setMetadata(collection);
                 container.updateBlobMetadata(properties);
             }
+            this.attributes().clear(false, false, false, true);
         }
         catch(StorageException e) {
             this.error("Cannot write file attributes", e);
@@ -238,13 +239,15 @@ public class AzurePath extends CloudPath {
                         null, null));
             }
             container.setContainerAccessControl(list);
-            this.attributes().clear(false, false, true);
         }
         catch(StorageException e) {
             this.error("Cannot change permissions", e);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
+        }
+        finally {
+            this.attributes().clear(false, false, true, false);
         }
     }
 
@@ -600,7 +603,10 @@ public class AzurePath extends CloudPath {
     public void copy(AbstractPath copy) {
         if(attributes().isFile()) {
             final NameValueCollection metadata = new NameValueCollection();
-            metadata.putAll(this.readMetadata());
+            if(this.attributes().getMetadata().isEmpty()) {
+                this.readMetadata();
+            }
+            metadata.putAll(this.attributes().getMetadata());
             try {
                 this.getSession().getContainer(this.getContainerName()).copyBlob(((AzurePath) copy).getContainerName(),
                         ((AzurePath) copy).getKey(), this.getKey(), metadata, null);

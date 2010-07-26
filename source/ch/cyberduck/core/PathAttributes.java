@@ -26,6 +26,9 @@ import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
+import java.util.Map;
+
 /**
  * Attributes of a remote directory or file.
  *
@@ -101,6 +104,8 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private int revision;
 
+    private Map<String, String> metadata = Collections.emptyMap();
+
     public PathAttributes() {
         super();
     }
@@ -119,14 +124,6 @@ public class PathAttributes extends Attributes implements Serializable {
         if(sizeObj != null) {
             this.size = Long.parseLong(sizeObj);
         }
-        String modifiedObj = dict.stringForKey("Modified");
-        if(modifiedObj != null) {
-            this.modified = Long.parseLong(modifiedObj);
-        }
-        Object permissionObj = dict.objectForKey("Permission");
-        if(permissionObj != null) {
-            this.permission = new Permission(permissionObj);
-        }
     }
 
     public <T> T getAsDictionary() {
@@ -134,12 +131,6 @@ public class PathAttributes extends Attributes implements Serializable {
         dict.setStringForKey(String.valueOf(this.type), "Type");
         if(this.size != -1) {
             dict.setStringForKey(String.valueOf(this.size), "Size");
-        }
-        if(this.modified != -1) {
-            dict.setStringForKey(String.valueOf(this.modified), "Modified");
-        }
-        if(null != permission) {
-            dict.setObjectForKey(permission, "Permission");
         }
         return dict.<T>getSerialized();
     }
@@ -335,19 +326,28 @@ public class PathAttributes extends Attributes implements Serializable {
         this.duplicate = duplicate;
     }
 
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
     /**
      *
      */
     public void clear() {
-        this.clear(true, true, true);
+        this.clear(true, true, true, true);
     }
 
     /**
      * @param timestamp   Clear modification, creation and last access date
      * @param size        Clear content length
      * @param permissions Clear permissions and ACLs
+     * @param metadata
      */
-    public void clear(boolean timestamp, boolean size, boolean permissions) {
+    public void clear(boolean timestamp, boolean size, boolean permissions, boolean metadata) {
         if(timestamp) {
             this.setModificationDate(-1);
             this.setCreationDate(-1);
@@ -359,6 +359,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(permissions) {
             this.setPermission(Permission.EMPTY);
             this.setAcl(Acl.EMPTY);
+        }
+        if(metadata) {
+            this.setMetadata(Collections.<String, String>emptyMap());
         }
     }
 }
