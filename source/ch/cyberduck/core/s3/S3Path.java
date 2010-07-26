@@ -491,11 +491,15 @@ public class S3Path extends CloudPath {
                     // Owner gets FULL_CONTROL. No one else has access rights (default).
                     object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
                 }
-                else if(acl.equals(this.getSession().getPublicAcl(true, false))) {
+                else if(acl.equals(this.getSession().getPrivateAcl(this.getContainerName()))) {
+                    // Owner gets FULL_CONTROL. No one else has access rights (default).
+                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+                }
+                else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, false))) {
                     // Owner gets FULL_CONTROL and the anonymous principal is granted READ access
                     object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
                 }
-                else if(acl.equals(this.getSession().getPublicAcl(true, true))) {
+                else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, true))) {
                     // Owner gets FULL_CONTROL, the anonymous principal is granted READ and WRITE access
                     object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE);
                 }
@@ -556,6 +560,7 @@ public class S3Path extends CloudPath {
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     if(null != bucket.getOwner()) {
                         p.attributes().setOwner(bucket.getOwner().getDisplayName());
+                        p.attributes().setGroup(bucket.getOwner().getId());
                     }
                     if(null != bucket.getCreationDate()) {
                         p.attributes().setCreationDate(bucket.getCreationDate().getTime());
