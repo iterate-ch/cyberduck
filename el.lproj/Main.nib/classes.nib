@@ -43,6 +43,7 @@
         downloadAsButtonClicked = id;
         downloadButtonClicked = id;
         downloadToButtonClicked = id;
+        duplicateBookmarkButtonClicked = id;
         duplicateFileButtonClicked = id;
         editBookmarkButtonClicked = id;
         editButtonClicked = id;
