@@ -29,6 +29,8 @@
 				<string>id</string>
 				<key>downloadToButtonClicked</key>
 				<string>id</string>
+				<key>duplicateBookmarkButtonClicked</key>
+				<string>id</string>
 				<key>duplicateFileButtonClicked</key>
 				<string>id</string>
 				<key>editBookmarkButtonClicked</key>
