@@ -112,7 +112,7 @@ public class GotoController extends SheetController {
     protected void gotoFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
         final Path dir = PathFactory.createPath(this.getSession(), workdir.getAsDictionary());
-        if(filename.charAt(0) != Path.DELIMITER) {
+        if(!filename.startsWith(String.valueOf(Path.DELIMITER))) {
             dir.setPath(workdir.getAbsolute(), filename);
         }
         else {
