@@ -27,9 +27,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
-import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -166,6 +167,12 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                         return super.validateDrop(outlineView, destination, row, draggingInfo);
                     }
                     else {
+                        for(Path next : PathPasteboard.getPasteboard(controller.getSession().getHost()).getFiles(controller.getSession())) {
+                            if(destination.equals(next)) {
+                                // Do not allow dragging onto myself. Fix #4320
+                                return NSDraggingInfo.NSDragOperationNone;
+                            }
+                        }
                         outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
                         return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                     }
