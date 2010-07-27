@@ -97,7 +97,7 @@ public class DAVPath extends Path {
                     this.getName()));
 
             this.getSession().getClient().setPath(this.attributes().isDirectory() ?
-                    this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
+                    this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
 
             this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
             attributes().setSize(this.getSession().getClient().getGetContentLength());
@@ -115,7 +115,7 @@ public class DAVPath extends Path {
                     this.getName()));
 
             this.getSession().getClient().setPath(this.attributes().isDirectory() ?
-                    this.getAbsolute() + Path.DELIMITER : this.getAbsolute());
+                    this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
 
             this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
             attributes().setModificationDate(this.getSession().getClient().getGetLastModified());

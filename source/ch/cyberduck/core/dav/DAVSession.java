@@ -131,7 +131,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
         this.DAV = new DAVResource(host);
         final String workdir = host.getDefaultPath();
         if(StringUtils.isNotBlank(workdir)) {
-            this.getClient().setPath(workdir.startsWith(String.valueOf(Path.DELIMITER)) ? workdir : Path.DELIMITER + workdir);
+            this.getClient().setPath(workdir.startsWith(String.valueOf(Path.DELIMITER)) ? workdir : String.valueOf(Path.DELIMITER) + workdir);
         }
 
         this.configure();
@@ -259,7 +259,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        this.getClient().setPath(workdir.isRoot() ? String.valueOf(Path.DELIMITER) : workdir.getAbsolute() + Path.DELIMITER);
+        this.getClient().setPath(workdir.isRoot() ? String.valueOf(Path.DELIMITER) : workdir.getAbsolute() + String.valueOf(Path.DELIMITER));
         super.setWorkdir(workdir);
     }
 

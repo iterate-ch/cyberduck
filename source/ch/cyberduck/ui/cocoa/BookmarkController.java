@@ -85,7 +85,7 @@ public class BookmarkController extends WindowController {
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
                 host.getCredentials().setUsername(member);
-                host.setDefaultPath(Path.DELIMITER + member);
+                host.setDefaultPath(String.valueOf(Path.DELIMITER) + member);
             }
         }
         host.setProtocol(protocol);

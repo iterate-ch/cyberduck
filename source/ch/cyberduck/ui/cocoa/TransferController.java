@@ -687,6 +687,8 @@ public class TransferController extends WindowController implements NSToolbar.De
             @Override
             public void pause() {
                 transfer.fireTransferQueued();
+                // Upon retry do not suggest to overwrite already completed items from the transfer
+                resume = true;
                 super.pause();
                 transfer.fireTransferResumed();
             }

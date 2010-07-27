@@ -123,7 +123,7 @@ public class SFTPPath extends Path {
                         try {
                             String target = this.getSession().sftp().readLink(p.getAbsolute());
                             if(!target.startsWith(String.valueOf(Path.DELIMITER))) {
-                                target = Path.normalize(this.getAbsolute() + Path.DELIMITER + target);
+                                target = Path.normalize(this.getAbsolute() + String.valueOf(Path.DELIMITER) + target);
                             }
                             p.setSymlinkTarget(target);
                             SFTPv3FileAttributes attr = this.getSession().sftp().stat(target);

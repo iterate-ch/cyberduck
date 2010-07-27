@@ -62,7 +62,7 @@ public abstract class Editor {
         this.edited = path;
         final Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("editor.tmp.directory"),
-                        edited.getHost().getHostname() + Path.DELIMITER + edited.getParent().getAbsolute()));
+                        edited.getHost().getHostname() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
         this.edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
     }
 

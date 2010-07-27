@@ -80,11 +80,11 @@ public class IDiskPath extends DAVPath {
         final String member = this.getHost().getCredentials().getUsername();
 
         // Maps to http://homepage.mac.com/<member>
-        final String homepage = Path.DELIMITER + member + Path.DELIMITER + "Sites";
+        final String homepage = String.valueOf(Path.DELIMITER) + member + String.valueOf(Path.DELIMITER) + "Sites";
         // Maps to http://web.mac.com/<member>
-        final String sites = Path.DELIMITER + member + Path.DELIMITER + "Web/Sites";
+        final String sites = String.valueOf(Path.DELIMITER) + member + String.valueOf(Path.DELIMITER) + "Web/Sites";
 
-        final String gallery = Path.DELIMITER + member + Path.DELIMITER + "Web/Sites/_gallery";
+        final String gallery = String.valueOf(Path.DELIMITER) + member + String.valueOf(Path.DELIMITER) + "Web/Sites/_gallery";
 
         String absolute = this.getAbsolute();
         if(absolute.startsWith(homepage)) {

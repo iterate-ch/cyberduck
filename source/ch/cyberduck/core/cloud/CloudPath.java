@@ -86,7 +86,7 @@ public abstract class CloudPath extends Path {
         if(this.isContainer()) {
             return null;
         }
-        if(this.getAbsolute().startsWith(Path.DELIMITER + this.getContainerName())) {
+        if(this.getAbsolute().startsWith(String.valueOf(Path.DELIMITER) + this.getContainerName())) {
             return this.getAbsolute().substring(this.getContainerName().length() + 2);
         }
         return null;

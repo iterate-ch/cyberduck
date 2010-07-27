@@ -581,7 +581,7 @@ public class S3Path extends CloudPath {
                     // specified prefix. If you omit this optional argument, the value
                     // of Prefix for your query will be the empty string.
                     // In other words, the results will be not be restricted by prefix.
-                    prefix = this.getKey() + Path.DELIMITER;
+                    prefix = this.getKey() + String.valueOf(Path.DELIMITER);
                 }
                 // If this optional, Unicode string parameter is included with your request,
                 // then keys that contain the same string between the prefix and the first
@@ -1015,7 +1015,7 @@ public class S3Path extends CloudPath {
                     + this.getSession().getHostnameForContainer(this.getContainerName()) + key;
         }
         else {
-            return this.getSession().getHost().toURL() + Path.DELIMITER + this.getContainerName() + key;
+            return this.getSession().getHost().toURL() + String.valueOf(Path.DELIMITER) + this.getContainerName() + key;
         }
     }
 
