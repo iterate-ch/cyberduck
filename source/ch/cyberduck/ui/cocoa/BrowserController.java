@@ -1565,6 +1565,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         c.window().makeKeyAndOrderFront(null);
     }
 
+    @Action
+    public void duplicateBookmarkButtonClicked(final ID sender) {
+        final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
+        this.toggleBookmarks(true);
+        final Host duplicate = new Host(selected.getAsDictionary());
+        this.addBookmark(duplicate);
+        BookmarkController c = BookmarkController.Factory.create(duplicate);
+        c.window().makeKeyAndOrderFront(null);
+    }
+
     @Outlet
     private NSButton addBookmarkButton;
 
@@ -1590,9 +1600,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     Preferences.instance().getProperty("connection.hostname.default"),
                     Preferences.instance().getInteger("connection.port.default"));
         }
-
         this.toggleBookmarks(true);
+        this.addBookmark(item);
+    }
 
+    private void addBookmark(Host item) {
         bookmarkModel.setFilter(null);
         bookmarkModel.getSource().add(item);
         final int row = bookmarkModel.getSource().lastIndexOf(item);
@@ -3766,6 +3778,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow().intValue() != -1;
+        }
+        else if(action.equals(Foundation.selector("duplicateBookmarkButtonClicked:"))) {
+            return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
         }
         else if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
             return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
