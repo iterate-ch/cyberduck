@@ -440,7 +440,7 @@ public class TransportManager
 		throw new IOException("Unsupported ProxyData");
 	}
 
-	public void initialize(CryptoWishList cwl, ServerHostKeyVerifier verifier, DHGexParameters dhgex,
+	public void initialize(String identification, CryptoWishList cwl, ServerHostKeyVerifier verifier, DHGexParameters dhgex,
 			int connectTimeout, SecureRandom rnd, ProxyData proxyData) throws IOException
 	{
 		/* First, establish the TCP connection to the SSH-2 server */
@@ -452,7 +452,7 @@ public class TransportManager
 		 * for later use.
 		 */
 
-		ClientServerHello csh = new ClientServerHello(sock.getInputStream(), sock.getOutputStream());
+		ClientServerHello csh = new ClientServerHello(identification, sock.getInputStream(), sock.getOutputStream());
 
 		tc = new TransportConnection(sock.getInputStream(), sock.getOutputStream(), rnd);
 

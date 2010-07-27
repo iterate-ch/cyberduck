@@ -43,7 +43,7 @@ public class Connection
 	/**
 	 * The identifier presented to the SSH-2 server.
 	 */
-	public final static String identification = "Ganymed Build_211beta5";
+	private String identification = "Ganymed";
 
 	/* Will be used to generate all random data needed for the current connection.
 	 * Note: SecureRandom.nextBytes() is thread safe.
@@ -128,6 +128,13 @@ public class Connection
 	{
 		this.hostname = hostname;
 		this.port = port;
+	}
+
+	public Connection(String hostname, int port, String identification)
+	{
+		this.hostname = hostname;
+		this.port = port;
+        this.identification = identification;
 	}
 
 	/**
@@ -693,7 +700,8 @@ public class Connection
 
 			try
 			{
-				tm.initialize(cryptoWishList, verifier, dhgexpara, connectTimeout, getOrCreateSecureRND(), proxyData);
+				tm.initialize(identification, cryptoWishList, verifier, dhgexpara, connectTimeout,
+                        getOrCreateSecureRND(), proxyData);
 			}
 			catch (SocketTimeoutException se)
 			{

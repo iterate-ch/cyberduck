@@ -53,9 +53,9 @@ public class ClientServerHello
 		return len;
 	}
 
-	public ClientServerHello(InputStream bi, OutputStream bo) throws IOException
+	public ClientServerHello(String identification, InputStream bi, OutputStream bo) throws IOException
 	{
-		client_line = "SSH-2.0-" + Connection.identification;
+		client_line = "SSH-2.0-" + identification;
 
 		bo.write((client_line + "\r\n").getBytes());
 		bo.flush();

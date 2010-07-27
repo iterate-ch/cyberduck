@@ -128,7 +128,7 @@ public class SFTPSession extends Session {
         }
         this.fireConnectionWillOpenEvent();
 
-        SSH = new Connection(this.getHostname(), host.getPort());
+        SSH = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
 
         final int timeout = this.timeout();
         this.getClient().connect(verifier, timeout, timeout);
@@ -184,7 +184,7 @@ public class SFTPSession extends Session {
 
                 @Override
                 public String getPasswordPlaceholder() {
-                    return credentials.getPasswordPlaceholder();
+                    return Locale.localizedString("One-time passcode", "Credentials");
                 }
             };
             this.getLoginController().prompt(host.getProtocol(), additional,
@@ -314,7 +314,7 @@ public class SFTPSession extends Session {
 
                     @Override
                     public String getPasswordPlaceholder() {
-                        return Locale.localizedString("One-time password", "Credentials");
+                        return Locale.localizedString("One-time passcode", "Credentials");
                     }
                 };
                 SFTPSession.this.getLoginController().prompt(host.getProtocol(), credentials,
