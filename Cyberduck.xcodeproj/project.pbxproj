@@ -101,6 +101,7 @@
 		4741662206C4FC4000AC0BD2 /* stop.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 474165AD06C4FC4000AC0BD2 /* stop.tiff */; };
 		474166A606C6555E00AC0BD2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474166A406C6555E00AC0BD2 /* InfoPlist.strings */; };
 		4741686B06C6BA9400AC0BD2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4741686906C6BA9400AC0BD2 /* Localizable.strings */; };
+		4743700B11FF0D6C00BDCC48 /* transparent.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4743700A11FF0D6C00BDCC48 /* transparent.tiff */; };
 		474520F21076B60600823467 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		474522C61076B68E00823467 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		474523921076B6A900823467 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -811,6 +812,7 @@
 		4741687F06C6BB0100AC0BD2 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4741688106C6BB1600AC0BD2 /* es */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4741688306C6BB2100AC0BD2 /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
+		4743700A11FF0D6C00BDCC48 /* transparent.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = transparent.tiff; sourceTree = "<group>"; };
 		474522C51076B68E00823467 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		474523971076B6D800823467 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		47457F8C09980270002C93C3 /* UKCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKCrashReporter.h; sourceTree = "<group>"; };
@@ -1723,6 +1725,7 @@
 				47905BE10AE3D6FF00F9E193 /* unlocked.tiff */,
 				47905BE20AE3D6FF00F9E193 /* locked.tiff */,
 				4754786A0A232C9A00CD6EAC /* cancel.tiff */,
+				4743700A11FF0D6C00BDCC48 /* transparent.tiff */,
 				4781AF400828423100B3E0FA /* download0.icns */,
 				475D17B70805D54C00166B8A /* download1.icns */,
 				475D17B60805D54C00166B8A /* download2.icns */,
@@ -2492,6 +2495,7 @@
 				4783C6F511EC62B6006D9FAD /* azure-icon.png in Resources */,
 				4783C6F811EC62C4006D9FAD /* connection-secure.tiff in Resources */,
 				4783C6F911EC62C4006D9FAD /* connection.tiff in Resources */,
+				4743700B11FF0D6C00BDCC48 /* transparent.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

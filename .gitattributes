@@ -852,6 +852,7 @@ img/statusRed.tiff -text svneol=unset#image/tiff
 img/statusYellow.tiff -text svneol=unset#image/tiff
 img/stop.tiff -text svneol=unset#image/tiff
 img/sync.tiff -text svneol=unset#image/tiff
+img/transparent.tiff -text
 img/trash.tiff -text svneol=unset#image/tiff
 img/turtle.tiff -text svneol=unset#image/tiff
 img/unlocked.tiff -text svneol=unset#image/tiff
