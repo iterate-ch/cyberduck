@@ -1659,16 +1659,18 @@ public class InfoController extends ToolbarWindowController {
         }
         boolean logging = false;
         boolean versioning = false;
+        boolean storageclass = false;
         if(enable) {
             logging = ((S3Session) session).isLoggingSupported();
             versioning = ((S3Session) session).isVersioningSupported();
+            storageclass = ((S3Session)session).getSupportedStorageClasses().size() > 1;
         }
+        bucketVersioningButton.setEnabled(stop && enable && versioning);
+        bucketMfaButton.setEnabled(stop && enable && versioning
+                && bucketVersioningButton.state() == NSCell.NSOnState);
+        bucketLoggingButton.setEnabled(stop && enable && logging);
         for(Path file : files) {
-            bucketVersioningButton.setEnabled(stop && enable && versioning);
-            bucketMfaButton.setEnabled(stop && enable && versioning
-                    && bucketVersioningButton.state() == NSCell.NSOnState);
-            bucketLoggingButton.setEnabled(stop && enable && logging);
-            storageClassPopup.setEnabled(stop && enable && file.attributes().isFile());
+            storageClassPopup.setEnabled(stop && enable && storageclass && file.attributes().isFile());
         }
         if(stop) {
             s3Progress.stopAnimation(null);
