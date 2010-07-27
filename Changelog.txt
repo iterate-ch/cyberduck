@@ -16,6 +16,7 @@ Changelog. Last modified: $Date$
 - [Feature] Download previous file version (S3, Google Docs)
 - [Feature] Revert to previous file version (S3)
 - [Feature] Eucalyptus Walrus support enabled by default (S3)
+- [Feature] Duplicate Bookmark (#3385)
 - [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
 - [Bugfix] Improved interoperability with Dunkel Cloud Storage (S3)
 - [Bugfix] Trust validation failure with self signed certificates for HTTP redirects (WebDAV) (#2443)
