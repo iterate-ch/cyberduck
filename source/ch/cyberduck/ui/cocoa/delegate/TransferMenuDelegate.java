@@ -70,7 +70,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
             item.setEnabled(false);
             item.setTarget(null);
         }
-        item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
+        //item.setState(path.getLocal().exists() ? NSCell.NSOnState : NSCell.NSOffState);
         item.setRepresentedObject(path.getLocal().getAbsolute());
         item.setImage(IconCache.instance().iconForPath(path, 16));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
