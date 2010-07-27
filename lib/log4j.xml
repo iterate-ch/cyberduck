@@ -9,8 +9,14 @@
     <logger name="httpclient.wire.header" additivity="false">
         <level value="debug"/>
     </logger>
+    <logger name="httpclient.wire.content" additivity="false">
+        <level value="error"/>
+    </logger>
     <logger name="org.apache.http.headers" additivity="false">
         <level value="debug"/>
+    </logger>
+    <logger name="org.apache.http.wire" additivity="false">
+        <level value="error"/>
     </logger>
     <root>
         <level value="error"/>
