@@ -20,13 +20,10 @@ package ch.cyberduck.ui.cocoa.model;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.PathReferenceFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Mapper between path references returned from the outline view model and its internal
@@ -44,7 +41,7 @@ public class OutlinePathReference extends PathReference<NSObject> {
      * @param path
      */
     private OutlinePathReference(AbstractPath path) {
-        final StringBuilder reference = new StringBuilder(path.getAbsolute()).append(Path.DELIMITER);
+        final StringBuilder reference = new StringBuilder(path.getAbsolute());
         if(path.attributes().isDuplicate()) {
             reference.append("-").append(path.attributes().getVersionId());
         }
