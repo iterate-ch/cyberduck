@@ -764,7 +764,7 @@ public class BookmarkController extends WindowController {
         pkCheckbox.setEnabled(host.getProtocol().equals(Protocol.SFTP));
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.NSOnState);
-            this.updateField(pkLabel, host.getCredentials().getIdentity().toURL());
+            this.updateField(pkLabel, host.getCredentials().getIdentity().getAbbreviatedPath());
             pkLabel.setTextColor(NSColor.textColor());
         }
         else {

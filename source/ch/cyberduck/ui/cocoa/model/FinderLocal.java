@@ -596,11 +596,6 @@ public class FinderLocal extends Local {
 
     @Override
     public String toString() {
-        return this.toURL();
-    }
-
-    @Override
-    public String toURL() {
         return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
     }
 }

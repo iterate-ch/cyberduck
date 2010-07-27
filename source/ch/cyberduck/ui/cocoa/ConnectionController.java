@@ -219,7 +219,7 @@ public class ConnectionController extends SheetController {
         this.anonymousCheckboxClicked(anonymousCheckbox);
         if(host.getCredentials().isPublicKeyAuthentication()) {
             pkCheckbox.setState(NSCell.NSOnState);
-            pkLabel.setStringValue(host.getCredentials().getIdentity().toURL());
+            pkLabel.setStringValue(host.getCredentials().getIdentity().getAbbreviatedPath());
         }
         else {
             this.updateIdentity();

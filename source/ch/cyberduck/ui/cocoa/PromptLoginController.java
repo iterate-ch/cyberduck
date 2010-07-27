@@ -236,7 +236,7 @@ public class PromptLoginController extends AbstractLoginController {
                 this.pkCheckbox.setEnabled(enablePublicKey);
                 if(credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
-                    this.updateField(this.pkLabel, credentials.getIdentity().toURL());
+                    this.updateField(this.pkLabel, credentials.getIdentity().getAbbreviatedPath());
                     this.pkLabel.setTextColor(NSColor.textColor());
                 }
                 else {
