@@ -25,6 +25,10 @@
 "STANDARD" = "Navadno Amazon S3 shranjevanje podatkov";
 "REDUCED_REDUNDANCY" = "»Reduced Redundancy Storage« (RSS)";
 
+/* Google Login Credentials */
+"Google Account Email" = "Google Account Email";
+"Google Account Password" = "Google Account Password";
+
 /* MFA */
 "Multi-Factor Authentication" = "Multi-Factor Authentication";
 "MFA Serial Number" = "MFA Serial Number";
@@ -35,7 +39,3 @@
 "Email Address" = "Email Address";
 "http://acs.amazonaws.com/groups/global/AllUsers" = "http://acs.amazonaws.com/groups/global/AllUsers";
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
-
-/* Versioning */
-"Revert Version" = "Revert Version";
-"Download Version" = "Download Version";
