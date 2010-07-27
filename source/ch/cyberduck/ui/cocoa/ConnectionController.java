@@ -95,13 +95,12 @@ public class ConnectionController extends SheetController {
         usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
         passField.cell().setPlaceholderString(protocol.getPasswordPlaceholder());
         if(protocol.equals(Protocol.IDISK)) {
-            usernameField.cell().setPlaceholderString(Locale.localizedString("MobileMe Member Name", "IDisk"));
             final String member = Preferences.instance().getProperty("iToolsMember");
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
                 usernameField.setStringValue(member);
                 usernameField.setEnabled(false);
-                pathField.setStringValue(Path.DELIMITER + member);
+                pathField.setStringValue(String.valueOf(Path.DELIMITER) + member);
                 pathField.setEnabled(false);
             }
         }
