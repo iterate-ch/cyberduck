@@ -28,9 +28,9 @@ import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 import ch.cyberduck.ui.cocoa.view.CDControllerCell;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -39,6 +39,8 @@ import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
+
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -102,6 +104,8 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     public void setLocalField(NSTextField localField) {
         this.localField = localField;
+        this.localField.setAllowsEditingTextAttributes(true);
+        this.localField.setSelectable(true);
     }
 
     @Outlet
@@ -481,11 +485,14 @@ public class TransferController extends WindowController implements NSToolbar.De
         if(1 == selected) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             // Draw text fields at the bottom
-            final String url = transfer.getRoot().toURL();
-            urlField.setStringValue(url);
+            String url = transfer.getRoot().toURL();
+            urlField.setAttributedStringValue(
+                    HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(url,
+                            TRUNCATE_MIDDLE_ATTRIBUTES), url));
             if(transfer.numberOfRoots() == 1) {
-                localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(transfer.getRoot().getLocal().getAbsolute(),
-                        TRUNCATE_MIDDLE_ATTRIBUTES));
+                localField.setAttributedStringValue(
+                        HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(transfer.getRoot().getLocal().getAbsolute(),
+                                TRUNCATE_MIDDLE_ATTRIBUTES), transfer.getRoot().getLocal().toURL()));
             }
             else {
                 localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Multiple files"),
