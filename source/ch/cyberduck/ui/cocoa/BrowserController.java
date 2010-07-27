@@ -2853,14 +2853,28 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return false;
     }
 
+    @Action
+    public void copy(final ID sender) {
+        final NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+        pasteboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+        StringBuilder copy = new StringBuilder();
+        for(Path selected : this.getSelectedPaths()) {
+            copy.append(selected.getAbsolute()).append("\n");
+        }
+        if(!pasteboard.setStringForType(copy.toString(), NSPasteboard.StringPboardType)) {
+            log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
+        }
+    }
+
+    @Action
     public void cut(final ID sender) {
         for(Path selected : this.getSelectedPaths()) {
             // Writing data for private use when the item gets dragged to the transfer queue.
             PathPasteboard.getPasteboard(this.getSession().getHost()).add(selected.<NSDictionary>getAsDictionary());
         }
-        final NSPasteboard generalPasteboard = NSPasteboard.generalPasteboard();
-        generalPasteboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-        if(!generalPasteboard.setStringForType(this.getSelectedPath().getAbsolute(), NSPasteboard.StringPboardType)) {
+        final NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
+        pasteboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+        if(!pasteboard.setStringForType(this.getSelectedPath().getAbsolute(), NSPasteboard.StringPboardType)) {
             log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
         }
     }
@@ -3718,6 +3732,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private boolean validateItem(final Selector action) {
         if(action.equals(Foundation.selector("cut:"))) {
+            return this.isMounted() && this.getSelectionCount() > 0;
+        }
+        else if(action.equals(Foundation.selector("copy:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("pasteFromFinder:"))) {
