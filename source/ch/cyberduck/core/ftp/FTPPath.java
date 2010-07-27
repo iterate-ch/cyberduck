@@ -399,8 +399,14 @@ public class FTPPath extends Path {
                 this.getSession().getClient().mkdir(this.getName());
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        this.writeUnixPermissionsImpl(new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
+                        try {
+                            this.writeUnixPermissionsImpl(new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
+                        }
+                        catch(FTPException ignore) {
+                            //CHMOD not supported; ignore
+                            log.warn(ignore.getMessage());
+                        }
                     }
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
