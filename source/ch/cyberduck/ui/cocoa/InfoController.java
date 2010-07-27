@@ -662,6 +662,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleAclSettings(true);
+                    initAcl();
                 }
 
                 @Override
