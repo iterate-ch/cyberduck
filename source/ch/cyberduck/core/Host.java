@@ -273,7 +273,7 @@ public class Host implements Serializable {
             dict.setStringForKey(this.getEncoding(), "Encoding");
         }
         if(null != this.getCredentials().getIdentity()) {
-            dict.setStringForKey(this.getCredentials().getIdentity().toURL(), "Private Key File");
+            dict.setStringForKey(this.getCredentials().getIdentity().getAbbreviatedPath(), "Private Key File");
         }
         if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null != this.getFTPConnectMode()) {
@@ -605,7 +605,7 @@ public class Host implements Serializable {
      */
     public void setDownloadFolder(String folder) {
         log.debug("setDownloadFolder:" + folder);
-        this.downloadFolder = LocalFactory.createLocal(folder).toURL();
+        this.downloadFolder = LocalFactory.createLocal(folder).getAbbreviatedPath();
     }
 
     /**
