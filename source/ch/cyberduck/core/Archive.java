@@ -214,19 +214,20 @@ public abstract class Archive {
      * @return
      */
     public String getCompressCommand(final List<Path> paths) {
-        String archive;
+        StringBuilder archive = new StringBuilder();
         if(paths.size() == 1) {
-            archive = paths.get(0).getAbsolute();
+            archive.append(paths.get(0).getAbsolute());
         }
         else {
-            archive = paths.get(0).getParent().getAbsolute() + Path.DELIMITER + "Archive";
+            // Use default filename
+            archive.append(paths.get(0).getParent().getAbsolute()).append(Path.DELIMITER).append("Archive");
         }
         final List<String> files = new ArrayList<String>();
         for(Path path : paths) {
             files.add(this.escape(path.getAbsolute()));
         }
         return MessageFormat.format(Preferences.instance().getProperty("archive.command.create." + this.getIdentifier()),
-                this.escape(archive), StringUtils.join(files, " "));
+                this.escape(archive.toString()), StringUtils.join(files, " "));
     }
 
     /**
