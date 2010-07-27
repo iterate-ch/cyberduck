@@ -1010,13 +1010,11 @@ public class S3Path extends CloudPath {
             return this.createSignedUrl();
         }
         final String key = this.isContainer() ? "" : this.encode(this.getKey());
-        if(ServiceUtils.isBucketNameValidDNSName(this.getContainerName())) {
-            return Protocol.S3.getScheme() + "://"
-                    + this.getSession().getHostnameForContainer(this.getContainerName()) + key;
+        final String hostnameForContainer = this.getSession().getHostnameForContainer(this.getContainerName());
+        if(hostnameForContainer.equals(this.getSession().getHost().getHostname())) {
+            return Protocol.S3.getScheme() + "://" + this.getSession().getHost().getHostname() + this.getAbsolute();
         }
-        else {
-            return this.getSession().getHost().toURL() + String.valueOf(Path.DELIMITER) + this.getContainerName() + key;
-        }
+        return Protocol.S3.getScheme() + "://" + hostnameForContainer + key;
     }
 
     @Override
