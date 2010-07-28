@@ -311,6 +311,8 @@ public class FTPSession extends Session implements SSLSession {
         client.setMlsdListSupportedEnabled(Preferences.instance().getBoolean("ftp.sendMlsdListCommand"));
         client.setStrictReturnCodes(true);
         client.setConnectMode(this.getConnectMode());
+        // AUTH command required before login
+        auth = true;
     }
 
     /**
@@ -367,12 +369,21 @@ public class FTPSession extends Session implements SSLSession {
 
     }
 
+    /**
+     * Send TLS AUTH command before user credentials.
+     */
+    private boolean auth;
+
     @Override
     protected void login(LoginController controller, final Credentials credentials) throws IOException {
         try {
             final FTPClient client = this.getClient();
             if(this.getHost().getProtocol().isSecure() /*|| isTLSSupported()*/) {
-                ((FTPSClient) client).auth();
+                if(auth) {
+                    // Only send AUTH before the first login attempt
+                    ((FTPSClient) client).auth();
+                    auth = false;
+                }
             }
 
             client.login(credentials.getUsername(), credentials.getPassword());
