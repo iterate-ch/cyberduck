@@ -360,7 +360,7 @@ public abstract class Transfer implements Serializable {
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     public Path lookup(PathReference r) {
-        return session.cache().lookup(r);
+        return this.getSession().cache().lookup(r);
     }
 
     /**
@@ -459,7 +459,7 @@ public abstract class Transfer implements Serializable {
             if(!failure) {
                 p.status().setComplete(true);
             }
-            session.cache().remove(p.getReference());
+            this.getSession().cache().remove(p.getReference());
         }
     }
 
@@ -578,7 +578,7 @@ public abstract class Transfer implements Serializable {
     protected void clear(final TransferOptions options) {
         log.debug("clear:" + options);
         if(options.closeSession) {
-            session.cache().clear();
+            this.getSession().cache().clear();
         }
     }
 
@@ -587,7 +587,7 @@ public abstract class Transfer implements Serializable {
      * @see Session#cache()
      */
     public Cache<Path> cache() {
-        return session.cache();
+        return this.getSession().cache();
     }
 
     /**
