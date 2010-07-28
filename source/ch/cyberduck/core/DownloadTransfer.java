@@ -134,6 +134,7 @@ public class DownloadTransfer extends Transfer {
             if(file.attributes().isFile()) {
                 if(file.attributes().isSymbolicLink()) {
                     if(null != file.getSymlinkTarget()) {
+                        // A server will resolve the symbolic link when the file is requested.
                         Path symlink = PathFactory.createPath(file.getSession(), file.getSymlinkTarget(),
                                 Path.FILE_TYPE);
                         if(symlink.attributes().getSize() == -1) {
