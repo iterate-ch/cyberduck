@@ -679,6 +679,9 @@ public abstract class Preferences {
         defaults.put("update.check", String.valueOf(true));
         final int DAY = 60 * 60 * 24;
         defaults.put("update.check.interval", String.valueOf(DAY)); // periodic update check in seconds
+
+        defaults.put("bookmark.import.filezilla", String.valueOf(true));
+        defaults.put("bookmark.import.filezilla.location", "~/.filezilla/sitemanager.xml");
     }
 
     /**

@@ -18,10 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.filezilla.FilezillaBookmarkCollection;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -32,14 +33,13 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.*;
@@ -626,6 +626,27 @@ public class MainController extends BundleController implements NSApplication.De
                     Rendezvous.instance().init();
                 }
             });
+        }
+        if(Preferences.instance().getBoolean("bookmark.import.filezilla")) {
+            FilezillaBookmarkCollection c = new FilezillaBookmarkCollection();
+            c.load();
+            if(!c.isEmpty()) {
+                final NSAlert alert = NSAlert.alert(
+                        Locale.localizedString("Import Filezilla Bookmarks", "Configuration"),
+                        MessageFormat.format(Locale.localizedString("{0} bookmarks found.", "Configuration"), c.size()),
+                        Locale.localizedString("Import", "Configuration"), //default
+                        Locale.localizedString("Don't Ask Again", "Configuration"), //other
+                        Locale.localizedString("Cancel", "Configuration"));
+                alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                int choice = alert.runModal(); //alternate
+                if(choice == SheetCallback.DEFAULT_OPTION) {
+                    BookmarkCollection.defaultCollection().addAll(c);
+                    Preferences.instance().setProperty("bookmark.import.filezilla", false);
+                }
+                if(choice == SheetCallback.ALTERNATE_OPTION) {
+                    Preferences.instance().setProperty("bookmark.import.filezilla", false);
+                }
+            }
         }
     }
 
