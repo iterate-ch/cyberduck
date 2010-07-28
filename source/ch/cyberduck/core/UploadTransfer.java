@@ -76,8 +76,8 @@ public class UploadTransfer extends Transfer {
                 if(n.getLocal().isChild(upload.getLocal())) {
                     iter.remove();
                 }
-                if(upload.getName().equals(n.getName())) {
-                    // The selected file has the same name; if downloaded as a root element
+                if(upload.equals(n)) {
+                    // The selected file has the same name; if uploaded as a root element
                     // it would overwrite the earlier
                     final String parent = upload.getParent().getAbsolute();
                     final String filename = upload.getName();

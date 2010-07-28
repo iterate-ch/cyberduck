@@ -62,7 +62,7 @@ public class DownloadTransfer extends Transfer {
                 if(n.isChild(download)) {
                     iter.remove();
                 }
-                if(download.getLocal().getName().equals(n.getLocal().getName())) {
+                if(download.getLocal().equals(n.getLocal())) {
                     // The selected file has the same name; if downloaded as a root element
                     // it would overwrite the earlier
                     final String parent = download.getLocal().getParent().getAbsolute();
