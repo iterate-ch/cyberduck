@@ -167,25 +167,13 @@ public abstract class NSNumber extends NSValue {
      * Original signature : <code>long longValue()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:45</i>
      */
-    public abstract com.sun.jna.NativeLong longValue();
+    public abstract long longValue();
 
     /**
      * Original signature : <code>unsigned long unsignedLongValue()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:46</i>
      */
-    public abstract com.sun.jna.NativeLong unsignedLongValue();
-
-    /**
-     * Original signature : <code>long long longLongValue()</code><br>
-     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:47</i>
-     */
-    public abstract long longLongValue();
-
-    /**
-     * Original signature : <code>unsigned long long unsignedLongLongValue()</code><br>
-     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:48</i>
-     */
-    public abstract long unsignedLongLongValue();
+    public abstract long unsignedLongValue();
 
     /**
      * Original signature : <code>float floatValue()</code><br>

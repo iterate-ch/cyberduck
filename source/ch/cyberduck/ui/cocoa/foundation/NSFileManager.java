@@ -175,15 +175,12 @@ public abstract class NSFileManager extends NSObject {
     public abstract boolean removeItemAtPath_error(String path, com.sun.jna.ptr.PointerByReference error);
 
     /**
-     * The following methods will be deprecated in the next major release of Mac OS X after Leopard. Their error-returning replacements are listed above.<br>
+     * The following methods will be deprecated in the next major release of Mac OS X after Leopard.
+     * Their error-returning replacements are listed above.<br>
      * Original signature : <code>NSDictionary* fileAttributesAtPath(NSString*, BOOL)</code><br>
      * <i>native declaration : :84</i>
      */
     public abstract NSDictionary fileAttributesAtPath_traverseLink(String path, boolean yorn);
-
-    public NSDictionary fileAttributes(String path) {
-        return fileAttributesAtPath_traverseLink(path, true);
-    }
 
     /**
      * Original signature : <code>BOOL changeFileAttributes(NSDictionary*, NSString*)</code><br>
