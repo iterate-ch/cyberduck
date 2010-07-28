@@ -28,7 +28,7 @@ public abstract class Locale {
      * @return
      */
     public static String localizedString(final String key) {
-        return localizedString(key, null);
+        return localizedString(key, "Localizable");
     }
 
     /**
