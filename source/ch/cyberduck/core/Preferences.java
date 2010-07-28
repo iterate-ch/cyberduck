@@ -607,6 +607,11 @@ public abstract class Preferences {
         defaults.put("connection.hostname.idn", String.valueOf(true)); //Convert hostnames to Punycode
 
         /**
+         * Warning if credenials are sent plaintext
+         */
+        defaults.put("connection.unsecure.warn", String.valueOf(false));
+
+        /**
          * java.net.preferIPv6Addresses
          */
         defaults.put("connection.dns.ipv6", String.valueOf(false));

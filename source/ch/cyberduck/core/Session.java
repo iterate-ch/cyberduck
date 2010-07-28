@@ -155,19 +155,20 @@ public abstract class Session {
 
     /**
      * Sets the callback to ask for login credentials
-     *
-     * @param loginController
-     * @see #login
      */
     public void setLoginController(LoginController loginController) {
         this.login = loginController;
     }
 
     /**
-     * @return
+     * @return The callback to ask for login credentials
      */
     public LoginController getLoginController() {
         return login;
+    }
+
+    protected void prompt(LoginController login) throws LoginCanceledException {
+        login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
 
     /**
@@ -176,17 +177,24 @@ public abstract class Session {
      * @throws IOException
      */
     protected void login() throws IOException {
-        login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
-
+        this.prompt(login);
         final Credentials credentials = host.getCredentials();
         this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 credentials.getUsername()));
-        this.login(credentials);
-
+        if(!host.getProtocol().isSecure() && !credentials.isAnonymousLogin()) {
+            if(Preferences.instance().getBoolean("connection.unsecure.warn")) {
+                login.warn(
+                        MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
+                                host.getProtocol().getName()),
+                        MessageFormat.format(Locale.localizedString("Your {0} and {1} will be sent in plaintext.", "Credentials"),
+                                credentials.getUsernamePlaceholder(), credentials.getPasswordPlaceholder())
+                );
+            }
+        }
+        this.login(login, credentials);
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-
         KeychainFactory.instance().save(host);
     }
 
@@ -197,7 +205,7 @@ public abstract class Session {
      * @throws LoginCanceledException
      * @see #connect
      */
-    protected abstract void login(Credentials credentials) throws IOException;
+    protected abstract void login(LoginController controller, Credentials credentials) throws IOException;
 
     /**
      * Mount the default path of the configured host or the home directory as returned by the server
@@ -555,7 +563,7 @@ public abstract class Session {
     protected void fireConnectionWillCloseEvent() {
         log.debug("connectionWillClose");
         this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
-                this.getHost().getHostname()));
+                host.getHostname()));
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionWillClose();
@@ -631,14 +639,13 @@ public abstract class Session {
     }
 
     /**
-     *
      * @param container
-     *@param readable
-     * @param writable   @return
+     * @param readable
+     * @param writable  @return
      */
     public Acl getPublicAcl(String container, boolean readable, boolean writable) {
         return Acl.EMPTY;
-    };
+    }
 
     /**
      * Roles available for users in a configurable ACL.
@@ -733,8 +740,8 @@ public abstract class Session {
             return false;
         }
         if(other instanceof Session) {
-            return this.getHost().getHostname().equals(((Session) other).getHost().getHostname())
-                    && this.getHost().getProtocol().equals(((Session) other).getHost().getProtocol());
+            return host.getHostname().equals(((Session) other).getHost().getHostname())
+                    && host.getProtocol().equals(((Session) other).getHost().getProtocol());
         }
         return false;
     }
