@@ -342,8 +342,8 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     @Override
-    protected void login(final Credentials credentials) throws IOException {
-        this.login(credentials, this.getHostConfiguration());
+    protected void login(LoginController controller, Credentials credentials) throws IOException {
+        this.login(controller, credentials, this.getHostConfiguration());
     }
 
     /**
@@ -351,7 +351,7 @@ public class S3Session extends CloudSession implements SSLSession {
      * @param hostconfig
      * @throws IOException
      */
-    protected void login(final Credentials credentials, final HostConfiguration hostconfig) throws IOException {
+    protected void login(LoginController controller, Credentials credentials, HostConfiguration hostconfig) throws IOException {
         try {
             this.S3 = new CustomRestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                     credentials.getPassword()), this.getUserAgent(), new CredentialsProvider() {
@@ -371,7 +371,7 @@ public class S3Session extends CloudSession implements SSLSession {
         catch(S3ServiceException e) {
             if(this.isLoginFailure(e)) {
                 this.message(Locale.localizedString("Login failed", "Credentials"));
-                this.getLoginController().fail(host.getProtocol(), credentials);
+                controller.fail(host.getProtocol(), credentials);
                 this.login();
             }
             else {
@@ -385,7 +385,7 @@ public class S3Session extends CloudSession implements SSLSession {
      *
      * @return MFA one time authentication password.
      */
-    protected Credentials mfa() throws ConnectionCanceledException {
+    protected Credentials mfa(LoginController controller) throws ConnectionCanceledException {
         Credentials credentials = new Credentials(
                 Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
             @Override
@@ -399,7 +399,7 @@ public class S3Session extends CloudSession implements SSLSession {
             }
         };
         // Prompt for MFA credentials.
-        this.getLoginController().prompt(host.getProtocol(), credentials,
+        controller.prompt(host.getProtocol(), credentials,
                 Locale.localizedString("Provide additional login credentials", "Credentials"),
                 Locale.localizedString("Multi-Factor Authentication", "S3"), false, false);
 
@@ -960,7 +960,7 @@ public class S3Session extends CloudSession implements SSLSession {
             try {
                 this.check();
                 if(this.isMultiFactorAuthentication(container)) {
-                    final Credentials credentials = this.mfa();
+                    final Credentials credentials = this.mfa(this.getLoginController());
                     String multiFactorSerialNumber = credentials.getUsername();
                     String multiFactorAuthCode = credentials.getPassword();
                     if(enabled) {

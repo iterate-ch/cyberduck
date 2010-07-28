@@ -313,6 +313,16 @@ public class FTPSession extends Session implements SSLSession {
         client.setConnectMode(this.getConnectMode());
     }
 
+    /**
+     * @return True if the feaatures AUTH TLS, PBSZ and PROT are supported.
+     * @throws IOException
+     */
+    private boolean isTLSSupported() throws IOException {
+        return this.getClient().isFeatureSupported("AUTH TLS")
+                && this.getClient().isFeatureSupported("PBSZ")
+                && this.getClient().isFeatureSupported("PROT");
+    }
+
     @Override
     protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
         if(this.isConnected()) {
@@ -320,13 +330,14 @@ public class FTPSession extends Session implements SSLSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        if(this.getHost().getProtocol().isSecure()) {
+        if(this.getHost().getProtocol().isSecure() /*|| isTLSSupported()*/) {
             FTP = new FTPSClient(this.getEncoding(), messageListener, this.getTrustManager());
         }
         else {
             FTP = new FTPClient(this.getEncoding(), messageListener);
         }
-        this.configure(FTP);
+
+        this.configure(this.getClient());
 
         this.getClient().connect(host.getHostname(true), host.getPort());
         if(!this.isConnected()) {
@@ -357,24 +368,23 @@ public class FTPSession extends Session implements SSLSession {
     }
 
     @Override
-    protected void login(final Credentials credentials) throws IOException {
+    protected void login(LoginController controller, final Credentials credentials) throws IOException {
         try {
             final FTPClient client = this.getClient();
-            if(this.getHost().getProtocol().isSecure()) {
-                // Only send AUTH before the first login attempt
+            if(this.getHost().getProtocol().isSecure() /*|| isTLSSupported()*/) {
                 ((FTPSClient) client).auth();
             }
 
             client.login(credentials.getUsername(), credentials.getPassword());
             this.message(Locale.localizedString("Login successful", "Credentials"));
 
-            if(this.getHost().getProtocol().isSecure()) {
+            if(this.getHost().getProtocol().isSecure() /*|| isTLSSupported()*/) {
                 ((FTPSClient) client).prot();
             }
         }
         catch(FTPException e) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.getLoginController().fail(host.getProtocol(), credentials, e.getMessage());
+            controller.fail(host.getProtocol(), credentials, e.getMessage());
             this.login();
         }
     }

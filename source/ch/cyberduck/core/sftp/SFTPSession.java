@@ -160,18 +160,18 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    protected void login(final Credentials credentials) throws IOException {
+    protected void login(LoginController controller, final Credentials credentials) throws IOException {
         if(credentials.isPublicKeyAuthentication()) {
-            if(this.loginUsingPublicKeyAuthentication(credentials)) {
+            if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
             }
         }
-        else if(this.loginUsingKBIAuthentication(credentials)) {
+        else if(this.loginUsingKBIAuthentication(controller, credentials)) {
             this.message(Locale.localizedString("Login successful", "Credentials"));
             return;
         }
-        else if(this.loginUsingPasswordAuthentication(credentials)) {
+        else if(this.loginUsingPasswordAuthentication(controller, credentials)) {
             this.message(Locale.localizedString("Login successful", "Credentials"));
             return;
         }
@@ -187,16 +187,16 @@ public class SFTPSession extends Session {
                     return Locale.localizedString("One-time passcode", "Credentials");
                 }
             };
-            this.getLoginController().prompt(host.getProtocol(), additional,
+            controller.prompt(host.getProtocol(), additional,
                     Locale.localizedString("Partial authentication success", "Credentials"),
                     Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false);
-            if(this.loginUsingKBIAuthentication(additional)) {
+            if(this.loginUsingKBIAuthentication(controller, additional)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
             }
         }
         this.message(Locale.localizedString("Login failed", "Credentials"));
-        this.getLoginController().fail(host.getProtocol(), credentials);
+        controller.fail(host.getProtocol(), credentials);
         this.login();
     }
 
@@ -207,7 +207,7 @@ public class SFTPSession extends Session {
      * @return True if authentication succeeded
      * @throws IOException
      */
-    private boolean loginUsingPublicKeyAuthentication(final Credentials credentials) throws IOException {
+    private boolean loginUsingPublicKeyAuthentication(LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
             if(credentials.isPublicKeyAuthentication()) {
@@ -219,7 +219,7 @@ public class SFTPSession extends Session {
                 if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
                     passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.toURL());
                     if(StringUtils.isEmpty(passphrase)) {
-                        this.getLoginController().prompt(host.getProtocol(), credentials,
+                        controller.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Private key password protected", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
@@ -239,7 +239,7 @@ public class SFTPSession extends Session {
                 catch(IOException e) {
                     if(e.getCause() instanceof PEMDecryptException) {
                         this.message(Locale.localizedString("Login failed", "Credentials"));
-                        this.getLoginController().fail(host.getProtocol(), credentials,
+                        controller.fail(host.getProtocol(), credentials,
                                 e.getCause().getMessage());
                         this.login();
                     }
@@ -259,7 +259,7 @@ public class SFTPSession extends Session {
      * @return True if authentication succeeded
      * @throws IOException
      */
-    private boolean loginUsingPasswordAuthentication(final Credentials credentials) throws IOException {
+    private boolean loginUsingPasswordAuthentication(LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingPasswordAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "password")) {
             return this.getClient().authenticateWithPassword(credentials.getUsername(), credentials.getPassword());
@@ -274,56 +274,54 @@ public class SFTPSession extends Session {
      * @return True if authentication succeeded
      * @throws IOException
      */
-    private boolean loginUsingKBIAuthentication(final Credentials credentials) throws IOException {
+    private boolean loginUsingKBIAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingKBIAuthentication" +
                 "make:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
-            InteractiveLogic il = new InteractiveLogic();
-            return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(), il);
+            return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(),
+                    /**
+                     * The logic that one has to implement if "keyboard-interactive" autentication shall be
+                     * supported.
+                     */
+                    new InteractiveCallback() {
+                        private int promptCount = 0;
+
+                        /**
+                         * The callback may be invoked several times, depending on how
+                         * many questions-sets the server sends
+                         */
+                        public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
+                                                         boolean[] echo) throws IOException {
+                            log.debug("replyToChallenge:" + name);
+                            // In its first callback the server prompts for the password
+                            if(0 == promptCount) {
+                                log.debug("First callback returning provided credentials");
+                                promptCount++;
+                                return new String[]{host.getCredentials().getPassword()};
+                            }
+                            String[] response = new String[numPrompts];
+                            for(int i = 0; i < numPrompts; i++) {
+                                Credentials credentials = new Credentials(host.getCredentials().getUsername(), null, false) {
+                                    @Override
+                                    public String getUsernamePlaceholder() {
+                                        return host.getProtocol().getUsernamePlaceholder();
+                                    }
+
+                                    @Override
+                                    public String getPasswordPlaceholder() {
+                                        return Locale.localizedString("One-time passcode", "Credentials");
+                                    }
+                                };
+                                controller.prompt(host.getProtocol(), credentials,
+                                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], false, false);
+                                response[i] = credentials.getPassword();
+                                promptCount++;
+                            }
+                            return response;
+                        }
+                    });
         }
         return false;
-    }
-
-    /**
-     * The logic that one has to implement if "keyboard-interactive" autentication shall be
-     * supported.
-     */
-    private class InteractiveLogic implements InteractiveCallback {
-        private int promptCount = 0;
-
-        /**
-         * The callback may be invoked several times, depending on how
-         * many questions-sets the server sends
-         */
-        public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
-                                         boolean[] echo) throws IOException {
-            log.debug("replyToChallenge:" + name);
-            // In its first callback the server prompts for the password
-            if(0 == promptCount) {
-                log.debug("First callback returning provided credentials");
-                promptCount++;
-                return new String[]{host.getCredentials().getPassword()};
-            }
-            String[] response = new String[numPrompts];
-            for(int i = 0; i < numPrompts; i++) {
-                Credentials credentials = new Credentials(host.getCredentials().getUsername(), null, false) {
-                    @Override
-                    public String getUsernamePlaceholder() {
-                        return host.getProtocol().getUsernamePlaceholder();
-                    }
-
-                    @Override
-                    public String getPasswordPlaceholder() {
-                        return Locale.localizedString("One-time passcode", "Credentials");
-                    }
-                };
-                SFTPSession.this.getLoginController().prompt(host.getProtocol(), credentials,
-                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], false, false);
-                response[i] = credentials.getPassword();
-                promptCount++;
-            }
-            return response;
-        }
     }
 
     @Override

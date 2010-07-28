@@ -105,13 +105,13 @@ public class CFSession extends CloudSession implements SSLSession {
     }
 
     @Override
-    protected void login(Credentials credentials) throws IOException {
+    protected void login(LoginController controller, Credentials credentials) throws IOException {
         this.getClient().setUserName(credentials.getUsername());
         this.getClient().setPassword(credentials.getPassword());
         this.getTrustManager().setHostname(URI.create(this.getClient().getAuthenticationURL()).getHost());
         if(!this.getClient().login()) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.getLoginController().fail(host.getProtocol(), credentials);
+            controller.fail(host.getProtocol(), credentials);
             this.login();
         }
         this.getTrustManager().setHostname(URI.create(this.getClient().getStorageURL()).getHost());

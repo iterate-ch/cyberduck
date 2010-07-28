@@ -147,23 +147,13 @@ public class DAVSession extends HTTPSession implements SSLSession {
     }
 
     @Override
-    protected void login() throws IOException {
+    protected void prompt(LoginController login) throws LoginCanceledException {
         // Do not prompt for credentials yet but in the credentials provider
-        // below upon request with the given authentication scheme realm
-
-        final Credentials credentials = host.getCredentials();
-        this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
-                credentials.getUsername()));
-        this.login(credentials);
-
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        KeychainFactory.instance().save(host);
+        // below upon request when the given authentication scheme realm is known
     }
 
     @Override
-    protected void login(final Credentials credentials) throws IOException, LoginCanceledException {
+    protected void login(final LoginController controller, final Credentials credentials) throws IOException, LoginCanceledException {
         try {
             final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
 
@@ -188,16 +178,15 @@ public class DAVSession extends HTTPSession implements SSLSession {
                         if(StringUtils.isNotBlank(authscheme.getRealm())) {
                             realm.append(" ").append(authscheme.getRealm());
                         }
-                        final LoginController lc = getLoginController();
                         if(0 == retry) {
-                            lc.check(host,
+                            controller.check(host,
                                     Locale.localizedString("Login with username and password", "Credentials"),
                                     realm.toString());
                         }
                         else {
                             // authstate.isAuthAttempted() && authscheme.isComplete()
                             // Already tried and failed.
-                            lc.fail(host.getProtocol(), credentials, realm.toString());
+                            controller.fail(host.getProtocol(), credentials, realm.toString());
                         }
 
                         message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),

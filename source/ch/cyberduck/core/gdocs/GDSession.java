@@ -120,14 +120,14 @@ public class GDSession extends Session {
     }
 
     @Override
-    protected void login(Credentials credentials) throws IOException {
+    protected void login(LoginController controller, Credentials credentials) throws IOException {
         try {
             this.getClient().setUserCredentials(credentials.getUsername(), credentials.getPassword());
             this.message(Locale.localizedString("Login successful", "Credentials"));
         }
         catch(AuthenticationException e) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            this.getLoginController().fail(host.getProtocol(), credentials, e.getMessage());
+            controller.fail(host.getProtocol(), credentials, e.getMessage());
             this.login();
         }
     }

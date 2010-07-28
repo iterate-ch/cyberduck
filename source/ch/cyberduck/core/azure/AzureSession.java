@@ -161,7 +161,7 @@ public class AzureSession extends CloudSession implements SSLSession {
     }
 
     @Override
-    protected void login(Credentials credentials) throws IOException {
+    protected void login(LoginController controller, Credentials credentials) throws IOException {
         // http://*.blob.core.windows.net
         client = new AzureStorageClient(URI.create(host.getProtocol().getScheme() + "://" + host.getHostname()),
                 credentials.getUsername(),
@@ -173,7 +173,7 @@ public class AzureSession extends CloudSession implements SSLSession {
         catch(StorageServerException e) {
             if(this.isLoginFailure(e)) {
                 this.message(Locale.localizedString("Login failed", "Credentials"));
-                this.getLoginController().fail(host.getProtocol(), credentials);
+                controller.fail(host.getProtocol(), credentials);
                 this.login();
             }
             else {
