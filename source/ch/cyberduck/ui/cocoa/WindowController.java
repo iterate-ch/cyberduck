@@ -184,13 +184,16 @@ public abstract class WindowController extends BundleController implements NSWin
 
     /**
      * @param alert
+     * @return Return code from the dialog if called from background thread.
      */
-    protected void alert(final NSAlert alert) {
+    protected int alert(final NSAlert alert) {
+        final int[] response = new int[1];
         this.alert(alert, new SheetCallback() {
             public void callback(final int returncode) {
-                ;
+                response[0] = returncode;
             }
         });
+        return response[0];
     }
 
     /**
