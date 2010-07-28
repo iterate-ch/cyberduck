@@ -21,6 +21,13 @@ package ch.cyberduck.core;
 public interface LoginController {
 
     /**
+     *
+     * @param title
+     * @param message
+     */
+    void warn(String title, String message) throws LoginCanceledException;
+
+    /**
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
      *
