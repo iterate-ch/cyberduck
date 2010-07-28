@@ -129,7 +129,7 @@ public class IconCache {
         cache.put(key, versions);
     }
 
-    private NSImage get(String key, Integer size) {
+    private NSImage load(String key, Integer size) {
         if(!cache.containsKey(key)) {
             log.warn("No cached image for " + key);
             return null;
@@ -143,7 +143,7 @@ public class IconCache {
      * @return
      */
     public NSImage iconForExtension(String extension, Integer size) {
-        NSImage img = this.get(extension, size);
+        NSImage img = this.load(extension, size);
         if(null == img) {
             img = NSWorkspace.sharedWorkspace().iconForFileType(extension);
             this.put(extension, this.convert(img, size), size);
@@ -196,7 +196,8 @@ public class IconCache {
     }
 
     /**
-     * @param name
+     * @param name   When looking for files in the application bundle, it is better (but not required)
+     *               to include the filename extension in the name parameter
      * @param width
      * @param height
      * @return
@@ -204,13 +205,18 @@ public class IconCache {
      * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer, Integer)
      */
     protected NSImage iconForName(final String name, Integer width, Integer height) {
-        NSImage image = this.get(name, width);
+        NSImage image = this.load(name, width);
         if(null == image) {
             image = NSImage.imageNamed(name);
             if(null == image) {
                 log.warn("No icon named " + name);
+                this.put(name, null, width);
             }
-            this.put(name, this.convert(image, width, height), width);
+            else {
+                // You can clear an image object from the cache explicitly by passing nil for the image name.
+                image.setName(null);
+                this.put(name, this.convert(image, width, height), width);
+            }
         }
         return image;
     }
@@ -312,15 +318,10 @@ public class IconCache {
     }
 
     public NSImage convert(NSImage icon, Integer width, Integer height) {
-        if(null == icon) {
-            log.warn("Icon is null");
-            return null;
-        }
         if(null == width || null == height) {
             log.info("Return default size for " + icon.name());
             return icon;
         }
-        icon.setName(icon.name() + width + height);
         icon.setSize(new NSSize(width, height));
         return icon;
     }
