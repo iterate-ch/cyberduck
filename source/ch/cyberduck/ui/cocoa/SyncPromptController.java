@@ -99,9 +99,6 @@ public class SyncPromptController extends TransferPromptController {
         };
 
         for(TransferAction action : actions) {
-            if(null == action) {
-                continue; //Not resumeable
-            }
             this.actionPopup.addItemWithTitle(action.getLocalizableString());
             this.actionPopup.lastItem().setRepresentedObject(action.toString());
             if(action.equals(defaultAction)) {
