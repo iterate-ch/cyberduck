@@ -355,7 +355,7 @@ public class MainController extends BundleController implements NSApplication.De
                             Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                     + "\n\n"
                                     + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
-                            Locale.localizedString("Continue"), //default
+                            Locale.localizedString("Continue", "License"), //default
                             null, //other
                             null);
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
@@ -367,7 +367,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final NSAlert alert = NSAlert.alert(
                             Locale.localizedString("Not a valid donation key", "License"),
                             Locale.localizedString("This donation key does not appear to be valid.", "License"),
-                            Locale.localizedString("Continue"), //default
+                            Locale.localizedString("Continue", "License"), //default
                             null, //other
                             null);
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
