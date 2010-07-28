@@ -632,7 +632,7 @@ public class MainController extends BundleController implements NSApplication.De
             c.load();
             if(!c.isEmpty()) {
                 final NSAlert alert = NSAlert.alert(
-                        Locale.localizedString("Import Filezilla Bookmarks", "Configuration"),
+                        MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), "Filezilla"),
                         MessageFormat.format(Locale.localizedString("{0} bookmarks found.", "Configuration"), c.size()),
                         Locale.localizedString("Import", "Configuration"), //default
                         Locale.localizedString("Don't Ask Again", "Configuration"), //other
