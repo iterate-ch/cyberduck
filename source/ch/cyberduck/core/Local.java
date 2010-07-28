@@ -343,7 +343,7 @@ public abstract class Local extends AbstractPath {
     }
 
     /**
-     * @return the file type for the extension of this file provided by launch services
+     * @return Human readable localized description of file type
      */
     public String kind() {
         if(this.attributes().isDirectory()) {
@@ -361,6 +361,9 @@ public abstract class Local extends AbstractPath {
         return _impl.getAbsolutePath();
     }
 
+    /**
+     * @return A shortened path representation.
+     */
     public String getAbbreviatedPath() {
         return this.getAbsolute();
     }
@@ -376,6 +379,9 @@ public abstract class Local extends AbstractPath {
         }
     }
 
+    /**
+     * @return The last path component.
+     */
     @Override
     public String getName() {
         return _impl.getName();
@@ -386,6 +392,9 @@ public abstract class Local extends AbstractPath {
         return LocalFactory.createLocal(_impl.getParentFile());
     }
 
+    /**
+     * @return True if the path exists on the file system.
+     */
     @Override
     public boolean exists() {
         return _impl.exists();
@@ -416,6 +425,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void copy(AbstractPath copy) {
         if(copy.equals(this)) {
+            log.warn(this.getName() + " and " + copy.getName() + " are identical. Not copied.");
             return;
         }
         FileInputStream in = null;
@@ -439,14 +449,21 @@ public abstract class Local extends AbstractPath {
         return _impl.getAbsolutePath().hashCode();
     }
 
+    /**
+     * Compares the two files using their path with a string comparision ignoring case.
+     * Implementations should override this depending on the case sensitivity of the file system.
+     *
+     * @param o
+     * @return
+     */
     @Override
-    public boolean equals(Object other) {
-        if(null == other) {
+    public boolean equals(Object o) {
+        if(null == o) {
             return false;
         }
-        if(other instanceof Local) {
-            // Compare the resolved absolute path
-            return this.getSymlinkTarget().equalsIgnoreCase(((Local) other).getSymlinkTarget());
+        if(o instanceof Local) {
+            Local other = (Local) o;
+            return this.getAbsolute().equalsIgnoreCase(other.getAbsolute());
         }
         return false;
     }
@@ -495,10 +512,10 @@ public abstract class Local extends AbstractPath {
     public abstract void setWhereFrom(final String dataUrl);
 
     public java.io.InputStream getInputStream() throws FileNotFoundException {
-        return new RepeatableFileInputStream(this._impl);
+        return new RepeatableFileInputStream(_impl);
     }
 
     public java.io.OutputStream getOutputStream(boolean resume) throws FileNotFoundException {
-        return new FileOutputStream(this._impl, resume);
+        return new FileOutputStream(_impl, resume);
     }
 }
