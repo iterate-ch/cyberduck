@@ -107,7 +107,7 @@ public class FinderLocal extends Local {
             // See trac #933
             name = name.replace(this.getPathDelimiter(), ':');
         }
-        super.setPath(parent, name);        
+        super.setPath(parent, name);
     }
 
     /**
@@ -179,8 +179,8 @@ public class FinderLocal extends Local {
         @Override
         public Permission getPermission() {
             try {
-                NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(
-                        _impl.getAbsolutePath());
+                NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
+                        _impl.getAbsolutePath(), false);
                 if(null == fileAttributes) {
                     log.error("No such file:" + getAbsolute());
                     return null;
@@ -207,7 +207,8 @@ public class FinderLocal extends Local {
          */
         @Override
         public long getCreationDate() {
-            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
+            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
+                    _impl.getAbsolutePath(), false);
             // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
             // if the link points to a nonexistent file, this method returns null. If flag is false,
             // the attributes of the symbolic link are returned.
@@ -231,7 +232,8 @@ public class FinderLocal extends Local {
 
         @Override
         public String getOwner() {
-            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
+            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
+                    _impl.getAbsolutePath(), false);
             // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
             // if the link points to a nonexistent file, this method returns null. If flag is false,
             // the attributes of the symbolic link are returned.
@@ -250,7 +252,8 @@ public class FinderLocal extends Local {
 
         @Override
         public String getGroup() {
-            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributes(_impl.getAbsolutePath());
+            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
+                    _impl.getAbsolutePath(), false);
             // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
             // if the link points to a nonexistent file, this method returns null. If flag is false,
             // the attributes of the symbolic link are returned.
@@ -266,10 +269,27 @@ public class FinderLocal extends Local {
             }
             return group.toString();
         }
+
+        /**
+         * @return The value for the key NSFileSystemFileNumber, or 0 if the receiver doesn’t have an entry for the key
+         */
+        public long getInode() {
+            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
+                    _impl.getAbsolutePath(), false);
+            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
+            // if the link points to a nonexistent file, this method returns null. If flag is false,
+            // the attributes of the symbolic link are returned.
+            if(null == fileAttributes) {
+                log.error("No such file:" + getAbsolute());
+                return 0;
+            }
+            NSNumber number = Rococoa.cast(fileAttributes.objectForKey(NSFileManager.NSFileSystemFileNumber), NSNumber.class);
+            return number.longValue();
+        }
     }
 
     @Override
-    public LocalAttributes attributes() {
+    public FinderLocalAttributes attributes() {
         if(null == attributes) {
             attributes = new FinderLocalAttributes();
         }
@@ -277,7 +297,8 @@ public class FinderLocal extends Local {
     }
 
     /**
-     * @return Human readable description of file type
+     * @return The file type for the extension of this file provided by launch services
+     *         if the path is a file.
      */
     @Override
     public String kind() {
@@ -373,6 +394,27 @@ public class FinderLocal extends Local {
             }
         }
         super.touch(recursive);
+    }
+
+    /**
+     * Comparing by inode if the file exists.
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof FinderLocal) {
+            if(!this.exists()) {
+                return super.equals(o);
+            }
+            FinderLocal other = (FinderLocal) o;
+            if(!other.exists()) {
+                return super.equals(o);
+            }
+            return this.attributes().getInode() == other.attributes().getInode();
+        }
+        return super.equals(o);
     }
 
     /**
