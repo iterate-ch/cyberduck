@@ -186,8 +186,8 @@ public abstract class Session {
                 login.warn(
                         MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
                                 host.getProtocol().getName()),
-                        MessageFormat.format(Locale.localizedString("Your {0} and {1} will be sent in plaintext.", "Credentials"),
-                                credentials.getUsernamePlaceholder(), credentials.getPasswordPlaceholder())
+                        MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                                credentials.getPasswordPlaceholder())
                 );
             }
         }
