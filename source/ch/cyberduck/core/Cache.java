@@ -89,7 +89,7 @@ public class Cache<E extends AbstractPath> {
      * @return An empty list if no cached file listing is available
      */
     public AttributedList<E> get(PathReference reference) {
-        final AttributedList<E> childs = _impl.get(reference);
+        final AttributedList<E> childs = this.get(reference, null, null);
         if(null == childs) {
             log.warn("No cache for " + reference);
             return AttributedList.emptyList();
