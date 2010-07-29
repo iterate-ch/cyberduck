@@ -1,5 +1,5 @@
 Cyberduck
-FTP, SFTP, WebDAV, Cloud Files, Google Docs & Amazon S3 Browser for Mac OS X.
+FTP, SFTP, WebDAV, Cloud Files, Google Docs, Windows Azure & Amazon S3 Browser for Mac OS X.
 http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
@@ -17,6 +17,7 @@ Changelog. Last modified: $Date$
 - [Feature] Revert to previous file version (S3)
 - [Feature] Eucalyptus Walrus support enabled by default (S3)
 - [Feature] Duplicate Bookmark (#3385)
+- [Feature] Import bookmarks from thirdparty applications (Filezilla, Fetch, Flow) (#3373)
 - [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
 - [Bugfix] Improved interoperability with Dunkel Cloud Storage (S3)
 - [Bugfix] Trust validation failure with self signed certificates for HTTP redirects (WebDAV) (#2443)
