@@ -48,4 +48,8 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     public void save() {
         throw new UnsupportedOperationException("Should not attempt to write to thirdparty bookmark collection");
     }
+
+    public abstract String getName();
+
+    public abstract String getConfiguration();
 }

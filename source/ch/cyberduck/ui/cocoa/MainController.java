@@ -22,9 +22,11 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
 import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
-import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.importer.FlowBookmarkCollection;
+import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -628,46 +630,38 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             });
         }
+        // Import thirdparty bookmarks.
         if(Preferences.instance().getBoolean("bookmark.import.filezilla")) {
-            AbstractHostCollection c = new FilezillaBookmarkCollection();
-            c.load();
-            if(!c.isEmpty()) {
-                final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), "Filezilla"),
-                        MessageFormat.format(Locale.localizedString("{0} bookmarks found.", "Configuration"), c.size()),
-                        Locale.localizedString("Import", "Configuration"), //default
-                        Locale.localizedString("Don't Ask Again", "Configuration"), //other
-                        Locale.localizedString("Cancel", "Configuration"));
-                alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                int choice = alert.runModal(); //alternate
-                if(choice == SheetCallback.DEFAULT_OPTION) {
-                    BookmarkCollection.defaultCollection().addAll(c);
-                    Preferences.instance().setProperty("bookmark.import.filezilla", false);
-                }
-                if(choice == SheetCallback.ALTERNATE_OPTION) {
-                    Preferences.instance().setProperty("bookmark.import.filezilla", false);
-                }
-            }
+            this.importBookmarks(new FilezillaBookmarkCollection());
         }
         if(Preferences.instance().getBoolean("bookmark.import.fetch")) {
-            AbstractHostCollection c = new FetchBookmarkCollection();
-            c.load();
-            if(!c.isEmpty()) {
-                final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), "Fetch"),
-                        MessageFormat.format(Locale.localizedString("{0} bookmarks found.", "Configuration"), c.size()),
-                        Locale.localizedString("Import", "Configuration"), //default
-                        Locale.localizedString("Don't Ask Again", "Configuration"), //other
-                        Locale.localizedString("Cancel", "Configuration"));
-                alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                int choice = alert.runModal(); //alternate
-                if(choice == SheetCallback.DEFAULT_OPTION) {
-                    BookmarkCollection.defaultCollection().addAll(c);
-                    Preferences.instance().setProperty("bookmark.import.fetch", false);
-                }
-                if(choice == SheetCallback.ALTERNATE_OPTION) {
-                    Preferences.instance().setProperty("bookmark.import.fetch", false);
-                }
+            this.importBookmarks(new FetchBookmarkCollection());
+        }
+        if(Preferences.instance().getBoolean("bookmark.import.flow")) {
+            this.importBookmarks(new FlowBookmarkCollection());
+        }
+    }
+
+    /**
+     * @param c Thirdparty bookmark collection
+     */
+    private void importBookmarks(ThirdpartyBookmarkCollection c) {
+        c.load();
+        if(!c.isEmpty()) {
+            final NSAlert alert = NSAlert.alert(
+                    MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
+                    MessageFormat.format(Locale.localizedString("{0} bookmarks found.", "Configuration"), c.size()),
+                    Locale.localizedString("Import", "Configuration"), //default
+                    Locale.localizedString("Don't Ask Again", "Configuration"), //other
+                    Locale.localizedString("Cancel", "Configuration"));
+            alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+            int choice = alert.runModal(); //alternate
+            if(choice == SheetCallback.DEFAULT_OPTION) {
+                BookmarkCollection.defaultCollection().addAll(c);
+                Preferences.instance().setProperty(c.getConfiguration(), false);
+            }
+            if(choice == SheetCallback.ALTERNATE_OPTION) {
+                Preferences.instance().setProperty(c.getConfiguration(), false);
             }
         }
     }

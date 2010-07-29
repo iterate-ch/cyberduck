@@ -37,6 +37,16 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FetchBookmarkCollection.class);
 
     @Override
+    public String getName() {
+        return "Fetch";
+    }
+
+    @Override
+    public String getConfiguration() {
+        return "bookmark.import.fetch";
+    }
+
+    @Override
     public void load() {
         super.load(LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.fetch.location")));
     }
