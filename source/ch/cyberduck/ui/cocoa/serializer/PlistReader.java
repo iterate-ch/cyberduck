@@ -58,8 +58,8 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
 
     /**
      *
-     * @param bookmark
+     * @param dict
      * @return
      */
-    public abstract S deserialize(NSDictionary bookmark);
+    public abstract S deserialize(NSDictionary dict);
 }
