@@ -89,38 +89,58 @@ public class FilezillaBookmarkCollection extends ThirdpartyBookmarkCollection {
                 current.setHostname(elementText);
             }
             else if(name.equals("Protocol")) {
-                switch(Integer.parseInt(elementText)) {
-                    case 0:
-                        current.setProtocol(Protocol.FTP);
-                        break;
-                    case 3:
-                    case 4:
-                        current.setProtocol(Protocol.FTP_TLS);
-                        break;
-                    case 1:
-                        current.setProtocol(Protocol.SFTP);
-                        break;
+                try {
+                    switch(Integer.parseInt(elementText)) {
+                        case 0:
+                            current.setProtocol(Protocol.FTP);
+                            break;
+                        case 3:
+                        case 4:
+                            current.setProtocol(Protocol.FTP_TLS);
+                            break;
+                        case 1:
+                            current.setProtocol(Protocol.SFTP);
+                            break;
+                    }
+                }
+                catch(NumberFormatException e) {
+                    log.error(e.getMessage());
                 }
             }
             else if(name.equals("Port")) {
-                current.setPort(Integer.parseInt(elementText));
+                try {
+                    current.setPort(Integer.parseInt(elementText));
+                }
+                catch(NumberFormatException e) {
+                    log.error(e.getMessage());
+                }
             }
             else if(name.equals("MaximumMultipleConnections")) {
                 if("0".equals(elementText)) {
                     current.setMaxConnections(null);
                 }
                 else {
-                    current.setMaxConnections(Integer.parseInt(elementText));
+                    try {
+                        current.setMaxConnections(Integer.parseInt(elementText));
+                    }
+                    catch(NumberFormatException e) {
+                        log.error(e.getMessage());
+                    }
                 }
             }
             else if(name.equals("User")) {
                 current.getCredentials().setUsername(elementText);
             }
             else if(name.equals("Logontype")) {
-                switch(Integer.parseInt(elementText)) {
-                    case 0:
-                        current.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
-                        break;
+                try {
+                    switch(Integer.parseInt(elementText)) {
+                        case 0:
+                            current.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
+                            break;
+                    }
+                }
+                catch(NumberFormatException e) {
+                    log.error(e.getMessage());
                 }
             }
             else if(name.equals("Pass")) {
