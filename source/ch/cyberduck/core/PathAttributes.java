@@ -100,10 +100,13 @@ public class PathAttributes extends Attributes implements Serializable {
     private boolean duplicate;
 
     /**
-     * Revision number
+     * Revision number.
      */
     private int revision;
 
+    /**
+     * HTTP headers.
+     */
     private Map<String, String> metadata = Collections.emptyMap();
 
     public PathAttributes() {
@@ -124,6 +127,14 @@ public class PathAttributes extends Attributes implements Serializable {
         if(sizeObj != null) {
             this.size = Long.parseLong(sizeObj);
         }
+        String modifiedObj = dict.stringForKey("Modified");
+        if(modifiedObj != null) {
+            this.modified = Long.parseLong(modifiedObj);
+        }
+        Object permissionObj = dict.objectForKey("Permission");
+        if(permissionObj != null) {
+            this.permission = new Permission(permissionObj);
+        }
     }
 
     public <T> T getAsDictionary() {
@@ -131,6 +142,12 @@ public class PathAttributes extends Attributes implements Serializable {
         dict.setStringForKey(String.valueOf(this.type), "Type");
         if(this.size != -1) {
             dict.setStringForKey(String.valueOf(this.size), "Size");
+        }
+        if(this.modified != -1) {
+            dict.setStringForKey(String.valueOf(this.modified), "Modified");
+        }
+        if(null != permission) {
+            dict.setObjectForKey(permission, "Permission");
         }
         return dict.<T>getSerialized();
     }
@@ -363,5 +380,26 @@ public class PathAttributes extends Attributes implements Serializable {
         if(metadata) {
             this.setMetadata(Collections.<String, String>emptyMap());
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof PathAttributes) {
+            PathAttributes attr = ((PathAttributes) other);
+            if(this.getType() != attr.getType()) {
+                return false;
+            }
+            else if(this.getSize() != attr.getSize()) {
+                return false;
+            }
+            else if(this.getModificationDate() != attr.getModificationDate()) {
+                return false;
+            }
+            else if(!this.getPermission().equals(attr.getPermission())) {
+                return false;
+            }
+            return true;
+        }
+        return super.equals(other);
     }
 }
