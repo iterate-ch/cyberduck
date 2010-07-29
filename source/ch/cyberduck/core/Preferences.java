@@ -685,6 +685,9 @@ public abstract class Preferences {
 
         defaults.put("bookmark.import.fetch", String.valueOf(true));
         defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
+
+        defaults.put("bookmark.import.flow", String.valueOf(true));
+        defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
     }
 
     /**
