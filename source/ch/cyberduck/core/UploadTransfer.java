@@ -241,8 +241,13 @@ public class UploadTransfer extends Transfer {
     private final Cache<Path> cache = new Cache<Path>();
 
     @Override
+    public Cache<Path> cache() {
+        return cache;
+    }
+
+    @Override
     public AttributedList<Path> childs(final Path parent) {
-        if(!cache.containsKey(parent.<Object>getReference())) {
+        if(!this.cache().containsKey(parent.<Object>getReference())) {
             if(!parent.getLocal().exists()) {
                 // Cannot fetch file listing of non existant file
                 return AttributedList.emptyList();
@@ -257,25 +262,9 @@ public class UploadTransfer extends Transfer {
                 }
                 childs.add(upload);
             }
-            cache.put(parent.<Object>getReference(), childs);
+            this.cache().put(parent.<Object>getReference(), childs);
         }
-        return cache.get(parent.<Object>getReference());
-    }
-
-    @Override
-    public Path lookup(PathReference r) {
-        return cache.lookup(r);
-    }
-
-    @Override
-    protected void clear(final TransferOptions options) {
-        cache.clear();
-        super.clear(options);
-    }
-
-    @Override
-    public Cache<Path> cache() {
-        return cache;
+        return this.cache().get(parent.<Object>getReference());
     }
 
     @Override
