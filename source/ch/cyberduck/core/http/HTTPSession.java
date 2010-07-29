@@ -19,7 +19,10 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ssl.*;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpVersion;
@@ -81,7 +84,12 @@ public abstract class HTTPSession extends Session implements SSLSession {
         super(h);
     }
 
-    protected DefaultHttpClient createClient() {
+    /**
+     * Create new HTTP client with default configuration and custom trust manager.
+     *
+     * @return A new instance of a default HTTP client.
+     */
+    protected DefaultHttpClient http() {
         return new DefaultHttpClient() {
             @Override
             protected HttpParams createHttpParams() {

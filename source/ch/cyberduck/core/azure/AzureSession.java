@@ -143,7 +143,7 @@ public class AzureSession extends CloudSession implements SSLSession {
          */
         public HttpClient getHttp() {
             if(null == http) {
-                http = createClient();
+                http = http();
             }
             return http;
         }
