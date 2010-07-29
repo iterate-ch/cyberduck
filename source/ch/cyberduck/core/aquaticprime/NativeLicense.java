@@ -38,6 +38,15 @@ public class NativeLicense extends AbstractLicense {
         protected License open(Local file) {
             return new NativeLicense(file);
         }
+
+        /**
+         * @throws UnsupportedOperationException
+         * @see #create(ch.cyberduck.core.Local)
+         */
+        @Override
+        protected License create() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private static boolean JNI_LOADED = false;

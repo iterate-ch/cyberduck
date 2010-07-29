@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class LicenseFactory extends Factory<License> {
     private static Logger log = Logger.getLogger(LicenseFactory.class);
@@ -52,15 +52,6 @@ public abstract class LicenseFactory extends Factory<License> {
      */
     public static void addFactory(Factory.Platform platform, LicenseFactory f) {
         factories.put(platform, f);
-    }
-
-    /**
-     * @throws UnsupportedOperationException
-     * @see #create(ch.cyberduck.core.Local)
-     */
-    @Override
-    protected License create() {
-        throw new UnsupportedOperationException();
     }
 
     /**
