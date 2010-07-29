@@ -653,7 +653,7 @@ public class Connection
 		final TimeoutState state = new TimeoutState();
 
 		tm = new TransportManager(hostname, port);
-
+        tm.setSoTimeout(connectTimeout);
 		tm.setConnectionMonitors(connectionMonitors);
 
 		/* Make sure that the runnable below will observe the new value of "tm"

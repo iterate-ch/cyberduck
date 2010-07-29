@@ -338,7 +338,6 @@ public class TransportManager
 		{
 			InetAddress addr = createInetAddress(hostname);
 			sock.connect(new InetSocketAddress(addr, port), connectTimeout);
-			sock.setSoTimeout(0);
 			return;
 		}
 
@@ -350,7 +349,6 @@ public class TransportManager
 
 			InetAddress addr = createInetAddress(pd.proxyHost);
 			sock.connect(new InetSocketAddress(addr, pd.proxyPort), connectTimeout);
-			sock.setSoTimeout(0);
 
 			/* OK, now tell the proxy where we actually want to connect to */
 
