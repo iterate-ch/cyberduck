@@ -22,7 +22,8 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
-import ch.cyberduck.core.filezilla.FilezillaBookmarkCollection;
+import ch.cyberduck.core.importer.FetchBookmarkCollection;
+import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -628,7 +629,7 @@ public class MainController extends BundleController implements NSApplication.De
             });
         }
         if(Preferences.instance().getBoolean("bookmark.import.filezilla")) {
-            FilezillaBookmarkCollection c = new FilezillaBookmarkCollection();
+            AbstractHostCollection c = new FilezillaBookmarkCollection();
             c.load();
             if(!c.isEmpty()) {
                 final NSAlert alert = NSAlert.alert(
@@ -645,6 +646,27 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 if(choice == SheetCallback.ALTERNATE_OPTION) {
                     Preferences.instance().setProperty("bookmark.import.filezilla", false);
+                }
+            }
+        }
+        if(Preferences.instance().getBoolean("bookmark.import.fetch")) {
+            AbstractHostCollection c = new FetchBookmarkCollection();
+            c.load();
+            if(!c.isEmpty()) {
+                final NSAlert alert = NSAlert.alert(
+                        MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), "Fetch"),
+                        MessageFormat.format(Locale.localizedString("{0} bookmarks found.", "Configuration"), c.size()),
+                        Locale.localizedString("Import", "Configuration"), //default
+                        Locale.localizedString("Don't Ask Again", "Configuration"), //other
+                        Locale.localizedString("Cancel", "Configuration"));
+                alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                int choice = alert.runModal(); //alternate
+                if(choice == SheetCallback.DEFAULT_OPTION) {
+                    BookmarkCollection.defaultCollection().addAll(c);
+                    Preferences.instance().setProperty("bookmark.import.fetch", false);
+                }
+                if(choice == SheetCallback.ALTERNATE_OPTION) {
+                    Preferences.instance().setProperty("bookmark.import.fetch", false);
                 }
             }
         }
