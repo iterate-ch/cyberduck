@@ -682,6 +682,9 @@ public abstract class Preferences {
 
         defaults.put("bookmark.import.filezilla", String.valueOf(true));
         defaults.put("bookmark.import.filezilla.location", "~/.filezilla/sitemanager.xml");
+
+        defaults.put("bookmark.import.fetch", String.valueOf(true));
+        defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
     }
 
     /**
