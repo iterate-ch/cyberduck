@@ -19,8 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sftp.KnownHostsHostKeyVerifier;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
@@ -50,8 +48,7 @@ public class HostKeyController extends KnownHostsHostKeyVerifier {
                         + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
                 Locale.localizedString("Allow"), // default button
                 Locale.localizedString("Deny"), // alternate button
-                LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).attributes().getPermission().isWritable() ?
-                        Locale.localizedString("Always") : null //other button
+                isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
         );
         SheetController c = new AlertController(parent, alert) {
             public void callback(final int returncode) {
@@ -87,7 +84,7 @@ public class HostKeyController extends KnownHostsHostKeyVerifier {
                         + Locale.localizedString("Do you want to allow the host access?"),
                 Locale.localizedString("Allow"), // defaultbutton
                 Locale.localizedString("Deny"), //alternative button
-                LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).attributes().getPermission().isWritable() ? Locale.localizedString("Always") : null //other button
+                isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
         );
         SheetController c = new AlertController(parent, alert) {
             public void callback(final int returncode) {

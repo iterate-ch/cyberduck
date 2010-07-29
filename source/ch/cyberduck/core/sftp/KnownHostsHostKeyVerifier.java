@@ -71,6 +71,10 @@ public abstract class KnownHostsHostKeyVerifier implements ServerHostKeyVerifier
     protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                                    final byte[] serverHostKey) throws ConnectionCanceledException;
 
+    protected boolean isHostKeyDatabaseWritable() {
+        return LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).attributes().getPermission().isWritable();
+    }
+
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                        final byte[] serverHostKey) throws Exception {
         int result = database.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
