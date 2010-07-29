@@ -136,11 +136,6 @@ public class HistoryCollection extends BookmarkCollection {
     }
 
     @Override
-    protected Host unique(Host bookmark) {
-        return bookmark;
-    }
-
-    @Override
     public boolean allowsAdd() {
         return false;
     }
