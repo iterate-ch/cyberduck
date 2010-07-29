@@ -126,6 +126,11 @@ public class FinderLocal extends Local {
         return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
     }
 
+    @Override
+    public boolean exists() {
+        return NSFileManager.defaultManager().fileExistsAtPath(this.getAbsolute());
+    }
+
     private static boolean JNI_LOADED = false;
 
     private static boolean loadNative() {
