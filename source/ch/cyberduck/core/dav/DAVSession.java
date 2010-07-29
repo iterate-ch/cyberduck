@@ -275,8 +275,13 @@ public class DAVSession extends HTTPSession implements SSLSession {
     @Override
     public void error(Path path, String message, Throwable e) {
         if(e instanceof HttpException) {
-            super.error(path, message, new HttpException(
-                    HttpStatus.getStatusText(((HttpException) e).getReasonCode())));
+            String status = HttpStatus.getStatusText(((HttpException) e).getReasonCode());
+            if(StringUtils.isNotBlank(status)) {
+                super.error(path, message, new HttpException(status));
+            }
+            else {
+                super.error(path, message, e);
+            }
         }
         else {
             super.error(path, message, e);
