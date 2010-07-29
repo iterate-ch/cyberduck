@@ -171,6 +171,8 @@ public abstract class Session {
         login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
 
+    private boolean unsecurewarning = true;
+
     /**
      * Attempts to login using the credentials provided from the login controller.
      *
@@ -179,18 +181,15 @@ public abstract class Session {
     protected void login() throws IOException {
         this.prompt(login);
         final Credentials credentials = host.getCredentials();
+        if(unsecurewarning
+                && !host.getProtocol().isSecure()
+                && !credentials.isAnonymousLogin()
+                && Preferences.instance().getBoolean("connection.unsecure.warn")) {
+            login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                    MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), credentials.getPasswordPlaceholder()));
+        }
         this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 credentials.getUsername()));
-        if(!host.getProtocol().isSecure() && !credentials.isAnonymousLogin()) {
-            if(Preferences.instance().getBoolean("connection.unsecure.warn")) {
-                login.warn(
-                        MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"),
-                                host.getProtocol().getName()),
-                        MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"),
-                                credentials.getPasswordPlaceholder())
-                );
-            }
-        }
         this.login(login, credentials);
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
