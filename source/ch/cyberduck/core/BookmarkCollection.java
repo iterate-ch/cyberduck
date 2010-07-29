@@ -24,7 +24,7 @@ import ch.cyberduck.core.serializer.HostWriterFactory;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id$
+ * @version $Id: BookmarkCollection.java 6244 2010-07-04 06:39:24Z dkocher $
  */
 public class BookmarkCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(BookmarkCollection.class);
@@ -95,23 +95,9 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     @Override
     public void add(int row, Host host) {
-        super.add(row, this.unique(host));
+        super.add(row, host);
         this.sort();
         this.save();
-    }
-
-    /**
-     * Ensures the bookmark nickname is unique
-     *
-     * @param host
-     * @return
-     */
-    protected Host unique(Host host) {
-        final String proposal = host.getNickname();
-        for(int i = 1; this.contains(host) && !(this.get(this.indexOf(host)) == host); i++) {
-            host.setNickname(proposal + " (" + i + ")");
-        }
-        return host;
     }
 
     /**

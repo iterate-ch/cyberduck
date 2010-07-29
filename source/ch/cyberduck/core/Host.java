@@ -36,6 +36,7 @@ import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * @version $Id$
@@ -76,6 +77,7 @@ public class Host implements Serializable {
             return Host.this.getProtocol().getPasswordPlaceholder();
         }
     };
+    private String uuid;
     /**
      * IDN normalized hostname
      */
@@ -184,6 +186,10 @@ public class Host implements Serializable {
      */
     public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        Object uuidObj = dict.stringForKey("UUID");
+        if(uuidObj != null) {
+            this.setUuid(uuidObj.toString());
+        }
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj != null) {
             this.setProtocol(Protocol.forName(protocolObj.toString()));
@@ -259,6 +265,7 @@ public class Host implements Serializable {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey(this.getProtocol().getIdentifier(), "Protocol");
         dict.setStringForKey(this.getNickname(), "Nickname");
+        dict.setStringForKey(this.getUuid(), "UUID");
         if(StringUtils.isNotBlank(this.getHostname())) {
             dict.setStringForKey(this.getHostname(), "Hostname");
         }
@@ -449,6 +456,17 @@ public class Host implements Serializable {
      */
     public Protocol getProtocol() {
         return this.protocol;
+    }
+
+    public String getUuid() {
+        if(null == uuid) {
+            uuid = UUID.randomUUID().toString();
+        }
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     /**
@@ -754,6 +772,9 @@ public class Host implements Serializable {
         }
         if(other instanceof Host) {
             Host o = (Host) other;
+            if(this.getUuid().equals(o.getUuid())) {
+                return true;
+            }
             return this.getNickname().equals(o.getNickname());
         }
         if(other instanceof String) {
