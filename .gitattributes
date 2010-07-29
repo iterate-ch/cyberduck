@@ -1996,6 +1996,7 @@ source/ch/cyberduck/core/http/HTTPSession.java -text
 source/ch/cyberduck/core/http/StickyHostConfiguration.java -text
 source/ch/cyberduck/core/idisk/IDiskPath.java -text
 source/ch/cyberduck/core/idisk/IDiskSession.java -text
+source/ch/cyberduck/core/importer/ThirdpartyBookmarkCollection.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text

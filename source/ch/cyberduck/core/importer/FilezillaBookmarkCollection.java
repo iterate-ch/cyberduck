@@ -1,4 +1,4 @@
-package ch.cyberduck.core.filezilla;
+package ch.cyberduck.core.importer;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -40,33 +40,15 @@ import java.nio.charset.Charset;
 /**
  * @version $Id$
  */
-public class FilezillaBookmarkCollection extends AbstractHostCollection {
+public class FilezillaBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
-
-    public FilezillaBookmarkCollection() {
-        super();
-    }
-
-    @Override
-    public void save() {
-        throw new UnsupportedOperationException("Should not attempt to write to thirdparty bookmark collection");
-    }
 
     @Override
     public void load() {
-        final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.filezilla.location"));
-        if(file.exists()) {
-            log.info("Found Bookmarks file: " + file.getAbsolute());
-            this.parse(file);
-        }
+        super.load(LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.filezilla.location")));
     }
 
-    /**
-     * Parses an XML document from an input stream using a document handler.
-     *
-     * @throws org.jets3t.service.S3ServiceException
-     *          any parsing, IO or other exceptions are wrapped in an S3ServiceException.
-     */
+    @Override
     protected void parse(Local file) {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(),
