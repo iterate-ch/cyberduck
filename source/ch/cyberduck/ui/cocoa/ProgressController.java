@@ -289,7 +289,7 @@ public class ProgressController extends BundleController {
             Path path = transfer.getRoot();
             NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), "");
             item.setRepresentedObject(path.getAbsolute());
-            item.setImage(IconCache.instance().iconForPath(path, 16));
+            item.setImage(IconCache.instance().iconForPath(path, 16, false));
             item.setEnabled(path.getLocal().exists());
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer.getRoots());

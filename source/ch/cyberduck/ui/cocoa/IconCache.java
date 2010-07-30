@@ -244,9 +244,6 @@ public class IconCache {
 
     private final NSRect NSZeroRect = new NSRect(0, 0);
 
-    private final boolean overlayFolderImage
-            = Preferences.instance().getBoolean("browser.markInaccessibleFolders");
-
     private static Local FOLDER_PATH
             = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
 
@@ -258,6 +255,10 @@ public class IconCache {
      * @return
      */
     public NSImage iconForPath(final Path item, Integer size) {
+        return this.iconForPath(item, size, Preferences.instance().getBoolean("browser.markInaccessibleFolders"));
+    }
+
+    public NSImage iconForPath(final Path item, Integer size, boolean overlay) {
         if(item.attributes().isSymbolicLink()) {
             if(item.attributes().isDirectory()) {
                 final NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
@@ -294,7 +295,7 @@ public class IconCache {
             return this.iconForName(item.getHost().getProtocol().disk(), size);
         }
         if(item.attributes().isDirectory()) {
-            if(overlayFolderImage) {
+            if(overlay) {
                 if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
                     return this.iconForFolder("privatefolderbadge.png", size);
