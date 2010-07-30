@@ -222,6 +222,14 @@ public abstract class AbstractPath {
      * @return true if p is a child of me in the path hierarchy
      */
     public boolean isChild(AbstractPath p) {
+        if(this.attributes().isFile()) {
+            // If a file we don't have any childs at all
+            return false;
+        }
+        if(this.getParent().equals(p.getParent())) {
+            // Cannot be a child if the same parent
+            return false;
+        }
         for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if(parent.equals(p)) {
                 return true;
