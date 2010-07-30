@@ -688,6 +688,9 @@ public abstract class Preferences {
 
         defaults.put("bookmark.import.flow", String.valueOf(true));
         defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
+
+        defaults.put("terminal.bundle.identifier", "com.apple.Terminal");
+        defaults.put("terminal.command", "do script \"{0}\"");
     }
 
     /**

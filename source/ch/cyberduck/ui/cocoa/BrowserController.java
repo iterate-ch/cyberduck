@@ -2992,9 +2992,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(null == workdir) {
             workdir = this.workdir().getAbsolute();
         }
-        final String command
-                = "tell application \"Terminal\"\n"
-                + "do script \"ssh -t "
+        final String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                Preferences.instance().getProperty("terminal.bundle.identifier"));
+        if(StringUtils.isEmpty(app)) {
+            log.error("Application with bundle identifier " + Preferences.instance().getProperty("terminal.bundle.identifier") + " is not installed");
+            return;
+        }
+        String ssh = "ssh -t "
                 + (identity ? "-i " + this.getSession().getHost().getCredentials().getIdentity().getAbsolute() : "")
                 + " "
                 + this.getSession().getHost().getCredentials().getUsername()
@@ -3003,17 +3007,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 + " "
                 + "-p " + this.getSession().getHost().getPort()
                 + " "
-                + "\\\"cd " + workdir + " && exec \\\\$SHELL\\\"\""
+                + "\\\"cd " + workdir + " && exec \\\\$SHELL\\\"";
+        final String command
+                = "tell application \"" + LocalFactory.createLocal(app).getDisplayName() + "\""
+                + "\n"
+                + "activate"
+                + "\n"
+                + MessageFormat.format(Preferences.instance().getProperty("terminal.command"), ssh)
                 + "\n"
                 + "end tell";
         final NSAppleScript as = NSAppleScript.createWithSource(command);
         as.executeAndReturnError(new PointerByReference());
-        final String terminal = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
-        if(StringUtils.isEmpty(terminal)) {
-            log.error("Terminal.app not installed");
-            return;
-        }
-        NSWorkspace.sharedWorkspace().launchApplication(terminal);
     }
 
     @Action
@@ -4266,10 +4270,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
-            final Local terminal = LocalFactory.createLocal(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal"));
-            item.setLabel(terminal.getDisplayName());
-            item.setPaletteLabel(terminal.getDisplayName());
-            item.setImage(IconCache.instance().iconForPath(terminal, 128));
+            String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("terminal.bundle.identifier"));
+            if(StringUtils.isEmpty(app)) {
+                log.error("Application with bundle identifier " + Preferences.instance().getProperty("terminal.bundle.identifier") + " is not installed");
+            }
+            else {
+                final Local terminal = LocalFactory.createLocal(app);
+                item.setLabel(terminal.getDisplayName());
+                item.setPaletteLabel(terminal.getDisplayName());
+                item.setImage(IconCache.instance().iconForPath(terminal, 128));
+            }
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openTerminalButtonClicked:"));
             return item;
