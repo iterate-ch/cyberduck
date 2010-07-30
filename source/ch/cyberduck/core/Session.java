@@ -34,7 +34,7 @@ import java.util.*;
 /**
  * @version $Id$
  */
-public abstract class Session {
+public abstract class Session implements TranscriptListener {
     private static Logger log = Logger.getLogger(Session.class);
 
     /**
