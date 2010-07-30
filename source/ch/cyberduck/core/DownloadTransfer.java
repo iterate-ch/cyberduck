@@ -261,7 +261,10 @@ public class DownloadTransfer extends Transfer {
 
     private final DownloadTransferFilter ACTION_SKIP = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
-            return !p.getLocal().exists();
+            if(p.getLocal().exists()) {
+                return p.getLocal().attributes().getSize() == 0;
+            }
+            return true;
         }
     };
 
