@@ -650,7 +650,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(!c.isEmpty()) {
             final NSAlert alert = NSAlert.alert(
                     MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
-                    MessageFormat.format(Locale.localizedString("{0} bookmarks found.", "Configuration"), c.size()),
+                    MessageFormat.format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
                     Locale.localizedString("Import", "Configuration"), //default
                     Locale.localizedString("Don't Ask Again", "Configuration"), //other
                     Locale.localizedString("Cancel", "Configuration"));
