@@ -318,11 +318,9 @@ public class AzurePath extends CloudPath {
         }
         catch(StorageException e) {
             childs.attributes().setReadable(false);
-            this.error("Listing directory failed", e);
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);
-            this.error("Listing directory failed", e);
         }
         return childs;
     }

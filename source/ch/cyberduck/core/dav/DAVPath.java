@@ -184,7 +184,6 @@ public class DAVPath extends Path {
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);
-            this.error("Listing directory failed", e);
         }
         return childs;
     }

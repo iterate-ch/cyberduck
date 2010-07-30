@@ -665,11 +665,9 @@ public class S3Path extends CloudPath {
         }
         catch(S3ServiceException e) {
             childs.attributes().setReadable(false);
-            this.error("Listing directory failed", e);
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);
-            this.error("Listing directory failed", e);
         }
         return childs;
     }

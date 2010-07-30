@@ -219,7 +219,6 @@ public class CFPath extends CloudPath {
         }
         catch(IOException e) {
             childs.attributes().setReadable(false);
-            this.error("Listing directory failed", e);
         }
         return childs;
     }
