@@ -26,9 +26,10 @@ import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -40,18 +41,29 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         super(BookmarkCollection.defaultCollection());
     }
 
+    private static final int BOOKMARKS_INDEX = 7;
+
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         if(this.isPopulated()) {
             // If you return a negative value, the number of items is left unchanged
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        return new NSInteger(BookmarkCollection.defaultCollection().size() + 9);
-        //index 0-2 are static menu items, 3 is sepeartor, 4 is iDisk with submenu, 5 is History with submenu,
-        // 6 is Bonjour with submenu, 7 is sepearator
+        /**
+         * Toogle Bookmarks
+         * ----------------
+         * New Bookmark
+         * Edit Bookmark
+         * Delete Bookmark
+         * Duplicate Bookmark
+         * ----------------
+         * History
+         * Bonjour
+         * ----------------
+         * ...
+         */
+        return new NSInteger(BookmarkCollection.defaultCollection().size() + BOOKMARKS_INDEX + 3);
     }
-
-    private static final int BOOKMARKS_INDEX = 6;
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
