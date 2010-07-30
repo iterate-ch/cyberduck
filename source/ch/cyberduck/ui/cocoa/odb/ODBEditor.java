@@ -81,7 +81,7 @@ public class ODBEditor extends Editor {
     public static Map<String, String> getInstalledEditors() {
         return INSTALLED_ODB_EDITORS;
     }
-    
+
     /**
      * @param c
      * @param bundleIdentifier
@@ -107,17 +107,18 @@ public class ODBEditor extends Editor {
         if(!ODBEditor.loadNative()) {
             return;
         }
-        this.edit(edited.getLocal().getAbsolute(), bundleIdentifier);
+        this.edit(edited.getLocal().getAbsolute(), edited.toURL(), bundleIdentifier);
     }
 
     /**
      * Native implementation
      * Open the file using the ODB external editor protocol
      *
-     * @param path
+     * @param local            Absolute path on the local file system
+     * @param url              The remote URL
      * @param bundleIdentifier
      */
-    private native void edit(final String path, final String bundleIdentifier);
+    private native void edit(String local, String url, String bundleIdentifier);
 
     /**
      * Called by the native editor when the file has been closed

@@ -17,7 +17,6 @@
  */
 
 #import "Editor.h"
-#import "ODBEditor.h"
 
 // Simple utility to convert java strings to NSStrings
 NSString *convertToNSString(JNIEnv *env, jstring javaString)
@@ -50,13 +49,14 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
 										JNIEnv *env, 
 										jobject this, 
-										jstring path,
+										jstring local,
+										jstring url,
 										jstring bundleIdentifier)
 {
 	Editor *editor = [[Editor alloc] init: env
 						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
 						 withEditorObject: (*env)->NewGlobalRef(env, this)];
-	[editor odbEdit:nil path:convertToNSString(env, path) withEditor:convertToNSString(env, bundleIdentifier)];
+	[editor odbEdit:nil path:convertToNSString(env, local) url:convertToNSString(env, url) withEditor:convertToNSString(env, bundleIdentifier)];
 }
 
 @implementation Editor
@@ -82,9 +82,13 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
 	[super dealloc];
 }
 
-- (IBAction) odbEdit:(id) sender path:(NSString *)path withEditor:(NSString *)editor
+- (void)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor
 {
-    [[ODBEditor sharedODBEditor:editor] editFile:path options:nil forClient:self context:nil];
+    NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
+                                url, ODBEditorCustomPathKey,
+                                nil
+                            ];
+    [[ODBEditor sharedODBEditor:editor] editFile:path options:options forClient:self context:nil];
 }
 
 - (void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context

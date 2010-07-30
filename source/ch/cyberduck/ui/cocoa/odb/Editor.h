@@ -34,7 +34,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit
-  (JNIEnv *, jobject, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jstring, jstring);
 
 #ifdef __cplusplus
 }
@@ -42,6 +42,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit
 #endif
 
 #import <Cocoa/Cocoa.h>
+#import "ODBEditor.h"
 
 @interface Editor : NSObject
 {
@@ -51,7 +52,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit
 }
 
 - (id)init:(JNIEnv*)env withEditorClass:(jclass)editorClass withEditorObject:(jobject)editorObject;
-
-- (IBAction) odbEdit:(id) sender path:(NSString *)path withEditor:(NSString *)bundleIdentifier;
+- (void)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor;
 
 @end

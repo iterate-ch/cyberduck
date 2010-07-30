@@ -16,13 +16,9 @@
  *  dkocher@cyberduck.ch
  */
 
-#import "NSAppleEventDescriptor-Extensions.h"
 #import "ODBEditor.h"
-#import "ODBEditorSuite.h"
-#import <Carbon/Carbon.h>
 
 NSString * const ODBEditorCustomPathKey		= @"ODBEditorCustomPath";
-
 NSString * const ODBEditorNonRetainedClient = @"ODBEditorNonRetainedClient";
 NSString * const ODBEditorClientContext		= @"ODBEditorClientContext";
 NSString * const ODBEditorFileName			= @"ODBEditorFileName";
@@ -183,8 +179,9 @@ static ODBEditor	*_sharedODBEditor;
 	
 	// custom path
 	
-	if (customPath != nil)
+	if (customPath != nil) {
 		[appleEvent setParamDescriptor: [NSAppleEventDescriptor descriptorWithString: customPath] forKeyword: keyFileCustomPath];
+    }
 	
 	// send the event
 	
