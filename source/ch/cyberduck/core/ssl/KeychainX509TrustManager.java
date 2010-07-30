@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 /**
  * @version $Id$
@@ -51,6 +52,10 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
     private void checkCertificates(final X509Certificate[] certs)
             throws CertificateException {
 
+        if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
+            log.info("Certificate for " + this.getHostname() + " previously trusted");
+            return;
+        }
         if(KeychainFactory.instance().isTrusted(this.getHostname(), certs)) {
             log.info("Certificate for " + this.getHostname() + " trusted in Keychain");
             // We still accept the certificate if we find it in the Keychain
