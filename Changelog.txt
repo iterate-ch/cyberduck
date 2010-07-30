@@ -4,11 +4,11 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-4.0 (Sep-01-2010) [http://trac.cyberduck.ch/milestone/3.6]
+4.0 (Sep-01-2010) [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Connecting to Google Storage (Google Storage)
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
-3.6 (Jul-30-2010) [http://trac.cyberduck.ch/milestone/3.6]
+3.6 (Aug-05-2010) [http://trac.cyberduck.ch/milestone/3.6]
 - [Feature] Edit Access Control List (#3191) (S3, Google Storage, Google Docs)
 - [Feature] Enable Bucket Versioning (#4511) (S3)
 - [Feature] Enable Bucket Multi-Factor Authentication Delete (#4510) (S3)
@@ -18,11 +18,15 @@ Changelog. Last modified: $Date$
 - [Feature] Eucalyptus Walrus support enabled by default (S3)
 - [Feature] Duplicate Bookmark (#3385)
 - [Feature] Import bookmarks from thirdparty applications (Filezilla, Fetch, Flow) (#3373)
+- [Feature] Copy directory listing to clipboard (#2372)
+- [Feature] Support for thidparty terminal applications (#2987)
 - [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
 - [Bugfix] Improved interoperability with Dunkel Cloud Storage (S3)
 - [Bugfix] Trust validation failure with self signed certificates for HTTP redirects (WebDAV) (#2443)
 - [Bugfix] Drag and drop of a file over a bookmark to upload (#4562)
 - [Bugfix] Connect authenticated to thirdparty buckets (S3) (#4480)
+- [Bugfix] Connections stalls after long idle (SFTP) (#5073, #4214, #3941)
+- [Bugfix] Dragging files for upload is slow (#4141)
 
 3.5.1 (Jun-15-2010) [http://trac.cyberduck.ch/milestone/3.5.1]
 - [Bugfix] Crash opening Info window (#4536)
