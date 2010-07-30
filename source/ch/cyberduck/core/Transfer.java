@@ -120,11 +120,12 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param roots
+     * @param items
      */
-    public Transfer(List<Path> roots) {
-        this.setRoots(roots);
+    public Transfer(List<Path> items) {
+        this.roots = items;
         this.session = this.getRoot().getSession();
+        // Intialize bandwidth setting
         this.init();
     }
 
@@ -294,9 +295,14 @@ public abstract class Transfer implements Serializable {
         return this.roots;
     }
 
-    protected void setRoots(List<Path> roots) {
+    public void setRoots(List<Path> roots) {
         this.roots = roots;
     }
+
+    /**
+     * Normalize path names and remove duplicates.
+     */
+    protected abstract void normalize();
 
     public Session getSession() {
         return this.session;
@@ -499,6 +505,8 @@ public abstract class Transfer implements Serializable {
             }
 
             this.clear(options);
+
+            this.normalize();
 
             // Get the transfer filter from the concret transfer class
             final TransferFilter filter = this.filter(action);

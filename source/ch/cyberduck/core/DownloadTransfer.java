@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
@@ -25,6 +26,7 @@ import ch.cyberduck.ui.growl.Growl;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -48,9 +50,13 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected void setRoots(List<Path> downloads) {
+    protected void normalize() {
         final List<Path> normalized = new Collection<Path>();
-        for(Path download : downloads) {
+        for(Path download : this.getRoots()) {
+            if(this.isCanceled()) {
+                return;
+            }
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Transfer"), download.getName()));
             boolean duplicate = false;
             for(Iterator<Path> iter = normalized.iterator(); iter.hasNext();) {
                 Path n = iter.next();
@@ -87,7 +93,7 @@ public class DownloadTransfer extends Transfer {
                 normalized.add(download);
             }
         }
-        super.setRoots(normalized);
+        this.setRoots(normalized);
     }
 
     @Override
