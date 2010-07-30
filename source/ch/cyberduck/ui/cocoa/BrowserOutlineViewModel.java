@@ -151,14 +151,19 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     }
 
     public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo draggingInfo, NSObject item, NSInteger row) {
-        Path destination = null;
         if(controller.isMounted()) {
+            Path destination = null;
             if(null != item) {
                 destination = controller.lookup(new OutlinePathReference(item));
             }
             if(!PathPasteboard.getPasteboard(controller.getSession().getHost()).isEmpty()
                     || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                if(null != destination) {
+                if(null == destination) {
+                    // Dragging over empty rows
+                    outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+                    return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
+                }
+                else {
                     // Dragging over file or folder
                     final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation()).intValue();
                     if(0 == draggingColumn && destination.attributes().isDirectory()) {
@@ -177,17 +182,13 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                         return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                     }
                 }
-                else {
-                    // Dragging over empty rows
-                    outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
-                    return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
-                }
             }
         }
+        // Passing to super to look for URLs to mount
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
         }
-        return super.validateDrop(outlineView, destination, row, draggingInfo);
+        return super.validateDrop(outlineView, null, row, draggingInfo);
     }
 
     public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row) {

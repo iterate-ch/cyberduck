@@ -84,6 +84,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
             }
             return super.validateDrop(view, destination, row, draggingInfo);
         }
+        // Passing to super to look for URLs to mount
         return super.validateDrop(view, null, row, draggingInfo);
     }
 
