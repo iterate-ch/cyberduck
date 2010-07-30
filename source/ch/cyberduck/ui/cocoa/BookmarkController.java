@@ -259,9 +259,15 @@ public class BookmarkController extends WindowController {
             this.background(new AbstractBackgroundAction() {
 
                 public void run() {
+                    String url;
+                    if(StringUtils.isNotBlank(host.getProtocol().favicon())) {
+                        url = host.getProtocol().favicon();
+                    }
+                    else {
+                        url = host.getWebURL() + "/favicon.ico";
+                    }
                     // Default favicon location
-                    final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(host.getWebURL()
-                            + "/favicon.ico"));
+                    final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
                     if(null == data) {
                         return;
                     }

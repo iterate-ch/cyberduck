@@ -65,6 +65,10 @@ public abstract class Protocol {
         return this.getScheme().toUpperCase();
     }
 
+    public String favicon() {
+        return null;
+    }
+
     /**
      * @return
      */
@@ -360,6 +364,11 @@ public abstract class Protocol {
         public String getPasswordPlaceholder() {
             return Locale.localizedString("Secret Access Key", "S3");
         }
+
+        @Override
+        public String favicon() {
+            return "http://media.amazonwebservices.com/favicon.ico";
+        }
     };
 
     public static final Protocol S3 = new Protocol() {
@@ -416,6 +425,11 @@ public abstract class Protocol {
         @Override
         public String icon() {
             return S3_SSL.icon();
+        }
+
+        @Override
+        public String favicon() {
+            return "http://media.amazonwebservices.com/favicon.ico";
         }
     };
 
