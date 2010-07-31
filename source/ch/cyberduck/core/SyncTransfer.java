@@ -67,6 +67,12 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
+    protected void normalize() {
+        _delegateUpload.normalize();
+        _delegateDownload.normalize();
+    }
+
+    @Override
     public void setBandwidth(float bytesPerSecond) {
         ;
     }
