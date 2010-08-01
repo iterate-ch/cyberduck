@@ -235,7 +235,8 @@ public class DAVPath extends Path {
             if(!this.getSession().getClient().moveMethod(this.getAbsolute(), renamed.getAbsolute())) {
                 throw new IOException(this.getSession().getClient().getStatusMessage());
             }
-            this.setPath(renamed.getAbsolute());
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(attributes().isFile()) {

@@ -186,7 +186,6 @@ public class SFTPPath extends Path {
                 renamed.delete();
             }
             this.getSession().sftp().mv(this.getAbsolute(), renamed.getAbsolute());
-            this.setPath(renamed.getAbsolute());
             // The directory listing is no more current
             this.getParent().invalidate();
         }

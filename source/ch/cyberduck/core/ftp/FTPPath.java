@@ -427,7 +427,8 @@ public class FTPPath extends Path {
 
             this.getSession().setWorkdir(this.getParent());
             this.getSession().getClient().rename(this.getName(), renamed.getAbsolute());
-            this.setPath(renamed.getAbsolute());
+            // The directory listing is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(attributes().isFile()) {

@@ -934,7 +934,8 @@ public class S3Path extends CloudPath {
                 // Moving the object retaining the metadata of the original.
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
                         destination, false);
-                this.setPath(renamed.getAbsolute());
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             else if(attributes().isVolume()) {
                 // Renaming buckets is not currently supported by S3
