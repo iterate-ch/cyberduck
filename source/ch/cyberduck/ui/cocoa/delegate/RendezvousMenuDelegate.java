@@ -59,6 +59,9 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(RendezvousCollection.defaultCollection().size() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
+            item.setTarget(null);
+            item.setAction(null);
+            item.setImage(null);
             item.setEnabled(false);
         }
         else {
