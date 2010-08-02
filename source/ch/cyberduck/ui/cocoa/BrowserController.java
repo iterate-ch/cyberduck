@@ -1570,6 +1570,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
         this.toggleBookmarks(true);
         final Host duplicate = new Host(selected.getAsDictionary());
+        duplicate.setUuid(null);
         this.addBookmark(duplicate);
         BookmarkController c = BookmarkController.Factory.create(duplicate);
         c.window().makeKeyAndOrderFront(null);
