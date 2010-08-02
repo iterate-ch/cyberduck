@@ -30,6 +30,7 @@ import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.rococoa.Foundation;
@@ -289,7 +290,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -668,7 +669,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                            files.get(0).getName(), acl);
+                            this.toString(files), acl);
                 }
             });
         }
@@ -979,7 +980,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -1513,7 +1514,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -1571,7 +1572,7 @@ public class InfoController extends ToolbarWindowController {
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
-                double size = 0;
+                long size = 0;
 
                 public void run() {
                     for(Path next : files) {
@@ -1586,24 +1587,29 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
-                    StringBuilder formatted = new StringBuilder(Status.getSizeAsString(size));
-                    if(size > -1) {
-                        formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
-                    }
-                    sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            formatted.toString(),
-                            TRUNCATE_MIDDLE_ATTRIBUTES));
+                    updateSize(size);
                     toggleSizeSettings(true);
                 }
 
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
     }
+
+    private void updateSize(long size) {
+        StringBuilder formatted = new StringBuilder(Status.getSizeAsString(size));
+        if(size > -1) {
+            formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
+        }
+        sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                formatted.toString(),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
+    }
+
 
     private void initChecksum() {
         if(this.numberOfFiles() > 1) {
@@ -1637,7 +1643,7 @@ public class InfoController extends ToolbarWindowController {
                     @Override
                     public String getActivity() {
                         return MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                                files.get(0).getName());
+                                this.toString(files));
                     }
                 });
             }
@@ -1664,7 +1670,7 @@ public class InfoController extends ToolbarWindowController {
         if(enable) {
             logging = ((S3Session) session).isLoggingSupported();
             versioning = ((S3Session) session).isVersioningSupported();
-            storageclass = ((S3Session)session).getSupportedStorageClasses().size() > 1;
+            storageclass = ((S3Session) session).getSupportedStorageClasses().size() > 1;
         }
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
@@ -1766,7 +1772,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -1865,7 +1871,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -1903,7 +1909,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -2007,9 +2013,7 @@ public class InfoController extends ToolbarWindowController {
      * @param permission
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
-        // Write altered permissions to the server
         if(this.togglePermissionSettings(false)) {
-            // send the changes to the remote host
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
@@ -2031,7 +2035,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                            files.get(0).getName(), permission);
+                            this.toString(files), permission);
                 }
             });
         }
@@ -2142,7 +2146,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -2220,7 +2224,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                            files.get(0).getName());
+                            this.toString(files));
                 }
             });
         }
@@ -2229,11 +2233,12 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
-            // send the changes to the remote host
             controller.background(new BrowserBackgroundAction(controller) {
+                private long total;
+
                 public void run() {
                     for(Path next : files) {
-                        this.calculateSize(next);
+                        next.attributes().setSize(this.calculateSize(next));
                         if(!controller.isConnected()) {
                             break;
                         }
@@ -2247,26 +2252,34 @@ public class InfoController extends ToolbarWindowController {
                 }
 
                 /**
-                 * Calculates recursively the size of this path
+                 * Calculates recursively the size of this path if a directory
                  *
                  * @return The size of the file or the sum of all containing files if a directory
                  * @warn Potentially lengthy operation
                  */
-                private double calculateSize(AbstractPath p) {
+                private long calculateSize(final AbstractPath p) {
+                    long size = 0;
                     if(p.attributes().isDirectory()) {
-                        long size = 0;
                         for(AbstractPath next : p.childs()) {
                             size += this.calculateSize(next);
                         }
-                        ((PathAttributes) p.attributes()).setSize(size);
                     }
-                    return p.attributes().getSize();
+                    else if(p.attributes().isFile()) {
+                        size += p.attributes().getSize();
+                        total += size;
+                        final long update = total;
+                        invoke(new WindowMainAction(InfoController.this) {
+                            public void run() {
+                                updateSize(update);
+                            }
+                        });
+                    }
+                    return size;
                 }
 
                 @Override
                 public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                            files.get(0).getName());
+                    return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"), this.toString(files));
                 }
             });
         }
