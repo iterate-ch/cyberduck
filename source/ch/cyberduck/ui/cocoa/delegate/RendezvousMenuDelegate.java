@@ -19,8 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Rendezvous;
-import ch.cyberduck.core.RendezvousListener;
+import ch.cyberduck.core.RendezvousCollection;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.IconCache;
@@ -28,18 +27,19 @@ import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
-public class RendezvousMenuDelegate extends AbstractMenuDelegate implements RendezvousListener {
+public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
     public RendezvousMenuDelegate() {
-        Rendezvous.instance().addListener(this);
+        super(RendezvousCollection.defaultCollection());
     }
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
@@ -48,23 +48,21 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        int n = Rendezvous.instance().numberOfServices();
-        if(n > 0) {
-            return new NSInteger(n);
+        if(RendezvousCollection.defaultCollection().size() > 0) {
+            // The number of history plus a delimiter and the 'Clear' menu
+            return new NSInteger(RendezvousCollection.defaultCollection().size());
         }
         return new NSInteger(1);
     }
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        if(Rendezvous.instance().numberOfServices() == 0) {
+        if(RendezvousCollection.defaultCollection().size() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
             item.setEnabled(false);
-            // No more menu updates.
-            return false;
         }
         else {
-            final Host h = Rendezvous.instance().getService(index.intValue());
+            final Host h = RendezvousCollection.defaultCollection().get(index.intValue());
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setEnabled(true);
@@ -78,20 +76,6 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
     public void rendezvousMenuClicked(NSMenuItem sender) {
         log.debug("rendezvousMenuClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(Rendezvous.instance().getServiceWithUuid(sender.representedObject()));
-    }
-
-    @Override
-    protected void invalidate() {
-        Rendezvous.instance().removeListener(this);
-        super.invalidate();
-    }
-
-    public void serviceResolved(String servicename, String hostname) {
-        this.setNeedsUpdate(true);
-    }
-
-    public void serviceLost(String servicename) {
-        this.setNeedsUpdate(true);
+        controller.mount(RendezvousCollection.defaultCollection().lookup(sender.representedObject()));
     }
 }
