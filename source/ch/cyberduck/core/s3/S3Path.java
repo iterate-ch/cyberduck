@@ -935,6 +935,7 @@ public class S3Path extends CloudPath {
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
                         destination, false);
                 // The directory listing is no more current
+                renamed.getParent().invalidate();
                 this.getParent().invalidate();
             }
             else if(attributes().isVolume()) {

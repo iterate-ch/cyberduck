@@ -594,6 +594,7 @@ public class AzurePath extends CloudPath {
     @Override
     public void rename(AbstractPath renamed) {
         this.copy(renamed);
+        renamed.getParent().invalidate();
         this.delete();
     }
 

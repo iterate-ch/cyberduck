@@ -237,6 +237,7 @@ public class DAVPath extends Path {
             }
             // The directory listing is no more current
             this.getParent().invalidate();
+            renamed.getParent().invalidate();
         }
         catch(IOException e) {
             if(attributes().isFile()) {
