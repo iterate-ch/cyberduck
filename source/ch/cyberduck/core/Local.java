@@ -406,6 +406,11 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
+    public void setPath(String parent, String name) {
+        _impl = new File(Path.normalize(parent), Path.normalize(name));
+    }
+
+    @Override
     public void writeTimestamp(long millis) {
         if(!_impl.setLastModified(millis)) {
             log.warn("Write modification date failed:" + this.getAbsolute());
