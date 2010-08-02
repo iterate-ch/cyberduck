@@ -440,18 +440,18 @@ public class PreferencesController extends ToolbarWindowController {
 
     private final CollectionListener<Host> bookmarkCollectionListener = new CollectionListener<Host>() {
         public void collectionItemAdded(Host bookmark) {
-            PreferencesController.this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
-            PreferencesController.this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(IconCache.iconNamed("cyberduck-document", 16));
-            PreferencesController.this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getNickname());
+            defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
+            defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document", 16));
+            defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
         }
 
         public void collectionItemRemoved(Host bookmark) {
-            if(PreferencesController.this.defaultBookmarkCombobox.titleOfSelectedItem().equals(bookmark.getNickname())) {
+            if(defaultBookmarkCombobox.selectedItem().representedObject().equals(bookmark.getUuid())) {
                 Preferences.instance().deleteProperty("browser.defaultBookmark");
             }
-            NSInteger i = PreferencesController.this.defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getNickname());
+            NSInteger i = defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getUuid());
             if(i.intValue() > -1) {
-                PreferencesController.this.defaultBookmarkCombobox.removeItemAtIndex(i);
+                defaultBookmarkCombobox.removeItemAtIndex(i);
             }
         }
 
@@ -465,41 +465,30 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBookmarkCombobox.setToolTip(Locale.localizedString("Bookmarks"));
         this.defaultBookmarkCombobox.removeAllItems();
         this.defaultBookmarkCombobox.addItemWithTitle(Locale.localizedString("None"));
+        this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
         this.defaultBookmarkCombobox.menu().addItem(NSMenuItem.separatorItem());
         for(Host bookmark : BookmarkCollection.defaultCollection()) {
             this.defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
-            this.defaultBookmarkCombobox.itemWithTitle(bookmark.getNickname()).setImage(
+            this.defaultBookmarkCombobox.lastItem().setImage(
                     IconCache.iconNamed(bookmark.getProtocol().icon(), 16));
-            this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getNickname());
+            this.defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
+            if(bookmark.getUuid().equals(Preferences.instance().getProperty("browser.defaultBookmark"))) {
+                this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
+            }
         }
         BookmarkCollection.defaultCollection().addListener(bookmarkCollectionListener);
         this.defaultBookmarkCombobox.setTarget(this.id());
         final Selector action = Foundation.selector("defaultBookmarkComboboxClicked:");
         this.defaultBookmarkCombobox.setAction(action);
-        String defaultBookmarkNickname = Preferences.instance().getProperty("browser.defaultBookmark");
-        if(null == defaultBookmarkNickname) {
-            this.defaultBookmarkCombobox.selectItemWithTitle(Locale.localizedString("None"));
-
-        }
-        else {
-            NSInteger i = this.defaultBookmarkCombobox.indexOfItemWithTitle(defaultBookmarkNickname);
-            if(i.intValue() > -1) {
-                this.defaultBookmarkCombobox.selectItemAtIndex(i);
-            }
-            else {
-                this.defaultBookmarkCombobox.selectItemWithTitle(Locale.localizedString("None"));
-            }
-        }
     }
 
     @Action
     public void defaultBookmarkComboboxClicked(NSPopUpButton sender) {
-        if(Locale.localizedString("None").equals(sender.titleOfSelectedItem())) {
+        final String selected = sender.selectedItem().representedObject();
+        if(null == selected) {
             Preferences.instance().deleteProperty("browser.defaultBookmark");
         }
-        else {
-            Preferences.instance().setProperty("browser.defaultBookmark", sender.titleOfSelectedItem());
-        }
+        Preferences.instance().setProperty("browser.defaultBookmark", selected);
     }
 
     @Outlet

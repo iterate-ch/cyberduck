@@ -437,23 +437,24 @@ public class MainController extends BundleController implements NSApplication.De
     private void openDefaultBookmark(BrowserController controller) {
         String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
         if(null == defaultBookmark) {
+            log.info("No default bookmark configured");
             return; //No default bookmark given
         }
-        for(Host bookmark : BookmarkCollection.defaultCollection()) {
-            if(bookmark.getNickname().equals(defaultBookmark)) {
-                for(BrowserController browser : getBrowsers()) {
-                    if(browser.hasSession()) {
-                        if(browser.getSession().getHost().equals(bookmark)) {
-                            log.debug("Default bookmark already mounted");
-                            return;
-                        }
-                    }
+        Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
+        if(null == bookmark) {
+            log.info("Default bookmark no more available");
+            return;
+        }
+        for(BrowserController browser : getBrowsers()) {
+            if(browser.hasSession()) {
+                if(browser.getSession().getHost().equals(bookmark)) {
+                    log.debug("Default bookmark already mounted");
+                    return;
                 }
-                log.debug("Mounting default bookmark " + bookmark);
-                controller.mount(bookmark);
-                return;
             }
         }
+        log.debug("Mounting default bookmark " + bookmark);
+        controller.mount(bookmark);
     }
 
     /**
@@ -550,9 +551,7 @@ public class MainController extends BundleController implements NSApplication.De
             @Override
             public void cleanup() {
                 if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                    if(MainController.getBrowsers().isEmpty()) {
-                        openDefaultBookmark(MainController.newDocument());
-                    }
+                    openDefaultBookmark(MainController.newDocument());
                 }
             }
         });
