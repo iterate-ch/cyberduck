@@ -1628,37 +1628,35 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void deleteBookmarkButtonClicked(final ID sender) {
-        final NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
-        NSUInteger[] indexes = new NSUInteger[iterator.count().intValue()];
-        int i = 0;
+        NSIndexSet iterator = bookmarkTable.selectedRowIndexes();
+        final List<Host> selected = new ArrayList<Host>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            indexes[i] = index;
+            selected.add(bookmarkModel.getSource().get(index.intValue()));
+        }
+        StringBuilder alertText = new StringBuilder(
+                Locale.localizedString("Do you want to delete the selected bookmark?"));
+        int i = 0;
+        Iterator<Host> iter = selected.iterator();
+        while(i < 10 && iter.hasNext()) {
+            alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getNickname());
             i++;
         }
-        bookmarkTable.deselectAll(null);
-        int j = 0;
-        for(i = 0; i < indexes.length; i++) {
-            int row = indexes[i].intValue() - j;
-            final NSInteger index = new NSInteger(row);
-            bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
-            bookmarkTable.scrollRowToVisible(index);
-            if(bookmarkModel.getSource().allowsEdit()) {
-                Host host = bookmarkModel.getSource().get(row);
-                final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark"),
-                        Locale.localizedString("Do you want to delete the selected bookmark?")
-                                + " (" + host.getNickname() + ")",
-                        Locale.localizedString("Delete"),
-                        Locale.localizedString("Cancel"),
-                        null);
-                switch(alert.runModal()) {
-                    case SheetCallback.ALTERNATE_OPTION:
-                        continue;
+        if(iter.hasNext()) {
+            alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
+        }
+        final NSAlert alert = NSAlert.alert(Locale.localizedString("Delete Bookmark"),
+                alertText.toString(),
+                Locale.localizedString("Delete"),
+                Locale.localizedString("Cancel"),
+                null);
+        this.alert(alert, new SheetCallback() {
+            public void callback(int returncode) {
+                if(returncode == DEFAULT_OPTION) {
+                    bookmarkTable.deselectAll(null);
+                    bookmarkModel.getSource().removeAll(selected);
                 }
             }
-            bookmarkModel.getSource().remove(row);
-            j++;
-        }
-        bookmarkTable.deselectAll(null);
+        });
     }
 
     // ----------------------------------------------------------
@@ -2106,7 +2104,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             StringBuilder alertText = new StringBuilder(
                     Locale.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
             int i = 0;
-            Iterator<Path> iter = null;
+            Iterator<Path> iter;
             boolean shouldWarn = false;
             for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
                 Path item = iter.next();
@@ -2152,7 +2150,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 StringBuilder alertText = new StringBuilder(
                         Locale.localizedString("Do you want to move the selected files?"));
                 int i = 0;
-                Iterator<Path> iter = null;
+                Iterator<Path> iter;
                 for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
                     Path item = iter.next();
                     alertText.append("\n" + Character.toString('\u2022') + " " + item.getName());
@@ -2260,13 +2258,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         StringBuilder alertText =
                 new StringBuilder(Locale.localizedString("Really delete the following files? This cannot be undone."));
         int i = 0;
-        Iterator<Path> iter = null;
+        Iterator<Path> iter;
         for(iter = normalized.iterator(); i < 10 && iter.hasNext();) {
             alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getName());
             i++;
         }
         if(iter.hasNext()) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" " + "(...)");
+            alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
         }
         NSAlert alert = NSAlert.alert(Locale.localizedString("Delete"), //title
                 alertText.toString(),
