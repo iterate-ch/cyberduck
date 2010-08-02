@@ -185,31 +185,6 @@ public class Rendezvous implements BrowseListener, ResolveListener {
     }
 
     /**
-     * @param identifier The full service domain name
-     * @return The host this name maps to or null if none is found
-     */
-    public Host getServiceWithIdentifier(String identifier) {
-        log.debug("getService:" + identifier);
-        return services.get(identifier);
-    }
-
-    /**
-     * @param displayedName The name returned by #getDisplayedName
-     * @return The host this name maps to or null if none is found
-     */
-    public Host getServiceWithDisplayedName(String displayedName) {
-        synchronized(this) {
-            for(Host h : services.values()) {
-                if(h.getNickname().equals(displayedName)) {
-                    return h;
-                }
-            }
-        }
-        log.warn("No identifier for displayed name:" + displayedName);
-        return null;
-    }
-
-    /**
      * @return The number of services found; 0 <= services < n
      */
     public int numberOfServices() {
@@ -226,7 +201,8 @@ public class Rendezvous implements BrowseListener, ResolveListener {
      */
     public String getDisplayedName(int index) {
         if(index < this.numberOfServices()) {
-            return services.values().toArray(new Host[services.size()])[index].getNickname();
+            Host host = services.values().toArray(new Host[services.size()])[index];
+            return host.getNickname();
         }
         return Locale.localizedString("Unknown");
     }
