@@ -98,7 +98,7 @@ public abstract class Attributes {
      * @return Version Identifier or null if not versioned.
      */
     public String getVersionId() {
-        return Locale.localizedString("Unknown");
+        return null;
     }
 
     /**
@@ -112,10 +112,10 @@ public abstract class Attributes {
     }
 
     /**
-     * @return The incrementing revision number of the file.
+     * @return The incrementing revision number of the file or null if not versioned.
      */
     public String getRevision() {
-        return Locale.localizedString("Unknown");
+        return null;
     }
 
     /**
