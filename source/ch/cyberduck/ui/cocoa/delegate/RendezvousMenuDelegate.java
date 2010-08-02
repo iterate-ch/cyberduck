@@ -64,14 +64,13 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
             return false;
         }
         else {
-            final String title = Rendezvous.instance().getDisplayedName(index.intValue());
-            final Host h = Rendezvous.instance().getServiceWithDisplayedName(title);
-            item.setTitle(title);
+            final Host h = Rendezvous.instance().getService(index.intValue());
+            item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setEnabled(true);
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(Foundation.selector("rendezvousMenuClicked:"));
-            item.setRepresentedObject(h.getNickname());
+            item.setRepresentedObject(h.getUuid());
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
@@ -79,7 +78,7 @@ public class RendezvousMenuDelegate extends AbstractMenuDelegate implements Rend
     public void rendezvousMenuClicked(NSMenuItem sender) {
         log.debug("rendezvousMenuClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(Rendezvous.instance().getServiceWithDisplayedName(sender.representedObject()));
+        controller.mount(Rendezvous.instance().getServiceWithUuid(sender.representedObject()));
     }
 
     @Override

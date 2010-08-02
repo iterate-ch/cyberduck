@@ -48,6 +48,20 @@ public abstract class AbstractHostCollection extends Collection<Host> {
     }
 
     /**
+     * Lookup bookmark by UUID
+     * @param uuid Identifier of bookmark
+     * @return Null if not found
+     */
+    public Host lookup(String uuid) {
+        for(Host bookmark: this) {
+            if(bookmark.getUuid().equals(uuid)) {
+                return bookmark;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Add new bookmark to the collection
      *
      * @return

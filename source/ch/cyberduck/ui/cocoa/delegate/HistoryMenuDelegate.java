@@ -77,7 +77,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             Host h = HistoryCollection.defaultCollection().get(index.intValue());
             item.setTitle(h.getNickname());
             item.setAction(Foundation.selector("historyMenuItemClicked:"));
-            item.setRepresentedObject(h.getNickname());
+            item.setRepresentedObject(h.getUuid());
             item.setTarget(this.id());
             item.setEnabled(true);
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
@@ -102,9 +102,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     public void historyMenuItemClicked(NSMenuItem sender) {
         log.debug("historyMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(HistoryCollection.defaultCollection().get(
-                HistoryCollection.defaultCollection().indexOf(sender.representedObject())
-        ));
+        controller.mount(HistoryCollection.defaultCollection().lookup(sender.representedObject()));
     }
 
     public void clearMenuItemClicked(NSMenuItem sender) {

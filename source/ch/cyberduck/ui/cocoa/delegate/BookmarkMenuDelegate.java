@@ -81,7 +81,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setTarget(this.id());
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
             item.setAction(Foundation.selector("bookmarkMenuItemClicked:"));
-            item.setRepresentedObject(h.getNickname());
+            item.setRepresentedObject(h.getUuid());
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
@@ -89,7 +89,6 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        final int row = BookmarkCollection.defaultCollection().indexOf(sender.representedObject());
-        controller.mount(BookmarkCollection.defaultCollection().get(row));
+        controller.mount(BookmarkCollection.defaultCollection().lookup(sender.representedObject()));
     }
 }
