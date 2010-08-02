@@ -139,16 +139,7 @@ public class UserDefaultsPreferences extends Preferences {
     protected void setDefaults() {
         super.setDefaults();
 
-        Local APP_SUPPORT_DIR;
-        if(null == NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path")) {
-            APP_SUPPORT_DIR = LocalFactory.createLocal("~/Library/Application Support/Cyberduck");
-        }
-        else {
-            APP_SUPPORT_DIR = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.support.path").toString());
-        }
-        APP_SUPPORT_DIR.mkdir(true);
-
-        defaults.put("application.support.path", APP_SUPPORT_DIR.getAbbreviatedPath());
+        defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support/Cyberduck").getAbbreviatedPath());
         defaults.put("application",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
         defaults.put("version",
