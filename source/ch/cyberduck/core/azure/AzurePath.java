@@ -116,13 +116,15 @@ public class AzurePath extends CloudPath {
                 this.attributes().setMetadata(metadata);
             }
             else {
+                Map<String, String> metadata = new HashMap<String, String>();
                 final IBlobProperties properties = container.getBlobProperties(this.getKey());
                 if(null == properties.getMetadata()) {
-                    log.warn("No blob properties for " + this.getAbsolute());
+                    log.warn("No blob metadata for " + this.getAbsolute());
                 }
-                Map<String, String> metadata = new HashMap<String, String>();
-                for(Object key : properties.getMetadata().keySet()) {
-                    metadata.put(key.toString(), properties.getMetadata().getSingleValue(key.toString()));
+                else {
+                    for(Object key : properties.getMetadata().keySet()) {
+                        metadata.put(key.toString(), properties.getMetadata().getSingleValue(key.toString()));
+                    }
                 }
                 this.attributes().setMetadata(metadata);
             }
