@@ -2073,8 +2073,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     original.getParent().invalidate();
                     final Path renamed = renamedIterator.next();
                     original.rename(renamed);
-                    renamed.invalidate();
-                    renamed.getParent().invalidate();
                     if(!isConnected()) {
                         break;
                     }
