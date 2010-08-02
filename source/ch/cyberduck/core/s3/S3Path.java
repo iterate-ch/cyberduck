@@ -137,7 +137,7 @@ public class S3Path extends CloudPath {
         final String container = this.getContainerName();
         if(null == _details || !_details.isMetadataComplete()) {
             try {
-                if(StringUtils.isNotBlank(this.attributes().getVersionId())) {
+                if(this.attributes().isDuplicate()) {
                     _details = this.getSession().getClient().getVersionedObjectDetails(this.attributes().getVersionId(),
                             container, this.getKey());
                 }
@@ -435,7 +435,7 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
                         this.getName()));
 
-                if(StringUtils.isNotBlank(attributes().getVersionId())) {
+                if(this.attributes().isDuplicate()) {
                     in = this.getSession().getClient().getVersionedObject(attributes().getVersionId(),
                             this.getContainerName(), this.getKey(),
                             null, // ifModifiedSince
@@ -856,7 +856,7 @@ public class S3Path extends CloudPath {
             if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
-                delete(container, key, this.attributes().getVersionId());
+                this.delete(container, key, this.attributes().getVersionId());
             }
             else if(attributes().isDirectory()) {
                 for(AbstractPath child : this.childs()) {
