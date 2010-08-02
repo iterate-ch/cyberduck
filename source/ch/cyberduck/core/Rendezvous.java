@@ -140,17 +140,6 @@ public class Rendezvous implements BrowseListener, ResolveListener {
             log.info("Service resolved:" + servicename);
             RendezvousListener[] l = listeners.toArray(
                     new RendezvousListener[listeners.size()]);
-            if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
-                try {
-                    if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
-                        log.info("Supressed Rendezvous notification for " + hostname);
-                        return;
-                    }
-                }
-                catch(UnknownHostException e) {
-                    ; //Ignore
-                }
-            }
             for(RendezvousListener listener : l) {
                 listener.serviceResolved(servicename, hostname);
             }
