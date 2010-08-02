@@ -18,10 +18,12 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -84,6 +86,15 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
 
     public void cleanup() {
         ;
+    }
+
+    protected String toString(List<Path> files) {
+        StringBuilder name = new StringBuilder();
+        name.append(files.get(0).getName());
+        if(files.size() > 1) {
+            name.append("…");
+        }
+        return name.toString();
     }
 
     private Set<BackgroundActionListener> listeners
