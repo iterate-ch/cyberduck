@@ -771,11 +771,7 @@ public class Host implements Serializable {
             return false;
         }
         if(other instanceof Host) {
-            Host o = (Host) other;
-            if(this.getUuid().equals(o.getUuid())) {
-                return true;
-            }
-            return this.getNickname().equals(o.getNickname());
+            return this.getUuid().equals(((Host) other).getUuid());
         }
         if(other instanceof String) {
             //hack to allow comparision in BookmarkMenuDelegate
