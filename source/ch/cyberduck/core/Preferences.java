@@ -297,6 +297,11 @@ public abstract class Preferences {
         defaults.put("browser.logDrawer.isOpen", String.valueOf(false));
         defaults.put("browser.logDrawer.size.height", String.valueOf(200));
 
+        /**
+         * Filename (Short Date Format)Extension
+         */
+        defaults.put("browser.duplicate.format", "{0} ({1}){2}");
+
         defaults.put("info.toggle.permission", String.valueOf(1));
         defaults.put("info.toggle.distribution", String.valueOf(0));
         defaults.put("info.toggle.s3", String.valueOf(0));

@@ -20,12 +20,15 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -53,14 +56,11 @@ public class DuplicateFileController extends FileController {
     public void setFilenameField(NSTextField field) {
         super.setFilenameField(field);
         final Path selected = ((BrowserController) parent).getSelectedPath();
-        StringBuilder proposal = new StringBuilder();
-        proposal.append(FilenameUtils.getBaseName(selected.getName()));
-        proposal.append(" (").append(DateFormatterFactory.instance().getShortFormat(
-                System.currentTimeMillis()).replace(Path.DELIMITER, ':')).append(")");
-        if(StringUtils.isNotEmpty(selected.getExtension())) {
-            proposal.append(".").append(selected.getExtension());
-        }
-        this.filenameField.setStringValue(proposal.toString());
+        String proposal = MessageFormat.format(Preferences.instance().getProperty("browser.duplicate.format"),
+                FilenameUtils.getBaseName(selected.getName()),
+                DateFormatterFactory.instance().getShortFormat(System.currentTimeMillis()).replace(Path.DELIMITER, ':'),
+                StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : "");
+        this.filenameField.setStringValue(proposal);
     }
 
     public void callback(final int returncode) {
