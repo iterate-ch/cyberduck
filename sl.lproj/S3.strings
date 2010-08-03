@@ -26,16 +26,16 @@
 "REDUCED_REDUNDANCY" = "»Reduced Redundancy Storage« (RSS)";
 
 /* Google Login Credentials */
-"Google Account Email" = "Google Account Email";
-"Google Account Password" = "Google Account Password";
+"Google Account Email" = "E-poštni naslov Google računa";
+"Google Account Password" = "Geslo Google računa";
 
 /* MFA */
-"Multi-Factor Authentication" = "Multi-Factor Authentication";
-"MFA Serial Number" = "MFA Serial Number";
-"MFA Authentication Code" = "MFA Authentication Code";
+"Multi-Factor Authentication" = "Multifaktorska avtentifikacija";
+"MFA Serial Number" = "MFA serijska številka";
+"MFA Authentication Code" = "MFA avtentifikacijska koda";
 
 /* ACL Editing */
-"Canonical User ID" = "Canonical User ID";
-"Email Address" = "Email Address";
+"Canonical User ID" = "Uporabniški ID";
+"Email Address" = "E-poštni naslov";
 "http://acs.amazonaws.com/groups/global/AllUsers" = "http://acs.amazonaws.com/groups/global/AllUsers";
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";

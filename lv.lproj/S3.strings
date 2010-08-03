@@ -26,16 +26,16 @@
 "REDUCED_REDUNDANCY" = "Samazināta līdzīgo datu glabātuve (RRS)";
 
 /* Google Login Credentials */
-"Google Account Email" = "Google Account Email";
-"Google Account Password" = "Google Account Password";
+"Google Account Email" = "Google konta e-pasts";
+"Google Account Password" = "Google konta kods";
 
 /* MFA */
-"Multi-Factor Authentication" = "Multi-Factor Authentication";
-"MFA Serial Number" = "MFA Serial Number";
-"MFA Authentication Code" = "MFA Authentication Code";
+"Multi-Factor Authentication" = "Multi-Faktoru autentificēšana";
+"MFA Serial Number" = "MFA seriāla nummurs";
+"MFA Authentication Code" = "MFA autentifikācijas kods";
 
 /* ACL Editing */
-"Canonical User ID" = "Canonical User ID";
-"Email Address" = "Email Address";
+"Canonical User ID" = "Kanoniskā lietotāja ID";
+"Email Address" = "E-pasta adrese";
 "http://acs.amazonaws.com/groups/global/AllUsers" = "http://acs.amazonaws.com/groups/global/AllUsers";
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
