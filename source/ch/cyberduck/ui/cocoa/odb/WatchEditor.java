@@ -21,10 +21,10 @@ package ch.cyberduck.ui.cocoa.odb;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TransferAction;
-import ch.cyberduck.ui.cocoa.io.FileWatcher;
-import ch.cyberduck.ui.cocoa.io.FileWatcherListener;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.io.FileWatcher;
+import ch.cyberduck.ui.cocoa.io.FileWatcherListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -78,6 +78,13 @@ public class WatchEditor extends Editor implements FileWatcherListener {
 
     /**
      * @param c
+     */
+    public WatchEditor(BrowserController c, Path path) {
+        this(c, path.getLocal().getDefaultApplication(), path);
+    }
+
+    /**
+     * @param c
      * @param bundleIdentifier
      */
     public WatchEditor(BrowserController c, String bundleIdentifier, Path path) {
@@ -96,6 +103,13 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     public void edit() {
         NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
                 NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
+        this.watch();
+    }
+
+    /**
+     * Watch the file for changes
+     */
+    public void watch() {
         monitor = new FileWatcher(edited.getLocal());
         monitor.register();
         monitor.addListener(this);

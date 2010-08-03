@@ -60,10 +60,6 @@ public abstract class Editor {
         this.controller = controller;
         this.bundleIdentifier = bundleIdentifier;
         this.edited = path;
-        final Local folder = LocalFactory.createLocal(
-                new File(Preferences.instance().getProperty("editor.tmp.directory"),
-                        edited.getHost().getHostname() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
-        this.edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
     }
 
     /**
@@ -74,6 +70,18 @@ public abstract class Editor {
     }
 
     public void open() {
+        final Local folder = LocalFactory.createLocal(
+                new File(Preferences.instance().getProperty("editor.tmp.directory"),
+                        edited.getHost().getHostname() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
+        this.open(folder);
+    }
+
+    /**
+     * Open the file in the parent directory
+     * @param folder Where to temporary save the file to.
+     */
+    public void open(Local folder) {
+        this.edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 TransferOptions options = new TransferOptions();
