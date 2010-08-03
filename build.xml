@@ -428,7 +428,7 @@
         </jar>
     </target>
 
-    <target name="dll" description="Convert core.jar and ui.jar to core.dll">
+    <target name="dll" if="windows" description="Convert core.jar and ui.jar to core.dll">
         <exec dir="${home}" executable="mono" spawn="false">
             <arg line="${ikvm.home}/bin/ikvmc.exe -target:library -out:${build}/core.dll -version:${cyberduck.version.major}.${cyberduck.version.minor}"/>
             <arg value="${build}/core.jar"/>
