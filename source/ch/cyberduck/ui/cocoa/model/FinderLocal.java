@@ -92,12 +92,11 @@ public class FinderLocal extends Local {
 
     @Override
     public void setPath(String name) {
-        final String absolute = stringByExpandingTildeInPath(name);
         if(loadNative()) {
-            super.setPath(this.resolveAlias(absolute));
+            super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
         }
         else {
-            super.setPath(absolute);
+            super.setPath(stringByExpandingTildeInPath(name));
         }
     }
 
@@ -107,7 +106,7 @@ public class FinderLocal extends Local {
             // See trac #933
             name = name.replace(this.getPathDelimiter(), ':');
         }
-        super.setPath(parent, name);
+        super.setPath(stringByExpandingTildeInPath(parent), name);
     }
 
     /**
