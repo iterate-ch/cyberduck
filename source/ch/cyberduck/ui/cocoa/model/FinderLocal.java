@@ -182,6 +182,9 @@ public class FinderLocal extends Local {
     private class FinderLocalAttributes extends LocalAttributes {
         @Override
         public Permission getPermission() {
+            if(!exists()) {
+                return Permission.EMPTY;
+            }
             try {
                 NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
                         _impl.getAbsolutePath(), false);
@@ -201,7 +204,7 @@ public class FinderLocal extends Local {
             catch(NumberFormatException e) {
                 log.error(e.getMessage());
             }
-            return null;
+            return Permission.EMPTY;
         }
 
         /**
@@ -211,6 +214,9 @@ public class FinderLocal extends Local {
          */
         @Override
         public long getCreationDate() {
+            if(!exists()) {
+                return -1;
+            }
             final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
                     _impl.getAbsolutePath(), false);
             // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
@@ -236,6 +242,9 @@ public class FinderLocal extends Local {
 
         @Override
         public String getOwner() {
+            if(!exists()) {
+                return super.getOwner();
+            }
             final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
                     _impl.getAbsolutePath(), false);
             // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
@@ -256,6 +265,9 @@ public class FinderLocal extends Local {
 
         @Override
         public String getGroup() {
+            if(!exists()) {
+                return super.getGroup();
+            }
             final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
                     _impl.getAbsolutePath(), false);
             // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
@@ -278,6 +290,9 @@ public class FinderLocal extends Local {
          * @return The value for the key NSFileSystemFileNumber, or 0 if the receiver doesn’t have an entry for the key
          */
         public long getInode() {
+            if(!exists()) {
+                return 0;
+            }
             final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
                     _impl.getAbsolutePath(), false);
             // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
