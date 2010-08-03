@@ -45,6 +45,7 @@
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
 
+    <property name="ikvm.home" value="${user.home}/bin/ikvm"/>
     <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
     <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
 
@@ -126,6 +127,8 @@
         </exec>
         <property name="svn.revision" value="${svn.revision}"/>
         <echo message="_REVISION_=${svn.revision}"/>
+        <buildnumber/>
+        <echo message="Build number ${build.number}"/>
     </target>
 
     <target name="stub">
@@ -133,9 +136,11 @@
         <!-- copy application stub -->
         <copy file="${apple.appstub}" toFile="${app.macos}/${ant.project.name}" overwrite="true"/>
         <!-- fix stub permissions -->
-        <exec executable="/bin/chmod">
-            <arg line="755 '${app.macos}/${ant.project.name}'"/>
-        </exec>
+        <chmod perm="755" type="file">
+            <fileset dir="${app.macos}">
+                <include name="${ant.project.name}"/>
+            </fileset>
+        </chmod>
     </target>
 
     <target name="nightly">
@@ -339,7 +344,7 @@
         </scp>
     </target>
 
-    <target name="build" depends="archive, stub" description="Compile, jar and copy to application bundle">
+    <target name="build" depends="archive, stub, dll" description="Compile, jar and copy to application bundle">
         <copy todir="${app.java}">
             <fileset dir="${build}">
                 <include name="*.jar"/>
@@ -423,6 +428,15 @@
         </jar>
     </target>
 
+    <target name="dll" description="Convert core.jar and ui.jar to core.dll">
+        <exec dir="${home}" executable="mono" spawn="false">
+            <arg line="${ikvm.home}/bin/ikvmc.exe -target:library -out:${build}/core.dll -version:${cyberduck.version.major}.${cyberduck.version.minor}"/>
+            <arg value="${build}/core.jar"/>
+            <arg value="${build}/ui.jar"/>
+            <arg value="${lib}/*.jar"/>
+        </exec>
+    </target>
+
     <target name="doc" depends="init" description="Generate Javadoc">
         <mkdir dir="${doc}"/>
         <javadoc packagenames="ch.cyberduck.*,com.*,org.*"
@@ -464,13 +478,12 @@
     </target>
 
     <target name="test" depends="compile" description="Runs all test cases and generate report">
-        <javac
-                debug="${debug}"
-                encoding="utf-8"
-                deprecation="off"
-                srcdir="${unittests}"
-                destdir="${build.unittests}"
-                includes="**/*.java">
+        <javac debug="${debug}"
+               encoding="utf-8"
+               deprecation="off"
+               srcdir="${unittests}"
+               destdir="${build.unittests}"
+               includes="**/*.java">
             <classpath refid="test.classpath"/>
         </javac>
         <junit fork="yes" printsummary="on" filtertrace="on" haltonfailure="no" showoutput="yes">
