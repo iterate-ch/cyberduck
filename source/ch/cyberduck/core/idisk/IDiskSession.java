@@ -20,12 +20,21 @@ package ch.cyberduck.core.idisk;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.dav.DAVSession;
 
 /**
  * @version $Id$
  */
 public class IDiskSession extends DAVSession {
+
+    public static class Factory extends SessionFactory {
+        @Override
+        protected Session create(Host h) {
+            return new IDiskSession(h);
+        }
+    }
 
     public IDiskSession(Host h) {
         super(h);
