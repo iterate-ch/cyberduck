@@ -45,11 +45,15 @@ import java.util.*;
 public class CFSession extends CloudSession implements SSLSession {
     private static Logger log = Logger.getLogger(CFSession.class);
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new CFSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     private AbstractX509TrustManager trustManager;

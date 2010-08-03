@@ -41,7 +41,7 @@ import java.util.List;
 public class SFTPPath extends Path {
     private static Logger log = Logger.getLogger(SFTPPath.class);
 
-    public static class Factory extends PathFactory<SFTPSession> {
+    private static class Factory extends PathFactory<SFTPSession> {
         @Override
         protected Path create(SFTPSession session, String path, int type) {
             return new SFTPPath(session, path, type);
@@ -61,6 +61,10 @@ public class SFTPPath extends Path {
         protected <T> Path create(SFTPSession session, T dict) {
             return new SFTPPath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     private final SFTPSession session;

@@ -29,7 +29,7 @@ import ch.cyberduck.core.dav.DAVPath;
  */
 public class IDiskPath extends DAVPath {
 
-    public static class Factory extends PathFactory<IDiskSession> {
+    private static class Factory extends PathFactory<IDiskSession> {
         @Override
         protected Path create(IDiskSession session, String path, int type) {
             return new IDiskPath(session, path, type);
@@ -49,6 +49,10 @@ public class IDiskPath extends DAVPath {
         protected <T> Path create(IDiskSession session, T dict) {
             return new IDiskPath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     protected IDiskPath(IDiskSession s, String parent, String name, int type) {

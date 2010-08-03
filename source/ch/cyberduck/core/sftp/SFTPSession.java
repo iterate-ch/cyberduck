@@ -40,11 +40,15 @@ import java.io.*;
 public class SFTPSession extends Session {
     private static Logger log = Logger.getLogger(SFTPSession.class);
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new SFTPSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     private Connection SSH;

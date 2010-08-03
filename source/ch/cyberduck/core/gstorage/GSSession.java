@@ -43,11 +43,15 @@ import java.util.List;
  */
 public class GSSession extends S3Session {
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new GSSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     protected GSSession(Host h) {

@@ -62,7 +62,7 @@ import java.util.List;
 public class GDPath extends Path {
     private static Logger log = Logger.getLogger(GDPath.class);
 
-    public static class Factory extends PathFactory<GDSession> {
+    private static class Factory extends PathFactory<GDSession> {
         @Override
         protected Path create(GDSession session, String path, int type) {
             return new GDPath(session, path, type);
@@ -82,6 +82,10 @@ public class GDPath extends Path {
         protected <T> Path create(GDSession session, T dict) {
             return new GDPath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     @Override

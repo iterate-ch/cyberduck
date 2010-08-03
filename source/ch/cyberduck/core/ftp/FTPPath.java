@@ -52,7 +52,7 @@ public class FTPPath extends Path {
     private static final String MAC_LINE_SEPARATOR = "\r";
     private static final String UNIX_LINE_SEPARATOR = "\n";
 
-    public static class Factory extends PathFactory<FTPSession> {
+    private static class Factory extends PathFactory<FTPSession> {
         @Override
         protected Path create(FTPSession session, String path, int type) {
             return new FTPPath(session, path, type);
@@ -72,6 +72,10 @@ public class FTPPath extends Path {
         protected <T> Path create(FTPSession session, T dict) {
             return new FTPPath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     private final FTPSession session;

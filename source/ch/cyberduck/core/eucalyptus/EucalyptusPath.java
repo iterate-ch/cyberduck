@@ -28,7 +28,7 @@ import ch.cyberduck.core.s3.S3Path;
  */
 public class EucalyptusPath extends S3Path {
 
-    public static class Factory extends PathFactory<EucalyptusSession> {
+    private static class Factory extends PathFactory<EucalyptusSession> {
         @Override
         protected Path create(EucalyptusSession session, String path, int type) {
             return new EucalyptusPath(session, path, type);
@@ -48,6 +48,10 @@ public class EucalyptusPath extends S3Path {
         protected <T> Path create(EucalyptusSession session, T dict) {
             return new EucalyptusPath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     protected EucalyptusPath(EucalyptusSession s, String parent, String name, int type) {

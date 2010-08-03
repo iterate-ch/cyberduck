@@ -34,7 +34,7 @@ import java.io.IOException;
  */
 public class GSPath extends S3Path {
 
-    public static class Factory extends PathFactory<GSSession> {
+    private static class Factory extends PathFactory<GSSession> {
         @Override
         protected Path create(GSSession session, String path, int type) {
             return new GSPath(session, path, type);
@@ -54,6 +54,10 @@ public class GSPath extends S3Path {
         protected <T> Path create(GSSession session, T dict) {
             return new GSPath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     protected GSPath(S3Session s, String parent, String name, int type) {

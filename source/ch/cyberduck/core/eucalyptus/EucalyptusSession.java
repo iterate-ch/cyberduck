@@ -40,11 +40,15 @@ import java.util.List;
  */
 public class EucalyptusSession extends S3Session {
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new EucalyptusSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     public EucalyptusSession(Host h) {

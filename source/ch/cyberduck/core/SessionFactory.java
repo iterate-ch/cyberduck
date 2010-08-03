@@ -18,12 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class SessionFactory {
+    private static Logger log = Logger.getLogger(SessionFactory.class);
 
     private static Map<Protocol, SessionFactory> factories
             = new HashMap<Protocol, SessionFactory>();
@@ -37,6 +40,7 @@ public abstract class SessionFactory {
     protected abstract Session create(Host h);
 
     public static void addFactory(Protocol protocol, SessionFactory f) {
+        log.debug("Add factory for protocol " + protocol + ":" + f);
         protocols.add(protocol);
         factories.put(protocol, f);
     }

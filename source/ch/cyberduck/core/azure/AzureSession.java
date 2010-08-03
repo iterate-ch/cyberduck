@@ -66,11 +66,15 @@ import java.util.concurrent.Callable;
 public class AzureSession extends CloudSession implements SSLSession {
     private static Logger log = Logger.getLogger(AzureSession.class);
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new AzureSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     protected AzureSession(Host h) {

@@ -40,7 +40,7 @@ import java.text.MessageFormat;
 public class DAVPath extends Path {
     private static Logger log = Logger.getLogger(DAVPath.class);
 
-    public static class Factory extends PathFactory<DAVSession> {
+    private static class Factory extends PathFactory<DAVSession> {
         @Override
         protected Path create(DAVSession session, String path, int type) {
             return new DAVPath(session, path, type);
@@ -60,6 +60,10 @@ public class DAVPath extends Path {
         protected <T> Path create(DAVSession session, T dict) {
             return new DAVPath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     private final DAVSession session;

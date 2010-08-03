@@ -50,11 +50,15 @@ import java.util.*;
 public class FTPSession extends Session implements SSLSession {
     private static Logger log = Logger.getLogger(FTPSession.class);
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new FTPSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     private FTPClient FTP;

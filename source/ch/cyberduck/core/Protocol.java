@@ -887,81 +887,82 @@ public abstract class Protocol {
     static {
         if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
             SessionFactory.addFactory(
-                    Protocol.FTP, new FTPSession.Factory());
+                    Protocol.FTP, FTPSession.factory());
             PathFactory.addFactory(
-                    Protocol.FTP, new FTPPath.Factory());
+                    Protocol.FTP, FTPPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.ftp.tls.enable")) {
             SessionFactory.addFactory(
-                    Protocol.FTP_TLS, new FTPSession.Factory());
+                    Protocol.FTP_TLS, FTPSession.factory());
             PathFactory.addFactory(
-                    Protocol.FTP_TLS, new FTPPath.Factory());
+                    Protocol.FTP_TLS, FTPPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.sftp.enable")) {
             SessionFactory.addFactory(
-                    Protocol.SFTP, new SFTPSession.Factory());
+                    Protocol.SFTP, SFTPSession.factory());
             PathFactory.addFactory(
-                    Protocol.SFTP, new SFTPPath.Factory());
+                    Protocol.SFTP,
+                    SFTPPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.webdav.enable")) {
             SessionFactory.addFactory(
-                    Protocol.WEBDAV, new DAVSession.Factory());
+                    Protocol.WEBDAV, DAVSession.factory());
             PathFactory.addFactory(
-                    Protocol.WEBDAV, new DAVPath.Factory());
+                    Protocol.WEBDAV, DAVPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.webdav.tls.enable")) {
             SessionFactory.addFactory(
-                    Protocol.WEBDAV_SSL, new DAVSession.Factory());
+                    Protocol.WEBDAV_SSL, DAVSession.factory());
             PathFactory.addFactory(
-                    Protocol.WEBDAV_SSL, new DAVPath.Factory());
+                    Protocol.WEBDAV_SSL, DAVPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.idisk.enable")) {
             SessionFactory.addFactory(
-                    Protocol.IDISK, new IDiskSession.Factory());
+                    Protocol.IDISK, IDiskSession.factory());
             PathFactory.addFactory(
-                    Protocol.IDISK, new IDiskPath.Factory());
+                    Protocol.IDISK, IDiskPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.s3.tls.enable")) {
             SessionFactory.addFactory(
-                    Protocol.S3_SSL, new S3Session.Factory());
+                    Protocol.S3_SSL, S3Session.factory());
             PathFactory.addFactory(
-                    Protocol.S3_SSL, new S3Path.Factory());
+                    Protocol.S3_SSL, S3Path.factory());
         }
         if(Preferences.instance().getBoolean("protocol.s3.enable")) {
             SessionFactory.addFactory(
-                    Protocol.S3, new S3Session.Factory());
+                    Protocol.S3, S3Session.factory());
             PathFactory.addFactory(
-                    Protocol.S3, new S3Path.Factory());
+                    Protocol.S3, S3Path.factory());
         }
         if(Preferences.instance().getBoolean("protocol.gstorage.tls.enable")) {
             SessionFactory.addFactory(
-                    Protocol.GOOGLESTORAGE_SSL, new GSSession.Factory());
+                    Protocol.GOOGLESTORAGE_SSL, GSSession.factory());
             PathFactory.addFactory(
-                    Protocol.GOOGLESTORAGE_SSL, new GSPath.Factory());
+                    Protocol.GOOGLESTORAGE_SSL, GSPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.s3.eucalyptus.enable")) {
             SessionFactory.addFactory(
-                    Protocol.EUCALYPTUS, new EucalyptusSession.Factory());
+                    Protocol.EUCALYPTUS, EucalyptusSession.factory());
             PathFactory.addFactory(
-                    Protocol.EUCALYPTUS, new EucalyptusPath.Factory());
+                    Protocol.EUCALYPTUS, EucalyptusPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.cf.enable")) {
             SessionFactory.addFactory(
-                    Protocol.CLOUDFILES, new CFSession.Factory());
+                    Protocol.CLOUDFILES, CFSession.factory());
             PathFactory.addFactory(
-                    Protocol.CLOUDFILES, new CFPath.Factory());
+                    Protocol.CLOUDFILES, CFPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
             SessionFactory.addFactory(
-                    Protocol.GDOCS_SSL, new GDSession.Factory());
+                    Protocol.GDOCS_SSL, GDSession.factory());
             PathFactory.addFactory(
-                    Protocol.GDOCS_SSL, new GDPath.Factory());
+                    Protocol.GDOCS_SSL, GDPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.azure.tls.enable")) {
             SessionFactory.addFactory(
-                    Protocol.AZURE_SSL, new AzureSession.Factory());
+                    Protocol.AZURE_SSL, AzureSession.factory());
             PathFactory.addFactory(
-                    Protocol.AZURE_SSL, new AzurePath.Factory());
+                    Protocol.AZURE_SSL, AzurePath.factory());
         }
     }
 

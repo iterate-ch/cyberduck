@@ -29,11 +29,15 @@ import ch.cyberduck.core.dav.DAVSession;
  */
 public class IDiskSession extends DAVSession {
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new IDiskSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     public IDiskSession(Host h) {

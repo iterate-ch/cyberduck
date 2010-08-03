@@ -48,7 +48,7 @@ import java.util.*;
 public class AzurePath extends CloudPath {
     private static Logger log = Logger.getLogger(AzurePath.class);
 
-    public static class Factory extends PathFactory<AzureSession> {
+    private static class Factory extends PathFactory<AzureSession> {
         @Override
         protected Path create(AzureSession session, String path, int type) {
             return new AzurePath(session, path, type);
@@ -68,6 +68,10 @@ public class AzurePath extends CloudPath {
         protected <T> Path create(AzureSession session, T dict) {
             return new AzurePath(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     private final AzureSession session;

@@ -45,11 +45,15 @@ import java.text.MessageFormat;
 public class DAVSession extends HTTPSession implements SSLSession {
     private static Logger log = Logger.getLogger(DAVSession.class);
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new DAVSession(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     private DAVResource DAV;

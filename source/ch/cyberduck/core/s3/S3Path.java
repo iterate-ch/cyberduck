@@ -52,7 +52,7 @@ import java.util.*;
 public class S3Path extends CloudPath {
     private static Logger log = Logger.getLogger(S3Path.class);
 
-    public static class Factory extends PathFactory<S3Session> {
+    private static class Factory extends PathFactory<S3Session> {
         @Override
         protected Path create(S3Session session, String path, int type) {
             return new S3Path(session, path, type);
@@ -72,6 +72,10 @@ public class S3Path extends CloudPath {
         protected <T> Path create(S3Session session, T dict) {
             return new S3Path(session, dict);
         }
+    }
+
+    public static PathFactory factory() {
+        return new Factory();
     }
 
     private final S3Session session;

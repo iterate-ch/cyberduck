@@ -64,11 +64,15 @@ import java.util.*;
 public class S3Session extends CloudSession implements SSLSession {
     private static Logger log = Logger.getLogger(S3Session.class);
 
-    public static class Factory extends SessionFactory {
+    private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
             return new S3Session(h);
         }
+    }
+
+    public static SessionFactory factory() {
+        return new Factory();
     }
 
     private CustomRestS3Service S3;
