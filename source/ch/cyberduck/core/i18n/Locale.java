@@ -37,7 +37,7 @@ public abstract class Locale {
      * @return
      */
     public static String localizedString(final String key, final String table) {
-        return LocaleFactory.createLocale().get(key, table);
+        return LocaleFactory.instance().get(key, table);
     }
 
     public abstract String get(final String key, final String table);

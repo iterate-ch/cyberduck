@@ -31,7 +31,8 @@ public abstract class LocaleFactory extends Factory<Locale> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, LocaleFactory> factories = new HashMap<Platform, LocaleFactory>();
+    protected static final Map<Platform, LocaleFactory> factories
+            = new HashMap<Platform, LocaleFactory>();
 
     /**
      * @param platform
@@ -44,9 +45,9 @@ public abstract class LocaleFactory extends Factory<Locale> {
     private static Locale l;
 
     /**
-     * @return
+     * @return Locale instance for the current platform.
      */
-    public static Locale createLocale() {
+    public static Locale instance() {
         if(null == l) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
                 throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
