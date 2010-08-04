@@ -29,9 +29,13 @@ import org.apache.log4j.Logger;
 public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
-    public void warn(String title, String message) throws LoginCanceledException {
-        log.warn(title + ":" + message);
+    public void warn(String title, String message, String preference) throws LoginCanceledException {
+        this.warn(title, message, Locale.localizedString("Continue", "Credentials"),
+                Locale.localizedString("Disconnect", "Credentials"), preference);
     }
+
+    public abstract void warn(String title, String message, String defaultButton, String otherButton, String preference)
+            throws LoginCanceledException;
 
     /**
      * Check the credentials for validity and prompt the user for the password if not found

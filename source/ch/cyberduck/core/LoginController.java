@@ -21,11 +21,28 @@ package ch.cyberduck.core;
 public interface LoginController {
 
     /**
+     * Display warning sheet. Block connection until decision is made.
+     * Using default Continue and Disconnct button.
+     * if disabled permamently.
      *
-     * @param title
-     * @param message
+     * @param title      Title in alert window
+     * @param message    Message in alert window
+     * @param preference Where to save preference if dismissed
+     * @throws LoginCanceledException If the other option has been selected.
      */
-    void warn(String title, String message) throws LoginCanceledException;
+    void warn(String title, String message, String preference) throws LoginCanceledException;
+
+    /**
+     * Display warning sheet. Block connection until decision is made.
+     *
+     * @param title         Title in alert window
+     * @param message       Message in alert window
+     * @param defaultButton Button title for default button
+     * @param otherButton   Button title for other button
+     * @param preference    Where to save preference if dismissed
+     * @throws LoginCanceledException If the other option has been selected.
+     */
+    void warn(String title, String message, String defaultButton, String otherButton, String preference) throws LoginCanceledException;
 
     /**
      * Check the credentials for validity and prompt the user for the password if not found

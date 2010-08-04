@@ -67,24 +67,19 @@ public class PromptLoginController extends AbstractLoginController {
         this.parent = parent;
     }
 
-    /**
-     * Display warning sheet.
-     *
-     * @param title
-     * @param message
-     */
     @Override
-    public void warn(String title, String message) throws LoginCanceledException {
+    public void warn(String title, String message, String defaultButton, String otherButton, String preference) throws LoginCanceledException {
         final NSAlert alert = NSAlert.alert(title, message,
-                Locale.localizedString("Continue", "License"),
+                defaultButton,
                 Locale.localizedString("Don't show again", "Credentials"),
-                Locale.localizedString("Disconnect"));
+                otherButton);
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         switch(this.parent.alert(alert)) {
             case SheetCallback.OTHER_OPTION:
                 throw new LoginCanceledException();
             case SheetCallback.ALTERNATE_OPTION:
-                Preferences.instance().setProperty("connection.unsecure.warn", false);
+                // Never show again.
+                Preferences.instance().setProperty(preference, true);
                 break;
         }
     }
