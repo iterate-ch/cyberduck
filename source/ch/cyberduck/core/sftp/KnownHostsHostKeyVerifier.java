@@ -19,12 +19,10 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.ethz.ssh2.KnownHosts;
-import ch.ethz.ssh2.ServerHostKeyVerifier;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +32,7 @@ import java.io.IOException;
 /**
  * @version $Id:$
  */
-public abstract class KnownHostsHostKeyVerifier implements ServerHostKeyVerifier {
+public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
     protected static Logger log = Logger.getLogger(KnownHostsHostKeyVerifier.class);
 
     /**
@@ -61,15 +59,6 @@ public abstract class KnownHostsHostKeyVerifier implements ServerHostKeyVerifier
             this.database = new KnownHosts();
         }
     }
-
-    /**
-     * @return True if accepted.
-     */
-    protected abstract boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                               final byte[] serverHostKey) throws ConnectionCanceledException;
-
-    protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                                   final byte[] serverHostKey) throws ConnectionCanceledException;
 
     protected boolean isHostKeyDatabaseWritable() {
         return LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).attributes().getPermission().isWritable();
