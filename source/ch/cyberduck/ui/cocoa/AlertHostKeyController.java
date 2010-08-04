@@ -19,8 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.HostKeyControllerFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.sftp.HostKeyController;
 import ch.cyberduck.core.sftp.KnownHostsHostKeyVerifier;
+import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.ethz.ssh2.KnownHosts;
@@ -30,18 +34,44 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class HostKeyController extends KnownHostsHostKeyVerifier {
-    protected static Logger log = Logger.getLogger(HostKeyController.class);
+public class AlertHostKeyController extends KnownHostsHostKeyVerifier {
+    protected static Logger log = Logger.getLogger(AlertHostKeyController.class);
+
+    public static void register() {
+        HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends HostKeyControllerFactory {
+        @Override
+        protected HostKeyController create() {
+            return new AlertHostKeyController(TransferController.instance());
+        }
+
+        @Override
+        public HostKeyController create(Controller c) {
+            return new AlertHostKeyController((WindowController) c);
+        }
+
+        @Override
+        public HostKeyController create(Session s) {
+            for(BrowserController c : MainController.getBrowsers()) {
+                if(c.getSession() == s) {
+                    return this.create(c);
+                }
+            }
+            return this.create();
+        }
+    }
 
     private WindowController parent;
 
-    public HostKeyController(WindowController c) {
+    public AlertHostKeyController(WindowController c) {
         this.parent = c;
     }
 
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                      final byte[] serverHostKey) throws ConnectionCanceledException {
+                                           final byte[] serverHostKey) throws ConnectionCanceledException {
         NSAlert alert = NSAlert.alert(Locale.localizedString("Unknown host key for") + " "
                 + hostname, //title
                 Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is")
@@ -74,7 +104,7 @@ public class HostKeyController extends KnownHostsHostKeyVerifier {
 
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                          final byte[] serverHostKey) throws ConnectionCanceledException {
+                                           final byte[] serverHostKey) throws ConnectionCanceledException {
         NSAlert alert = NSAlert.alert(Locale.localizedString("Host key mismatch:") + " " + hostname, //title
                 Locale.localizedString("The host key supplied is") + ": "
                         + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)

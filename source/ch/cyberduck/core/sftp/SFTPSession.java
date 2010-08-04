@@ -19,9 +19,11 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
-import ch.ethz.ssh2.*;
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.InteractiveCallback;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.StreamGobbler;
 import ch.ethz.ssh2.channel.ChannelClosedException;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
@@ -78,12 +80,6 @@ public class SFTPSession extends Session {
         return false;
     }
 
-    private ServerHostKeyVerifier verifier = null;
-
-    public void setHostKeyVerificationController(ServerHostKeyVerifier v) {
-        this.verifier = v;
-    }
-
     private SFTPv3Client SFTP;
 
     /**
@@ -135,7 +131,7 @@ public class SFTPSession extends Session {
         SSH = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
 
         final int timeout = this.timeout();
-        this.getClient().connect(verifier, timeout, timeout);
+        this.getClient().connect(HostKeyControllerFactory.instance(this), timeout, timeout);
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
