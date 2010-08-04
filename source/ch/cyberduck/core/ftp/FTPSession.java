@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import com.enterprisedt.net.ftp.*;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -61,7 +62,7 @@ public class FTPSession extends Session implements SSLSession {
         return new Factory();
     }
 
-    private FTPClient FTP;
+    private FTPSClient FTP;
     protected FTPFileEntryParser parser;
 
     public FTPSession(Host h) {
@@ -69,7 +70,7 @@ public class FTPSession extends Session implements SSLSession {
     }
 
     @Override
-    protected FTPClient getClient() throws ConnectionCanceledException {
+    protected FTPSClient getClient() throws ConnectionCanceledException {
         if(null == FTP) {
             throw new ConnectionCanceledException();
         }
@@ -317,6 +318,7 @@ public class FTPSession extends Session implements SSLSession {
         client.setConnectMode(this.getConnectMode());
         // AUTH command required before login
         auth = true;
+        unsecurewarning = true;
     }
 
     /**
@@ -330,18 +332,13 @@ public class FTPSession extends Session implements SSLSession {
     }
 
     @Override
-    protected void connect() throws IOException, FTPException, ConnectionCanceledException, LoginCanceledException {
+    protected void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }
         this.fireConnectionWillOpenEvent();
 
-        if(this.getHost().getProtocol().isSecure() /*|| isTLSSupported()*/) {
-            FTP = new FTPSClient(this.getEncoding(), messageListener, this.getTrustManager());
-        }
-        else {
-            FTP = new FTPClient(this.getEncoding(), messageListener);
-        }
+        FTP = new FTPSClient(this.getEncoding(), messageListener, this.getTrustManager());
 
         this.configure(this.getClient());
 
@@ -378,22 +375,55 @@ public class FTPSession extends Session implements SSLSession {
      */
     private boolean auth;
 
+    private boolean unsecurewarning;
+
+    /**
+     * Propose protocol change if AUTH TLS is available.
+     *
+     * @param login
+     * @param credentials
+     * @throws IOException
+     */
     @Override
-    protected void login(LoginController controller, final Credentials credentials) throws IOException {
+    protected void warn(LoginController login, Credentials credentials) throws IOException {
+        if(unsecurewarning
+                && !this.getHost().getProtocol().isSecure()
+                && !Preferences.instance().getBoolean("connection.unsecure." + this.getHost().getHostname())
+                && this.isTLSSupported()) {
+            try {
+                login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                        MessageFormat.format(Locale.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
+                        Locale.localizedString("Change", "Credentials"),
+                        Locale.localizedString("Continue", "Credentials"),
+                        "connection.unsecure." + this.getHost().getHostname());
+            }
+            catch(LoginCanceledException e) {
+                // Continue choosen. Login using plain FTP.
+                return;
+            }
+            // Protocol switch
+            this.getHost().setProtocol(Protocol.FTP_TLS);
+        }
+        else {
+            super.warn(login, credentials);
+        }
+    }
+
+    @Override
+    protected void login(LoginController controller, Credentials credentials) throws IOException {
         try {
             final FTPClient client = this.getClient();
-            if(this.getHost().getProtocol().isSecure() /*|| isTLSSupported()*/) {
+            if(this.getHost().getProtocol().isSecure()) {
                 if(auth) {
                     // Only send AUTH before the first login attempt
                     ((FTPSClient) client).auth();
                     auth = false;
                 }
             }
-
             client.login(credentials.getUsername(), credentials.getPassword());
             this.message(Locale.localizedString("Login successful", "Credentials"));
 
-            if(this.getHost().getProtocol().isSecure() /*|| isTLSSupported()*/) {
+            if(this.getHost().getProtocol().isSecure()) {
                 ((FTPSClient) client).prot();
             }
         }

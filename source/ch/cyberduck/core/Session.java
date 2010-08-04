@@ -163,23 +163,43 @@ public abstract class Session implements TranscriptListener {
      * @throws IOException
      */
     protected void login() throws IOException {
-        LoginController c = LoginControllerFactory.instance(this);
-        this.prompt(c);
-        final Credentials credentials = host.getCredentials();
-        if(unsecurewarning
-                && !host.getProtocol().isSecure()
-                && !credentials.isAnonymousLogin()
-                && Preferences.instance().getBoolean("connection.unsecure.warn")) {
-            c.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                    MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), credentials.getPasswordPlaceholder()));
+        LoginController login = LoginControllerFactory.instance(this);
+        this.prompt(login);
+
+        if(!this.isConnected()) {
+            throw new ConnectionCanceledException();
         }
+
+        final Credentials credentials = host.getCredentials();
+        this.warn(login, credentials);
+
         this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 credentials.getUsername()));
-        this.login(c, credentials);
+        this.login(login, credentials);
+
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
         KeychainFactory.instance().save(host);
+    }
+
+    /**
+     * Warning if credenials are sent plaintext.
+     *
+     * @param login
+     * @param credentials
+     * @throws ConnectionCanceledException
+     */
+    protected void warn(LoginController login, Credentials credentials) throws IOException {
+        if(unsecurewarning
+                && !host.getProtocol().isSecure()
+                && !credentials.isAnonymousLogin()
+                && !Preferences.instance().getBoolean("connection.unsecure." + this.getHost().getHostname())) {
+            login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                    MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), credentials.getPasswordPlaceholder()),
+                    "connection.unsecure." + this.getHost().getHostname());
+            unsecurewarning = false;
+        }
     }
 
     /**
