@@ -166,10 +166,6 @@ public abstract class Session implements TranscriptListener {
         LoginController login = LoginControllerFactory.instance(this);
         this.prompt(login);
 
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-
         final Credentials credentials = host.getCredentials();
         this.warn(login, credentials);
 
