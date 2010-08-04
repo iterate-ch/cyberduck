@@ -165,7 +165,6 @@ public class PromptLoginController extends AbstractLoginController {
 
             public void keychainCheckboxClicked(final NSButton sender) {
                 final boolean enabled = sender.state() == NSCell.NSOnState;
-                credentials.setUseKeychain(enabled);
                 Preferences.instance().setProperty("connection.login.addKeychain", enabled);
             }
 
@@ -276,6 +275,7 @@ public class PromptLoginController extends AbstractLoginController {
             public void callback(final int returncode) {
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
                     this.window().endEditingFor(null);
+                    credentials.setUseKeychain(keychainCheckbox.state() == NSCell.NSOnState);
                     credentials.setUsername(usernameField.stringValue());
                     credentials.setPassword(passwordField.stringValue());
                 }
