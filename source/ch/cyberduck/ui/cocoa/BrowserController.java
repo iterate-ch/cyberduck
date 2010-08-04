@@ -3285,11 +3285,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.session.removeConnectionListener(listener);
         }
         this.session = SessionFactory.createSession(host);
-        if(this.session instanceof ch.cyberduck.core.sftp.SFTPSession) {
-            ((ch.cyberduck.core.sftp.SFTPSession) session).setHostKeyVerificationController(
-                    new HostKeyController(this));
-        }
-        this.session.setLoginController(new PromptLoginController(this));
         this.setWorkdir(null);
         this.setEncoding(this.session.getEncoding());
         this.session.addProgressListener(new ProgressListener() {

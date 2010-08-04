@@ -633,12 +633,6 @@ public class TransferController extends WindowController implements NSToolbar.De
                         validateToolbar();
                     }
                 });
-                if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                    ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(
-                            new HostKeyController(TransferController.this));
-                }
-                transfer.getSession().setLoginController(new PromptLoginController(TransferController.this));
-
                 return super.prepare();
             }
 
@@ -652,10 +646,6 @@ public class TransferController extends WindowController implements NSToolbar.De
             @Override
             public void finish() {
                 super.finish();
-                if(transfer.getSession() instanceof ch.cyberduck.core.sftp.SFTPSession) {
-                    ((ch.cyberduck.core.sftp.SFTPSession) transfer.getSession()).setHostKeyVerificationController(null);
-                }
-                transfer.getSession().setLoginController(null);
                 transfer.removeListener(tl);
                 // Upon retry, use resume
                 reload = false;
