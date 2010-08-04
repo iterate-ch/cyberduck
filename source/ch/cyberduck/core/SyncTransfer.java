@@ -24,10 +24,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
 
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -221,26 +218,91 @@ public class SyncTransfer extends Transfer {
     @Override
     public AttributedList<Path> childs(final Path parent) {
         final Set<Path> childs = new HashSet<Path>();
-        childs.addAll(_delegateDownload.childs(parent));
-        childs.addAll(_delegateUpload.childs(parent));
-        for(Path child: childs) {
-            boolean skipped = false;
-            final Comparison comparison = this.compare(child);
-            // Updating default skip settings for actual transfer
-            if(COMPARISON_EQUAL.equals(comparison)) {
-                skipped = child.attributes().isFile();
-            }
-            else if(child.attributes().isFile()) {
-                if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
-                    skipped = this.getAction().equals(ACTION_UPLOAD);
-                }
-                else if(comparison.equals(COMPARISON_LOCAL_NEWER)) {
-                    skipped = this.getAction().equals(ACTION_DOWNLOAD);
-                }
-            }
-            child.status().setSkipped(skipped);
+        if(parent.exists()) {
+            childs.addAll(_delegateDownload.childs(parent));
+        }
+        if(parent.getLocal().exists()) {
+            childs.addAll(_delegateUpload.childs(parent));
+        }
+        for(Path child : childs) {
+            this.setStatus(child);
         }
         return new AttributedList<Path>(childs);
+    }
+
+    private void setStatus(Path path) {
+        boolean skipped = false;
+        final Comparison comparison = this.compare(path);
+        // Updating default skip settings for actual transfer
+        if(COMPARISON_EQUAL.equals(comparison)) {
+            skipped = path.attributes().isFile();
+        }
+        else if(path.attributes().isFile()) {
+            if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
+                skipped = this.getAction().equals(ACTION_UPLOAD);
+            }
+            else if(comparison.equals(COMPARISON_LOCAL_NEWER)) {
+                skipped = this.getAction().equals(ACTION_DOWNLOAD);
+            }
+        }
+        path.status().setSkipped(skipped);
+    }
+
+    /**
+     * Contains both download and upload cache
+     */
+    private final Cache<Path> cache = new Cache<Path>() {
+        @Override
+        public AttributedList<Path> remove(PathReference reference) {
+            _delegateDownload.cache().remove(reference);
+            _delegateUpload.cache().remove(reference);
+            return super.remove(reference);
+        }
+
+        @Override
+        public void clear() {
+            _delegateDownload.cache().clear();
+            _delegateUpload.cache().clear();
+            super.clear();
+        }
+
+        @Override
+        public boolean containsKey(PathReference reference) {
+            return _delegateDownload.cache().containsKey(reference)
+                    || _delegateUpload.cache().containsKey(reference);
+        }
+
+        @Override
+        public AttributedList<Path> get(PathReference reference, Comparator<Path> c, PathFilter<Path> f) {
+            final Set<Path> childs = new HashSet<Path>();
+            if(_delegateDownload.cache().containsKey(reference)) {
+                childs.addAll(_delegateDownload.cache().get(reference, c, f));
+            }
+            if(_delegateUpload.cache().containsKey(reference)) {
+                childs.addAll(_delegateUpload.cache().get(reference, c, f));
+            }
+            return new AttributedList<Path>(childs);
+        }
+
+        @Override
+        public Path lookup(PathReference reference) {
+            Path path = _delegateUpload.cache().lookup(reference);
+            if(null == path) {
+                path = _delegateDownload.cache().lookup(reference);
+            }
+            if(null == path) {
+                log.warn("Lookup failed for " + reference + " in cache");
+            }
+            else {
+                setStatus(path);
+            }
+            return path;
+        }
+    };
+
+    @Override
+    public Cache<Path> cache() {
+        return cache;
     }
 
     @Override

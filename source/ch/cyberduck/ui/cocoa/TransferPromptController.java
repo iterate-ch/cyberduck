@@ -505,11 +505,8 @@ public abstract class TransferPromptController extends SheetController implement
         if(action.equals(selected)) {
             return;
         }
-
         Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
-
         action = selected;
-        transfer.cache().clear();
         this.reloadData();
     }
 }

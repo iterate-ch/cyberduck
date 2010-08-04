@@ -114,14 +114,11 @@ public class SyncPromptController extends TransferPromptController {
     public void actionPopupClicked(NSPopUpButton sender) {
         final TransferAction current = ((SyncTransfer) transfer).getAction();
         final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
-
         if(current.equals(selected)) {
             return;
         }
-
         Preferences.instance().setProperty("queue.sync.action.default", selected.toString());
         ((SyncTransfer) transfer).setTransferAction(selected);
-        transfer.cache().clear();
         this.reloadData();
     }
 }
