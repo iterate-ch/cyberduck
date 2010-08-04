@@ -964,7 +964,8 @@ public class S3Session extends CloudSession implements SSLSession {
             try {
                 this.check();
                 if(this.isMultiFactorAuthentication(container)) {
-                    final Credentials credentials = this.mfa(this.getLoginController());
+                    LoginController c = LoginControllerFactory.instance(this);
+                    final Credentials credentials = this.mfa(c);
                     String multiFactorSerialNumber = credentials.getUsername();
                     String multiFactorAuthCode = credentials.getPassword();
                     if(enabled) {

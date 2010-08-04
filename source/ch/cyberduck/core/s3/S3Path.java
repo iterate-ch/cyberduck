@@ -907,7 +907,8 @@ public class S3Path extends CloudPath {
     private void delete(String container, String key, String version) throws ConnectionCanceledException, S3ServiceException {
         if(StringUtils.isNotEmpty(version)) {
             if(this.getSession().isMultiFactorAuthentication(container)) {
-                final Credentials credentials = this.getSession().mfa(this.getSession().getLoginController());
+                LoginController c = LoginControllerFactory.instance(this.getSession());
+                final Credentials credentials = this.getSession().mfa(c);
                 this.getSession().getClient().deleteVersionedObjectWithMFA(version,
                         credentials.getUsername(),
                         credentials.getPassword(),
