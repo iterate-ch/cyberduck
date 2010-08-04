@@ -271,7 +271,11 @@ public class BookmarkController extends WindowController {
                     if(null == data) {
                         return;
                     }
-                    favicon = IconCache.instance().convert(NSImage.imageWithData(data), 16);
+                    NSImage img = NSImage.imageWithData(data);
+                    if(null == img) {
+                        return;
+                    }
+                    favicon = IconCache.instance().convert(img, 16);
                 }
 
                 @Override
