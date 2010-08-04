@@ -83,6 +83,9 @@ public class MainApplication {
 
                 DeprecatedQuickLook.register();
                 QuartzQuickLook.register();
+
+                PromptLoginController.register();
+                AlertHostKeyController.register();
             }
 
             final Logger root = Logger.getRootLogger();
