@@ -124,7 +124,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
     }
 
     @Override
-    protected void connect() throws IOException, LoginCanceledException {
+    protected void connect() throws IOException {
         if(this.isConnected()) {
             return;
         }
@@ -157,7 +157,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
     }
 
     @Override
-    protected void login(final LoginController controller, final Credentials credentials) throws IOException, LoginCanceledException {
+    protected void login(final LoginController controller, final Credentials credentials) throws IOException {
         try {
             final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
 
