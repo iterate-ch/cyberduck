@@ -20,6 +20,8 @@ Changelog. Last modified: $Date$
 - [Feature] Import bookmarks from thirdparty applications (Filezilla, Fetch, Flow) (#3373)
 - [Feature] Copy directory listing to clipboard (#2372)
 - [Feature] Support for thidparty terminal applications (#2987)
+- [Feature] Unsecure connection warning when password is transmitted in plaintext
+- [Feature] Alert to change connection to TLS if server supports AUTH TLS (FTP)
 - [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
 - [Bugfix] Improved interoperability with Dunkel Cloud Storage (S3)
 - [Bugfix] Trust validation failure with self signed certificates for HTTP redirects (WebDAV) (#2443)
