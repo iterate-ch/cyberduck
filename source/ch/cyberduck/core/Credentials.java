@@ -71,7 +71,7 @@ public abstract class Credentials {
      * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
      */
     public Credentials(String user, String password, boolean shouldBeAddedToKeychain) {
-        this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
+        this.setUseKeychain(shouldBeAddedToKeychain);
         this.init(user, password);
     }
 
