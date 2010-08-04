@@ -2335,6 +2335,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return True if the selected path is editable (not a directory and no known binary file)
      */
     private boolean isEditable(final Path selected) {
+        if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
+            return false;
+        }
         if(selected.attributes().isFile()) {
             if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
                 return true;
@@ -3993,7 +3996,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             String editor = null;
             final Path selected = this.getSelectedPath();
             if(null != selected) {
-                if(selected.attributes().isFile()) {
+                if(this.isEditable(selected)) {
                     // Choose editor for selected file
                     editor = EditorFactory.defaultEditor(selected.getLocal());
                 }
