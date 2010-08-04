@@ -1972,6 +1972,7 @@ sl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/HistoryCollection.java -text
+source/ch/cyberduck/core/LoginControllerFactory.java -text
 source/ch/cyberduck/core/NaturalOrderComparator.java -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/RendezvousCollection.java -text

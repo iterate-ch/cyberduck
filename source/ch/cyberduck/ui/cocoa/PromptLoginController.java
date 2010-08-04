@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
@@ -33,6 +34,32 @@ import org.apache.log4j.Logger;
  */
 public class PromptLoginController extends AbstractLoginController {
     private static Logger log = Logger.getLogger(PromptLoginController.class);
+
+    public static void register() {
+        LoginControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    }
+
+    private static class Factory extends LoginControllerFactory {
+        @Override
+        protected LoginController create() {
+            return new PromptLoginController(TransferController.instance());
+        }
+
+        @Override
+        public LoginController create(Controller c) {
+            return new PromptLoginController((WindowController) c);
+        }
+
+        @Override
+        public LoginController create(Session s) {
+            for(BrowserController c : MainController.getBrowsers()) {
+                if(c.getSession() == s) {
+                    return this.create(c);
+                }
+            }
+            return this.create();
+        }
+    }
 
     private WindowController parent;
 

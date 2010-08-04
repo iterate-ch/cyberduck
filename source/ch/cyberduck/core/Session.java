@@ -151,22 +151,6 @@ public abstract class Session implements TranscriptListener {
      */
     protected abstract void connect() throws IOException;
 
-    private LoginController login;
-
-    /**
-     * Sets the callback to ask for login credentials
-     */
-    public void setLoginController(LoginController loginController) {
-        this.login = loginController;
-    }
-
-    /**
-     * @return The callback to ask for login credentials
-     */
-    public LoginController getLoginController() {
-        return login;
-    }
-
     protected void prompt(LoginController login) throws LoginCanceledException {
         login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
@@ -179,18 +163,19 @@ public abstract class Session implements TranscriptListener {
      * @throws IOException
      */
     protected void login() throws IOException {
-        this.prompt(login);
+        LoginController c = LoginControllerFactory.instance(this);
+        this.prompt(c);
         final Credentials credentials = host.getCredentials();
         if(unsecurewarning
                 && !host.getProtocol().isSecure()
                 && !credentials.isAnonymousLogin()
                 && Preferences.instance().getBoolean("connection.unsecure.warn")) {
-            login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+            c.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                     MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), credentials.getPasswordPlaceholder()));
         }
         this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 credentials.getUsername()));
-        this.login(login, credentials);
+        this.login(c, credentials);
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
@@ -742,7 +727,7 @@ public abstract class Session implements TranscriptListener {
             return host.getHostname().equals(((Session) other).getHost().getHostname())
                     && host.getProtocol().equals(((Session) other).getHost().getProtocol());
         }
-        return false;
+        return super.equals(other);
     }
 
     public String toString() {
