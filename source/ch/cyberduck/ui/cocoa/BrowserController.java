@@ -4006,9 +4006,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 item.setImage(IconCache.iconNamed("pencil.tiff"));
             }
             else {
-                item.setImage(NSWorkspace.sharedWorkspace().iconForFile(
-                        NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(editor))
-                );
+                item.setImage(IconCache.instance().iconForApplication(editor, 32));
             }
         }
         else if(identifier.equals(TOOLBAR_DISCONNECT)) {
@@ -4199,13 +4197,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 item.setImage(IconCache.iconNamed("notfound.tiff"));
             }
             else {
-                String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(browser);
-                if(null == path) {
-                    item.setImage(IconCache.iconNamed("notfound.tiff"));
-                }
-                else {
-                    item.setImage(NSWorkspace.sharedWorkspace().iconForFile(path));
-                }
+                item.setImage(IconCache.instance().iconForApplication(browser, 32));
             }
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openBrowserButtonClicked:"));

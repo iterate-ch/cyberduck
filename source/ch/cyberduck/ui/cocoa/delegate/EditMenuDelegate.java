@@ -19,20 +19,18 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -97,15 +95,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         else {
             item.setKeyEquivalent("");
         }
-        final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
-        if(StringUtils.isNotEmpty(path)) {
-            item.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(path), 16));
-        }
-        else {
-            // Used to provide a custom icon for the edit menu and disable the menu
-            // if no external editor can be found
-            item.setImage(IconCache.iconNamed("pencil.tiff"));
-        }
+        item.setImage(IconCache.instance().iconForApplication(identifier, 16));
         item.setAction(Foundation.selector("editMenuClicked:"));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }

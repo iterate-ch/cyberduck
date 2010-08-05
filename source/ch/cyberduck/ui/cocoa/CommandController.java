@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -28,13 +27,14 @@ import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.io.IOException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.enterprisedt.net.ftp.FTPException;
+
+import java.io.IOException;
 
 /**
  * @version $Id$
@@ -71,8 +71,7 @@ public class CommandController extends SheetController implements TranscriptList
 
     public void setImage(NSImageView image) {
         this.image = image;
-        final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.Terminal");
-        this.image.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
+        this.image.setImage(IconCache.instance().iconForApplication("com.apple.Terminal", 128));
     }
 
     public void layoutManager_didCompleteLayoutForTextContainer_atEnd(NSLayoutManager layoutManager,

@@ -29,15 +29,16 @@ import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.CDBookmarkCell;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3Object;
 
 import com.enterprisedt.net.ftp.FTPTransferType;
 
@@ -290,11 +291,7 @@ public class PreferencesController extends ToolbarWindowController {
         final boolean enabled = EditorFactory.getInstalledEditors().containsValue(identifier);
         editorCombobox.itemWithTitle(editor).setEnabled(enabled);
         if(enabled) {
-            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(identifier);
-            if(StringUtils.isNotEmpty(path)) {
-                editorCombobox.itemWithTitle(editor).setImage(IconCache.instance().iconForPath(
-                        LocalFactory.createLocal(path), 16));
-            }
+            editorCombobox.itemWithTitle(editor).setImage(IconCache.instance().iconForApplication(identifier, 16));
         }
     }
 
@@ -1814,13 +1811,13 @@ public class PreferencesController extends ToolbarWindowController {
         log.debug("Default Protocol Handler for " + protocol + ":" + defaultHandler);
         final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol.getScheme());
         for(String bundleIdentifier : bundleIdentifiers) {
-            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
-            if(StringUtils.isEmpty(path)) {
+            String app = EditorFactory.getApplicationName(bundleIdentifier);
+            if(StringUtils.isEmpty(app)) {
                 continue;
             }
-            defaultProtocolHandlerCombobox.addItemWithTitle(EditorFactory.getApplicationName(bundleIdentifier));
+            defaultProtocolHandlerCombobox.addItemWithTitle(app);
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-            item.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(path), 16));
+            item.setImage(IconCache.instance().iconForApplication(bundleIdentifier, 16));
             item.setRepresentedObject(bundleIdentifier);
             if(bundleIdentifier.equals(defaultHandler)) {
                 defaultProtocolHandlerCombobox.selectItem(item);

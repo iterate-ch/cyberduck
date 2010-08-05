@@ -64,8 +64,8 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      * @return
      */
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuUpdateItemAtIndex:" + index.intValue());
+        if(log.isTraceEnabled()) {
+            log.trace("menuUpdateItemAtIndex:" + index.intValue());
         }
         if(index.intValue() == this.numberOfItemsInMenu(menu).intValue() - 1) {
             this.setNeedsUpdate(false);
@@ -77,7 +77,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      * Menu needs revalidation before being displayed the next time
      */
     protected void setNeedsUpdate(boolean u) {
-        log.debug("setNeedsUpdate:" + u);
+        log.trace("setNeedsUpdate:" + u);
         update = u;
     }
 

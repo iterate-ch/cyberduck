@@ -231,15 +231,40 @@ public class IconCache {
      * @return
      */
     public NSImage iconForPath(final Local item, Integer size) {
+        NSImage icon = null;
         if(item.exists()) {
-            NSImage icon = this.iconForName(item.getAbsolute(), size);
+            icon = this.iconForName(item.getAbsolute(), size);
             if(null == icon) {
                 icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
                 this.put(item.getAbsolute(), this.convert(icon, size), size);
             }
-            return icon;
         }
-        return this.iconForName("notfound.tiff", size);
+        if(null == icon) {
+            return this.iconForName("notfound.tiff", size);
+        }
+        return icon;
+    }
+
+    public NSImage iconForApplication(final String bundleIdentifier) {
+        return this.iconForApplication(bundleIdentifier, null);
+    }
+
+    /**
+     * @param bundleIdentifier
+     * @param size
+     * @return
+     */
+    public NSImage iconForApplication(final String bundleIdentifier, Integer size) {
+        NSImage icon = this.iconForName(bundleIdentifier, size);
+        if(null == icon) {
+            icon = NSWorkspace.sharedWorkspace().iconForFile(
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
+            this.put(bundleIdentifier, this.convert(icon, size), size);
+        }
+        if(null == icon) {
+            return this.iconForName("notfound.tiff", size);
+        }
+        return icon;
     }
 
     private final NSRect NSZeroRect = new NSRect(0, 0);
