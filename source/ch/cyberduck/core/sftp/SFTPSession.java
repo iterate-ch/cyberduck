@@ -189,7 +189,7 @@ public class SFTPSession extends Session {
             };
             controller.prompt(host.getProtocol(), additional,
                     Locale.localizedString("Partial authentication success", "Credentials"),
-                    Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false);
+                    Locale.localizedString("Provide additional login credentials", "Credentials") + ".", false, false, false);
             if(this.loginUsingKBIAuthentication(controller, additional)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
                 return;
@@ -224,7 +224,7 @@ public class SFTPSession extends Session {
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
                         passphrase = credentials.getPassword();
-                        if(credentials.usesKeychain()) {
+                        if(credentials.isUseKeychain()) {
                             KeychainFactory.instance().addPassword("SSHKeychain", identity.toURL(), passphrase);
                         }
                     }
@@ -313,7 +313,7 @@ public class SFTPSession extends Session {
                                     }
                                 };
                                 controller.prompt(host.getProtocol(), credentials,
-                                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], false, false);
+                                        Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], false, false, false);
                                 response[i] = credentials.getPassword();
                                 promptCount++;
                             }

@@ -87,7 +87,8 @@ public class PromptLoginController extends AbstractLoginController {
     @Override
     public void prompt(final Protocol protocol, final Credentials credentials,
                        final String title, final String reason,
-                       final boolean enableKeychain, final boolean enablePublicKey) throws LoginCanceledException {
+                       final boolean enableKeychain, final boolean enablePublicKey,
+                       final boolean enableAnonymous) throws LoginCanceledException {
         SheetController c = new SheetController(parent) {
             @Override
             protected String getBundleName() {
@@ -180,7 +181,6 @@ public class PromptLoginController extends AbstractLoginController {
                 this.keychainCheckbox = keychainCheckbox;
                 this.keychainCheckbox.setTarget(this.id());
                 this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-                this.keychainCheckbox.setEnabled(Preferences.instance().getBoolean("connection.login.useKeychain"));
                 this.keychainCheckbox.setState(Preferences.instance().getBoolean("connection.login.useKeychain")
                         && Preferences.instance().getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
             }
@@ -275,9 +275,15 @@ public class PromptLoginController extends AbstractLoginController {
                         this.keychainCheckbox.setState(NSCell.NSOffState);
                     }
                 }
-                this.anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
+                this.anonymousCheckbox.setEnabled(enableAnonymous);
+                if(enableAnonymous && credentials.isAnonymousLogin()) {
+                    this.anonymousCheckbox.setState(NSCell.NSOnState);
+                }
+                else {
+                    this.anonymousCheckbox.setState(NSCell.NSOffState);
+                }
                 this.pkCheckbox.setEnabled(enablePublicKey);
-                if(credentials.isPublicKeyAuthentication()) {
+                if(enablePublicKey && credentials.isPublicKeyAuthentication()) {
                     this.pkCheckbox.setState(NSCell.NSOnState);
                     this.updateField(this.pkLabel, credentials.getIdentity().getAbbreviatedPath());
                     this.pkLabel.setTextColor(NSColor.textColor());

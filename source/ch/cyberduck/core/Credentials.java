@@ -124,7 +124,7 @@ public abstract class Credentials {
     /**
      * @return true if the password will be added to the system keychain when logged in successfully
      */
-    public boolean usesKeychain() {
+    public boolean isUseKeychain() {
         return this.shouldBeAddedToKeychain;
     }
 

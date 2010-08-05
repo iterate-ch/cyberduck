@@ -98,7 +98,7 @@ public abstract class AbstractLoginController implements LoginController {
             log.info("Do not write anonymous credentials to Keychain");
             return;
         }
-        if(!host.getCredentials().usesKeychain()) {
+        if(!host.getCredentials().isUseKeychain()) {
             log.info("Do not write credentials to Keychain");
             return;
         }
@@ -121,7 +121,8 @@ public abstract class AbstractLoginController implements LoginController {
 
     public void prompt(final Protocol protocol, final Credentials credentials,
                        final String title, final String reason) throws LoginCanceledException {
-        this.prompt(protocol, credentials, title, reason, true, protocol.equals(Protocol.SFTP), true);
+        this.prompt(protocol, credentials, title, reason, Preferences.instance().getBoolean("connection.login.useKeychain"),
+                protocol.equals(Protocol.SFTP), true);
     }
 
     public abstract void prompt(Protocol protocol, Credentials credentials,
