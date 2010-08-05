@@ -77,12 +77,10 @@ public class EditorFactory {
      *         Preferences or null if not installed.
      */
     public static String defaultEditor() {
-        if(log.isDebugEnabled()) {
-            log.debug("defaultEditor");
+        if(log.isTraceEnabled()) {
+            log.trace("defaultEditor");
         }
-        if(StringUtils.isEmpty(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                Preferences.instance().getProperty("editor.bundleIdentifier")
-        ))) {
+        if(StringUtils.isEmpty(EditorFactory.getApplicationName(Preferences.instance().getProperty("editor.bundleIdentifier")))) {
             return null;
         }
         return Preferences.instance().getProperty("editor.bundleIdentifier");
@@ -113,11 +111,7 @@ public class EditorFactory {
         if(Preferences.instance().getBoolean("editor.odb.enable")) {
             // Find matching ODB editor if any
             for(final String bundleIdentifier : ODBEditor.getInstalledEditors().values()) {
-                final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
-                if(StringUtils.isEmpty(path)) {
-                    continue;
-                }
-                if(path.equals(defaultApplication)) {
+                if(bundleIdentifier.equals(defaultApplication)) {
                     return bundleIdentifier;
                 }
             }
@@ -138,8 +132,8 @@ public class EditorFactory {
      * @return All statically registered but possibly not installed editors
      */
     public static Map<String, String> getSupportedEditors() {
-        if(log.isDebugEnabled()) {
-            log.debug("getSupportedEditors");
+        if(log.isTraceEnabled()) {
+            log.trace("getSupportedEditors");
         }
         Map<String, String> supported = new HashMap<String, String>();
         if(Preferences.instance().getBoolean("editor.odb.enable")) {
@@ -163,8 +157,8 @@ public class EditorFactory {
      * @return All statically registered and installed editors
      */
     public static Map<String, String> getInstalledEditors() {
-        if(log.isDebugEnabled()) {
-            log.debug("getInstalledEditors");
+        if(log.isTraceEnabled()) {
+            log.trace("getInstalledEditors");
         }
         Map<String, String> installed = new HashMap<String, String>();
         if(Preferences.instance().getBoolean("editor.odb.enable")) {
@@ -182,8 +176,8 @@ public class EditorFactory {
      *         the default editor set in the Preferences
      */
     public static Map<String, String> getInstalledEditors(final Local file) {
-        if(log.isDebugEnabled()) {
-            log.debug("getInstalledEditors:" + file);
+        if(log.isTraceEnabled()) {
+            log.trace("getInstalledEditors:" + file);
         }
         if(null == file) {
             return getInstalledEditors();
