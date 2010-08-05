@@ -44,8 +44,7 @@ public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
     public KnownHostsHostKeyVerifier() {
         Local f = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
         if(!f.exists()) {
-            f.getParent().mkdir(true);
-            f.touch();
+            f.touch(true);
         }
         if(f.attributes().getPermission().isReadable()) {
             try {
