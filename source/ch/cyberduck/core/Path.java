@@ -189,7 +189,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param parent The absolute path to the parent directory on the remote host
      * @param local  The associated local file
      */
-    protected Path(Path parent, final Local local) {
+    protected Path(String parent, final Local local) {
         this.setPath(parent, local);
         this.attributes().setType(
                 local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
@@ -199,10 +199,9 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param parent The parent directory
      * @param file   The local file corresponding with this remote path
      */
-    public void setPath(Path parent, final Local file) {
-        this.setPath(parent.getAbsolute(), file.getName());
+    public void setPath(String parent, final Local file) {
+        this.setPath(parent, file.getName());
         this.setLocal(file);
-        this.setParent(parent);
     }
 
     /**
@@ -547,6 +546,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @return the file type for the extension of this file provided by launch services
      */
+    @Override
     public String kind() {
         if(this.attributes().isSymbolicLink()) {
             if(this.attributes().isFile()) {
@@ -571,28 +571,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public abstract Session getSession();
 
-    @Override
-    public void mkdir(boolean recursive) {
-        if(recursive) {
-            final Path parent = this.getParent();
-            if(!parent.exists()) {
-                parent.touch(recursive);
-            }
-        }
-        this.mkdir();
-    }
-
-    @Override
-    public void touch(boolean recursive) {
-        if(recursive) {
-            final AbstractPath parent = this.getLocal().getParent();
-            if(!parent.exists()) {
-                parent.touch(recursive);
-            }
-        }
-        this.touch();
-    }
-
     /**
      * Upload an empty file.
      */
@@ -601,6 +579,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(this.attributes().isFile()) {
             int no = 0;
             final String filename = this.getLocal().getName();
+            this.setLocal(LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), filename));
             while(this.getLocal().exists()) {
                 no++;
                 String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
@@ -623,6 +602,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             }
             finally {
                 this.getLocal().delete(false);
+                this.setLocal(null);
             }
         }
     }
@@ -748,16 +728,18 @@ public abstract class Path extends AbstractPath implements Serializable {
         // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
         // overhead when transferring a large amount of files
         final boolean updateIcon = attributes().getSize() > Status.MEGA * 5;
+
+        final Local local = this.getLocal();
         // Set the first progress icon
-        this.getLocal().setIcon(0);
+        local.setIcon(0);
 
         if(Preferences.instance().getBoolean("queue.download.quarantine")) {
             // Set quarantine attributes
-            this.getLocal().setQuarantine(this.getHost().toURL(), this.toURL());
+            local.setQuarantine(this.getHost().toURL(), this.toURL());
         }
         if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
             // Set quarantine attributes
-            this.getLocal().setWhereFrom(this.toURL());
+            local.setWhereFrom(this.toURL());
         }
 
         final StreamListener listener = new StreamListener() {
@@ -771,7 +753,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 if(-1 == bytes) {
                     // Remove custom icon if complete. The Finder will display the default
                     // icon for this filetype
-                    getLocal().setIcon(-1);
+                    local.setIcon(-1);
                 }
                 else {
                     l.bytesReceived(bytes);
@@ -780,7 +762,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                         // An integer between 0 and 9
                         if(fraction > step) {
                             // Another 10 percent of the file has been transferred
-                            getLocal().setIcon(++step);
+                            local.setIcon(++step);
                         }
                     }
                 }

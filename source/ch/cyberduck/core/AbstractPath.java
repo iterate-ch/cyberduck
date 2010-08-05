@@ -238,6 +238,8 @@ public abstract class AbstractPath {
         return false;
     }
 
+    public abstract String kind();
+
     /**
      * @return The target of the symbolic link if this path denotes a symbolic link
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
@@ -256,7 +258,16 @@ public abstract class AbstractPath {
      * @param recursive Create intermediate directories as required.  If this option is
      *                  not specified, the full path prefix of each operand must already exist
      */
-    public abstract void touch(boolean recursive);
+    public void touch(boolean recursive) {
+        if(!this.exists()) {
+            if(recursive) {
+                if(!this.getParent().exists()) {
+                    this.getParent().mkdir(recursive);
+                }
+            }
+            this.touch();
+        }
+    }
 
     /**
      * Create a new folder.
@@ -269,7 +280,15 @@ public abstract class AbstractPath {
      * @param recursive Create intermediate directories as required.  If this option is
      *                  not specified, the full path prefix of each operand must already exist
      */
-    public abstract void mkdir(boolean recursive);
+    public void mkdir(boolean recursive) {
+        if(recursive) {
+            final AbstractPath parent = this.getParent();
+            if(!parent.exists()) {
+                parent.mkdir(recursive);
+            }
+        }
+        this.mkdir();
+    }
 
     /**
      * @param perm      The permissions to apply

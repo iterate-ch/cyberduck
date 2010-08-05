@@ -234,18 +234,6 @@ public abstract class Local extends AbstractPath {
      * Creates a new file and sets its resource fork to feature a custom progress icon
      */
     @Override
-    public void touch(boolean recursive) {
-        if(!this.exists()) {
-            if(recursive) {
-                if(!this.getParent().exists()) {
-                    this.getParent().touch(recursive);
-                }
-            }
-            this.touch();
-        }
-    }
-
-    @Override
     public void touch() {
         try {
             if(_impl.createNewFile()) {
@@ -345,6 +333,7 @@ public abstract class Local extends AbstractPath {
     /**
      * @return Human readable localized description of file type
      */
+    @Override
     public String kind() {
         if(this.attributes().isDirectory()) {
             return Locale.localizedString("Folder");
