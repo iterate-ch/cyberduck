@@ -215,7 +215,7 @@ public class SFTPPath extends Path {
                 this.getSession().sftp().rm(this.getAbsolute());
             }
             else if(this.attributes().isDirectory()) {
-                for(AbstractPath child : this.childs()) {
+                for(AbstractPath child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
@@ -334,7 +334,7 @@ public class SFTPPath extends Path {
             this.getSession().sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes().isDirectory()) {
                 if(recursive) {
-                    for(AbstractPath child : this.childs()) {
+                    for(AbstractPath child : this.children()) {
                         if(!this.getSession().isConnected()) {
                             break;
                         }
@@ -360,7 +360,7 @@ public class SFTPPath extends Path {
             this.getSession().sftp().setstat(this.getAbsolute(), attr);
             if(this.attributes().isDirectory()) {
                 if(recursive) {
-                    for(AbstractPath child : this.childs()) {
+                    for(AbstractPath child : this.children()) {
                         if(!this.getSession().isConnected()) {
                             break;
                         }
@@ -411,7 +411,7 @@ public class SFTPPath extends Path {
         this.getSession().sftp().setstat(getAbsolute(), attr);
         if(this.attributes().isDirectory()) {
             if(recursive) {
-                for(AbstractPath child : this.childs()) {
+                for(AbstractPath child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }

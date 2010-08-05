@@ -107,7 +107,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // Delay until path is cached in the background
                 controller.background(new BrowserBackgroundAction(controller) {
                     public void run() {
-                        path.childs();
+                        path.children();
                     }
 
                     @Override

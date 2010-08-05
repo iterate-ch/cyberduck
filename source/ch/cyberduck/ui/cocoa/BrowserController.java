@@ -3155,11 +3155,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void run() {
                 if(directory.isCached()) {
                     //Reset the readable attribute
-                    directory.childs().attributes().setReadable(true);
+                    directory.children().attributes().setReadable(true);
                 }
                 // Get the directory listing in the background
-                directory.childs();
-                if(directory.childs().attributes().isReadable()) {
+                directory.children();
+                if(directory.children().attributes().isReadable()) {
                     // Update the working directory if listing is successful
                     workdir = directory;
                     // Update the current working directory

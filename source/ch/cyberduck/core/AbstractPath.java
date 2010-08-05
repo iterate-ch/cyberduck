@@ -105,8 +105,8 @@ public abstract class AbstractPath {
      * @return Cached directory listing as returned by the server
      * @see #list()
      */
-    public <T extends AbstractPath> AttributedList<T> childs() {
-        return this.childs(null);
+    public <T extends AbstractPath> AttributedList<T> children() {
+        return this.children(null);
     }
 
     /**
@@ -118,8 +118,8 @@ public abstract class AbstractPath {
      * @return Cached directory listing as returned by the server filtered
      * @see #list()
      */
-    public <T extends AbstractPath> AttributedList<T> childs(PathFilter<T> filter) {
-        return this.childs(null, filter);
+    public <T extends AbstractPath> AttributedList<T> children(PathFilter<T> filter) {
+        return this.children(null, filter);
     }
 
     /**
@@ -131,7 +131,7 @@ public abstract class AbstractPath {
      * @return The children of this path or an empty list if it is not accessible for some reason
      * @see #list()
      */
-    public <T extends AbstractPath> AttributedList<T> childs(Comparator<T> comparator, PathFilter<T> filter) {
+    public <T extends AbstractPath> AttributedList<T> children(Comparator<T> comparator, PathFilter<T> filter) {
         if(!this.isCached()) {
             this.cache().put(this.<Object>getReference(), this.list());
         }
@@ -312,7 +312,7 @@ public abstract class AbstractPath {
      * @return True if the directory contains no childs items
      */
     public boolean isEmpty() {
-        return this.childs().size() == 0;
+        return this.children().size() == 0;
     }
 
     /**

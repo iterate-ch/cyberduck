@@ -255,7 +255,7 @@ public abstract class Session implements TranscriptListener {
                 home = PathFactory.createPath(this,
                         this.workdir().getAbsolute(), directory, Path.DIRECTORY_TYPE);
             }
-            if(!home.childs().attributes().isReadable()) {
+            if(!home.children().attributes().isReadable()) {
                 // the default path does not exist or is not readable due to permission issues
                 home = this.workdir();
             }

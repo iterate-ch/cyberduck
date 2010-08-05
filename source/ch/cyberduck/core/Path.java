@@ -832,7 +832,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(this.isRoot()) {
             return true;
         }
-        return this.getParent().childs().contains(this);
+        return this.getParent().children().contains(this);
     }
 
     /**

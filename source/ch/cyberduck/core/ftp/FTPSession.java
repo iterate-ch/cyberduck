@@ -165,7 +165,7 @@ public class FTPSession extends Session implements SSLSession {
     private List<TimeZone> calculateTimezone() throws IOException {
         try {
             // Determine the server offset from UTC
-            final AttributedList<Path> list = this.workdir().childs();
+            final AttributedList<Path> list = this.workdir().children();
             if(list.isEmpty()) {
                 log.warn("Cannot determine timezone with empty directory listing");
                 return Collections.emptyList();

@@ -121,7 +121,7 @@ public class S3Path extends CloudPath {
                     return false;
                 }
             }
-            return !this.childs().isEmpty();
+            return !this.children().isEmpty();
         }
         return super.exists();
     }
@@ -809,7 +809,7 @@ public class S3Path extends CloudPath {
         this.attributes().clear(false, false, true, false);
         if(attributes().isDirectory()) {
             if(recursive) {
-                for(AbstractPath child : this.childs()) {
+                for(AbstractPath child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
@@ -863,7 +863,7 @@ public class S3Path extends CloudPath {
                 this.delete(container, key, this.attributes().getVersionId());
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath child : this.childs()) {
+                for(AbstractPath child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
@@ -947,7 +947,7 @@ public class S3Path extends CloudPath {
                 // Renaming buckets is not currently supported by S3
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath i : this.childs()) {
+                for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
@@ -982,7 +982,7 @@ public class S3Path extends CloudPath {
                         ((S3Path) copy).getContainerName(), destination, false);
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath i : this.childs()) {
+                for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }

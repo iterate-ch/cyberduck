@@ -337,7 +337,7 @@ public class CFPath extends CloudPath {
                 this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath i : this.childs()) {
+                for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }

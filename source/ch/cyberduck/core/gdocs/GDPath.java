@@ -175,7 +175,7 @@ public class GDPath extends Path {
     public String getExportUri() {
         if(StringUtils.isBlank(exportUri)) {
             log.warn("Refetching Export URI for " + this.toString());
-            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
+            final GDPath cached = (GDPath) this.getParent().children().get(this.getReference());
             if(null == cached) {
                 log.error("Missing Export URI for " + this.toString());
                 return null;
@@ -194,7 +194,7 @@ public class GDPath extends Path {
     public String getResourceId() {
         if(StringUtils.isBlank(resourceId)) {
             log.warn("Refetching Resource ID for " + this.toString());
-            final GDPath cached = (GDPath) this.getParent().childs().get(this.getReference());
+            final GDPath cached = (GDPath) this.getParent().children().get(this.getReference());
             if(null == cached) {
                 log.error("Missing Resource ID for " + this.toString());
                 return null;

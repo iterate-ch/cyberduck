@@ -347,7 +347,7 @@ public class FinderLocal extends Local {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
                 if(attributes().isDirectory() && recursive) {
-                    for(AbstractPath child : childs()) {
+                    for(AbstractPath child : children()) {
                         child.writeUnixPermission(perm, recursive);
                     }
                 }

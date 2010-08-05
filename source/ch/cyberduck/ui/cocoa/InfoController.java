@@ -2260,7 +2260,7 @@ public class InfoController extends ToolbarWindowController {
                 private long calculateSize(final AbstractPath p) {
                     long size = 0;
                     if(p.attributes().isDirectory()) {
-                        for(AbstractPath next : p.childs()) {
+                        for(AbstractPath next : p.children()) {
                             size += this.calculateSize(next);
                         }
                     }

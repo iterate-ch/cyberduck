@@ -186,7 +186,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> childs(final Path parent) {
-        final AttributedList<Path> list = parent.childs(childFilter);
+        final AttributedList<Path> list = parent.children(childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
             download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getLocal().getName()));
@@ -293,7 +293,7 @@ public class DownloadTransfer extends Transfer {
             for(Path root : this.getRoots()) {
                 if(root.getLocal().exists()) {
                     if(root.getLocal().attributes().isDirectory()) {
-                        if(0 == root.getLocal().childs().size()) {
+                        if(0 == root.getLocal().children().size()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }

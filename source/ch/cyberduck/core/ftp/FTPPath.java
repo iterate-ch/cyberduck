@@ -476,7 +476,7 @@ public class FTPPath extends Path {
             }
             if(-1 == attributes().getSize()) {
                 // Read the size from the directory listing
-                final AttributedList<AbstractPath> l = this.getParent().childs();
+                final AttributedList<AbstractPath> l = this.getParent().children();
                 if(l.contains(this)) {
                     attributes().setSize(l.get(l.indexOf(this)).attributes().getSize());
                 }
@@ -508,7 +508,7 @@ public class FTPPath extends Path {
             }
             if(-1 == attributes().getModificationDate()) {
                 // Read the timestamp from the directory listing
-                final AttributedList<AbstractPath> l = this.getParent().childs();
+                final AttributedList<AbstractPath> l = this.getParent().children();
                 if(l.contains(this)) {
                     attributes().setModificationDate(l.get(l.indexOf(this)).attributes().getModificationDate());
                 }
@@ -528,7 +528,7 @@ public class FTPPath extends Path {
                     this.getName()));
 
             // Read the permission from the directory listing
-            final AttributedList<AbstractPath> l = this.getParent().childs();
+            final AttributedList<AbstractPath> l = this.getParent().children();
             if(l.contains(this)) {
                 attributes().setPermission(l.get(l.indexOf(this)).attributes().getPermission());
             }
@@ -551,7 +551,7 @@ public class FTPPath extends Path {
             }
             else if(attributes().isDirectory()) {
                 this.getSession().setWorkdir(this);
-                for(AbstractPath file : this.childs()) {
+                for(AbstractPath file : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
@@ -598,7 +598,7 @@ public class FTPPath extends Path {
             else if(attributes().isDirectory()) {
                 this.getSession().getClient().site(command + " " + owner + " " + this.getAbsolute());
                 if(recursive) {
-                    for(AbstractPath child : this.childs()) {
+                    for(AbstractPath child : this.children()) {
                         if(!this.getSession().isConnected()) {
                             break;
                         }
@@ -626,7 +626,7 @@ public class FTPPath extends Path {
             else if(attributes().isDirectory()) {
                 this.getSession().getClient().site(command + " " + group + " " + this.getAbsolute());
                 if(recursive) {
-                    for(AbstractPath child : this.childs()) {
+                    for(AbstractPath child : this.children()) {
                         if(!this.getSession().isConnected()) {
                             break;
                         }
@@ -678,7 +678,7 @@ public class FTPPath extends Path {
         else if(attributes().isDirectory()) {
             this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
             if(recursive) {
-                for(AbstractPath child : this.childs()) {
+                for(AbstractPath child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }

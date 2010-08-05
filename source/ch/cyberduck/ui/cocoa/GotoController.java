@@ -70,11 +70,11 @@ public class GotoController extends SheetController {
             if(!((BrowserController) parent).isMounted()) {
                 return new NSInteger(0);
             }
-            return new NSInteger(((BrowserController) parent).workdir().childs(comparator, filter).size());
+            return new NSInteger(((BrowserController) parent).workdir().children(comparator, filter).size());
         }
 
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return ((BrowserController) parent).workdir().childs(comparator, filter).get(row.intValue()).<NSObject>getReference().unique();
+            return ((BrowserController) parent).workdir().children(comparator, filter).get(row.intValue()).<NSObject>getReference().unique();
         }
     }
 

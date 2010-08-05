@@ -527,7 +527,7 @@ public class AzurePath extends CloudPath {
                 container.deleteBlob(this.getKey());
             }
             else if(attributes().isDirectory()) {
-                for(AbstractPath i : this.childs()) {
+                for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
@@ -621,7 +621,7 @@ public class AzurePath extends CloudPath {
             }
         }
         else {
-            for(AbstractPath i : this.childs()) {
+            for(AbstractPath i : this.children()) {
                 if(!this.getSession().isConnected()) {
                     break;
                 }
