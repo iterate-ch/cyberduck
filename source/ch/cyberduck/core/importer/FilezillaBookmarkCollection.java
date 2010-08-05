@@ -44,18 +44,13 @@ public class FilezillaBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
 
     @Override
-    public String getName() {
-        return "Filezilla";
+    public String getBundleIdentifier() {
+        return "de.filezilla";
     }
 
     @Override
-    public String getConfiguration() {
-        return "bookmark.import.filezilla";
-    }
-
-    @Override
-    public void load() {
-        super.load(LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.filezilla.location")));
+    public Local getFile() {
+        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.filezilla.location"));
     }
 
     @Override

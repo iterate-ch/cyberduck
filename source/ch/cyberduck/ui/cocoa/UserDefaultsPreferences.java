@@ -144,6 +144,11 @@ public class UserDefaultsPreferences extends Preferences {
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
         defaults.put("version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+
+        defaults.put("bookmark.import.filezilla.location", "~/.filezilla/sitemanager.xml");
+        defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
+        defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
+        defaults.put("bookmark.import.interarchy.location", "~/Library/Application Support/Interarchy/Bookmarks.plist");
     }
 
     /**

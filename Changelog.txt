@@ -17,7 +17,7 @@ Changelog. Last modified: $Date$
 - [Feature] Revert to previous file version (S3)
 - [Feature] Eucalyptus Walrus support enabled by default (S3)
 - [Feature] Duplicate Bookmark (#3385)
-- [Feature] Import bookmarks from thirdparty applications (Filezilla, Fetch, Flow) (#3373)
+- [Feature] Import bookmarks from thirdparty applications (Filezilla, Fetch, Interarchy, Flow) (#3373)
 - [Feature] Copy directory listing to clipboard (#2372)
 - [Feature] Support for thidparty terminal applications (#2987)
 - [Feature] Unsecure connection warning when password is transmitted in plaintext

@@ -26,6 +26,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.List;
@@ -33,17 +34,17 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static Logger log = Logger.getLogger(FetchBookmarkCollection.class);
+public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
+    private static Logger log = Logger.getLogger(InterarchyBookmarkCollection.class);
 
     @Override
     public String getBundleIdentifier() {
-        return "com.fetchsoftworks.Fetch";
+        return "com.nolobe.interarchy";
     }
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.fetch.location"));
+        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.interarchy.location"));
     }
 
     @Override
@@ -52,32 +53,38 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
         if(null == serialized) {
             return;
         }
-        NSDictionary dict = new PlistDeserializer(serialized).objectForKey("Shortcuts v2");
-        if(null == dict) {
+        List<NSDictionary> items = new PlistDeserializer(serialized).listForKey("Children");
+        if(null == items) {
             return;
         }
-        dict = new PlistDeserializer(dict).objectForKey("Shortcuts");
-        if(null == dict) {
+        for(NSDictionary item : items) {
+            this.parse(item);
+        }
+    }
+
+    private void parse(NSDictionary item) {
+        final PlistDeserializer bookmark = new PlistDeserializer(item);
+        List<NSDictionary> children = bookmark.listForKey("Children");
+        if(null != children) {
+            for(NSDictionary child : children) {
+                this.parse(child);
+            }
             return;
         }
-        List<NSDictionary> shortcuts = new PlistDeserializer(dict).listForKey("Shortcuts");
-        for(NSDictionary shortcut : shortcuts) {
-            PlistDeserializer reader = new PlistDeserializer(shortcut);
-            NSDictionary remote = reader.objectForKey("Remote Item");
-            if(null == remote) {
-                continue;
-            }
-            NSDictionary location = new PlistDeserializer(remote).objectForKey("Location");
-            if(null == location) {
-                continue;
-            }
-            String url = new PlistDeserializer(location).stringForKey("URL");
-            if(null == url) {
-                continue;
-            }
-            final Host host = Host.parse(url);
-            host.setNickname(reader.stringForKey("Name"));
-            this.add(host);
+        String url = bookmark.stringForKey("URL");
+        if(StringUtils.isBlank(url)) {
+            // Possibly a folder
+            return;
         }
+        Host host = Host.parse(url);
+        if(StringUtils.isBlank(host.getHostname())) {
+            // Possibly file://
+            return;
+        }
+        String title = bookmark.stringForKey("Title");
+        if(StringUtils.isNotBlank(title)) {
+            host.setNickname(title);
+        }
+        this.add(host);
     }
 }

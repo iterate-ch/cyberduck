@@ -23,6 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -36,18 +37,13 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FlowBookmarkCollection.class);
 
     @Override
-    public String getName() {
-        return "Flow";
+    public String getBundleIdentifier() {
+        return "com.extendmac.Flow";
     }
 
     @Override
-    public String getConfiguration() {
-        return "bookmark.import.flow";
-    }
-
-    @Override
-    public void load() {
-        super.load(LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.flow.location")));
+    public Local getFile() {
+        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.flow.location"));
     }
 
     @Override
@@ -74,23 +70,23 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                 }
                 Host host = new Host(server);
                 String port = bookmark.stringForKey("Port");
-                if(null != port) {
+                if(StringUtils.isNotBlank(port)) {
                     host.setPort(Integer.parseInt(port));
                 }
                 String path = bookmark.stringForKey("InitialPath");
-                if(null != path) {
+                if(StringUtils.isNotBlank(path)) {
                     host.setDefaultPath(path);
                 }
                 String name = bookmark.stringForKey("Name");
-                if(null != name) {
+                if(StringUtils.isNotBlank(name)) {
                     host.setNickname(name);
                 }
                 String user = bookmark.stringForKey("Username");
-                if(null != user) {
+                if(StringUtils.isNotBlank(user)) {
                     host.getCredentials().setUsername(user);
                 }
                 String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
-                if(null != mode) {
+                if(StringUtils.isNotBlank(mode)) {
                     if("Passive".equals(mode)) {
                         host.setFTPConnectMode(FTPConnectMode.PASV);
                     }
@@ -99,7 +95,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                     }
                 }
                 String protocol = bookmark.stringForKey("Protocol");
-                if(null != protocol) {
+                if(StringUtils.isNotBlank(protocol)) {
                     try {
                         switch(Integer.parseInt(protocol)) {
                             case 0:

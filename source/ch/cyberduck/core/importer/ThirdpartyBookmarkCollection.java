@@ -21,7 +21,9 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -36,11 +38,22 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
      * @param file Local path.
      */
     protected void load(Local file) {
+        if(!this.isInstalled()) {
+            log.debug("No application installed for " + this.getBundleIdentifier());
+            return;
+        }
         if(file.exists()) {
             log.info("Found Bookmarks file: " + file.getAbsolute());
             this.parse(file);
         }
     }
+
+    @Override
+    public void load() {
+        this.load(this.getFile());
+    }
+
+    public abstract Local getFile();
 
     protected abstract void parse(Local file);
 
@@ -49,7 +62,17 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         throw new UnsupportedOperationException("Should not attempt to write to thirdparty bookmark collection");
     }
 
-    public abstract String getName();
+    public String getName() {
+        return EditorFactory.getApplicationName(this.getBundleIdentifier());
+    }
 
-    public abstract String getConfiguration();
+    public boolean isInstalled() {
+        return StringUtils.isNotBlank(this.getName());
+    }
+
+    public abstract String getBundleIdentifier();
+
+    public String getConfiguration() {
+        return "bookmark.import." + this.getBundleIdentifier();
+    }
 }

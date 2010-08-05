@@ -680,15 +680,6 @@ public abstract class Preferences {
         final int DAY = 60 * 60 * 24;
         defaults.put("update.check.interval", String.valueOf(DAY)); // periodic update check in seconds
 
-        defaults.put("bookmark.import.filezilla", String.valueOf(true));
-        defaults.put("bookmark.import.filezilla.location", "~/.filezilla/sitemanager.xml");
-
-        defaults.put("bookmark.import.fetch", String.valueOf(true));
-        defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
-
-        defaults.put("bookmark.import.flow", String.valueOf(true));
-        defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
-
         defaults.put("terminal.bundle.identifier", "com.apple.Terminal");
         defaults.put("terminal.command", "do script \"{0}\"");
     }
