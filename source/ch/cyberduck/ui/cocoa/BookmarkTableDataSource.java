@@ -344,7 +344,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                     }
                     // Upload to the remote host this bookmark points to
                     roots.add(PathFactory.createPath(session,
-                            PathFactory.createPath(session, h.getDefaultPath(), Path.DIRECTORY_TYPE),
+                            h.getDefaultPath(),
                             LocalFactory.createLocal(filename)));
                 }
             }

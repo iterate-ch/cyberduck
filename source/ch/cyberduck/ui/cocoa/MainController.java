@@ -385,7 +385,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final Path workdir = controller.workdir();
                     final Session session = controller.getTransferSession();
                     final Transfer q = new UploadTransfer(
-                            PathFactory.createPath(session, workdir, f)
+                            PathFactory.createPath(session, workdir.getAbsolute(), f)
                     );
                     controller.transfer(q, workdir);
                     break;
