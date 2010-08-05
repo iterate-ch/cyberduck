@@ -76,14 +76,6 @@ public abstract class AbstractKeychain {
             log.warn("No password given");
             return;
         }
-        if(host.getCredentials().isAnonymousLogin()) {
-            log.info("Do not write anonymous credentials to Keychain");
-            return;
-        }
-        if(!host.getCredentials().usesKeychain()) {
-            log.info("Do not write credentials to Keychain");
-            return;
-        }
         if(log.isInfoEnabled()) {
             log.info("Add Password to Keychain:" + host);
         }

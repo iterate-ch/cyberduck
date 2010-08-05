@@ -75,6 +75,13 @@ public interface LoginController {
     void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException;
 
     /**
+     * Callback upon successful login. Save credentials.
+     *
+     * @param host
+     */
+    void success(Host host);
+
+    /**
      * Call this to allow the user to reenter the new login credentials.
      * A concrete subclass should display a login prompt.
      *
@@ -96,9 +103,10 @@ public interface LoginController {
      * @param reason          The detail message for the login prompt. Any additional information why the login failed.
      * @param enableKeychain  Enable checkbox to save password in keychain
      * @param enablePublicKey Enable public key authentication checkbox
+     * @param enableAnonymous
      * @throws LoginCanceledException
      */
     void prompt(final Protocol protocol, final Credentials credentials,
                 final String title, final String reason,
-                final boolean enableKeychain, final boolean enablePublicKey) throws LoginCanceledException;
+                final boolean enableKeychain, final boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;
 }

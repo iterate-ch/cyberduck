@@ -93,6 +93,18 @@ public abstract class AbstractLoginController implements LoginController {
                 Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
+    public void success(Host host) {
+        if(host.getCredentials().isAnonymousLogin()) {
+            log.info("Do not write anonymous credentials to Keychain");
+            return;
+        }
+        if(!host.getCredentials().usesKeychain()) {
+            log.info("Do not write credentials to Keychain");
+            return;
+        }
+        KeychainFactory.instance().save(host);
+    }
+
     /**
      * Display login failure with a prompt to enter the username and password.
      *
@@ -109,10 +121,10 @@ public abstract class AbstractLoginController implements LoginController {
 
     public void prompt(final Protocol protocol, final Credentials credentials,
                        final String title, final String reason) throws LoginCanceledException {
-        this.prompt(protocol, credentials, title, reason, true, protocol.equals(Protocol.SFTP));
+        this.prompt(protocol, credentials, title, reason, true, protocol.equals(Protocol.SFTP), true);
     }
 
     public abstract void prompt(Protocol protocol, Credentials credentials,
                                 String title, String reason,
-                                boolean enableKeychain, boolean enablePublicKey) throws LoginCanceledException;
+                                boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;
 }

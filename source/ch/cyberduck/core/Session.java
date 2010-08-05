@@ -176,7 +176,7 @@ public abstract class Session implements TranscriptListener {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        KeychainFactory.instance().save(host);
+        login.success(host);
     }
 
     /**
