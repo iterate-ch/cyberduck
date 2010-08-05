@@ -60,7 +60,7 @@ public class AzurePath extends CloudPath {
         }
 
         @Override
-        protected Path create(AzureSession session, Path parent, Local file) {
+        protected Path create(AzureSession session, String parent, Local file) {
             return new AzurePath(session, parent, file);
         }
 
@@ -86,7 +86,7 @@ public class AzurePath extends CloudPath {
         this.session = s;
     }
 
-    protected AzurePath(AzureSession s, Path parent, Local file) {
+    protected AzurePath(AzureSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }

@@ -41,8 +41,8 @@ public class IDiskPath extends DAVPath {
         }
 
         @Override
-        protected Path create(IDiskSession session, Path path, Local file) {
-            return new IDiskPath(session, path, file);
+        protected Path create(IDiskSession session, String parent, Local file) {
+            return new IDiskPath(session, parent, file);
         }
 
         @Override
@@ -63,7 +63,7 @@ public class IDiskPath extends DAVPath {
         super(s, path, type);
     }
 
-    protected IDiskPath(IDiskSession s, Path parent, Local file) {
+    protected IDiskPath(IDiskSession s, String parent, Local file) {
         super(s, parent, file);
     }
 

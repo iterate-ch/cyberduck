@@ -64,8 +64,8 @@ public class FTPPath extends Path {
         }
 
         @Override
-        protected Path create(FTPSession session, Path path, Local file) {
-            return new FTPPath(session, path, file);
+        protected Path create(FTPSession session, String parent, Local file) {
+            return new FTPPath(session, parent, file);
         }
 
         @Override
@@ -90,7 +90,7 @@ public class FTPPath extends Path {
         this.session = s;
     }
 
-    protected FTPPath(FTPSession s, Path parent, Local file) {
+    protected FTPPath(FTPSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }

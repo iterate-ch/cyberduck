@@ -45,7 +45,7 @@ public abstract class CloudPath extends Path {
         super(path, type);
     }
 
-    protected CloudPath(Path parent, final Local local) {
+    protected CloudPath(String parent, final Local local) {
         super(parent, local);
     }
 

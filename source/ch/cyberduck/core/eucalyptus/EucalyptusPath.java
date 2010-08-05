@@ -40,8 +40,8 @@ public class EucalyptusPath extends S3Path {
         }
 
         @Override
-        protected Path create(EucalyptusSession session, Path path, Local file) {
-            return new EucalyptusPath(session, path, file);
+        protected Path create(EucalyptusSession session, String parent, Local file) {
+            return new EucalyptusPath(session, parent, file);
         }
 
         @Override
@@ -62,7 +62,7 @@ public class EucalyptusPath extends S3Path {
         super(s, path, type);
     }
 
-    protected EucalyptusPath(EucalyptusSession s, Path parent, Local file) {
+    protected EucalyptusPath(EucalyptusSession s, String parent, Local file) {
         super(s, parent, file);
     }
 

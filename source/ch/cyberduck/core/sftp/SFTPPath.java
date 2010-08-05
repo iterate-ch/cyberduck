@@ -53,8 +53,8 @@ public class SFTPPath extends Path {
         }
 
         @Override
-        protected Path create(SFTPSession session, Path path, Local file) {
-            return new SFTPPath(session, path, file);
+        protected Path create(SFTPSession session, String parent, Local file) {
+            return new SFTPPath(session, parent, file);
         }
 
         @Override
@@ -79,7 +79,7 @@ public class SFTPPath extends Path {
         this.session = s;
     }
 
-    private SFTPPath(SFTPSession s, Path parent, Local file) {
+    private SFTPPath(SFTPSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }

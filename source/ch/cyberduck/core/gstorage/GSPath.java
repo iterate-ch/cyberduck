@@ -46,8 +46,8 @@ public class GSPath extends S3Path {
         }
 
         @Override
-        protected Path create(GSSession session, Path path, Local file) {
-            return new GSPath(session, path, file);
+        protected Path create(GSSession session, String parent, Local file) {
+            return new GSPath(session, parent, file);
         }
 
         @Override
@@ -68,7 +68,7 @@ public class GSPath extends S3Path {
         super(s, path, type);
     }
 
-    protected GSPath(S3Session s, Path parent, Local file) {
+    protected GSPath(S3Session s, String parent, Local file) {
         super(s, parent, file);
     }
 

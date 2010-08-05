@@ -62,7 +62,7 @@ public class CFPath extends CloudPath {
         }
 
         @Override
-        protected Path create(CFSession session, Path parent, Local file) {
+        protected Path create(CFSession session, String parent, Local file) {
             return new CFPath(session, parent, file);
         }
 
@@ -88,7 +88,7 @@ public class CFPath extends CloudPath {
         this.session = s;
     }
 
-    protected CFPath(CFSession s, Path parent, Local file) {
+    protected CFPath(CFSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }

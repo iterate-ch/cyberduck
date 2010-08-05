@@ -74,8 +74,8 @@ public class GDPath extends Path {
         }
 
         @Override
-        protected Path create(GDSession session, Path path, Local file) {
-            return new GDPath(session, path, file);
+        protected Path create(GDSession session, String parent, Local file) {
+            return new GDPath(session, parent, file);
         }
 
         @Override
@@ -137,7 +137,7 @@ public class GDPath extends Path {
         this.session = s;
     }
 
-    protected GDPath(GDSession s, Path parent, Local file) {
+    protected GDPath(GDSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
