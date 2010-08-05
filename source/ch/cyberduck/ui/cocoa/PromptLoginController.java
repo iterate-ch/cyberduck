@@ -63,7 +63,7 @@ public class PromptLoginController extends AbstractLoginController {
 
     private WindowController parent;
 
-    public PromptLoginController(final WindowController parent) {
+    private PromptLoginController(final WindowController parent) {
         this.parent = parent;
     }
 
