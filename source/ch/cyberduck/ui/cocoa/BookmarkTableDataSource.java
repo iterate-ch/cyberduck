@@ -269,7 +269,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     String file = elements.objectAtIndex(new NSUInteger(i)).toString();
-                    if(file.contains(".duck")) {
+                    if(file.endsWith(".duck")) {
                         //allow file drags if bookmark file even if list is empty
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
