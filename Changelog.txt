@@ -5,10 +5,10 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 4.0 (Sep-01-2010) [http://trac.cyberduck.ch/milestone/4.0]
-- [Feature] Connecting to Google Storage (Google Storage)
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
 3.6 (Aug-05-2010) [http://trac.cyberduck.ch/milestone/3.6]
+- [Feature] Connecting to Google Storage (Google Storage)
 - [Feature] Edit Access Control List (#3191) (S3, Google Storage, Google Docs)
 - [Feature] Enable Bucket Versioning (#4511) (S3)
 - [Feature] Enable Bucket Multi-Factor Authentication Delete (#4510) (S3)
