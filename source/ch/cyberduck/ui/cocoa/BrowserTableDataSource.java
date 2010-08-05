@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
+import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
 import org.rococoa.Rococoa;
@@ -141,7 +142,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
-        log.debug("setObjectValueForItem:" + item);
+        if(log.isTraceEnabled()) {
+            log.trace("setObjectValueForItem:" + item.getAbsolute());
+        }
         if(identifier.equals(FILENAME_COLUMN)) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
                 final Path renamed = PathFactory.createPath(controller.getSession(),
@@ -166,8 +169,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         if(null == item) {
             return null;
         }
-        if(log.isDebugEnabled()) {
-            log.debug("objectValueForItem:" + item.getAbsolute());
+        if(log.isTraceEnabled()) {
+            log.trace("objectValueForItem:" + item.getAbsolute());
         }
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
@@ -256,7 +259,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final List<Path> roots = new Collection<Path>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         Path p = PathFactory.createPath(session,
-                                destination,
+                                destination.getAbsolute(),
                                 LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         roots.add(p);
                     }
@@ -472,14 +475,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
      *         blocking the destination application.
      */
-    public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
-        log.debug("namesOfPromisedFilesDroppedAtDestination:" + dropDestination);
+    public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
+        log.debug("namesOfPromisedFilesDroppedAtDestination:" + url);
         NSMutableArray promisedDragNames = NSMutableArray.array();
-        if(null != dropDestination) {
+        if(null != url) {
+            final Local destination = LocalFactory.createLocal(url.path());
             final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
             final List<Path> promisedPaths = pasteboard.getFiles(controller.getTransferSession());
             for(Path p : promisedPaths) {
-                p.setLocal(LocalFactory.createLocal(dropDestination.path(), p.getName()));
+                p.setLocal(LocalFactory.createLocal(destination, p.getName()));
                 // Add to returned path names
                 promisedDragNames.addObject(NSString.stringWithString(p.getLocal().getName()));
             }
@@ -491,10 +495,22 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     promisedPaths.get(0).getLocal().mkdir();
                 }
             }
-            final Transfer q = new DownloadTransfer(promisedPaths);
-            if(q.numberOfRoots() > 0) {
-                controller.transfer(q);
-            }
+            // Drag to application icon in dock.
+            final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
+            controller.transfer(new DownloadTransfer(promisedPaths) {
+                @Override
+                protected void fireDidTransferPath(Path path) {
+                    if(dock) {
+                        WatchEditor editor = new WatchEditor(controller, path);
+                        editor.watch();
+                    }
+                    super.fireDidTransferPath(path);
+                }
+            }, dock, dock ? new TransferPrompt() {
+                public TransferAction prompt() {
+                    return TransferAction.ACTION_OVERWRITE;
+                }
+            } : null);
             pasteboard.clear();
         }
         // Filenames
