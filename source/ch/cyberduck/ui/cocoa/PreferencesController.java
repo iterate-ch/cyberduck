@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
@@ -37,7 +38,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
 
 import com.enterprisedt.net.ftp.FTPTransferType;
@@ -1001,7 +1001,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup;
 
-    private static final String CHOOSE = Locale.localizedString("Choose") + "...";
+    private static final String CHOOSE = Locale.localizedString("Choose") + "…";
 
     // The currently set download folder
     private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
@@ -1980,14 +1980,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = defaultBucketLocation;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString("US", "S3"));
-        this.defaultBucketLocation.lastItem().setRepresentedObject(S3Bucket.LOCATION_US);
-        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(S3Bucket.LOCATION_EUROPE, "S3"));
-        this.defaultBucketLocation.lastItem().setRepresentedObject(S3Bucket.LOCATION_EUROPE);
-        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(S3Bucket.LOCATION_US_WEST, "S3"));
-        this.defaultBucketLocation.lastItem().setRepresentedObject(S3Bucket.LOCATION_US_WEST);
-        this.defaultBucketLocation.addItemWithTitle(Locale.localizedString("ap-southeast-1", "S3"));
-        this.defaultBucketLocation.lastItem().setRepresentedObject("ap-southeast-1");
+        for(String location : S3Session.getAvailableLocations()) {
+            this.defaultBucketLocation.addItemWithTitle(Locale.localizedString(location, "S3"));
+            this.defaultBucketLocation.lastItem().setRepresentedObject(location);
+        }
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
         this.defaultBucketLocation.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.location"), "S3"));

@@ -277,6 +277,13 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     /**
+     * @return List of data center locations.
+     */
+    public static List<String> getAvailableLocations() {
+        return Arrays.asList("US", S3Bucket.LOCATION_EUROPE, S3Bucket.LOCATION_US_WEST, S3Bucket.LOCATION_ASIA_PACIFIC);
+    }
+
+    /**
      * Set to false if permission error response indicates this
      * feature is not implemented.
      */
