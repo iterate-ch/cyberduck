@@ -67,7 +67,7 @@ public class CreateFileController extends FileController {
                     LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), filename));
 
             public void run() {
-                file.touch(false);
+                file.touch();
                 if(file.exists()) {
                     if(edit) {
                         Editor editor = EditorFactory.createEditor(c, file);
