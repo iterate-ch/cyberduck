@@ -430,7 +430,7 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup;
 
-    private static final String CHOOSE = Locale.localizedString("Choose") + "...";
+    private static final String CHOOSE = Locale.localizedString("Choose") + "…";
 
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
