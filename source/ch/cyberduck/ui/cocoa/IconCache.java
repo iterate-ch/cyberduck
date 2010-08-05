@@ -159,22 +159,31 @@ public class IconCache {
         return folder;
     }
 
-    private NSImage iconForFolder(String badge, Integer size) {
+    private NSImage iconForFolder(NSImage badge, Integer size) {
         final String name = "BadgedFolder" + badge;
         NSImage folder = this.iconForName(name, size);
         if(null == folder) {
             folder = NSImage.imageWithSize(new NSSize(size, size));
-            folder.lockFocus();
-            NSImage f = FOLDER_ICON;
-            f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                    NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-            NSImage o = this.iconForName(badge);
-            o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                    NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-            folder.unlockFocus();
+            this.badge(badge, folder);
             this.put(name, this.convert(folder, size), size);
         }
         return folder;
+    }
+
+    /**
+     * Overlay badge image.
+     *
+     * @param badge
+     * @param icon
+     */
+    private void badge(NSImage badge, NSImage icon) {
+        icon.lockFocus();
+        NSImage f = FOLDER_ICON;
+        f.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
+                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+        badge.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
+                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+        icon.unlockFocus();
     }
 
     /**
@@ -287,14 +296,7 @@ public class IconCache {
         if(item.attributes().isSymbolicLink()) {
             if(item.attributes().isDirectory()) {
                 final NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
-                folder.lockFocus();
-                NSImage f = FOLDER_ICON;
-                f.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                        NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                NSImage o = this.iconForName("aliasbadge.png");
-                o.drawInRect(new NSRect(new NSPoint(0, 0), folder.size()),
-                        NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-                folder.unlockFocus();
+                this.badge(this.iconForName("aliasbadge.png"), folder);
                 return this.convert(folder, size);
             }
             final NSImage symlink = NSImage.imageWithSize(new NSSize(size, size));
@@ -323,15 +325,15 @@ public class IconCache {
             if(overlay) {
                 if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
-                    return this.iconForFolder("privatefolderbadge.png", size);
+                    return this.iconForFolder(this.iconForName("privatefolderbadge.png"), size);
                 }
                 if(!item.attributes().getPermission().isReadable()) {
                     if(item.attributes().getPermission().isWritable()) {
-                        return this.iconForFolder("dropfolderbadge.png", size);
+                        return this.iconForFolder(this.iconForName("dropfolderbadge.png"), size);
                     }
                 }
                 if(!item.attributes().getPermission().isWritable()) {
-                    return this.iconForFolder("readonlyfolderbadge.png", size);
+                    return this.iconForFolder(this.iconForName("readonlyfolderbadge.png"), size);
                 }
             }
             return this.iconForFolder(size);
