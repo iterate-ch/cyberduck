@@ -157,6 +157,11 @@ public class DAVSession extends HTTPSession implements SSLSession {
     }
 
     @Override
+    protected void warn(LoginController login, Credentials credentials) throws IOException {
+        // Do not warn yet but in the credentials provider depending on the choosen realm.
+    }
+
+    @Override
     protected void login(final LoginController controller, final Credentials credentials) throws IOException {
         try {
             final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
@@ -198,6 +203,9 @@ public class DAVSession extends HTTPSession implements SSLSession {
 
                         retry++;
                         if(authscheme instanceof RFC2617Scheme) {
+                            if(authscheme instanceof BasicScheme) {
+                                DAVSession.super.warn(controller, credentials);
+                            }
                             return new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword());
                         }
                         if(authscheme instanceof NTLMScheme) {
@@ -209,10 +217,10 @@ public class DAVSession extends HTTPSession implements SSLSession {
                                 authscheme.getSchemeName());
                     }
                     catch(LoginCanceledException e) {
-                        throw new CredentialsNotAvailableException();
+                        throw new CredentialsNotAvailableException(e.getMessage(), e);
                     }
                     catch(IOException e) {
-                        throw new CredentialsNotAvailableException();
+                        throw new CredentialsNotAvailableException(e.getMessage(), e);
                     }
                 }
             });
