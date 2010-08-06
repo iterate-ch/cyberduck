@@ -40,7 +40,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -187,37 +189,29 @@ public class CFPath extends CloudPath {
                 }
             }
             else {
-                final int limit = Preferences.instance().getInteger("cf.list.limit");
-                List<FilesObject> list;
-                String marker = null;
-                do {
-                    list = this.getSession().getClient().listObjects(this.getContainerName(), this.getKey(), limit, marker);
-                    for(FilesObject object : list) {
-                        final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
-                                "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                        if(file.getParent().equals(this)) {
-                            file.setParent(this);
-                            if(file.attributes().getType() == Path.FILE_TYPE) {
-                                file.attributes().setSize(object.getSize());
-                                file.attributes().setChecksum(object.getMd5sum());
-                            }
-                            try {
-                                final Date modified = DateParser.parse(object.getLastModified());
-                                if(null != modified) {
-                                    file.attributes().setModificationDate(modified.getTime());
-                                }
-                            }
-                            catch(InvalidDateException e) {
-                                log.warn("Not ISO 8601 format:" + e.getMessage());
-                            }
-                            file.attributes().setOwner(this.attributes().getOwner());
-
-                            childs.add(file);
+                for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(), this.getKey(), -1, null)) {
+                    final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
+                            "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    if(file.getParent().equals(this)) {
+                        file.setParent(this);
+                        if(file.attributes().getType() == Path.FILE_TYPE) {
+                            file.attributes().setSize(object.getSize());
+                            file.attributes().setChecksum(object.getMd5sum());
                         }
-                        marker = object.getName();
+                        try {
+                            final Date modified = DateParser.parse(object.getLastModified());
+                            if(null != modified) {
+                                file.attributes().setModificationDate(modified.getTime());
+                            }
+                        }
+                        catch(InvalidDateException e) {
+                            log.warn("Not ISO 8601 format:" + e.getMessage());
+                        }
+                        file.attributes().setOwner(this.attributes().getOwner());
+
+                        childs.add(file);
                     }
                 }
-                while(list.size() == limit);
             }
             this.getSession().setWorkdir(this);
         }
