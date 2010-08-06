@@ -331,7 +331,12 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     public String getContainerName() {
-        return String.valueOf(Path.DELIMITER);
+        return this.getContainer().getAbsolute();
+    }
+
+    public Path getContainer() {
+        return PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
+            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
     }
 
     /**
@@ -348,17 +353,17 @@ public abstract class Path extends AbstractPath implements Serializable {
             if(this.isRoot()) {
                 return this;
             }
-            String parent = getParent(this.getAbsolute());
-            if(String.valueOf(DELIMITER).equals(parent)) {
-                this.parent = PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
-                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            String name = this.getParent(this.getAbsolute());
+            if(String.valueOf(DELIMITER).equals(name)) {
+                parent = PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
+            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
             }
             else {
-                this.parent = PathFactory.createPath(this.getSession(), parent,
+                parent = PathFactory.createPath(this.getSession(), name,
                         Path.DIRECTORY_TYPE);
             }
         }
-        return this.parent;
+        return parent;
     }
 
     /**

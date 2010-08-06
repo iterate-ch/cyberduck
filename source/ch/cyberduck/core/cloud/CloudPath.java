@@ -68,7 +68,13 @@ public abstract class CloudPath extends Path {
     /**
      * @return The parent container/bucket of this file
      */
+    @Override
     public String getContainerName() {
+        return this.getContainer().getName();
+    }
+
+    @Override
+    public Path getContainer() {
         if(this.isRoot()) {
             return null;
         }
@@ -76,7 +82,7 @@ public abstract class CloudPath extends Path {
         while(!bucketname.isContainer()) {
             bucketname = (CloudPath) bucketname.getParent();
         }
-        return bucketname.getName();
+        return bucketname;
     }
 
     /**
