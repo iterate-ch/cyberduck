@@ -178,7 +178,10 @@ public class S3Path extends CloudPath {
                 // Keep same storage class
                 destination.setStorageClass(this.attributes().getStorageClass());
                 // Apply non standard ACL
-                destination.setAcl(this.getDetails().getAcl());
+                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
+                    this.readAcl();
+                }
+                destination.setAcl(this.convert(this.attributes().getAcl()));
                 this.getSession().getClient().copyVersionedObject(this.attributes().getVersionId(),
                         this.getContainerName(), this.getKey(), this.getContainerName(), destination, false);
                 // The directory listing is no more current
@@ -206,30 +209,24 @@ public class S3Path extends CloudPath {
             }
             final String container = this.getContainerName();
             if(this.isContainer()) {
-                final S3Bucket bucket = this.getSession().getBucket(container);
-                if(null == bucket.getAcl()) {
-                    // This method can be performed by anonymous services, but can only succeed if the
-                    // bucket's existing ACL already allows write access by the anonymous user.
-                    // In general, you can only access the ACL of a bucket if the ACL already in place
-                    // for that bucket (in S3) allows you to do so.
-                    bucket.setAcl(this.getSession().getClient().getBucketAcl(container));
-                }
-                this.attributes().setAcl(this.convert(bucket.getAcl()));
+                // This method can be performed by anonymous services, but can only succeed if the
+                // bucket's existing ACL already allows write access by the anonymous user.
+                // In general, you can only access the ACL of a bucket if the ACL already in place
+                // for that bucket (in S3) allows you to do so.
+                this.attributes().setAcl(this.convert(this.getSession().getClient().getBucketAcl(container)));
             }
             else if(attributes().isFile()) {
-                final S3Object details = this.getDetails();
-                if(null == details.getAcl()) {
-                    if(this.getSession().isVersioning(container)) {
-                        details.setAcl(this.getSession().getClient().getVersionedObjectAcl(this.attributes().getVersionId(),
-                                container, this.getKey()));
-                    }
-                    else {
-                        // This method can be performed by anonymous services, but can only succeed if the
-                        // object's existing ACL already allows read access by the anonymous user.
-                        details.setAcl(this.getSession().getClient().getObjectAcl(container, this.getKey()));
-                    }
+                AccessControlList list;
+                if(this.getSession().isVersioning(container)) {
+                    list = this.getSession().getClient().getVersionedObjectAcl(this.attributes().getVersionId(),
+                            container, this.getKey());
                 }
-                this.attributes().setAcl(this.convert(details.getAcl()));
+                else {
+                    // This method can be performed by anonymous services, but can only succeed if the
+                    // object's existing ACL already allows read access by the anonymous user.
+                    list = this.getSession().getClient().getObjectAcl(container, this.getKey());
+                }
+                this.attributes().setAcl(this.convert(list));
             }
         }
         catch(S3ServiceException e) {
@@ -935,7 +932,10 @@ public class S3Path extends CloudPath {
                 // Keep same storage class
                 destination.setStorageClass(this.attributes().getStorageClass());
                 // Apply non standard ACL
-                destination.setAcl(this.getDetails().getAcl());
+                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
+                    this.readAcl();
+                }
+                destination.setAcl(this.convert(this.attributes().getAcl()));
                 // Moving the object retaining the metadata of the original.
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
                         destination, false);
@@ -976,7 +976,10 @@ public class S3Path extends CloudPath {
                 // Keep same storage class
                 destination.setStorageClass(((PathAttributes) copy.attributes()).getStorageClass());
                 // Apply non standard ACL
-                destination.setAcl(this.getDetails().getAcl());
+                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
+                    this.readAcl();
+                }
+                destination.setAcl(this.convert(this.attributes().getAcl()));
                 // Copying object applying the metadata of the original
                 this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                         ((S3Path) copy).getContainerName(), destination, false);
