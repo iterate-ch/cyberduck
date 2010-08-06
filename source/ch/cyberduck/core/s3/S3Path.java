@@ -30,7 +30,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.S3ObjectsChunk;
-import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.*;
@@ -1071,7 +1070,12 @@ public class S3Path extends CloudPath {
      * @return
      */
     public String createTorrentUrl() {
-        return S3Service.createTorrentUrl(
-                this.getContainerName(), this.getKey(), this.getSession().configuration);
+        try {
+            return this.getSession().getClient().createTorrentUrl(this.getContainerName(), this.getKey());
+        }
+        catch(ConnectionCanceledException e) {
+            log.error(e.getMessage());
+        }
+        return null;
     }
 }
