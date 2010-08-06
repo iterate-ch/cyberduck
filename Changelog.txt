@@ -15,6 +15,7 @@ Changelog. Last modified: $Date$
 - [Feature] Display previous file versions in browser (S3, Google Docs)
 - [Feature] Download previous file version (S3, Google Docs)
 - [Feature] Revert to previous file version (S3)
+- [Feature] Default root file (index.html) configuration for distribution (CloudFront)
 - [Feature] Eucalyptus Walrus support enabled by default (S3)
 - [Feature] Duplicate Bookmark (#3385)
 - [Feature] Import bookmarks from thirdparty applications (Filezilla, Fetch, Interarchy, Flow) (#3373)
