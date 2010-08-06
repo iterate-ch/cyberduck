@@ -38,7 +38,8 @@ public abstract class CloudSession extends HTTPSession {
      * @param cnames
      * @param logging
      */
-    public abstract void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging);
+    public abstract void writeDistribution(boolean enabled, String container, Distribution.Method method, 
+                                           String[] cnames, boolean logging, String defaultRootObject);
 
     /**
      * @return

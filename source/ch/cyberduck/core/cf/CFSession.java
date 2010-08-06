@@ -184,7 +184,8 @@ public class CFSession extends CloudSession implements SSLSession {
      * @param logging
      */
     @Override
-    public void writeDistribution(boolean enabled, String container, Distribution.Method method, String[] cnames, boolean logging) {
+    public void writeDistribution(boolean enabled, String container, Distribution.Method method, 
+                                  String[] cnames, boolean logging, String defaultRootObject) {
         final AbstractX509TrustManager trust = this.getTrustManager();
         try {
             this.check();

@@ -527,7 +527,8 @@ public class S3Session extends CloudSession implements SSLSession {
                                                                                Distribution.Method method,
                                                                                final String bucket,
                                                                                String[] cnames,
-                                                                               LoggingStatus logging) throws CloudFrontServiceException {
+                                                                               LoggingStatus logging,
+                                                                               String defaultRootObject) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
         if(method.equals(Distribution.STREAMING)) {
             return this.createCloudFrontService().createStreamingDistribution(
@@ -559,8 +560,8 @@ public class S3Session extends CloudSession implements SSLSession {
      * @throws CloudFrontServiceException CloudFront failure details
      */
     public void updateDistribution(boolean enabled, Distribution.Method method,
-                                   final org.jets3t.service.model.cloudfront.Distribution distribution, String[] cnames, LoggingStatus logging
-    ) throws CloudFrontServiceException {
+                                   org.jets3t.service.model.cloudfront.Distribution distribution,
+                                   String[] cnames, LoggingStatus logging, String defaultRootObject) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
         if(method.equals(Distribution.STREAMING)) {
             this.createCloudFrontService().updateStreamingDistributionConfig(
@@ -693,7 +694,7 @@ public class S3Session extends CloudSession implements SSLSession {
                             Locale.localizedString(d.getStatus(), "S3"),
                             distributionConfig.getCNAMEs(),
                             distributionConfig.isLoggingEnabled(),
-                            method);
+                            method, null);
                     if(distribution.isDeployed()) {
                         distributionStatus.put(container, distribution);
                     }
@@ -728,7 +729,8 @@ public class S3Session extends CloudSession implements SSLSession {
      * @param logging
      */
     @Override
-    public void writeDistribution(final boolean enabled, String container, Distribution.Method method, final String[] cnames, boolean logging) {
+    public void writeDistribution(boolean enabled, String container, Distribution.Method method,
+                                  String[] cnames, boolean logging, String defaultRootObject) {
         if(this.getHost().getCredentials().isAnonymousLogin()) {
             log.info("Anonymous cannot write distribution");
             return;
@@ -752,12 +754,12 @@ public class S3Session extends CloudSession implements SSLSession {
                 this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
             }
             for(org.jets3t.service.model.cloudfront.Distribution distribution : this.listDistributions(container, method)) {
-                this.updateDistribution(enabled, method, distribution, cnames, l);
+                this.updateDistribution(enabled, method, distribution, cnames, l, defaultRootObject);
                 // We currently only support one distribution per bucket
                 return;
             }
             // Create new configuration
-            this.createDistribution(enabled, method, container, cnames, l);
+            this.createDistribution(enabled, method, container, cnames, l, defaultRootObject);
         }
         catch(CloudFrontServiceException e) {
             this.error("Cannot write file attributes", e);

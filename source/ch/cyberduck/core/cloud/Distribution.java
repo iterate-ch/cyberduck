@@ -43,6 +43,11 @@ public class Distribution {
 
     private Method method;
 
+    /**
+     * Key of the default root object.
+     */
+    private String defaultRootObject;
+
     public static interface Method {
         public abstract String toString();
 
@@ -141,15 +146,30 @@ public class Distribution {
 
     /**
      *
-     * @param enabled
-     * @param deployed
-     * @param url
-     * @param status
-     * @param cnames
+     * @param enabled    Deployment Enabled
+     * @param deployed Deployment Status is about to be changed
+     * @param url        Where to find this distribution
+     * @param status     Status Message about Deployment Status
+     * @param cnames     Multiple CNAME aliases of this distribution
      * @param logging
      * @param method
      */
     public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method) {
+        this(enabled, deployed, url, status, cnames, logging, DOWNLOAD, null);
+    }
+
+    /**
+     *
+     * @param enabled    Deployment Enabled
+     * @param deployed Deployment Status is about to be changed
+     * @param url        Where to find this distribution
+     * @param status     Status Message about Deployment Status
+     * @param cnames     Multiple CNAME aliases of this distribution
+     * @param logging
+     * @param method
+     * @param defaultRootObject
+     */
+    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method, String defaultRootObject) {
         this.enabled = enabled;
         this.deployed = deployed;
         this.url = url;
@@ -157,6 +177,7 @@ public class Distribution {
         this.cnames = cnames;
         this.logging = logging;
         this.method = method;
+        this.defaultRootObject = defaultRootObject;
     }
 
     /**
@@ -203,6 +224,14 @@ public class Distribution {
             return new String[]{};
         }
         return cnames;
+    }
+
+    public String getDefaultRootObject() {
+        return defaultRootObject;
+    }
+
+    public void setDefaultRootObject(String defaultRootObject) {
+        this.defaultRootObject = defaultRootObject;
     }
 
     public Method getMethod() {

@@ -82,7 +82,8 @@ public class AzureSession extends CloudSession implements SSLSession {
     }
 
     @Override
-    public void writeDistribution(boolean enabled, String container, Distribution.Method method, String[] cnames, boolean logging) {
+    public void writeDistribution(boolean enabled, String container, Distribution.Method method, 
+                                  String[] cnames, boolean logging, String defaultRootObject) {
         throw new UnsupportedOperationException();
     }
 
