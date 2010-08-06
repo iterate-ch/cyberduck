@@ -190,10 +190,10 @@ public abstract class Session implements TranscriptListener {
         if(unsecurewarning
                 && !host.getProtocol().isSecure()
                 && !credentials.isAnonymousLogin()
-                && !Preferences.instance().getBoolean("connection.unsecure." + this.getHost().getHostname())) {
+                && !Preferences.instance().getBoolean("connection.unsecure." + this.getHost().getUuid())) {
             login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                     MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), credentials.getPasswordPlaceholder()),
-                    "connection.unsecure." + this.getHost().getHostname());
+                    "connection.unsecure." + this.getHost().getUuid());
             unsecurewarning = false;
         }
     }
