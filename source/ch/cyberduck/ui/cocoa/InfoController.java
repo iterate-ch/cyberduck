@@ -253,6 +253,15 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSPopUpButton distributionDefaultRootPopup;
+
+    public void setDistributionDefaultRootPopup(NSPopUpButton b) {
+        this.distributionDefaultRootPopup = b;
+        this.distributionDefaultRootPopup.setTarget(this.id());
+        this.distributionDefaultRootPopup.setAction(Foundation.selector("distributionApplyButtonClicked:"));
+    }
+
+    @Outlet
     private NSTextField bucketLocationField;
 
     public void setBucketLocationField(NSTextField t) {
@@ -310,7 +319,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        final String container = ((S3Path) next).getContainerName();
+                        final String container = next.getContainerName();
                         ((S3Session) controller.getSession()).setLogging(container,
                                 bucketLoggingButton.state() == NSCell.NSOnState);
                         break;
@@ -339,7 +348,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        final String container = ((S3Path) next).getContainerName();
+                        final String container = next.getContainerName();
                         ((S3Session) controller.getSession()).setVersioning(container,
                                 bucketMfaButton.state() == NSCell.NSOnState,
                                 bucketVersioningButton.state() == NSCell.NSOnState);
@@ -369,7 +378,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        final String container = ((S3Path) next).getContainerName();
+                        final String container = next.getContainerName();
                         ((S3Session) controller.getSession()).setVersioning(container,
                                 bucketMfaButton.state() == NSCell.NSOnState,
                                 bucketVersioningButton.state() == NSCell.NSOnState
@@ -1550,6 +1559,9 @@ public class InfoController extends ToolbarWindowController {
         distributionCnameField.setStringValue(Locale.localizedString("Unknown"));
         distributionDeliveryPopup.removeAllItems();
         distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        distributionDefaultRootPopup.removeAllItems();
+        distributionDefaultRootPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
         if(this.toggleDistributionSettings(false)) {
             CloudSession session = (CloudSession) controller.getSession();
             distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
@@ -1749,7 +1761,7 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     for(Path file : files) {
                         final S3Session s = (S3Session) controller.getSession();
-                        final String container = ((S3Path) file).getContainerName();
+                        final String container = file.getContainerName();
                         location = s.getLocation(container);
                         logging = s.isLogging(container);
                         versioning = s.isVersioning(container);
@@ -2095,13 +2107,23 @@ public class InfoController extends ToolbarWindowController {
         if(enable) {
             enable = ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
         }
-
+        if(enable) {
+            String container = files.get(0).getContainerName();
+            // Not enabled if multiple files selected with not same parent container
+            for(Path next : files) {
+                if(next.getContainerName().equals(container)) {
+                    continue;
+                }
+                enable = false;
+                break;
+            }
+        }
         distributionEnableButton.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);
-        // Amazon S3 only
-        distributionCnameField.setEnabled(stop && enable && session instanceof S3Session);
+        distributionCnameField.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
+        distributionDefaultRootPopup.setEnabled(stop && enable);
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
@@ -2119,19 +2141,20 @@ public class InfoController extends ToolbarWindowController {
                     for(Path next : files) {
                         CloudPath cloud = (CloudPath) next;
                         CloudSession session = (CloudSession) controller.getSession();
-                        String container = cloud.getContainerName();
                         Distribution.Method method = Distribution.DOWNLOAD;
                         if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
                             method = Distribution.STREAMING;
                         }
                         if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
-                            session.writeDistribution(distributionEnableButton.state() == NSCell.NSOnState, container, method,
+                            session.writeDistribution(distributionEnableButton.state() == NSCell.NSOnState, cloud.getContainerName(), method,
                                     StringUtils.split(distributionCnameField.stringValue()),
-                                    distributionLoggingButton.state() == NSCell.NSOnState);
+                                    distributionLoggingButton.state() == NSCell.NSOnState,
+                                    distributionDefaultRootPopup.selectedItem().representedObject());
                         }
                         else {
-                            session.writeDistribution(distributionEnableButton.state() == NSCell.NSOnState, container, method,
-                                    new String[]{}, distributionLoggingButton.state() == NSCell.NSOnState);
+                            session.writeDistribution(distributionEnableButton.state() == NSCell.NSOnState, cloud.getContainerName(), method,
+                                    new String[]{}, distributionLoggingButton.state() == NSCell.NSOnState,
+                                    distributionDefaultRootPopup.selectedItem().representedObject());
                         }
                         break;
                     }
@@ -2170,6 +2193,12 @@ public class InfoController extends ToolbarWindowController {
                             distribution = session.readDistribution(cloud.getContainerName(), Distribution.DOWNLOAD);
                         }
                         break;
+                    }
+                    for(AbstractPath next : files.get(0).getContainer().children()) {
+                        if(next.attributes().isFile()) {
+                            distributionDefaultRootPopup.addItemWithTitle(next.getName());
+                            distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
+                        }
                     }
                 }
 
@@ -2217,6 +2246,11 @@ public class InfoController extends ToolbarWindowController {
                             // We only support one CNAME URL
                             break;
                         }
+                    }
+                    final String defaultRoot = distribution.getDefaultRootObject();
+                    if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
+                        distributionDefaultRootPopup.addItemWithTitle(distribution.getDefaultRootObject());
+                        distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
                     }
                     toggleDistributionSettings(true);
                 }

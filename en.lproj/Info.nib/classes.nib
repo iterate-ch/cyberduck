@@ -46,6 +46,8 @@
 				<string>id</string>
 				<key>distributionCnameUrlField</key>
 				<string>id</string>
+				<key>distributionDefaultRootPopup</key>
+				<string>id</string>
 				<key>distributionDeliveryPopup</key>
 				<string>id</string>
 				<key>distributionEnableButton</key>
