@@ -831,6 +831,7 @@ img/notfound.tiff -text svneol=unset#image/tiff
 img/open.tiff -text svneol=unset#image/tiff
 img/outline.tiff -text svneol=unset#image/tiff
 img/pencil.tiff -text svneol=unset#image/tiff
+img/permissions.tiff -text
 img/plus.tiff -text svneol=unset#image/tiff
 img/privatefolderbadge.png -text svneol=unset#image/png
 img/queue.tiff -text svneol=unset#image/tiff

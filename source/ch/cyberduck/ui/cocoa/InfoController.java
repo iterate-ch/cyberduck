@@ -1174,9 +1174,6 @@ public class InfoController extends ToolbarWindowController {
             // Give icon and label of the given session
             item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
         }
-        else if(itemIdentifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            item.setImage(IconCache.iconNamed("NSUserAccounts", 32));
-        }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
             if(session instanceof S3Session) {
                 // Set icon of cloud service provider
