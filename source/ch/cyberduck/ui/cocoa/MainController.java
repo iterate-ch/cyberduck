@@ -642,6 +642,10 @@ public class MainController extends BundleController implements NSApplication.De
         // Import thirdparty bookmarks.
         for(ThirdpartyBookmarkCollection c : this.getThirdpartyBookmarks()) {
             if(!Preferences.instance().getBoolean(c.getConfiguration())) {
+                if(!c.isInstalled()) {
+                    log.info("No application installed for " + c.getBundleIdentifier());
+                    continue;
+                }
                 c.load();
                 if(!c.isEmpty()) {
                     final NSAlert alert = NSAlert.alert(

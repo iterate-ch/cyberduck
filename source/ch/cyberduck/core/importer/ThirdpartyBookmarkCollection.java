@@ -38,10 +38,6 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
      * @param file Local path.
      */
     protected void load(Local file) {
-        if(!this.isInstalled()) {
-            log.debug("No application installed for " + this.getBundleIdentifier());
-            return;
-        }
         if(file.exists()) {
             log.info("Found Bookmarks file: " + file.getAbsolute());
             this.parse(file);
