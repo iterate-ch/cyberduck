@@ -781,7 +781,7 @@ public class FTPClient {
     private void utime(long modtime, long createdtime, String remoteFile)
             throws IOException, FTPException {
 
-        if(this.utimeSupported) {
+        if(utimeSupported) {
             try {
                 // The utime() function sets the access and modification times of the named
                 // file from the structures in the argument array timep.
@@ -794,7 +794,7 @@ public class FTPClient {
                         + " UTC");
             }
             catch(FTPException e) {
-                this.utimeSupported = false;
+                utimeSupported = false;
                 log.warn("UTIME not supported");
             }
         }
@@ -809,16 +809,15 @@ public class FTPClient {
      * @param remoteFile
      */
     public void chmod(String octal, String remoteFile) throws IOException, FTPException {
-        if(this.chmodSupported) {
+        if(chmodSupported) {
             try {
                 this.site("CHMOD " + octal + " " + remoteFile);
             }
             catch(FTPException e) {
-                this.chmodSupported = false;
-                throw e;
+                chmodSupported = false;
+                log.warn("CHMOD not supported");
             }
         }
-        throw new FTPException("CHMOD not supported");
     }
 
     /**
