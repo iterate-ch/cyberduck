@@ -621,6 +621,11 @@ public abstract class Preferences {
         defaults.put("connection.proxy.enable", String.valueOf(true));
 
         /**
+         * Warning when opening connections sending credentials in plaintext
+         */
+        defaults.put("connection.unsecure.warning", String.valueOf(true));
+
+        /**
          * Transfer read buffer size
          */
         defaults.put("connection.chunksize", String.valueOf(32768));

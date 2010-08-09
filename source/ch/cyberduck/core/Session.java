@@ -155,7 +155,16 @@ public abstract class Session implements TranscriptListener {
         login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
 
-    private boolean unsecurewarning = true;
+    private boolean unsecurewarning =
+            Preferences.instance().getBoolean("connection.unsecure.warning");
+
+    public boolean isUnsecurewarning() {
+        return unsecurewarning;
+    }
+
+    public void setUnsecurewarning(boolean unsecurewarning) {
+        this.unsecurewarning = unsecurewarning;
+    }
 
     /**
      * Attempts to login using the credentials provided from the login controller.
@@ -187,14 +196,15 @@ public abstract class Session implements TranscriptListener {
      * @throws ConnectionCanceledException
      */
     protected void warn(LoginController login, Credentials credentials) throws IOException {
-        if(unsecurewarning
+        if(this.isUnsecurewarning()
                 && !host.getProtocol().isSecure()
                 && !credentials.isAnonymousLogin()
                 && !Preferences.instance().getBoolean("connection.unsecure." + this.getHost().getUuid())) {
             login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                     MessageFormat.format(Locale.localizedString("{0} will be sent in plaintext.", "Credentials"), credentials.getPasswordPlaceholder()),
                     "connection.unsecure." + this.getHost().getUuid());
-            unsecurewarning = false;
+            // Do not warn again upon subsequent login
+            this.setUnsecurewarning(false);
         }
     }
 
