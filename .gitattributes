@@ -826,7 +826,7 @@ img/info.tiff -text svneol=unset#image/tiff
 img/language.tiff -text
 img/list.tiff -text svneol=unset#image/tiff
 img/locked.tiff -text svneol=unset#image/tiff
-img/newfolder.icns -text
+img/newfolder.tiff -text
 img/notfound.tiff -text svneol=unset#image/tiff
 img/open.tiff -text svneol=unset#image/tiff
 img/outline.tiff -text svneol=unset#image/tiff

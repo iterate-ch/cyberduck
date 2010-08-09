@@ -4233,7 +4233,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_FOLDER));
             item.setToolTip(Locale.localizedString("Create New Folder"));
-            item.setImage(IconCache.iconNamed("newfolder.icns"));
+            item.setImage(IconCache.iconNamed("newfolder.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("createFolderButtonClicked:"));
             return item;

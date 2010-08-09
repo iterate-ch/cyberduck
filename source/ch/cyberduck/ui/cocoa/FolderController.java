@@ -18,7 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -40,7 +41,7 @@ public class FolderController extends FileController {
 
     @Override
     public void setIconView(NSImageView iconView) {
-        iconView.setImage(IconCache.iconNamed("newfolder.icns", 128));
+        iconView.setImage(IconCache.iconNamed("newfolder.tiff", 128));
         super.setIconView(iconView);
     }
 

@@ -132,7 +132,6 @@
 		475286CD10D2CC660029363C /* CDOutlineCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C010D2CC660029363C /* CDOutlineCell.m */; };
 		475286CE10D2CC660029363C /* CDOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 475286C110D2CC660029363C /* CDOutlineView.m */; };
 		4754786B0A232C9A00CD6EAC /* cancel.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4754786A0A232C9A00CD6EAC /* cancel.tiff */; };
-		475A4BA00F8179E200F65EB9 /* newfolder.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475A4B9F0F8179E200F65EB9 /* newfolder.icns */; };
 		475D17B90805D54C00166B8A /* download5.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17AF0805D54C00166B8A /* download5.icns */; };
 		475D17BA0805D54C00166B8A /* download7.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B00805D54C00166B8A /* download7.icns */; };
 		475D17BC0805D54C00166B8A /* download8.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B20805D54C00166B8A /* download8.icns */; };
@@ -147,6 +146,8 @@
 		4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		47652D0B1202BED200745031 /* Azure.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47652CE91202BED200745031 /* Azure.strings */; };
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
+		476901D9120FEF4300A43B25 /* permissions.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476901D8120FEF4300A43B25 /* permissions.tiff */; };
+		476901DD120FEF4D00A43B25 /* newfolder.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476901DC120FEF4D00A43B25 /* newfolder.tiff */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
 		477839340BA1BE8E0037E145 /* statusGreen.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839310BA1BE8E0037E145 /* statusGreen.tiff */; };
 		477839350BA1BE8E0037E145 /* statusRed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839320BA1BE8E0037E145 /* statusRed.tiff */; };
@@ -942,7 +943,6 @@
 		47562B8C081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Login.nib; sourceTree = "<group>"; };
 		47562B8D081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Preferences.nib; sourceTree = "<group>"; };
 		47562B8E081D998C002849AB /* pl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pl; path = pl.lproj/Bookmark.nib; sourceTree = "<group>"; };
-		475A4B9F0F8179E200F65EB9 /* newfolder.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = newfolder.icns; sourceTree = "<group>"; };
 		475D17AF0805D54C00166B8A /* download5.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download5.icns; sourceTree = "<group>"; };
 		475D17B00805D54C00166B8A /* download7.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download7.icns; sourceTree = "<group>"; };
 		475D17B20805D54C00166B8A /* download8.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download8.icns; sourceTree = "<group>"; };
@@ -988,6 +988,8 @@
 		47652D091202BED200745031 /* lv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = lv; path = lv.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652D0A1202BED200745031 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Azure.strings; sourceTree = "<group>"; };
 		476774DD0B74CE750025093E /* trash.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = trash.tiff; sourceTree = "<group>"; };
+		476901D8120FEF4300A43B25 /* permissions.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = permissions.tiff; sourceTree = "<group>"; };
+		476901DC120FEF4D00A43B25 /* newfolder.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = newfolder.tiff; sourceTree = "<group>"; };
 		476C7C1807F5A2A700CF6032 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/File.nib; sourceTree = "<group>"; };
 		476C7C1C07F5A2D000CF6032 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/File.nib; sourceTree = "<group>"; };
 		476C7C1D07F5A2D300CF6032 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/File.nib; sourceTree = "<group>"; };
@@ -1804,7 +1806,7 @@
 				474165A906C4FC4000AC0BD2 /* resume.tiff */,
 				474165AA06C4FC4000AC0BD2 /* reveal.tiff */,
 				474165AD06C4FC4000AC0BD2 /* stop.tiff */,
-				475A4B9F0F8179E200F65EB9 /* newfolder.icns */,
+				476901DC120FEF4D00A43B25 /* newfolder.tiff */,
 				4739D39D0F8268D600D2782A /* delete.tiff */,
 				4709E81A0F864B16005A06CE /* sync.tiff */,
 				4739D3990F8268B700D2782A /* upload.tiff */,
@@ -1816,6 +1818,7 @@
 				4725794911DD7FD6009DD748 /* dropfolderbadge.png */,
 				4725794A11DD7FD6009DD748 /* aliasbadge.png */,
 				4725794B11DD7FD6009DD748 /* privatefolderbadge.png */,
+				476901D8120FEF4300A43B25 /* permissions.tiff */,
 			);
 			path = img;
 			sourceTree = "<group>";
@@ -2502,7 +2505,6 @@
 				4717BE190F3096FD00BB4496 /* dav.icns in Resources */,
 				4717BE1A0F3096FD00BB4496 /* cf.icns in Resources */,
 				4717BE1C0F3096FD00BB4496 /* sftp.icns in Resources */,
-				475A4BA00F8179E200F65EB9 /* newfolder.icns in Resources */,
 				4739D3970F82681100D2782A /* reload.tiff in Resources */,
 				4739D39B0F8268B700D2782A /* upload.tiff in Resources */,
 				4739D39C0F8268B700D2782A /* download.tiff in Resources */,
@@ -2532,6 +2534,8 @@
 				4783C6F911EC62C4006D9FAD /* connection.tiff in Resources */,
 				4743700B11FF0D6C00BDCC48 /* transparent.tiff in Resources */,
 				47652D0B1202BED200745031 /* Azure.strings in Resources */,
+				476901D9120FEF4300A43B25 /* permissions.tiff in Resources */,
+				476901DD120FEF4D00A43B25 /* newfolder.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
