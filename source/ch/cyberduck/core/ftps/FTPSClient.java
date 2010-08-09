@@ -36,9 +36,20 @@ import java.io.IOException;
 public class FTPSClient extends FTPClient {
     private static Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
-    public FTPSClient(final String encoding, final FTPMessageListener listener, final X509TrustManager trustManager) {
-        super(encoding, listener);
-        control = new FTPSControlSocket(encoding, listener, trustManager);
+    /**
+     * @param encoding
+     * @param listener
+     */
+    public FTPSClient(String encoding, FTPMessageListener listener) {
+        super(encoding, listener, new FTPSControlSocket(encoding, listener));
+    }
+
+    public void setSecureDataSocket(boolean secure) {
+        ((FTPSControlSocket) this.control).setSecureDataSocket(secure);
+    }
+
+    public void setTrustManager(X509TrustManager trust) {
+        ((FTPSControlSocket) this.control).setTrustManager(trust);
     }
 
     /**
@@ -65,7 +76,7 @@ public class FTPSClient extends FTPClient {
         }
         catch(FTPException e) {
             log.warn("No data channel security: " + e.getMessage());
-            ((FTPSControlSocket) this.control).setUseDataConnectionSecurity(false);
+            this.setSecureDataSocket(false);
             if(Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError")) {
                 throw new IOException("The data channel could not be secured: " + e.getMessage());
             }

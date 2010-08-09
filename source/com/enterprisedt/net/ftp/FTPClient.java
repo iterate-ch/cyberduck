@@ -97,8 +97,12 @@ public class FTPClient {
      * @param listener
      */
     public FTPClient(final String encoding, final FTPMessageListener listener) {
+        this(encoding, listener, new FTPControlSocket(encoding, listener));
+    }
+
+    public FTPClient(final String encoding, final FTPMessageListener listener, FTPControlSocket socket) {
         this.listener = listener;
-        this.control = new FTPControlSocket(encoding, listener);
+        this.control = socket;
     }
 
     private String[] features;
