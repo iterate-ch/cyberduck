@@ -367,7 +367,7 @@ public abstract class Protocol {
 
         @Override
         public String favicon() {
-            return "http://media.amazonwebservices.com/favicon.ico";
+            return this.icon();
         }
     };
 
@@ -429,7 +429,7 @@ public abstract class Protocol {
 
         @Override
         public String favicon() {
-            return "http://media.amazonwebservices.com/favicon.ico";
+            return this.icon();
         }
     };
 
@@ -753,6 +753,11 @@ public abstract class Protocol {
         public String getPasswordPlaceholder() {
             return Locale.localizedString("Google Account Password", "S3");
         }
+
+        @Override
+        public String favicon() {
+            return this.icon();
+        }
     };
 
     public static final Protocol GOOGLESTORAGE_SSL = new Protocol() {
@@ -820,6 +825,11 @@ public abstract class Protocol {
         public String getPasswordPlaceholder() {
             return Locale.localizedString("Secret", "S3");
         }
+
+        @Override
+        public String favicon() {
+            return this.icon();
+        }
     };
 
     public static final Protocol AZURE_SSL = new Protocol() {
@@ -881,6 +891,11 @@ public abstract class Protocol {
         @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("Primary Access Key", "Azure");
+        }
+
+        @Override
+        public String favicon() {
+            return this.icon();
         }
     };
 

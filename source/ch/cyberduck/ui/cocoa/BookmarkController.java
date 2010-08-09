@@ -246,7 +246,7 @@ public class BookmarkController extends WindowController {
         this.webUrlImage = b;
         this.webUrlImage.setTarget(this.id());
         this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
-        this.webUrlImage.setImage(IconCache.iconNamed("site", 16));
+        this.webUrlImage.setImage(IconCache.iconNamed("site.tiff", 16));
     }
 
     private NSImage favicon;
@@ -259,19 +259,19 @@ public class BookmarkController extends WindowController {
             this.background(new AbstractBackgroundAction() {
 
                 public void run() {
-                    String url;
+                    NSImage img;
                     if(StringUtils.isNotBlank(host.getProtocol().favicon())) {
-                        url = host.getProtocol().favicon();
+                        img = IconCache.iconNamed(host.getProtocol().favicon(), 16);
                     }
                     else {
-                        url = host.getWebURL() + "/favicon.ico";
+                        String url = host.getWebURL() + "/favicon.ico";
+                        // Default favicon location
+                        final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
+                        if(null == data) {
+                            return;
+                        }
+                        img = NSImage.imageWithData(data);
                     }
-                    // Default favicon location
-                    final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
-                    if(null == data) {
-                        return;
-                    }
-                    NSImage img = NSImage.imageWithData(data);
                     if(null == img) {
                         return;
                     }
