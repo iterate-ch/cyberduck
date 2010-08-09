@@ -435,6 +435,7 @@ public class FTPSession extends Session implements SSLSession {
             this.message(Locale.localizedString("Login successful", "Credentials"));
 
             if(this.getHost().getProtocol().isSecure()) {
+                // Negotiate data connection security
                 ((FTPSClient) client).prot();
             }
         }
