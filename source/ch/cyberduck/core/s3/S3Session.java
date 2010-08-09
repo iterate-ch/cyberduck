@@ -1079,7 +1079,7 @@ public class S3Session extends CloudSession implements SSLSession {
             final Acl.CanonicalUser owner = new Acl.CanonicalUser(container.getOwner().getId(), container.getOwner().getDisplayName(), false) {
                 @Override
                 public String getPlaceholder() {
-                    return container.getOwner().getDisplayName();
+                    return container.getOwner().getDisplayName() + " (" + Locale.localizedString("Owner") + ")";
                 }
             };
             if(users.contains(owner)) {
