@@ -122,6 +122,8 @@
 				<string>id</string>
 				<key>s3PublicUrlField</key>
 				<string>id</string>
+				<key>s3PublicUrlValidityField</key>
+				<string>id</string>
 				<key>s3torrentUrlField</key>
 				<string>id</string>
 				<key>sizeButton</key>
