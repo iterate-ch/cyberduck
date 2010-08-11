@@ -3967,7 +3967,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return true; // by default everything is enabled
     }
 
-    private static final String TOOLBAR_NEW_CONNECTION = "New Connection";
+    private static final String TOOLBAR_NEW_CONNECTION = "Open Connection";
     private static final String TOOLBAR_BROWSER_VIEW = "Browser View";
     private static final String TOOLBAR_TRANSFERS = "Transfers";
     private static final String TOOLBAR_QUICK_CONNECT = "Quick Connect";
