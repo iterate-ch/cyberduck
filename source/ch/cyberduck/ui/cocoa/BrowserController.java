@@ -63,8 +63,6 @@ import org.rococoa.cocoa.foundation.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.sun.jna.ptr.PointerByReference;
-
 import java.io.File;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
@@ -2998,17 +2996,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             log.error("Application with bundle identifier " + Preferences.instance().getProperty("terminal.bundle.identifier") + " is not installed");
             return;
         }
-        String ssh = "ssh -t "
-                + (identity ? "-i " + this.getSession().getHost().getCredentials().getIdentity().getAbsolute() : "")
-                + " "
-                + this.getSession().getHost().getCredentials().getUsername()
-                + "@"
-                + this.getSession().getHost().getHostname()
-                + " "
-                + "-p " + this.getSession().getHost().getPort()
-                + " "
-                + "\\\"cd " + workdir + " && exec \\\\$SHELL\\\"";
-        final String command
+        String ssh = MessageFormat.format(Preferences.instance().getProperty("terminal.command.ssh"),
+                identity ? "-i " + this.getSession().getHost().getCredentials().getIdentity().getAbsolute() : "",
+                this.getSession().getHost().getCredentials().getUsername(),
+                this.getSession().getHost().getHostname(),
+                this.getSession().getHost().getPort(), workdir);
+        log.info("SSH Command:" + ssh);
+        // Escape 
+        ssh = StringUtils.replace(ssh, "\\", "\\\\");
+        // Escape all " for do script command
+        ssh = StringUtils.replace(ssh, "\"", "\\\"");
+        log.info("Escaped SSH Command for Applescript:" + ssh);
+        String command
                 = "tell application \"" + LocalFactory.createLocal(app).getDisplayName() + "\""
                 + "\n"
                 + "activate"
@@ -3016,8 +3015,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 + MessageFormat.format(Preferences.instance().getProperty("terminal.command"), ssh)
                 + "\n"
                 + "end tell";
+        log.info("Excecuting AppleScript:" + command);
         final NSAppleScript as = NSAppleScript.createWithSource(command);
-        as.executeAndReturnError(new PointerByReference());
+        as.executeAndReturnError(null);
     }
 
     @Action
