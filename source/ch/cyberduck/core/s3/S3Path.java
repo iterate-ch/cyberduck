@@ -24,6 +24,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
@@ -1014,7 +1015,7 @@ public class S3Path extends CloudPath {
     @Override
     public String toURL() {
         if(Preferences.instance().getBoolean("s3.url.public")) {
-            return this.createSignedUrl();
+            return this.createSignedUrl().getUrl();
         }
         final String key = this.isContainer() ? "" : this.encode(this.getKey());
         final String hostnameForContainer = this.getSession().getHostnameForContainer(this.getContainerName());
@@ -1025,8 +1026,13 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public String createSignedUrl() {
-        return this.createSignedUrl(Preferences.instance().getInteger("s3.url.expire.seconds"));
+    public DescriptiveUrl createSignedUrl() {
+        Calendar expiry = Calendar.getInstance();
+        expiry.add(Calendar.SECOND, Preferences.instance().getInteger("s3.url.expire.seconds"));
+        return new DescriptiveUrl(this.createSignedUrl(Preferences.instance().getInteger("s3.url.expire.seconds")),
+                MessageFormat.format(Locale.localizedString("Expires on {0}", "S3"),
+                        DateFormatterFactory.instance().getLongFormat(expiry.getTimeInMillis()))
+        );
     }
 
     /**
@@ -1069,9 +1075,9 @@ public class S3Path extends CloudPath {
      *
      * @return
      */
-    public String createTorrentUrl() {
+    public DescriptiveUrl createTorrentUrl() {
         try {
-            return this.getSession().getClient().createTorrentUrl(this.getContainerName(), this.getKey());
+            return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(), this.getKey()));
         }
         catch(ConnectionCanceledException e) {
             log.error(e.getMessage());

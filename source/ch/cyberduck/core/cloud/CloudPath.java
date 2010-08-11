@@ -22,6 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -138,7 +139,30 @@ public abstract class CloudPath extends Path {
     /**
      * @return A signed URL with a limited validity over time.
      */
-    public String createSignedUrl() {
-        return this.toHttpURL();
+    public DescriptiveUrl createSignedUrl() {
+        return new DescriptiveUrl(this.toHttpURL());
+    }
+
+    public static class DescriptiveUrl {
+        private String url;
+
+        private String help;
+
+        public DescriptiveUrl(String url) {
+            this(url, Locale.localizedString("Open in Web Browser"));
+        }
+
+        public DescriptiveUrl(String url, String help) {
+            this.url = url;
+            this.help = help;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getHelp() {
+            return help;
+        }
     }
 }

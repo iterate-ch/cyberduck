@@ -402,9 +402,13 @@ public class InfoController extends ToolbarWindowController {
         this.s3PublicUrlField = t;
         this.s3PublicUrlField.setAllowsEditingTextAttributes(true);
         this.s3PublicUrlField.setSelectable(true);
-        this.s3PublicUrlField.setToolTip(
-                "Expires in " + Preferences.instance().getDouble("s3.url.expire.seconds") / 60 / 60 + " hours"
-        );
+    }
+
+    @Outlet
+    private NSTextField s3PublicUrlValidityField;
+
+    public void setS3PublicUrlValidityField(NSTextField s3PublicUrlValidityField) {
+        this.s3PublicUrlValidityField = s3PublicUrlValidityField;
     }
 
     @Outlet
@@ -1071,7 +1075,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     protected double getMaxWindowWidth() {
-        return 500;
+        return 600;
     }
 
     @Override
@@ -1730,21 +1734,24 @@ public class InfoController extends ToolbarWindowController {
                             storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                             storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                         }
-                        final String signedUrl = s3.createSignedUrl();
-                        if(StringUtils.isNotBlank(signedUrl)) {
+                        final CloudPath.DescriptiveUrl url = s3.createSignedUrl();
+                        if(null != url) {
                             s3PublicUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(signedUrl, TRUNCATE_MIDDLE_ATTRIBUTES), signedUrl)
+                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
+                                            url.getUrl())
                             );
-                            s3PublicUrlField.setToolTip(signedUrl);
+                            s3PublicUrlField.setToolTip(url.getUrl());
+                            s3PublicUrlValidityField.setStringValue(url.getHelp());
                         }
-                        final String torrent = s3.createTorrentUrl();
-                        if(StringUtils.isNotBlank(torrent)) {
+                        final CloudPath.DescriptiveUrl torrent = s3.createTorrentUrl();
+                        if(null != torrent) {
                             s3torrentUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(torrent, TRUNCATE_MIDDLE_ATTRIBUTES), torrent)
+                                            NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
+                                            torrent.getUrl())
                             );
-                            s3torrentUrlField.setToolTip(torrent);
+                            s3torrentUrlField.setToolTip(torrent.getUrl());
                         }
                     }
                 }
@@ -2352,11 +2359,11 @@ public class InfoController extends ToolbarWindowController {
         }
         if(tab.equals(TOOLBAR_ITEM_METADATA)) {
             this.openUrl(Preferences.instance().getProperty("website.help")
-                    + "/howto/" + controller.getSession().getHost().getProtocol().getIdentifier());
+                    + controller.getSession().getHost().getProtocol().getIdentifier());
         }
         if(tab.equals(TOOLBAR_ITEM_S3)) {
             this.openUrl(Preferences.instance().getProperty("website.help")
-                    + "/howto/" + controller.getSession().getHost().getProtocol().getIdentifier());
+                    + controller.getSession().getHost().getProtocol().getIdentifier());
         }
         if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             this.openUrl(Preferences.instance().getProperty("website.help")
