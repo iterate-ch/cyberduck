@@ -39,3 +39,6 @@
 "Email Address" = "E-poštni naslov";
 "http://acs.amazonaws.com/groups/global/AllUsers" = "http://acs.amazonaws.com/groups/global/AllUsers";
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
+
+/* Signed URL Expiry */
+"Expires on {0}" = "Expires on {0}";
