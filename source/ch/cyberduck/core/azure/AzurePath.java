@@ -23,6 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
@@ -652,7 +653,7 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    public String createSignedUrl() {
+    public DescriptiveUrl createSignedUrl() {
         ResourceType type;
         if(this.isContainer()) {
             type = ResourceType.Container;
@@ -671,11 +672,14 @@ public class AzurePath extends CloudPath {
         try {
             final String signedidentifier = null; // Optional. A unique value that correlates to an access policy
             // specified at the container level. The signed identifier may have a maximum size of 64 characters.
-            this.getSession().getClient().createSharedAccessUrl(this.getContainerName(),
+            final ISharedAccessUrl shared = this.getSession().getClient().createSharedAccessUrl(this.getContainerName(),
                     this.getKey(), type, SharedAccessPermissions.RL,
                     null, // If the signature does not provide a value for the signedstart field, the
                     // start time is assumed to be the time when the request reaches the Blob service.
                     new DateTime(expiry.getTime()), signedidentifier);
+            return new DescriptiveUrl(shared.getRestUrl(), MessageFormat.format(Locale.localizedString("Expires on {0}", "S3"),
+                    DateFormatterFactory.instance().getLongFormat(expiry.getTimeInMillis()))
+            );
         }
         catch(ConnectionCanceledException e) {
             log.error(e.getMessage());
