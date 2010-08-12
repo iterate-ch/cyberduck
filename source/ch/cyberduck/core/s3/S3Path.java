@@ -323,7 +323,7 @@ public class S3Path extends CloudPath {
 
     @Override
     public void readMetadata() {
-        if(attributes().isFile()) {
+        if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
                 this.getSession().check();
                 final S3Object target = this.getDetails();
@@ -619,6 +619,7 @@ public class S3Path extends CloudPath {
                                 final S3Object details = path.getDetails();
                                 if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
                                     path.attributes().setType(Path.DIRECTORY_TYPE);
+                                    path.attributes().setPlaceholder(true);
                                 }
                             }
                             path.attributes().setStorageClass(object.getStorageClass());

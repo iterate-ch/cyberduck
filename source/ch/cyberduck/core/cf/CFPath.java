@@ -198,6 +198,9 @@ public class CFPath extends CloudPath {
                             file.attributes().setSize(object.getSize());
                             file.attributes().setChecksum(object.getMd5sum());
                         }
+                        if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
+                            file.attributes().setPlaceholder(true);
+                        }
                         try {
                             final Date modified = DateParser.parse(object.getLastModified());
                             if(null != modified) {
@@ -359,7 +362,7 @@ public class CFPath extends CloudPath {
      */
     @Override
     public void readMetadata() {
-        if(attributes().isFile()) {
+        if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
                 this.getSession().check();
                 final FilesObjectMetaData meta

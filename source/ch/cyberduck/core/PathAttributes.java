@@ -105,6 +105,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private int revision;
 
     /**
+     * Directory placeholder in Cloud Storage.
+     */
+    private boolean placeholder;
+
+    /**
      * HTTP headers.
      */
     private Map<String, String> metadata = Collections.emptyMap();
@@ -349,6 +354,15 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
+    }
+
+
+    public boolean isPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(boolean placeholder) {
+        this.placeholder = placeholder;
     }
 
     /**

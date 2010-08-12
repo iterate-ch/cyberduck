@@ -1832,7 +1832,7 @@ public class InfoController extends ToolbarWindowController {
                 final Credentials credentials = file.getHost().getCredentials();
                 enable = enable && !credentials.isAnonymousLogin();
                 enable = enable && file instanceof CloudPath;
-                enable = enable && file.attributes().isFile();
+                enable = enable && (file.attributes().isFile() || file.attributes().isPlaceholder());
             }
         }
         metadataTable.setEnabled(stop && enable);
