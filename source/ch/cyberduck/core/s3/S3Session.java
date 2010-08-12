@@ -249,6 +249,11 @@ public class S3Session extends CloudSession implements SSLSession {
                     }
                 }
             }
+            if(reload) {
+                loggingStatus.clear();
+                versioningStatus.clear();
+                distributionStatus.clear();
+            }
         }
         return new ArrayList<S3Bucket>(buckets.values());
     }
@@ -546,7 +551,12 @@ public class S3Session extends CloudSession implements SSLSession {
                 cnames, // CNAME aliases for distribution
                 new Date(reference).toString(), // Comment
                 enabled,  // Enabled?
-                logging // Logging Status. Disabled if null
+                logging, // Logging Status. Disabled if null
+                null,
+                false,
+                null,
+                null,
+                defaultRootObject
         );
     }
 
@@ -578,7 +588,12 @@ public class S3Session extends CloudSession implements SSLSession {
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
                     enabled, // Enabled?
-                    logging // Logging Status. Disabled if null
+                    logging, // Logging Status. Disabled if null
+                    null,
+                    false,
+                    null,
+                    null,
+                    defaultRootObject
             );
         }
     }
@@ -694,7 +709,7 @@ public class S3Session extends CloudSession implements SSLSession {
                             Locale.localizedString(d.getStatus(), "S3"),
                             distributionConfig.getCNAMEs(),
                             distributionConfig.isLoggingEnabled(),
-                            method, null);
+                            method, distributionConfig.getDefaultRootObject());
                     if(distribution.isDeployed()) {
                         distributionStatus.put(container, distribution);
                     }
