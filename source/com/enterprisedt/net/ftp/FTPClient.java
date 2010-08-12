@@ -501,11 +501,10 @@ public class FTPClient {
                         }
                         catch(IndexOutOfBoundsException e) {
                             log.error("Failed parsing line '" + line + "':" + e.getMessage());
-                            continue;
                         }
                     }
                     else {
-                        result.append(line.trim()).append('\n');
+                        result.append(line).append('\n');
                     }
                 }
                 return new BufferedReader(new StringReader(result.toString()));
@@ -581,6 +580,7 @@ public class FTPClient {
             return new BufferedReader(new InputStreamReader(data.getInputStream(),
                     Charset.forName(encoding)
             )) {
+                @Override
                 public String readLine() throws IOException {
                     String line = super.readLine();
                     if(null != line) {
