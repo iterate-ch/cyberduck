@@ -835,7 +835,7 @@ public abstract class Protocol {
     public static final Protocol AZURE_SSL = new Protocol() {
         @Override
         public String getName() {
-            return "Windows Azure Cloud Storage";
+            return "Azure";
         }
 
         @Override
