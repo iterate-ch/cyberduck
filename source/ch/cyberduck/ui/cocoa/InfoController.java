@@ -2198,12 +2198,6 @@ public class InfoController extends ToolbarWindowController {
                         }
                         break;
                     }
-                    for(AbstractPath next : files.get(0).getContainer().children()) {
-                        if(next.attributes().isFile()) {
-                            distributionDefaultRootPopup.addItemWithTitle(next.getName());
-                            distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
-                        }
-                    }
                 }
 
                 @Override
@@ -2251,10 +2245,17 @@ public class InfoController extends ToolbarWindowController {
                             break;
                         }
                     }
-                    final String defaultRoot = distribution.getDefaultRootObject();
-                    if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
-                        distributionDefaultRootPopup.addItemWithTitle(distribution.getDefaultRootObject());
-                        distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
+                    if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
+                        for(AbstractPath next : files.get(0).getContainer().children()) {
+                            if(next.attributes().isFile()) {
+                                distributionDefaultRootPopup.addItemWithTitle(next.getName());
+                                distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
+                            }
+                        }
+                        final String defaultRoot = distribution.getDefaultRootObject();
+                        if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
+                            distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
+                        }
                     }
                     toggleDistributionSettings(true);
                 }
