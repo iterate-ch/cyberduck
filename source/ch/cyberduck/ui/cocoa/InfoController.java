@@ -526,10 +526,10 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(c.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
                         grant.getRole().setName(value.toString());
-                        if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
-                                && StringUtils.isNotBlank(grant.getRole().getName())) {
-                            InfoController.this.aclInputDidEndEditing();
-                        }
+                    }
+                    if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
+                            && StringUtils.isNotBlank(grant.getRole().getName())) {
+                        InfoController.this.aclInputDidEndEditing();
                     }
                 }
             }
@@ -637,7 +637,12 @@ public class InfoController extends ToolbarWindowController {
         this.acl.add(index, acl);
         this.setAcl(this.acl);
         aclTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), false);
-        aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), new NSInteger(index), true);
+        if(acl.getUser().isEditable()) {
+            aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), new NSInteger(index), true);
+        }
+        else {
+            aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN), new NSInteger(index), true);
+        }
     }
 
     @Outlet
@@ -667,9 +672,7 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        Acl acl = new Acl();
-                        acl.addAll(InfoController.this.acl.toArray(new Acl.UserAndRole[InfoController.this.acl.size()]));
-                        next.writeAcl(acl, false);
+                        next.writeAcl(new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), false);
                     }
                 }
 
