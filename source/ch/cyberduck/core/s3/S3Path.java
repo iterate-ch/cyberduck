@@ -776,6 +776,9 @@ public class S3Path extends CloudPath {
         final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
         list.setOwner(owner);
         for(Acl.UserAndRole userAndRole : acl.asList()) {
+            if(!userAndRole.isValid()) {
+                continue;
+            }
             if(userAndRole.getUser().isEmailIdentifier()) {
                 list.grantPermission(new EmailAddressGrantee(userAndRole.getUser().getIdentifier()),
                         org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));

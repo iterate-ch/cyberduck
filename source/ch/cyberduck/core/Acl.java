@@ -40,6 +40,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         this.addAll(user, permissions);
     }
 
+    public Acl(Acl.UserAndRole... set) {
+        this.addAll(set);
+    }
+
     /**
      * @param user
      * @param permissions
@@ -97,6 +101,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
                         && this.getRole().equals(((UserAndRole) obj).getRole());
             }
             return false;
+        }
+
+        public boolean isValid() {
+            return this.getUser().isValid() && this.getRole().isValid();
         }
 
         @Override
@@ -170,6 +178,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public void setIdentifier(String identifier) {
             this.identifier = identifier;
+        }
+
+        public boolean isValid() {
+            return StringUtils.isNotBlank(this.getIdentifier());
         }
 
         @Override
@@ -317,6 +329,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public boolean isValid() {
+            return StringUtils.isNotBlank(this.getName());
         }
 
         @Override

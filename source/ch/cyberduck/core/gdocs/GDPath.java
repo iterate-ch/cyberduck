@@ -302,6 +302,9 @@ public class GDPath extends Path {
     @Override
     public void writeAcl(Acl acl, boolean recursive) {
         for(Acl.User user : acl.keySet()) {
+            if(!user.isValid()) {
+                continue;
+            }
             AclScope scope;
             if(user.isEmailIdentifier()) {
                 scope = new AclScope(AclScope.Type.USER, user.getIdentifier());
@@ -316,6 +319,9 @@ public class GDPath extends Path {
                 scope = new AclScope(AclScope.Type.DEFAULT, user.getIdentifier());
             }
             for(Acl.Role role : acl.get(user)) {
+                if(!role.isValid()) {
+                    continue;
+                }
                 AclEntry entry = new AclEntry();
                 entry.setScope(scope);
                 entry.setRole(new AclRole(role.getName()));

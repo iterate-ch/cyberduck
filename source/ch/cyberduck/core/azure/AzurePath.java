@@ -240,9 +240,12 @@ public class AzurePath extends CloudPath {
             else {
                 list = new ContainerAccessControl(false);
             }
-            for(Acl.UserAndRole ur : acl.asList()) {
-                list.addSignedIdentifier(new SignedIdentifier(ur.getUser().getIdentifier(),
-                        SharedAccessPermissions.valueOf(ur.getRole().getName()),
+            for(Acl.UserAndRole userAndRole : acl.asList()) {
+                if(!userAndRole.isValid()) {
+                    continue;
+                }
+                list.addSignedIdentifier(new SignedIdentifier(userAndRole.getUser().getIdentifier(),
+                        SharedAccessPermissions.valueOf(userAndRole.getRole().getName()),
                         null, null));
             }
             container.setContainerAccessControl(list);
