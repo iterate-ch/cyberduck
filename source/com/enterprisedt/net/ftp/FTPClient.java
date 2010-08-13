@@ -26,6 +26,7 @@
 
 package com.enterprisedt.net.ftp;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -504,7 +505,7 @@ public class FTPClient {
                         }
                     }
                     else {
-                        result.append(line).append('\n');
+                        result.append(StringUtils.stripStart(line, null)).append('\n');
                     }
                 }
                 return new BufferedReader(new StringReader(result.toString()));
