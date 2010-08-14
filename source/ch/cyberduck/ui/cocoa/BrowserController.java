@@ -3967,13 +3967,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return true; // by default everything is enabled
     }
 
-    private static final String TOOLBAR_NEW_CONNECTION = "Open Connection";
+    private static final String TOOLBAR_NEW_CONNECTION = "New Connection";
     private static final String TOOLBAR_BROWSER_VIEW = "Browser View";
     private static final String TOOLBAR_TRANSFERS = "Transfers";
     private static final String TOOLBAR_QUICK_CONNECT = "Quick Connect";
-    //    private static final String TOOLBAR_NAVIGATION = "Location";
     private static final String TOOLBAR_TOOLS = "Tools";
-    //    private static final String TOOLBAR_HISTORY = "History";
     private static final String TOOLBAR_REFRESH = "Refresh";
     private static final String TOOLBAR_ENCODING = "Encoding";
     private static final String TOOLBAR_SYNCHRONIZE = "Synchronize";
@@ -4300,7 +4298,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             return item;
         }
-        // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa.
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
     }
@@ -4308,65 +4305,59 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Outlet
     private NSButton quicklookButton;
 
-    private static final NSArray defaultToolbarItems = NSArray.arrayWithObjects(
-            TOOLBAR_NEW_CONNECTION,
-            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
-            TOOLBAR_QUICK_CONNECT,
-            TOOLBAR_TOOLS,
-            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
-            TOOLBAR_REFRESH,
-            TOOLBAR_EDIT,
-            NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier,
-            TOOLBAR_DISCONNECT
-    );
-
     /**
      * @param toolbar
      * @return The default configuration of toolbar items
      */
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
-        return defaultToolbarItems;
+        return NSArray.arrayWithObjects(
+                TOOLBAR_NEW_CONNECTION,
+                NSToolbarItem.NSToolbarSeparatorItemIdentifier,
+                TOOLBAR_QUICK_CONNECT,
+                TOOLBAR_TOOLS,
+                NSToolbarItem.NSToolbarSeparatorItemIdentifier,
+                TOOLBAR_REFRESH,
+                TOOLBAR_EDIT,
+                NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier,
+                TOOLBAR_DISCONNECT
+        );
     }
-
-    private static final NSArray allowedToolbarItems = NSArray.arrayWithObjects(
-            TOOLBAR_NEW_CONNECTION,
-            TOOLBAR_BROWSER_VIEW,
-            TOOLBAR_TRANSFERS,
-            TOOLBAR_QUICK_CONNECT,
-            TOOLBAR_TOOLS,
-            TOOLBAR_REFRESH,
-            TOOLBAR_ENCODING,
-            TOOLBAR_SYNCHRONIZE,
-            TOOLBAR_DOWNLOAD,
-            TOOLBAR_UPLOAD,
-            TOOLBAR_EDIT,
-            TOOLBAR_DELETE,
-            TOOLBAR_NEW_FOLDER,
-            TOOLBAR_NEW_BOOKMARK,
-            TOOLBAR_GET_INFO,
-            TOOLBAR_WEBVIEW,
-            TOOLBAR_TERMINAL,
-            TOOLBAR_ARCHIVE,
-            TOOLBAR_QUICKLOOK,
-            TOOLBAR_DISCONNECT,
-            NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
-            NSToolbarItem.NSToolbarSpaceItemIdentifier,
-            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
-            NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier
-    );
 
     /**
      * @param toolbar
      * @return All available toolbar items
      */
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
-        return allowedToolbarItems;
+        return NSArray.arrayWithObjects(
+                TOOLBAR_NEW_CONNECTION,
+                TOOLBAR_BROWSER_VIEW,
+                TOOLBAR_TRANSFERS,
+                TOOLBAR_QUICK_CONNECT,
+                TOOLBAR_TOOLS,
+                TOOLBAR_REFRESH,
+                TOOLBAR_ENCODING,
+                TOOLBAR_SYNCHRONIZE,
+                TOOLBAR_DOWNLOAD,
+                TOOLBAR_UPLOAD,
+                TOOLBAR_EDIT,
+                TOOLBAR_DELETE,
+                TOOLBAR_NEW_FOLDER,
+                TOOLBAR_NEW_BOOKMARK,
+                TOOLBAR_GET_INFO,
+                TOOLBAR_WEBVIEW,
+                TOOLBAR_TERMINAL,
+                TOOLBAR_ARCHIVE,
+                TOOLBAR_QUICKLOOK,
+                TOOLBAR_DISCONNECT,
+                NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
+                NSToolbarItem.NSToolbarSpaceItemIdentifier,
+                NSToolbarItem.NSToolbarSeparatorItemIdentifier,
+                NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier
+        );
     }
 
-    private static final NSArray selectableToolbarItems = NSArray.array();
-
     public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
-        return selectableToolbarItems;
+        return NSArray.array();
     }
 
     /**
