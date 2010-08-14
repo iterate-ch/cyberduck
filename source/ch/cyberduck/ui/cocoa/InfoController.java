@@ -2353,25 +2353,22 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void helpButtonClicked(final NSButton sender) {
         final String tab = this.getSelectedTab();
+        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
         if(tab.equals(TOOLBAR_ITEM_GENERAL)) {
-            this.openUrl(Preferences.instance().getProperty("website.help")
-                    + "/howto/info");
+            site.append("/howto/info");
         }
-        if(tab.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            this.openUrl(Preferences.instance().getProperty("website.help")
-                    + "/howto/info");
+        else if(tab.equals(TOOLBAR_ITEM_PERMISSIONS)) {
+            site.append("/howto/info");
         }
-        if(tab.equals(TOOLBAR_ITEM_METADATA)) {
-            this.openUrl(Preferences.instance().getProperty("website.help")
-                    + controller.getSession().getHost().getProtocol().getIdentifier());
+        else if(tab.equals(TOOLBAR_ITEM_METADATA)) {
+            site.append("/").append(controller.getSession().getHost().getProtocol().getIdentifier());
         }
-        if(tab.equals(TOOLBAR_ITEM_S3)) {
-            this.openUrl(Preferences.instance().getProperty("website.help")
-                    + controller.getSession().getHost().getProtocol().getIdentifier());
+        else if(tab.equals(TOOLBAR_ITEM_S3)) {
+            site.append("/").append(controller.getSession().getHost().getProtocol().getIdentifier());
         }
-        if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
-            this.openUrl(Preferences.instance().getProperty("website.help")
-                    + "/howto/cdn");
+        else if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
+            site.append("/howto/cdn");
         }
+        this.openUrl(site.toString());
     }
 }
