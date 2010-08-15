@@ -42,3 +42,6 @@
 
 /* Signed URL Expiry */
 "Expires on {0}" = "Expires on {0}";
+
+/* HTTP Metadata */
+"Custom Header" = "Custom Header";

@@ -833,7 +833,7 @@ public class InfoController extends ToolbarWindowController {
         this.metadataAddButton.setTarget(this.id());
         this.metadataAddButton.addItemWithTitle("");
         this.metadataAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
-        this.metadataAddButton.addItemWithTitle("Custom Header");
+        this.metadataAddButton.addItemWithTitle(Locale.localizedString("Custom Header", "S3"));
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCustomClicked:"));
         this.metadataAddButton.lastItem().setTarget(this.id());
         this.metadataAddButton.menu().addItem(NSMenuItem.separatorItem());
