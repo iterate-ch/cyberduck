@@ -179,6 +179,7 @@ public abstract class Preferences {
         defaults.put("website.forum", "http://forum.cyberduck.ch/");
         defaults.put("website.help", "http://help.cyberduck.ch/" + this.locale());
         defaults.put("website.bug", "http://trac.cyberduck.ch/newticket/");
+        defaults.put("website.crash", "http://crash.cyberduck.ch/report");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.supress", String.valueOf(true));
