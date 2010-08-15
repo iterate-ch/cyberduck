@@ -41,17 +41,22 @@ public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
      */
     private KnownHosts database;
 
+    /**
+     * Path to known_hosts file.
+     */
+    private Local file;
+
     public KnownHostsHostKeyVerifier() {
-        Local f = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
-        if(!f.exists()) {
-            f.touch(true);
+        file = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
+        if(!file.exists()) {
+            file.touch(true);
         }
-        if(f.attributes().getPermission().isReadable()) {
+        if(file.attributes().getPermission().isReadable()) {
             try {
-                this.database = new KnownHosts(f.getAbsolute());
+                this.database = new KnownHosts(file.getAbsolute());
             }
             catch(IOException e) {
-                log.error("Cannot read " + f.getAbsolute());
+                log.error("Cannot read " + file.getAbsolute());
             }
         }
         if(null == this.database) {
@@ -60,7 +65,7 @@ public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
     }
 
     protected boolean isHostKeyDatabaseWritable() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).attributes().getPermission().isWritable();
+        return file.attributes().getPermission().isWritable();
     }
 
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
@@ -101,7 +106,7 @@ public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
         if(always) {
             // Also try to add the key to a known_host file
             try {
-                KnownHosts.addHostkeyToFile(new File(LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts")).getAbsolute()),
+                KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
                         new String[]{KnownHosts.createHashedHostname(hostname)},
                         serverHostKeyAlgorithm, serverHostKey);
             }
