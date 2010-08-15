@@ -18,27 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.ethz.ssh2.sftp.SFTPException;
 
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.StatusLine;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.S3ServiceException;
-import org.soyatec.windows.azure.error.StorageServerException;
-
-import com.enterprisedt.net.ftp.FTPException;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-
-import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 /**
  * @version $Id:$
@@ -68,7 +53,7 @@ public class ErrorController extends BundleController {
         this.descriptionField = descriptionField;
         this.descriptionField.setSelectable(true);
         this.descriptionField.setAttributedStringValue(
-                NSAttributedString.attributedStringWithAttributes(this.getDetailedCauseMessage(failure), TRUNCATE_MIDDLE_ATTRIBUTES));
+                NSAttributedString.attributedStringWithAttributes(failure.getDetailedCauseMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     @Outlet
@@ -78,7 +63,7 @@ public class ErrorController extends BundleController {
         this.errorField = errorField;
         this.errorField.setSelectable(true);
         this.errorField.setAttributedStringValue(
-                NSAttributedString.attributedStringWithAttributes(this.getReadableTitle(failure) + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                NSAttributedString.attributedStringWithAttributes(failure.getReadableTitle() + ": " + failure.getMessage(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     @Outlet
@@ -104,93 +89,7 @@ public class ErrorController extends BundleController {
      * @return
      */
     public String getTooltip() {
-        return this.getReadableTitle(failure);
-    }
-
-    private String getReadableTitle(BackgroundException e) {
-        final Throwable cause = e.getCause();
-        if(cause instanceof FTPException) {
-            return "FTP " + Locale.localizedString("Error");
-        }
-        if(cause instanceof SFTPException) {
-            return "SSH " + Locale.localizedString("Error");
-        }
-        if(cause instanceof S3ServiceException) {
-            return "S3 " + Locale.localizedString("Error");
-        }
-        if(cause instanceof CloudFrontServiceException) {
-            return "CloudFront " + Locale.localizedString("Error");
-        }
-        if(cause instanceof HttpException) {
-            return "HTTP " + Locale.localizedString("Error");
-        }
-        if(cause instanceof SocketException) {
-            return "Network " + Locale.localizedString("Error");
-        }
-        if(cause instanceof UnknownHostException) {
-            return "DNS " + Locale.localizedString("Error");
-        }
-        if(cause instanceof IOException) {
-            return "I/O " + Locale.localizedString("Error");
-        }
-        return Locale.localizedString("Error");
-    }
-
-    private String getDetailedCauseMessage(BackgroundException e) {
-        final Throwable cause = e.getCause();
-        StringBuilder buffer = new StringBuilder();
-        if(null != cause) {
-            if(StringUtils.isNotBlank(cause.getMessage())) {
-                buffer.append(cause.getMessage());
-            }
-            if(cause instanceof SFTPException) {
-                ;
-            }
-            if(cause instanceof S3ServiceException) {
-                final S3ServiceException s3 = (S3ServiceException) cause;
-                if(StringUtils.isNotBlank(s3.getResponseStatus())) {
-                    // HTTP method status
-                    buffer.append(" ").append(s3.getResponseStatus()).append(".");
-                }
-                if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
-                    // S3 protocol message
-                    buffer.append(" ").append(s3.getS3ErrorMessage());
-                }
-            }
-            if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
-                final org.jets3t.service.impl.rest.HttpException http = (org.jets3t.service.impl.rest.HttpException) cause;
-                buffer.append(" ").append(http.getResponseCode());
-                if(StringUtils.isNotBlank(http.getResponseMessage())) {
-                    buffer.append(" ").append(http.getResponseMessage());
-                }
-            }
-            if(cause instanceof CloudFrontServiceException) {
-                final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
-                if(StringUtils.isNotBlank(cf.getErrorMessage())) {
-                    buffer.append(" ").append(cf.getErrorMessage());
-                }
-                if(StringUtils.isNotBlank(cf.getErrorDetail())) {
-                    buffer.append(" ").append(cf.getErrorDetail());
-                }
-            }
-            if(cause instanceof FilesException) {
-                final FilesException cf = (FilesException) cause;
-                final StatusLine status = cf.getHttpStatusLine();
-                if(null != status) {
-                    if(StringUtils.isNotBlank(status.getReasonPhrase())) {
-                        buffer.append(" ").append(status.getReasonPhrase());
-                    }
-                }
-            }
-            if(cause instanceof StorageServerException) {
-                buffer.delete(buffer.indexOf("\r\n"), buffer.length());
-            }
-        }
-        String message = buffer.toString();
-        if(!StringUtils.isEmpty(message) && !message.endsWith(".")) {
-            message = message + ".";
-        }
-        return Locale.localizedString(message, "Error");
+        return failure.getReadableTitle();
     }
 
     @Override

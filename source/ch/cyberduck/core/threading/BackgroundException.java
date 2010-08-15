@@ -21,6 +21,21 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
+import ch.ethz.ssh2.sftp.SFTPException;
+
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.StatusLine;
+import org.apache.commons.lang.StringUtils;
+import org.jets3t.service.CloudFrontServiceException;
+import org.jets3t.service.S3ServiceException;
+import org.soyatec.windows.azure.error.StorageServerException;
+
+import com.enterprisedt.net.ftp.FTPException;
+import com.rackspacecloud.client.cloudfiles.FilesException;
+
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -58,6 +73,98 @@ public class BackgroundException extends Exception {
             cause = cause.getCause();
         }
         return cause;
+    }
+
+    /**
+     * @return What kind of error
+     */
+    public String getReadableTitle() {
+        final Throwable cause = this.getCause();
+        if(cause instanceof FTPException) {
+            return "FTP " + Locale.localizedString("Error");
+        }
+        if(cause instanceof SFTPException) {
+            return "SSH " + Locale.localizedString("Error");
+        }
+        if(cause instanceof S3ServiceException) {
+            return "S3 " + Locale.localizedString("Error");
+        }
+        if(cause instanceof CloudFrontServiceException) {
+            return "CloudFront " + Locale.localizedString("Error");
+        }
+        if(cause instanceof HttpException) {
+            return "HTTP " + Locale.localizedString("Error");
+        }
+        if(cause instanceof SocketException) {
+            return "Network " + Locale.localizedString("Error");
+        }
+        if(cause instanceof UnknownHostException) {
+            return "DNS " + Locale.localizedString("Error");
+        }
+        if(cause instanceof IOException) {
+            return "I/O " + Locale.localizedString("Error");
+        }
+        return Locale.localizedString("Error");
+    }
+
+    /**
+     * @return Detailed message from the underlying cause.
+     */
+    public String getDetailedCauseMessage() {
+        final Throwable cause = this.getCause();
+        StringBuilder buffer = new StringBuilder();
+        if(null != cause) {
+            if(StringUtils.isNotBlank(cause.getMessage())) {
+                buffer.append(cause.getMessage());
+            }
+            if(cause instanceof SFTPException) {
+                ;
+            }
+            if(cause instanceof S3ServiceException) {
+                final S3ServiceException s3 = (S3ServiceException) cause;
+                if(StringUtils.isNotBlank(s3.getResponseStatus())) {
+                    // HTTP method status
+                    buffer.append(" ").append(s3.getResponseStatus()).append(".");
+                }
+                if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
+                    // S3 protocol message
+                    buffer.append(" ").append(s3.getS3ErrorMessage());
+                }
+            }
+            if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
+                final org.jets3t.service.impl.rest.HttpException http = (org.jets3t.service.impl.rest.HttpException) cause;
+                buffer.append(" ").append(http.getResponseCode());
+                if(StringUtils.isNotBlank(http.getResponseMessage())) {
+                    buffer.append(" ").append(http.getResponseMessage());
+                }
+            }
+            if(cause instanceof CloudFrontServiceException) {
+                final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
+                if(StringUtils.isNotBlank(cf.getErrorMessage())) {
+                    buffer.append(" ").append(cf.getErrorMessage());
+                }
+                if(StringUtils.isNotBlank(cf.getErrorDetail())) {
+                    buffer.append(" ").append(cf.getErrorDetail());
+                }
+            }
+            if(cause instanceof FilesException) {
+                final FilesException cf = (FilesException) cause;
+                final StatusLine status = cf.getHttpStatusLine();
+                if(null != status) {
+                    if(StringUtils.isNotBlank(status.getReasonPhrase())) {
+                        buffer.append(" ").append(status.getReasonPhrase());
+                    }
+                }
+            }
+            if(cause instanceof StorageServerException) {
+                buffer.delete(buffer.indexOf("\r\n"), buffer.length());
+            }
+        }
+        String message = buffer.toString();
+        if(!StringUtils.isEmpty(message) && !message.endsWith(".")) {
+            message = message + ".";
+        }
+        return Locale.localizedString(message, "Error");
     }
 
     /**
