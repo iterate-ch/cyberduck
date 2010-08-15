@@ -151,7 +151,7 @@ public class PathAttributes extends Attributes implements Serializable {
         if(this.modified != -1) {
             dict.setStringForKey(String.valueOf(this.modified), "Modified");
         }
-        if(null != permission) {
+        if(!Permission.EMPTY.equals(permission)) {
             dict.setObjectForKey(permission, "Permission");
         }
         return dict.<T>getSerialized();
