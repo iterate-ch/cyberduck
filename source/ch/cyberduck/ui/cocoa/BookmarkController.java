@@ -296,7 +296,7 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void openWebUrl(final NSButton sender) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(host.getWebURL()));
+        this.openUrl(host.getWebURL());
     }
 
     @Outlet

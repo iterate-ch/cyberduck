@@ -240,15 +240,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void bugreportMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openURL(
-                NSURL.URLWithString(Preferences.instance().getProperty("website.bug")));
+        this.openUrl(Preferences.instance().getProperty("website.bug"));
     }
 
     @Action
     public void helpMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openURL(
-                NSURL.URLWithString(Preferences.instance().getProperty("website.help"))
-        );
+        this.openUrl(Preferences.instance().getProperty("website.help"));
     }
 
     @Action
@@ -268,17 +265,17 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void websiteMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.home")));
+        this.openUrl(Preferences.instance().getProperty("website.home"));
     }
 
     @Action
     public void forumMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.forum")));
+        this.openUrl(Preferences.instance().getProperty("website.forum"));
     }
 
     @Action
     public void donateMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
+        this.openUrl(Preferences.instance().getProperty("website.donate"));
     }
 
     @Action
@@ -292,8 +289,8 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void feedbackMenuClicked(final ID sender) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(Preferences.instance().getProperty("mail.feedback")
-                + "?subject=" + Preferences.instance().getProperty("application") + "-" + Preferences.instance().getProperty("version")));
+        this.openUrl(Preferences.instance().getProperty("mail.feedback")
+                + "?subject=" + Preferences.instance().getProperty("application") + "-" + Preferences.instance().getProperty("version"));
     }
 
     @Action
@@ -803,8 +800,7 @@ public class MainController extends BundleController implements NSApplication.De
 
                 public void closeDonationSheet(final NSButton sender) {
                     if(sender.tag() == SheetCallback.DEFAULT_OPTION) {
-                        NSWorkspace.sharedWorkspace().openURL(
-                                NSURL.URLWithString(Preferences.instance().getProperty("website.donate")));
+                        this.openUrl(Preferences.instance().getProperty("website.donate"));
                     }
                     this.terminate();
                 }

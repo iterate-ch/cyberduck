@@ -2401,13 +2401,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void openBrowserButtonClicked(final ID sender) {
-        final String url = this.getSelectedPathWebUrl();
-        if(StringUtils.isNotBlank(url)) {
-            NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
-        }
-        else {
-            AppKitFunctions.instance.NSBeep();
-        }
+        this.openUrl(this.getSelectedPathWebUrl());
     }
 
     protected String getSelectedPathWebUrl() {

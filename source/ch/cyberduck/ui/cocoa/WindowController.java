@@ -258,13 +258,4 @@ public abstract class WindowController extends BundleController implements NSWin
     public void helpButtonClicked(final NSButton sender) {
         this.openUrl(Preferences.instance().getProperty("website.help"));
     }
-
-    /**
-     * Open URL with default web browser.
-     *
-     * @param url
-     */
-    protected void openUrl(String url) {
-        NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
-    }
 }
