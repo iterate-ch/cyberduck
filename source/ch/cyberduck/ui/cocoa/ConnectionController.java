@@ -92,7 +92,6 @@ public class ConnectionController extends SheetController {
             usernameField.cell().setPlaceholderString("");
             passField.cell().setPlaceholderString("");
         }
-        hostField.setStringValue(protocol.getDefaultHostname());
         usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
         passField.cell().setPlaceholderString(protocol.getPasswordPlaceholder());
         if(protocol.equals(Protocol.IDISK)) {
