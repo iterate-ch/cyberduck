@@ -23,6 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -579,21 +580,18 @@ public class ConnectionController extends SheetController {
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue());
-            urlLabel.setAttributedStringValue(
-                    NSAttributedString.attributedStringWithAttributes(url, TRUNCATE_MIDDLE_ATTRIBUTES));
+            urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
+                    NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
         }
         else {
-            urlLabel.setAttributedStringValue(
-                    NSAttributedString.attributedStringWithAttributes(hostField.stringValue(), TRUNCATE_MIDDLE_ATTRIBUTES));
+            urlLabel.setStringValue("");
         }
     }
 
     public void helpButtonClicked(final ID sender) {
         final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
-        NSWorkspace.sharedWorkspace().openURL(
-                NSURL.URLWithString(Preferences.instance().getProperty("website.help")
-                        + "/" + protocol.getIdentifier())
-        );
+        this.openUrl(Preferences.instance().getProperty("website.help")
+                        + "/" + protocol.getIdentifier());
     }
 
     @Override
