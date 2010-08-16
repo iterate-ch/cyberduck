@@ -137,6 +137,9 @@ public abstract class CloudPath extends Path {
     public abstract AttributedList<Path> list();
 
     /**
+     * Query string authentication. Query string authentication is useful for giving HTTP or browser access to
+     * resources that would normally require authentication. The signature in the query string secures the request
+     *
      * @return A signed URL with a limited validity over time.
      */
     public DescriptiveUrl createSignedUrl() {
