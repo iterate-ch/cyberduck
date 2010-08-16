@@ -105,27 +105,6 @@ public class S3Path extends CloudPath {
         return session;
     }
 
-    @Override
-    public boolean exists() {
-        if(attributes().isDirectory()) {
-            if(this.isContainer()) {
-                try {
-                    return this.getSession().getClient().isBucketAccessible(this.getContainerName());
-                }
-                catch(S3ServiceException e) {
-                    log.error(e.getMessage());
-                    return false;
-                }
-                catch(ConnectionCanceledException e) {
-                    log.error(e.getMessage());
-                    return false;
-                }
-            }
-            return !this.children().isEmpty();
-        }
-        return super.exists();
-    }
-
     /**
      * Object details not contained in standard listing.
      *
