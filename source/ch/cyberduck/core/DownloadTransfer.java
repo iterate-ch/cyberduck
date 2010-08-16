@@ -362,18 +362,21 @@ public class DownloadTransfer extends Transfer {
             else {
                 permission = p.attributes().getPermission();
             }
-            if(p.attributes().isDirectory()) {
-                // Make sure we can write files to directory created.
-                permission.getOwnerPermissions()[Permission.WRITE] = true;
-                permission.getOwnerPermissions()[Permission.EXECUTE] = true;
+            if(!Permission.EMPTY.equals(permission)) {
+                if(p.attributes().isDirectory()) {
+                    // Make sure we can read & write files to directory created.
+                    permission.getOwnerPermissions()[Permission.READ] = true;
+                    permission.getOwnerPermissions()[Permission.WRITE] = true;
+                    permission.getOwnerPermissions()[Permission.EXECUTE] = true;
+                }
+                if(p.attributes().isFile()) {
+                    // Make sure the owner can always read and write.
+                    permission.getOwnerPermissions()[Permission.READ] = true;
+                    permission.getOwnerPermissions()[Permission.WRITE] = true;
+                }
+                log.info("Updating permissions:" + local + "," + permission);
+                local.writeUnixPermission(permission, false);
             }
-            if(p.attributes().isFile()) {
-                // Make sure the owner can always read and write.
-                permission.getOwnerPermissions()[Permission.READ] = true;
-                permission.getOwnerPermissions()[Permission.WRITE] = true;
-            }
-            log.info("Updating permissions:" + local + "," + permission);
-            local.writeUnixPermission(permission, false);
         }
         if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
             if(p.attributes().getModificationDate() != -1) {
