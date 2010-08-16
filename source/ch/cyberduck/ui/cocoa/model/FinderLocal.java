@@ -305,6 +305,11 @@ public class FinderLocal extends Local {
             NSNumber number = Rococoa.cast(fileAttributes.objectForKey(NSFileManager.NSFileSystemFileNumber), NSNumber.class);
             return number.longValue();
         }
+
+        @Override
+        public boolean isBundle() {
+            return NSWorkspace.sharedWorkspace().isFilePackageAtPath(getAbsolute());
+        }
     }
 
     @Override
