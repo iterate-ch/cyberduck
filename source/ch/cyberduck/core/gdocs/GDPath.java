@@ -306,13 +306,13 @@ public class GDPath extends Path {
                 continue;
             }
             AclScope scope;
-            if(user.isEmailIdentifier()) {
+            if(user instanceof Acl.EmailUser) {
                 scope = new AclScope(AclScope.Type.USER, user.getIdentifier());
             }
-            else if(user.isGroupIdentifier()) {
+            else if(user instanceof Acl.GroupUser) {
                 scope = new AclScope(AclScope.Type.GROUP, user.getIdentifier());
             }
-            else if(user.isDomainIdentifier()) {
+            else if(user instanceof Acl.DomainUser) {
                 scope = new AclScope(AclScope.Type.DOMAIN, user.getIdentifier());
             }
             else {
