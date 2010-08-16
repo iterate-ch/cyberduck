@@ -1871,8 +1871,10 @@ public class InfoController extends ToolbarWindowController {
                             // Prune metadata from entries which are unique to a single file.
                             // For example md5-hash
                             if(updated.containsKey(key)) {
-                                log.info("Nullify " + key + " from metadata because value is not equal for multiple files.");
-                                updated.put(key, null);
+                                if(!metadata.get(key).equals(updated.get(key))) {
+                                    log.info("Nullify " + key + " from metadata because value is not equal for multiple files.");
+                                    updated.put(key, null);
+                                }
                             }
                             else {
                                 updated.put(key, metadata.get(key));
