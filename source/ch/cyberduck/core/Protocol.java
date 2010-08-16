@@ -849,11 +849,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public String disk() {
-            return FTP_TLS.disk();
-        }
-
-        @Override
         public boolean isSecure() {
             return true;
         }
