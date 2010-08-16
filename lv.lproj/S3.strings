@@ -37,7 +37,16 @@
 /* ACL Editing */
 "Canonical User ID" = "Kanoniskā lietotāja ID";
 "Email Address" = "E-pasta adrese";
-"http://acs.amazonaws.com/groups/global/AllUsers" = "http://acs.amazonaws.com/groups/global/AllUsers";
+
+/* Amazon Related ACL Scopes */
+"Amazon Customer Email Address" = "Amazon Customer Email Address";
+
+/* Google Storage Related ACL Scopes */
+"Google Account Email Address" = "Google Account Email Address";
+"Google Group Email Address" = "Google Group Email Address";
+"Google Apps Domain" = "Google Apps Domain";
+
+"http://acs.amazonaws.com/groups/global/AllUsers" ="http://acs.amazonaws.com/groups/global/AllUsers";
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
 
 /* Signed URL Expiry */
