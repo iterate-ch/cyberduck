@@ -45,24 +45,24 @@ if __name__=="__main__":
 		revision = None
 		if form.has_key("revision"):
 			revision = form["revision"].value
-		system = None
+		platform = None
                 if form.has_key("os"):
-			system = form["os"].value
+			platform = form["os"].value
 		if not revision:
 			useragent = cgi.escape(os.environ["HTTP_USER_AGENT"])
 			revision = re.match(r"Cyberduck \(([0-9]+)\)", useragent).group(1)
 		ip = cgi.escape(os.environ["REMOTE_ADDR"])
 		if form.has_key("crashlog"):
-			logging.info("Crash Report from %s for OS %s and revision %s", ip, system, revision)
+			logging.info("Crash Report from %s for OS %s and revision %s", ip, platform, revision)
 			crashlog = form["crashlog"].value
 
 			#add database entry
 			conn = sqlite3.connect(db)
 			c = conn.cursor()
 
-			row = (ip, crashlog, revision)
+			row = (ip, crashlog, revision, platform)
 			try:
-				c.execute('insert into crash values(?,?,?)', row)
+				c.execute('insert into crash values(?,?,?,?)', row)
 			except sqlite3.IntegrityError, (ErrorMessage):
 				logging.error('Error adding crashlog from IP %s:%s', ip, ErrorMessage)
 				pass
