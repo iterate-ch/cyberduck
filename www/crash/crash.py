@@ -3,6 +3,8 @@
 
 import cgi
 import os
+# Regular Expressions
+import re
 import smtplib
 import email
 from email.MIMEText import MIMEText
@@ -35,7 +37,6 @@ def mailreport(crashlog, ip, revision):
 	s.sendmail("noreply@cyberduck.ch", "bugs@cyberduck.ch", mail.as_string())
 	s.quit()
 
-
 if __name__=="__main__":
 	print "Content-type: text/html"
 	print
@@ -44,9 +45,15 @@ if __name__=="__main__":
 		revision = None
 		if form.has_key("revision"):
 			revision = form["revision"].value
+		system = None
+                if form.has_key("os"):
+			system = form["os"].value
+		if not revision:
+			useragent = cgi.escape(os.environ["HTTP_USER_AGENT"])
+			revision = re.match(r"Cyberduck \(([0-9]+)\)", useragent).group(1)
 		ip = cgi.escape(os.environ["REMOTE_ADDR"])
 		if form.has_key("crashlog"):
-			logging.info("Crash Report from %s for revision %s", ip, revision)
+			logging.info("Crash Report from %s for OS %s and revision %s", ip, system, revision)
 			crashlog = form["crashlog"].value
 
 			#add database entry
@@ -66,8 +73,8 @@ if __name__=="__main__":
 				c.close()
 
 			#send mail
-			if revision:
-				mailreport(crashlog, ip, revision)
+			#if revision:
+				#mailreport(crashlog, ip, revision)
 	except:
 		logging.error("Unexpected error:".join(format_exception(*exc_info())))
 		cgi.print_exception()
