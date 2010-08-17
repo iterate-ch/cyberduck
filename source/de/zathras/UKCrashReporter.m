@@ -107,7 +107,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
                     NSString            *boundary = @"0xKhTmLbOuNdArY";
 
                     // Prepare a request:
-                    NSString            *url = [[@"http://crash.cyberduck.ch/report" stringByAppendingString:@"?revision="] stringByAppendingString:appRevision];
+                    NSString            *url = [[[@"http://crash.cyberduck.ch/report" stringByAppendingString:@"?revision="] stringByAppendingString:appRevision] stringByAppendingString:@"&os=mac"];
                     NSMutableURLRequest *postRequest = [NSMutableURLRequestClass requestWithURL:[NSURL URLWithString: url]];
                     NSString            *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary];
                     NSString			*agent = [NSString stringWithFormat:@"Cyberduck (%@)", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
