@@ -42,23 +42,23 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
 
     public NSInteger numberOfRowsInTableView(NSTableView view) {
         if(controller.isMounted()) {
-            return new NSInteger(this.childs(this.controller.workdir()).size());
+            return new NSInteger(this.children(this.controller.workdir()).size());
         }
         return new NSInteger(0);
     }
 
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
                                                             NSTableColumn tableColumn, NSInteger row) {
-        super.setObjectValueForItem(this.childs(this.controller.workdir()).get(row.intValue()),
+        super.setObjectValueForItem(this.children(this.controller.workdir()).get(row.intValue()),
                 value, tableColumn.identifier());
     }
 
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view,
                                                             NSTableColumn tableColumn, NSInteger row) {
         if(controller.isMounted()) {
-            final List<Path> childs = this.childs(this.controller.workdir());
-            if(row.intValue() < childs.size()) {
-                return super.objectValueForItem(childs.get(row.intValue()), tableColumn.identifier());
+            final List<Path> children = this.children(this.controller.workdir());
+            if(row.intValue() < children.size()) {
+                return super.objectValueForItem(children.get(row.intValue()), tableColumn.identifier());
             }
         }
         return null;
@@ -76,7 +76,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
             final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
             if(0 == draggingColumn || 1 == draggingColumn) {
                 if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
-                    Path p = this.childs(this.controller.workdir()).get(row.intValue());
+                    Path p = this.children(this.controller.workdir()).get(row.intValue());
                     if(p.attributes().isDirectory()) {
                         destination = p;
                     }
@@ -93,7 +93,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
         if(controller.isMounted()) {
             Path destination = controller.workdir();
             if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
-                destination = this.childs(this.controller.workdir()).get(row.intValue());
+                destination = this.children(this.controller.workdir()).get(row.intValue());
             }
             return super.acceptDrop(view, destination, draggingInfo);
         }
@@ -116,9 +116,9 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                                                                NSPasteboard pboard) {
         if(controller.isMounted()) {
             NSMutableArray items = NSMutableArray.array();
-            final AttributedList<Path> childs = this.childs(this.controller.workdir());
+            final AttributedList<Path> children = this.children(this.controller.workdir());
             for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
-                items.addObject(NSString.stringWithString(childs.get(index.intValue()).getAbsolute()));
+                items.addObject(NSString.stringWithString(children.get(index.intValue()).getAbsolute()));
             }
             return super.writeItemsToPasteBoard(view, items, pboard);
         }
@@ -133,9 +133,9 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
 //    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
 //        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
 //        final List<Path> roots = new Collection<Path>();
-//        final AttributedList<Path> childs = this.childs(this.controller.workdir());
+//        final AttributedList<Path> children = this.children(this.controller.workdir());
 //        for(NSUInteger index = rowIndexes.firstIndex(); index.intValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
-//            Path promisedDragPath = childs.get(index.intValue());
+//            Path promisedDragPath = children.get(index.intValue());
 //            promisedDragPath.setLocal(LocalFactory.createLocalLocal(dropDestination.path(), promisedDragPath.getName()));
 //            if(rowIndexes.count().intValue() == 1) {
 //                if(promisedDragPath.attributes().isFile()) {

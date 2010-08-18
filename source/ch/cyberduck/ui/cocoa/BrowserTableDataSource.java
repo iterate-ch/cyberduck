@@ -90,11 +90,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     /**
      * Must be efficient; called very frequently by the table view
      *
-     * @param path The directory to fetch the childs from
+     * @param path The directory to fetch the children from
      * @return The cached or newly fetched file listing of the directory
      * @pre Call from the main thread
      */
-    protected AttributedList<Path> childs(final Path path) {
+    protected AttributedList<Path> children(final Path path) {
         synchronized(isLoadingListingInBackground) {
             // Check first if it hasn't been already requested so we don't spawn
             // a multitude of unecessary threads
@@ -134,11 +134,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     public int indexOf(NSView tableView, Path p) {
-        return this.childs(controller.workdir()).indexOf(p);
+        return this.children(controller.workdir()).indexOf(p);
     }
 
     public boolean contains(NSView tableView, Path p) {
-        return this.childs(controller.workdir()).contains(p);
+        return this.children(controller.workdir()).contains(p);
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {

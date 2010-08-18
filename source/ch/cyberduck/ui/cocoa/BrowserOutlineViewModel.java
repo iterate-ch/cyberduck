@@ -52,12 +52,12 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         return this.indexOf(tableView, p) != -1;
     }
 
-    protected AttributedList<Path> childs(final OutlinePathReference path) {
+    protected AttributedList<Path> children(final OutlinePathReference path) {
         final Path lookup = controller.lookup(path);
         if(null == lookup) {
             return AttributedList.emptyList();
         }
-        return super.childs(lookup);
+        return super.children(lookup);
     }
 
     /**
@@ -86,7 +86,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         }
         if(controller.isMounted()) {
             if(null == item) {
-                return new NSInteger(this.childs(controller.workdir()).size());
+                return new NSInteger(this.children(controller.workdir()).size());
             }
             NSEvent event = NSApplication.sharedApplication().currentEvent();
             if(event != null) {
@@ -105,7 +105,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                     }
                 }
             }
-            return new NSInteger(this.childs(new OutlinePathReference(item)).size());
+            return new NSInteger(this.children(new OutlinePathReference(item)).size());
         }
         return new NSInteger(0);
     }
@@ -130,12 +130,12 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == path) {
             return null;
         }
-        final AttributedList<Path> childs = this.childs(path);
-        if(index.intValue() >= childs.size()) {
+        final AttributedList<Path> children = this.children(path);
+        if(index.intValue() >= children.size()) {
             log.warn("Index " + index + " out of bound for " + item);
             return null;
         }
-        return childs.get(index.intValue()).<NSObject>getReference().unique();
+        return children.get(index.intValue()).<NSObject>getReference().unique();
     }
 
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,

@@ -36,9 +36,7 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @version $Id$
@@ -143,7 +141,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @return The list of child items for the parent folder. The listing is filtered
      *         using the standard regex exclusion and the additional passed filter
      */
-    protected AttributedList<Path> childs(final Path path) {
+    protected AttributedList<Path> children(final Path path) {
         synchronized(isLoadingListingInBackground) {
             // Check first if it hasn't been already requested so we don't spawn
             // a multitude of unecessary threads
@@ -156,7 +154,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 // Delay until path is cached in the background
                 controller.background(new AbstractBackgroundAction() {
                     public void run() {
-                        transfer.childs(path);
+                        transfer.children(path);
                     }
 
                     @Override
@@ -221,18 +219,18 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return new NSInteger(roots.size());
         }
-        return new NSInteger(this.childs(this.lookup(new OutlinePathReference(item))).size());
+        return new NSInteger(this.children(this.lookup(new OutlinePathReference(item))).size());
     }
 
     public NSObject outlineView_child_ofItem(final NSOutlineView view, NSInteger index, NSObject item) {
         if(null == item) {
             return roots.get(index.intValue()).<NSObject>getReference().unique();
         }
-        final AttributedList<Path> childs = this.childs(this.lookup(new OutlinePathReference(item)));
-        if(childs.isEmpty()) {
+        final AttributedList<Path> children = this.children(this.lookup(new OutlinePathReference(item)));
+        if(children.isEmpty()) {
             return null;
         }
-        return childs.get(index.intValue()).<NSObject>getReference().unique();
+        return children.get(index.intValue()).<NSObject>getReference().unique();
     }
 
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, NSObject item) {

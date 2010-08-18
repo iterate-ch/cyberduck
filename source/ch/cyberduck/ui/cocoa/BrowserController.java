@@ -200,7 +200,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         return true;
                     }
                     if(file.attributes().isDirectory() && getSelectedBrowserView() == browserOutlineView) {
-                        // #471. Expanded item childs may match search string
+                        // #471. Expanded item children may match search string
                         return file.isCached();
                     }
                     return false;
@@ -394,9 +394,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private Path pathAtRow(int row) {
         switch(this.browserSwitchView.selectedSegment()) {
             case SWITCH_LIST_VIEW: {
-                final AttributedList<Path> childs = this.browserListModel.childs(this.workdir());
-                if(row < childs.size()) {
-                    return childs.get(row);
+                final AttributedList<Path> children = this.browserListModel.children(this.workdir());
+                if(row < children.size()) {
+                    return children.get(row);
                 }
                 break;
             }
@@ -760,7 +760,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
                                                                                   ID rect, NSTableColumn c,
                                                                                   NSInteger row, NSPoint mouseLocation) {
-            return this.tooltip(browserListModel.childs(workdir()).get(row.intValue()));
+            return this.tooltip(browserListModel.children(workdir()).get(row.intValue()));
         }
     }
 
@@ -1130,7 +1130,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final String identifier = tableColumn.identifier();
-                final Path path = browserListModel.childs(BrowserController.this.workdir()).get(row.intValue());
+                final Path path = browserListModel.children(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
                     cell.setEditable(getSession().isRenameSupported(path));
                 }
