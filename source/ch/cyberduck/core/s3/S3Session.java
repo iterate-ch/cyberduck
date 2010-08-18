@@ -734,12 +734,6 @@ public class S3Session extends CloudSession implements SSLSession {
     private Map<Distribution.Method, Map<String, Distribution>> distributionStatus
             = new HashMap<Distribution.Method, Map<String, Distribution>>();
 
-    {
-        for(Distribution.Method method : this.getSupportedDistributionMethods()) {
-            distributionStatus.put(method, new HashMap<String, Distribution>());
-        }
-    }
-
     /**
      * @param container
      * @param method
@@ -860,6 +854,12 @@ public class S3Session extends CloudSession implements SSLSession {
     private List<Distribution.Method> distributionMethods
             = Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
 
+    {
+        for(Distribution.Method method : this.getSupportedDistributionMethods()) {
+            distributionStatus.put(method, new HashMap<String, Distribution>(0));
+        }
+    }
+    
     @Override
     public List<Distribution.Method> getSupportedDistributionMethods() {
         return distributionMethods;
