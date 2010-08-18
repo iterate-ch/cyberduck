@@ -2249,11 +2249,11 @@ public class InfoController extends ToolbarWindowController {
                         distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                     }
                     else {
-                        if(null == distribution.getUrl()) {
+                        if(StringUtils.isBlank(distribution.getUrl())) {
                             distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
                         }
                         else {
-                            final String url = distribution.getUrl() + key;
+                            final String url = distribution.getUrl(key);
                             distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                     NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
                             distributionUrlField.setToolTip(url);
@@ -2267,16 +2267,12 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        for(String cname : cnames) {
-                            final String url = distribution.getMethod().getProtocol() + cname + distribution.getMethod().getContext() + key;
-                            distributionCnameUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
-                            );
-                            distributionCnameUrlField.setToolTip(url);
-                            // We only support one CNAME URL
-                            break;
-                        }
+                        final String url = distribution.getCnameUrl(key);
+                        distributionCnameUrlField.setAttributedStringValue(
+                                HyperlinkAttributedStringFactory.create(
+                                        NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
+                        );
+                        distributionCnameUrlField.setToolTip(url);
                     }
                     if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
                         for(AbstractPath next : files.get(0).getContainer().children()) {

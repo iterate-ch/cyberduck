@@ -101,7 +101,6 @@ public class Distribution {
     }
 
     /**
-     *
      * @param enabled
      * @param url
      * @param status
@@ -112,32 +111,32 @@ public class Distribution {
     }
 
     /**
-     * @param enabled    Deployment Enabled
-     * @param url        Where to find this distribution
-     * @param status     Status Message about Deployment Status
-     * @param cnames     Multiple CNAME aliases of this distribution
+     * @param enabled Deployment Enabled
+     * @param url     Where to find this distribution
+     * @param status  Status Message about Deployment Status
+     * @param cnames  Multiple CNAME aliases of this distribution
      */
     public Distribution(boolean enabled, String url, String status, String[] cnames) {
         this(enabled, enabled, url, status, cnames);
     }
 
     /**
-     * @param enabled    Deployment Enabled
+     * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
-     * @param url        Where to find this distribution
-     * @param status     Status Message about Deployment Status
-     * @param cnames     Multiple CNAME aliases of this distribution
+     * @param url      Where to find this distribution
+     * @param status   Status Message about Deployment Status
+     * @param cnames   Multiple CNAME aliases of this distribution
      */
     public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames) {
         this(enabled, deployed, url, status, cnames, false);
     }
 
     /**
-     * @param enabled    Deployment Enabled
+     * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
-     * @param url        Where to find this distribution
-     * @param status     Status Message about Deployment Status
-     * @param cnames     Multiple CNAME aliases of this distribution
+     * @param url      Where to find this distribution
+     * @param status   Status Message about Deployment Status
+     * @param cnames   Multiple CNAME aliases of this distribution
      * @param logging
      */
     public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
@@ -145,12 +144,11 @@ public class Distribution {
     }
 
     /**
-     *
-     * @param enabled    Deployment Enabled
+     * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
-     * @param url        Where to find this distribution
-     * @param status     Status Message about Deployment Status
-     * @param cnames     Multiple CNAME aliases of this distribution
+     * @param url      Where to find this distribution
+     * @param status   Status Message about Deployment Status
+     * @param cnames   Multiple CNAME aliases of this distribution
      * @param logging
      * @param method
      */
@@ -159,12 +157,11 @@ public class Distribution {
     }
 
     /**
-     *
-     * @param enabled    Deployment Enabled
-     * @param deployed Deployment Status is about to be changed
-     * @param url        Where to find this distribution
-     * @param status     Status Message about Deployment Status
-     * @param cnames     Multiple CNAME aliases of this distribution
+     * @param enabled           Deployment Enabled
+     * @param deployed          Deployment Status is about to be changed
+     * @param url               Where to find this distribution
+     * @param status            Status Message about Deployment Status
+     * @param cnames            Multiple CNAME aliases of this distribution
      * @param logging
      * @param method
      * @param defaultRootObject
@@ -204,6 +201,18 @@ public class Distribution {
      */
     public String getUrl() {
         return url;
+    }
+
+    public String getUrl(String key) {
+        return this.getUrl() + key;
+    }
+
+    public String getCnameUrl(String key) {
+        for(String cname : cnames) {
+            // We only support one CNAME URL
+            return this.getMethod().getProtocol() + cname + this.getMethod().getContext() + key;
+        }
+        return null;
     }
 
     /**
