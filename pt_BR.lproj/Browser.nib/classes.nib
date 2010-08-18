@@ -29,6 +29,7 @@
         spinner = NSProgressIndicator;
         statusLabel = NSTextField;
         upButton = NSSegmentedControl;
+        urlMenu = NSMenu;
         window = NSWindow;
     };
     SUPERCLASS = NSObject;

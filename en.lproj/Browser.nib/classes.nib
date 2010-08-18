@@ -120,6 +120,8 @@
 				<string>NSTextField</string>
 				<key>upButton</key>
 				<string>NSSegmentedControl</string>
+				<key>urlMenu</key>
+				<string>NSMenu</string>
 				<key>window</key>
 				<string>NSWindow</string>
 			</dict>

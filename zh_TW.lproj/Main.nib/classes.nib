@@ -23,6 +23,7 @@
         encodingMenu = NSMenu;
         historyMenu = NSMenu;
         rendezvousMenu = NSMenu;
+        urlMenu = NSMenu;
     };
     SUPERCLASS = NSObject;
 },

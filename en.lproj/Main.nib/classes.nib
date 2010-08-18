@@ -141,6 +141,8 @@
 				<string>NSMenu</string>
 				<key>rendezvousMenu</key>
 				<string>NSMenu</string>
+				<key>urlMenu</key>
+				<string>NSMenu</string>
 			</dict>
 			<key>SUPERCLASS</key>
 			<string>NSObject</string>
