@@ -91,8 +91,8 @@ public class GSPath extends S3Path {
      */
     @Override
     public DescriptiveUrl toAuthenticatedUrl() {
-        return new DescriptiveUrl("https://sandbox.google.com/storage" + this.getAbsolute(),
-                Locale.localizedString("Authenticated browser download using cookie-based Google account authentication in conjunction with ACL", "S3"));
+        // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
+        return new DescriptiveUrl("https://sandbox.google.com/storage" + this.getAbsolute());
     }
 
     @Override
