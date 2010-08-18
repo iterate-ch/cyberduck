@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -326,4 +328,27 @@ public abstract class AbstractPath {
      * @param copy Destination
      */
     public abstract void copy(AbstractPath copy);
+
+    public static class DescriptiveUrl {
+        private String url;
+
+        private String help;
+
+        public DescriptiveUrl(String url) {
+            this(url, Locale.localizedString("Open in Web Browser"));
+        }
+
+        public DescriptiveUrl(String url, String help) {
+            this.url = url;
+            this.help = help;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getHelp() {
+            return help;
+        }
+    }
 }

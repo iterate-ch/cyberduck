@@ -22,7 +22,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -135,37 +134,4 @@ public abstract class CloudPath extends Path {
 
     @Override
     public abstract AttributedList<Path> list();
-
-    /**
-     * Query string authentication. Query string authentication is useful for giving HTTP or browser access to
-     * resources that would normally require authentication. The signature in the query string secures the request
-     *
-     * @return A signed URL with a limited validity over time.
-     */
-    public DescriptiveUrl createSignedUrl() {
-        return new DescriptiveUrl(this.toHttpURL());
-    }
-
-    public static class DescriptiveUrl {
-        private String url;
-
-        private String help;
-
-        public DescriptiveUrl(String url) {
-            this(url, Locale.localizedString("Open in Web Browser"));
-        }
-
-        public DescriptiveUrl(String url, String help) {
-            this.url = url;
-            this.help = help;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getHelp() {
-            return help;
-        }
-    }
 }
