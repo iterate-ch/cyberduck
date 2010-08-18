@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.application.NSView;
@@ -90,6 +91,9 @@ public abstract class BundleController extends ProxyController {
 
     protected abstract String getBundleName();
 
+    protected void openUrl(AbstractPath.DescriptiveUrl url) {
+        this.openUrl(url.getUrl());    
+    }
 
     /**
      * Open URL with default web browser.
