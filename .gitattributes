@@ -1990,8 +1990,8 @@ source/ch/cyberduck/core/cloud/Distribution.java -text
 source/ch/cyberduck/core/dav/DAVPath.java -text
 source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
-source/ch/cyberduck/core/eucalyptus/EucalyptusPath.java -text
-source/ch/cyberduck/core/eucalyptus/EucalyptusSession.java -text
+source/ch/cyberduck/core/eucalyptus/ECPath.java -text
+source/ch/cyberduck/core/eucalyptus/ECSession.java -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/LaxUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParser.java -text

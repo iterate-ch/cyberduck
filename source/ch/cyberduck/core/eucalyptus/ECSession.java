@@ -25,6 +25,8 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.jets3t.service.Jets3tProperties;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -38,12 +40,12 @@ import java.util.List;
  * @version $Id$
  * @see "http://eucalyptus.cs.ucsb.edu/"
  */
-public class EucalyptusSession extends S3Session {
+public class ECSession extends S3Session {
 
     private static class Factory extends SessionFactory {
         @Override
         protected Session create(Host h) {
-            return new EucalyptusSession(h);
+            return new ECSession(h);
         }
     }
 
@@ -51,16 +53,17 @@ public class EucalyptusSession extends S3Session {
         return new Factory();
     }
 
-    public EucalyptusSession(Host h) {
+    public ECSession(Host h) {
         super(h);
     }
 
     @Override
-    protected void configure() {
-        super.configure();
+    protected Jets3tProperties getProperties() {
+        Jets3tProperties configuration = super.getProperties();
         configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize("/services/Walrus"));
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
+        return configuration;
     }
 
     @Override
