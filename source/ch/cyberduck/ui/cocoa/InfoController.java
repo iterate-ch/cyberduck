@@ -452,6 +452,15 @@ public class InfoController extends ToolbarWindowController {
         this.distributionCnameUrlField.setSelectable(true);
     }
 
+    @Outlet
+    private NSTextField aclUrlField;
+
+    public void setAclUrlField(NSTextField t) {
+        this.aclUrlField = t;
+        this.aclUrlField.setAllowsEditingTextAttributes(true);
+        this.aclUrlField.setSelectable(true);
+    }
+
     /**
      * Grant editing model.
      */
@@ -1453,7 +1462,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             this.updateField(webUrlField, Locale.localizedString("Unknown"));
             controller.background(new BrowserBackgroundAction(controller) {
-                String url;
+                AbstractPath.DescriptiveUrl url;
 
                 public void run() {
                     for(Path next : files) {
@@ -1463,12 +1472,12 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
-                    if(StringUtils.isNotBlank(url)) {
+                    if(StringUtils.isNotBlank(url.getUrl())) {
                         webUrlField.setAttributedStringValue(
                                 HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
+                                        NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
                         );
-                        webUrlField.setToolTip(url);
+                        webUrlField.setToolTip(url.getUrl());
                     }
                 }
             });
@@ -1686,15 +1695,11 @@ public class InfoController extends ToolbarWindowController {
         if(enable) {
             logging = ((S3Session) session).isLoggingSupported();
             versioning = ((S3Session) session).isVersioningSupported();
-            storageclass = ((S3Session) session).getSupportedStorageClasses().size() > 1;
         }
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
-        for(Path file : files) {
-            storageClassPopup.setEnabled(stop && enable && storageclass && file.attributes().isFile());
-        }
         if(stop) {
             s3Progress.stopAnimation(null);
         }
@@ -1711,6 +1716,7 @@ public class InfoController extends ToolbarWindowController {
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
         s3PublicUrlField.setStringValue(Locale.localizedString("Unknown"));
+        s3PublicUrlValidityField.setStringValue(Locale.localizedString("Unknown"));
         s3torrentUrlField.setStringValue(Locale.localizedString("Unknown"));
         storageClassPopup.addItemWithTitle(Locale.localizedString("Unknown"));
         storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
@@ -1737,18 +1743,20 @@ public class InfoController extends ToolbarWindowController {
                             storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                             storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                         }
-                        final CloudPath.DescriptiveUrl url = s3.createSignedUrl();
-                        if(null != url) {
+                        final CloudPath.DescriptiveUrl url = s3.toSignedUrl();
+                        if(StringUtils.isNotBlank(url.getUrl())) {
                             s3PublicUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
                                             NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
                                             url.getUrl())
                             );
                             s3PublicUrlField.setToolTip(url.getUrl());
+                        }
+                        if(StringUtils.isNotBlank(url.getHelp())) {
                             s3PublicUrlValidityField.setStringValue(url.getHelp());
                         }
-                        final CloudPath.DescriptiveUrl torrent = s3.createTorrentUrl();
-                        if(null != torrent) {
+                        final CloudPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                        if(StringUtils.isNotBlank(torrent.getUrl())) {
                             s3torrentUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
                                             NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
@@ -1903,7 +1911,28 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initAcl() {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
+        this.aclUrlField.cell().setPlaceholderString(Locale.localizedString("Unknown"));
         if(this.toggleAclSettings(false)) {
+            if(this.numberOfFiles() > 1) {
+                aclUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                aclUrlField.setToolTip("");
+            }
+            else {
+                for(Path file : files) {
+                    if(file.attributes().isFile()) {
+                        final S3Path s3 = (S3Path) file;
+                        final CloudPath.DescriptiveUrl url = s3.toAuthenticatedUrl();
+                        if(StringUtils.isNotBlank(url.getUrl())) {
+                            aclUrlField.setAttributedStringValue(
+                                    HyperlinkAttributedStringFactory.create(
+                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
+                                            url.getUrl())
+                            );
+                            aclUrlField.setToolTip(url.getHelp());
+                        }
+                    }
+                }
+            }
             controller.background(new BrowserBackgroundAction(controller) {
                 private List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
 
@@ -2076,7 +2105,6 @@ public class InfoController extends ToolbarWindowController {
         recursiveButton.setEnabled(stop && enable);
         for(Path next : files) {
             if(next.attributes().isFile()) {
-                recursiveButton.setState(NSCell.NSOffState);
                 recursiveButton.setEnabled(false);
                 break;
             }
