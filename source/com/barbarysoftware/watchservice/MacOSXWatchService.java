@@ -91,11 +91,11 @@ class MacOSXWatchService extends AbstractWatchService {
     private static Set<File> recursiveListFiles(File folder) {
         Set<File> files = new HashSet<File>();
         if(folder.isDirectory()) {
-            final File[] childs = folder.listFiles();
-            if(null == childs) {
+            final File[] children = folder.listFiles();
+            if(null == children) {
                 return files;
             }
-            for (File file : childs) {
+            for (File file : children) {
                 if (file.isDirectory()) {
                     files.addAll(recursiveListFiles(file));
                 } else {
