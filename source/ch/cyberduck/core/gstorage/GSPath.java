@@ -19,10 +19,7 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
@@ -96,6 +93,11 @@ public class GSPath extends S3Path {
     public DescriptiveUrl toAuthenticatedUrl() {
         return new DescriptiveUrl("https://sandbox.google.com/storage" + this.getAbsolute(),
                 Locale.localizedString("Authenticated browser download using cookie-based Google account authentication in conjunction with ACL", "S3"));
+    }
+
+    @Override
+    public DescriptiveUrl toSignedUrl() {
+        return new DescriptiveUrl(null, null);
     }
 
     /**
