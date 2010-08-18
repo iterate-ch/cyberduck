@@ -24,8 +24,8 @@ import ch.cyberduck.core.cf.CFPath;
 import ch.cyberduck.core.cf.CFSession;
 import ch.cyberduck.core.dav.DAVPath;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.eucalyptus.EucalyptusPath;
-import ch.cyberduck.core.eucalyptus.EucalyptusSession;
+import ch.cyberduck.core.eucalyptus.ECPath;
+import ch.cyberduck.core.eucalyptus.ECSession;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.gdocs.GDPath;
@@ -952,9 +952,9 @@ public abstract class Protocol {
         }
         if(Preferences.instance().getBoolean("protocol.s3.eucalyptus.enable")) {
             SessionFactory.addFactory(
-                    Protocol.EUCALYPTUS, EucalyptusSession.factory());
+                    Protocol.EUCALYPTUS, ECSession.factory());
             PathFactory.addFactory(
-                    Protocol.EUCALYPTUS, EucalyptusPath.factory());
+                    Protocol.EUCALYPTUS, ECPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.cf.enable")) {
             SessionFactory.addFactory(
