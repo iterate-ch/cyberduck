@@ -296,7 +296,7 @@ public class IconCache {
         if(item.attributes().isSymbolicLink()) {
             if(item.attributes().isDirectory()) {
                 final NSImage folder = NSImage.imageWithSize(new NSSize(size, size));
-                this.badge(this.iconForName("aliasbadge.png"), folder);
+                this.badge(this.iconForName("aliasbadge.png", size), folder);
                 return this.convert(folder, size);
             }
             final NSImage symlink = NSImage.imageWithSize(new NSSize(size, size));
@@ -304,7 +304,7 @@ public class IconCache {
             NSImage f = this.iconForExtension(item.getExtension(), size);
             f.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
-            NSImage o = this.iconForName("aliasbadge.png");
+            NSImage o = this.iconForName("aliasbadge.png", size);
             o.drawInRect(new NSRect(new NSPoint(0, 0), symlink.size()),
                     NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
             symlink.unlockFocus();
@@ -325,15 +325,15 @@ public class IconCache {
             if(overlay) {
                 if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
-                    return this.iconForFolder(this.iconForName("privatefolderbadge.png"), size);
+                    return this.iconForFolder(this.iconForName("privatefolderbadge.png", size), size);
                 }
                 if(!item.attributes().getPermission().isReadable()) {
                     if(item.attributes().getPermission().isWritable()) {
-                        return this.iconForFolder(this.iconForName("dropfolderbadge.png"), size);
+                        return this.iconForFolder(this.iconForName("dropfolderbadge.png", size), size);
                     }
                 }
                 if(!item.attributes().getPermission().isWritable()) {
-                    return this.iconForFolder(this.iconForName("readonlyfolderbadge.png"), size);
+                    return this.iconForFolder(this.iconForName("readonlyfolderbadge.png", size), size);
                 }
             }
             return this.iconForFolder(size);
