@@ -252,13 +252,13 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> childs(final Path parent) {
+    public AttributedList<Path> children(final Path parent) {
         if(!this.cache().containsKey(parent.<Object>getReference())) {
             if(!parent.getLocal().exists()) {
                 // Cannot fetch file listing of non existant file
                 return AttributedList.emptyList();
             }
-            final AttributedList<Path> childs = new AttributedList<Path>();
+            final AttributedList<Path> children = new AttributedList<Path>();
             for(AbstractPath child : parent.getLocal().children(childFilter)) {
                 final Local local = LocalFactory.createLocal(child.getAbsolute());
                 Path upload = PathFactory.createPath(getSession(), parent.getAbsolute(), local);
@@ -266,9 +266,9 @@ public class UploadTransfer extends Transfer {
                     upload = this.getSession().cache().lookup(upload.getReference());
                     upload.setLocal(local);
                 }
-                childs.add(upload);
+                children.add(upload);
             }
-            this.cache().put(parent.<Object>getReference(), childs);
+            this.cache().put(parent.<Object>getReference(), children);
         }
         return this.cache().get(parent.<Object>getReference());
     }
@@ -398,7 +398,7 @@ public class UploadTransfer extends Transfer {
             for(Path root : this.getRoots()) {
                 if(root.exists()) {
                     if(root.getLocal().attributes().isDirectory()) {
-                        if(0 == this.childs(root).size()) {
+                        if(0 == this.children(root).size()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }

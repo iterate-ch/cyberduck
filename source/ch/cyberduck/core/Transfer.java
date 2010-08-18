@@ -370,12 +370,12 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * Returns the childs of this path filtering it with the default regex filter
+     * Returns the children of this path filtering it with the default regex filter
      *
-     * @param parent The directory to list the childs
+     * @param parent The directory to list the children
      * @return A list of child items
      */
-    public abstract AttributedList<Path> childs(final Path parent);
+    public abstract AttributedList<Path> children(final Path parent);
 
     /**
      * @param item
@@ -405,7 +405,7 @@ public abstract class Transfer implements Serializable {
         item.status().setSelected(selected);
         if(item.attributes().isDirectory()) {
             if(item.isCached()) {
-                for(Path child : this.childs(item)) {
+                for(Path child : this.children(item)) {
                     this.setSelected(child, selected);
                 }
             }
@@ -452,11 +452,11 @@ public abstract class Transfer implements Serializable {
         if(p.attributes().isDirectory()) {
             p.status().reset();
             boolean failure = false;
-            final AttributedList<Path> childs = this.childs(p);
-            if(!childs.attributes().isReadable()) {
+            final AttributedList<Path> children = this.children(p);
+            if(!children.attributes().isReadable()) {
                 failure = true;
             }
-            for(Path child : childs) {
+            for(Path child : children) {
                 this.transfer(child, filter);
                 if(child.attributes().isFile() && !child.status().isComplete()) {
                     failure = true;
@@ -559,8 +559,8 @@ public abstract class Transfer implements Serializable {
         }
 
         if(p.attributes().isDirectory()) {
-            // Call recursively for all childs
-            for(Path child : this.childs(p)) {
+            // Call recursively for all children
+            for(Path child : this.children(p)) {
                 this.prepare(child, filter);
             }
         }

@@ -185,7 +185,7 @@ public class DownloadTransfer extends Transfer {
     };
 
     @Override
-    public AttributedList<Path> childs(final Path parent) {
+    public AttributedList<Path> children(final Path parent) {
         final AttributedList<Path> list = parent.children(childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder

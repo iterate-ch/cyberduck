@@ -216,18 +216,18 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public AttributedList<Path> childs(final Path parent) {
-        final Set<Path> childs = new HashSet<Path>();
+    public AttributedList<Path> children(final Path parent) {
+        final Set<Path> children = new HashSet<Path>();
         if(parent.exists()) {
-            childs.addAll(_delegateDownload.childs(parent));
+            children.addAll(_delegateDownload.children(parent));
         }
         if(parent.getLocal().exists()) {
-            childs.addAll(_delegateUpload.childs(parent));
+            children.addAll(_delegateUpload.children(parent));
         }
-        for(Path child : childs) {
+        for(Path child : children) {
             this.setStatus(child);
         }
-        return new AttributedList<Path>(childs);
+        return new AttributedList<Path>(children);
     }
 
     private void setStatus(Path path) {
@@ -274,14 +274,14 @@ public class SyncTransfer extends Transfer {
 
         @Override
         public AttributedList<Path> get(PathReference reference, Comparator<Path> c, PathFilter<Path> f) {
-            final Set<Path> childs = new HashSet<Path>();
+            final Set<Path> children = new HashSet<Path>();
             if(_delegateDownload.cache().containsKey(reference)) {
-                childs.addAll(_delegateDownload.cache().get(reference, c, f));
+                children.addAll(_delegateDownload.cache().get(reference, c, f));
             }
             if(_delegateUpload.cache().containsKey(reference)) {
-                childs.addAll(_delegateUpload.cache().get(reference, c, f));
+                children.addAll(_delegateUpload.cache().get(reference, c, f));
             }
-            return new AttributedList<Path>(childs);
+            return new AttributedList<Path>(children);
         }
 
         @Override
