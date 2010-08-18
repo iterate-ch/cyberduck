@@ -60,6 +60,11 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
 
     protected abstract Local getSelectedFile();
 
+    /**
+     * Caching last selected extension to build menu.
+     *
+     * @return
+     */
     @Override
     protected boolean isPopulated() {
         final Local selected = this.getSelectedFile();
