@@ -48,7 +48,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     /**
      * Contains all exceptions thrown while this action was running
      */
-    protected List<BackgroundException> exceptions
+    private List<BackgroundException> exceptions
             = new Collection<BackgroundException>();
 
     /**
@@ -59,7 +59,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     /**
      * Contains the transcript of the session while this action was running
      */
-    protected StringBuilder transcript;
+    private StringBuilder transcript;
 
     /**
      *
@@ -100,8 +100,22 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         if(exceptions.size() < Preferences.instance().getInteger("growl.limit")) {
             Growl.instance().notify(exception.getMessage(), description);
         }
-        exceptions.add(exception);
+        if(!exceptions.contains(exception)) {
+            exceptions.add(exception);
+        }
         failed = true;
+    }
+
+    public List<BackgroundException> getExceptions() {
+        return exceptions;
+    }
+
+    public String getTranscript() {
+        return transcript.toString();
+    }
+
+    public boolean hasTranscript() {
+        return transcript.length() > 0;
     }
 
     /**
@@ -165,6 +179,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         exceptions.clear();
     }
 
+    protected void diagnose() {
+        List<BackgroundException> exceptions = this.getExceptions();
+        exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
+    }
+
     /**
      * @return True if the the action had a permanent failures. Returns false if
      *         there were only temporary exceptions and the action suceeded upon retry
@@ -174,11 +193,21 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         return failed;
     }
 
+    public boolean isNetworkFailure() {
+        for(BackgroundException e : this.getExceptions()) {
+            final Throwable cause = e.getCause();
+            if(cause instanceof SocketException || cause instanceof UnknownHostException) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void finish() {
         while(this.hasFailed() && this.retry() > 0) {
             log.info("Retry failed background action:" + this);
-            // This is a automated retry. Wait some time first.
+            // This is an automated retry. Wait some time first.
             this.pause();
             if(!this.isCanceled()) {
                 repeatCount++;

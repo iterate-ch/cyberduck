@@ -181,4 +181,22 @@ public class BackgroundException extends Exception {
     public Session getSession() {
         return this.session;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof BackgroundException) {
+            BackgroundException other = (BackgroundException) obj;
+            if(!this.getSession().equals(other.getSession())) {
+                return false;
+            }
+            if(null == this.getPath() && null == other.getPath()) {
+                return this.getCause().getMessage().equals(other.getCause().getMessage());
+            }
+            if(!this.getPath().equals(other.getPath())) {
+                return false;
+            }
+            return this.getCause().getMessage().equals(other.getCause().getMessage());
+        }
+        return super.equals(obj);
+    }
 }
