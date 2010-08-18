@@ -27,6 +27,7 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.S3Object;
 
 import java.util.Arrays;
@@ -61,8 +62,37 @@ public class GSSession extends S3Session {
     @Override
     protected void configure() {
         super.configure();
+        Jets3tProperties configuration = super.getProperties();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
     }
+
+//    private static final String GOOGLE_SIGNATURE_IDENTIFIER = "GOOG1";
+//    private static final String GOOGLE_REST_HEADER_PREFIX = "x-goog-";
+//    private static final String GOOGLE_REST_METADATA_PREFIX = "x-goog-meta-";
+//
+//    /**
+//     * @return the identifier for the signature algorithm.
+//     */
+//    @Override
+//    protected String getSignatureIdentifier() {
+//        return GOOGLE_SIGNATURE_IDENTIFIER;
+//    }
+//
+//    /**
+//     * @return header prefix for general Google Storage headers: x-goog-.
+//     */
+//    @Override
+//    public String getRestHeaderPrefix() {
+//        return GOOGLE_REST_HEADER_PREFIX;
+//    }
+//
+//    /**
+//     * @return header prefix for Google Storage metadata headers: x-goog-meta-.
+//     */
+//    @Override
+//    public String getRestMetadataPrefix() {
+//        return GOOGLE_REST_METADATA_PREFIX;
+//    }
 
     @Override
     public List<String> getSupportedStorageClasses() {
@@ -92,6 +122,30 @@ public class GSSession extends S3Session {
     @Override
     public boolean isRequesterPaysSupported() {
         return false;
+    }
+
+    @Override
+    public List<Acl.User> getAvailableAclUsers() {
+        final List<Acl.User> users = super.getAvailableAclUsers();
+        users.add(new Acl.EmailUser() {
+            @Override
+            public String getPlaceholder() {
+                return Locale.localizedString("Google Account Email Address", "S3");
+            }
+        });
+//        users.add(new Acl.DomainUser("") {
+//            @Override
+//            public String getPlaceholder() {
+//                return Locale.localizedString("Google Apps Domain", "S3");
+//            }
+//        });
+//        users.add(new Acl.GroupUser("", true) {
+//            @Override
+//            public String getPlaceholder() {
+//                return Locale.localizedString("Google Group Email Address", "S3");
+//            }
+//        });
+        return users;
     }
 
     @Override
