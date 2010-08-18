@@ -850,7 +850,7 @@ public class GDPath extends Path {
     }
 
     @Override
-    public String toHttpURL() {
-        return this.getDocumentUri();
+    public DescriptiveUrl toHttpURL() {
+        return new DescriptiveUrl(this.getDocumentUri(), this.getHost().getProtocol().getDescription());
     }
 }

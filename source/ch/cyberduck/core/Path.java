@@ -907,7 +907,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The URL accessible with HTTP using the
      *         hostname configuration from the bookmark
      */
-    public String toHttpURL() {
+    public DescriptiveUrl toHttpURL() {
         return this.toHttpURL(this.getHost().getWebURL());
     }
 
@@ -916,7 +916,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The HTTP accessible URL of this path including the default path
      *         prepended from the bookmark
      */
-    protected String toHttpURL(String hostname) {
+    protected DescriptiveUrl toHttpURL(String hostname) {
         String absolute = this.encode(this.getAbsolute());
         if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
             if(absolute.startsWith(this.getHost().getDefaultPath())) {
@@ -926,7 +926,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(!absolute.startsWith(String.valueOf(DELIMITER))) {
             absolute = DELIMITER + absolute;
         }
-        return hostname + absolute;
+        return new DescriptiveUrl(hostname + absolute);
     }
 
     /**

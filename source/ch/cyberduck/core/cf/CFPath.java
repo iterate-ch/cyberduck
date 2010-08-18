@@ -398,7 +398,7 @@ public class CFPath extends CloudPath {
      * @return Publicy accessible URL of given object
      */
     @Override
-    public String toHttpURL() {
+    public DescriptiveUrl toHttpURL() {
         final Distribution distribution
                 = this.getSession().readDistribution(this.getContainerName(), Distribution.DOWNLOAD);
         if(null == distribution.getUrl()) {
@@ -409,6 +409,6 @@ public class CFPath extends CloudPath {
         if(!this.isContainer()) {
             b.append(this.encode(this.getKey()));
         }
-        return b.toString();
+        return new DescriptiveUrl(b.toString());
     }
 }

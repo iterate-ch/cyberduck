@@ -640,17 +640,17 @@ public class AzurePath extends CloudPath {
 
     @Override
     public String toURL() {
-        return this.toHttpURL();
+        return this.toHttpURL().getUrl();
     }
 
     @Override
-    public String toHttpURL() {
+    public DescriptiveUrl toHttpURL() {
         try {
             IBlobContainer container = this.getSession().getContainer(this.getContainerName());
             if(this.isContainer()) {
-                return container.getContainerUri().toString();
+                return new DescriptiveUrl(container.getContainerUri().toString());
             }
-            return container.getBlobProperties(this.getKey()).getUri().toString();
+            return new DescriptiveUrl(container.getBlobProperties(this.getKey()).getUri().toString());
         }
         catch(IOException e) {
             log.error(e.getMessage());
@@ -658,8 +658,7 @@ public class AzurePath extends CloudPath {
         return super.toHttpURL();
     }
 
-    @Override
-    public DescriptiveUrl createSignedUrl() {
+    public DescriptiveUrl toSignedUrl() {
         ResourceType type;
         if(this.isContainer()) {
             type = ResourceType.Container;

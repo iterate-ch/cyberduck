@@ -27,6 +27,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.apache.log4j.Logger;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GroupGrantee;
@@ -37,6 +38,7 @@ import java.io.IOException;
  * @version $Id$
  */
 public class GSPath extends S3Path {
+    private static Logger log = Logger.getLogger(GSPath.class);
 
     private static class Factory extends PathFactory<GSSession> {
         @Override
@@ -91,7 +93,7 @@ public class GSPath extends S3Path {
      * @return
      */
     @Override
-    public DescriptiveUrl createSignedUrl() {
+    public DescriptiveUrl toAuthenticatedUrl() {
         return new DescriptiveUrl("https://sandbox.google.com/storage" + this.getAbsolute(),
                 Locale.localizedString("Authenticated browser download using cookie-based Google account authentication in conjunction with ACL", "S3"));
     }
@@ -102,8 +104,8 @@ public class GSPath extends S3Path {
      * @return Always null.
      */
     @Override
-    public DescriptiveUrl createTorrentUrl() {
-        return null;
+    public DescriptiveUrl toTorrentUrl() {
+        return new DescriptiveUrl(null, null);
     }
 
     /**
@@ -147,4 +149,87 @@ public class GSPath extends S3Path {
         }
         return acl;
     }
+
+//    /**
+//     * Convert ACL read from service.
+//     *
+//     * @param list
+//     * @return
+//     */
+//    @Override
+//    protected Acl convert(final AccessControlList list) {
+//        if(log.isDebugEnabled()) {
+//            try {
+//                log.debug(list.toXml());
+//            }
+//            catch(S3ServiceException e) {
+//                log.error(e.getMessage());
+//            }
+//        }
+//        Acl acl = new Acl();
+//        for(GrantAndPermission grant : list.getGrantAndPermissions()) {
+//            Acl.Role role = new Acl.Role(grant.getPermission().toString());
+//            if(grant.getGrantee() instanceof CanonicalGrantee) {
+//                acl.addAll(new Acl.CanonicalUser(grant.getGrantee().getIdentifier(),
+//                        ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
+//            }
+//            else if(grant.getGrantee() instanceof EmailAddressGrantee) {
+//                acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier()), role);
+//            }
+//            else if(grant.getGrantee() instanceof UserByEmailAddressGrantee) {
+//                acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier()), role);
+//            }
+//            else if(grant.getGrantee() instanceof GroupByEmailAddressGrantee) {
+//                acl.addAll(new Acl.EmailGroupUser(grant.getGrantee().getIdentifier()), role);
+//            }
+//            else if(grant.getGrantee() instanceof GroupByDomainGrantee) {
+//                acl.addAll(new Acl.DomainUser(grant.getGrantee().getIdentifier()), role);
+//            }
+//            else if(grant.getGrantee() instanceof GroupGrantee) {
+//                acl.addAll(new Acl.GroupUser(grant.getGrantee().getIdentifier()), role);
+//            }
+//        }
+//        return acl;
+//    }
+
+//    @Override
+//    protected AccessControlList convert(Acl acl) throws IOException {
+//        AccessControlList list = new AccessControlList();
+//        final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
+//        list.setOwner(owner);
+//        for(Acl.UserAndRole userAndRole : acl.asList()) {
+//            if(!userAndRole.isValid()) {
+//                continue;
+//            }
+//            if(userAndRole.getUser() instanceof Acl.EmailUser) {
+//                list.grantPermission(new UserByEmailAddressGrantee(userAndRole.getUser().getIdentifier()),
+//                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+//            }
+//            else if(userAndRole.getUser() instanceof Acl.GroupUser) {
+//                list.grantPermission(new GroupByIdGrantee(userAndRole.getUser().getIdentifier()),
+//                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+//            }
+//            else if(userAndRole.getUser() instanceof Acl.EmailGroupUser) {
+//                list.grantPermission(new GroupByEmailAddressGrantee(userAndRole.getUser().getIdentifier()),
+//                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+//            }
+//            else if(userAndRole.getUser() instanceof Acl.DomainUser) {
+//                list.grantPermission(new GroupByDomainGrantee(userAndRole.getUser().getIdentifier()),
+//                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+//            }
+//            else {
+//                list.grantPermission(new UserByIdGrantee(userAndRole.getUser().getIdentifier()),
+//                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+//            }
+//        }
+//        if(log.isDebugEnabled()) {
+//            try {
+//                log.debug(list.toXml());
+//            }
+//            catch(S3ServiceException e) {
+//                log.error(e.getMessage());
+//            }
+//        }
+//        return list;
+//    }
 }
