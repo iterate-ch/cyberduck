@@ -322,7 +322,9 @@ public class S3Session extends CloudSession implements SSLSession {
             if(reload) {
                 loggingStatus.clear();
                 versioningStatus.clear();
-                distributionStatus.clear();
+                for(Distribution.Method method : this.getSupportedDistributionMethods()) {
+                    distributionStatus.get(method).clear();
+                }
             }
         }
         return new ArrayList<S3Bucket>(buckets.values());
@@ -859,7 +861,7 @@ public class S3Session extends CloudSession implements SSLSession {
             distributionStatus.put(method, new HashMap<String, Distribution>(0));
         }
     }
-    
+
     @Override
     public List<Distribution.Method> getSupportedDistributionMethods() {
         return distributionMethods;
