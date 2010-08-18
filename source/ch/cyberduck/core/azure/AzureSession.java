@@ -82,6 +82,11 @@ public class AzureSession extends CloudSession implements SSLSession {
     }
 
     @Override
+    public Distribution getDistribution(String container, Distribution.Method method) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void writeDistribution(boolean enabled, String container, Distribution.Method method, 
                                   String[] cnames, boolean logging, String defaultRootObject) {
         throw new UnsupportedOperationException();
@@ -89,7 +94,7 @@ public class AzureSession extends CloudSession implements SSLSession {
 
     @Override
     public Distribution readDistribution(String container, Distribution.Method method) {
-        return new Distribution();
+        throw new UnsupportedOperationException();
     }
 
     @Override

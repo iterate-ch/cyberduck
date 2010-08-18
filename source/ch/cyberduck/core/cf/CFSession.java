@@ -177,6 +177,11 @@ public class CFSession extends CloudSession implements SSLSession {
     private Map<String, Distribution> distributionStatus
             = new HashMap<String, Distribution>();
 
+    @Override
+    public Distribution getDistribution(String container, Distribution.Method method) {
+        return distributionStatus.get(container);
+    }
+
     /**
      * @param enabled Enable content distribution for the container
      * @param method

@@ -33,12 +33,19 @@ public abstract class CloudSession extends HTTPSession {
     }
 
     /**
+     * @param container
+     * @param method
+     * @return Cached distribution if available.
+     */
+    public abstract Distribution getDistribution(String container, Distribution.Method method);
+
+    /**
      * @param enabled
      * @param method
      * @param cnames
      * @param logging
      */
-    public abstract void writeDistribution(boolean enabled, String container, Distribution.Method method, 
+    public abstract void writeDistribution(boolean enabled, String container, Distribution.Method method,
                                            String[] cnames, boolean logging, String defaultRootObject);
 
     /**

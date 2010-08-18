@@ -50,6 +50,7 @@ import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
@@ -75,20 +76,106 @@ public class S3Session extends CloudSession implements SSLSession {
         return new Factory();
     }
 
-    private CustomRestS3Service S3;
+    private RequestEntityRestStorageService S3;
 
     protected S3Session(Host h) {
         super(h);
     }
 
     @Override
-    protected CustomRestS3Service getClient() throws ConnectionCanceledException {
+    protected RequestEntityRestStorageService getClient() throws ConnectionCanceledException {
         if(null == S3) {
             throw new ConnectionCanceledException();
         }
         return S3;
     }
 
+    /**
+     * Exposing protected methods
+     */
+    public class RequestEntityRestStorageService extends RestS3Service {
+        public RequestEntityRestStorageService(ProviderCredentials credentials) throws S3ServiceException {
+            super(credentials, S3Session.this.getUserAgent(), new CredentialsProvider() {
+                /**
+                 * Implementation method for the CredentialsProvider interface
+                 * @throws CredentialsNotAvailableException
+                 */
+                public org.apache.commons.httpclient.Credentials getCredentials(AuthScheme authscheme, String hostname, int port, boolean proxy)
+                        throws CredentialsNotAvailableException {
+                    log.error("Additional HTTP authentication not supported:" + authscheme.getSchemeName());
+                    throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
+                            authscheme.getSchemeName());
+                }
+            }, S3Session.this.getProperties(), S3Session.this.getHostConfiguration());
+        }
+
+        /**
+         * Exposing implementation method.
+         *
+         * @param bucketName
+         * @param object
+         * @param requestEntity
+         * @throws S3ServiceException
+         */
+        @Override
+        public void pubObjectWithRequestEntityImpl(String bucketName, S3Object object,
+                                                   RequestEntity requestEntity) throws S3ServiceException {
+            super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
+        }
+
+        /**
+         * @return the identifier for the signature algorithm.
+         */
+        @Override
+        protected String getSignatureIdentifier() {
+            return S3Session.this.getSignatureIdentifier();
+        }
+
+        /**
+         * @return header prefix for general Google Storage headers: x-goog-.
+         */
+        @Override
+        public String getRestHeaderPrefix() {
+            return S3Session.this.getRestHeaderPrefix();
+        }
+
+        /**
+         * @return header prefix for Google Storage metadata headers: x-goog-meta-.
+         */
+        @Override
+        public String getRestMetadataPrefix() {
+            return S3Session.this.getRestMetadataPrefix();
+        }
+    }
+
+    private static final String AWS_SIGNATURE_IDENTIFIER = "AWS";
+    private static final String AWS_REST_HEADER_PREFIX = "x-amz-";
+    private static final String AWS_REST_METADATA_PREFIX = "x-amz-meta-";
+
+    /**
+     * @return the identifier for the signature algorithm.
+     */
+    protected String getSignatureIdentifier() {
+        return AWS_SIGNATURE_IDENTIFIER;
+    }
+
+    /**
+     * @return header prefix for general headers.
+     */
+    protected String getRestHeaderPrefix() {
+        return AWS_REST_HEADER_PREFIX;
+    }
+
+    /**
+     * @return header prefix for metadata headers.
+     */
+    protected String getRestMetadataPrefix() {
+        return AWS_REST_METADATA_PREFIX;
+    }
+
+    /**
+     *
+     */
     private AbstractX509TrustManager trustManager;
 
     /**
@@ -108,35 +195,17 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     /**
-     * Exposing protected methods
-     */
-    public static class CustomRestS3Service extends RestS3Service {
-        public CustomRestS3Service(AWSCredentials awsCredentials, String invokingApplicationDescription,
-                                   CredentialsProvider credentialsProvider,
-                                   Jets3tProperties jets3tProperties,
-                                   HostConfiguration hostConfig) throws S3ServiceException {
-            super(awsCredentials, invokingApplicationDescription, credentialsProvider, jets3tProperties, hostConfig);
-        }
-
-        /**
-         * Exposing implementation method.
-         *
-         * @param bucketName
-         * @param object
-         * @param requestEntity
-         * @throws S3ServiceException
-         */
-        @Override
-        public void pubObjectWithRequestEntityImpl(String bucketName, S3Object object,
-                                                   RequestEntity requestEntity) throws S3ServiceException {
-            super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
-        }
-    }
-
-    /**
      *
      */
-    protected Jets3tProperties configuration = new Jets3tProperties();
+    private Jets3tProperties configuration
+            = new Jets3tProperties();
+
+    /**
+     * @return Client configuration
+     */
+    protected Jets3tProperties getProperties() {
+        return configuration;
+    }
 
     protected void configure() {
         if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())
@@ -197,7 +266,8 @@ public class S3Session extends CloudSession implements SSLSession {
     /**
      * Caching the uses's buckets
      */
-    private Map<String, S3Bucket> buckets = new HashMap<String, S3Bucket>();
+    private Map<String, S3Bucket> buckets
+            = new HashMap<String, S3Bucket>();
 
     /**
      * @param reload
@@ -359,29 +429,9 @@ public class S3Session extends CloudSession implements SSLSession {
 
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
-        this.login(controller, credentials, this.getHostConfiguration());
-    }
-
-    /**
-     * @param credentials
-     * @param hostconfig
-     * @throws IOException
-     */
-    protected void login(LoginController controller, Credentials credentials, HostConfiguration hostconfig) throws IOException {
         try {
-            this.S3 = new CustomRestS3Service(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
-                    credentials.getPassword()), this.getUserAgent(), new CredentialsProvider() {
-                /**
-                 * Implementation method for the CredentialsProvider interface
-                 * @throws CredentialsNotAvailableException
-                 */
-                public org.apache.commons.httpclient.Credentials getCredentials(AuthScheme authscheme, String hostname, int port, boolean proxy)
-                        throws CredentialsNotAvailableException {
-                    log.error("Additional HTTP authentication not supported:" + authscheme.getSchemeName());
-                    throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
-                            authscheme.getSchemeName());
-                }
-            }, configuration, hostconfig);
+            this.S3 = new RequestEntityRestStorageService(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
+                    credentials.getPassword()));
             this.getBuckets(true);
         }
         catch(S3ServiceException e) {
@@ -681,9 +731,24 @@ public class S3Session extends CloudSession implements SSLSession {
     /**
      * Cache distribution status result.
      */
-    private Map<String, Distribution> distributionStatus
-            = new HashMap<String, Distribution>();
+    private Map<Distribution.Method, Map<String, Distribution>> distributionStatus
+            = new HashMap<Distribution.Method, Map<String, Distribution>>();
 
+    {
+        for(Distribution.Method method : this.getSupportedDistributionMethods()) {
+            distributionStatus.put(method, new HashMap<String, Distribution>());
+        }
+    }
+
+    /**
+     * @param container
+     * @param method
+     * @return
+     */
+    @Override
+    public Distribution getDistribution(String container, Distribution.Method method) {
+        return distributionStatus.get(method).get(container);
+    }
 
     /**
      * @return
@@ -697,7 +762,7 @@ public class S3Session extends CloudSession implements SSLSession {
         if(this.getSupportedDistributionMethods().size() == 0) {
             return new Distribution();
         }
-        if(!distributionStatus.containsKey(container)) {
+        if(!distributionStatus.get(method).containsKey(container)) {
             try {
                 this.check();
                 for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container, method)) {
@@ -711,7 +776,7 @@ public class S3Session extends CloudSession implements SSLSession {
                             distributionConfig.isLoggingEnabled(),
                             method, distributionConfig.getDefaultRootObject());
                     if(distribution.isDeployed()) {
-                        distributionStatus.put(container, distribution);
+                        distributionStatus.get(method).put(container, distribution);
                     }
                     return distribution;
                 }
@@ -729,8 +794,8 @@ public class S3Session extends CloudSession implements SSLSession {
                 this.error("Cannot read file attributes", e);
             }
         }
-        if(distributionStatus.containsKey(container)) {
-            return distributionStatus.get(container);
+        if(distributionStatus.get(method).containsKey(container)) {
+            return distributionStatus.get(method).get(container);
         }
         return new Distribution();
     }
@@ -783,7 +848,7 @@ public class S3Session extends CloudSession implements SSLSession {
             this.error("Cannot write file attributes", e);
         }
         finally {
-            distributionStatus.clear();
+            distributionStatus.get(method).clear();
         }
     }
 
@@ -1087,9 +1152,15 @@ public class S3Session extends CloudSession implements SSLSession {
     @Override
     public List<Acl.User> getAvailableAclUsers() {
         final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
+                new Acl.CanonicalUser(),
                 new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false),
-                new Acl.CanonicalUser(""),
-                new Acl.EmailUser("")));
+                new Acl.EmailUser() {
+                    @Override
+                    public String getPlaceholder() {
+                        return Locale.localizedString("Amazon Customer Email Address", "S3");
+                    }
+                })
+        );
         for(final S3Bucket container : buckets.values()) {
             final Acl.CanonicalUser owner = new Acl.CanonicalUser(container.getOwner().getId(), container.getOwner().getDisplayName(), false) {
                 @Override
@@ -1100,7 +1171,7 @@ public class S3Session extends CloudSession implements SSLSession {
             if(users.contains(owner)) {
                 continue;
             }
-            users.add(owner);
+            users.add(0, owner);
         }
         return users;
     }
