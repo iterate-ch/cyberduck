@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -39,7 +40,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -553,6 +553,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return selected.getLocal();
         }
         return null;
+    }
+
+    @Outlet
+    private NSMenu urlMenu;
+    private URLMenuDelegate urlMenuDelegate;
+
+    public void setUrlMenu(NSMenu urlMenu) {
+        this.urlMenu = urlMenu;
+        this.urlMenuDelegate = new URLMenuDelegate() {
+            @Override
+            protected Path getSelectedFile() {
+                return getSelectedPath();
+            }
+        };
+        this.urlMenu.setDelegate(urlMenuDelegate.id());
     }
 
     @Outlet
@@ -2401,18 +2416,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void openBrowserButtonClicked(final ID sender) {
-        this.openUrl(this.getSelectedPathWebUrl());
-    }
-
-    protected String getSelectedPathWebUrl() {
         Path selected;
         if(this.getSelectionCount() == 1) {
             selected = this.getSelectedPath();
+            this.openUrl(this.getSelectedPath().toHttpURL());
         }
         else {
-            selected = this.workdir();
+            this.openUrl(this.workdir().toHttpURL());
         }
-        return selected.toHttpURL();
     }
 
     @Action
@@ -2932,42 +2943,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     this.transfer(q, workdir);
                 }
             }
-        }
-    }
-
-    @Action
-    public void copyURLButtonClicked(final ID sender) {
-        final StringBuilder url = new StringBuilder();
-        if(this.getSelectionCount() > 0) {
-            for(Iterator<Path> iter = this.getSelectedPaths().iterator(); iter.hasNext();) {
-                url.append(iter.next().toURL());
-                if(iter.hasNext()) {
-                    url.append("\n");
-                }
-            }
-        }
-        else {
-            url.append(this.workdir().toURL());
-        }
-        NSPasteboard pboard = NSPasteboard.generalPasteboard();
-        pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-        if(!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
-            log.error("Error writing URL to NSPasteboard.StringPboardType.");
-        }
-    }
-
-    @Action
-    public void copyWebURLButtonClicked(final ID sender) {
-        final String url = this.getSelectedPathWebUrl();
-        if(StringUtils.isNotBlank(url)) {
-            NSPasteboard pboard = NSPasteboard.generalPasteboard();
-            pboard.declareTypes(NSArray.arrayWithObject(NSPasteboard.StringPboardType), null);
-            if(!pboard.setString_forType(url, NSPasteboard.StringPboardType)) {
-                log.error("Error writing URL to NSPasteboard.StringPboardType.");
-            }
-        }
-        else {
-            AppKitFunctions.instance.NSBeep();
         }
     }
 
@@ -3901,9 +3876,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(action.equals(Foundation.selector("forwardButtonClicked:"))) {
             return this.isMounted() && this.getForwardHistory().size() > 0;
         }
-        else if(action.equals(Foundation.selector("copyURLButtonClicked:")) || action.equals(Foundation.selector("copyWebURLButtonClicked:"))) {
-            return this.isMounted();
-        }
         else if(action.equals(Foundation.selector("printDocument:"))) {
             return this.isMounted();
         }
@@ -4138,7 +4110,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setToolTip(Locale.localizedString("Refresh directory listing"));
-            item.setImage(IconCache.iconNamed("reload.tiff"));
+            item.setImage(IconCache.iconNamed("refresh.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;

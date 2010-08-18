@@ -2012,6 +2012,7 @@ source/ch/cyberduck/ui/cocoa/AbstractPathTableDelegate.java -text
 source/ch/cyberduck/ui/cocoa/BundleController.java -text
 source/ch/cyberduck/ui/cocoa/ErrorController.java -text
 source/ch/cyberduck/ui/cocoa/TranscriptController.java -text
+source/ch/cyberduck/ui/cocoa/delegate/URLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text

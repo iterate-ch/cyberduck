@@ -194,6 +194,27 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     @Outlet
+    private NSMenu urlMenu;
+    private URLMenuDelegate urlMenuDelegate;
+
+    public void setUrlMenu(NSMenu urlMenu) {
+        this.urlMenu = urlMenu;
+        this.urlMenuDelegate = new URLMenuDelegate() {
+            @Override
+            protected Path getSelectedFile() {
+                final List<BrowserController> browsers = MainController.getBrowsers();
+                for(BrowserController controller : browsers) {
+                    if(controller.window().isKeyWindow()) {
+                        return controller.getSelectedPath();
+                    }
+                }
+                return null;
+            }
+        };
+        this.urlMenu.setDelegate(urlMenuDelegate.id());
+    }
+
+    @Outlet
     private NSMenu archiveMenu;
     private ArchiveMenuDelegate archiveMenuDelegate;
 
