@@ -212,7 +212,8 @@ public class Distribution {
             // We only support one CNAME URL
             return this.getMethod().getProtocol() + cname + this.getMethod().getContext() + key;
         }
-        return null;
+        // No CNAME configured.
+        return this.getUrl(key);
     }
 
     /**
