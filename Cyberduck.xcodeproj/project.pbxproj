@@ -208,6 +208,7 @@
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		47C4E87710584D710001F618 /* bookmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C4E87610584D710001F618 /* bookmark.png */; };
 		47C577EB121BF89C0005FDCC /* azure.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47C577EA121BF89C0005FDCC /* azure.icns */; };
+		47C5F1C3121C39A60037247D /* refresh.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47C5F1C2121C39A60037247D /* refresh.tiff */; };
 		47CD32A10751163400B82A2B /* plus.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47CD32A00751163400B82A2B /* plus.tiff */; };
 		47D31BFE1013AD19006423B2 /* eucalyptus-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47D31BFD1013AD19006423B2 /* eucalyptus-icon.png */; };
 		47D327A40F0829EC00619C38 /* rendezvous.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47D327A30F0829EC00619C38 /* rendezvous.tiff */; };
@@ -1263,6 +1264,7 @@
 		47C4E87610584D710001F618 /* bookmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bookmark.png; sourceTree = "<group>"; };
 		47C577EA121BF89C0005FDCC /* azure.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = azure.icns; sourceTree = "<group>"; };
 		47C59A560880165B00CC2FA5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ja; path = ja.lproj/Command.nib; sourceTree = "<group>"; };
+		47C5F1C2121C39A60037247D /* refresh.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = refresh.tiff; sourceTree = "<group>"; };
 		47C761EA06A88D7600B464FF /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		47C92D4D1189B6B300EDDD00 /* sl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sl; path = sl.lproj/Alert.nib; sourceTree = "<group>"; };
 		47C92D4E1189B6B300EDDD00 /* sl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sl; path = sl.lproj/Bookmark.nib; sourceTree = "<group>"; };
@@ -1790,6 +1792,7 @@
 				478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */,
 				479734D9077B735A0027370F /* arrowLeftBlack16.tiff */,
 				4739D3960F82681100D2782A /* reload.tiff */,
+				47C5F1C2121C39A60037247D /* refresh.tiff */,
 				4741653E06C4FC3F00AC0BD2 /* addPressed.tiff */,
 				4741653F06C4FC3F00AC0BD2 /* alert.tiff */,
 				4741654406C4FC3F00AC0BD2 /* bookmarks.tiff */,
@@ -2540,6 +2543,7 @@
 				476901D9120FEF4300A43B25 /* permissions.tiff in Resources */,
 				476901DD120FEF4D00A43B25 /* newfolder.tiff in Resources */,
 				47C577EB121BF89C0005FDCC /* azure.icns in Resources */,
+				47C5F1C3121C39A60037247D /* refresh.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

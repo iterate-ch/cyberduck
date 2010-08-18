@@ -837,6 +837,7 @@ img/plus.tiff -text svneol=unset#image/tiff
 img/privatefolderbadge.png -text svneol=unset#image/png
 img/queue.tiff -text svneol=unset#image/tiff
 img/readonlyfolderbadge.png -text svneol=unset#image/png
+img/refresh.tiff -text svneol=unset#image/tiff
 img/reload.tiff -text svneol=unset#image/tiff
 img/remove.tiff -text svneol=unset#image/tiff
 img/removePressed.tiff -text svneol=unset#image/tiff
