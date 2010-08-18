@@ -749,18 +749,6 @@ public abstract class NSTextView extends NSText {
      * - (void)showFindIndicatorForRange:(null)charRange; (Argument charRange cannot be converted)
      */
     /**
-     * <i>from NSSharing native declaration : :422</i><br>
-     * Conversion Error : /// Original signature : <code>void setDelegate(null)</code><br>
-     * - (void)setDelegate:(null)anObject; (Argument anObject cannot be converted)
-     */
-    public abstract void setDelegate(org.rococoa.ID anObject);
-
-    /**
-     * Original signature : <code>void setBackgroundColor(NSColor*)</code><br>
-     * <i>from NSSharing native declaration : :434</i>
-     */
-    public abstract void setBackgroundColor(NSColor color);
-    /**
      * <i>from NSSharing native declaration : :440</i><br>
      * Conversion Error : /// Original signature : <code>void setSelectedRange(null)</code><br>
      * - (void)setSelectedRange:(null)charRange; (Argument charRange cannot be converted)
