@@ -144,18 +144,6 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
          */
         public abstract String getPlaceholder();
 
-        public boolean isEmailIdentifier() {
-            return false;
-        }
-
-        public boolean isGroupIdentifier() {
-            return false;
-        }
-
-        public boolean isDomainIdentifier() {
-            return false;
-        }
-
         @Override
         public String toString() {
             return identifier;
@@ -209,6 +197,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         private String displayName;
 
+        public CanonicalUser() {
+            this("", null);
+        }
+
         public CanonicalUser(String identifier) {
             this(identifier, null);
         }
@@ -257,14 +249,12 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
      * An email grantee
      */
     public static class EmailUser extends User {
+        public EmailUser() {
+            super("", true);
+        }
 
         public EmailUser(String identifier) {
             super(identifier, true);
-        }
-
-        @Override
-        public boolean isEmailIdentifier() {
-            return true;
         }
 
         @Override
@@ -283,13 +273,23 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         }
 
         @Override
-        public boolean isGroupIdentifier() {
-            return true;
+        public String getPlaceholder() {
+            return Locale.localizedString(this.getIdentifier(), "S3");
+        }
+    }
+
+    public static class EmailGroupUser extends User {
+        public EmailGroupUser(String identifier) {
+            this(identifier, false);
+        }
+
+        public EmailGroupUser(String identifier, boolean editable) {
+            super(identifier, editable);
         }
 
         @Override
         public String getPlaceholder() {
-            return Locale.localizedString(this.getIdentifier(), "S3");
+            return Locale.localizedString("Email Address", "S3");
         }
     }
 
@@ -299,13 +299,8 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         }
 
         @Override
-        public boolean isDomainIdentifier() {
-            return true;
-        }
-
-        @Override
         public String getPlaceholder() {
-            return Locale.localizedString(this.getIdentifier(), "S3");
+            return Locale.localizedString("Domain Name", "S3");
         }
     }
 
