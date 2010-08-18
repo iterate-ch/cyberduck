@@ -548,7 +548,7 @@ public class GDPath extends Path {
 
     @Override
     public AttributedList<Path> list() {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
@@ -556,15 +556,15 @@ public class GDPath extends Path {
 
             this.getSession().setWorkdir(this);
 
-            childs.addAll(this.list(new DocumentQuery(this.getFolderFeed())));
+            children.addAll(this.list(new DocumentQuery(this.getFolderFeed())));
         }
         catch(ServiceException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
         catch(IOException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
-        return childs;
+        return children;
     }
 
     private void filter(List<DocumentListEntry> entries) {
@@ -591,7 +591,7 @@ public class GDPath extends Path {
      * @throws IOException
      */
     private AttributedList<Path> list(DocumentQuery query) throws ServiceException, IOException {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
 
         DocumentListFeed feed = new DocumentListFeed();
         DocumentListFeed pager = this.getSession().getClient().getFeed(query, DocumentListFeed.class);
@@ -641,7 +641,7 @@ public class GDPath extends Path {
                     path.attributes().setModificationDate(updated.getValue());
                 }
                 // Add to listing
-                childs.add(path);
+                children.add(path);
                 if(path.attributes().isFile()) {
                     // Fetch revisions
                     if(Preferences.instance().getBoolean("google.docs.revisions.enable")) {
@@ -672,7 +672,7 @@ public class GDPath extends Path {
                                 revision.attributes().setRevision(++i);
                                 revision.attributes().setDuplicate(true);
                                 // Add to listing
-                                childs.add(revision);
+                                children.add(revision);
                             }
                         }
                         catch(NotImplementedException e) {
@@ -682,7 +682,7 @@ public class GDPath extends Path {
                 }
             }
         }
-        return childs;
+        return children;
     }
 
     @Override

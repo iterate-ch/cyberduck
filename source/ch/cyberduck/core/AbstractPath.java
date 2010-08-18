@@ -223,7 +223,7 @@ public abstract class AbstractPath {
      */
     public boolean isChild(AbstractPath p) {
         if(this.attributes().isFile()) {
-            // If a file we don't have any childs at all
+            // If a file we don't have any children at all
             return false;
         }
         if(this.getParent().equals(p.getParent())) {
@@ -309,7 +309,7 @@ public abstract class AbstractPath {
     public abstract void delete();
 
     /**
-     * @return True if the directory contains no childs items
+     * @return True if the directory contains no children items
      */
     public boolean isEmpty() {
         return this.children().size() == 0;

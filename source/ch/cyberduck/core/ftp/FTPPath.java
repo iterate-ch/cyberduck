@@ -107,7 +107,7 @@ public class FTPPath extends Path {
 
     @Override
     public AttributedList<Path> list() {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
@@ -116,13 +116,13 @@ public class FTPPath extends Path {
             this.getSession().setWorkdir(this);
             // Cached file parser determined from SYST response with the timezone set from the bookmark
             final FTPFileEntryParser parser = this.getSession().getFileParser();
-            boolean success = this.parse(childs, parser, this.getSession().getClient().stat(this.getAbsolute()));
-            if(!success || childs.isEmpty()) {
+            boolean success = this.parse(children, parser, this.getSession().getClient().stat(this.getAbsolute()));
+            if(!success || children.isEmpty()) {
                 // STAT listing failed or empty
                 // Set transfer type for traditional data socket file listings
                 this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
                 final BufferedReader mlsd = this.getSession().getClient().mlsd(this.getSession().getEncoding());
-                success = this.parse(childs, mlsd);
+                success = this.parse(children, mlsd);
                 // MLSD listing failed
                 if(null != mlsd) {
                     // Close MLSD data socket
@@ -130,7 +130,7 @@ public class FTPPath extends Path {
                 }
                 if(!success) {
                     final BufferedReader lsa = this.getSession().getClient().list(this.getSession().getEncoding(), true);
-                    success = this.parse(childs, parser, lsa);
+                    success = this.parse(children, parser, lsa);
                     if(null != lsa) {
                         // Close LIST data socket
                         this.getSession().getClient().finishDir();
@@ -138,7 +138,7 @@ public class FTPPath extends Path {
                     if(!success) {
                         // LIST -a listing failed
                         final BufferedReader ls = this.getSession().getClient().list(this.getSession().getEncoding(), false);
-                        success = this.parse(childs, parser, ls);
+                        success = this.parse(children, parser, ls);
                         if(null != ls) {
                             // Close LIST data socket
                             this.getSession().getClient().finishDir();
@@ -150,7 +150,7 @@ public class FTPPath extends Path {
                     }
                 }
             }
-            for(Path child : childs) {
+            for(Path child : children) {
                 if(child.attributes().getType() == Path.SYMBOLIC_LINK_TYPE) {
                     try {
                         this.getSession().setWorkdir(child);
@@ -163,9 +163,9 @@ public class FTPPath extends Path {
             }
         }
         catch(IOException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
-        return childs;
+        return children;
     }
 
     /**
@@ -233,12 +233,12 @@ public class FTPPath extends Path {
     /**
      * Parse response of MLSD
      *
-     * @param childs
+     * @param children
      * @param reader
      * @return
      * @throws IOException
      */
-    private boolean parse(final AttributedList<Path> childs, BufferedReader reader)
+    private boolean parse(final AttributedList<Path> children, BufferedReader reader)
             throws IOException {
 
         if(null == reader) {
@@ -307,7 +307,7 @@ public class FTPPath extends Path {
                     if(facts.containsKey("create")) {
                         parsed.attributes().setCreationDate(this.getSession().getClient().parseTimestamp(facts.get("create")));
                     }
-                    childs.add(parsed);
+                    children.add(parsed);
                 }
             }
         }
@@ -322,7 +322,7 @@ public class FTPPath extends Path {
      * @return An empty list if no parsable lines are found
      * @throws IOException
      */
-    protected boolean parse(final AttributedList<Path> childs, FTPFileEntryParser parser, BufferedReader reader)
+    protected boolean parse(final AttributedList<Path> children, FTPFileEntryParser parser, BufferedReader reader)
             throws IOException {
         if(null == reader) {
             // This is an empty directory
@@ -385,7 +385,7 @@ public class FTPPath extends Path {
             if(timestamp != null) {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());
             }
-            childs.add(parsed);
+            children.add(parsed);
         }
         return success;
     }

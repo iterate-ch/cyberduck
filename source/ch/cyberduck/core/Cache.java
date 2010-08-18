@@ -83,18 +83,18 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     * Get the childs of this path using the last sorting and filter used
+     * Get the children of this path using the last sorting and filter used
      *
      * @param reference Reference to the path in cache.
      * @return An empty list if no cached file listing is available
      */
     public AttributedList<E> get(PathReference reference) {
-        final AttributedList<E> childs = this.get(reference, null, null);
-        if(null == childs) {
+        final AttributedList<E> children = this.get(reference, null, null);
+        if(null == children) {
             log.warn("No cache for " + reference);
             return AttributedList.emptyList();
         }
-        return childs;
+        return children;
     }
 
     /**
@@ -110,56 +110,56 @@ public class Cache<E extends AbstractPath> {
      *          and requests a new filter here.
      */
     public AttributedList<E> get(PathReference reference, Comparator<E> comparator, PathFilter<E> filter) {
-        AttributedList<E> childs = _impl.get(reference);
-        if(null == childs) {
+        AttributedList<E> children = _impl.get(reference);
+        if(null == children) {
             log.warn("No cache for " + reference);
             return AttributedList.emptyList();
         }
         boolean needsSorting = false;
         if(null != comparator) {
-            needsSorting = !childs.attributes().getComparator().equals(comparator);
+            needsSorting = !children.attributes().getComparator().equals(comparator);
         }
         boolean needsFiltering = false;
         if(null != filter) {
-            needsFiltering = !childs.attributes().getFilter().equals(filter);
+            needsFiltering = !children.attributes().getFilter().equals(filter);
         }
         if(needsSorting) {
             // Do not sort when the list has not been filtered yet
             if(!needsFiltering) {
-                childs.sort(comparator);
+                children.sort(comparator);
             }
             // Saving last sorting comparator
-            childs.attributes().setComparator(comparator);
+            children.attributes().setComparator(comparator);
         }
         if(needsFiltering) {
-            // Add previously hidden files to childs
-            final List<E> hidden = childs.attributes().getHidden();
-            childs.addAll(hidden);
+            // Add previously hidden files to children
+            final List<E> hidden = children.attributes().getHidden();
+            children.addAll(hidden);
             // Clear the previously set of hidden files
             hidden.clear();
-            for(E child : childs) {
+            for(E child : children) {
                 if(!filter.accept(child)) {
                     //child not accepted by filter; add to cached hidden files
-                    childs.attributes().addHidden(child);
+                    children.attributes().addHidden(child);
                     //remove hidden file from current file listing
-                    childs.remove(child);
+                    children.remove(child);
                 }
             }
             // Saving last filter
-            childs.attributes().setFilter(filter);
+            children.attributes().setFilter(filter);
             // Sort again because the list has changed
-            childs.sort(comparator);
+            children.sort(comparator);
         }
-        return childs;
+        return children;
     }
 
     /**
      * @param reference Reference to the path in cache.
-     * @param childs
+     * @param children
      * @return
      */
-    public AttributedList<E> put(PathReference reference, AttributedList<E> childs) {
-        return _impl.put(reference, childs);
+    public AttributedList<E> put(PathReference reference, AttributedList<E> children) {
+        return _impl.put(reference, children);
     }
 
     /**

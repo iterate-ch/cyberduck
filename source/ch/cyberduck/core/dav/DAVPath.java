@@ -155,7 +155,7 @@ public class DAVPath extends Path {
 
     @Override
     public AttributedList<Path> list() {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
@@ -183,13 +183,13 @@ public class DAVPath extends Path {
                 }
                 p.attributes().setSize(resource.getGetContentLength());
 
-                childs.add(p);
+                children.add(p);
             }
         }
         catch(IOException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
-        return childs;
+        return children;
     }
 
     @Override

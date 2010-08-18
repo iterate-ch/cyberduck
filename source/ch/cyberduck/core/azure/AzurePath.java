@@ -291,7 +291,7 @@ public class AzurePath extends CloudPath {
 
     @Override
     public AttributedList<Path> list() {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
@@ -304,7 +304,7 @@ public class AzurePath extends CloudPath {
                             Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                     p.attributes().setOwner(container.getAccountName());
                     p.attributes().setModificationDate(container.getLastModifiedTime().getTime());
-                    childs.add(p);
+                    children.add(p);
                 }
             }
             else {
@@ -323,19 +323,19 @@ public class AzurePath extends CloudPath {
                         if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
                             file.attributes().setPlaceholder(true);
                         }
-                        childs.add(file);
+                        children.add(file);
                     }
                 }
             }
             this.getSession().setWorkdir(this);
         }
         catch(StorageException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
         catch(IOException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
-        return childs;
+        return children;
     }
 
     @Override

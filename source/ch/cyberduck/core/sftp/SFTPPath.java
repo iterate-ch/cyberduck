@@ -96,14 +96,13 @@ public class SFTPPath extends Path {
 
     @Override
     public AttributedList<Path> list() {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            List<SFTPv3DirectoryEntry> children = this.getSession().sftp().ls(this.getAbsolute());
-            for(SFTPv3DirectoryEntry f : children) {
+            for(SFTPv3DirectoryEntry f : (List<SFTPv3DirectoryEntry>)this.getSession().sftp().ls(this.getAbsolute())) {
                 if(!f.filename.equals(".") && !f.filename.equals("..")) {
                     Path p = new SFTPPath(this.getSession(), this.getAbsolute(),
                             f.filename, f.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
@@ -147,15 +146,15 @@ public class SFTPPath extends Path {
                     if(null != perm) {
                         p.attributes().setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
                     }
-                    childs.add(p);
+                    children.add(p);
                 }
             }
             this.getSession().setWorkdir(this);
         }
         catch(IOException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
-        return childs;
+        return children;
     }
 
     @Override

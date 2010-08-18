@@ -318,16 +318,16 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public AttributedList<Local> list() {
-        final AttributedList<Local> childs = new AttributedList<Local>();
+        final AttributedList<Local> children = new AttributedList<Local>();
         File[] files = _impl.listFiles();
         if(null == files) {
             log.error("_impl.listFiles == null");
-            return childs;
+            return children;
         }
         for(File file : files) {
-            childs.add(LocalFactory.createLocal(file));
+            children.add(LocalFactory.createLocal(file));
         }
-        return childs;
+        return children;
     }
 
     /**

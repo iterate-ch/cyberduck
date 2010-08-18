@@ -527,7 +527,7 @@ public class S3Path extends CloudPath {
 
     @Override
     public AttributedList<Path> list() {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
@@ -545,7 +545,7 @@ public class S3Path extends CloudPath {
                     if(null != bucket.getCreationDate()) {
                         p.attributes().setCreationDate(bucket.getCreationDate().getTime());
                     }
-                    childs.add(p);
+                    children.add(p);
                 }
             }
             else {
@@ -603,7 +603,7 @@ public class S3Path extends CloudPath {
                             }
                             path.attributes().setStorageClass(object.getStorageClass());
                             path.attributes().setVersionId(object.getVersionId());
-                            childs.add(path);
+                            children.add(path);
                         }
                         final String[] prefixes = chunk.getCommonPrefixes();
                         for(String common : prefixes) {
@@ -614,14 +614,14 @@ public class S3Path extends CloudPath {
                             final Path p = PathFactory.createPath(this.getSession(),
                                     container, common, Path.DIRECTORY_TYPE);
                             p.setParent(this);
-                            if(childs.contains(p)) {
+                            if(children.contains(p)) {
                                 continue;
                             }
                             if(null != bucket.getOwner()) {
                                 p.attributes().setOwner(bucket.getOwner().getDisplayName());
                                 p.attributes().setGroup(bucket.getOwner().getId());
                             }
-                            childs.add(p);
+                            children.add(p);
                         }
                         priorLastKey = chunk.getPriorLastKey();
                     }
@@ -636,7 +636,7 @@ public class S3Path extends CloudPath {
                                     container, prefix, delimiter,
                                     Preferences.instance().getInteger("s3.listing.chunksize"),
                                     priorLastKey, priorLastVersionId, true);
-                            childs.addAll(this.getVersions(bucket, Arrays.asList(chunk.getItems())));
+                            children.addAll(this.getVersions(bucket, Arrays.asList(chunk.getItems())));
                         }
                         while(priorLastKey != null && !status().isCanceled());
                     }
@@ -645,12 +645,12 @@ public class S3Path extends CloudPath {
             this.getSession().setWorkdir(this);
         }
         catch(S3ServiceException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
         catch(IOException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
-        return childs;
+        return children;
     }
 
     private List<Path> getVersions(S3Bucket bucket, List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)

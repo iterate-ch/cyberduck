@@ -171,7 +171,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public AttributedList<Path> list() {
-        final AttributedList<Path> childs = new AttributedList<Path>();
+        final AttributedList<Path> children = new AttributedList<Path>();
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
@@ -185,7 +185,7 @@ public class CFPath extends CloudPath {
                     p.attributes().setSize(container.getTotalSize());
                     p.attributes().setOwner(this.getSession().getClient().getUserName());
 
-                    childs.add(p);
+                    children.add(p);
                 }
             }
             else {
@@ -212,16 +212,16 @@ public class CFPath extends CloudPath {
                         }
                         file.attributes().setOwner(this.attributes().getOwner());
 
-                        childs.add(file);
+                        children.add(file);
                     }
                 }
             }
             this.getSession().setWorkdir(this);
         }
         catch(IOException e) {
-            childs.attributes().setReadable(false);
+            children.attributes().setReadable(false);
         }
-        return childs;
+        return children;
     }
 
     @Override
