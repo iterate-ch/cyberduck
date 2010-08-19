@@ -30,6 +30,8 @@ import org.jets3t.service.acl.CanonicalGrantee;
 import org.jets3t.service.acl.GroupGrantee;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -108,6 +110,15 @@ public class GSPath extends S3Path {
     @Override
     public DescriptiveUrl toTorrentUrl() {
         return new DescriptiveUrl(null, null);
+    }
+
+    @Override
+    public List<DescriptiveUrl> getUrls() {
+        List<DescriptiveUrl> urls = super.getUrls();
+        urls.add(new DescriptiveUrl(this.toAuthenticatedUrl().getUrl(),
+                MessageFormat.format(Locale.localizedString("Copy {0} URL"), Locale.localizedString("Authenticated"))));
+        return urls;
+
     }
 
     /**
