@@ -29,7 +29,6 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
@@ -51,7 +50,20 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
+    /**
+     * @return Path selected in the browser or current working directory.
+     */
     protected abstract Path getSelectedPath();
+
+    /**
+     * @return
+     */
+    protected abstract String getKeyEquivalent();
+
+    /**
+     * @return
+     */
+    protected abstract int getModifierMask();
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         Path path = this.getSelectedPath();
@@ -67,12 +79,11 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         Path path = this.getSelectedPath();
         item.setTitle(Locale.localizedString("Unknown"));
         if(index.intValue() == 0) {
-            item.setKeyEquivalent("c");
-            item.setKeyEquivalentModifierMask(NSEvent.NSCommandKeyMask | NSEvent.NSShiftKeyMask);
+            item.setKeyEquivalentModifierMask(this.getModifierMask());
+            item.setKeyEquivalent(this.getKeyEquivalent());
         }
         else {
             item.setKeyEquivalent("");
-            item.setKeyEquivalentModifierMask(0);
         }
         item.setAction(null);
         item.setImage(null);
@@ -82,7 +93,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             boolean label = index.intValue() % 2 == 0;
             if(label) {
                 item.setEnabled(true);
-                item.setAction(Foundation.selector("copyURLClicked:"));
+                item.setAction(Foundation.selector("urlClicked:"));
                 item.setTitle(url.getHelp());
             }
             else {
@@ -100,26 +111,9 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Action
-    public void copyURLClicked(final NSMenuItem sender) {
-        this.copy(sender.representedObject());
-    }
+    public abstract void urlClicked(final NSMenuItem sender);
 
-    /**
-     * @param url
-     */
-    private void copy(String url) {
-        if(StringUtils.isNotBlank(url)) {
-            NSPasteboard pboard = NSPasteboard.generalPasteboard();
-            pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-            if(!pboard.setStringForType(url, NSPasteboard.StringPboardType)) {
-                log.error("Error writing URL to NSPasteboard.StringPboardType.");
-            }
-        }
-        else {
-            AppKitFunctions.instance.NSBeep();
-        }
-    }
-
+    @Override
     public boolean validateMenuItem(NSMenuItem item) {
         if(null == this.getSelectedPath()) {
             return false;
