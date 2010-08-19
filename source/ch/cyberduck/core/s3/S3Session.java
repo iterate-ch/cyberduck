@@ -43,10 +43,7 @@ import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3BucketLoggingStatus;
-import org.jets3t.service.model.S3BucketVersioningStatus;
-import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.*;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
@@ -1164,16 +1161,21 @@ public class S3Session extends CloudSession implements SSLSession {
                 })
         );
         for(final S3Bucket container : buckets.values()) {
-            final Acl.CanonicalUser owner = new Acl.CanonicalUser(container.getOwner().getId(), container.getOwner().getDisplayName(), false) {
-                @Override
-                public String getPlaceholder() {
-                    return container.getOwner().getDisplayName() + " (" + Locale.localizedString("Owner") + ")";
-                }
-            };
-            if(users.contains(owner)) {
+            final S3Owner owner = container.getOwner();
+            if(null == owner) {
+                log.warn("Owner not known for container " + container);
                 continue;
             }
-            users.add(0, owner);
+            final Acl.CanonicalUser canonicalUser = new Acl.CanonicalUser(owner.getId(), owner.getDisplayName(), false) {
+                @Override
+                public String getPlaceholder() {
+                    return owner.getDisplayName() + " (" + Locale.localizedString("Owner") + ")";
+                }
+            };
+            if(users.contains(canonicalUser)) {
+                continue;
+            }
+            users.add(0, canonicalUser);
         }
         return users;
     }
