@@ -106,6 +106,8 @@ public class AzurePath extends CloudPath {
     public void readMetadata() {
         try {
             this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                    this.getName()));
 
             IBlobContainer container = this.getSession().getContainer(this.getContainerName());
             if(this.isContainer()) {
@@ -146,6 +148,8 @@ public class AzurePath extends CloudPath {
     public void writeMetadata(Map<String, String> meta) {
         try {
             this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                    this.getName()));
 
             final NameValueCollection collection = new NameValueCollection();
             collection.putAll(meta);
