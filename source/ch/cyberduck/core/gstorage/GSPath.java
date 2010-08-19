@@ -19,11 +19,15 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
@@ -93,8 +97,11 @@ public class GSPath extends S3Path {
      */
     @Override
     public DescriptiveUrl toAuthenticatedUrl() {
-        // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
-        return new DescriptiveUrl("https://sandbox.google.com/storage" + this.getAbsolute());
+        if(this.attributes().isFile()) {
+            // Authenticated browser download using cookie-based Google account authentication in conjunction with ACL
+            return new DescriptiveUrl("https://sandbox.google.com/storage" + this.getAbsolute());
+        }
+        return new DescriptiveUrl(null, null);
     }
 
     @Override
@@ -115,8 +122,11 @@ public class GSPath extends S3Path {
     @Override
     public List<DescriptiveUrl> getUrls() {
         List<DescriptiveUrl> urls = super.getUrls();
-        urls.add(new DescriptiveUrl(this.toAuthenticatedUrl().getUrl(),
-                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
+        DescriptiveUrl url = this.toAuthenticatedUrl();
+        if(StringUtils.isNotBlank(url.getUrl())) {
+            urls.add(new DescriptiveUrl(url.getUrl(),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
+        }
         return urls;
 
     }

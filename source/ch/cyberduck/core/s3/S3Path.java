@@ -1075,27 +1075,29 @@ public class S3Path extends CloudPath {
      * @return
      */
     public String createSignedUrl(int expiry) {
-        try {
-            if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
-                log.info("Anonymous cannot create signed URL");
-                return null;
-            }
-            this.getSession().check();
-            // Determine expiry time for URL
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.SECOND, expiry);
-            long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
+        if(this.attributes().isFile()) {
+            try {
+                if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
+                    log.info("Anonymous cannot create signed URL");
+                    return null;
+                }
+                this.getSession().check();
+                // Determine expiry time for URL
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.SECOND, expiry);
+                long secondsSinceEpoch = cal.getTimeInMillis() / 1000;
 
-            // Generate URL
-            return this.getSession().getClient().createSignedUrl("GET",
-                    this.getContainerName(), this.getKey(), null,
-                    null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
-        }
-        catch(S3ServiceException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                // Generate URL
+                return this.getSession().getClient().createSignedUrl("GET",
+                        this.getContainerName(), this.getKey(), null,
+                        null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
+            }
+            catch(S3ServiceException e) {
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
         return null;
     }
@@ -1107,13 +1109,15 @@ public class S3Path extends CloudPath {
      * @return
      */
     public DescriptiveUrl toTorrentUrl() {
-        try {
-            return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(), encode(this.getKey())));
+        if(this.attributes().isFile()) {
+            try {
+                return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(), encode(this.getKey())));
+            }
+            catch(ConnectionCanceledException e) {
+                log.error(e.getMessage());
+            }
         }
-        catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
-        }
-        return null;
+        return new DescriptiveUrl(null, null);
     }
 
     /**
