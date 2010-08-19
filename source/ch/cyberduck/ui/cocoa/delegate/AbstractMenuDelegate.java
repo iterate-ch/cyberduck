@@ -91,4 +91,8 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     protected NSMenuItem seperator() {
         return NSMenuItem.separatorItem();
     }
+
+    public boolean validateMenuItem(NSMenuItem item) {
+        return true;
+    }
 }
