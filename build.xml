@@ -405,6 +405,7 @@
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
                 <include name="ch/cyberduck/ui/*.class"/>
+                <include name="ch/cyberduck/ui/action/*.class"/>
                 <include name="ch/cyberduck/ui/growl/*.class"/>
             </fileset>
         </jar>
