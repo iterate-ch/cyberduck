@@ -564,7 +564,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.urlMenuDelegate = new URLMenuDelegate() {
             @Override
             protected Path getSelectedPath() {
-                return getSelectedPath();
+                return BrowserController.this.getSelectedPath();
             }
         };
         this.urlMenu.setDelegate(urlMenuDelegate.id());
