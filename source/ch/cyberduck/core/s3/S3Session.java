@@ -834,7 +834,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 // We currently only support one distribution per bucket
                 return;
             }
-            // Create new configuration
+            // No existing distribution found for method. Create new configuration.
             this.createDistribution(enabled, method, container, cnames, l, defaultRootObject);
         }
         catch(CloudFrontServiceException e) {
