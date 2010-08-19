@@ -74,15 +74,15 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             item.setKeyEquivalent("");
             item.setKeyEquivalentModifierMask(0);
         }
-        item.setEnabled(false);
+        item.setAction(null);
         item.setImage(null);
-        item.setAction(Foundation.selector("copyURLClicked:"));
         if(path != null) {
             AbstractPath.DescriptiveUrl url = path.getUrls().get(index.intValue() / 2);
             item.setRepresentedObject(url.getUrl());
             boolean label = index.intValue() % 2 == 0;
             if(label) {
                 item.setEnabled(true);
+                item.setAction(Foundation.selector("copyURLClicked:"));
                 item.setTitle(url.getHelp());
             }
             else {
