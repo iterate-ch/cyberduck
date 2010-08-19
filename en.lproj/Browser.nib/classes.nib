@@ -106,6 +106,8 @@
 				<string>NSDrawer</string>
 				<key>navigationButton</key>
 				<string>NSSegmentedControl</string>
+				<key>openUrlMenu</key>
+				<string>NSMenu</string>
 				<key>pathPopup</key>
 				<string>NSPopUpButton</string>
 				<key>quickConnectPopup</key>

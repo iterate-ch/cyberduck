@@ -22,6 +22,7 @@
         historyButton = NSButton;
         logDrawer = NSDrawer;
         navigationButton = NSSegmentedControl;
+        openUrlMenu = NSMenu;
         pathPopup = NSPopUpButton;
         quickConnectPopup = NSComboBox;
         searchField = NSView;
