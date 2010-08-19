@@ -18,10 +18,7 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
 
@@ -49,6 +46,9 @@ public abstract class CloudPath extends Path {
         super(parent, local);
     }
 
+    @Override
+    public abstract CloudSession getSession();
+    
     @Override
     public Path getParent() {
         final CloudPath parent = (CloudPath) super.getParent();
