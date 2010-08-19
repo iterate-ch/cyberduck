@@ -563,7 +563,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new URLMenuDelegate() {
             @Override
-            protected Path getSelectedFile() {
+            protected Path getSelectedPath() {
                 return getSelectedPath();
             }
         };
