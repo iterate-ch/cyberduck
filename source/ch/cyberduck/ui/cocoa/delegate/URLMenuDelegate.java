@@ -20,10 +20,11 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
@@ -60,8 +61,8 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         Path path = this.getSelectedFile();
-        if(path instanceof S3Path) {
-            S3Session session = ((S3Path) path).getSession();
+        if(path instanceof CloudPath) {
+            CloudSession session = ((CloudPath) path).getSession();
             int count = 8;
             for(Distribution.Method method : session.getSupportedDistributionMethods()) {
                 Distribution distribution = session.getDistribution(path.getContainerName(), method);
@@ -165,11 +166,11 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Unknown"), URL_FONT_ATTRIBUTES));
             item.setEnabled(false);
             if(path != null) {
-                if(path instanceof S3Path) {
-                    S3Session session = ((S3Path) path).getSession();
+                if(path instanceof CloudPath) {
+                    CloudSession session = ((CloudPath) path).getSession();
                     Distribution distribution = session.getDistribution(path.getContainerName(), Distribution.DOWNLOAD);
                     if(null != distribution) {
-                        String url = distribution.getCnameUrl(((S3Path) path).getKey());
+                        String url = distribution.getCnameUrl(((CloudPath) path).getKey());
                         if(StringUtils.isNotBlank(url)) {
                             item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(url, URL_FONT_ATTRIBUTES));
                             item.setImage(IconCache.iconNamed("site", 16));
@@ -178,19 +179,19 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 }
             }
         }
-        else if(index.intValue() == 9) {
+        else if(index.intValue() == 10) {
             item.setTitle(MessageFormat.format(Locale.localizedString("Copy {0} URL"), Locale.localizedString(Distribution.STREAMING.toString(), "S3")));
             item.setAction(Foundation.selector("copyDowloadDistributionClicked:"));
         }
-        else if(index.intValue() == 10) {
+        else if(index.intValue() == 11) {
             item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Unknown"), URL_FONT_ATTRIBUTES));
             item.setEnabled(false);
             if(path != null) {
-                if(path instanceof S3Path) {
-                    S3Session session = ((S3Path) path).getSession();
+                if(path instanceof CloudPath) {
+                    CloudSession session = ((CloudPath) path).getSession();
                     Distribution distribution = session.getDistribution(path.getContainerName(), Distribution.STREAMING);
                     if(null != distribution) {
-                        String url = distribution.getCnameUrl(((S3Path) path).getKey());
+                        String url = distribution.getCnameUrl(((CloudPath) path).getKey());
                         if(StringUtils.isNotBlank(url)) {
                             item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(url, URL_FONT_ATTRIBUTES));
                             item.setImage(IconCache.iconNamed("site", 16));
