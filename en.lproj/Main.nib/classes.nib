@@ -139,6 +139,8 @@
 				<string>NSMenu</string>
 				<key>historyMenu</key>
 				<string>NSMenu</string>
+				<key>openUrlMenu</key>
+				<string>NSMenu</string>
 				<key>rendezvousMenu</key>
 				<string>NSMenu</string>
 				<key>urlMenu</key>
