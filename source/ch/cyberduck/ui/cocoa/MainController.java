@@ -201,7 +201,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new URLMenuDelegate() {
             @Override
-            protected Path getSelectedFile() {
+            protected Path getSelectedPath() {
                 final List<BrowserController> browsers = MainController.getBrowsers();
                 for(BrowserController controller : browsers) {
                     if(controller.window().isKeyWindow()) {

@@ -40,6 +40,9 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -336,7 +339,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     public Path getContainer() {
         return PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
-            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
     }
 
     /**
@@ -356,7 +359,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             String name = this.getParent(this.getAbsolute());
             if(String.valueOf(DELIMITER).equals(name)) {
                 parent = PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
-            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
             }
             else {
                 parent = PathFactory.createPath(this.getSession(), name,
@@ -879,7 +882,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return
      * @see URLEncoder#encode(String, String)
      */
-    public String encode(final String p) {
+    public static String encode(final String p) {
         try {
             StringBuilder b = new StringBuilder();
             StringTokenizer t = new StringTokenizer(p, "/");
@@ -900,7 +903,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     @Override
     public String toURL() {
         // Do not use java.net.URL because it doesn't know about custom protocols!
-        return this.getHost().toURL() + this.encode(this.getAbsolute());
+        return this.getHost().toURL() + encode(this.getAbsolute());
     }
 
     /**
@@ -917,7 +920,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      *         prepended from the bookmark
      */
     protected DescriptiveUrl toHttpURL(String hostname) {
-        String absolute = this.encode(this.getAbsolute());
+        String absolute = encode(this.getAbsolute());
         if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
             if(absolute.startsWith(this.getHost().getDefaultPath())) {
                 absolute = absolute.substring(this.getHost().getDefaultPath().length());
@@ -927,6 +930,16 @@ public abstract class Path extends AbstractPath implements Serializable {
             absolute = DELIMITER + absolute;
         }
         return new DescriptiveUrl(hostname + absolute);
+    }
+
+    /**
+     * @return All possible URLs to the same resource.
+     */
+    public List<DescriptiveUrl> getUrls() {
+        return new ArrayList<DescriptiveUrl>(Arrays.asList(
+                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("Copy {0} URL"), this.getHost().getProtocol().getName())),
+                new DescriptiveUrl(this.toHttpURL().getUrl(), MessageFormat.format(Locale.localizedString("Copy {0} URL"), Locale.localizedString("Web"))))
+        );
     }
 
     /**
