@@ -207,6 +207,9 @@ public class Distribution {
     }
 
     public String getUrl(String key) {
+        if(StringUtils.isEmpty(this.getUrl())) {
+            return null;
+        }
         StringBuilder b = new StringBuilder(this.getUrl());
         if(StringUtils.isNotEmpty(key)) {
             b.append(Path.encode(key));
