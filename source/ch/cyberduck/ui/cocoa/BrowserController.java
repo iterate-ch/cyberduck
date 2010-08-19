@@ -29,9 +29,7 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
-import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
-import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -545,7 +543,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     protected Local getSelectedFile() {
-        final Path selected = BrowserController.this.getSelectedPath();
+        final Path selected = this.getSelectedPath();
         if(null == selected) {
             return null;
         }
@@ -561,13 +559,36 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setUrlMenu(NSMenu urlMenu) {
         this.urlMenu = urlMenu;
-        this.urlMenuDelegate = new URLMenuDelegate() {
+        this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
             protected Path getSelectedPath() {
-                return BrowserController.this.getSelectedPath();
+                Path selected = BrowserController.this.getSelectedPath();
+                if(null == selected) {
+                    return BrowserController.this.workdir();
+                }
+                return selected;
             }
         };
         this.urlMenu.setDelegate(urlMenuDelegate.id());
+    }
+
+    @Outlet
+    private NSMenu openUrlMenu;
+    private URLMenuDelegate openUrlMenuDelegate;
+
+    public void setOpenUrlMenu(NSMenu openUrlMenu) {
+        this.openUrlMenu = openUrlMenu;
+        this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
+            @Override
+            protected Path getSelectedPath() {
+                Path selected = BrowserController.this.getSelectedPath();
+                if(null == selected) {
+                    return BrowserController.this.workdir();
+                }
+                return selected;
+            }
+        };
+        this.openUrlMenu.setDelegate(openUrlMenuDelegate.id());
     }
 
     @Outlet
