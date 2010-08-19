@@ -27,10 +27,16 @@ public abstract class NSMutableAttributedString extends NSAttributedString {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableAttributedString", _Class.class);
 
     public static NSMutableAttributedString create(String str) {
+        if(null == str) {
+            str = "";
+        }
         return Rococoa.cast(CLASS.alloc().initWithString(str), NSMutableAttributedString.class);
     }
 
     public static NSMutableAttributedString create(String str, NSDictionary attrs) {
+        if(null == str) {
+            str = "";
+        }
         return Rococoa.cast(CLASS.alloc().initWithString_attributes(str, attrs), NSMutableAttributedString.class);
     }
 

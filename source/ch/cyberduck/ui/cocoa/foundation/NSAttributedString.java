@@ -28,10 +28,16 @@ public abstract class NSAttributedString extends NSObject {
     private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
 
     public static NSAttributedString attributedString(String str) {
+        if(null == str) {
+            str = "";
+        }
         return CLASS.alloc().initWithString(str);
     }
 
     public static NSAttributedString attributedStringWithAttributes(String str, NSDictionary attrs) {
+        if(null == str) {
+            str = "";
+        }
         return CLASS.alloc().initWithString_attributes(str, attrs);
     }
 
