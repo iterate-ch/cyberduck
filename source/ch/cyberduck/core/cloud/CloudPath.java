@@ -18,10 +18,18 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +56,7 @@ public abstract class CloudPath extends Path {
 
     @Override
     public abstract CloudSession getSession();
-    
+
     @Override
     public Path getParent() {
         final CloudPath parent = (CloudPath) super.getParent();
@@ -134,4 +142,23 @@ public abstract class CloudPath extends Path {
 
     @Override
     public abstract AttributedList<Path> list();
+
+    @Override
+    public List<DescriptiveUrl> getUrls() {
+        List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>(Arrays.asList(
+                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("Copy {0} URL"), this.getHost().getProtocol().getName())))
+        );
+        CloudSession session = this.getSession();
+        for(Distribution.Method method : session.getSupportedDistributionMethods()) {
+            Distribution distribution = session.getDistribution(this.getContainerName(), method);
+            if(null != distribution) {
+                // Cached
+                urls.add(new DescriptiveUrl(distribution.getCnameUrl(this.getKey()),
+                        MessageFormat.format(Locale.localizedString("Copy {0} URL"), Locale.localizedString(method.toString(), "S3")))
+                );
+            }
+            // Not cached yet.
+        }
+        return urls;
+    }
 }
