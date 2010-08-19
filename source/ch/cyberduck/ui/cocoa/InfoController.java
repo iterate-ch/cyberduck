@@ -27,9 +27,11 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.DateFormatterFactory;
+import ch.cyberduck.ui.action.*;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.cocoa.threading.InfoBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
@@ -329,6 +331,12 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleS3Settings(true);
+                }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                            this.toString(files));
                 }
             });
         }
@@ -681,7 +689,7 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     for(Path next : files) {
-                        next.writeAcl(new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), false);
+                        next.writeAcl(new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true);
                     }
                 }
 
@@ -750,7 +758,7 @@ public class InfoController extends ToolbarWindowController {
                 }
                 if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
                     final String value = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
-                    if(StringUtils.isBlank(value)) {
+                    if(StringUtils.isEmpty(value)) {
                         return null;
                     }
                     return NSString.stringWithString(StringUtils.isNotEmpty(value) ? value : "");
@@ -826,7 +834,7 @@ public class InfoController extends ToolbarWindowController {
                                                                      NSTableColumn c, NSInteger row) {
                 if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
                     final String value = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
-                    if(StringUtils.isBlank(value)) {
+                    if(null == value) {
                         cell.setPlaceholderString(Locale.localizedString("Multiple files"));
                     }
                 }
@@ -980,34 +988,15 @@ public class InfoController extends ToolbarWindowController {
 
     private void metadataInputDidEndEditing() {
         if(toggleMetadataSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-                public void run() {
-                    for(Path next : files) {
-                        Map<String, String> updated = new HashMap<String, String>(metadata);
-                        for(String key : updated.keySet()) {
-                            // Prune metadata from entries which are unique to a single file.
-                            // For example md5-hash
-                            if(StringUtils.isBlank(updated.get(key))) {
-                                // Reset with previous value
-                                updated.put(key, next.attributes().getMetadata().get(key));
-                            }
+            controller.background(new InfoBackgroundAction<Map<String, String>>(controller,
+                    new WriteMetadataWorker(files, metadata) {
+                        @Override
+                        public void cleanup(Map<String, String> metadata) {
+                            toggleMetadataSettings(true);
+                            initMetadata();
                         }
-                        ((CloudPath) next).writeMetadata(updated);
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    toggleMetadataSettings(true);
-                    initMetadata();
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                            this.toString(files));
-                }
-            });
+                    })
+            );
         }
     }
 
@@ -1183,8 +1172,10 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    public boolean validateToolbarItem(final NSToolbarItem item) {
-        final String itemIdentifier = item.itemIdentifier();
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar,
+                                                                                 final String itemIdentifier,
+                                                                                 boolean flag) {
+        NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
         final Session session = controller.getSession();
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             // Give icon and label of the given session
@@ -1203,11 +1194,9 @@ public class InfoController extends ToolbarWindowController {
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
-            // Give icon of the given session
-            item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
             item.setImage(IconCache.iconNamed("pencil", 32));
         }
-        return super.validateToolbarItem(item);
+        return item;
     }
 
     @Override
@@ -1492,24 +1481,10 @@ public class InfoController extends ToolbarWindowController {
         octalField.setStringValue(Locale.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-                public void run() {
-                    for(Path next : files) {
-                        if(this.isCanceled()) {
-                            break;
-                        }
-                        if(next.attributes().getPermission().equals(Permission.EMPTY)) {
-                            // Read permission of every selected path
-                            next.readUnixPermission();
-                        }
-                    }
-                }
-
+            controller.background(new InfoBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
                 @Override
-                public void cleanup() {
-                    Permission permission = null;
-                    for(Path next : files) {
-                        permission = next.attributes().getPermission();
+                public void cleanup(List<Permission> permissions) {
+                    for(Permission permission : permissions) {
                         updateCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
                         updateCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
                         updateCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
@@ -1522,51 +1497,47 @@ public class InfoController extends ToolbarWindowController {
                         updateCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
                         updateCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
                     }
-                    octalField.setStringValue(permission.getOctalString());
-                    final int count = numberOfFiles();
+                    final int count = permissions.size();
                     if(count > 1) {
                         permissionsField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                     }
                     else {
-                        permissionsField.setStringValue(permission.toString());
+                        for(Permission permission : permissions) {
+                            permissionsField.setStringValue(permission.toString());
+                            octalField.setStringValue(permission.getOctalString());
+                        }
                     }
                     togglePermissionSettings(true);
                 }
 
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                            this.toString(files));
+                /**
+                 * @param checkbox
+                 * @param condition
+                 */
+                private void updateCheckbox(NSButton checkbox, boolean condition) {
+                    // Sets the cell's state to value, which can be NSCell.NSOnState, NSCell.NSOffState, or NSCell.MixedState.
+                    // If necessary, this method also redraws the receiver.
+                    if((checkbox.state() == NSCell.NSOffState || !checkbox.isEnabled()) && !condition) {
+                        checkbox.setState(NSCell.NSOffState);
+                    }
+                    else if((checkbox.state() == NSCell.NSOnState || !checkbox.isEnabled()) && condition) {
+                        checkbox.setState(NSCell.NSOnState);
+                    }
+                    else {
+                        checkbox.setState(NSCell.NSMixedState);
+                    }
+                    checkbox.setEnabled(true);
                 }
-            });
+            }));
         }
-    }
-
-    /**
-     * @param checkbox
-     * @param condition
-     */
-    private void updateCheckbox(NSButton checkbox, boolean condition) {
-        // Sets the cell's state to value, which can be NSCell.NSOnState, NSCell.NSOffState, or NSCell.MixedState.
-        // If necessary, this method also redraws the receiver.
-        if((checkbox.state() == NSCell.NSOffState || !checkbox.isEnabled()) && !condition) {
-            checkbox.setState(NSCell.NSOffState);
-        }
-        else if((checkbox.state() == NSCell.NSOnState || !checkbox.isEnabled()) && condition) {
-            checkbox.setState(NSCell.NSOnState);
-        }
-        else {
-            checkbox.setState(NSCell.NSMixedState);
-        }
-        checkbox.setEnabled(true);
     }
 
     /**
      * Read content distribution settings
      */
     private void initDistribution() {
-        this.distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
-        this.distributionCnameField.cell().setPlaceholderString(Locale.localizedString("Unknown"));
+        distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
+        distributionCnameField.cell().setPlaceholderString(Locale.localizedString("Unknown"));
         distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
         distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
         distributionCnameField.setStringValue(Locale.localizedString("Unknown"));
@@ -1596,32 +1567,13 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-                long size = 0;
-
-                public void run() {
-                    for(Path next : files) {
-                        if(-1 == next.attributes().getSize()) {
-                            next.readSize();
-                        }
-                        if(-1 < next.attributes().getSize()) {
-                            size += next.attributes().getSize();
-                        }
-                    }
-                }
-
+            controller.background(new InfoBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
                 @Override
-                public void cleanup() {
+                public void cleanup(Long size) {
                     updateSize(size);
                     toggleSizeSettings(true);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                            this.toString(files));
-                }
-            });
+            }));
         }
     }
 
@@ -1642,35 +1594,20 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             if(this.toggleSizeSettings(false)) {
-                controller.background(new BrowserBackgroundAction(controller) {
-
-                    public void run() {
-                        for(Path file : files) {
-                            if(StringUtils.isBlank(file.attributes().getChecksum())) {
-                                file.readChecksum();
-                            }
-                        }
-                    }
-
+                controller.background(new InfoBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
                     @Override
-                    public void cleanup() {
-                        for(Path file : files) {
-                            if(StringUtils.isBlank(file.attributes().getChecksum())) {
+                    public void cleanup(List<String> checksums) {
+                        for(String checksum : checksums) {
+                            if(StringUtils.isBlank(checksum)) {
                                 updateField(checksumField, Locale.localizedString("Unknown"));
                             }
                             else {
-                                updateField(checksumField, file.attributes().getChecksum());
+                                updateField(checksumField, checksum);
                             }
                         }
                         toggleSizeSettings(true);
                     }
-
-                    @Override
-                    public String getActivity() {
-                        return MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                                this.toString(files));
-                    }
-                });
+                }));
             }
         }
     }
@@ -1865,44 +1802,13 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.<String, String>emptyMap());
         if(this.toggleMetadataSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-                private Map<String, String> updated = new HashMap<String, String>();
-
-                public void run() {
-                    for(Path next : files) {
-                        // Reading HTTP headers custom metadata
-                        if(next.attributes().getMetadata().isEmpty()) {
-                            ((CloudPath) next).readMetadata();
-                        }
-                        final Map<String, String> metadata = next.attributes().getMetadata();
-                        for(String key : metadata.keySet()) {
-                            // Prune metadata from entries which are unique to a single file.
-                            // For example md5-hash
-                            if(updated.containsKey(key)) {
-                                if(!metadata.get(key).equals(updated.get(key))) {
-                                    log.info("Nullify " + key + " from metadata because value is not equal for multiple files.");
-                                    updated.put(key, null);
-                                }
-                            }
-                            else {
-                                updated.put(key, metadata.get(key));
-                            }
-                        }
-                    }
-                }
-
+            controller.background(new InfoBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(files) {
                 @Override
-                public void cleanup() {
+                public void cleanup(Map<String, String> updated) {
                     setMetadata(updated);
                     toggleMetadataSettings(true);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
-                            this.toString(files));
-                }
-            });
+            }));
         }
     }
 
@@ -1911,7 +1817,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initAcl() {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
-        this.aclUrlField.cell().setPlaceholderString(Locale.localizedString("Unknown"));
+        aclUrlField.setStringValue(Locale.localizedString("Unknown"));
         if(this.toggleAclSettings(false)) {
             if(this.numberOfFiles() > 1) {
                 aclUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -1933,35 +1839,13 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            controller.background(new BrowserBackgroundAction(controller) {
-                private List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
-
-                public void run() {
-                    for(Path next : files) {
-                        if(Acl.EMPTY.equals(next.attributes().getAcl())) {
-                            next.readAcl();
-                        }
-                        for(Acl.UserAndRole acl : next.attributes().getAcl().asList()) {
-                            if(updated.contains(acl)) {
-                                continue;
-                            }
-                            updated.add(acl);
-                        }
-                    }
-                }
-
+            controller.background(new InfoBackgroundAction<List<Acl.UserAndRole>>(controller, new AclWorker(files) {
                 @Override
-                public void cleanup() {
+                public void cleanup(List<Acl.UserAndRole> updated) {
                     setAcl(updated);
                     toggleAclSettings(true);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                            this.toString(files));
-                }
-            });
+            }));
         }
     }
 
@@ -2029,8 +1913,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void recursiveButtonClicked(final NSButton sender) {
-        this.changePermissions(this.getPermissionFromCheckboxes(),
-                recursiveButton.state() == NSCell.NSOnState);
+        this.changePermissions(this.getPermissionFromCheckboxes(), true);
     }
 
     @Action
@@ -2064,30 +1947,15 @@ public class InfoController extends ToolbarWindowController {
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-                public void run() {
-                    for(Path next : files) {
-                        if(recursive || !next.attributes().getPermission().equals(permission)) {
-                            next.writeUnixPermission(permission, recursive);
+            controller.background(new InfoBackgroundAction<Permission>(controller,
+                    new WritePermissionWorker(files, permission, recursive) {
+                        @Override
+                        public void cleanup(Permission permission) {
+                            togglePermissionSettings(true);
+                            initPermissions();
                         }
-                        if(!controller.isConnected()) {
-                            break;
-                        }
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    initPermissions();
-                    togglePermissionSettings(true);
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                            this.toString(files), permission);
-                }
-            });
+                    })
+            );
         }
     }
 
@@ -2242,22 +2110,16 @@ public class InfoController extends ToolbarWindowController {
 
                     final CloudPath file = ((CloudPath) files.get(0));
                     // Concatenate URLs
-                    final String key = file.isContainer() ? "" : file.encode(file.getKey());
                     if(numberOfFiles() > 1) {
                         distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                         distributionUrlField.setToolTip("");
                         distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                     }
                     else {
-                        if(StringUtils.isBlank(distribution.getUrl())) {
-                            distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
-                        }
-                        else {
-                            final String url = distribution.getUrl(key);
-                            distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                    NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
-                            distributionUrlField.setToolTip(url);
-                        }
+                        String url = distribution.getUrl(file.getKey());
+                        distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
+                                NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
+                        distributionUrlField.setToolTip(url);
                     }
                     final String[] cnames = distribution.getCNAMEs();
                     if(0 == cnames.length) {
@@ -2267,7 +2129,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        final String url = distribution.getCnameUrl(key);
+                        final String url = distribution.getCnameUrl(file.getKey());
                         distributionCnameUrlField.setAttributedStringValue(
                                 HyperlinkAttributedStringFactory.create(
                                         NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
@@ -2301,55 +2163,22 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-                private long total;
-
-                public void run() {
-                    for(Path next : files) {
-                        next.attributes().setSize(this.calculateSize(next));
-                        if(!controller.isConnected()) {
-                            break;
-                        }
-                    }
-                }
-
+            controller.background(new InfoBackgroundAction<Long>(controller, new CalculateSizeWorker(files) {
                 @Override
-                public void cleanup() {
-                    initSize();
+                public void cleanup(Long size) {
+                    updateSize(size);
                     toggleSizeSettings(true);
                 }
 
-                /**
-                 * Calculates recursively the size of this path if a directory
-                 *
-                 * @return The size of the file or the sum of all containing files if a directory
-                 * @warn Potentially lengthy operation
-                 */
-                private long calculateSize(final AbstractPath p) {
-                    long size = 0;
-                    if(p.attributes().isDirectory()) {
-                        for(AbstractPath next : p.children()) {
-                            size += this.calculateSize(next);
-                        }
-                    }
-                    else if(p.attributes().isFile()) {
-                        size += p.attributes().getSize();
-                        total += size;
-                        final long update = total;
-                        invoke(new WindowMainAction(InfoController.this) {
-                            public void run() {
-                                updateSize(update);
-                            }
-                        });
-                    }
-                    return size;
-                }
-
                 @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"), this.toString(files));
+                protected void update(final long size) {
+                    invoke(new WindowMainAction(InfoController.this) {
+                        public void run() {
+                            updateSize(size);
+                        }
+                    });
                 }
-            });
+            }));
         }
     }
 

@@ -2008,6 +2008,16 @@ source/ch/cyberduck/core/sftp/HostKeyController.java -text
 source/ch/cyberduck/core/sftp/KnownHostsHostKeyVerifier.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
+source/ch/cyberduck/ui/action/AclWorker.java -text
+source/ch/cyberduck/ui/action/CalculateSizeWorker.java -text
+source/ch/cyberduck/ui/action/ChecksumWorker.java -text
+source/ch/cyberduck/ui/action/ReadMetadataWorker.java -text
+source/ch/cyberduck/ui/action/ReadPermissionWorker.java -text
+source/ch/cyberduck/ui/action/ReadSizeWorker.java -text
+source/ch/cyberduck/ui/action/Worker.java -text
+source/ch/cyberduck/ui/action/WriteDistributionWorker.java -text
+source/ch/cyberduck/ui/action/WriteMetadataWorker.java -text
+source/ch/cyberduck/ui/action/WritePermissionWorker.java -text
 source/ch/cyberduck/ui/cocoa/AbstractPathTableDelegate.java -text
 source/ch/cyberduck/ui/cocoa/BundleController.java -text
 source/ch/cyberduck/ui/cocoa/ErrorController.java -text
@@ -2016,6 +2026,7 @@ source/ch/cyberduck/ui/cocoa/delegate/URLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
+source/ch/cyberduck/ui/cocoa/threading/InfoBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/urlhandler/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/growl/GrowlFactory.java -text
 source/com/snoize/SNDisclosableView.m -text
