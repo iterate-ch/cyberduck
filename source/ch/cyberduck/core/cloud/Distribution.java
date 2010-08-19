@@ -18,7 +18,10 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @version $Id$
@@ -204,13 +207,22 @@ public class Distribution {
     }
 
     public String getUrl(String key) {
-        return this.getUrl() + key;
+        StringBuilder b = new StringBuilder(this.getUrl());
+        if(StringUtils.isNotEmpty(key)) {
+            b.append(Path.encode(key));
+        }
+        return b.toString();
     }
 
     public String getCnameUrl(String key) {
+        StringBuilder b = new StringBuilder();
         for(String cname : cnames) {
             // We only support one CNAME URL
-            return this.getMethod().getProtocol() + cname + this.getMethod().getContext() + key;
+            b.append(this.getMethod().getProtocol()).append(cname).append(this.getMethod().getContext());
+            if(StringUtils.isNotEmpty(key)) {
+                b.append(Path.encode(key));
+            }
+            return b.toString();
         }
         // No CNAME configured.
         return this.getUrl(key);
