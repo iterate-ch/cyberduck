@@ -1466,7 +1466,7 @@ public class InfoController extends ToolbarWindowController {
                                 HyperlinkAttributedStringFactory.create(
                                         NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
                         );
-                        webUrlField.setToolTip(url.getUrl());
+                        webUrlField.setToolTip(url.getHelp());
                     }
                 }
             });
@@ -1687,7 +1687,7 @@ public class InfoController extends ToolbarWindowController {
                                             NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
                                             url.getUrl())
                             );
-                            s3PublicUrlField.setToolTip(url.getUrl());
+                            s3PublicUrlField.setToolTip(url.getHelp());
                         }
                         if(StringUtils.isNotBlank(url.getHelp())) {
                             s3PublicUrlValidityField.setStringValue(url.getHelp());
@@ -1699,7 +1699,7 @@ public class InfoController extends ToolbarWindowController {
                                             NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
                                             torrent.getUrl())
                             );
-                            s3torrentUrlField.setToolTip(torrent.getUrl());
+                            s3torrentUrlField.setToolTip(torrent.getHelp());
                         }
                     }
                 }
