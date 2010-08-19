@@ -35,7 +35,6 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.*;
 import org.jets3t.service.model.*;
-import org.jets3t.service.model.S3Object;
 import org.jets3t.service.utils.Mimetypes;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -316,6 +315,9 @@ public class S3Path extends CloudPath {
         if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
                 this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                        this.getName()));
+
                 final S3Object target = this.getDetails();
                 HashMap<String, String> metadata = new HashMap<String, String>();
                 Map<String, Object> source = target.getModifiableMetadata();
@@ -338,6 +340,9 @@ public class S3Path extends CloudPath {
         if(attributes().isFile()) {
             try {
                 this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                        this.getName()));
+
                 final S3Object target = this.getDetails();
                 target.replaceAllMetadata(new HashMap<String, Object>(meta));
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
@@ -962,7 +967,7 @@ public class S3Path extends CloudPath {
                         break;
                     }
                     i.rename(PathFactory.createPath(this.getSession(), renamed.getAbsolute(),
-                            i.getName(), i.attributes().getType()));
+                            renamed.getName(), i.attributes().getType()));
                 }
             }
         }
@@ -999,8 +1004,10 @@ public class S3Path extends CloudPath {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                            i.getName(), i.attributes().getType()));
+                    S3Path destination = (S3Path) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                            i.getName(), i.attributes().getType());
+                    destination.attributes().setStorageClass(((PathAttributes) copy.attributes()).getStorageClass());
+                    i.copy(destination);
                 }
             }
         }
@@ -1024,15 +1031,25 @@ public class S3Path extends CloudPath {
      */
     @Override
     public String toURL() {
-        if(Preferences.instance().getBoolean("s3.url.public")) {
-            return this.toSignedUrl().getUrl();
+        StringBuilder url = new StringBuilder(Protocol.S3.getScheme());
+        url.append("://");
+        if(this.isRoot()) {
+            url.append(this.getHost().getHostname());
         }
-        final String key = this.isContainer() ? "" : this.encode(this.getKey());
-        final String hostnameForContainer = this.getSession().getHostnameForContainer(this.getContainerName());
-        if(hostnameForContainer.equals(this.getSession().getHost().getHostname())) {
-            return Protocol.S3.getScheme() + "://" + this.getSession().getHost().getHostname() + this.getAbsolute();
+        else {
+            final String hostnameForContainer = this.getSession().getHostnameForContainer(this.getContainerName());
+            if(hostnameForContainer.equals(this.getSession().getHost().getHostname())) {
+                url.append(this.getSession().getHost().getHostname());
+                url.append(encode(this.getAbsolute()));
+            }
+            else {
+                url.append(hostnameForContainer);
+                if(!this.isContainer()) {
+                    url.append(encode(this.getKey()));
+                }
+            }
         }
-        return Protocol.S3.getScheme() + "://" + hostnameForContainer + key;
+        return url.toString();
     }
 
     /**
@@ -1091,7 +1108,7 @@ public class S3Path extends CloudPath {
      */
     public DescriptiveUrl toTorrentUrl() {
         try {
-            return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(), this.getKey()));
+            return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(), encode(this.getKey())));
         }
         catch(ConnectionCanceledException e) {
             log.error(e.getMessage());
@@ -1104,5 +1121,22 @@ public class S3Path extends CloudPath {
      */
     public DescriptiveUrl toAuthenticatedUrl() {
         return new DescriptiveUrl(null, null);
+    }
+
+    @Override
+    public List<DescriptiveUrl> getUrls() {
+        List<DescriptiveUrl> urls = super.getUrls();
+        DescriptiveUrl signed = this.toSignedUrl();
+        if(StringUtils.isNotBlank(signed.getUrl())) {
+            urls.add(new DescriptiveUrl(signed.getUrl(),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed"))));
+        }
+        DescriptiveUrl torrent = this.toTorrentUrl();
+        if(StringUtils.isNotBlank(torrent.getUrl())) {
+            urls.add(new DescriptiveUrl(torrent.getUrl(),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Torrent"))));
+        }
+        return urls;
+
     }
 }

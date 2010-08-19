@@ -504,10 +504,6 @@ public abstract class Preferences {
          * Validaty for public S3 URLs
          */
         defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60)); //expiry time for public URL
-        /**
-         * Generate publicy accessible URLs when copying URLs in S3 browser
-         */
-        defaults.put("s3.url.public", String.valueOf(false));
         defaults.put("s3.tls.acceptAnyCertificate", String.valueOf(false));
 
         defaults.put("s3.mfa.serialnumber", "");

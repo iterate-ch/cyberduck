@@ -365,6 +365,9 @@ public class CFPath extends CloudPath {
         if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
                 this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                        this.getName()));
+
                 final FilesObjectMetaData meta
                         = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getName());
                 this.attributes().setMetadata(meta.getMetaData());
@@ -380,6 +383,9 @@ public class CFPath extends CloudPath {
         if(attributes().isFile()) {
             try {
                 this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                        this.getName()));
+
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getName(), meta);
                 this.attributes().clear(false, false, false, true);
             }
@@ -401,14 +407,6 @@ public class CFPath extends CloudPath {
     public DescriptiveUrl toHttpURL() {
         final Distribution distribution
                 = this.getSession().readDistribution(this.getContainerName(), Distribution.DOWNLOAD);
-        if(null == distribution.getUrl()) {
-            return super.toHttpURL();
-        }
-        StringBuilder b = new StringBuilder();
-        b.append(distribution.getUrl());
-        if(!this.isContainer()) {
-            b.append(this.encode(this.getKey()));
-        }
-        return new DescriptiveUrl(b.toString());
+        return new DescriptiveUrl(distribution.getUrl(this.getKey()));
     }
 }

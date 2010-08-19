@@ -116,7 +116,7 @@ public class GSPath extends S3Path {
     public List<DescriptiveUrl> getUrls() {
         List<DescriptiveUrl> urls = super.getUrls();
         urls.add(new DescriptiveUrl(this.toAuthenticatedUrl().getUrl(),
-                MessageFormat.format(Locale.localizedString("Copy {0} URL"), Locale.localizedString("Authenticated"))));
+                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
         return urls;
 
     }

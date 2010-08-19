@@ -149,7 +149,8 @@ public abstract class CloudPath extends Path {
     @Override
     public List<DescriptiveUrl> getUrls() {
         List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>(Arrays.asList(
-                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("Copy {0} URL"), this.getHost().getProtocol().getName())))
+                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
+                        this.getHost().getProtocol().getScheme().toUpperCase())))
         );
         CloudSession session = this.getSession();
         for(Distribution.Method method : session.getSupportedDistributionMethods()) {
@@ -157,7 +158,7 @@ public abstract class CloudPath extends Path {
             if(null != distribution) {
                 // Cached
                 urls.add(new DescriptiveUrl(distribution.getCnameUrl(this.getKey()),
-                        MessageFormat.format(Locale.localizedString("Copy {0} URL"), Locale.localizedString(method.toString(), "S3")))
+                        MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")))
                 );
             }
             // Not cached yet.
