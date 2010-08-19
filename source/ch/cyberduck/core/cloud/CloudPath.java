@@ -81,6 +81,9 @@ public abstract class CloudPath extends Path {
      */
     @Override
     public String getContainerName() {
+        if(this.isRoot()) {
+            return null;
+        }
         return this.getContainer().getName();
     }
 
