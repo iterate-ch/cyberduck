@@ -1222,9 +1222,12 @@ public class InfoController extends ToolbarWindowController {
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
             if(session instanceof S3Session) {
+                if(!((S3Session) session).isBucketLocationSupported()) {
+                    return false;
+                }
                 return !anonymous;
             }
-            // Not enabled if not a cloud session
+            // Not enabled if not a AWS
             return false;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
@@ -1826,8 +1829,7 @@ public class InfoController extends ToolbarWindowController {
             else {
                 for(Path file : files) {
                     if(file.attributes().isFile()) {
-                        final S3Path s3 = (S3Path) file;
-                        final CloudPath.DescriptiveUrl url = s3.toAuthenticatedUrl();
+                        final CloudPath.DescriptiveUrl url = file.toAuthenticatedUrl();
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             aclUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
