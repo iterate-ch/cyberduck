@@ -2119,9 +2119,11 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         String url = distribution.getUrl(file.getKey());
-                        distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
-                        distributionUrlField.setToolTip(url);
+                        if(StringUtils.isNotBlank(url)) {
+                            distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
+                                    NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
+                            distributionUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                        }
                     }
                     final String[] cnames = distribution.getCNAMEs();
                     if(0 == cnames.length) {
@@ -2131,12 +2133,14 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        final String url = distribution.getCnameUrl(file.getKey());
-                        distributionCnameUrlField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
-                        );
-                        distributionCnameUrlField.setToolTip(url);
+                        String url = distribution.getCnameUrl(file.getKey());
+                        if(StringUtils.isNotBlank(url)) {
+                            distributionCnameUrlField.setAttributedStringValue(
+                                    HyperlinkAttributedStringFactory.create(
+                                            NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
+                            );
+                            distributionCnameUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                        }
                     }
                     if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
                         for(AbstractPath next : files.get(0).getContainer().children()) {
