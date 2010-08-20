@@ -402,8 +402,14 @@ public class FTPPath extends Path {
                 this.getSession().getClient().mkdir(this.getName());
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        this.writeUnixPermissionImpl(new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
+                        try {
+                            this.writeUnixPermissionImpl(new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
+                        }
+                        catch(FTPException ignore) {
+                            // CHMOD not supported
+                            log.warn(ignore.getMessage());
+                        }
                     }
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
@@ -839,7 +845,13 @@ public class FTPPath extends Path {
                     throw new FTPException("Transfer mode not set");
                 }
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    this.writeUnixPermissionImpl(this.attributes().getPermission(), false);
+                    try {
+                        this.writeUnixPermissionImpl(this.attributes().getPermission(), false);
+                    }
+                    catch(FTPException ignore) {
+                        // CHMOD not supported
+                        log.warn(ignore.getMessage());
+                    }
                 }
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     try {

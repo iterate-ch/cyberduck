@@ -801,6 +801,7 @@ public class FTPClient {
             catch(FTPException e) {
                 utimeSupported = false;
                 log.warn("UTIME not supported");
+                throw e;
             }
         }
     }
@@ -821,6 +822,7 @@ public class FTPClient {
             catch(FTPException e) {
                 chmodSupported = false;
                 log.warn("CHMOD not supported");
+                throw e;
             }
         }
     }
