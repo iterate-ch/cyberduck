@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSControl;
+import ch.cyberduck.ui.cocoa.application.NSView;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -50,10 +50,10 @@ public abstract class AlertController extends SheetController {
         super(parent);
         this.alert = alert;
         this.alert.setAlertStyle(style);
+        this.alert.setDelegate(this.id());
     }
 
-    protected void setAccessoryView(NSControl view) {
-        view.sizeToFit();
+    public void setAccessoryView(NSView view) {
         view.setFrame(new NSRect(300, view.frame().size.height.floatValue()));
         alert.setAccessoryView(view);
     }
@@ -74,5 +74,17 @@ public abstract class AlertController extends SheetController {
      */
     public void alertDidEnd_returnCode_contextInfo(NSAlert alert, int returnCode, ID contextInfo) {
         this.sheetDidClose_returnCode_contextInfo(alert.window(), returnCode, contextInfo);
+    }
+
+    /**
+     * Open help page.
+     */
+    protected void help() {
+        ;
+    }
+
+    public boolean alertShowHelp(NSAlert alert) {
+        this.help();
+        return true;
     }
 }
