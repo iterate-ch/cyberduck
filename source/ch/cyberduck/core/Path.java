@@ -933,6 +933,13 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * @return Empty.
+     */
+    public DescriptiveUrl toAuthenticatedUrl() {
+        return new DescriptiveUrl(null, null);
+    }
+
+    /**
      * @return All possible URLs to the same resource.
      */
     public List<DescriptiveUrl> getUrls() {

@@ -1120,13 +1120,6 @@ public class S3Path extends CloudPath {
         return new DescriptiveUrl(null, null);
     }
 
-    /**
-     * @return Empty.
-     */
-    public DescriptiveUrl toAuthenticatedUrl() {
-        return new DescriptiveUrl(null, null);
-    }
-
     @Override
     public List<DescriptiveUrl> getUrls() {
         List<DescriptiveUrl> urls = super.getUrls();
