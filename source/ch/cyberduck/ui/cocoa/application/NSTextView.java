@@ -23,11 +23,23 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 
-
 /// <i>native declaration : :72</i>
+
 public abstract class NSTextView extends NSText {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextView", _Class.class);
+
+    public static NSTextView create() {
+        return CLASS.alloc().init();
+    }
+
+    public interface _Class extends ObjCClass {
+        NSTextView alloc();
+    }
+
+    public abstract NSTextView init();
 
     /**
      * <i>native declaration : :80</i><br>

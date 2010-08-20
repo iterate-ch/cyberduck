@@ -89,9 +89,9 @@ public abstract class NSMenu extends NSObject implements NSCopying {
          *         and menu:updateItem:atIndex:shouldCancel: is not called. If you can populate the menu quickly,
          *         you can implement menuNeedsUpdate: instead of numberOfItemsInMenu: and menu:updateItem:atIndex:shouldCancel:.
          */
-        public NSInteger numberOfItemsInMenu(NSMenu menu);
+        NSInteger numberOfItemsInMenu(NSMenu menu);
 
-        public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel);
+        boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, NSInteger index, boolean shouldCancel);
     }
 
     public abstract NSMenu init();
