@@ -120,12 +120,8 @@ public class EditorFactory {
             // Use application determined by launch services using file system notifications
             return defaultApplication;
         }
-        if(ODBEditor.getInstalledEditors().containsValue(Preferences.instance().getProperty("editor.bundleIdentifier"))) {
-            // Use default editor
-            return defaultEditor();
-        }
         log.warn("No editor for file type " + file.getExtension());
-        return null;
+        return defaultEditor();
     }
 
     /**
