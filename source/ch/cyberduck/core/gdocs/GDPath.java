@@ -856,10 +856,11 @@ public class GDPath extends Path {
             else {
                 try {
                     // Move into new folder
-                    this.getSession().getClient().insert(new URL(((GDPath) renamed.getParent()).getFolderFeed()), moved);
+                    final DocumentListEntry update
+                            = this.getSession().getClient().insert(new URL(((GDPath) renamed.getParent()).getFolderFeed()), moved);
                     // Move out of previous folder
                     this.getSession().getClient().delete(new URL((((GDPath) this.getParent()).getFolderFeed()) +
-                            "/" + this.getResourceId()), this.attributes().getChecksum());
+                            "/" + this.getResourceId()), update.getEtag());
                 }
                 catch(ServiceException e) {
                     throw new IOException(e.getMessage());
