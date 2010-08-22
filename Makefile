@@ -6,7 +6,6 @@ BUILDSTYLE=$(DEFAULT_BUILDSTYLE)
 PROJECT=Cyberduck.xcodeproj
 
 default:
-	cd Spotlight\ Importer; make
 	xcodebuild -project $(PROJECT) -target build -configuration $(BUILDSTYLE)
 
 release:
