@@ -191,16 +191,6 @@ public class GDSession extends Session {
         return false;
     }
 
-    /**
-     * Renaming is not currently supported
-     *
-     * @return Always false
-     */
-    @Override
-    public boolean isRenameSupported(Path file) {
-        return false;
-    }
-
     @Override
     public List<Acl.Role> getAvailableAclRoles() {
         return Arrays.asList(new Acl.Role(AclRole.OWNER.getValue()), new Acl.Role(AclRole.READER.getValue()),

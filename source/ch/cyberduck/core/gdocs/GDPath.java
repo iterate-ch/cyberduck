@@ -119,12 +119,6 @@ public class GDPath extends Path {
         return super.<S>getAsDictionary(dict);
     }
 
-    private static final String DOCUMENT_FOLDER_TYPE = "folder";
-    private static final String DOCUMENT_FILE_TYPE = "file";
-    private static final String DOCUMENT_TEXT_TYPE = "document";
-    private static final String DOCUMENT_PRESENTATION_TYPE = "presentation";
-    private static final String DOCUMENT_SPREADSHEET_TYPE = "spreadsheet";
-
     private final GDSession session;
 
     protected GDPath(GDSession s, String parent, String name, int type) {
@@ -147,12 +141,20 @@ public class GDPath extends Path {
         this.session = s;
     }
 
+    /**
+     * Arbitrary file type not converted to Google Docs.
+     */
+    private static final String DOCUMENT_FILE_TYPE = "file";
+
+    /**
+     * Kind of document or folder.
+     */
     private String documentType;
 
     public String getDocumentType() {
         if(null == documentType) {
             if(attributes().isDirectory()) {
-                return DOCUMENT_FOLDER_TYPE;
+                return FolderEntry.LABEL;
             }
             // Arbitrary file type not converted to Google Docs.
             return DOCUMENT_FILE_TYPE;
@@ -165,7 +167,7 @@ public class GDPath extends Path {
     }
 
     /**
-     * Unique identifier
+     * URL from where the document can be downloaded.
      */
     private String exportUri;
 
@@ -189,6 +191,10 @@ public class GDPath extends Path {
         this.exportUri = exportUri;
     }
 
+    /**
+     * Resource ID. Contains both the document type and document ID.
+     * For folders this is <code>folder:0BwoD_34YE1B4ZDFiZmMwNTAtMGFiMy00MmQ1LTg1NTQtNmFiYWFkNTg2MTQ3</code>
+     */
     private String resourceId;
 
     public String getResourceId() {
@@ -230,26 +236,32 @@ public class GDPath extends Path {
      * @return Includes the protocol and hostname only
      */
     protected StringBuilder getFeed() {
-        return new StringBuilder(this.getSession().getHost().getProtocol().getScheme()).append("://").append(
-                this.getSession().getHost().getHostname());
+        final StringBuilder feed = new StringBuilder(this.getSession().getHost().getProtocol().getScheme()).append("://");
+        feed.append(this.getSession().getHost().getHostname());
+        feed.append("/feeds/default/private/full/");
+        return feed;
     }
 
-    protected URL getFolderFeed() throws MalformedURLException {
+    protected String getResourceFeed() throws MalformedURLException {
+        return this.getFeed().append(this.getResourceId()).toString();
+    }
+
+    protected String getFolderFeed() throws MalformedURLException {
         final StringBuilder feed = this.getFeed();
         if(this.isRoot()) {
-            return new URL(feed.append("/feeds/default/private/full/folder%3Aroot/contents").toString());
+            return feed.append("folder%3Aroot/contents").toString();
         }
-        return new URL(feed.append("/feeds/default/private/full/folder%3A").append(this.getDocumentId()).append("/contents").toString());
+        return feed.append("folder%3A").append(this.getDocumentId()).append("/contents").toString();
     }
 
-    protected URL getAclFeed() throws MalformedURLException {
-        final StringBuilder feed = this.getFeed();
-        return new URL(feed.append("/feeds/default/private/full/").append(this.getResourceId()).append("/acl").toString());
+    protected String getAclFeed() throws MalformedURLException {
+        final StringBuilder feed = new StringBuilder(this.getResourceFeed());
+        return feed.append("/acl").toString();
     }
 
-    public URL getRevisionsFeed() throws MalformedURLException {
-        final StringBuilder feed = this.getFeed();
-        return new URL(feed.append("/feeds/default/private/full/").append(this.getResourceId()).append("/revisions").toString());
+    public String getRevisionsFeed() throws MalformedURLException {
+        final StringBuilder feed = new StringBuilder(this.getResourceFeed());
+        return feed.append("/revisions").toString();
     }
 
     @Override
@@ -270,7 +282,7 @@ public class GDPath extends Path {
                     this.getName()));
             try {
                 Acl acl = new Acl();
-                AclFeed feed = this.getSession().getClient().getFeed(this.getAclFeed(), AclFeed.class);
+                AclFeed feed = this.getSession().getClient().getFeed(new URL(this.getAclFeed()), AclFeed.class);
                 for(AclEntry entry : feed.getEntries()) {
                     AclScope scope = entry.getScope();
                     AclScope.Type type = scope.getType();
@@ -327,7 +339,7 @@ public class GDPath extends Path {
                 entry.setRole(new AclRole(role.getName()));
                 try {
                     try {
-                        this.getSession().getClient().insert(this.getAclFeed(), entry);
+                        this.getSession().getClient().insert(new URL(this.getAclFeed()), entry);
                     }
                     catch(ServiceException e) {
                         throw new IOException(e.getMessage());
@@ -364,7 +376,7 @@ public class GDPath extends Path {
                 final GoogleAuthTokenFactory.UserToken token
                         = (GoogleAuthTokenFactory.UserToken) this.getSession().getClient().getAuthTokenFactory().getAuthToken();
                 try {
-                    if(type.equals(DOCUMENT_SPREADSHEET_TYPE)) {
+                    if(type.equals(SpreadsheetEntry.LABEL)) {
                         // Authenticate against the Spreadsheets API to obtain an auth token
                         SpreadsheetService spreadsheet = new SpreadsheetService(this.getSession().getUserAgent());
                         final Credentials credentials = this.getSession().getHost().getCredentials();
@@ -440,8 +452,8 @@ public class GDPath extends Path {
                             this.attributes().getSize());
                     if(this.exists()) {
                         // First, fetch entry using the resourceId
-                        URL url = new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId());
-                        final DocumentEntry updated = this.getSession().getClient().getEntry(url, DocumentEntry.class);
+                        URL url = new URL(this.getResourceFeed());
+                        final DocumentListEntry updated = this.getSession().getClient().getEntry(url, DocumentListEntry.class);
                         updated.setMediaSource(source);
                         updated.updateMedia(true);
                     }
@@ -449,7 +461,7 @@ public class GDPath extends Path {
                         final MediaContent content = new MediaContent();
                         content.setMediaSource(source);
                         content.setMimeType(new ContentType(mime));
-                        final DocumentEntry document = new DocumentEntry();
+                        final DocumentListEntry document = new DocumentListEntry();
                         document.setContent(content);
                         document.setTitle(new PlainTextConstruct(this.getName()));
 
@@ -457,7 +469,7 @@ public class GDPath extends Path {
                                 this.getName()));
                         status().setResume(false);
 
-                        String feed = ((GDPath) this.getParent()).getFolderFeed().toExternalForm();
+                        String feed = ((GDPath) this.getParent()).getFolderFeed().toString();
                         StringBuilder url = new StringBuilder(feed);
                         if(this.isOcrSupported()) {
                             // Image file type
@@ -556,7 +568,7 @@ public class GDPath extends Path {
 
             this.getSession().setWorkdir(this);
 
-            children.addAll(this.list(new DocumentQuery(this.getFolderFeed())));
+            children.addAll(this.list(new DocumentQuery(new URL(this.getFolderFeed()))));
         }
         catch(ServiceException e) {
             children.attributes().setReadable(false);
@@ -604,39 +616,39 @@ public class GDPath extends Path {
         }
         while(pager.getEntries().size() > 0);
         this.filter(feed.getEntries());
-        for(final DocumentListEntry documentEntry : feed.getEntries()) {
-            log.debug("Resource:" + documentEntry.getResourceId());
-            final String type = documentEntry.getType();
+        for(final DocumentListEntry entry : feed.getEntries()) {
+            log.debug("Resource:" + entry.getResourceId());
+            final String type = entry.getType();
             {
-                GDPath path = new GDPath(this.getSession(), documentEntry.getTitle().getPlainText(),
-                        DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                GDPath path = new GDPath(this.getSession(), entry.getTitle().getPlainText(),
+                        FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 path.setParent(this);
                 path.setDocumentType(type);
-                if(!documentEntry.getParentLinks().isEmpty()) {
-                    path.setPath(documentEntry.getParentLinks().iterator().next().getTitle(), documentEntry.getTitle().getPlainText());
+                if(!entry.getParentLinks().isEmpty()) {
+                    path.setPath(entry.getParentLinks().iterator().next().getTitle(), entry.getTitle().getPlainText());
                 }
                 // Download URL
-                path.setExportUri(((OutOfLineContent) documentEntry.getContent()).getUri());
+                path.setExportUri(((OutOfLineContent) entry.getContent()).getUri());
                 // Link to Google Docs Editor
-                path.setDocumentUri(documentEntry.getDocumentLink().getHref());
-                path.setResourceId(documentEntry.getResourceId());
+                path.setDocumentUri(entry.getDocumentLink().getHref());
+                path.setResourceId(entry.getResourceId());
                 // Add unique document ID as checksum
-                path.attributes().setChecksum(documentEntry.getDocId());
-                if(null != documentEntry.getMediaSource()) {
-                    path.attributes().setSize(documentEntry.getMediaSource().getContentLength());
+                path.attributes().setChecksum(entry.getEtag());
+                if(null != entry.getMediaSource()) {
+                    path.attributes().setSize(entry.getMediaSource().getContentLength());
                 }
-                if(documentEntry.getQuotaBytesUsed() > 0) {
-                    path.attributes().setSize(documentEntry.getQuotaBytesUsed());
+                if(entry.getQuotaBytesUsed() > 0) {
+                    path.attributes().setSize(entry.getQuotaBytesUsed());
                 }
-                final DateTime lastViewed = documentEntry.getLastViewed();
+                final DateTime lastViewed = entry.getLastViewed();
                 if(lastViewed != null) {
                     path.attributes().setAccessedDate(lastViewed.getValue());
                 }
-                LastModifiedBy lastModifiedBy = documentEntry.getLastModifiedBy();
+                LastModifiedBy lastModifiedBy = entry.getLastModifiedBy();
                 if(lastModifiedBy != null) {
                     path.attributes().setOwner(lastModifiedBy.getName());
                 }
-                final DateTime updated = documentEntry.getUpdated();
+                final DateTime updated = entry.getUpdated();
                 if(updated != null) {
                     path.attributes().setModificationDate(updated.getValue());
                 }
@@ -647,7 +659,7 @@ public class GDPath extends Path {
                     if(Preferences.instance().getBoolean("google.docs.revisions.enable")) {
                         try {
                             final List<RevisionEntry> revisions = this.getSession().getClient().getFeed(
-                                    path.getRevisionsFeed(), RevisionFeed.class).getEntries();
+                                    new URL(path.getRevisionsFeed()), RevisionFeed.class).getEntries();
                             Collections.sort(revisions, new Comparator<RevisionEntry>() {
                                 public int compare(RevisionEntry o1, RevisionEntry o2) {
                                     return o1.getUpdated().compareTo(o2.getUpdated());
@@ -655,12 +667,11 @@ public class GDPath extends Path {
                             });
                             int i = 0;
                             for(RevisionEntry revisionEntry : revisions) {
-                                GDPath revision = new GDPath(this.getSession(), documentEntry.getTitle().getPlainText(),
-                                        DOCUMENT_FOLDER_TYPE.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                                GDPath revision = new GDPath(this.getSession(), entry.getTitle().getPlainText(),
+                                        FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                                 revision.setParent(this);
                                 revision.setDocumentType(type);
                                 revision.setExportUri(((OutOfLineContent) revisionEntry.getContent()).getUri());
-
                                 final long size = ((OutOfLineContent) revisionEntry.getContent()).getLength();
                                 if(size > 0) {
                                     revision.attributes().setSize(size);
@@ -669,6 +680,7 @@ public class GDPath extends Path {
                                 revision.attributes().setModificationDate(revisionEntry.getUpdated().getValue());
                                 // Versioning is enabled if non null.
                                 revision.attributes().setVersionId(revisionEntry.getVersionId());
+                                revision.attributes().setChecksum(revisionEntry.getEtag());
                                 revision.attributes().setRevision(++i);
                                 revision.attributes().setDuplicate(true);
                                 // Add to listing
@@ -725,13 +737,13 @@ public class GDPath extends Path {
      * @return
      */
     protected static String getExportFormat(String type) {
-        if(type.equals(DOCUMENT_TEXT_TYPE)) {
+        if(type.equals(DocumentEntry.LABEL)) {
             return Preferences.instance().getProperty("google.docs.export.document");
         }
-        if(type.equals(DOCUMENT_PRESENTATION_TYPE)) {
+        if(type.equals(PresentationEntry.LABEL)) {
             return Preferences.instance().getProperty("google.docs.export.presentation");
         }
-        if(type.equals(DOCUMENT_SPREADSHEET_TYPE)) {
+        if(type.equals(SpreadsheetEntry.LABEL)) {
             return Preferences.instance().getProperty("google.docs.export.spreadsheet");
         }
         if(type.equals(DOCUMENT_FILE_TYPE)) {
@@ -755,7 +767,7 @@ public class GDPath extends Path {
                 DocumentListEntry folder = new FolderEntry();
                 folder.setTitle(new PlainTextConstruct(this.getName()));
                 try {
-                    this.getSession().getClient().insert(((GDPath) this.getParent()).getFolderFeed(), folder);
+                    this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), folder);
                 }
                 catch(ServiceException e) {
                     throw new IOException(e.getMessage());
@@ -788,17 +800,16 @@ public class GDPath extends Path {
     @Override
     public void delete() {
         try {
+            if(this.attributes().isDuplicate()) {
+                log.warn("Cannot delete revision " + this.attributes().getRevision());
+                return;
+            }
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                    this.getName()));
             try {
-                if(this.attributes().isDuplicate()) {
-                    log.warn("Cannot delete revision " + this.attributes().getRevision());
-                    return;
-                }
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
-                        this.getName()));
-
-                session.getClient().delete(
-                        new URL("https://docs.google.com/feeds/default/private/full/" + this.getResourceId()), "*");
+                this.getSession().getClient().delete(
+                        new URL(this.getResourceFeed()), this.attributes().getChecksum());
             }
             catch(ServiceException e) {
                 throw new IOException(e.getMessage());
@@ -821,7 +832,54 @@ public class GDPath extends Path {
 
     @Override
     public void rename(AbstractPath renamed) {
-        throw new UnsupportedOperationException();
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
+                    this.getName(), renamed));
+
+            DocumentListEntry moved = new DocumentListEntry();
+            moved.setId("https://docs.google.com/feeds/id/" + this.getResourceId());
+            if(this.getParent().equals(renamed.getParent())) {
+                // Rename file
+                moved.setTitle(new PlainTextConstruct(renamed.getName()));
+                try {
+                    // Move into new folder
+                    this.getSession().getClient().update(new URL(this.getResourceFeed()), moved, this.attributes().getChecksum());
+                }
+                catch(ServiceException e) {
+                    throw new IOException(e.getMessage());
+                }
+                catch(MalformedURLException e) {
+                    throw new IOException(e.getMessage());
+                }
+            }
+            else {
+                try {
+                    // Move into new folder
+                    this.getSession().getClient().insert(new URL(((GDPath) renamed.getParent()).getFolderFeed()), moved);
+                    // Move out of previous folder
+                    this.getSession().getClient().delete(new URL((((GDPath) this.getParent()).getFolderFeed()) +
+                            "/" + this.getResourceId()), this.attributes().getChecksum());
+                }
+                catch(ServiceException e) {
+                    throw new IOException(e.getMessage());
+                }
+                catch(MalformedURLException e) {
+                    throw new IOException(e.getMessage());
+                }
+            }
+            // The directory listing is no more current
+            this.getParent().invalidate();
+            renamed.getParent().invalidate();
+        }
+        catch(IOException e) {
+            if(this.attributes().isFile()) {
+                this.error("Cannot rename file", e);
+            }
+            if(this.attributes().isDirectory()) {
+                this.error("Cannot rename folder", e);
+            }
+        }
     }
 
     @Override
@@ -835,7 +893,7 @@ public class GDPath extends Path {
                 DocumentListEntry file = new DocumentEntry();
                 file.setTitle(new PlainTextConstruct(this.getName()));
                 try {
-                    this.getSession().getClient().insert(((GDPath) this.getParent()).getFolderFeed(), file);
+                    this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), file);
                 }
                 catch(ServiceException e) {
                     throw new IOException(e.getMessage());
