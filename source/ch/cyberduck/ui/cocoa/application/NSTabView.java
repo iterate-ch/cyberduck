@@ -50,7 +50,7 @@ public abstract class NSTabView extends NSView {
      * May raise an NSRangeException if identifier not found<br>
      * <i>native declaration : :76</i>
      */
-    public abstract void selectTabViewItemWithIdentifier(NSObject identifier);
+    public abstract void selectTabViewItemWithIdentifier(String identifier);
 
     /**
      * Original signature : <code>void takeSelectedTabViewItemFromSender(id)</code><br>
