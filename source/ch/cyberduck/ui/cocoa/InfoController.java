@@ -640,7 +640,7 @@ public class InfoController extends ToolbarWindowController {
     public void aclAddButtonClicked(NSMenuItem sender) {
         for(Acl.User grantee : controller.getSession().getAvailableAclUsers()) {
             if(sender.representedObject().equals(grantee.getPlaceholder())) {
-                this.aclAddButtonClicked(new Acl.UserAndRole(grantee, new Acl.Role("")));
+                this.addAclItem(new Acl.UserAndRole(grantee, new Acl.Role("")));
             }
         }
     }
@@ -650,10 +650,11 @@ public class InfoController extends ToolbarWindowController {
      *
      * @param update The acl to insert.
      */
-    private void aclAddButtonClicked(Acl.UserAndRole update) {
-        final int index = acl.size();
-        acl.add(index, update);
-        this.setAcl(acl);
+    private void addAclItem(Acl.UserAndRole update) {
+        List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>(acl);
+        final int index = updated.size();
+        updated.add(index, update);
+        this.setAcl(updated);
         aclTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), false);
         if(update.getUser().isEditable()) {
             aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), new NSInteger(index), true);
@@ -676,13 +677,14 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void aclRemoveButtonClicked(ID sender) {
+        List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>(acl);
         NSIndexSet iterator = aclTable.selectedRowIndexes();
         List<Acl.UserAndRole> remove = new ArrayList<Acl.UserAndRole>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            remove.add(acl.get(index.intValue()));
+            remove.add(updated.get(index.intValue()));
         }
-        acl.removeAll(remove);
-        this.setAcl(acl);
+        updated.removeAll(remove);
+        this.setAcl(updated);
         this.aclInputDidEndEditing();
     }
 
@@ -979,9 +981,9 @@ public class InfoController extends ToolbarWindowController {
     private void addMetadataItem(String name, String value, boolean selectValue) {
         log.debug("addMetadataItem:" + name);
         int row = metadata.size();
-        List<Header> m = new ArrayList<Header>(metadata);
-        m.add(row, new Header(name, value));
-        this.setMetadata(m);
+        List<Header> updated = new ArrayList<Header>(metadata);
+        updated.add(row, new Header(name, value));
+        this.setMetadata(updated);
         metadataTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
         metadataTable.editRow(
                 selectValue ? metadataTable.columnWithIdentifier(HEADER_METADATA_VALUE_COLUMN) : metadataTable.columnWithIdentifier(HEADER_METADATA_NAME_COLUMN),
@@ -1001,13 +1003,14 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void metadataRemoveButtonClicked(ID sender) {
+        List<Header> updated = new ArrayList<Header>(metadata);
         NSIndexSet iterator = metadataTable.selectedRowIndexes();
         List<Header> remove = new ArrayList<Header>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            remove.add(metadata.get(index.intValue()));
+            remove.add(updated.get(index.intValue()));
         }
-        metadata.removeAll(remove);
-        this.setMetadata(metadata);
+        updated.removeAll(remove);
+        this.setMetadata(updated);
         this.metadataInputDidEndEditing();
     }
 
