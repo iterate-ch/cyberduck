@@ -154,4 +154,9 @@ public class GSSession extends S3Session {
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
     }
+
+    @Override
+    public boolean isBucketLocationSupported() {
+        return false;
+    }
 }
