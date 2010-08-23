@@ -1562,7 +1562,6 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initPermissions() {
         permissionsField.setStringValue(Locale.localizedString("Unknown"));
-        octalField.setStringValue(Locale.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
             controller.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
