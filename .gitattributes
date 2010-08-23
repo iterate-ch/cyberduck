@@ -2028,7 +2028,7 @@ source/ch/cyberduck/ui/cocoa/delegate/URLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
-source/ch/cyberduck/ui/cocoa/threading/InfoBackgroundAction.java -text
+source/ch/cyberduck/ui/cocoa/threading/WorkerBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/urlhandler/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/growl/GrowlFactory.java -text
 source/com/snoize/SNDisclosableView.m -text

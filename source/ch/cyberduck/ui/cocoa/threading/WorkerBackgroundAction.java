@@ -25,12 +25,12 @@ import ch.cyberduck.ui.cocoa.BrowserController;
 /**
  * @version $Id:$
  */
-public class InfoBackgroundAction<T> extends BrowserBackgroundAction {
+public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
     private Worker<T> worker;
 
     private T result;
 
-    public InfoBackgroundAction(BrowserController controller, Worker<T> worker) {
+    public WorkerBackgroundAction(BrowserController controller, Worker<T> worker) {
         super(controller);
         this.worker = worker;
     }
