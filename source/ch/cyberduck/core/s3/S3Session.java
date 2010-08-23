@@ -1043,33 +1043,63 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     /**
-     * @param container The bucket name
+     * @param container  The bucket name
      * @param mfa
-     * @param enabled
+     * @param versioning
      */
-    public void setVersioning(final String container, boolean mfa, boolean enabled) {
+    public void setVersioning(final String container, boolean mfa, boolean versioning) {
         if(this.isVersioningSupported()) {
             try {
                 this.check();
                 if(this.isMultiFactorAuthentication(container)) {
+                    // The bucket is already MFA protected.
                     LoginController c = LoginControllerFactory.instance(this);
-                    final Credentials credentials = this.mfa(c);
-                    String multiFactorSerialNumber = credentials.getUsername();
-                    String multiFactorAuthCode = credentials.getPassword();
-                    if(enabled) {
-                        this.getClient().enableBucketVersioningWithMFA(container,
-                                multiFactorSerialNumber, multiFactorAuthCode);
+                    final Credentials auth = this.mfa(c);
+                    if(versioning) {
+                        if(this.isVersioning(container)) {
+                            log.debug("Versioning already enabled for bucket " + container);
+                        }
+                        else {
+                            // Enable versioning if not already active.
+                            log.debug("Enable bucket versioning with MFA " + auth.getUsername() + " for " + container);
+                            this.getClient().enableBucketVersioningWithMFA(container,
+                                    auth.getUsername(), auth.getPassword());
+                        }
                     }
                     else {
+                        log.debug("Suspend bucket versioning with MFA " + auth.getUsername() + " for " + container);
                         this.getClient().suspendBucketVersioningWithMFA(container,
-                                multiFactorSerialNumber, multiFactorAuthCode);
+                                auth.getUsername(), auth.getPassword());
+                    }
+                    if(versioning && !mfa) {
+                        log.debug("Disable MFA " + auth.getUsername() + " for " + container);
+                        // User has choosen to disable MFA
+                        final Credentials auth2 = this.mfa(c);
+                        this.getClient().disableMFAForVersionedBucket(container,
+                                auth2.getUsername(), auth2.getPassword());
                     }
                 }
                 else {
-                    if(enabled) {
-                        this.getClient().enableBucketVersioning(container);
+                    if(versioning) {
+                        if(mfa) {
+                            LoginController c = LoginControllerFactory.instance(this);
+                            final Credentials auth = this.mfa(c);
+                            log.debug("Enable bucket versioning with MFA " + auth.getUsername() + " for " + container);
+                            this.getClient().enableBucketVersioningWithMFA(container,
+                                    auth.getUsername(), auth.getPassword());
+                        }
+                        else {
+                            if(this.isVersioning(container)) {
+                                log.debug("Versioning already enabled for bucket " + container);
+                            }
+                            else {
+                                log.debug("Enable bucket versioning for " + container);
+                                this.getClient().enableBucketVersioning(container);
+                            }
+                        }
                     }
                     else {
+                        log.debug("Susped bucket versioning for " + container);
                         this.getClient().suspendBucketVersioning(container);
                     }
                 }
