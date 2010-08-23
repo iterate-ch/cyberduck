@@ -728,9 +728,9 @@ public class S3Path extends CloudPath {
                         this.error("Bucket name is not DNS compatible");
                         return;
                     }
-                    this.getSession().getClient().createBucket(this.getName(),
-                            Preferences.instance().getProperty("s3.location"));
-                    this.getSession().getBuckets(true);
+                    S3Bucket bucket = new S3Bucket(this.getContainerName(), Preferences.instance().getProperty("s3.location"));
+                    bucket.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
+                    this.getSession().getClient().createBucket(bucket);
                 }
                 else {
                     S3Object object = new S3Object(this.getKey());
@@ -1007,7 +1007,7 @@ public class S3Path extends CloudPath {
                     S3Path destination = (S3Path) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
                             i.getName(), i.attributes().getType());
                     // Apply storage class of parent directory
-                    ((S3Path)i).attributes().setStorageClass(this.attributes().getStorageClass());
+                    ((S3Path) i).attributes().setStorageClass(this.attributes().getStorageClass());
                     i.copy(destination);
                 }
             }
