@@ -121,6 +121,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
             }
         }
         this.getClient().setFollowRedirects(Preferences.instance().getBoolean("webdav.followRedirects"));
+        this.getClient().setOverwrite(true);
     }
 
     @Override
