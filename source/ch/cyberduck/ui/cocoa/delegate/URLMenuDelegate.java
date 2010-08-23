@@ -25,7 +25,10 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -36,6 +39,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.text.MessageFormat;
 
 /**
  * @version $Id:$
@@ -77,17 +82,19 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         item.setTarget(this.id());
         Path path = this.getSelectedPath();
-        item.setTitle(Locale.localizedString("Unknown"));
-        if(index.intValue() == 0) {
+        if(0 == index.intValue()) {
             item.setKeyEquivalentModifierMask(this.getModifierMask());
             item.setKeyEquivalent(this.getKeyEquivalent());
         }
         else {
             item.setKeyEquivalent("");
         }
-        item.setAction(null);
-        item.setImage(null);
-        if(path != null) {
+        if(null == path) {
+            item.setTitle(MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Unknown")));
+            item.setAction(null);
+            item.setImage(null);
+        }
+        else {
             AbstractPath.DescriptiveUrl url = path.getUrls().get(index.intValue() / 2);
             item.setRepresentedObject(url.getUrl());
             boolean label = index.intValue() % 2 == 0;
