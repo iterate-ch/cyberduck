@@ -102,7 +102,7 @@ public class SFTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            for(SFTPv3DirectoryEntry f : (List<SFTPv3DirectoryEntry>)this.getSession().sftp().ls(this.getAbsolute())) {
+            for(SFTPv3DirectoryEntry f : (List<SFTPv3DirectoryEntry>) this.getSession().sftp().ls(this.getAbsolute())) {
                 if(!f.filename.equals(".") && !f.filename.equals("..")) {
                     Path p = new SFTPPath(this.getSession(), this.getAbsolute(),
                             f.filename, f.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
@@ -240,46 +240,42 @@ public class SFTPPath extends Path {
 
     @Override
     public void readSize() {
-        if(this.attributes().isFile()) {
-            try {
-                this.getSession().check();
-                SFTPv3FileAttributes attr = this.getSession().sftp().stat(this.getAbsolute());
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                        this.getName()));
+        try {
+            this.getSession().check();
+            SFTPv3FileAttributes attr = this.getSession().sftp().stat(this.getAbsolute());
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                    this.getName()));
 
-                this.attributes().setSize(attr.size);
-            }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
-            }
+            this.attributes().setSize(attr.size);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
         }
     }
 
     @Override
     public void readTimestamp() {
-        if(this.attributes().isFile()) {
-            SFTPv3FileHandle handle = null;
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                        this.getName()));
+        SFTPv3FileHandle handle = null;
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                    this.getName()));
 
-                handle = this.getSession().sftp().openFileRO(this.getAbsolute());
-                SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
-                this.attributes().setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
-                this.getSession().sftp().closeFile(handle);
-            }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
-            }
-            finally {
-                if(handle != null) {
-                    try {
-                        this.getSession().sftp().closeFile(handle);
-                    }
-                    catch(IOException e) {
-                        ;
-                    }
+            handle = this.getSession().sftp().openFileRO(this.getAbsolute());
+            SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
+            this.attributes().setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
+            this.getSession().sftp().closeFile(handle);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        finally {
+            if(handle != null) {
+                try {
+                    this.getSession().sftp().closeFile(handle);
+                }
+                catch(IOException e) {
+                    ;
                 }
             }
         }
@@ -287,35 +283,33 @@ public class SFTPPath extends Path {
 
     @Override
     public void readUnixPermission() {
-        if(this.attributes().isFile()) {
-            SFTPv3FileHandle handle = null;
-            try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                        this.getName()));
+        SFTPv3FileHandle handle = null;
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
+                    this.getName()));
 
-                handle = this.getSession().sftp().openFileRO(this.getAbsolute());
-                SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
-                String perm = attr.getOctalPermissions();
+            handle = this.getSession().sftp().openFileRO(this.getAbsolute());
+            SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
+            String perm = attr.getOctalPermissions();
+            try {
+                this.attributes().setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
+            }
+            catch(NumberFormatException e) {
+                log.error(e.getMessage());
+            }
+            this.getSession().sftp().closeFile(handle);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        finally {
+            if(handle != null) {
                 try {
-                    this.attributes().setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
+                    this.getSession().sftp().closeFile(handle);
                 }
-                catch(NumberFormatException e) {
-                    log.error(e.getMessage());
-                }
-                this.getSession().sftp().closeFile(handle);
-            }
-            catch(IOException e) {
-                this.error("Cannot read file attributes", e);
-            }
-            finally {
-                if(handle != null) {
-                    try {
-                        this.getSession().sftp().closeFile(handle);
-                    }
-                    catch(IOException e) {
-                        ;
-                    }
+                catch(IOException e) {
+                    ;
                 }
             }
         }
@@ -423,28 +417,24 @@ public class SFTPPath extends Path {
 
     @Override
     public void writeTimestamp(long millis) {
-        if(this.attributes().isFile()) {
-            try {
-                this.writeModificationDateImpl(millis);
-            }
-            catch(IOException e) {
-                this.error("Cannot change timestamp", e);
-            }
+        try {
+            this.writeModificationDateImpl(millis);
+        }
+        catch(IOException e) {
+            this.error("Cannot change timestamp", e);
         }
     }
 
     private void writeModificationDateImpl(long modified) throws IOException {
-        if(this.attributes().isFile()) {
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                    this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
-            SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-            int t = (int) (modified / 1000);
-            // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-            attrs.atime = t;
-            attrs.mtime = t;
-            this.getSession().sftp().setstat(this.getAbsolute(), attrs);
-            this.attributes().clear(true, false, false, false);
-        }
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
+                this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
+        SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+        int t = (int) (modified / 1000);
+        // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+        attrs.atime = t;
+        attrs.mtime = t;
+        this.getSession().sftp().setstat(this.getAbsolute(), attrs);
+        this.attributes().clear(true, false, false, false);
     }
 
     @Override
