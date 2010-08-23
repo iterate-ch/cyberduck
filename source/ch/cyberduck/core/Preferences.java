@@ -592,7 +592,9 @@ public abstract class Preferences {
 
         defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", Protocol.FTP.getIdentifier());
-
+        /**
+         * Socket timeout
+         */
         defaults.put("connection.timeout.seconds", String.valueOf(30));
         /**
          * Retry to connect after a I/O failure automatically
