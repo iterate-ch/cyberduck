@@ -982,14 +982,14 @@ public class S3Path extends CloudPath {
     @Override
     public void copy(AbstractPath copy) {
         try {
-            if(attributes().isFile()) {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                        this.getName(), copy));
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                    this.getName(), copy));
 
+            if(this.attributes().isFile()) {
                 S3Object destination = new S3Object(((S3Path) copy).getKey());
                 // Keep same storage class
-                destination.setStorageClass(((PathAttributes) copy.attributes()).getStorageClass());
+                destination.setStorageClass(this.attributes().getStorageClass());
                 // Apply non standard ACL
                 if(Acl.EMPTY.equals(this.attributes().getAcl())) {
                     this.readAcl();
@@ -999,14 +999,15 @@ public class S3Path extends CloudPath {
                 this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                         ((S3Path) copy).getContainerName(), destination, false);
             }
-            else if(attributes().isDirectory()) {
+            else if(this.attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
                     S3Path destination = (S3Path) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
                             i.getName(), i.attributes().getType());
-                    destination.attributes().setStorageClass(((PathAttributes) copy.attributes()).getStorageClass());
+                    // Apply storage class of parent directory
+                    ((S3Path)i).attributes().setStorageClass(this.attributes().getStorageClass());
                     i.copy(destination);
                 }
             }
