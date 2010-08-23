@@ -912,7 +912,7 @@ public class InfoController extends ToolbarWindowController {
      */
     @Action
     public void metadataAddCustomClicked(ID sender) {
-        this.addMetadataItem(Locale.localizedString("Unknown"));
+        this.addMetadataItem();
     }
 
     @Action
@@ -952,6 +952,10 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void metadataAddPragmaClicked(ID sender) {
         this.addMetadataItem("Pragma", "", true);
+    }
+
+    private void addMetadataItem() {
+        this.addMetadataItem("");
     }
 
     /**
@@ -1617,20 +1621,20 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initDistribution() {
         distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
-        distributionCnameField.cell().setPlaceholderString(Locale.localizedString("Unknown"));
-        distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
+        distributionCnameField.cell().setPlaceholderString(Locale.localizedString("None"));
+        distributionUrlField.setStringValue(Locale.localizedString("None"));
         distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
-        distributionCnameField.setStringValue(Locale.localizedString("Unknown"));
+        distributionCnameField.setStringValue(Locale.localizedString("None"));
         distributionDeliveryPopup.removeAllItems();
-        distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionDefaultRootPopup.removeAllItems();
-        distributionDefaultRootPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        distributionDefaultRootPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
         if(this.toggleDistributionSettings(false)) {
             CloudSession session = (CloudSession) controller.getSession();
             distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                     session.getDistributionServiceName()));
-            distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
+            distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
             for(Distribution.Method method : session.getSupportedDistributionMethods()) {
                 distributionDeliveryPopup.addItemWithTitle(method.toString());
                 distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
@@ -1732,9 +1736,9 @@ public class InfoController extends ToolbarWindowController {
     private void initS3() {
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
-        s3PublicUrlField.setStringValue(Locale.localizedString("Unknown"));
+        s3PublicUrlField.setStringValue(Locale.localizedString("None"));
         s3PublicUrlValidityField.setStringValue(Locale.localizedString("Unknown"));
-        s3torrentUrlField.setStringValue(Locale.localizedString("Unknown"));
+        s3torrentUrlField.setStringValue(Locale.localizedString("None"));
         storageClassPopup.addItemWithTitle(Locale.localizedString("Unknown"));
         storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
@@ -1901,7 +1905,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initAcl() {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
-        aclUrlField.setStringValue(Locale.localizedString("Unknown"));
+        aclUrlField.setStringValue(Locale.localizedString("None"));
         if(this.toggleAclSettings(false)) {
             if(this.numberOfFiles() > 1) {
                 aclUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -2111,7 +2115,8 @@ public class InfoController extends ToolbarWindowController {
         distributionCnameField.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionDefaultRootPopup.setEnabled(stop && enable);
+        distributionDefaultRootPopup.setEnabled(stop && enable
+                && Distribution.DOWNLOAD.toString().equals(distributionDeliveryPopup.selectedItem().representedObject()));
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
@@ -2230,10 +2235,13 @@ public class InfoController extends ToolbarWindowController {
                                 distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
                             }
                         }
-                        final String defaultRoot = distribution.getDefaultRootObject();
-                        if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
-                            distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
-                        }
+                    }
+                    final String defaultRoot = distribution.getDefaultRootObject();
+                    if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
+                        distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
+                    }
+                    else {
+                        distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
                     }
                     toggleDistributionSettings(true);
                 }
