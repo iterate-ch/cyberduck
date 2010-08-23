@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.RepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.*;
@@ -30,15 +30,14 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.view.CDControllerCell;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import org.apache.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +52,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
 
     public AlertRepeatableBackgroundAction(WindowController controller) {
         this.controller = controller;
-        this.exceptions = new Collection<BackgroundException>();
     }
 
     @Override
@@ -67,163 +65,59 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
         this.reset();
     }
 
+    private void callback(final int returncode) {
+        if(returncode == SheetCallback.DEFAULT_OPTION) { //Try Again
+            for(BackgroundException e : getExceptions()) {
+                Path workdir = e.getPath();
+                if(null == workdir) {
+                    continue;
+                }
+                workdir.invalidate();
+            }
+            AlertRepeatableBackgroundAction.this.reset();
+            // Re-run the action with the previous lock used
+            controller.background(AlertRepeatableBackgroundAction.this);
+        }
+    }
+
     /**
      * Display an alert dialog with a summary of all failed tasks
      */
     protected void alert() {
         if(controller.isVisible()) {
-            final SheetController alert = new SheetController(controller) {
-
-                @Override
-                protected String getBundleName() {
-                    return "Alert";
-                }
-
-                @Override
-                public void awakeFromNib() {
-                    final boolean log = transcript.length() > 0;
-                    this.setState(transcriptButton, log && Preferences.instance().getBoolean("alert.toggle.transcript"));
-                    transcriptButton.setEnabled(log);
-                    super.awakeFromNib();
-                }
-
-                @Override
-                protected void invalidate() {
-                    errorView.setDataSource(null);
-                    errorView.setDelegate(null);
-                    super.invalidate();
-                }
-
-                @Outlet
-                private NSButton diagnosticsButton;
-
-                public void setDiagnosticsButton(NSButton diagnosticsButton) {
-                    this.diagnosticsButton = diagnosticsButton;
-                    this.diagnosticsButton.setTarget(this.id());
-                    this.diagnosticsButton.setAction(Foundation.selector("diagnosticsButtonClicked:"));
-                    boolean hidden = true;
-                    for(BackgroundException e : exceptions) {
-                        final Throwable cause = e.getCause();
-                        if(cause instanceof SocketException || cause instanceof UnknownHostException) {
-                            hidden = false;
-                            break;
-                        }
+            if(this.getExceptions().size() == 1) {
+                final BackgroundException failure = this.getExceptions().get(0);
+                String detail = failure.getDetailedCauseMessage();
+                String title = failure.getReadableTitle() + ": " + failure.getMessage();
+                NSAlert alert = NSAlert.alert(title, //title
+                        Locale.localizedString(detail),
+                        Locale.localizedString("Try Again", "Alert"), // default button
+                        AlertRepeatableBackgroundAction.this.isNetworkFailure() ? Locale.localizedString("Network Diagnostics") : null, //other button
+                        Locale.localizedString("Cancel") // alternate button
+                );
+                alert.setShowsHelp(null != failure.getPath());
+                final AlertController c = new AlertController(AlertRepeatableBackgroundAction.this.controller, alert) {
+                    public void callback(final int returncode) {
+                        AlertRepeatableBackgroundAction.this.callback(returncode);
                     }
-                    this.diagnosticsButton.setHidden(hidden);
-                }
 
-                @Action
-                public void diagnosticsButtonClicked(final NSButton sender) {
-                    exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
-                }
-
-                @Outlet
-                private NSButton transcriptButton;
-
-                public void setTranscriptButton(NSButton transcriptButton) {
-                    this.transcriptButton = transcriptButton;
-                }
-
-                private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
-
-                @Outlet
-                private NSTableView errorView;
-                private ListDataSource model;
-                private AbstractTableDelegate<ErrorController> delegate;
-
-                private List<ErrorController> errors;
-
-                public void setErrorView(NSTableView errorView) {
-                    this.errorView = errorView;
-                    this.errorView.setRowHeight(new CGFloat(77));
-                    this.errors = new ArrayList<ErrorController>();
-                    for(BackgroundException e : exceptions) {
-                        errors.add(new ErrorController(e));
+                    @Override
+                    protected void help() {
+                        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                        site.append("/").append(failure.getPath().getSession().getHost().getProtocol().getIdentifier());
+                        this.openUrl(site.toString());
                     }
-                    this.errorView.setDataSource((model = new ListDataSource() {
-                        public NSInteger numberOfRowsInTableView(NSTableView view) {
-                            return new NSInteger(errors.size());
-                        }
-
-                        public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
-                            return null;
-                        }
-                    }).id());
-                    this.errorView.setDelegate((delegate = new AbstractTableDelegate<ErrorController>() {
-                        @Override
-                        public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-                        }
-
-                        @Override
-                        public void tableRowDoubleClicked(final ID sender) {
-                        }
-
-                        @Override
-                        public boolean selectionShouldChange() {
-                            return false;
-                        }
-
-                        @Override
-                        public void selectionDidChange(NSNotification notification) {
-                        }
-
-                        @Override
-                        protected boolean isTypeSelectSupported() {
-                            return false;
-                        }
-
-                        public void enterKeyPressed(final ID sender) {
-                        }
-
-                        public void deleteKeyPressed(final ID sender) {
-                        }
-
-                        public String tooltip(ErrorController e) {
-                            return e.getTooltip();
-                        }
-
-                        public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
-                            Rococoa.cast(cell, CDControllerCell.class).setView(errors.get(row.intValue()).view());
-                        }
-                    }).id());
-                    {
-                        NSTableColumn c = tableColumnsFactory.create("Error");
-                        c.setMinWidth(50f);
-                        c.setWidth(400f);
-                        c.setMaxWidth(1000f);
-                        c.setDataCell(prototype);
-                        this.errorView.addTableColumn(c);
-                    }
+                };
+                if(this.hasTranscript()) {
+                    // Display custom multiple file alert
+                    //c.setAccessoryView(alert.getTranscriptView());
                 }
-
-                private final NSCell prototype = CDControllerCell.controllerCell();
-
-                @Outlet
-                private NSTextView transcriptView;
-
-                public void setTranscriptView(NSTextView transcriptView) {
-                    this.transcriptView = transcriptView;
-                    this.transcriptView.textStorage().setAttributedString(
-                            NSAttributedString.attributedStringWithAttributes(transcript.toString(), FIXED_WITH_FONT_ATTRIBUTES));
-                }
-
-                public void callback(final int returncode) {
-                    if(returncode == DEFAULT_OPTION) { //Try Again
-                        for(BackgroundException e : exceptions) {
-                            Path workdir = e.getPath();
-                            if(null == workdir) {
-                                continue;
-                            }
-                            workdir.invalidate();
-                        }
-                        AlertRepeatableBackgroundAction.this.reset();
-                        // Re-run the action with the previous lock used
-                        controller.background(AlertRepeatableBackgroundAction.this);
-                    }
-                    Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
-                }
-            };
-            alert.beginSheet();
+                c.beginSheet();
+            }
+            else {
+                final SheetController c = new AlertSheetController();
+                c.beginSheet();
+            }
         }
     }
 
@@ -233,6 +127,146 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
             }
             return this.get(identifier);
+        }
+    }
+
+    /**
+     *
+     */
+    private class AlertSheetController extends SheetController {
+
+        public AlertSheetController() {
+            super(AlertRepeatableBackgroundAction.this.controller);
+        }
+
+        @Override
+        protected String getBundleName() {
+            return "Alert";
+        }
+
+        @Override
+        public void awakeFromNib() {
+            final boolean log = AlertRepeatableBackgroundAction.this.hasTranscript();
+            this.setState(transcriptButton, log && Preferences.instance().getBoolean("alert.toggle.transcript"));
+            transcriptButton.setEnabled(log);
+            super.awakeFromNib();
+        }
+
+        @Override
+        protected void invalidate() {
+            errorView.setDataSource(null);
+            errorView.setDelegate(null);
+            super.invalidate();
+        }
+
+        @Outlet
+        private NSButton diagnosticsButton;
+
+        public void setDiagnosticsButton(NSButton diagnosticsButton) {
+            this.diagnosticsButton = diagnosticsButton;
+            this.diagnosticsButton.setTarget(this.id());
+            this.diagnosticsButton.setAction(Foundation.selector("diagnosticsButtonClicked:"));
+            this.diagnosticsButton.setHidden(!AlertRepeatableBackgroundAction.this.isNetworkFailure());
+        }
+
+        @Action
+        public void diagnosticsButtonClicked(final NSButton sender) {
+            AlertRepeatableBackgroundAction.this.diagnose();
+        }
+
+        @Outlet
+        private NSButton transcriptButton;
+
+        public void setTranscriptButton(NSButton transcriptButton) {
+            this.transcriptButton = transcriptButton;
+        }
+
+        private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
+
+        @Outlet
+        private NSTableView errorView;
+        private ListDataSource model;
+        private AbstractTableDelegate<ErrorController> delegate;
+
+        private List<ErrorController> errors;
+
+        public void setErrorView(NSTableView errorView) {
+            this.errorView = errorView;
+            this.errorView.setRowHeight(new CGFloat(77));
+            this.errors = new ArrayList<ErrorController>();
+            for(BackgroundException e : getExceptions()) {
+                errors.add(new ErrorController(e));
+            }
+            this.errorView.setDataSource((model = new ListDataSource() {
+                public NSInteger numberOfRowsInTableView(NSTableView view) {
+                    return new NSInteger(errors.size());
+                }
+
+                public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
+                    return null;
+                }
+            }).id());
+            this.errorView.setDelegate((delegate = new AbstractTableDelegate<ErrorController>() {
+                @Override
+                public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
+                }
+
+                @Override
+                public void tableRowDoubleClicked(final ID sender) {
+                }
+
+                @Override
+                public boolean selectionShouldChange() {
+                    return false;
+                }
+
+                @Override
+                public void selectionDidChange(NSNotification notification) {
+                }
+
+                @Override
+                protected boolean isTypeSelectSupported() {
+                    return false;
+                }
+
+                public void enterKeyPressed(final ID sender) {
+                }
+
+                public void deleteKeyPressed(final ID sender) {
+                }
+
+                public String tooltip(ErrorController e) {
+                    return e.getTooltip();
+                }
+
+                public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
+                    Rococoa.cast(cell, CDControllerCell.class).setView(errors.get(row.intValue()).view());
+                }
+            }).id());
+            {
+                NSTableColumn c = tableColumnsFactory.create("Error");
+                c.setMinWidth(50f);
+                c.setWidth(400f);
+                c.setMaxWidth(1000f);
+                c.setDataCell(prototype);
+                this.errorView.addTableColumn(c);
+            }
+        }
+
+        private final NSCell prototype = CDControllerCell.controllerCell();
+
+        @Outlet
+        private NSTextView transcriptView;
+
+        public void setTranscriptView(NSTextView transcriptView) {
+            this.transcriptView = transcriptView;
+            this.transcriptView.textStorage().setAttributedString(
+                    NSAttributedString.attributedStringWithAttributes(AlertRepeatableBackgroundAction.this.getTranscript(), FIXED_WITH_FONT_ATTRIBUTES));
+        }
+
+        public void callback(final int returncode) {
+            Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
+            AlertRepeatableBackgroundAction.this.callback(returncode);
         }
     }
 }
