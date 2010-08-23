@@ -480,7 +480,8 @@ public class InfoController extends ToolbarWindowController {
      * @param acl The updated access control list
      */
     private void setAcl(List<Acl.UserAndRole> acl) {
-        this.acl = acl;
+        this.acl.clear();
+        this.acl.addAll(acl);
         this.aclTable.reloadData();
     }
 
@@ -647,14 +648,14 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Add to the table, reload data and select inserted row.
      *
-     * @param acl The acl to insert.
+     * @param update The acl to insert.
      */
-    private void aclAddButtonClicked(Acl.UserAndRole acl) {
-        final int index = this.acl.size();
-        this.acl.add(index, acl);
-        this.setAcl(this.acl);
+    private void aclAddButtonClicked(Acl.UserAndRole update) {
+        final int index = acl.size();
+        acl.add(index, update);
+        this.setAcl(acl);
         aclTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), false);
-        if(acl.getUser().isEditable()) {
+        if(update.getUser().isEditable()) {
             aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), new NSInteger(index), true);
         }
         else {
@@ -676,9 +677,11 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void aclRemoveButtonClicked(ID sender) {
         NSIndexSet iterator = aclTable.selectedRowIndexes();
+        List<Acl.UserAndRole> remove = new ArrayList<Acl.UserAndRole>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            acl.remove(index.intValue());
+            remove.add(acl.get(index.intValue()));
         }
+        acl.removeAll(remove);
         this.setAcl(acl);
         this.aclInputDidEndEditing();
     }
@@ -717,19 +720,52 @@ public class InfoController extends ToolbarWindowController {
     public static final String HEADER_METADATA_VALUE_COLUMN = "VALUE";
 
     /**
+     *
+     */
+    private static class Header implements Comparable<Header> {
+        private String name;
+        private String value;
+
+        private Header(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public int compareTo(Header o) {
+            return this.getName().compareTo(o.getName());
+        }
+    }
+
+    /**
      * Custom HTTP headers for REST protocols
      */
-    private Map<String, String> metadata
-            = new TreeMap<String, String>();
+    private List<Header> metadata
+            = new ArrayList<Header>();
 
     /**
      * Replace current metadata model. Will reload the table view.
      *
      * @param m The new header key and values
      */
-    private void setMetadata(Map<String, String> m) {
+    private void setMetadata(List<Header> m) {
         metadata.clear();
-        metadata.putAll(m);
+        metadata.addAll(m);
         metadataTable.reloadData();
     }
 
@@ -753,11 +789,11 @@ public class InfoController extends ToolbarWindowController {
                                                                     NSInteger row) {
                 final String identifier = tableColumn.identifier();
                 if(identifier.equals(HEADER_METADATA_NAME_COLUMN)) {
-                    final String name = metadata.keySet().toArray(new String[metadata.size()])[row.intValue()];
+                    final String name = metadata.get(row.intValue()).getName();
                     return NSString.stringWithString(StringUtils.isNotEmpty(name) ? name : "");
                 }
                 if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
-                    final String value = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
+                    final String value = metadata.get(row.intValue()).getValue();
                     if(StringUtils.isEmpty(value)) {
                         return null;
                     }
@@ -770,22 +806,16 @@ public class InfoController extends ToolbarWindowController {
             public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
                                                                     NSTableColumn c, NSInteger row) {
                 if(StringUtils.isNotBlank(value.toString())) {
-                    final String previousKey = metadata.keySet().toArray(new String[metadata.size()])[row.intValue()];
-                    final String previousValue = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
-                    metadata.remove(previousKey);
+                    Header header = metadata.get(row.intValue());
                     if(c.identifier().equals(HEADER_METADATA_NAME_COLUMN)) {
-                        metadata.put(value.toString(), previousValue);
-                        if(StringUtils.isNotBlank(previousValue)) {
-                            // Only update if both fields are set
-                            metadataInputDidEndEditing();
-                        }
+                        header.setName(value.toString());
                     }
                     if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
-                        metadata.put(previousKey, value.toString());
-                        if(StringUtils.isNotBlank(previousKey)) {
-                            // Only update if both fields are set
-                            metadataInputDidEndEditing();
-                        }
+                        header.setValue(value.toString());
+                    }
+                    if(StringUtils.isNotBlank(header.getName()) && StringUtils.isNotBlank(header.getValue())) {
+                        // Only update if both fields are set
+                        metadataInputDidEndEditing();
                     }
                 }
             }
@@ -833,7 +863,7 @@ public class InfoController extends ToolbarWindowController {
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell,
                                                                      NSTableColumn c, NSInteger row) {
                 if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
-                    final String value = metadata.values().toArray(new String[metadata.size()])[row.intValue()];
+                    final String value = metadata.get(row.intValue()).getValue();
                     if(null == value) {
                         cell.setPlaceholderString(Locale.localizedString("Multiple files"));
                     }
@@ -948,16 +978,10 @@ public class InfoController extends ToolbarWindowController {
      */
     private void addMetadataItem(String name, String value, boolean selectValue) {
         log.debug("addMetadataItem:" + name);
-        Map<String, String> m = new TreeMap<String, String>(metadata);
-        m.put(name, value);
+        int row = metadata.size();
+        List<Header> m = new ArrayList<Header>(metadata);
+        m.add(row, new Header(name, value));
         this.setMetadata(m);
-        int row = 0;
-        for(String key : m.keySet()) {
-            if(key.equals(name)) {
-                break;
-            }
-            row++;
-        }
         metadataTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
         metadataTable.editRow(
                 selectValue ? metadataTable.columnWithIdentifier(HEADER_METADATA_VALUE_COLUMN) : metadataTable.columnWithIdentifier(HEADER_METADATA_NAME_COLUMN),
@@ -977,19 +1001,24 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void metadataRemoveButtonClicked(ID sender) {
-        Map<String, String> m = new TreeMap<String, String>(metadata);
         NSIndexSet iterator = metadataTable.selectedRowIndexes();
+        List<Header> remove = new ArrayList<Header>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            m.remove(new ArrayList<String>(m.keySet()).get(index.intValue()));
+            remove.add(metadata.get(index.intValue()));
         }
-        this.setMetadata(m);
+        metadata.removeAll(remove);
+        this.setMetadata(metadata);
         this.metadataInputDidEndEditing();
     }
 
     private void metadataInputDidEndEditing() {
         if(toggleMetadataSettings(false)) {
+            final Map<String, String> update = new HashMap<String, String>();
+            for(Header header : metadata) {
+                update.put(header.getName(), header.getValue());
+            }
             controller.background(new WorkerBackgroundAction<Map<String, String>>(controller,
-                    new WriteMetadataWorker(files, metadata) {
+                    new WriteMetadataWorker(files, update) {
                         @Override
                         public void cleanup(Map<String, String> metadata) {
                             toggleMetadataSettings(true);
@@ -1848,12 +1877,16 @@ public class InfoController extends ToolbarWindowController {
      * Read custom metadata HTTP headers from cloud provider
      */
     private void initMetadata() {
-        this.setMetadata(Collections.<String, String>emptyMap());
+        this.setMetadata(Collections.<Header>emptyList());
         if(this.toggleMetadataSettings(false)) {
             controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(files) {
                 @Override
                 public void cleanup(Map<String, String> updated) {
-                    setMetadata(updated);
+                    List<Header> m = new ArrayList<Header>();
+                    for(String key : updated.keySet()) {
+                        m.add(new Header(key, updated.get(key)));
+                    }
+                    setMetadata(m);
                     toggleMetadataSettings(true);
                 }
             }));
