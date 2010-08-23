@@ -50,6 +50,8 @@ public abstract class NSMutableArray extends NSArray {
      */
     public abstract void addObject(NSObject anObject);
 
+    public abstract void addObject(String anObject);
+
     /**
      * Original signature : <code>void insertObject(id, NSUInteger)</code><br>
      * <i>native declaration : :83</i>
