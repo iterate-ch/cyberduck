@@ -31,8 +31,8 @@ import ch.cyberduck.ui.action.*;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
-import ch.cyberduck.ui.cocoa.threading.InfoBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
+import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.rococoa.Foundation;
@@ -988,7 +988,7 @@ public class InfoController extends ToolbarWindowController {
 
     private void metadataInputDidEndEditing() {
         if(toggleMetadataSettings(false)) {
-            controller.background(new InfoBackgroundAction<Map<String, String>>(controller,
+            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller,
                     new WriteMetadataWorker(files, metadata) {
                         @Override
                         public void cleanup(Map<String, String> metadata) {
@@ -1153,6 +1153,7 @@ public class InfoController extends ToolbarWindowController {
 
     private static final String TOOLBAR_ITEM_GENERAL = "info";
     private static final String TOOLBAR_ITEM_PERMISSIONS = "permissions";
+    private static final String TOOLBAR_ITEM_ACL = "acl";
     private static final String TOOLBAR_ITEM_DISTRIBUTION = "distribution";
     private static final String TOOLBAR_ITEM_S3 = "s3";
     private static final String TOOLBAR_ITEM_METADATA = "metadata";
@@ -1196,6 +1197,9 @@ public class InfoController extends ToolbarWindowController {
         else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
             item.setImage(IconCache.iconNamed("pencil", 32));
         }
+        else if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
+            item.setImage(IconCache.iconNamed("permissions", 32));
+        }
         return item;
     }
 
@@ -1208,7 +1212,14 @@ public class InfoController extends ToolbarWindowController {
                 // Anonymous never has the right to updated permissions
                 return false;
             }
-            return session.isAclSupported() || session.isUnixPermissionsSupported();
+            return session.isUnixPermissionsSupported();
+        }
+        if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
+            if(anonymous) {
+                // Anonymous never has the right to updated permissions
+                return false;
+            }
+            return session.isAclSupported();
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             if(anonymous) {
@@ -1271,6 +1282,13 @@ public class InfoController extends ToolbarWindowController {
 
     public void setPanelPermissions(NSView v) {
         this.panelPermissions = v;
+    }
+
+    @Outlet
+    private NSView panelAcl;
+
+    public void setPanelAcl(NSView v) {
+        this.panelAcl = v;
     }
 
     @Outlet
@@ -1367,7 +1385,34 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     protected List<NSView> getPanels() {
-        return Arrays.asList(panelGeneral, panelPermissions, panelMetadata, panelDistribution, panelCloud);
+        List<NSView> views = new ArrayList<NSView>();
+        views.add(panelGeneral);
+        if(!controller.getSession().isAclSupported() /*controller.getSession().isUnixPermissionsSupported()*/) {
+            views.add(panelPermissions);
+        }
+        if(controller.getSession().isAclSupported()) {
+            views.add(panelAcl);
+        }
+        views.add(panelMetadata);
+        views.add(panelDistribution);
+        views.add(panelCloud);
+        return views;
+    }
+
+    @Override
+    protected List<String> getPanelIdentifiers() {
+        List<String> identifiers = new ArrayList<String>();
+        identifiers.add(TOOLBAR_ITEM_GENERAL);
+        if(!controller.getSession().isAclSupported() /*controller.getSession().isUnixPermissionsSupported()*/) {
+            identifiers.add(TOOLBAR_ITEM_PERMISSIONS);
+        }
+        if(controller.getSession().isAclSupported()) {
+            identifiers.add(TOOLBAR_ITEM_ACL);
+        }
+        identifiers.add(TOOLBAR_ITEM_METADATA);
+        identifiers.add(TOOLBAR_ITEM_DISTRIBUTION);
+        identifiers.add(TOOLBAR_ITEM_S3);
+        return identifiers;
     }
 
     private String getName() {
@@ -1484,7 +1529,7 @@ public class InfoController extends ToolbarWindowController {
         octalField.setStringValue(Locale.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
-            controller.background(new InfoBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
+            controller.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
                 @Override
                 public void cleanup(List<Permission> permissions) {
                     for(Permission permission : permissions) {
@@ -1570,7 +1615,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new InfoBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
+            controller.background(new WorkerBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
                 @Override
                 public void cleanup(Long size) {
                     updateSize(size);
@@ -1597,7 +1642,7 @@ public class InfoController extends ToolbarWindowController {
         }
         else {
             if(this.toggleSizeSettings(false)) {
-                controller.background(new InfoBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
+                controller.background(new WorkerBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
                     @Override
                     public void cleanup(List<String> checksums) {
                         for(String checksum : checksums) {
@@ -1805,7 +1850,7 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.<String, String>emptyMap());
         if(this.toggleMetadataSettings(false)) {
-            controller.background(new InfoBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(files) {
+            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(files) {
                 @Override
                 public void cleanup(Map<String, String> updated) {
                     setMetadata(updated);
@@ -1841,7 +1886,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            controller.background(new InfoBackgroundAction<List<Acl.UserAndRole>>(controller, new AclWorker(files) {
+            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new AclWorker(files) {
                 @Override
                 public void cleanup(List<Acl.UserAndRole> updated) {
                     setAcl(updated);
@@ -1949,7 +1994,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
-            controller.background(new InfoBackgroundAction<Permission>(controller,
+            controller.background(new WorkerBackgroundAction<Permission>(controller,
                     new WritePermissionWorker(files, permission, recursive) {
                         @Override
                         public void cleanup(Permission permission) {
@@ -2169,7 +2214,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void calculateSizeButtonClicked(final ID sender) {
         if(this.toggleSizeSettings(false)) {
-            controller.background(new InfoBackgroundAction<Long>(controller, new CalculateSizeWorker(files) {
+            controller.background(new WorkerBackgroundAction<Long>(controller, new CalculateSizeWorker(files) {
                 @Override
                 public void cleanup(Long size) {
                     updateSize(size);
@@ -2219,7 +2264,10 @@ public class InfoController extends ToolbarWindowController {
             site.append("/howto/info");
         }
         else if(tab.equals(TOOLBAR_ITEM_PERMISSIONS)) {
-            site.append("/howto/info");
+            site.append("/howto/permissions");
+        }
+        else if(tab.equals(TOOLBAR_ITEM_ACL)) {
+            site.append("/howto/acl");
         }
         else if(tab.equals(TOOLBAR_ITEM_METADATA)) {
             site.append("/").append(controller.getSession().getHost().getProtocol().getIdentifier());

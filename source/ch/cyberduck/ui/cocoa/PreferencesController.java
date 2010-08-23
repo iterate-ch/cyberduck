@@ -152,6 +152,12 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
+    protected List<String> getPanelIdentifiers() {
+        return Arrays.asList("general", "browser", "queue", "pencil", "ftp", "sftp", "s3", "google", "bandwidth",
+                "connection", "update", "language");
+    }
+
+    @Override
     protected void invalidate() {
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
