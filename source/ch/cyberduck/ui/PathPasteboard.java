@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 import org.apache.log4j.Logger;
 
@@ -32,10 +31,10 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class PathPasteboard<T> extends Collection<T> implements Pasteboard<T> {
+public class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
     private static Logger log = Logger.getLogger(PathPasteboard.class);
 
-    private static Map<Host, PathPasteboard<NSDictionary>> instances = new HashMap<Host, PathPasteboard<NSDictionary>>() {
+    private static Map<Session, PathPasteboard> instances = new HashMap<Session, PathPasteboard>() {
         @Override
         public boolean isEmpty() {
             for(PathPasteboard pasteboard : this.values()) {
@@ -48,51 +47,41 @@ public class PathPasteboard<T> extends Collection<T> implements Pasteboard<T> {
     };
 
     /**
-     * @param host
-     * @return Pasteboard for a given host
+     * @param session
+     * @return Pasteboard for a given session
      */
-    public static PathPasteboard<NSDictionary> getPasteboard(Host host) {
-        if(!instances.containsKey(host)) {
-            instances.put(host, new PathPasteboard<NSDictionary>(host));
+    public static PathPasteboard getPasteboard(Session session) {
+        if(!instances.containsKey(session)) {
+            instances.put(session, new PathPasteboard(session));
         }
-        return instances.get(host);
+        return instances.get(session);
     }
 
     /**
      * @return
      */
-    public static Map<Host, PathPasteboard<NSDictionary>> allPasteboards() {
+    public static Map<Session, PathPasteboard> allPasteboards() {
         return instances;
     }
 
-    private Host host;
+    private Session session;
 
-    private PathPasteboard(Host host) {
-        this.host = host;
+    private PathPasteboard(Session session) {
+        this.session = session;
     }
 
-    /**
-     * @return
-     */
-    public List<Path> getFiles() {
-        return this.getFiles(SessionFactory.createSession(host));
-    }
-
-    /**
-     * @param session
-     * @return
-     */
-    public List<Path> getFiles(final Session session) {
+    public List<Path> copy() {
         List<Path> content = new ArrayList<Path>();
-        for(T dict : this) {
-            content.add(PathFactory.createPath(session, dict));
+        Session copy = SessionFactory.createSession(session.getHost());
+        for(Path path : this) {
+            content.add(PathFactory.createPath(copy, path.getAsDictionary()));
         }
         return content;
     }
 
     @Override
     public void clear() {
-        instances.remove(host);
+        instances.remove(session);
         super.clear();
     }
 }

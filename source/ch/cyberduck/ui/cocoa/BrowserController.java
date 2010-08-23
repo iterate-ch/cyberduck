@@ -27,6 +27,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.delegate.*;
@@ -2906,7 +2907,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void cut(final ID sender) {
         for(Path selected : this.getSelectedPaths()) {
             // Writing data for private use when the item gets dragged to the transfer queue.
-            PathPasteboard.getPasteboard(this.getSession().getHost()).add(selected.<NSDictionary>getAsDictionary());
+            PathPasteboard.getPasteboard(this.getSession()).add(selected);
         }
         final NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
         pasteboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
@@ -2917,7 +2918,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void paste(final ID sender) {
-        final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(this.getSession().getHost());
+        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         if(pasteboard.isEmpty()) {
             return;
         }
@@ -2932,7 +2933,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 parent = selected.getParent();
             }
         }
-        for(final Path next : pasteboard.getFiles(this.getSession())) {
+        for(final Path next : pasteboard) {
             Path current = PathFactory.createPath(getSession(),
                     next.getAbsolute(), next.attributes().getType());
             Path renamed = PathFactory.createPath(getSession(),
@@ -3664,15 +3665,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         }
         else if(action.equals(Foundation.selector("paste:"))) {
-            if(this.isMounted() && !PathPasteboard.getPasteboard(this.getSession().getHost()).isEmpty()) {
-                if(PathPasteboard.getPasteboard(this.getSession().getHost()).size() == 1) {
-                    item.setTitle(Locale.localizedString("Paste") + " \""
-                            + PathPasteboard.getPasteboard(this.getSession().getHost()).getFiles(this.getSession()).get(0).getName() + "\"");
+            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+            if(this.isMounted() && !pasteboard.isEmpty()) {
+                if(pasteboard.size() == 1) {
+                    item.setTitle(Locale.localizedString("Paste") + " \"" + pasteboard.get(0).getName() + "\"");
                 }
                 else {
-                    item.setTitle(Locale.localizedString("Paste")
-                            + " (" + PathPasteboard.getPasteboard(this.getSession().getHost()).size() + " " +
-                            Locale.localizedString("files") + ")");
+                    item.setTitle(Locale.localizedString("Paste") + " (" + pasteboard.size() + " " + Locale.localizedString("files") + ")");
                 }
             }
             else {
@@ -3752,7 +3751,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("paste:"))) {
             if(this.isMounted()) {
-                return !PathPasteboard.getPasteboard(this.getSession().getHost()).isEmpty();
+                return !PathPasteboard.getPasteboard(this.getSession()).isEmpty();
             }
             return false;
         }

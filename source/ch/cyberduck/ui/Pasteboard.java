@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Pasteboard<T> {
 

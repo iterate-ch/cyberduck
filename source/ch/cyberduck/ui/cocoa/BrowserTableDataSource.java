@@ -21,11 +21,11 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.DateFormatterFactory;
+import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
@@ -286,19 +286,17 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
         }
         if(controller.isMounted()) {
-            final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
             if(!pasteboard.isEmpty()) {
                 // A file dragged within the browser has been received
                 if((draggingInfo.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationMove.intValue())
                         == NSDraggingInfo.NSDragOperationMove.intValue()) {
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard.getFiles(controller.getSession())) {
-                        Path original = PathFactory.createPath(controller.getSession(),
-                                next.getAbsolute(), next.attributes().getType());
+                    for(Path next : pasteboard) {
                         Path renamed = PathFactory.createPath(controller.getSession(),
-                                destination.getAbsolute(), original.getName(), next.attributes().getType());
-                        files.put(original, renamed);
+                                destination.getAbsolute(), next.getName(), next.attributes().getType());
+                        files.put(next, renamed);
                     }
                     pasteboard.clear();
                     controller.renamePaths(files);
@@ -307,7 +305,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(draggingInfo.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                     // The file should be duplicated
                     final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard.getFiles(controller.getSession())) {
+                    for(Path next : pasteboard) {
                         final Path copy = PathFactory.createPath(controller.getSession(), next.getAsDictionary());
                         copy.setPath(destination.getAbsolute(), next.getName());
                         files.put(next, copy);
@@ -358,10 +356,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(null == destination) {
                 return NSDraggingInfo.NSDragOperationNone;
             }
-            if(PathPasteboard.getPasteboard(controller.getSession().getHost()).isEmpty()) {
+            if(PathPasteboard.getPasteboard(controller.getSession()).isEmpty()) {
                 return NSDraggingInfo.NSDragOperationNone;
             }
-            for(Path next : PathPasteboard.getPasteboard(controller.getSession().getHost()).getFiles(controller.getSession())) {
+            for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
                 if(destination.equals(next)) {
                     // Do not allow dragging onto myself
                     return NSDraggingInfo.NSDragOperationNone;
@@ -411,7 +409,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
                 final NSMutableArray fileTypes = NSMutableArray.array();
-                final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+                final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
                 for(int i = 0; i < items.count().intValue(); i++) {
                     final Path path = controller.lookup(new OutlinePathReference(items.objectAtIndex(new NSUInteger(i))));
                     if(null == path) {
@@ -432,7 +430,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeUnknown));
                     }
                     // Writing data for private use when the item gets dragged to the transfer queue.
-                    pasteboard.add(path.<NSDictionary>getAsDictionary());
+                    pasteboard.add(path);
                 }
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
@@ -456,10 +454,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      */
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation:" + operation);
-        final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
+        final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
-            final List<Path> files = pasteboard.getFiles(controller.getSession());
-            controller.deletePaths(files);
+            controller.deletePaths(pasteboard);
         }
         pasteboard.clear();
     }
@@ -480,24 +477,23 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.createLocal(url.path());
-            final PathPasteboard<NSDictionary> pasteboard = PathPasteboard.getPasteboard(controller.getSession().getHost());
-            final List<Path> promisedPaths = pasteboard.getFiles(controller.getTransferSession());
-            for(Path p : promisedPaths) {
+            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
+            for(Path p : pasteboard) {
                 p.setLocal(LocalFactory.createLocal(destination, p.getName()));
                 // Add to returned path names
                 promisedDragNames.addObject(NSString.stringWithString(p.getLocal().getName()));
             }
-            if(promisedPaths.size() == 1) {
-                if(promisedPaths.get(0).attributes().isFile()) {
-                    promisedPaths.get(0).getLocal().touch();
+            if(pasteboard.size() == 1) {
+                if(pasteboard.get(0).attributes().isFile()) {
+                    pasteboard.get(0).getLocal().touch();
                 }
-                if(promisedPaths.get(0).attributes().isDirectory()) {
-                    promisedPaths.get(0).getLocal().mkdir();
+                if(pasteboard.get(0).attributes().isDirectory()) {
+                    pasteboard.get(0).getLocal().mkdir();
                 }
             }
             // Drag to application icon in dock.
             final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
-            controller.transfer(new DownloadTransfer(promisedPaths) {
+            controller.transfer(new DownloadTransfer(pasteboard) {
                 @Override
                 protected void fireDidTransferPath(Path path) {
                     if(dock) {

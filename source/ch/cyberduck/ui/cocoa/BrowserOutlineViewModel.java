@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -156,7 +157,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             if(null != item) {
                 destination = controller.lookup(new OutlinePathReference(item));
             }
-            if(!PathPasteboard.getPasteboard(controller.getSession().getHost()).isEmpty()
+            if(!PathPasteboard.getPasteboard(controller.getSession()).isEmpty()
                     || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 if(null == destination) {
                     // Dragging over empty rows
@@ -172,7 +173,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                         return super.validateDrop(outlineView, destination, row, draggingInfo);
                     }
                     else {
-                        for(Path next : PathPasteboard.getPasteboard(controller.getSession().getHost()).getFiles(controller.getSession())) {
+                        for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
                             if(destination.equals(next)) {
                                 // Do not allow dragging onto myself. Fix #4320
                                 return NSDraggingInfo.NSDragOperationNone;

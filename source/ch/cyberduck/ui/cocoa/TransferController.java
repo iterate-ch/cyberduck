@@ -23,6 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
@@ -831,14 +832,15 @@ public class TransferController extends WindowController implements NSToolbar.De
     @Action
     public void paste(final ID sender) {
         log.debug("paste");
-        final Map<Host, PathPasteboard<NSDictionary>> boards = PathPasteboard.allPasteboards();
-        if(!boards.isEmpty()) {
-            for(PathPasteboard<NSDictionary> pasteboard : boards.values()) {
-                TransferCollection.instance().add(new DownloadTransfer(pasteboard.getFiles()));
+        final Map<Session, PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+        for(PathPasteboard pasteboard : pasteboards.values()) {
+            if(pasteboard.isEmpty()) {
+                continue;
             }
+            TransferCollection.instance().add(new DownloadTransfer(pasteboard.copy()));
             this.reloadData();
         }
-        boards.clear();
+        pasteboards.clear();
     }
 
     @Action
@@ -1057,16 +1059,14 @@ public class TransferController extends WindowController implements NSToolbar.De
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
-            final Map<Host, PathPasteboard<NSDictionary>> boards = PathPasteboard.allPasteboards();
-            if(!boards.isEmpty() && boards.size() == 1) {
-                for(PathPasteboard<NSDictionary> pasteboard : boards.values()) {
+            final Map<Session, PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+            if(!pasteboards.isEmpty() && pasteboards.size() == 1) {
+                for(PathPasteboard pasteboard : pasteboards.values()) {
                     if(pasteboard.size() == 1) {
-                        item.setTitle(Locale.localizedString("Paste") + " \""
-                                + pasteboard.getFiles().get(0).getName() + "\"");
+                        item.setTitle(Locale.localizedString("Paste") + " \"" + pasteboard.get(0).getName() + "\"");
                     }
                     else {
-                        item.setTitle(Locale.localizedString("Paste")
-                                + " (" + pasteboard.size() + " " +
+                        item.setTitle(Locale.localizedString("Paste") + " (" + pasteboard.size() + " " +
                                 Locale.localizedString("files") + ")");
                     }
                 }

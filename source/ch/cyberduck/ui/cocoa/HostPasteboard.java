@@ -21,9 +21,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.ui.Pasteboard;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HostPasteboard extends Collection<Host> implements Pasteboard<Host> {
 

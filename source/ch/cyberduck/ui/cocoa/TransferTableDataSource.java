@@ -19,15 +19,21 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.foundation.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
+
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -183,18 +189,21 @@ public class TransferTableDataSource extends ListDataSource {
             }
             return false;
         }
-        final Map<Host, PathPasteboard<NSDictionary>> boards = PathPasteboard.allPasteboards();
-        if(!boards.isEmpty()) {
-            for(PathPasteboard<NSDictionary> pasteboard : boards.values()) {
-                TransferCollection.instance().add(row.intValue(), new DownloadTransfer(pasteboard.getFiles()));
-                view.reloadData();
-                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                view.scrollRowToVisible(row);
-            }
-            boards.clear();
-            return true;
+        final Map<Session, PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+        if(pasteboards.isEmpty()) {
+            return false;
         }
-        return false;
+        for(PathPasteboard pasteboard : pasteboards.values()) {
+            if(pasteboard.isEmpty()) {
+                continue;
+            }
+            TransferCollection.instance().add(row.intValue(), new DownloadTransfer(pasteboard.copy()));
+            view.reloadData();
+            view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+            view.scrollRowToVisible(row);
+        }
+        pasteboards.clear();
+        return true;
     }
 
     /**
