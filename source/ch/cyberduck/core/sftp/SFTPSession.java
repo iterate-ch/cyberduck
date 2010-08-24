@@ -19,11 +19,9 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
-import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.InteractiveCallback;
-import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.StreamGobbler;
+import ch.ethz.ssh2.*;
 import ch.ethz.ssh2.channel.ChannelClosedException;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
@@ -129,6 +127,11 @@ public class SFTPSession extends Session {
         this.fireConnectionWillOpenEvent();
 
         SSH = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
+        SSH.addConnectionMonitor(new ConnectionMonitor() {
+            public void connectionLost(Throwable reason) {
+                interrupt();
+            }
+        });
 
         final int timeout = this.timeout();
         this.getClient().connect(HostKeyControllerFactory.instance(this), timeout, timeout);
@@ -387,12 +390,6 @@ public class SFTPSession extends Session {
 
     @Override
     public Path workdir() throws IOException {
-        if(null == SFTP) {
-            throw new ConnectionCanceledException();
-        }
-        if(!SFTP.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
         if(null == workdir) {
             // "." as referring to the current directory
             workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."), Path.DIRECTORY_TYPE);
