@@ -1116,7 +1116,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     if(transfer.isRunning()) {
                         return false;
                     }
-                    return transfer.isResumable();
+                    return transfer.isResumable() && !transfer.isComplete();
                 }
             });
         }
