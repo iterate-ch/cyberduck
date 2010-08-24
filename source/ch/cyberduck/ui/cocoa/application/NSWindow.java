@@ -776,7 +776,7 @@ public abstract class NSWindow extends NSResponder {
      * Original signature : <code>NSDockTile* dockTile()</code><br>
      * <i>native declaration : :356</i>
      */
-    public abstract com.sun.jna.Pointer dockTile();
+    public abstract NSDockTile dockTile();
 
     /**
      * Original signature : <code>void setDocumentEdited(BOOL)</code><br>

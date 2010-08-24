@@ -401,7 +401,7 @@ public abstract class NSApplication extends NSObject {
      * Original signature : <code>NSDockTile* dockTile()</code><br>
      * <i>native declaration : :183</i>
      */
-    public abstract com.sun.jna.Pointer dockTile();
+    public abstract NSDockTile dockTile();
     /**
      * <i>native declaration : :186</i><br>
      * Conversion Error : /// Original signature : <code>BOOL sendAction(null, id, id)</code><br>

@@ -2023,6 +2023,7 @@ source/ch/cyberduck/ui/cocoa/AbstractPathTableDelegate.java -text
 source/ch/cyberduck/ui/cocoa/BundleController.java -text
 source/ch/cyberduck/ui/cocoa/ErrorController.java -text
 source/ch/cyberduck/ui/cocoa/TranscriptController.java -text
+source/ch/cyberduck/ui/cocoa/application/NSDockTile.java -text
 source/ch/cyberduck/ui/cocoa/delegate/CopyURLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/OpenURLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/URLMenuDelegate.java -text

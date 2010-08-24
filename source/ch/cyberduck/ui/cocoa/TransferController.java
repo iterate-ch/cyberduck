@@ -339,8 +339,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                 instance.alert(alert, new SheetCallback() {
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
-                            for(int i = 0; i < TransferCollection.instance().size(); i++) {
-                                Transfer transfer = TransferCollection.instance().get(i);
+                            for(Transfer transfer : TransferCollection.instance()) {
                                 if(transfer.isRunning()) {
                                     transfer.interrupt();
                                 }
@@ -603,7 +602,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             this.addTransfer(transfer);
         }
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
-            this.window.makeKeyAndOrderFront(null);
+            this.window().makeKeyAndOrderFront(null);
         }
         this.background(new AlertRepeatableBackgroundAction(this) {
             private boolean resume = resumeRequested;
@@ -627,11 +626,26 @@ public class TransferController extends WindowController implements NSToolbar.De
                     @Override
                     public void transferWillStart() {
                         validateToolbar();
+                        badge();
                     }
 
                     @Override
                     public void transferDidEnd() {
                         validateToolbar();
+                        badge();
+                    }
+
+                    private void badge() {
+                        if(Preferences.instance().getBoolean("queue.dock.badge")) {
+                            int count = TransferCollection.instance().numberOfRunningTransfers();
+                            if(0 == count) {
+                                NSApplication.sharedApplication().dockTile().setBadgeLabel("");
+                            }
+                            else {
+                                NSApplication.sharedApplication().dockTile().setBadgeLabel(
+                                        String.valueOf(count));
+                            }
+                        }
                     }
                 });
                 return super.prepare();
@@ -717,7 +731,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     private void validateToolbar() {
         invoke(new WindowMainAction(TransferController.this) {
             public void run() {
-                window.toolbar().validateVisibleItems();
+                window().toolbar().validateVisibleItems();
                 updateIcon();
             }
         });

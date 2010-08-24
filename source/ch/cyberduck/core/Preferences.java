@@ -405,6 +405,8 @@ public abstract class Preferences {
         defaults.put("queue.download.quarantine", String.valueOf(true));
         defaults.put("queue.download.wherefrom", String.valueOf(true));
 
+        defaults.put("queue.dock.badge", String.valueOf(true));
+
         /**
          * Bandwidth throttle options
          */
