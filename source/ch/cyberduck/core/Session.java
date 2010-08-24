@@ -115,7 +115,6 @@ public abstract class Session implements TranscriptListener {
                 // Most probably caused by user dismissing ceritifcate. No trusted certificate found.
                 throw new ConnectionCanceledException(e.getMessage());
             }
-            host.setTimestamp(new Date());
         }
         catch(IOException e) {
             this.interrupt();
@@ -563,6 +562,9 @@ public abstract class Session implements TranscriptListener {
         }
         this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
+
+        // Update last accessed timestamp
+        host.setTimestamp(new Date());
     }
 
     /**
