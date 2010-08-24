@@ -161,8 +161,10 @@ public class BackgroundException extends Exception {
             }
         }
         String message = buffer.toString();
-        if(!StringUtils.isEmpty(message) && !message.endsWith(".")) {
-            message = message + ".";
+        if(!StringUtils.isEmpty(message)) {
+            if(Character.isLetter(message.charAt(message.length() - 1))) {
+                message = message + ".";
+            }
         }
         return Locale.localizedString(message, "Error");
     }
