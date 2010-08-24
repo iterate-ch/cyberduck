@@ -25,25 +25,27 @@
 				<key>aclAddButton</key>
 				<string>id</string>
 				<key>aclProgress</key>
-				<string>id</string>
+				<string>NSProgressIndicator</string>
 				<key>aclRemoveButton</key>
 				<string>id</string>
 				<key>aclTable</key>
-				<string>id</string>
+				<string>NSTableView</string>
+				<key>aclUrlField</key>
+				<string>NSTextField</string>
 				<key>bucketLocationField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>bucketLoggingButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>bucketMfaButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>bucketVersioningButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>checksumField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>createdField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>distributionCnameField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>distributionCnameUrlField</key>
 				<string>id</string>
 				<key>distributionDefaultRootPopup</key>
@@ -51,55 +53,57 @@
 				<key>distributionDeliveryPopup</key>
 				<string>id</string>
 				<key>distributionEnableButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>distributionLoggingButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>distributionProgress</key>
-				<string>id</string>
+				<string>NSProgressIndicator</string>
 				<key>distributionStatusField</key>
 				<string>id</string>
 				<key>distributionUrlField</key>
 				<string>id</string>
 				<key>filenameField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>groupField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>groupr</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>groupw</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>groupx</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>iconImageView</key>
 				<string>id</string>
 				<key>kindField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>metadataAddButton</key>
 				<string>id</string>
 				<key>metadataProgress</key>
-				<string>id</string>
+				<string>NSProgressIndicator</string>
 				<key>metadataRemoveButton</key>
 				<string>id</string>
 				<key>metadataTable</key>
-				<string>id</string>
+				<string>NSTableView</string>
 				<key>modifiedField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>octalField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>otherr</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>otherw</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>otherx</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>ownerField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>ownerr</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>ownerw</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>ownerx</key>
-				<string>id</string>
+				<string>NSButton</string>
+				<key>panelAcl</key>
+				<string>NSView</string>
 				<key>panelCloud</key>
 				<string>NSView</string>
 				<key>panelDistribution</key>
@@ -111,35 +115,35 @@
 				<key>panelPermissions</key>
 				<string>NSView</string>
 				<key>pathField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>permissionProgress</key>
-				<string>id</string>
+				<string>NSProgressIndicator</string>
 				<key>permissionsField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>recursiveButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>s3Progress</key>
-				<string>id</string>
+				<string>NSProgressIndicator</string>
 				<key>s3PublicUrlField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>s3PublicUrlValidityField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>s3torrentUrlField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>sizeButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>sizeField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>sizeProgress</key>
-				<string>id</string>
+				<string>NSProgressIndicator</string>
 				<key>storageClassPopup</key>
 				<string>NSPopUpButton</string>
 				<key>tabView</key>
-				<string>id</string>
+				<string>NSTabView</string>
 				<key>webUrlField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>window</key>
-				<string>id</string>
+				<string>NSWindow</string>
 			</dict>
 			<key>SUPERCLASS</key>
 			<string>java.lang.Object</string>

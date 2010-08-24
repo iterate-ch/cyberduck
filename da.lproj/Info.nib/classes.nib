@@ -1,159 +1,85 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>IBClasses</key>
-	<array>
-		<dict>
-			<key>CLASS</key>
-			<string>NSObject</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>helpButtonClicked</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>CDInfoController</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>OUTLETS</key>
-			<dict>
-				<key>aclAddButton</key>
-				<string>id</string>
-				<key>aclProgress</key>
-				<string>id</string>
-				<key>aclRemoveButton</key>
-				<string>id</string>
-				<key>aclTable</key>
-				<string>id</string>
-				<key>bucketLocationField</key>
-				<string>id</string>
-				<key>bucketLoggingButton</key>
-				<string>id</string>
-				<key>bucketMfaButton</key>
-				<string>id</string>
-				<key>bucketVersioningButton</key>
-				<string>id</string>
-				<key>checksumField</key>
-				<string>id</string>
-				<key>createdField</key>
-				<string>id</string>
-				<key>distributionCnameField</key>
-				<string>id</string>
-				<key>distributionCnameUrlField</key>
-				<string>id</string>
-				<key>distributionDefaultRootPopup</key>
-				<string>id</string>
-				<key>distributionDeliveryPopup</key>
-				<string>id</string>
-				<key>distributionEnableButton</key>
-				<string>id</string>
-				<key>distributionLoggingButton</key>
-				<string>id</string>
-				<key>distributionProgress</key>
-				<string>id</string>
-				<key>distributionStatusField</key>
-				<string>id</string>
-				<key>distributionUrlField</key>
-				<string>id</string>
-				<key>filenameField</key>
-				<string>id</string>
-				<key>groupField</key>
-				<string>id</string>
-				<key>groupr</key>
-				<string>id</string>
-				<key>groupw</key>
-				<string>id</string>
-				<key>groupx</key>
-				<string>id</string>
-				<key>iconImageView</key>
-				<string>id</string>
-				<key>kindField</key>
-				<string>id</string>
-				<key>metadataAddButton</key>
-				<string>id</string>
-				<key>metadataProgress</key>
-				<string>id</string>
-				<key>metadataRemoveButton</key>
-				<string>id</string>
-				<key>metadataTable</key>
-				<string>id</string>
-				<key>modifiedField</key>
-				<string>id</string>
-				<key>octalField</key>
-				<string>id</string>
-				<key>otherr</key>
-				<string>id</string>
-				<key>otherw</key>
-				<string>id</string>
-				<key>otherx</key>
-				<string>id</string>
-				<key>ownerField</key>
-				<string>id</string>
-				<key>ownerr</key>
-				<string>id</string>
-				<key>ownerw</key>
-				<string>id</string>
-				<key>ownerx</key>
-				<string>id</string>
-				<key>panelCloud</key>
-				<string>NSView</string>
-				<key>panelDistribution</key>
-				<string>NSView</string>
-				<key>panelGeneral</key>
-				<string>NSView</string>
-				<key>panelMetadata</key>
-				<string>NSView</string>
-				<key>panelPermissions</key>
-				<string>NSView</string>
-				<key>pathField</key>
-				<string>id</string>
-				<key>permissionProgress</key>
-				<string>id</string>
-				<key>permissionsField</key>
-				<string>id</string>
-				<key>recursiveButton</key>
-				<string>id</string>
-				<key>s3Progress</key>
-				<string>id</string>
-				<key>s3PublicUrlField</key>
-				<string>id</string>
-				<key>s3PublicUrlValidityField</key>
-				<string>id</string>
-				<key>s3torrentUrlField</key>
-				<string>id</string>
-				<key>sizeButton</key>
-				<string>id</string>
-				<key>sizeField</key>
-				<string>id</string>
-				<key>sizeProgress</key>
-				<string>id</string>
-				<key>storageClassPopup</key>
-				<string>NSPopUpButton</string>
-				<key>tabView</key>
-				<string>id</string>
-				<key>webUrlField</key>
-				<string>id</string>
-				<key>window</key>
-				<string>id</string>
-			</dict>
-			<key>SUPERCLASS</key>
-			<string>java.lang.Object</string>
-		</dict>
-		<dict>
-			<key>CLASS</key>
-			<string>FirstResponder</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-	</array>
-	<key>IBVersion</key>
-	<string>1</string>
-</dict>
-</plist>
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        helpButtonClicked = id;
+    };
+    CLASS = CDInfoController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        aclAddButton = id;
+        aclProgress = NSProgressIndicator;
+        aclRemoveButton = id;
+        aclTable = NSTableView;
+        aclUrlField = NSTextField;
+        bucketLocationField = NSTextField;
+        bucketLoggingButton = NSButton;
+        bucketMfaButton = NSButton;
+        bucketVersioningButton = NSButton;
+        checksumField = NSTextField;
+        createdField = NSTextField;
+        distributionCnameField = NSTextField;
+        distributionCnameUrlField = id;
+        distributionDefaultRootPopup = id;
+        distributionDeliveryPopup = id;
+        distributionEnableButton = NSButton;
+        distributionLoggingButton = NSButton;
+        distributionProgress = NSProgressIndicator;
+        distributionStatusField = id;
+        distributionUrlField = id;
+        filenameField = NSTextField;
+        groupField = NSTextField;
+        groupr = NSButton;
+        groupw = NSButton;
+        groupx = NSButton;
+        iconImageView = id;
+        kindField = NSTextField;
+        metadataAddButton = id;
+        metadataProgress = NSProgressIndicator;
+        metadataRemoveButton = id;
+        metadataTable = NSTableView;
+        modifiedField = NSTextField;
+        octalField = NSTextField;
+        otherr = NSButton;
+        otherw = NSButton;
+        otherx = NSButton;
+        ownerField = NSTextField;
+        ownerr = NSButton;
+        ownerw = NSButton;
+        ownerx = NSButton;
+        panelAcl = NSView;
+        panelCloud = NSView;
+        panelDistribution = NSView;
+        panelGeneral = NSView;
+        panelMetadata = NSView;
+        panelPermissions = NSView;
+        pathField = NSTextField;
+        permissionProgress = NSProgressIndicator;
+        permissionsField = NSTextField;
+        recursiveButton = NSButton;
+        s3Progress = NSProgressIndicator;
+        s3PublicUrlField = NSTextField;
+        s3PublicUrlValidityField = NSTextField;
+        s3torrentUrlField = NSTextField;
+        sizeButton = NSButton;
+        sizeField = NSTextField;
+        sizeProgress = NSProgressIndicator;
+        storageClassPopup = NSPopUpButton;
+        tabView = NSTabView;
+        webUrlField = NSTextField;
+        window = NSWindow;
+    };
+    SUPERCLASS = "java.lang.Object";
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = NSObject;
+    LANGUAGE = ObjC;
+}
+    );
+    IBVersion = 1;
+}
