@@ -479,6 +479,9 @@ public class S3Session extends CloudSession implements SSLSession {
      * @return True if the error code of the S3 exception is a login failure
      */
     protected boolean isLoginFailure(S3ServiceException e) {
+        if(403 == e.getResponseCode()) {
+            return true;
+        }
         if(null == e.getS3ErrorCode()) {
             return false;
         }
