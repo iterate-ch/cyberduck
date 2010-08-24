@@ -1676,15 +1676,13 @@ public class InfoController extends ToolbarWindowController {
             checksumField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
         }
         else {
+            checksumField.setStringValue(Locale.localizedString("Unknown"));
             if(this.toggleSizeSettings(false)) {
                 controller.background(new WorkerBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
                     @Override
                     public void cleanup(List<String> checksums) {
                         for(String checksum : checksums) {
-                            if(StringUtils.isBlank(checksum)) {
-                                updateField(checksumField, Locale.localizedString("Unknown"));
-                            }
-                            else {
+                            if(StringUtils.isNotBlank(checksum)) {
                                 updateField(checksumField, checksum);
                             }
                         }
