@@ -79,7 +79,7 @@ public class ConnectionController extends SheetController {
         else {
             if(!hostField.isEnabled()) {
                 // Was previously configured with a static configuration
-                hostField.setStringValue("");
+                hostField.setStringValue(protocol.getDefaultHostname());
             }
             if(!pathField.isEnabled()) {
                 // Was previously configured with a static configuration
@@ -92,6 +92,7 @@ public class ConnectionController extends SheetController {
             usernameField.cell().setPlaceholderString("");
             passField.cell().setPlaceholderString("");
         }
+        hostField.cell().setPlaceholderString(protocol.getDefaultHostname());
         usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
         passField.cell().setPlaceholderString(protocol.getPasswordPlaceholder());
         if(protocol.equals(Protocol.IDISK)) {
