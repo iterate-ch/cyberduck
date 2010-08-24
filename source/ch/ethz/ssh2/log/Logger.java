@@ -13,8 +13,6 @@ package ch.ethz.ssh2.log;
 
 public class Logger
 {
-	private static final boolean enabled = false;
-
 	private String className;
 
 	public static Logger getLogger(Class x)
@@ -29,14 +27,16 @@ public class Logger
 
 	public final boolean isEnabled()
 	{
-		return enabled;
+		return true;
+	}
+
+	public final void log(String message)
+	{
+        this.log(-1, message);
 	}
 
 	public final void log(int level, String message)
 	{
-		if(enabled)
-		{
-            org.apache.log4j.Logger.getLogger(className).debug(message);
-        }
+        org.apache.log4j.Logger.getLogger(className).debug(message);
 	}
 }
