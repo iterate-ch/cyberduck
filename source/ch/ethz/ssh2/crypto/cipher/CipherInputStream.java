@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 /**
  * CipherInputStream.
- * 
+ *
  * @author Christian Plattner, plattner@inf.ethz.ch
  * @version $Id$
  */
@@ -38,6 +38,7 @@ public class CipherInputStream
 	private int fill_buffer() throws IOException
 	{
 		input_buffer_pos = 0;
+        input_buffer_size = 0;
 		input_buffer_size = bi.read(input_buffer, 0, BUFF_SIZE);
 		return input_buffer_size;
 	}
@@ -52,7 +53,7 @@ public class CipherInputStream
 			if (fill_buffer() <= 0)
 				return -1;
 		}
-		
+
 		int avail = input_buffer_size - input_buffer_pos;
 		int thiscopy = (len > avail) ? avail : len;
 
