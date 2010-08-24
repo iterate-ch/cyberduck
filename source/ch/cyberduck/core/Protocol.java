@@ -688,8 +688,75 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getUsernamePlaceholder() {
+        public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
+        }
+    };
+
+    public static final Protocol SWIFT = new Protocol() {
+        @Override
+        public String getName() {
+            return Locale.localizedString("Swift", "Mosso");
+        }
+
+        @Override
+        public String getDescription() {
+            return Locale.localizedString("Swift (OpenStack Object Storage)", "Mosso");
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "swift";
+        }
+
+        @Override
+        public int getDefaultPort() {
+            return 443;
+        }
+
+        @Override
+        public String getScheme() {
+            return "https";
+        }
+
+        @Override
+        public String[] getSchemes() {
+            return new String[]{this.getScheme(), "swift"};
+        }
+
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public boolean isHostnameConfigurable() {
+            return true;
+        }
+
+        @Override
+        public String getDefaultHostname() {
+            return "auth.api.rackspacecloud.com";
+        }
+
+        @Override
+        public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("API Access Key", "Mosso");
+        }
+
+        @Override
+        public String icon() {
+            return CLOUDFILES.icon();
+        }
+
+        @Override
+        public String disk() {
+            return CLOUDFILES.disk();
         }
     };
 
@@ -966,6 +1033,12 @@ public abstract class Protocol {
                     Protocol.CLOUDFILES, CFSession.factory());
             PathFactory.addFactory(
                     Protocol.CLOUDFILES, CFPath.factory());
+        }
+        if(Preferences.instance().getBoolean("protocol.cf.swift.enable")) {
+            SessionFactory.addFactory(
+                    Protocol.SWIFT, CFSession.factory());
+            PathFactory.addFactory(
+                    Protocol.SWIFT, CFPath.factory());
         }
         if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
             SessionFactory.addFactory(
