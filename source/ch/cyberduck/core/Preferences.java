@@ -530,6 +530,7 @@ public abstract class Preferences {
         defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
 
         defaults.put("cf.tls.acceptAnyCertificate", String.valueOf(false));
+        defaults.put("cf.authentication.url", "https://auth.api.rackspacecloud.com/v1.0");
 
         //doc	Microsoft Word
         //html	HTML Format

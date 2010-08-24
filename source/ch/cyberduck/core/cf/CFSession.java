@@ -23,9 +23,11 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.*;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
-import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.log4j.Logger;
 
 import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
@@ -93,19 +95,26 @@ public class CFSession extends CloudSession implements SSLSession {
         if(this.isConnected()) {
             return;
         }
-        this.CF = new FilesClient();
+        this.CF = new FilesClient(null, null, null, this.timeout());
         this.fireConnectionWillOpenEvent();
 
-        this.getClient().setConnectionTimeOut(this.timeout());
-        final HostConfiguration config = this.getHostConfiguration();
-        this.getClient().setHostConfiguration(config);
-        this.getClient().setUserAgent(this.getUserAgent());
-
+        this.configure(this.getClient());
         // Prompt the login credentials first
         this.login();
 
         this.fireConnectionDidOpenEvent();
+    }
 
+    /**
+     * Set connection properties
+     *
+     * @param client
+     */
+    protected void configure(FilesClient client) {
+        client.setConnectionTimeOut(this.timeout());
+        client.setHostConfiguration(this.getHostConfiguration());
+        client.setUserAgent(this.getUserAgent());
+        client.setAuthenticationURL(Preferences.instance().getProperty("cf.authentication.url"));
     }
 
     @Override
@@ -189,7 +198,7 @@ public class CFSession extends CloudSession implements SSLSession {
      * @param logging
      */
     @Override
-    public void writeDistribution(boolean enabled, String container, Distribution.Method method, 
+    public void writeDistribution(boolean enabled, String container, Distribution.Method method,
                                   String[] cnames, boolean logging, String defaultRootObject) {
         final AbstractX509TrustManager trust = this.getTrustManager();
         try {
