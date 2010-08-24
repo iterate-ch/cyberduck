@@ -4,10 +4,7 @@ package ch.ethz.ssh2.transport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.security.SecureRandom;
 import java.util.Vector;
 
@@ -46,7 +43,7 @@ import ch.ethz.ssh2.util.Tokenizer;
 
 /**
  * TransportManager.
- * 
+ *
  * @author Christian Plattner, plattner@inf.ethz.ch
  * @version $Id$
  */
@@ -147,7 +144,7 @@ public class TransportManager
 	 * the resolver even though one supplies a dotted IP
 	 * address in the Socket constructor. That is why we
 	 * try to generate the InetAdress "by hand".
-	 * 
+	 *
 	 * @param host
 	 * @return the InetAddress
 	 * @throws UnknownHostException
@@ -619,6 +616,11 @@ public class TransportManager
 		}
 	}
 
+    /**
+     * True if no response message expected.
+     */
+    private boolean idle;
+
 	public void sendMessage(byte[] msg) throws IOException
 	{
 		if (Thread.currentThread() == receiveThread)
@@ -649,6 +651,7 @@ public class TransportManager
 			try
 			{
 				tc.sendMessage(msg);
+                idle = false;
 			}
 			catch (IOException e)
 			{
@@ -663,8 +666,20 @@ public class TransportManager
 		byte[] msg = new byte[35000];
 
 		while (true)
-		{
-			int msglen = tc.receiveMessage(msg, 0, msg.length);
+        {
+            int msglen;
+            try {
+                msglen = tc.receiveMessage(msg, 0, msg.length);
+            }
+            catch(SocketTimeoutException e) {
+                // Timeout in read
+                if(idle) {
+                    log.log("Ignoring socket timeout ");
+                    continue;
+                }
+                throw e;
+            }
+            idle = true;
 
 			int type = msg[0] & 0xff;
 
