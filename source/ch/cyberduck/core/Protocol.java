@@ -450,13 +450,18 @@ public abstract class Protocol {
         }
 
         @Override
+        public String getDefaultHostname() {
+            return "ecc.eucalyptus.com";
+        }
+
+        @Override
         public int getDefaultPort() {
-            return 8773;
+            return 8443;
         }
 
         @Override
         public String getScheme() {
-            return "http";
+            return "https";
         }
 
         @Override
@@ -466,7 +471,7 @@ public abstract class Protocol {
 
         @Override
         public boolean isSecure() {
-            return false;
+            return true;
         }
 
         @Override
