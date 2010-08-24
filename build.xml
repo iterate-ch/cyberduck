@@ -127,7 +127,7 @@
         </exec>
         <property name="svn.revision" value="${svn.revision}"/>
         <echo message="_REVISION_=${svn.revision}"/>
-        <buildnumber/>
+        <buildnumber file="${build}/build.number"/>
         <echo message="Build number ${build.number}"/>
     </target>
 
