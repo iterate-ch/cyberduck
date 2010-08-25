@@ -47,7 +47,7 @@ Dashboard[!!-~]Widget/Plugin/Plugin.xcodeproj/project.pbxproj -text
 /Donate.webloc -text
 Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
 /Info.plist.debug -text
-/LICENSE -text
+/LICENSE.txt -text
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
 Upload[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
