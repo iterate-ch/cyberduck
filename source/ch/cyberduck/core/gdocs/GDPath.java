@@ -667,7 +667,7 @@ public class GDPath extends Path {
                             });
                             int i = 0;
                             for(RevisionEntry revisionEntry : revisions) {
-                                GDPath revision = new GDPath(this.getSession(), entry.getTitle().getPlainText(),
+                                GDPath revision = new GDPath(this.getSession(), revisionEntry.getTitle().getPlainText(),
                                         FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                                 revision.setParent(this);
                                 revision.setDocumentType(type);
