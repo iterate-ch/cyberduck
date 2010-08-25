@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 
+import java.text.MessageFormat;
+
 /**
  * @version $Id$
  */
@@ -76,12 +78,10 @@ public class Speedometer {
      */
     public String getProgress() {
         StringBuilder b = new StringBuilder();
-        b.append(Status.getSizeAsString(transfer.getTransferred()));
-        b.append(" ");
-        b.append(Locale.localizedString("of"));
-        b.append(" ");
         final double size = transfer.getSize();
-        b.append(Status.getSizeAsString(size));
+        final double transferred = transfer.getTransferred();
+        b.append(MessageFormat.format(Locale.localizedString("{0} of {1}"),
+                Status.getSizeAsString(transferred), Status.getSizeAsString(size)));
         final float speed = this.getSpeed();
         if(transfer.isRunning()) {
             if(size > -1 || speed > 0) {
@@ -91,7 +91,7 @@ public class Speedometer {
                         b.append(0);
                     }
                     else {
-                        b.append((int) (transfer.getTransferred() / size * 100));
+                        b.append((int) (transferred / size * 100));
                     }
                     b.append("%");
                 }
