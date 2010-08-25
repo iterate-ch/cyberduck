@@ -237,8 +237,8 @@
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
-            <arg line="--force --sign 'Cyberduck Code Signing Certificate' ${app.bundle}"/>
+        <exec dir="${home}" executable="/usr/bin/codesign" spawn="true">
+            <arg line="--force --sign 'Cyberduck Code Signing Certificate' --keychain ~/Library/Keychains/codesign.keychain -v ${app.bundle}"/>
         </exec>
     </target>
 
