@@ -125,12 +125,6 @@ public abstract class NSDictionary extends NSObject {
     public abstract NSArray allValues();
 
     /**
-     * Original signature : <code>NSString* description()</code><br>
-     * <i>from NSExtendedDictionary native declaration : :23</i>
-     */
-    public abstract String description();
-
-    /**
      * Original signature : <code>NSString* descriptionInStringsFileFormat()</code><br>
      * <i>from NSExtendedDictionary native declaration : :24</i>
      */
