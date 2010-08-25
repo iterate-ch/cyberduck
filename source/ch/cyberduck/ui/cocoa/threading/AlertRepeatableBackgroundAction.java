@@ -98,7 +98,12 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                 alert.setShowsHelp(null != failure.getPath());
                 final AlertController c = new AlertController(AlertRepeatableBackgroundAction.this.controller, alert) {
                     public void callback(final int returncode) {
-                        AlertRepeatableBackgroundAction.this.callback(returncode);
+                        if(returncode == SheetCallback.ALTERNATE_OPTION) {
+                            AlertRepeatableBackgroundAction.this.diagnose();
+                        }
+                        else {
+                            AlertRepeatableBackgroundAction.this.callback(returncode);
+                        }
                     }
 
                     @Override
