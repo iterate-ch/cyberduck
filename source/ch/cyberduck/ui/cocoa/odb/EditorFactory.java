@@ -25,6 +25,8 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
@@ -213,26 +215,41 @@ public class EditorFactory {
         }
     });
 
+    /**
+     * Determine the human readable application name for a given bundle identifier.
+     *
+     * @param bundleIdentifier
+     * @return
+     */
     public static String getApplicationName(String bundleIdentifier) {
         if(!applicationNameCache.containsKey(bundleIdentifier)) {
             log.debug("getApplicationName:" + bundleIdentifier);
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
-            if(StringUtils.isEmpty(path)) {
-                log.warn("Cannot determine installation path for " + bundleIdentifier);
+            if(StringUtils.isBlank(path)) {
+                log.error("Cannot determine installation path for " + bundleIdentifier);
                 applicationNameCache.put(bundleIdentifier, null);
+                return null;
+            }
+            NSBundle app = NSBundle.bundleWithPath(path);
+            if(null == app) {
+                log.error("Loading bundle failed:" + path);
+                applicationNameCache.put(bundleIdentifier, null);
+                return null;
+            }
+            NSDictionary dict = app.infoDictionary();
+            if(null == dict) {
+                log.error("Loading application dictionary failed:" + path);
+                applicationNameCache.put(bundleIdentifier, null);
+                return null;
+            }
+            final NSObject name = dict.objectForKey("CFBundleName");
+            if(null == name) {
+                log.warn("No CFBundleName for " + bundleIdentifier);
+                applicationNameCache.put(bundleIdentifier,
+                        FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName()));
             }
             else {
-                NSBundle app = NSBundle.bundleWithPath(path);
-                String name;
-                if(null != app.infoDictionary().objectForKey("CFBundleName")) {
-                    applicationNameCache.put(bundleIdentifier,
-                            app.infoDictionary().objectForKey("CFBundleName").toString());
-                }
-                else {
-                    log.warn("No CFBundleName for " + bundleIdentifier);
-                    applicationNameCache.put(bundleIdentifier,
-                            FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName()));
-                }
+                applicationNameCache.put(bundleIdentifier, name.toString());
             }
         }
         return applicationNameCache.get(bundleIdentifier);
