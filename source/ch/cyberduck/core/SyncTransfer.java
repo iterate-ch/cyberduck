@@ -235,9 +235,9 @@ public class SyncTransfer extends Transfer {
         final Comparison comparison = this.compare(path);
         // Updating default skip settings for actual transfer
         if(COMPARISON_EQUAL.equals(comparison)) {
-            skipped = path.attributes().isFile();
+            skipped = true;
         }
-        else if(path.attributes().isFile()) {
+        else {
             if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
                 skipped = this.getAction().equals(ACTION_UPLOAD);
             }
@@ -406,18 +406,18 @@ public class SyncTransfer extends Transfer {
         Comparison result = COMPARISON_EQUAL;
         if(p.getLocal().exists() && p.exists()) {
             if(p.attributes().isFile()) {
-                result = this.compareTimestamp(p);
+                return this.compareTimestamp(p);
             }
         }
         else if(p.exists()) {
-            // only the remote file exists
-            result = COMPARISON_REMOTE_NEWER;
+            // Only the remote file exists
+            return COMPARISON_REMOTE_NEWER;
         }
         else if(p.getLocal().exists()) {
-            // only the local file exists
-            result = COMPARISON_LOCAL_NEWER;
+            // Only the local file exists
+            return COMPARISON_LOCAL_NEWER;
         }
-        return result;
+        return COMPARISON_EQUAL;
     }
 
     /**
