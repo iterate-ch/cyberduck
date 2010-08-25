@@ -371,14 +371,14 @@ public class SFTPPath extends Path {
     public void writeUnixPermission(Permission perm, boolean recursive) {
         try {
             this.getSession().check();
-            this.writePermissionsImpl(perm, recursive);
+            this.writeUnixPermissionImpl(perm, recursive);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
         }
     }
 
-    private void writePermissionsImpl(Permission perm, boolean recursive) throws IOException {
+    private void writeUnixPermissionImpl(Permission perm, boolean recursive) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                 this.getName(), perm.getOctalString()));
 
@@ -408,7 +408,7 @@ public class SFTPPath extends Path {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    ((SFTPPath) child).writePermissionsImpl(perm, recursive);
+                    ((SFTPPath) child).writeUnixPermissionImpl(perm, recursive);
                 }
             }
         }
@@ -418,14 +418,14 @@ public class SFTPPath extends Path {
     @Override
     public void writeTimestamp(long millis) {
         try {
-            this.writeModificationDateImpl(millis);
+            this.writeModificationDateImpl(millis, millis);
         }
         catch(IOException e) {
             this.error("Cannot change timestamp", e);
         }
     }
 
-    private void writeModificationDateImpl(long modified) throws IOException {
+    private void writeModificationDateImpl(long modified, long created) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
@@ -542,6 +542,11 @@ public class SFTPPath extends Path {
                 }
 
                 this.upload(out, in, throttle, listener);
+
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    this.writeModificationDateImpl(this.attributes().getModificationDate(),
+                            this.attributes().getCreationDate());
+                }
             }
         }
         catch(IOException e) {
