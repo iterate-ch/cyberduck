@@ -1,0 +1,586 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{04AFCFBB-97D5-44EA-B087-F0CFAEB51E30}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ch.cyberduck</RootNamespace>
+    <AssemblyName>Cyberduck</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>..\..\..\cyberduck-application.ico</ApplicationIcon>
+    <TargetZone>LocalIntranet</TargetZone>
+    <GenerateManifests>false</GenerateManifests>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <SignAssembly>false</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutomaticUpdater">
+      <HintPath>..\..\..\lib\AutomaticUpdater.dll</HintPath>
+    </Reference>
+    <Reference Include="core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\build\core.dll</HintPath>
+    </Reference>
+    <Reference Include="ExceptionReporter.WinForms">
+      <HintPath>..\..\..\lib\ExceptionReporter.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Growl.Connector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=980c2339411be384, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\Growl.Connector.dll</HintPath>
+    </Reference>
+    <Reference Include="Growl.CoreLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=13e59d82e007b064, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\Growl.CoreLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Beans.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.API, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.API.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Parse, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Transform, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.XPath, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\IKVM.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="ObjectListView, Version=2.4.0.14677, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\ObjectListView.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=2.6.1.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <HintPath>..\..\..\lib\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
+    <Compile Include="core\aquaticprime\LicenseImpl.cs" />
+    <Compile Include="core\collections\IndexedLinkedList.cs" />
+    <Compile Include="core\collections\LRUCache.cs" />
+    <Compile Include="core\Commands.cs" />
+    <Compile Include="core\DelegateOutputStream.cs" />
+    <Compile Include="core\GlobalKeyboardHook.cs" />
+    <Compile Include="core\HostnameVerifier.cs" />
+    <Compile Include="core\ListAdapter.cs" />
+    <Compile Include="core\NativeConstants.cs" />
+    <Compile Include="core\NativeListEnumerator.cs" />
+    <Compile Include="core\NativeMethods.cs" />
+    <Compile Include="core\RFC2253.cs" />
+    <Compile Include="core\SerializableDictionary.cs" />
+    <Compile Include="core\Utils.cs" />
+    <Compile Include="core\VirtualFileDataObject.cs" />
+    <Compile Include="core\MainController.cs" />
+    <Compile Include="core\Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ui\controller\threading\InfoBackgroundAction.cs" />
+    <Compile Include="ui\winforms\UserDefaultsDateFormatter.cs" />
+    <EmbeddedResource Include="ResourcesBundle.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\controller\TransferControl.resx">
+      <DependentUpon>TransferControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\ActivityForm.resx">
+      <DependentUpon>ActivityForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\BaseForm.resx">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\BookmarkForm.resx">
+      <DependentUpon>BookmarkForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\BookmarkManagerForm.resx">
+      <DependentUpon>BookmarkManagerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\BrowserForm.resx">
+      <DependentUpon>BrowserForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\ConnectionForm.resx">
+      <DependentUpon>ConnectionForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\CreateFilePromptForm.resx">
+      <DependentUpon>CreateFilePromptForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\DonationForm.resx">
+      <DependentUpon>DonationForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\ErrorForm.resx">
+      <DependentUpon>ErrorForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\InfoForm.resx">
+      <DependentUpon>InfoForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\NewFolderPromptForm.resx">
+      <DependentUpon>NewFolderPromptForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\PreferencesForm.resx">
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\PromptForm.resx">
+      <DependentUpon>PromptForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\taskdialog\frmTaskDialog.resx">
+      <DependentUpon>frmTaskDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\TranscriptForm.resx">
+      <DependentUpon>TranscriptForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\TransferForm.resx">
+      <DependentUpon>TransferForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\TransferPromptForm.resx">
+      <DependentUpon>TransferPromptForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="App.config" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.cs" />
+    <Compile Include="core\StructureMapBootstrapper.cs" />
+    <Compile Include="ResourcesBundle.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ResourcesBundle.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ui\controller\ActivityController.cs" />
+    <Compile Include="ui\controller\AsyncController.cs" />
+    <Compile Include="ui\controller\BookmarkController.cs" />
+    <Compile Include="ui\controller\BookmarkManagerController.cs" />
+    <Compile Include="ui\controller\BookmarkModel.cs" />
+    <Compile Include="ui\controller\BrowserController.cs" />
+    <Compile Include="ui\controller\ConnectionController.cs" />
+    <Compile Include="ui\controller\Controller.cs" />
+    <Compile Include="ui\controller\CreateFileController.cs" />
+    <Compile Include="ui\controller\DataProtector.cs" />
+    <Compile Include="ui\controller\DonationController.cs" />
+    <Compile Include="ui\controller\DownloadPromptController.cs" />
+    <Compile Include="ui\controller\DownloadPromptModel.cs" />
+    <Compile Include="ui\controller\DuplicateFileController.cs" />
+    <Compile Include="ui\controller\Editor.cs" />
+    <Compile Include="ui\controller\EditorFactory.cs" />
+    <Compile Include="ui\controller\ErrorController.cs" />
+    <Compile Include="ui\controller\Events.cs" />
+    <Compile Include="ui\controller\FileController.cs" />
+    <Compile Include="ui\controller\FirefoxStyleRenderer.cs" />
+    <Compile Include="ui\controller\FolderController.cs" />
+    <Compile Include="ui\controller\FolderItems.cs" />
+    <Compile Include="ui\controller\growl\GrowlImpl.cs" />
+    <Compile Include="ui\controller\HostKeyController.cs" />
+    <Compile Include="ui\controller\HostPlistReader.cs" />
+    <Compile Include="ui\controller\IActivityView.cs" />
+    <Compile Include="ui\controller\IBookmarkManagerView.cs" />
+    <Compile Include="ui\controller\IBookmarkView.cs" />
+    <Compile Include="ui\controller\IBrowserView.cs" />
+    <Compile Include="ui\controller\IconCache.cs" />
+    <Compile Include="ui\controller\IConnectionView.cs" />
+    <Compile Include="ui\controller\ICreateFilePromptView.cs" />
+    <Compile Include="ui\controller\IDonationView.cs" />
+    <Compile Include="ui\controller\IDuplicateFilePromptView.cs" />
+    <Compile Include="ui\controller\IErrorView.cs" />
+    <Compile Include="ui\controller\IInfoView.cs" />
+    <Compile Include="ui\controller\ILoginView.cs" />
+    <Compile Include="ui\controller\IMessageBoxView.cs" />
+    <Compile Include="ui\controller\INewFolderPromptView.cs" />
+    <Compile Include="ui\controller\InfoController.cs" />
+    <Compile Include="ui\controller\IPreferencesView.cs" />
+    <Compile Include="ui\controller\IProgressView.cs" />
+    <Compile Include="ui\controller\IPromptView.cs" />
+    <Compile Include="ui\controller\ITransferPromptView.cs" />
+    <Compile Include="ui\controller\ITransferView.cs" />
+    <Compile Include="ui\controller\IView.cs" />
+    <Compile Include="ui\controller\Keychain.cs" />
+    <Compile Include="ui\controller\LocaleImpl.cs" />
+    <Compile Include="ui\controller\LocalImpl.cs" />
+    <Compile Include="ui\controller\LoginController.cs" />
+    <Compile Include="ui\controller\MessageBoxDialog.cs" />
+    <Compile Include="ui\controller\PathClipboard.cs" />
+    <Compile Include="ui\controller\PersistentFormHandler.cs" />
+    <Compile Include="ui\controller\SyncPromptController.cs" />
+    <Compile Include="ui\controller\SyncPromptModel.cs" />
+    <Compile Include="ui\winforms\controls\ReadOnlyRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\MulticolorTreeListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\SplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\serializer\PlistDeserializer.cs" />
+    <Compile Include="ui\winforms\serializer\PlistReader.cs" />
+    <Compile Include="ui\winforms\serializer\PlistSerializer.cs" />
+    <Compile Include="ui\winforms\serializer\PlistWriter.cs" />
+    <Compile Include="ui\controller\UserPreferences.cs" />
+    <Compile Include="ui\controller\PreferencesController.cs" />
+    <Compile Include="ui\controller\ProgressController.cs" />
+    <Compile Include="ui\controller\Proxy.cs" />
+    <Compile Include="ui\controller\Renderers.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\controller\SettingsDictionary.cs" />
+    <Compile Include="ui\controller\StreamLocal.cs" />
+    <Compile Include="ui\controller\TcpReachability.cs" />
+    <Compile Include="ui\controller\threading\AlertRepeatableBackgroundAction.cs" />
+    <Compile Include="ui\controller\threading\BrowserBackgroundAction.cs" />
+    <Compile Include="ui\controller\threading\SimpleDefaultMainAction.cs" />
+    <Compile Include="ui\controller\threading\SimpleWindowMainAction.cs" />
+    <Compile Include="ui\controller\threading\WindowMainAction.cs" />
+    <Compile Include="ui\controller\TransferControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ui\controller\TransferControl.Designer.cs">
+      <DependentUpon>TransferControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\controller\TransferController.cs" />
+    <Compile Include="ui\controller\TransferPromptController.cs" />
+    <Compile Include="ui\controller\TransferPromptModel.cs" />
+    <Compile Include="ui\controller\TreeBrowserModel.cs" />
+    <Compile Include="ui\controller\TreePathReference.cs" />
+    <Compile Include="ui\controller\UploadPromptController.cs" />
+    <Compile Include="ui\controller\UploadPromptModel.cs" />
+    <Compile Include="ui\controller\WatchEditor.cs" />
+    <Compile Include="ui\controller\WindowController.cs" />
+    <Compile Include="ui\winforms\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\ActivityForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\ActivityForm.Designer.cs">
+      <DependentUpon>ActivityForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\BaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\BaseForm.Designer.cs">
+      <DependentUpon>BaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\BookmarkForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\BookmarkForm.Designer.cs">
+      <DependentUpon>BookmarkForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\BookmarkManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\BookmarkManagerForm.Designer.cs">
+      <DependentUpon>BookmarkManagerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\BrowserForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\BrowserForm.Designer.cs">
+      <DependentUpon>BrowserForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\ConnectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\ConnectionForm.Designer.cs">
+      <DependentUpon>ConnectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\controls\Design\SearchTextBoxDesigner.cs" />
+    <Compile Include="ui\winforms\controls\EllipsisLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\ImageComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\LineSeparatedObjectListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\ListViewControls.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\PanelManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\SearchTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\SearchTextBox.Designer.cs">
+      <DependentUpon>SearchTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\CreateFilePromptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\CreateFilePromptForm.Designer.cs">
+      <DependentUpon>CreateFilePromptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\DonationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\DonationForm.Designer.cs">
+      <DependentUpon>DonationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\DuplicateFilePromptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\DuplicateFilePromptForm.Designer.cs">
+      <DependentUpon>DuplicateFilePromptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\ErrorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\ErrorForm.Designer.cs">
+      <DependentUpon>ErrorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\InfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\InfoForm.Designer.cs">
+      <DependentUpon>InfoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\NewFolderPromptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\NewFolderPromptForm.Designer.cs">
+      <DependentUpon>NewFolderPromptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\PreferencesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\PreferencesForm.Designer.cs">
+      <DependentUpon>PreferencesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\PromptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\PromptForm.Designer.cs">
+      <DependentUpon>PromptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\taskdialog\CommandButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\taskdialog\CommandButton.Designer.cs">
+      <DependentUpon>CommandButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\taskdialog\cTaskDialog.cs" />
+    <Compile Include="ui\winforms\taskdialog\frmTaskDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\taskdialog\frmTaskDialog.designer.cs">
+      <DependentUpon>frmTaskDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\taskdialog\VistaActiveTaskDialog.cs" />
+    <Compile Include="ui\winforms\taskdialog\VistaTaskDialog.cs" />
+    <Compile Include="ui\winforms\taskdialog\VistaTaskDialogCommonDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\taskdialog\VistaTaskDialogNotificationArgs.cs" />
+    <Compile Include="ui\winforms\taskdialog\VistaUnsafeNativeMethods.cs" />
+    <Compile Include="ui\winforms\ToolbarBaseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\ToolbarBaseForm.Designer.cs">
+      <DependentUpon>ToolbarBaseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\TranscriptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\TranscriptForm.Designer.cs">
+      <DependentUpon>TranscriptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\TransferForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\TransferForm.Designer.cs">
+      <DependentUpon>TransferForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ui\winforms\serializer\TransferPlistReader.cs" />
+    <Compile Include="ui\winforms\TransferPromptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\TransferPromptForm.Designer.cs">
+      <DependentUpon>TransferPromptForm.cs</DependentUpon>
+    </Compile>
+    <None Include="Resources\Credits.rtf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="ui\winforms\taskdialog\green_arrow1.png" />
+    <Content Include="ui\winforms\taskdialog\green_arrow2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ui\winforms\commondialog\CustomOpenFileFolderDialog.csproj">
+      <Project>{4B3467EF-CAB0-4500-B1ED-979FAE9B9C77}</Project>
+      <Name>CustomOpenFileFolderDialog</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.-->
+  <!-- Import of the MSBuildCommunityTask targets -->
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <!-- to manage version number -->
+  <!-- to generate our personnal version info -->
+  <Target Name="AssemblyInfo">
+    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="FTP and Cloud Files Browser" AssemblyCompany="Cyberduck" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright © 2010" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" Condition="$(Version) != '0' " />
+  </Target>
+  <!-- We launch these two targets -->
+  <Target Name="BeforeBuild">
+    <CallTarget Targets="AssemblyInfo" />
+    <ItemGroup>
+      <AdditionalResources Include="..\..\..\Acknowledgments.rtf" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AdditionalResources)" DestinationFolder="$(OutputPath)" />
+    <!-- copy localization projects -->
+    <!--<Exec Command="CopyResources.bat" WorkingDirectory="..\..\..\" />-->
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"
+    if exist "$(TargetPath)" if not exist "$(TargetPath).locked" move "$(TargetPath)" "$(TargetPath).locked
+</PreBuildEvent>
+  </PropertyGroup>
+</Project>

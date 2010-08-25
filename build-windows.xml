@@ -1,0 +1,132 @@
+<!--
+ *	Simple Ant (http://jakarta.apache.org/ant) build script for Cyberduck
+ *
+ *	$Revision$
+ *	$Date$
+ *
+ *  Copyright (c) 2005-2010 David Kocher. All rights reserved.
+ *  http://cyberduck.ch/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.ch
+ -->
+
+<project name="Cyberduck-Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
+
+    <property name="setup" value="${build}/setup"/>
+    <property name="nsis.home" value="${env.ProgramFiles(x86)}/NSIS"/>
+    <property name="winsdk.home" value="${env.ProgramFiles(x86)}/Microsoft SDKs/Windows/v7.0A/Bin"/>
+    <property name="ikvm.home" value="c:/workspace/ikvm-0.42.0.3"/>
+
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+    <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
+    
+    <target name="build" depends="revision, archive, dll">
+
+        <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
+        <propertyregex property="svn.revision.stripped"
+                       input="${svn.revision}"
+                       regexp="([\d]+).*"
+                       select="\1"/>
+
+        <property name="version"
+                  value="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.${build.number}"/>
+        <property name="shortversion"
+                  value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision.stripped})"/>
+
+        <copy todir="${build.deploy}">
+            <fileset dir=".">
+                <include name="*.lproj/**/*"/>
+                <exclude name=".svn"/>
+                <exclude name="*.nib"/>
+            </fileset>
+        </copy>
+
+        <dn:msbuild buildfile="source/ch/cyberduck/Cyberduck.csproj">
+            <target name="Clean"/>
+            <target name="Build"/>
+
+            <property name="Version" value="${version}"/>
+            <property name="Configuration" value="${configuration}"/>
+            <property name="Platform" value="AnyCPU"/>
+        </dn:msbuild>
+    </target>
+
+    <target name="dll" depends="compile" description="Convert core.jar and ui.jar to core.dll">
+        <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}" version="1.0.0.0" debug="false" verbose="true">
+            <fileset file="${build}/core.jar"/>
+            <fileset file="${build}/ui.jar"/>
+            <fileset dir="${lib}">
+                <include name="**/*.jar"/>
+                <exclude name="jna-*.jar"/>
+                <exclude name="activation-*.jar"/>
+                <exclude name="asm-*.jar"/>
+                <exclude name="cglib-*.jar"/>
+                <exclude name="slf4j-*.jar"/>
+                <exclude name="ext/*.jar"/>
+            </fileset>
+            <outputfilter>
+                <contains>Warning IKVMC0107: skipping resource (name clash): "META-INF/</contains>
+                <contains>Warning IKVMC0111: emitted java.lang.NoClassDefFoundError in "ch.cyberduck.core.Native</contains>
+                <contains>Warning IKVMC0111: emitted java.lang.NoClassDefFoundError in "ch.cyberduck.core.Rendezvous</contains>
+                <contains>org.apache.commons.cli</contains>
+                <contains>ch.cyberduck.ui.cocoa</contains>
+                <contains>org.apache.avalon</contains>
+                <contains>org.apache.commons.logging.impl</contains>
+                <contains>Warning IKVMC0111: emitted java.lang.NoClassDefFoundError in "com.rackspacecloud</contains>
+                <contains>javax.servlet.ServletContextListener</contains>
+                <contains>org.dom4j</contains>
+                <contains>org.gjt.xpp</contains>
+                <contains>org.apache.webdav.lib</contains>
+                <contains>org.apache.commons.xmlio</contains>
+                <contains>org.apache.log</contains>
+                <contains>com.sun.msv</contains>
+                <contains>org.xmlpull</contains>
+                <contains>com.google.gdata.data.apt.Data</contains>
+                <contains>com.sun</contains>
+                <contains>javax.annotation</contains>
+                <contains>nu.xom</contains>
+                <contains>org.jaxen.xom</contains>
+                <contains>org.w3c.dom.UserDataHandler</contains>
+                <contains>(class is already available in referenced assembly "IKVM.OpenJDK.XML.API</contains>
+                <contains>javax.jms</contains>
+                <contains>.JMS</contains>
+              </outputfilter>
+              <!-- only 25 outputfilters are allowed! -->
+        </ikvmc>
+
+        <!--
+        <exec dir="${home}" executable="mono" spawn="false">
+            <arg line="${ikvm.home}/bin/ikvmc.exe -target:library -out:${build}/core.dll -version:${cyberduck.version.major}.${cyberduck.version.minor}"/>
+            <arg value="${build}/core.jar"/>
+            <arg value="${build}/ui.jar"/>
+            <arg value="${lib}/*.jar"/>
+        </exec>
+        -->
+        
+    </target>
+
+    <target name="setup" depends="build">
+        <property name="setup.file" value="Cyberduck Installer.exe"/>
+        <exec executable="${nsis.home}/makensis">
+            <arg value="/DBASEDIR=${build.deploy}"/>
+            <arg value="/DPRODUCT_VERSION=${shortversion}"/>
+            <arg value="/DSETUPFILE=${setup.file}"/>
+            <arg value="${setup}/cyberduck.nsi"/>
+        </exec>
+        <exec executable="signtool.exe" dir="${winsdk.home}">
+            <arg line='sign /n "Cyberduck Code Signing Certificate" /t http://timestamp.globalsign.com/scripts/timestamp.dll "${setup}/${setup.file}"'/>
+        </exec>
+    </target>
+
+</project>

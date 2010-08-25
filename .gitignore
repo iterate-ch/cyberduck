@@ -1,0 +1,7 @@
+source/ch/cyberduck/*.aps
+source/ch/cyberduck/*.eto
+source/ch/cyberduck/*.user
+source/ch/cyberduck/[Bb]in
+source/ch/cyberduck/[Dd]ebug
+source/ch/cyberduck/[Rr]elease
+source/ch/cyberduck/obj

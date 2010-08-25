@@ -1,0 +1,419 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ExceptionReporter.WinForms</name>
+    </assembly>
+    <members>
+        <member name="T:ExceptionReporting.Core.ExceptionReportGenerator">
+            <summary>
+            ExceptionReportGenerator does everything that needs to happen to generate an ExceptionReport
+            This class is the entry point to use 'ExceptionReporter' as a general-purpose exception reporter
+            (ie use this class to create an exception report without showing a GUI/dialog)
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Core.Disposable">
+            <summary>
+            Base class for all classes wanting to implement <see cref="T:System.IDisposable"/>.
+            </summary>
+            <remarks>
+            Base on an article by Davy Brion 
+            <see href="http://davybrion.com/blog/2008/06/disposing-of-the-idisposable-implementation/"/>.
+            </remarks>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReportGenerator.#ctor(ExceptionReporting.Core.ExceptionReportInfo)">
+            <summary>
+            Initialises some ExceptionReportInfo properties related to the application/system
+            </summary>
+            <param name="reportInfo">an ExceptionReportInfo, can be pre-populated with config
+            however 'base' properties such as MachineName</param>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReportGenerator.CreateExceptionReport">
+            <summary>
+            Create an exception report 
+            NB This method re-uses the same information retrieved from the system on subsequent calls
+            Create a new ExceptionReportGenerator if you need to refresh system information from the computer
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:ExceptionReporting.IExceptionReportView">
+            <summary>
+            The interface (contract) for an ExceptionReportView
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.SystemInfo.SysInfoQuery">
+            <summary>
+            describes a query to SysInfo (more precisely, the Windows 'WMI' ManagementObjectSearcher)
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReportBuilder.Build">
+            <summary>
+            Build the exception report
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReportBuilder.ExceptionHierarchyToString(System.Exception)">
+            <summary>
+            Create a line-delimited string of the exception hierarchy 
+            //TODO see Label='EH' in View, this is doing too much and is duplicated
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Config.IFileReader">
+            <summary>generic interface to reading a file</summary>
+        </member>
+        <member name="M:ExceptionReporting.Config.IFileReader.ReadAll(System.String)">
+            <summary>read all contents of a file</summary>
+        </member>
+        <member name="T:ExceptionReporting.WinForms.Views.InternalExceptionView">
+            <summary>
+            For exceptions within the ExceptionReporter - considering removing altogether
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.IInternalExceptionView">
+            <summary>
+            An interface that represents the presentation of an internal exception
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.IInternalExceptionView.ShowException(System.String,System.Exception)">
+            <summary> Show the internal exception</summary>
+        </member>
+        <member name="T:ExceptionReporting.ViewFactory">
+            <summary>
+            ViewFactory inspects the assembly and retrieves the appropriate class
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.SystemInfo.SysInfoRetriever">
+            <summary>
+            Retrieves system information using WMI
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.SystemInfo.SysInfoRetriever.Retrieve(ExceptionReporting.SystemInfo.SysInfoQuery)">
+            <summary>
+            Retrieve system information, using the given SysInfoQuery to determine what information to retrieve
+            </summary>
+            <param name="sysInfoQuery">the query to determine what information to retrieve</param>
+            <returns>a SysInfoResult ie containing the results of the query</returns>
+        </member>
+        <member name="T:ExceptionReporting.Core.ExceptionReporter">
+            <summary>
+            The entry-point (class) to invoking an ExceptionReporter dialog
+            eg new ExceptionReporter().Show()
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReporter.#ctor">
+            <summary>
+            Initialise the ExceptionReporter
+            <remarks>readConfig() should be called (explicitly) if you need to override default config settings</remarks>
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReporter.Show(System.Exception[])">
+            <summary>
+            Show the ExceptionReport dialog
+            </summary>
+            <remarks>The <see cref="T:ExceptionReporting.Core.ExceptionReporter"/> will analyze the <see cref="T:System.Exception"/>s and 
+            create and show the report dialog.</remarks>
+            <param name="exceptions">The <see cref="T:System.Exception"/>s to show.</param>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReporter.Show(System.String,System.Exception[])">
+            <summary>
+            Show the ExceptionReport dialog with a custom message instead of the Exception's Message property
+            </summary>
+            <param name="customMessage">custom (exception) message</param>
+            <param name="exceptions">The exception/s to display in the exception report</param>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReporter.ReadConfig">
+            <summary>
+            Read settings from config file
+            <remarks> This method must be explicitly called - config is not automatically read</remarks>
+            </summary>
+        </member>
+        <member name="P:ExceptionReporting.Core.ExceptionReporter.Config">
+            <summary>
+            Public access to configuration
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.SystemInfo.SysInfoResultMapper">
+            <summary>
+             Map SysInfoResults to human-readable formats
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.SystemInfo.SysInfoResultMapper.AddTreeViewNode(System.Windows.Forms.TreeNode,ExceptionReporting.SystemInfo.SysInfoResult)">
+            <summary>
+            Add a tree node to an existing parentNode, by passing the SyfInfoResult
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.SystemInfo.SysInfoResultMapper.CreateStringList(System.Collections.Generic.IEnumerable{ExceptionReporting.SystemInfo.SysInfoResult})">
+            <summary>
+            create a string representation of a list of SysInfoResults, customised specifically (eg 2-level deep)
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Core.ExceptionReportInfo">
+            <summary>
+            a bag of information (some of which is stored and retrieved from config)
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReportInfo.SetExceptions(System.Collections.Generic.IEnumerable{System.Exception})">
+            <summary>
+            Add multiple exceptions to be shown (each in a separate tab if shown in dialog)
+            <remarks>
+            Note: Showing multiple exceptions is a special-case requirement - for only 1 top-level exception
+            use the MainException property instead
+            </remarks>
+            </summary>
+        </member>
+        <member name="P:ExceptionReporting.Core.ExceptionReportInfo.MainException">
+            <summary>
+            The Main (ostensibly 'only') exception, which is the subject of this exception 'report'
+            Setting this property will clear any previously set exceptions
+            <remarks>If multiple top-level exceptions are required, use SetExceptions instead</remarks>
+            </summary>
+        </member>
+        <member name="P:ExceptionReporting.Core.ExceptionReportInfo.ContactEmail">
+            <summary>
+            an email that is displayed in the 'Contact Information' (see EmailReportAddress for the email used to actually send)
+            </summary>
+        </member>
+        <member name="P:ExceptionReporting.Core.ExceptionReportInfo.EmailReportAddress">
+            <summary>
+            address that is used to send an email (eg appears in the 'to:' field in the default email client if simpleMAPI)
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Core.ExceptionReportInfo.EmailMethod">
+            <summary>
+            Enumerated type used to represent supported e-mail mechanisms 
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.ExceptionReportPresenter">
+            <summary>
+            The Presenter in this MVP (Model-View-Presenter) implementation 
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.SaveReportToFile(System.String)">
+            <summary>
+            Save the exception report to file/disk
+            </summary>
+            <param name="fileName">the filename to save</param>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.SendReportByEmail(System.IntPtr)">
+            <summary>
+            Send the exception report via email, using the configured email method/type
+            </summary>
+            <param name="handle">The handle of the window to use in sending the email</param>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.CopyReportToClipboard">
+            <summary>
+            copy the report to the clipboard, using the clipboard implementation supplied
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.ToggleDetail">
+            <summary>
+            toggle the detail between 'simple' (just messsage) and showFullDetail (ie normal)
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.GetSysInfoResults">
+            <summary>
+            Get the system information results
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.SendContactEmail">
+            <summary>
+            Send email (using ShellExecute) to the configured contact email address
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.NavigateToWebsite">
+            <summary>
+            Navigate to the website configured
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.PopulateReport">
+            <summary>
+            The main entry point, populate the report with everything it needs
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ExceptionReportPresenter.Close">
+            <summary>
+            Close/cleanup
+            </summary>
+        </member>
+        <member name="P:ExceptionReporting.ExceptionReportPresenter.AppAssembly">
+            <summary>
+            The application assembly - ie the main application using the exception reporter assembly
+            </summary>
+        </member>
+        <member name="P:ExceptionReporting.ExceptionReportPresenter.Clipboard">
+            <summary>
+            An IClipboard needs to be set by the calling View before copying to clipboard (see IClipboard for info)
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.WinForms.Views.ExceptionReportView">
+            <summary>
+            The main ExceptionReporter dialog
+            </summary>
+        </member>
+        <member name="F:ExceptionReporting.WinForms.Views.ExceptionReportView.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.WinForms.Views.ExceptionReportView.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ExceptionReporting.WinForms.Views.ExceptionReportView.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.WinForms.Views.ExceptionReportView.PopulateTabs">
+            <summary>
+            starts with all tabs visible, and removes ones that aren't configured to show
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Core.AssemblyReferenceDigger">
+            <summary>
+            Used to find and do things with referenced assemblies
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.AssemblyReferenceDigger.#ctor(System.Reflection.Assembly)">
+            <summary>Initialise with assembly</summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.AssemblyReferenceDigger.CreateReferencesString">
+            <summary> Finds all assemblies referenced and return a string </summary>
+            <returns>line-delimited string of referenced assemblies</returns>
+        </member>
+        <member name="F:ExceptionReporting.WinForms.Views.ExceptionDetailControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.WinForms.Views.ExceptionDetailControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:ExceptionReporting.WinForms.Views.ExceptionDetailControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.ViewResolver">
+            <summary>
+            Resolve a view from an assembly (limited to ExceptionReportView and InternalExceptionView)
+            This flexibility is required in order to load either a WPF or WinForms version of the view class
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.ViewResolver.#ctor(System.Reflection.Assembly)">
+            <summary>
+             Initialise the ViewResolver with an assembly to search
+            </summary>
+            <param name="assembly">the Assembly which contains the desired view</param>
+        </member>
+        <member name="M:ExceptionReporting.ViewResolver.Resolve``1">
+            <summary>
+            Resolve an interface to a concrete view class, limited to 2 particular expected 'View' classes in ExceptionReporter
+            </summary>
+            <typeparam name="T">The interface type (currenty just IExceptionReportView or IInternalExceptionView)</typeparam>
+            <returns>An instance of a type that implements the interface (T) in the given assembly (see constructor)</returns>
+        </member>
+        <member name="T:ExceptionReporting.Core.ScreenshotTaker">
+            <summary>
+            Utility to take a screenshot and return as a graphic file 
+            </summary>
+        </member>
+        <member name="F:ExceptionReporting.Core.ScreenshotTaker.ScreenshotMimeType">
+            <summary>The (hard-coded) file type that will be used to save the attached screenshot </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.ScreenshotTaker.TakeScreenShot">
+            <summary> Take a screenshot (supports multiple monitors) </summary>
+            <returns>Bitmap of the screen, as at the time called</returns>
+        </member>
+        <member name="M:ExceptionReporting.Core.ScreenshotTaker.GetImageAsFile(System.Drawing.Bitmap)">
+            <summary>
+            Return the supplied Bitmap, as a file on the system, in JPEG format
+            </summary>
+            <param name="bitmap">The Bitmap to save (most likely one created using TakeScreenshot()</param>
+            <returns></returns>
+        </member>
+        <member name="T:ExceptionReporting.Core.IClipboard">
+            <summary>
+             interface to abstract the concept of a clipboard - required because of the different implementations 
+             of clipboard in windows (ie WPF and WinForms)
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.IClipboard.CopyTo(System.String)">
+            <summary> copy text to clipboard </summary>
+            <param name="text">plain-text string</param>
+        </member>
+        <member name="T:ExceptionReporting.SystemInfo.SysInfoResult">
+            <summary>
+            SysInfoResult holds results from a (ultimately WMI) query into system information
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Mail.MailSender.SendSmtp(System.String,ExceptionReporting.Mail.MailSender.CompletedMethodDelegate)">
+            <summary>
+            Send SMTP email
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Mail.MailSender.SendMapi(System.String,System.IntPtr)">
+            <summary>
+            Send SimpleMAPI email
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.ExtensionAttribute">
+            <summary>
+            a hack (?) to ensure that we can use Extension Methods and still target .NET2
+            see http://www.danielmoth.com/Blog/2007/05/using-extension-methods-in-fx-20.html
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Extensions.ExceptionReporterExtensions">
+            <summary>
+            All extension methods for ExceptionReporter
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Extensions.ExceptionReporterExtensions.AppendDottedLine(System.Text.StringBuilder)">
+            <summary>
+            Append a dotted line to the given string
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Extensions.ExceptionReporterExtensions.GetString(System.String,System.String)">
+            <summary>
+            Return a string if not null, else the current value
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Extensions.ExceptionReporterExtensions.GetBool(System.String,System.Boolean)">
+            <summary>
+            Returns the boolean value of configString; where configString is null or empty, the current value is returned
+            <remarks>all of (case insensitive) 'y' 'n' 'true' or 'false' are accepted as boolean indicators</remarks>
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Core.ExceptionReport">
+            <summary>
+            Encapsulates the concept of an ExceptionReport
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Core.ExceptionReport.#ctor(System.Text.StringBuilder)">
+            <summary>
+            Construct an ExceptionReport from a StringBuilder
+            </summary>
+        </member>
+        <member name="T:ExceptionReporting.Config.ConfigReader">
+            <summary>
+            Read ExceptionReport configuration from the main application's (ie not this assembly's) config file
+            </summary>
+        </member>
+        <member name="M:ExceptionReporting.Config.ConfigReader.#ctor(ExceptionReporting.Core.ExceptionReportInfo)">
+            <param name="reportInfo">the ExceptionReportInfo object to fill with configuration information</param>
+        </member>
+        <member name="M:ExceptionReporting.Config.ConfigReader.ReadConfig">
+            <summary>Read all settings from the application config file</summary>
+        </member>
+        <member name="T:ExceptionReporting.Mail.EmailTextBuilder">
+            <summary>
+            textual content for email introduction
+            </summary>
+        </member>
+    </members>
+</doc>

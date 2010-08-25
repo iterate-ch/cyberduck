@@ -51,6 +51,7 @@ Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=nativ
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
 Upload[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
+/build-mac.xml -text
 ca.lproj/Alert.nib/classes.nib -text
 ca.lproj/Alert.nib/info.nib -text
 ca.lproj/Alert.nib/keyedobjects.nib -text
@@ -202,6 +203,7 @@ cy.lproj/S3.strings -text svneol=unset#text/utf-16
 cy.lproj/Status.strings -text svneol=unset#text/utf-16
 cy.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /cyberduck-application.icns -text svneol=unset#image/icns
+/cyberduck-application.ico -text
 /cyberduck-application.png -text svneol=unset#image/png
 /cyberduck-document.icns -text svneol=unset#image/icns
 da.lproj/Alert.nib/classes.nib -text
@@ -765,6 +767,7 @@ id.lproj/Prompt.strings -text svneol=unset#text/utf-16
 id.lproj/S3.strings -text svneol=unset#text/utf-16
 id.lproj/Status.strings -text svneol=unset#text/utf-16
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
+img/NSDotMac.png -text
 img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
 img/advanced.tiff -text
@@ -790,6 +793,7 @@ img/browser.tiff -text svneol=unset#image/tiff
 img/cancel.tiff -text svneol=unset#image/tiff
 img/cf-icon.png -text svneol=unset#unset
 img/cf.icns -text
+img/cf.ico -text
 img/clean.tiff -text svneol=unset#image/tiff
 img/cleanAll.tiff -text svneol=unset#image/tiff
 img/column.tiff -text svneol=unset#image/tiff
@@ -798,6 +802,7 @@ img/connection-secure.tiff -text
 img/connection.tiff -text svneol=unset#image/tiff
 img/dav-icon.png -text svneol=unset#image/png
 img/dav.icns -text
+img/dav.ico -text
 img/delete.tiff -text svneol=unset#image/tiff
 img/download.tiff -text svneol=unset#image/tiff
 img/download0.icns -text
@@ -818,15 +823,19 @@ img/eucalyptus-icon.png -text svneol=unset#image/png
 img/executable.tiff -text
 img/ftp-icon.png -text svneol=unset#image/png
 img/ftp.icns -text
+img/ftp.ico -text
 img/gear.tiff -text svneol=unset#image/tiff
 img/general.tiff -text svneol=unset#image/tiff
 img/google-icon.png -text svneol=unset#image/png
 img/google.icns -text
+img/google.ico -text
 img/history.tiff -text svneol=unset#image/tiff
 img/info.tiff -text svneol=unset#image/tiff
 img/language.tiff -text
 img/list.tiff -text svneol=unset#image/tiff
 img/locked.tiff -text svneol=unset#image/tiff
+img/log.png -text
+img/multiple.ico -text
 img/newfolder.tiff -text
 img/notfound.tiff -text svneol=unset#image/tiff
 img/open.tiff -text svneol=unset#image/tiff
@@ -846,8 +855,12 @@ img/resume.tiff -text svneol=unset#image/tiff
 img/reveal.tiff -text svneol=unset#image/tiff
 img/s3-icon.png -text svneol=unset#image/png
 img/s3.icns -text
+img/s3.ico -text
+img/search-active.png -text
+img/search-inactive.png -text
 img/sftp-icon.png -text svneol=unset#image/png
 img/sftp.icns -text
+img/sftp.ico -text
 img/site.tiff -text
 img/statusBlue.tiff -text
 img/statusGreen.tiff -text svneol=unset#image/tiff
@@ -855,6 +868,8 @@ img/statusRed.tiff -text svneol=unset#image/tiff
 img/statusYellow.tiff -text svneol=unset#image/tiff
 img/stop.tiff -text svneol=unset#image/tiff
 img/sync.tiff -text svneol=unset#image/tiff
+img/throbber.gif -text
+img/throbber_small.gif -text
 img/transparent.tiff -text
 img/trash.tiff -text svneol=unset#image/tiff
 img/turtle.tiff -text svneol=unset#image/tiff
@@ -1092,12 +1107,32 @@ ko.lproj/Prompt.strings -text svneol=unset#text/utf-16
 ko.lproj/S3.strings -text svneol=unset#text/utf-16
 ko.lproj/Status.strings -text svneol=unset#text/utf-16
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
+lib/AutomaticUpdater.dll -text
+lib/AutomaticUpdater.xml -text
+lib/ExceptionReporter.WinForms.dll -text
+lib/ExceptionReporter.WinForms.xml -text
+lib/Growl.Connector.dll -text
+lib/Growl.CoreLibrary.dll -text
 lib/Growl.framework/Growl -text
 lib/Growl.framework/Headers -text
 lib/Growl.framework/Resources -text
 lib/Growl.framework/Versions/A/Growl -text
 lib/Growl.framework/Versions/A/Resources/Info.plist -text
 lib/Growl.framework/Versions/Current -text
+lib/IKVM.OpenJDK.Beans.dll -text
+lib/IKVM.OpenJDK.Core.dll -text
+lib/IKVM.OpenJDK.Security.dll -text
+lib/IKVM.OpenJDK.SwingAWT.dll -text
+lib/IKVM.OpenJDK.Text.dll -text
+lib/IKVM.OpenJDK.Util.dll -text
+lib/IKVM.OpenJDK.XML.API.dll -text
+lib/IKVM.OpenJDK.XML.Parse.dll -text
+lib/IKVM.OpenJDK.XML.Transform.dll -text
+lib/IKVM.OpenJDK.XML.XPath.dll -text
+lib/IKVM.Runtime.dll -text
+lib/ObjectListView.dll -text
+lib/ObjectListView.pdb -text
+lib/Rhino.Mocks.dll -text
 lib/Sparkle.framework/Headers -text
 lib/Sparkle.framework/Resources -text
 lib/Sparkle.framework/Sparkle -text
@@ -1289,6 +1324,11 @@ lib/Sparkle.framework/Versions/A/Resources/zh_TW.lproj/SUUpdateAlert.nib/keyedob
 lib/Sparkle.framework/Versions/A/Resources/zh_TW.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Sparkle -text
 lib/Sparkle.framework/Versions/Current -text
+lib/StructureMap.AutoMocking.dll -text
+lib/StructureMap.AutoMocking.xml -text
+lib/StructureMap.dll -text
+lib/StructureMap.xml -text
+lib/System.Core.dll -text
 lib/activation-1.1.1.jar -text
 lib/asm-3.3.jar -text
 lib/backport-util-concurrent-3.1.jar -text
@@ -1330,6 +1370,7 @@ lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
 lib/mime.types -text
+lib/nunit.framework.dll -text
 lib/slf4j-api-1.5.6.jar -text
 lib/slf4j-log4j12-1.5.6.jar -text
 lv.lproj/Alert.nib/classes.nib -text
@@ -1843,6 +1884,9 @@ ru.lproj/Prompt.strings -text svneol=unset#text/utf-16
 ru.lproj/S3.strings -text svneol=unset#text/utf-16
 ru.lproj/Status.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
+setup/cyberduck.nsi -text
+setup/header.bmp -text
+setup/welcome.bmp -text
 sk.lproj/Alert.nib/classes.nib -text
 sk.lproj/Alert.nib/info.nib -text
 sk.lproj/Alert.nib/keyedobjects.nib -text
@@ -1973,22 +2017,47 @@ sl.lproj/Prompt.strings -text svneol=unset#text/utf-16
 sl.lproj/S3.strings -text svneol=unset#text/utf-16
 sl.lproj/Status.strings -text svneol=unset#text/utf-16
 sl.lproj/Transfer.strings -text svneol=unset#text/utf-16
+source/ch/cyberduck/App.config -text
+source/ch/cyberduck/Cyberduck.csproj -text
+source/ch/cyberduck/Cyberduck.csproj.user -text
+source/ch/cyberduck/Cyberduck.sln -text
+source/ch/cyberduck/ResourcesBundle.Designer.cs -text
+source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
+source/ch/cyberduck/core/Commands.cs -text
+source/ch/cyberduck/core/DelegateOutputStream.cs -text
+source/ch/cyberduck/core/GlobalKeyboardHook.cs -text
 source/ch/cyberduck/core/HistoryCollection.java -text
 source/ch/cyberduck/core/HostKeyControllerFactory.java -text
+source/ch/cyberduck/core/HostnameVerifier.cs -text
+source/ch/cyberduck/core/ListAdapter.cs -text
 source/ch/cyberduck/core/LoginControllerFactory.java -text
+source/ch/cyberduck/core/MainController.cs -text
+source/ch/cyberduck/core/NativeConstants.cs -text
+source/ch/cyberduck/core/NativeListEnumerator.cs -text
+source/ch/cyberduck/core/NativeMethods.cs -text
 source/ch/cyberduck/core/NaturalOrderComparator.java -text
+source/ch/cyberduck/core/Program.cs -text
 source/ch/cyberduck/core/Protocol.java -text
+source/ch/cyberduck/core/RFC2253.cs -text
 source/ch/cyberduck/core/RendezvousCollection.java -text
 source/ch/cyberduck/core/Serializable.java -text
+source/ch/cyberduck/core/SerializableDictionary.cs -text
 source/ch/cyberduck/core/Speedometer.java -text
+source/ch/cyberduck/core/StructureMapBootstrapper.cs -text
 source/ch/cyberduck/core/SystemConfigurationReachability.m -text
+source/ch/cyberduck/core/Utils.cs -text
+source/ch/cyberduck/core/VirtualFileDataObject.cs -text
+source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
+source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
 source/ch/cyberduck/core/cf/CFPath.java -text
 source/ch/cyberduck/core/cf/CFSession.java -text
 source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
 source/ch/cyberduck/core/cloud/Distribution.java -text
+source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
+source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/dav/DAVPath.java -text
 source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
@@ -2009,6 +2078,11 @@ source/ch/cyberduck/core/sftp/HostKeyController.java -text
 source/ch/cyberduck/core/sftp/KnownHostsHostKeyVerifier.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
+source/ch/cyberduck/properties/AssemblyInfo.cs -text
+source/ch/cyberduck/properties/Settings.Designer.cs -text
+source/ch/cyberduck/properties/Settings.cs -text
+source/ch/cyberduck/properties/Settings.settings -text
+source/ch/cyberduck/properties/app.manifest -text
 source/ch/cyberduck/ui/action/AclWorker.java -text
 source/ch/cyberduck/ui/action/CalculateSizeWorker.java -text
 source/ch/cyberduck/ui/action/ChecksumWorker.java -text
@@ -2032,7 +2106,183 @@ source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
 source/ch/cyberduck/ui/cocoa/threading/WorkerBackgroundAction.java -text
 source/ch/cyberduck/ui/cocoa/urlhandler/URLSchemeHandlerConfiguration.m -text
+source/ch/cyberduck/ui/controller/ActivityController.cs -text
+source/ch/cyberduck/ui/controller/AsyncController.cs -text
+source/ch/cyberduck/ui/controller/BookmarkController.cs -text
+source/ch/cyberduck/ui/controller/BookmarkManagerController.cs -text
+source/ch/cyberduck/ui/controller/BookmarkModel.cs -text
+source/ch/cyberduck/ui/controller/BrowserController.cs -text
+source/ch/cyberduck/ui/controller/ConnectionController.cs -text
+source/ch/cyberduck/ui/controller/Controller.cs -text
+source/ch/cyberduck/ui/controller/CreateFileController.cs -text
+source/ch/cyberduck/ui/controller/DataProtector.cs -text
+source/ch/cyberduck/ui/controller/DonationController.cs -text
+source/ch/cyberduck/ui/controller/DownloadPromptController.cs -text
+source/ch/cyberduck/ui/controller/DownloadPromptModel.cs -text
+source/ch/cyberduck/ui/controller/DuplicateFileController.cs -text
+source/ch/cyberduck/ui/controller/Editor.cs -text
+source/ch/cyberduck/ui/controller/EditorFactory.cs -text
+source/ch/cyberduck/ui/controller/ErrorController.cs -text
+source/ch/cyberduck/ui/controller/Events.cs -text
+source/ch/cyberduck/ui/controller/FileController.cs -text
+source/ch/cyberduck/ui/controller/FirefoxStyleRenderer.cs -text
+source/ch/cyberduck/ui/controller/FolderController.cs -text
+source/ch/cyberduck/ui/controller/FolderItems.cs -text
+source/ch/cyberduck/ui/controller/HostKeyController.cs -text
+source/ch/cyberduck/ui/controller/HostPlistReader.cs -text
+source/ch/cyberduck/ui/controller/IActivityView.cs -text
+source/ch/cyberduck/ui/controller/IBookmarkManagerView.cs -text
+source/ch/cyberduck/ui/controller/IBookmarkView.cs -text
+source/ch/cyberduck/ui/controller/IBrowserView.cs -text
+source/ch/cyberduck/ui/controller/IConnectionView.cs -text
+source/ch/cyberduck/ui/controller/ICreateFilePromptView.cs -text
+source/ch/cyberduck/ui/controller/IDonationView.cs -text
+source/ch/cyberduck/ui/controller/IDuplicateFilePromptView.cs -text
+source/ch/cyberduck/ui/controller/IErrorView.cs -text
+source/ch/cyberduck/ui/controller/IInfoView.cs -text
+source/ch/cyberduck/ui/controller/ILoginView.cs -text
+source/ch/cyberduck/ui/controller/IMessageBoxView.cs -text
+source/ch/cyberduck/ui/controller/INewFolderPromptView.cs -text
+source/ch/cyberduck/ui/controller/IPreferencesView.cs -text
+source/ch/cyberduck/ui/controller/IProgressView.cs -text
+source/ch/cyberduck/ui/controller/IPromptView.cs -text
+source/ch/cyberduck/ui/controller/ITransferPromptView.cs -text
+source/ch/cyberduck/ui/controller/ITransferView.cs -text
+source/ch/cyberduck/ui/controller/IView.cs -text
+source/ch/cyberduck/ui/controller/IconCache.cs -text
+source/ch/cyberduck/ui/controller/InfoController.cs -text
+source/ch/cyberduck/ui/controller/Keychain.cs -text
+source/ch/cyberduck/ui/controller/LocalImpl.cs -text
+source/ch/cyberduck/ui/controller/LocaleImpl.cs -text
+source/ch/cyberduck/ui/controller/LoginController.cs -text
+source/ch/cyberduck/ui/controller/MessageBoxDialog.cs -text
+source/ch/cyberduck/ui/controller/PathClipboard.cs -text
+source/ch/cyberduck/ui/controller/PersistentFormHandler.cs -text
+source/ch/cyberduck/ui/controller/PreferencesController.cs -text
+source/ch/cyberduck/ui/controller/ProgressController.cs -text
+source/ch/cyberduck/ui/controller/Proxy.cs -text
+source/ch/cyberduck/ui/controller/Renderers.cs -text
+source/ch/cyberduck/ui/controller/SettingsDictionary.cs -text
+source/ch/cyberduck/ui/controller/StreamLocal.cs -text
+source/ch/cyberduck/ui/controller/SyncPromptController.cs -text
+source/ch/cyberduck/ui/controller/SyncPromptModel.cs -text
+source/ch/cyberduck/ui/controller/TcpReachability.cs -text
+source/ch/cyberduck/ui/controller/TransferControl.Designer.cs -text
+source/ch/cyberduck/ui/controller/TransferControl.cs -text
+source/ch/cyberduck/ui/controller/TransferControl.resx -text
+source/ch/cyberduck/ui/controller/TransferController.cs -text
+source/ch/cyberduck/ui/controller/TransferPromptController.cs -text
+source/ch/cyberduck/ui/controller/TransferPromptModel.cs -text
+source/ch/cyberduck/ui/controller/TreeBrowserModel.cs -text
+source/ch/cyberduck/ui/controller/TreePathReference.cs -text
+source/ch/cyberduck/ui/controller/UploadPromptController.cs -text
+source/ch/cyberduck/ui/controller/UploadPromptModel.cs -text
+source/ch/cyberduck/ui/controller/UserPreferences.cs -text
+source/ch/cyberduck/ui/controller/WatchEditor.cs -text
+source/ch/cyberduck/ui/controller/WindowController.cs -text
+source/ch/cyberduck/ui/controller/growl/GrowlImpl.cs -text
+source/ch/cyberduck/ui/controller/threading/AlertRepeatableBackgroundAction.cs -text
+source/ch/cyberduck/ui/controller/threading/BrowserBackgroundAction.cs -text
+source/ch/cyberduck/ui/controller/threading/InfoBackgroundAction.cs -text
+source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
+source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
+source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
 source/ch/cyberduck/ui/growl/GrowlFactory.java -text
+source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text
+source/ch/cyberduck/ui/winforms/AboutBox.cs -text
+source/ch/cyberduck/ui/winforms/AboutBox.resx -text
+source/ch/cyberduck/ui/winforms/ActivityForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/ActivityForm.cs -text
+source/ch/cyberduck/ui/winforms/ActivityForm.resx -text
+source/ch/cyberduck/ui/winforms/BaseForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/BaseForm.cs -text
+source/ch/cyberduck/ui/winforms/BaseForm.resx -text
+source/ch/cyberduck/ui/winforms/BookmarkForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/BookmarkForm.cs -text
+source/ch/cyberduck/ui/winforms/BookmarkForm.resx -text
+source/ch/cyberduck/ui/winforms/BookmarkManagerForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/BookmarkManagerForm.cs -text
+source/ch/cyberduck/ui/winforms/BookmarkManagerForm.resx -text
+source/ch/cyberduck/ui/winforms/BrowserForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/BrowserForm.cs -text
+source/ch/cyberduck/ui/winforms/BrowserForm.resx -text
+source/ch/cyberduck/ui/winforms/ConnectionForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/ConnectionForm.cs -text
+source/ch/cyberduck/ui/winforms/ConnectionForm.resx -text
+source/ch/cyberduck/ui/winforms/CreateFilePromptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/CreateFilePromptForm.cs -text
+source/ch/cyberduck/ui/winforms/CreateFilePromptForm.resx -text
+source/ch/cyberduck/ui/winforms/DonationForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/DonationForm.cs -text
+source/ch/cyberduck/ui/winforms/DonationForm.resx -text
+source/ch/cyberduck/ui/winforms/DuplicateFilePromptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/DuplicateFilePromptForm.cs -text
+source/ch/cyberduck/ui/winforms/ErrorForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/ErrorForm.cs -text
+source/ch/cyberduck/ui/winforms/ErrorForm.resx -text
+source/ch/cyberduck/ui/winforms/InfoForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/InfoForm.cs -text
+source/ch/cyberduck/ui/winforms/InfoForm.resx -text
+source/ch/cyberduck/ui/winforms/LoginForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/LoginForm.cs -text
+source/ch/cyberduck/ui/winforms/LoginForm.resx -text
+source/ch/cyberduck/ui/winforms/NewFolderPromptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/NewFolderPromptForm.cs -text
+source/ch/cyberduck/ui/winforms/NewFolderPromptForm.resx -text
+source/ch/cyberduck/ui/winforms/PreferencesForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/PreferencesForm.cs -text
+source/ch/cyberduck/ui/winforms/PreferencesForm.resx -text
+source/ch/cyberduck/ui/winforms/PromptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/PromptForm.cs -text
+source/ch/cyberduck/ui/winforms/PromptForm.resx -text
+source/ch/cyberduck/ui/winforms/ToolbarBaseForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/ToolbarBaseForm.cs -text
+source/ch/cyberduck/ui/winforms/TranscriptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/TranscriptForm.cs -text
+source/ch/cyberduck/ui/winforms/TranscriptForm.resx -text
+source/ch/cyberduck/ui/winforms/TransferForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/TransferForm.cs -text
+source/ch/cyberduck/ui/winforms/TransferForm.resx -text
+source/ch/cyberduck/ui/winforms/TransferPromptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/TransferPromptForm.cs -text
+source/ch/cyberduck/ui/winforms/TransferPromptForm.resx -text
+source/ch/cyberduck/ui/winforms/UserDefaultsDateFormatter.cs -text
+source/ch/cyberduck/ui/winforms/commondialog/CustomOpenFileFolderDialog.csproj -text
+source/ch/cyberduck/ui/winforms/commondialog/InternalErrorException.cs -text
+source/ch/cyberduck/ui/winforms/commondialog/InteropUtil.cs -text
+source/ch/cyberduck/ui/winforms/commondialog/Properties/AssemblyInfo.cs -text
+source/ch/cyberduck/ui/winforms/commondialog/SelectFileAndFolderDialog.cs -text
+source/ch/cyberduck/ui/winforms/commondialog/res1.rc -text
+source/ch/cyberduck/ui/winforms/commondialog/resource.h -text
+source/ch/cyberduck/ui/winforms/controls/EllipsisLabel.cs -text
+source/ch/cyberduck/ui/winforms/controls/ImageComboBox.cs -text
+source/ch/cyberduck/ui/winforms/controls/LineSeparatedObjectListView.cs -text
+source/ch/cyberduck/ui/winforms/controls/ListViewControls.cs -text
+source/ch/cyberduck/ui/winforms/controls/MulticolorTreeListView.cs -text
+source/ch/cyberduck/ui/winforms/controls/PanelManager.cs -text
+source/ch/cyberduck/ui/winforms/controls/ReadOnlyRichTextBox.cs -text
+source/ch/cyberduck/ui/winforms/controls/SearchTextBox.Designer.cs -text
+source/ch/cyberduck/ui/winforms/controls/SearchTextBox.cs -text
+source/ch/cyberduck/ui/winforms/controls/SplitButton.cs -text
+source/ch/cyberduck/ui/winforms/controls/design/SearchTextBoxDesigner.cs -text
+source/ch/cyberduck/ui/winforms/serializer/PlistDeserializer.cs -text
+source/ch/cyberduck/ui/winforms/serializer/PlistReader.cs -text
+source/ch/cyberduck/ui/winforms/serializer/PlistSerializer.cs -text
+source/ch/cyberduck/ui/winforms/serializer/PlistWriter.cs -text
+source/ch/cyberduck/ui/winforms/serializer/TransferPlistReader.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/CommandButton.Designer.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/CommandButton.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/VistaActiveTaskDialog.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialog.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogCommonDialog.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogNotificationArgs.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/VistaUnsafeNativeMethods.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/cTaskDialog.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/frmTaskDialog.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/frmTaskDialog.designer.cs -text
+source/ch/cyberduck/ui/winforms/taskdialog/frmTaskDialog.resx -text
+source/ch/cyberduck/ui/winforms/taskdialog/green_arrow1.png -text
+source/ch/cyberduck/ui/winforms/taskdialog/green_arrow2.png -text
 source/com/snoize/SNDisclosableView.m -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text

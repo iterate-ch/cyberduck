@@ -4,7 +4,7 @@
  *	$Revision$
  *	$Date$
  *
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2005-2010 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,15 +25,16 @@
 
     <property file="build.properties"/>
 
+    <property name="app.name" value="${ant.project.name}"/>
     <property name="debug" value="on"/>
     <property name="home" value="."/>
     <property name="unittests" value="${home}/test"/>
     <property name="build" value="${home}/build"/>
-    <property name="build.deploy" value="${build}/Release"/>
+    <property name="configuration" value="Release"/>
+    <property name="build.deploy" value="${build}/${configuration}"/>
     <property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/unittests"/>
     <property name="build.unittests.reports" value="${build}/unittests/junit_reports"/>
-    <property name="build.spotlight" value="${home}/Spotlight Importer/build/Release"/>
     <property name="config" value="${home}/config"/>
     <property name="img" value="${home}/img"/>
     <property name="lib" value="${home}/lib"/>
@@ -45,9 +46,17 @@
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
 
-    <property name="ikvm.home" value="${user.home}/bin/ikvm"/>
     <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
     <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
+
+    <condition property="platform" value="mac">
+        <os family="mac"/>
+    </condition>
+    <condition property="platform" value="windows">
+        <os family="windows"/>
+    </condition>
+
+    <import description="Platform specific targets" file="build-${platform}.xml"/>
 
     <path id="test.classpath">
         <path refid="build.classpath"/>
@@ -78,19 +87,6 @@
     <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
         <classpath refid="build.classpath"/>
     </taskdef>
-
-    <!-- mac os x properties-->
-    <property name="app.name" value="${ant.project.name}"/>
-    <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
-    <property name="app.contents" value="${app.bundle}/Contents"/>
-    <property name="app.macos" location="${app.contents}/MacOS"/>
-    <property name="app.library" value="${app.contents}/Library"/>
-    <property name="app.resources" value="${app.contents}/Resources"/>
-    <property name="app.java" value="${app.resources}/Java"/>
-    <property name="app.spotlight" value="${app.library}/Spotlight"/>
-
-    <property name="apple.appstub"
-              location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
     <target name="init">
         <echo message="ant version:	  ${ant.version}"/>
@@ -127,251 +123,8 @@
         </exec>
         <property name="svn.revision" value="${svn.revision}"/>
         <echo message="_REVISION_=${svn.revision}"/>
-        <buildnumber file="${build}/build.number"/>
+        <buildnumber file="build.number"/>
         <echo message="Build number ${build.number}"/>
-    </target>
-
-    <target name="stub">
-        <echo message="Using stub: ${apple.appstub}"/>
-        <!-- copy application stub -->
-        <copy file="${apple.appstub}" toFile="${app.macos}/${ant.project.name}" overwrite="true"/>
-        <!-- fix stub permissions -->
-        <chmod perm="755" type="file">
-            <fileset dir="${app.macos}">
-                <include name="${ant.project.name}"/>
-            </fileset>
-        </chmod>
-    </target>
-
-    <target name="nightly">
-        <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
-        </antcall>
-    </target>
-
-    <target name="beta">
-        <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
-        </antcall>
-        <antcall target="zip"/>
-    </target>
-
-    <target name="release">
-        <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
-        </antcall>
-        <antcall target="zip"/>
-    </target>
-
-    <target name="zip">
-        <echo message="Creating ZIP archive..."/>
-        <exec dir="${build.deploy}" executable="zip" spawn="false">
-            <arg line="-y -r ../${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip ${app.name}.app"/>
-        </exec>
-        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
-                  algorithm="md5"/>
-    </target>
-
-    <target name="package" depends="build, timestamp, revision">
-        <echo message="_TIMESTAMP_=${touch.time}"/>
-        <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
-        <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/InfoPlist.strings"/>
-            <include name="**/Info.plist"/>
-            <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-        </replace>
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-16">
-            <include name="**/InfoPlist.strings"/>
-            <include name="**/Info.plist"/>
-            <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-        </replace>
-
-        <antcall target="codesign"/>
-        <antcall target="tar"/>
-
-        <copy todir="${build}" overwrite="true">
-            <fileset dir="${home}/www/update/">
-                <include name="changelog.rss"/>
-            </fileset>
-        </copy>
-
-        <echo message="_ARCHIVE_=${url.archive}"/>
-        <echo message="_CHANGELOG_=${url.changelog}"/>
-
-        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
-                  algorithm="md5" property="md5sum"/>
-        <echo message="_MD5SUM_=${md5sum}"/>
-
-        <echo message="Calculating DSA signature..."/>
-        <exec dir="${home}" executable="ruby" outputproperty="signature.dsa">
-            <arg value="${www.update}/sign.rb"/>
-            <arg value="${build}/${app.name}-${svn.revision}.tar.gz"/>
-            <arg value="${www.update}/private.pem"/>
-        </exec>
-        <property name="signature.dsa" value="${signature.dsa}"/>
-        <echo message="_DSASIGNATURE_=${signature.dsa}"/>
-
-        <replace dir="${build}" summary="true" encoding="UTF-8">
-            <include name="changelog.rss"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
-            <replacefilter token="_ARCHIVE_" value="${url.archive}"/>
-            <replacefilter token="_CHANGELOG_" value="${url.changelog}"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="_DSASIGNATURE_" value="${signature.dsa}"/>
-        </replace>
-    </target>
-
-    <target name="codesign">
-        <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="true">
-            <arg line="--force --sign 'Cyberduck Code Signing Certificate' --keychain ~/Library/Keychains/codesign.keychain -v ${app.bundle}"/>
-        </exec>
-    </target>
-
-    <target name="tar">
-        <echo message="Creating tar.gz archive..."/>
-        <exec dir="${build.deploy}" executable="tar" spawn="false">
-            <arg line="-czf ../${app.name}-${svn.revision}.tar.gz ${app.name}.app"/>
-        </exec>
-        <echo message="Calculating MD5 sum..."/>
-        <checksum file="${build}/${app.name}-${svn.revision}.tar.gz"
-                  algorithm="md5"/>
-    </target>
-
-    <target name="mirror.beta" depends="revision">
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <!-- Changelog Beta - version.cyberduck.ch -->
-        <scp file="${build}/changelog.rss"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${www.update}/changelog.html"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-    </target>
-
-    <target name="mirror.nightly" depends="revision">
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <!-- Changelog Nightly - version.cyberduck.ch -->
-        <scp file="${build}/changelog.rss"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${www.update}/changelog.html"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-    </target>
-
-    <target name="mirror.release" depends="revision">
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
-             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <!-- Changelog Release - version.cyberduck.ch -->
-        <scp file="${build}/changelog.rss"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-        <scp file="${www.update}/changelog.html"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
-             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
-             passphrase="">
-        </scp>
-    </target>
-
-    <target name="build" depends="archive, stub, dll" description="Compile, jar and copy to application bundle">
-        <copy todir="${app.java}">
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-            </fileset>
-        </copy>
-        <copy todir="${app.java}">
-            <fileset dir="${lib}">
-                <include name="*.jar"/>
-                <include name="*.dylib"/>
-                <include name="*.jnilib"/>
-            </fileset>
-        </copy>
-        <copy todir="${app.java}">
-            <fileset dir="${build.deploy}">
-                <include name="*.dylib"/>
-            </fileset>
-        </copy>
-        <copy todir="${app.spotlight}">
-            <fileset dir="${build.spotlight}">
-                <include name="*.mdimporter/**"/>
-            </fileset>
-        </copy>
-        <chmod perm="a+x" type="file">
-            <fileset dir="${app.spotlight}">
-                <include name="**/MacOS/*"/>
-            </fileset>
-        </chmod>
     </target>
 
     <target name="compile" depends="init" description="Compile the source tree">
@@ -429,15 +182,6 @@
         </jar>
     </target>
 
-    <target name="dll" if="windows" description="Convert core.jar and ui.jar to core.dll">
-        <exec dir="${home}" executable="mono" spawn="false">
-            <arg line="${ikvm.home}/bin/ikvmc.exe -target:library -out:${build}/core.dll -version:${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <arg value="${build}/core.jar"/>
-            <arg value="${build}/ui.jar"/>
-            <arg value="${lib}/*.jar"/>
-        </exec>
-    </target>
-
     <target name="doc" depends="init" description="Generate Javadoc">
         <mkdir dir="${doc}"/>
         <javadoc packagenames="ch.cyberduck.*,com.*,org.*"
@@ -448,24 +192,13 @@
                  use="true"
                  windowtitle="${app.name} API"
                  doctitle="${app.name}"
-                 bottom="Copyright (c) 2005 David Kocher. Enjoy ${app.name}!">
+                 bottom="Copyright (c) 2005-2010 David Kocher. Enjoy ${app.name}!">
             <classpath refid="build.classpath"/>
         </javadoc>
     </target>
 
     <target name="clean" description="Delete compiled classes, jar files, jni libraries and application bundle">
-        <delete dir="${build.classes}"/>
-        <delete dir="${build}/Cyberduck.build"/>
-        <delete>
-            <fileset dir="${build}" includes="*.jar"/>
-        </delete>
-        <delete>
-            <fileset dir="${build}" includes="*.zip"/>
-        </delete>
-        <delete>
-            <fileset dir="${build.deploy}" includes="*.dylib"/>
-        </delete>
-        <delete dir="${app.bundle}"/>
+        <delete dir="${build}"/>
     </target>
 
     <target name="manifest" description="Create a manifest used in the jar files">
