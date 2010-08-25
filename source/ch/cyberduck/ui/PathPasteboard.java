@@ -70,11 +70,21 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
         this.session = session;
     }
 
+    /**
+     * @return
+     */
     public List<Path> copy() {
+        return this.copy(SessionFactory.createSession(session.getHost()));
+    }
+
+    /**
+     * @param session
+     * @return
+     */
+    public List<Path> copy(Session session) {
         List<Path> content = new ArrayList<Path>();
-        Session copy = SessionFactory.createSession(session.getHost());
         for(Path path : this) {
-            content.add(PathFactory.createPath(copy, path.getAsDictionary()));
+            content.add(PathFactory.createPath(session, path.getAsDictionary()));
         }
         return content;
     }

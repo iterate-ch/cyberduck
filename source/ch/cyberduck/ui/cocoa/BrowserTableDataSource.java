@@ -493,7 +493,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             // Drag to application icon in dock.
             final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
-            controller.transfer(new DownloadTransfer(pasteboard) {
+            controller.transfer(new DownloadTransfer(pasteboard.copy(controller.getTransferSession())) {
                 @Override
                 protected void fireDidTransferPath(Path path) {
                     if(dock) {

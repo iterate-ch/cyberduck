@@ -2601,8 +2601,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             roots.add(path);
         }
-        final Transfer q = new DownloadTransfer(roots);
-        this.transfer(q);
+        final Transfer transfer = new DownloadTransfer(roots);
+        this.transfer(transfer);
     }
 
     private static String lastSelectedUploadDirectory = null;
