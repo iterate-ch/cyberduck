@@ -24,10 +24,20 @@ import ch.cyberduck.core.i18n.Locale;
  * @version $Id$
  */
 public class Speedometer {
-    //the time to start counting bytes transfered
+
+    /**
+     * The time to start counting bytes transfered
+     */
     private long timestamp;
-    //initial data already transfered
-    private double initialBytesTransfered;
+
+    /**
+     * Initial data already transfered
+     */
+    private double initialBytesTransferred;
+
+    /**
+     * Actual bytes transferred
+     */
     private double bytesTransferred;
 
     private Transfer transfer;
@@ -45,16 +55,16 @@ public class Speedometer {
      */
     public float getSpeed() {
         bytesTransferred = transfer.getTransferred();
-        if(bytesTransferred > initialBytesTransfered) {
-            if(0 == initialBytesTransfered) {
-                initialBytesTransfered = bytesTransferred;
+        if(bytesTransferred > initialBytesTransferred) {
+            if(0 == initialBytesTransferred) {
+                initialBytesTransferred = bytesTransferred;
                 return -1;
             }
             // number of seconds data was actually transferred
             double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000;
             if(elapsedSeconds > 1) {
                 // bytes per second
-                return (float) ((bytesTransferred - initialBytesTransfered) / (elapsedSeconds));
+                return (float) ((bytesTransferred - initialBytesTransferred) / (elapsedSeconds));
             }
         }
         return -1;
@@ -113,7 +123,7 @@ public class Speedometer {
      */
     public void reset() {
         this.timestamp = System.currentTimeMillis();
-        this.initialBytesTransfered = transfer.getTransferred();
+        this.initialBytesTransferred = transfer.getTransferred();
         this.bytesTransferred = 0;
     }
 }
