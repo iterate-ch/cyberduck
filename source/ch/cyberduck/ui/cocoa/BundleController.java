@@ -91,8 +91,8 @@ public abstract class BundleController extends ProxyController {
 
     protected abstract String getBundleName();
 
-    protected void openUrl(AbstractPath.DescriptiveUrl url) {
-        this.openUrl(url.getUrl());    
+    public static void openUrl(AbstractPath.DescriptiveUrl url) {
+        openUrl(url.getUrl());
     }
 
     /**
@@ -100,9 +100,11 @@ public abstract class BundleController extends ProxyController {
      *
      * @param url
      */
-    protected void openUrl(String url) {
+    public static void openUrl(String url) {
         if(StringUtils.isNotBlank(url)) {
-            NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
+            if(!NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
+                AppKitFunctions.instance.NSBeep();
+            }
         }
         else {
             AppKitFunctions.instance.NSBeep();
