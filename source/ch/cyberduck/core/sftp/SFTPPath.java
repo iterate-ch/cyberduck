@@ -103,51 +103,15 @@ public class SFTPPath extends Path {
                     this.getName()));
 
             for(SFTPv3DirectoryEntry f : (List<SFTPv3DirectoryEntry>) this.getSession().sftp().ls(this.getAbsolute())) {
-                if(!f.filename.equals(".") && !f.filename.equals("..")) {
-                    Path p = new SFTPPath(this.getSession(), this.getAbsolute(),
-                            f.filename, f.attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    p.setParent(this);
-                    if(null != f.attributes.uid) {
-                        p.attributes().setOwner(f.attributes.uid.toString());
-                    }
-                    if(null != f.attributes.gid) {
-                        p.attributes().setGroup(f.attributes.gid.toString());
-                    }
-                    if(null != f.attributes.size) {
-                        p.attributes().setSize(f.attributes.size);
-                    }
-                    if(null != f.attributes.mtime) {
-                        p.attributes().setModificationDate(Long.parseLong(f.attributes.mtime.toString()) * 1000L);
-                    }
-                    if(null != f.attributes.atime) {
-                        p.attributes().setAccessedDate(Long.parseLong(f.attributes.atime.toString()) * 1000L);
-                    }
-                    if(f.attributes.isSymlink()) {
-                        try {
-                            String target = this.getSession().sftp().readLink(p.getAbsolute());
-                            if(!target.startsWith(String.valueOf(Path.DELIMITER))) {
-                                target = Path.normalize(this.getAbsolute() + String.valueOf(Path.DELIMITER) + target);
-                            }
-                            p.setSymlinkTarget(target);
-                            SFTPv3FileAttributes attr = this.getSession().sftp().stat(target);
-                            if(attr.isDirectory()) {
-                                p.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                            }
-                            else if(attr.isRegularFile()) {
-                                p.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-                            }
-                        }
-                        catch(IOException e) {
-                            log.error("Cannot read symbolic link target of " + p.getAbsolute() + ":" + e.getMessage());
-                            p.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-                        }
-                    }
-                    String perm = f.attributes.getOctalPermissions();
-                    if(null != perm) {
-                        p.attributes().setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
-                    }
-                    children.add(p);
+                if(f.filename.equals(".") || f.filename.equals("..")) {
+                    continue;
                 }
+                SFTPv3FileAttributes attributes = f.attributes;
+                SFTPPath p = new SFTPPath(this.getSession(), this.getAbsolute(),
+                        f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                p.setParent(this);
+                p.readAttributes(attributes);
+                children.add(p);
             }
             this.getSession().setWorkdir(this);
         }
@@ -238,15 +202,70 @@ public class SFTPPath extends Path {
         }
     }
 
+    protected void readAttributes() {
+        try {
+            this.readAttributes(this.getSession().sftp().stat(this.getAbsolute()));
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+    }
+
+    protected void readAttributes(SFTPv3FileAttributes attributes) {
+        if(null != attributes.size) {
+            this.attributes().setSize(attributes.size);
+        }
+        String perm = attributes.getOctalPermissions();
+        if(null != perm) {
+            try {
+                this.attributes().setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
+            }
+            catch(NumberFormatException e) {
+                log.error(e.getMessage());
+            }
+        }
+        if(null != attributes.uid) {
+            this.attributes().setOwner(attributes.uid.toString());
+        }
+        if(null != attributes.gid) {
+            this.attributes().setGroup(attributes.gid.toString());
+        }
+        if(null != attributes.mtime) {
+            this.attributes().setModificationDate(Long.parseLong(attributes.mtime.toString()) * 1000L);
+        }
+        if(null != attributes.atime) {
+            this.attributes().setAccessedDate(Long.parseLong(attributes.atime.toString()) * 1000L);
+        }
+        if(attributes.isSymlink()) {
+            try {
+                String target = this.getSession().sftp().readLink(this.getAbsolute());
+                if(!target.startsWith(String.valueOf(Path.DELIMITER))) {
+                    target = Path.normalize(this.getAbsolute() + String.valueOf(Path.DELIMITER) + target);
+                }
+                this.setSymlinkTarget(target);
+                SFTPv3FileAttributes targetAttributes = this.getSession().sftp().stat(target);
+                if(targetAttributes.isDirectory()) {
+                    this.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                }
+                else if(targetAttributes.isRegularFile()) {
+                    this.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                }
+            }
+            catch(IOException e) {
+                log.error("Cannot read symbolic link target of " + this.getAbsolute() + ":" + e.getMessage());
+                this.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+            }
+        }
+    }
+
     @Override
     public void readSize() {
         try {
             this.getSession().check();
-            SFTPv3FileAttributes attr = this.getSession().sftp().stat(this.getAbsolute());
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                     this.getName()));
 
-            this.attributes().setSize(attr.size);
+            this.readAttributes();
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
@@ -255,63 +274,29 @@ public class SFTPPath extends Path {
 
     @Override
     public void readTimestamp() {
-        SFTPv3FileHandle handle = null;
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
-            handle = this.getSession().sftp().openFileRO(this.getAbsolute());
-            SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
-            this.attributes().setModificationDate(Long.parseLong(attr.mtime.toString()) * 1000L);
-            this.getSession().sftp().closeFile(handle);
+            this.readAttributes();
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
-        }
-        finally {
-            if(handle != null) {
-                try {
-                    this.getSession().sftp().closeFile(handle);
-                }
-                catch(IOException e) {
-                    ;
-                }
-            }
         }
     }
 
     @Override
     public void readUnixPermission() {
-        SFTPv3FileHandle handle = null;
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                     this.getName()));
 
-            handle = this.getSession().sftp().openFileRO(this.getAbsolute());
-            SFTPv3FileAttributes attr = this.getSession().sftp().fstat(handle);
-            String perm = attr.getOctalPermissions();
-            try {
-                this.attributes().setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
-            }
-            catch(NumberFormatException e) {
-                log.error(e.getMessage());
-            }
-            this.getSession().sftp().closeFile(handle);
+            this.readAttributes();
         }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
-        }
-        finally {
-            if(handle != null) {
-                try {
-                    this.getSession().sftp().closeFile(handle);
-                }
-                catch(IOException e) {
-                    ;
-                }
-            }
         }
     }
 
