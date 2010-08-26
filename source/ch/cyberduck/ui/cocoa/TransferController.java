@@ -762,7 +762,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             item.setLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setToolTip(Locale.localizedString(TOOLBAR_STOP));
-            item.setImage(IconCache.iconNamed("stop", 32));
+            item.setImage(IconCache.iconNamed("stoptransfer.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("stopButtonClicked:"));
             return item;
@@ -1033,9 +1033,9 @@ public class TransferController extends WindowController implements NSToolbar.De
                 TOOLBAR_RELOAD,
                 TOOLBAR_STOP,
                 TOOLBAR_REMOVE,
-                NSToolbarItem.NSToolbarFlexibleItemIdentifier,
                 TOOLBAR_OPEN,
                 TOOLBAR_SHOW,
+                NSToolbarItem.NSToolbarFlexibleItemIdentifier,
                 TOOLBAR_FILTER
         );
     }

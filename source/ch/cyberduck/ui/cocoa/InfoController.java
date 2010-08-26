@@ -2319,6 +2319,6 @@ public class InfoController extends ToolbarWindowController {
         else if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             site.append("/howto/cdn");
         }
-        this.openUrl(site.toString());
+        openUrl(site.toString());
     }
 }

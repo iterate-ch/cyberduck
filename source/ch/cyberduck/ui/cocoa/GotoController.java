@@ -94,6 +94,11 @@ public class GotoController extends SheetController {
         return "Goto";
     }
 
+    @Override
+    protected double getMaxWindowHeight() {
+        return this.window().frame().size.height.doubleValue();
+    }
+
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.gotoFolder(((BrowserController) parent).workdir(), folderCombobox.stringValue());

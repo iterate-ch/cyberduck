@@ -110,7 +110,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     protected void help() {
                         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
                         site.append("/").append(failure.getPath().getSession().getHost().getProtocol().getIdentifier());
-                        this.openUrl(site.toString());
+                        openUrl(site.toString());
                     }
                 };
                 if(this.hasTranscript()) {

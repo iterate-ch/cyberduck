@@ -133,8 +133,6 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setDelegate(this.id());
         window.setShowsToolbarButton(false);
         super.setWindow(window);
-//        window.setMinSize(new NSSize(this.getMinWindowWidth(), this.getMinWindowHeight()));
-        window.setMaxSize(new NSSize(this.getMaxWindowWidth(), this.getMaxWindowHeight()));
     }
 
     protected NSUInteger getToolbarSize() {
@@ -249,14 +247,6 @@ public abstract class ToolbarWindowController extends WindowController implement
         this.resize();
         Preferences.instance().setProperty(this.getToolbarName() + ".selected",
                 tabView.indexOfTabViewItem(tabViewItem));
-    }
-
-    protected double getMaxWindowHeight() {
-        return window.maxSize().height.doubleValue();
-    }
-
-    protected double getMaxWindowWidth() {
-        return window.maxSize().width.doubleValue();
     }
 
     protected double getMinWindowHeight() {

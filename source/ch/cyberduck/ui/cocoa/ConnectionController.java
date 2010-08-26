@@ -45,6 +45,71 @@ import java.util.Map;
 public class ConnectionController extends SheetController {
     private static Logger log = Logger.getLogger(ConnectionController.class);
 
+    private static final Map<WindowController, ConnectionController> controllers
+            = new HashMap<WindowController, ConnectionController>();
+
+    public static ConnectionController instance(final WindowController parent) {
+        if(!controllers.containsKey(parent)) {
+            final ConnectionController c = new ConnectionController(parent) {
+                @Override
+                protected void invalidate() {
+                    controllers.remove(parent);
+                    super.invalidate();
+                }
+            };
+            c.loadBundle();
+            controllers.put(parent, c);
+        }
+        final ConnectionController c = controllers.get(parent);
+        c.init();
+        return c;
+    }
+
+    protected void init() {
+        passField.setStringValue("");
+        final boolean enabled = Preferences.instance().getBoolean("connection.login.useKeychain");
+        keychainCheckbox.setEnabled(enabled);
+        if(!enabled) {
+            keychainCheckbox.setState(NSCell.NSOffState);
+        }
+    }
+
+    @Override
+    protected void invalidate() {
+        hostField.setDelegate(null);
+        hostField.setDataSource(null);
+        super.invalidate();
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+
+    /**
+     * @param parent
+     */
+    private ConnectionController(final WindowController parent) {
+        super(parent);
+    }
+
+    @Override
+    protected String getBundleName() {
+        return "Connection";
+    }
+
+    @Override
+    public void awakeFromNib() {
+        this.protocolSelectionDidChange(null);
+        this.setState(toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
+        super.awakeFromNib();
+    }
+
+    @Override
+    protected double getMaxWindowHeight() {
+        return this.window().frame().size.height.doubleValue();
+    }
+
     @Outlet
     private NSPopUpButton protocolPopup;
 
@@ -490,66 +555,6 @@ public class ConnectionController extends SheetController {
         this.toggleOptionsButton = b;
     }
 
-    private static final Map<WindowController, ConnectionController> controllers
-            = new HashMap<WindowController, ConnectionController>();
-
-    public static ConnectionController instance(final WindowController parent) {
-        if(!controllers.containsKey(parent)) {
-            final ConnectionController c = new ConnectionController(parent) {
-                @Override
-                protected void invalidate() {
-                    controllers.remove(parent);
-                    super.invalidate();
-                }
-            };
-            c.loadBundle();
-            controllers.put(parent, c);
-        }
-        final ConnectionController c = controllers.get(parent);
-        c.init();
-        return c;
-    }
-
-    protected void init() {
-        passField.setStringValue("");
-        final boolean enabled = Preferences.instance().getBoolean("connection.login.useKeychain");
-        keychainCheckbox.setEnabled(enabled);
-        if(!enabled) {
-            keychainCheckbox.setState(NSCell.NSOffState);
-        }
-    }
-
-    @Override
-    protected void invalidate() {
-        hostField.setDelegate(null);
-        hostField.setDataSource(null);
-        super.invalidate();
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
-    }
-
-    /**
-     * @param parent
-     */
-    private ConnectionController(final WindowController parent) {
-        super(parent);
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Connection";
-    }
-
-    @Override
-    public void awakeFromNib() {
-        this.protocolSelectionDidChange(null);
-        this.setState(toggleOptionsButton, Preferences.instance().getBoolean("connection.toggle.options"));
-        super.awakeFromNib();
-    }
-
     /**
      * Updating the password field with the actual password if any
      * is avaialble for this hostname
@@ -590,7 +595,7 @@ public class ConnectionController extends SheetController {
 
     public void helpButtonClicked(final ID sender) {
         final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
-        this.openUrl(Preferences.instance().getProperty("website.help")
+        openUrl(Preferences.instance().getProperty("website.help")
                         + "/" + protocol.getIdentifier());
     }
 

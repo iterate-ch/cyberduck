@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
@@ -58,6 +59,16 @@ public abstract class FileController extends SheetController {
     public void setEditButton(NSButton editButton) {
         this.editButton = editButton;
         this.editButton.setEnabled(EditorFactory.defaultEditor() != null);
+    }
+
+    @Override
+    protected double getMaxWindowWidth() {
+        return 500;
+    }
+
+    @Override
+    protected double getMaxWindowHeight() {
+        return this.window().frame().size.height.doubleValue();
     }
 
     public FileController(final WindowController parent) {

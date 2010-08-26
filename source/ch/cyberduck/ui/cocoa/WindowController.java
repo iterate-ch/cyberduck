@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
@@ -82,6 +83,8 @@ public abstract class WindowController extends BundleController implements NSWin
     public void setWindow(NSWindow window) {
         this.window = window;
         this.window.setReleasedWhenClosed(!this.isSingleton());
+//        window.setMinSize(new NSSize(this.getMinWindowWidth(), this.getMinWindowHeight()));
+        this.window.setMaxSize(new NSSize(this.getMaxWindowWidth(), this.getMaxWindowHeight()));
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("windowWillClose:"),
                 NSWindow.WindowWillCloseNotification,
@@ -90,6 +93,14 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public NSWindow window() {
         return this.window;
+    }
+
+    protected double getMaxWindowHeight() {
+        return this.window().maxSize().height.doubleValue();
+    }
+
+    protected double getMaxWindowWidth() {
+        return this.window().maxSize().width.doubleValue();
     }
 
     /**

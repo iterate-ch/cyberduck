@@ -296,7 +296,7 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void openWebUrl(final NSButton sender) {
-        this.openUrl(host.getWebURL());
+        openUrl(host.getWebURL());
     }
 
     @Outlet
@@ -587,9 +587,13 @@ public class BookmarkController extends WindowController {
     }
 
     @Override
-    public void setWindow(NSWindow window) {
-        window.setMaxSize(new NSSize(600, window.maxSize().height.doubleValue()));
-        super.setWindow(window);
+    protected double getMaxWindowHeight() {
+        return window.frame().size.height.doubleValue();
+    }
+
+    @Override
+    protected double getMaxWindowWidth() {
+        return 600;
     }
 
     @Outlet
