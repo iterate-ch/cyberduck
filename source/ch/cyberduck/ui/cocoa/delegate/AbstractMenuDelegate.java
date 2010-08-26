@@ -95,4 +95,23 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     public boolean validateMenuItem(NSMenuItem item) {
         return true;
     }
+
+
+    protected void clearShortcut(NSMenuItem item) {
+        this.setShortcut(item, "", 0);
+    }
+
+    protected void setShortcut(NSMenuItem item, String key) {
+        this.setShortcut(item, key, 0);
+    }
+
+    protected void setShortcut(NSMenuItem item, String key, int modifier) {
+        item.setKeyEquivalent(key);
+        if(log.isDebugEnabled()) {
+            if(!item.keyEquivalent().equals(key)) {
+                log.error("Failed to attach key equivalent to menu item:" + key);
+            }
+        }
+        item.setKeyEquivalentModifierMask(modifier);
+    }
 }

@@ -94,11 +94,10 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         String editor = editors.keySet().toArray(new String[editors.size()])[index.intValue()];
         item.setTitle(editor);
         if(identifier.equalsIgnoreCase(defaultEditor)) {
-            item.setKeyEquivalent("k");
-            item.setKeyEquivalentModifierMask(NSEvent.NSCommandKeyMask);
+            setShortcut(item, "k", NSEvent.NSCommandKeyMask);
         }
         else {
-            item.setKeyEquivalent("");
+            clearShortcut(item);
         }
         item.setImage(IconCache.instance().iconForApplication(identifier, 16));
         item.setAction(Foundation.selector("editMenuClicked:"));

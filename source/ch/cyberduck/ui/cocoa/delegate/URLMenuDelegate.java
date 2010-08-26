@@ -70,6 +70,8 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
      */
     protected abstract int getModifierMask();
 
+    protected abstract String getLabel();
+
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         Path path = this.getSelectedPath();
         if(null == path) {
@@ -83,11 +85,10 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         item.setTarget(this.id());
         Path path = this.getSelectedPath();
         if(0 == index.intValue()) {
-            item.setKeyEquivalentModifierMask(this.getModifierMask());
-            item.setKeyEquivalent(this.getKeyEquivalent());
+            this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {
-            item.setKeyEquivalent("");
+            this.clearShortcut(item);
         }
         if(null == path) {
             item.setTitle(MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Unknown")));

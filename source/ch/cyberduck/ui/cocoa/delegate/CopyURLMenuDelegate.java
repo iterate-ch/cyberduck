@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
@@ -45,6 +46,11 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     @Override
     protected int getModifierMask() {
         return NSEvent.NSCommandKeyMask | NSEvent.NSShiftKeyMask;
+    }
+
+    @Override
+    protected String getLabel() {
+        return Locale.localizedString("Copy");
     }
 
     @Action

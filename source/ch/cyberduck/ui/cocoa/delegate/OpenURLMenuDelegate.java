@@ -19,14 +19,12 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
-import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
+import ch.cyberduck.ui.cocoa.BundleController;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 
@@ -46,6 +44,11 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
         return NSEvent.NSCommandKeyMask | NSEvent.NSAlternateKeyMask;
     }
 
+    @Override
+    protected String getLabel() {
+        return Locale.localizedString("Open");
+    }
+
     @Action
     @Override
     public void urlClicked(final NSMenuItem sender) {
@@ -56,11 +59,6 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
      * @param url
      */
     private void open(String url) {
-        if(StringUtils.isNotBlank(url)) {
-            NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url));
-        }
-        else {
-            AppKitFunctions.instance.NSBeep();
-        }
+        BundleController.openUrl(url);
     }
 }
