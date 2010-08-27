@@ -42,18 +42,19 @@
                 <include name="*.jar"/>
             </fileset>
         </copy>
+        <copy todir="${app.java}">
+            <fileset dir="${lib}">
+                <include name="*.jar"/>
+                <include name="*.dylib"/>
+                <include name="*.jnilib"/>
+            </fileset>
+        </copy>
         <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false">
             <arg line="-project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
         </exec>
         <exec dir="${spotlight}" executable="/usr/bin/xcodebuild" spawn="false">
             <arg line="-project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
         </exec>
-        <copy todir="${app.java}">
-            <fileset dir="${lib}">
-                <include name="*.dylib"/>
-                <include name="*.jnilib"/>
-            </fileset>
-        </copy>
         <copy todir="${app.java}">
             <fileset dir="${build.deploy}">
                 <include name="*.dylib"/>
