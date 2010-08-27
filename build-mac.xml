@@ -32,9 +32,17 @@
     <property name="app.spotlight" value="${app.library}/Spotlight"/>    
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
-    <property name="build.spotlight" value="${home}/Spotlight Importer/build/${configuration}"/>
+
+    <property name="spotlight" value="${home}/Spotlight Importer"/>
+    <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
     <target name="build" depends="archive, stub" description="Compile, jar and copy to application bundle">
+        <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false">
+            <arg line="-project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
+        </exec>
+        <exec dir="${spotlight}" executable="/usr/bin/xcodebuild" spawn="false">
+            <arg line="-project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
+        </exec>
         <copy todir="${app.java}">
             <fileset dir="${build}">
                 <include name="*.jar"/>

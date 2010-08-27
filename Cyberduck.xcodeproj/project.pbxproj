@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -270,13 +270,6 @@
 			remoteGlobalIDString = 4762DAB809FC42EC0034C662;
 			remoteInfo = libDiagnostics;
 		};
-		471E21630A1734E8009E164E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 471D2C0B05A2505500675163;
-			remoteInfo = "app (International)";
-		};
 		4726A8D30DAD6E27001BC01D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -305,33 +298,12 @@
 			remoteGlobalIDString = 477A10400FD08DBA00BAD4AD;
 			remoteInfo = libCocoa;
 		};
-		478D627C0B74849300096EC7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 471D2C0B05A2505500675163;
-			remoteInfo = "app (International)";
-		};
-		479B79CA100A42C7006656FA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 471D2C0B05A2505500675163;
-			remoteInfo = "app (International)";
-		};
 		47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 47BEDAF60B92960400141EB4;
 			remoteInfo = libURLSchemeHandlerConfiguration;
-		};
-		47CD9C4F0739339B00E9379E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 471D2C0B05A2505500675163;
-			remoteInfo = app;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -2064,7 +2036,6 @@
 			);
 			buildToolPath = /usr/bin/ant;
 			dependencies = (
-				47CD9C500739339B00E9379E /* PBXTargetDependency */,
 			);
 			name = build;
 			passBuildSettingsInEnvironment = 1;
@@ -2078,7 +2049,6 @@
 			);
 			buildToolPath = /usr/bin/ant;
 			dependencies = (
-				471E21640A1734E8009E164E /* PBXTargetDependency */,
 			);
 			name = release;
 			passBuildSettingsInEnvironment = 1;
@@ -2092,7 +2062,6 @@
 			);
 			buildToolPath = /usr/bin/ant;
 			dependencies = (
-				478D627B0B74849300096EC7 /* PBXTargetDependency */,
 			);
 			name = nightly;
 			passBuildSettingsInEnvironment = 1;
@@ -2106,7 +2075,6 @@
 			);
 			buildToolPath = /usr/bin/ant;
 			dependencies = (
-				479B79C9100A42C7006656FA /* PBXTargetDependency */,
 			);
 			name = beta;
 			passBuildSettingsInEnvironment = 1;
@@ -2115,9 +2083,9 @@
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
-		471D2C0B05A2505500675163 /* app (International) */ = {
+		471D2C0B05A2505500675163 /* app */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app (International)" */;
+			buildConfigurationList = 47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app" */;
 			buildPhases = (
 				471D2C0E05A2505500675163 /* Resources */,
 				4735940F0CE76EE50085DEAC /* Prune NIBs */,
@@ -2137,7 +2105,7 @@
 				477A11D40FD0942800BAD4AD /* PBXTargetDependency */,
 				475C2DF70FDC287700E4251E /* PBXTargetDependency */,
 			);
-			name = "app (International)";
+			name = app;
 			productInstallPath = "$(USER_APPS_DIR)";
 			productName = Cyberduck;
 			productReference = 471D2C5505A2505600675163 /* Cyberduck.app */;
@@ -2343,7 +2311,7 @@
 				ORGANIZATIONNAME = Cyberduck;
 			};
 			buildConfigurationList = 47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
@@ -2387,7 +2355,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				471D2C0B05A2505500675163 /* app (International) */,
+				471D2C0B05A2505500675163 /* app */,
 				4734485D04575C6D00A801C6 /* build */,
 				474432380736A1DB00BA512B /* release */,
 				478D627A0B74849300096EC7 /* nightly */,
@@ -2763,11 +2731,6 @@
 			target = 4762DAB809FC42EC0034C662 /* libDiagnostics */;
 			targetProxy = 471E21570A1734D7009E164E /* PBXContainerItemProxy */;
 		};
-		471E21640A1734E8009E164E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 471D2C0B05A2505500675163 /* app (International) */;
-			targetProxy = 471E21630A1734E8009E164E /* PBXContainerItemProxy */;
-		};
 		4726A8D40DAD6E27001BC01D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 478ECD000DAD5743008A5B1F /* libQuickLook */;
@@ -2788,25 +2751,10 @@
 			target = 477A10400FD08DBA00BAD4AD /* libRococoa */;
 			targetProxy = 477A11D30FD0942800BAD4AD /* PBXContainerItemProxy */;
 		};
-		478D627B0B74849300096EC7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 471D2C0B05A2505500675163 /* app (International) */;
-			targetProxy = 478D627C0B74849300096EC7 /* PBXContainerItemProxy */;
-		};
-		479B79C9100A42C7006656FA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 471D2C0B05A2505500675163 /* app (International) */;
-			targetProxy = 479B79CA100A42C7006656FA /* PBXContainerItemProxy */;
-		};
 		47BEDCEF0B92A23B00141EB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 47BEDAF60B92960400141EB4 /* libURLSchemeHandlerConfiguration */;
 			targetProxy = 47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */;
-		};
-		47CD9C500739339B00E9379E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 471D2C0B05A2505500675163 /* app (International) */;
-			targetProxy = 47CD9C4F0739339B00E9379E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4497,7 +4445,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app (International)" */ = {
+		47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47D286C70855740C008142CF /* Release */,
