@@ -1,34 +1,34 @@
-------------------
-BUILDING CYBERDUCK
-------------------
+----------------------------------
+Building Cyberduck (Mac & Windows)
+----------------------------------
 
-<CYBERDUCK_HOME> is the root directory of your cyberduck source checkout.
+Prerequisites
+-------------
 
---------------
-Prerequisites:
---------------
-
+- Java 1.5.0 SDK in ~/.bin/1.5.0 or edit the jdk.home property in build.xml for a different JDK in /System/Library/Frameworks/JavaVM.framework/Versions
 - Java Header Files
 	(Missing file or directory: /System/Library/Frameworks/JavaVM.framework/Headers/jni.h)
-You need to install the Java Developer Tools from http://connect.apple.com (Free online membership). A complaint is reported to Apple that these headers are not included in the standard installation.
+You need to install the Java Developer Tools from http://connect.apple.com (Free online membership).
+- Apache Ant 1.7.1 or later
 
-- Jakarta Ant
-	You need the ant executable (or a symlink to) in /usr/bin/ant.
+Mac
+- Xcode 3.2 or later (xcodebuild) and the Mac OS X 10.5 SDK on Mac.
 
-- jUnit (http://junit.org)
-	Copy <CYBERDUCK_HOME>/lib/junit.jar to <ANT_HOME>/lib/junit.jar
+Windows
+- Microsoft Windows SDK for Windows 7 and .NET Framework 4
+	http://www.microsoft.com/downloads/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&displaylang=en
+- IKVM installation in c:/workspace/ikvm-0.42.0.3
+	http://sourceforge.net/projects/ikvm/files/
 
-- xcodebuild and make
-	Included with the developer tools. You need XCode 3.0 or later and the 10.5 SDK.
-
-----------
-Compiling:
-----------
-
-- Type 'make' in <CYBERDUCK_HOME>
-
----------
-Releases:
+Compiling
 ---------
 
-Cyberduck releases are branched in SVN such as 'release-2-6'. Checkout using 'svn co http://svn.cyberduck.ch/branches/release-2-6'.
+- Install ant-dotnet-1.0.jar in ~/.ant/lib/*.jar
+- Install ant-contrib-1.0b3.jar in ~/.ant/lib/*.jar
+
+- Type 'ant' for executing the default 'build' target. Depending on the platform, build-mac.xml or build-windows.xml is included respectively for native compilation.
+
+Tagged Releases
+---------------
+
+Releases are branched in SVN such as 'release-2-6'. Checkout using 'svn co http://svn.cyberduck.ch/tags/release-2-6'.
