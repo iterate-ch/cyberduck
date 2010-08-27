@@ -569,7 +569,7 @@ public abstract class Preferences {
         /**
          * Show revisions as hidden files in browser
          */
-        defaults.put("google.docs.revisions.enable", String.valueOf(true));
+        defaults.put("google.docs.revisions.enable", String.valueOf(false));
 
         /**
          * NTLM Windows Domain
