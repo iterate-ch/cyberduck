@@ -30,7 +30,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
-import ch.cyberduck.ui.cocoa.view.CDControllerCell;
+import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -415,7 +415,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             }
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
-                Rococoa.cast(cell, CDControllerCell.class).setView(transferTableModel.getController(row.intValue()).view());
+                Rococoa.cast(cell, ControllerCell.class).setView(transferTableModel.getController(row.intValue()).view());
             }
 
             @Override
@@ -453,7 +453,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.transferTable.sizeToFit();
     }
 
-    private final NSCell prototype = CDControllerCell.controllerCell();
+    private final NSCell prototype = ControllerCell.controllerCell();
 
     /**
      *

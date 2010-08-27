@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
-import ch.cyberduck.ui.cocoa.view.CDBookmarkCell;
+import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -381,13 +381,13 @@ public class PreferencesController extends ToolbarWindowController {
         for(int i = 0; i < this.bookmarkSizePopup.numberOfItems().intValue(); i++) {
             this.bookmarkSizePopup.itemAtIndex(new NSInteger(i)).setState(NSCell.NSOffState);
         }
-        if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
+        if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
             this.bookmarkSizePopup.selectItemAtIndex(new NSInteger(0));
         }
-        if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
+        if(BookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
             this.bookmarkSizePopup.selectItemAtIndex(new NSInteger(1));
         }
-        if(CDBookmarkCell.LARGE_BOOKMARK_SIZE == size) {
+        if(BookmarkCell.LARGE_BOOKMARK_SIZE == size) {
             this.bookmarkSizePopup.selectItemAtIndex(new NSInteger(2));
         }
     }
@@ -395,13 +395,13 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {
         if(sender.indexOfSelectedItem().intValue() == 0) {
-            Preferences.instance().setProperty("bookmark.icon.size", CDBookmarkCell.SMALL_BOOKMARK_SIZE);
+            Preferences.instance().setProperty("bookmark.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 1) {
-            Preferences.instance().setProperty("bookmark.icon.size", CDBookmarkCell.MEDIUM_BOOKMARK_SIZE);
+            Preferences.instance().setProperty("bookmark.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 2) {
-            Preferences.instance().setProperty("bookmark.icon.size", CDBookmarkCell.LARGE_BOOKMARK_SIZE);
+            Preferences.instance().setProperty("bookmark.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
         }
         BrowserController.updateBookmarkTableRowHeight();
     }

@@ -48,8 +48,8 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
-import ch.cyberduck.ui.cocoa.view.CDBookmarkCell;
-import ch.cyberduck.ui.cocoa.view.CDOutlineCell;
+import ch.cyberduck.ui.cocoa.view.BookmarkCell;
+import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.rococoa.Foundation;
@@ -607,7 +607,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setBonjourButton(NSButton bonjourButton) {
         this.bonjourButton = bonjourButton;
-        this.bonjourButton.setImage(IconCache.iconNamed("rendezvous", 16));
+        NSImage img = IconCache.iconNamed("rendezvous", 16);
+        img.setTemplate(false);
+        this.bonjourButton.setImage(img);
         this.setRecessedBezelStyle(this.bonjourButton);
         this.bonjourButton.setTarget(this.id());
         this.bonjourButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
@@ -618,7 +620,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setHistoryButton(NSButton historyButton) {
         this.historyButton = historyButton;
-        this.historyButton.setImage(IconCache.iconNamed("history", 16));
+        NSImage img = IconCache.iconNamed("history", 16);
+        img.setTemplate(false);
+        this.historyButton.setImage(img);
         this.setRecessedBezelStyle(this.historyButton);
         this.historyButton.setTarget(this.id());
         this.historyButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
@@ -629,7 +633,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        this.bookmarkButton.setImage(IconCache.iconNamed("bookmarks", 20, 16));
+        NSImage img = IconCache.iconNamed("bookmarks", 20, 16);
+        img.setTemplate(false);
+        this.bookmarkButton.setImage(img);
         this.setRecessedBezelStyle(this.bookmarkButton);
         this.bookmarkButton.setTarget(this.id());
         this.bookmarkButton.setAction(Foundation.selector("bookmarkButtonClicked:"));
@@ -1059,7 +1065,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 if(tableColumn.identifier().equals(BrowserTableDataSource.FILENAME_COLUMN)) {
                     cell.setEditable(getSession().isRenameSupported(path));
-                    (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
+                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
                 if(!BrowserController.this.isConnected() || !HIDDEN_FILTER.accept(path)) {
                     cell.setTextColor(NSColor.disabledControlTextColor());
@@ -1237,7 +1243,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 NSIndexSet.indexSetWithIndexesInRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(bookmarkTable.numberOfRows()))));
     }
 
-    private final NSTextFieldCell outlineCellPrototype = CDOutlineCell.outlineCell();
+    private final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
     private final NSImageCell imageCellPrototype = NSImageCell.imageCell();
     private final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
     private final NSTextFieldCell filenameCellPrototype = NSTextFieldCell.textFieldCell();
@@ -1377,10 +1383,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
                 final int size = Preferences.instance().getInteger("bookmark.icon.size");
-                if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
+                if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
                     return new CGFloat(18);
                 }
-                if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
+                if(BookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
                     return new CGFloat(45);
                 }
                 return new CGFloat(70);
@@ -1418,7 +1424,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.headerCell().setStringValue(Locale.localizedString("Bookmarks"));
             c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
-            c.setDataCell(CDBookmarkCell.bookmarkCell());
+            c.setDataCell(BookmarkCell.bookmarkCell());
             this.bookmarkTable.addTableColumn(c);
         }
         {
@@ -1436,10 +1442,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this._updateBookmarkCell();
 
         final int size = Preferences.instance().getInteger("bookmark.icon.size");
-        if(CDBookmarkCell.SMALL_BOOKMARK_SIZE == size) {
+        if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
             this.bookmarkTable.setRowHeight(new CGFloat(18));
         }
-        else if(CDBookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
+        else if(BookmarkCell.MEDIUM_BOOKMARK_SIZE == size) {
             this.bookmarkTable.setRowHeight(new CGFloat(45));
         }
         else {
@@ -2441,10 +2447,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         Path selected;
         if(this.getSelectionCount() == 1) {
             selected = this.getSelectedPath();
-            this.openUrl(this.getSelectedPath().toHttpURL());
+            openUrl(this.getSelectedPath().toHttpURL());
         }
         else {
-            this.openUrl(this.workdir().toHttpURL());
+            openUrl(this.workdir().toHttpURL());
         }
     }
 

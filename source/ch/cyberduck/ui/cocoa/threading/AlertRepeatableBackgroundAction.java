@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.view.CDControllerCell;
+import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -245,7 +245,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                 }
 
                 public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
-                    Rococoa.cast(cell, CDControllerCell.class).setView(errors.get(row.intValue()).view());
+                    Rococoa.cast(cell, ControllerCell.class).setView(errors.get(row.intValue()).view());
                 }
             }).id());
             {
@@ -258,7 +258,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
             }
         }
 
-        private final NSCell prototype = CDControllerCell.controllerCell();
+        private final NSCell prototype = ControllerCell.controllerCell();
 
         @Outlet
         private NSTextView transcriptView;

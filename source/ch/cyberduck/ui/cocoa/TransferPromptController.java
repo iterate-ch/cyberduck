@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.cocoa.view.CDOutlineCell;
+import ch.cyberduck.ui.cocoa.view.OutlineCell;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -313,7 +313,7 @@ public abstract class TransferPromptController extends SheetController implement
                     cell.setEnabled(!path.status().isSkipped());
                 }
                 if(identifier.equals(TransferPromptModel.FILENAME_COLUMN)) {
-                    (Rococoa.cast(cell, CDOutlineCell.class)).setIcon(IconCache.instance().iconForPath(path, 16));
+                    (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCache.instance().iconForPath(path, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!transfer.isIncluded(path)) {
@@ -401,7 +401,7 @@ public abstract class TransferPromptController extends SheetController implement
     }
 
     protected final NSButtonCell buttonCellPrototype = NSButtonCell.buttonCell();
-    protected final NSTextFieldCell outlineCellPrototype = CDOutlineCell.outlineCell();
+    protected final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
     protected final NSImageCell imageCellPrototype = NSImageCell.imageCell();
     protected final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
 

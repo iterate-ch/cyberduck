@@ -26,7 +26,7 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.cocoa.view.CDControllerCell;
+import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ID;
@@ -202,7 +202,7 @@ public class ActivityController extends WindowController {
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final Collection<TaskController> values = tasks.values();
                 int size = values.size();
-                Rococoa.cast(cell, CDControllerCell.class).setView(values.toArray(new TaskController[size])[size - 1 - row.intValue()].view());
+                Rococoa.cast(cell, ControllerCell.class).setView(values.toArray(new TaskController[size])[size - 1 - row.intValue()].view());
             }
         }).id());
         {
@@ -216,7 +216,7 @@ public class ActivityController extends WindowController {
         this.table.sizeToFit();
     }
 
-    private final NSCell prototype = CDControllerCell.controllerCell();
+    private final NSCell prototype = ControllerCell.controllerCell();
 
     @Override
     protected String getBundleName() {
