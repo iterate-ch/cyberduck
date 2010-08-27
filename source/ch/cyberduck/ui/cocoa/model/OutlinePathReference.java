@@ -25,6 +25,8 @@ import ch.cyberduck.core.PathReferenceFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Mapper between path references returned from the outline view model and its internal
  * string representation.
@@ -43,7 +45,12 @@ public class OutlinePathReference extends PathReference<NSObject> {
     private OutlinePathReference(AbstractPath path) {
         final StringBuilder reference = new StringBuilder(path.getAbsolute());
         if(path.attributes().isDuplicate()) {
-            reference.append("-").append(path.attributes().getVersionId());
+            if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
+                reference.append("-").append(path.attributes().getVersionId());
+            }
+            else if(StringUtils.isNotBlank(path.attributes().getChecksum())) {
+                reference.append("-").append(path.attributes().getChecksum());
+            }
         }
         this.reference = NSString.stringWithString(reference.toString());
         this.hashcode = reference.toString().hashCode();
