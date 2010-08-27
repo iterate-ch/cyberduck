@@ -37,6 +37,11 @@
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
     <target name="build" depends="archive, stub" description="Compile, jar and copy to application bundle">
+        <copy todir="${app.java}">
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
         <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false">
             <arg line="-project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
         </exec>
@@ -44,13 +49,7 @@
             <arg line="-project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
         </exec>
         <copy todir="${app.java}">
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-            </fileset>
-        </copy>
-        <copy todir="${app.java}">
             <fileset dir="${lib}">
-                <include name="*.jar"/>
                 <include name="*.dylib"/>
                 <include name="*.jnilib"/>
             </fileset>
