@@ -91,6 +91,10 @@ public abstract class AbstractPath {
         return reference;
     }
 
+    public void setReference(PathReference reference) {
+        this.reference = reference;
+    }
+
     public abstract String toURL();
 
     /**

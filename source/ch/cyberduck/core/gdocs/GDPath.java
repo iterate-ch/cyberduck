@@ -652,6 +652,11 @@ public class GDPath extends Path {
                 if(updated != null) {
                     path.attributes().setModificationDate(updated.getValue());
                 }
+                if(children.contains(path.getReference())) {
+                    // Google Docs allows files to be named the same. Not really a duplicate.
+                    path.attributes().setDuplicate(true);
+                    path.setReference(null);
+                }
                 // Add to listing
                 children.add(path);
                 if(path.attributes().isFile()) {
