@@ -19,29 +19,29 @@ package ch.cyberduck.ui.cocoa.view;
  */
 
 import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSView;
 
 import org.rococoa.ObjCClass;
 
 /**
  * @version $Id$
  */
-public abstract class CDBookmarkCell extends NSCell {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
+public abstract class ControllerCell extends NSCell {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDControllerCell", _Class.class);
 
-    /// <i>native declaration : :22</i>
-    public static final int SMALL_BOOKMARK_SIZE = 16;
-    /// <i>native declaration : :23</i>
-    public static final int MEDIUM_BOOKMARK_SIZE = 32;
-    /// <i>native declaration : :24</i>
-    public static final int LARGE_BOOKMARK_SIZE = 64;
-
-    public static CDBookmarkCell bookmarkCell() {
+    public static ControllerCell controllerCell() {
         return CLASS.alloc().init();
     }
 
     public interface _Class extends ObjCClass {
-        CDBookmarkCell alloc();
+        ControllerCell alloc();
     }
 
-    public abstract CDBookmarkCell init();
+    public abstract ControllerCell init();
+
+    /**
+     *
+     * @param aImage
+     */
+    public abstract void setView(NSView aImage);
 }

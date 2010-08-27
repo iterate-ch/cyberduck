@@ -18,28 +18,30 @@ package ch.cyberduck.ui.cocoa.view;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
+import ch.cyberduck.ui.cocoa.application.NSCell;
 
 import org.rococoa.ObjCClass;
 
 /**
  * @version $Id$
  */
-public abstract class CDOutlineCell extends NSTextFieldCell {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDOutlineCell", _Class.class);
+public abstract class BookmarkCell extends NSCell {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
 
-    public static CDOutlineCell outlineCell() {
+    /// <i>native declaration : :22</i>
+    public static final int SMALL_BOOKMARK_SIZE = 16;
+    /// <i>native declaration : :23</i>
+    public static final int MEDIUM_BOOKMARK_SIZE = 32;
+    /// <i>native declaration : :24</i>
+    public static final int LARGE_BOOKMARK_SIZE = 64;
+
+    public static BookmarkCell bookmarkCell() {
         return CLASS.alloc().init();
     }
 
     public interface _Class extends ObjCClass {
-        CDOutlineCell alloc();
+        BookmarkCell alloc();
     }
 
-    @Override
-    public abstract CDOutlineCell init();
-
-    public abstract void setIcon(NSImage aImage);
-
+    public abstract BookmarkCell init();
 }

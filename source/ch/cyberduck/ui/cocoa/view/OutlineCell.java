@@ -18,30 +18,28 @@ package ch.cyberduck.ui.cocoa.view;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
 
 import org.rococoa.ObjCClass;
 
 /**
  * @version $Id$
  */
-public abstract class CDControllerCell extends NSCell {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDControllerCell", _Class.class);
+public abstract class OutlineCell extends NSTextFieldCell {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDOutlineCell", _Class.class);
 
-    public static CDControllerCell controllerCell() {
+    public static OutlineCell outlineCell() {
         return CLASS.alloc().init();
     }
 
     public interface _Class extends ObjCClass {
-        CDControllerCell alloc();
+        OutlineCell alloc();
     }
 
-    public abstract CDControllerCell init();
+    @Override
+    public abstract OutlineCell init();
 
-    /**
-     *
-     * @param aImage
-     */
-    public abstract void setView(NSView aImage);
+    public abstract void setIcon(NSImage aImage);
+
 }
