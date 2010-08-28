@@ -23,7 +23,7 @@
 
 <project name="Cyberduck-Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
 
-    <property name="setup" value="${build}/setup"/>
+    <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${env.ProgramFiles(x86)}/NSIS"/>
     <property name="winsdk.home" value="${env.ProgramFiles(x86)}/Microsoft SDKs/Windows/v7.0A/Bin"/>
     <property name="ikvm.home" value="c:/workspace/ikvm-0.42.0.3"/>
@@ -31,7 +31,7 @@
     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
     
-    <target name="build" depends="revision, archive, dll">
+    <target name="build" depends="revision, archive">
 
         <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
         <propertyregex property="svn.revision.stripped"
@@ -47,6 +47,7 @@
         <copy todir="${build.deploy}">
             <fileset dir=".">
                 <include name="*.lproj/**/*"/>
+                <include name="cyberduck-document.ico"/>
                 <exclude name=".svn"/>
                 <exclude name="*.nib"/>
             </fileset>
@@ -117,15 +118,16 @@
     </target>
 
     <target name="setup" depends="build">
-        <property name="setup.file" value="Cyberduck Installer.exe"/>
+        <property name="setup.basedir" location="${build.deploy}"/>
+        <property name="setup.file" location="${build}/${app.name} Installer.exe"/>
         <exec executable="${nsis.home}/makensis">
-            <arg value="/DBASEDIR=${build.deploy}"/>
+            <arg value="/DBASEDIR=${setup.basedir}"/>
             <arg value="/DPRODUCT_VERSION=${shortversion}"/>
             <arg value="/DSETUPFILE=${setup.file}"/>
             <arg value="${setup}/cyberduck.nsi"/>
         </exec>
         <exec executable="signtool.exe" dir="${winsdk.home}">
-            <arg line='sign /n "Cyberduck Code Signing Certificate" /t http://timestamp.globalsign.com/scripts/timestamp.dll "${setup}/${setup.file}"'/>
+            <arg line='sign /r "StartCom" /t http://timestamp.globalsign.com/scripts/timestamp.dll "${setup.file}"'/>
         </exec>
     </target>
 
