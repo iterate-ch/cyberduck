@@ -1884,6 +1884,7 @@ ru.lproj/Prompt.strings -text svneol=unset#text/utf-16
 ru.lproj/S3.strings -text svneol=unset#text/utf-16
 ru.lproj/Status.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
+setup/FileAssociation.nsh -text
 setup/cyberduck.nsi -text
 setup/header.bmp -text
 setup/welcome.bmp -text

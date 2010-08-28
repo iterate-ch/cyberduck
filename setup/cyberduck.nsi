@@ -4,6 +4,7 @@
 !include LogicLib.nsh
 !include WinVer.nsh
 !include x64.nsh
+!include FileAssociation.nsh
 
 !define PRODUCT_NAME "Cyberduck"
 !define PRODUCT_WEB_SITE "http://cyberduck.ch"
@@ -32,7 +33,7 @@ RequestExecutionLevel admin
 !define MUI_LANGDLL_REGISTRY_VALUENAME "NSIS:Language"
 
 ;Required .NET framework
-!define MIN_FRA_MAJOR "2"
+!define MIN_FRA_MAJOR "4"
 !define MIN_FRA_MINOR "0"
 !define MIN_FRA_BUILD "*"
 
@@ -103,26 +104,21 @@ BrandingText " "
 Var InstallDotNET
 Var DownloadLink
 Var DotNetDesc
+Var TargetFilename
 
 Function .onInit
-         System::Call 'kernel32::CreateMutexA(i 0, i 0, t "CyberduckMutex") i .r1 ?e'
-         Pop $R0
-         StrCmp $R0 0 +2
-         Abort
+        System::Call 'kernel32::CreateMutexA(i 0, i 0, t "CyberduckMutex") i .r1 ?e'
+        Pop $R0
+        StrCmp $R0 0 +2
+        Abort
 
-         ;!insertmacro MUI_LANGDLL_DISPLAY
-         StrCpy $InstallDotNET "No"
+        ;!insertmacro MUI_LANGDLL_DISPLAY
+        StrCpy $InstallDotNET "No"
 
-  ; Check .NET version only if OS is at most Windows 2003  ${AndIfNot} ${IsWin2003R2} ${AtMost2003}
-   ${If} ${AtMostWin2003}
-     ${IfNot} ${IsWin2003R2}
         Call CheckFramework
         StrCmp $0 "1" +2
         StrCpy $InstallDotNET "Yes"
-        Pop $0
-     ${EndIf}
-   ${EndIf}
-
+        
 FunctionEnd
 
 Function .onInstSuccess
@@ -164,66 +160,62 @@ Section "MainSection" SEC01
   ${If} $InstallDotNET == "Yes"
      SetDetailsView hide
 
-     StrCpy $DotNetDesc ".NET Framework 2.0 SP2"
-
-     ;.NET 4.0 Client Profile
-     ;http://msdn.microsoft.com/library/ee942965%28v=VS.100%29.aspx#return_codes
+     StrCpy $DotNetDesc ".NET Framework 4.0 Client Profile"
 
      ; differentiate between x86 and x64
      ${If} ${RunningX64}
-           ;x86 and x64, .NET 4.0 CP : http://download.microsoft.com/download/5/6/2/562A10F9-C9F4-4313-A044-9C94E0A8FAC8/dotNetFx40_Client_x86_x64.exe
-           StrCpy $DownloadLink "http://download.microsoft.com/download/c/6/e/c6e88215-0178-4c6c-b5f3-158ff77b1f38/NetFx20SP2_x64.exe"
+           StrCpy $DownloadLink "http://download.microsoft.com/download/5/6/2/562A10F9-C9F4-4313-A044-9C94E0A8FAC8/dotNetFx40_Client_x86_x64.exe"
+           StrCpy $TargetFilename "dotNetFx40_Client_x86_x64.exe"
      ${Else}
-            ;x86, .NET 4.0 CP : http://download.microsoft.com/download/3/1/8/318161B8-9874-48E4-BB38-9EB82C5D6358/dotNetFx40_Client_x86.exe
-            StrCpy $DownloadLink "http://download.microsoft.com/download/c/6/e/c6e88215-0178-4c6c-b5f3-158ff77b1f38/NetFx20SP2_x86.exe"
+           StrCpy $DownloadLink "http://download.microsoft.com/download/3/1/8/318161B8-9874-48E4-BB38-9EB82C5D6358/dotNetFx40_Client_x86.exe"
+           StrCpy $TargetFilename "dotNetFx40_Client_x86.exe"
      ${EndIf}
 
-     inetc::get /NOCANCEL $DownloadLink "$INSTDIR\$DotNetDesc" /end
-
+     inetc::get /NOCANCEL $DownloadLink "$INSTDIR\$TargetFilename" /END
      Pop $1
-
      ${If} $1 != "OK"
-           Delete "$INSTDIR\dotnetfx.exe"
-           Abort "Installation cancelled."
+           Delete "$INSTDIR\$TargetFilename"
+           Abort "Error while downloading $DotNetDesc."
      ${EndIf}
 
      ClearErrors ;Make sure there isn't any previous errors.
      DetailPrint "Installing $DotNetDesc"
      SetDetailsPrint none
-     ;.NET 4.0 CP
-     ;     ExecWait '"$INSTDIR\$DotNetDesc" /passive /showfinalerror'
-     ExecWait '"$INSTDIR\$DotNetDesc" /qb'
-     Delete "$INSTDIR\dotnetfx.exe"
 
-     IFErrors 0 NoError
-           Abort "Installation cancelled."
+     ExecWait '"$INSTDIR\$TargetFilename" /passive /showfinalerror' $0
+     Delete "$INSTDIR\$TargetFilename"
+
+     ; check return code, see http://msdn.microsoft.com/library/ee942965%28v=VS.100%29.aspx#return_codes
+     IntCmp $0 0 NoError
+     IntCmp $0 1614 NoError
+     IntCmp $0 3010 NoError
+     Abort "Error $0 during installation of $DotNetDesc."
+     
      NoError:
-
-     SetDetailsPrint both
-     SetDetailsView show
+             SetDetailsPrint both
+             SetDetailsView show
   ${EndIf}
 
   File "${BASEDIR}\Cyberduck.exe"
   File "${BASEDIR}\Cyberduck.exe.config"
   File "${BASEDIR}\Acknowledgments.rtf"
+  File "${BASEDIR}\cyberduck-document.ico"
   File /x IKVM.OpenJDK.SwingAWT.dll "${BASEDIR}\*.dll"
   File /r "${BASEDIR}\*.lproj"
 
-  ; get directory of .NET framework installation
-  Push "v2.0"
-  Call GetDotNetDir
-  Pop $R0 ; .net framework v2.0 installation directory
-  StrCmp "" $R0 +1 +5
-
-  ; try with version 4.0 if 2.0 not found
   Push "v4.0"
   Call GetDotNetDir
   Pop $R0 ; .net framework v4.0 installation directory
   StrCmp "" $R0 +3 +1
 
-  DetailPrint "Creating native images $R0"
-  nsExec::Exec '"$R0\ngen.exe" install cyberduck.exe'
-  ;ExecWait '"$R0\ngen.exe" install core.dll'
+  DetailPrint "Creating native images"
+  nsExec::Exec '"$R0\ngen.exe" install "$INSTDIR\Cyberduck.exe"'
+
+  ; creating file associations
+  ${registerExtension} "$INSTDIR\Cyberduck.exe" ".cyberducklicense" "Cyberduck Donation Key" "$INSTDIR\cyberduck-document.ico"
+  ${registerExtension} "$INSTDIR\Cyberduck.exe" ".duck" "Cyberduck Bookmark" "$INSTDIR\cyberduck-document.ico"
+  ; notify the system that file associations have been changed
+  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
 
   CreateDirectory "$SMPROGRAMS\Cyberduck"
   CreateShortCut "$SMPROGRAMS\Cyberduck\Cyberduck.lnk" "$INSTDIR\Cyberduck.exe"
@@ -233,7 +225,7 @@ SectionEnd
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   CreateShortCut "$SMPROGRAMS\Cyberduck\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\Cyberduck\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  ;CreateShortCut "$SMPROGRAMS\Cyberduck\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
@@ -252,23 +244,20 @@ Function un.onUninstSuccess
 FunctionEnd
 
 Function un.onInit
-!insertmacro MUI_UNGETLANGUAGE
+  !insertmacro MUI_UNGETLANGUAGE
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
   Abort
 FunctionEnd
 
 Section Uninstall
-  Delete "$INSTDIR\${PRODUCT_NAME}.url"
-  Delete "$INSTDIR\uninst.exe"
-  Delete "$INSTDIR\Cyberduck.exe"
 
-  Delete "$SMPROGRAMS\Cyberduck\Uninstall.lnk"
+  ;Delete "$SMPROGRAMS\Cyberduck\Uninstall.lnk"
   Delete "$SMPROGRAMS\Cyberduck\Website.lnk"
   Delete "$DESKTOP\Cyberduck.lnk"
   Delete "$SMPROGRAMS\Cyberduck\Cyberduck.lnk"
 
   RMDir "$SMPROGRAMS\Cyberduck"
-  RMDir "$INSTDIR"
+  RMDir /r "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
@@ -385,12 +374,12 @@ Function CheckFrameWork
 
   ;Version on machine is greater than what we need
   OK:
-  StrCpy $0 "1"
-  goto end
+     StrCpy $0 "1"
+     goto end
 
   fail:
-  StrCmp $R8 "0.0.0" end
-
+     StrCpy $0 "0"
+  
   end:
 
   ;Pop the variables we pushed earlier
