@@ -8,9 +8,9 @@
     <ProjectGuid>{04AFCFBB-97D5-44EA-B087-F0CFAEB51E30}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ch.cyberduck</RootNamespace>
+    <RootNamespace>Ch.Cyberduck</RootNamespace>
     <AssemblyName>Cyberduck</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>..\..\..\cyberduck-application.ico</ApplicationIcon>
     <TargetZone>LocalIntranet</TargetZone>
@@ -38,7 +38,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -120,8 +121,7 @@
       <HintPath>..\..\..\lib\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="ObjectListView, Version=2.4.0.14677, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="ObjectListView">
       <HintPath>..\..\..\lib\ObjectListView.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap, Version=2.6.1.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
