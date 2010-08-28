@@ -136,7 +136,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // alertIcon
             // 
             this.alertIcon.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.alertIcon.Image = global::ch.cyberduck.ResourcesBundle.alert;
+            this.alertIcon.Image = global::Ch.Cyberduck.ResourcesBundle.alert;
             this.alertIcon.Location = new System.Drawing.Point(447, 73);
             this.alertIcon.Name = "alertIcon";
             this.alertIcon.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);

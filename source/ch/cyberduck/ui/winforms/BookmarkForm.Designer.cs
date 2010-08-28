@@ -196,7 +196,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // alertIcon
             // 
             this.alertIcon.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.alertIcon.Image = global::ch.cyberduck.ResourcesBundle.alert;
+            this.alertIcon.Image = global::Ch.Cyberduck.ResourcesBundle.alert;
             this.alertIcon.Location = new System.Drawing.Point(448, 73);
             this.alertIcon.Name = "alertIcon";
             this.alertIcon.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
@@ -442,7 +442,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.buttonWebURL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonWebURL.AutoSize = true;
-            this.buttonWebURL.Image = global::ch.cyberduck.ResourcesBundle.site;
+            this.buttonWebURL.Image = global::Ch.Cyberduck.ResourcesBundle.site;
             this.buttonWebURL.Location = new System.Drawing.Point(438, 227);
             this.buttonWebURL.Name = "buttonWebURL";
             this.buttonWebURL.Size = new System.Drawing.Size(31, 22);

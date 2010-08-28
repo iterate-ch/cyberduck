@@ -5,3 +5,10 @@ source/ch/cyberduck/[Bb]in
 source/ch/cyberduck/[Dd]ebug
 source/ch/cyberduck/[Rr]elease
 source/ch/cyberduck/obj
+source/ch/cyberduck/ui/winforms/commondialog/*.aps
+source/ch/cyberduck/ui/winforms/commondialog/*.eto
+source/ch/cyberduck/ui/winforms/commondialog/*.user
+source/ch/cyberduck/ui/winforms/commondialog/[Bb]in
+source/ch/cyberduck/ui/winforms/commondialog/[Dd]ebug
+source/ch/cyberduck/ui/winforms/commondialog/[Rr]elease
+source/ch/cyberduck/ui/winforms/commondialog/obj

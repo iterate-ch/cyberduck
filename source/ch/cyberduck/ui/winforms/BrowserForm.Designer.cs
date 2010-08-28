@@ -290,7 +290,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // securityToolStripStatusLabel
             // 
-            this.securityToolStripStatusLabel.Image = global::ch.cyberduck.ResourcesBundle.locked;
+            this.securityToolStripStatusLabel.Image = global::Ch.Cyberduck.ResourcesBundle.locked;
             this.securityToolStripStatusLabel.Name = "securityToolStripStatusLabel";
             this.securityToolStripStatusLabel.Size = new System.Drawing.Size(16, 17);
             this.securityToolStripStatusLabel.Click += new System.EventHandler(this.securityToolStripStatusLabel_Click);
@@ -932,7 +932,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // historyToolStripMenuItem
             // 
             this.historyToolStripMenuItem.DropDown = this.historyMenuStrip;
-            this.historyToolStripMenuItem.Image = global::ch.cyberduck.ResourcesBundle.history;
+            this.historyToolStripMenuItem.Image = global::Ch.Cyberduck.ResourcesBundle.history;
             this.historyToolStripMenuItem.Name = "historyToolStripMenuItem";
             this.historyToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.historyToolStripMenuItem.Text = "History";
@@ -948,7 +948,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.bonjourToolStripMenuItem.DropDown = this.bonjourMenuStrip;
             this.bonjourToolStripMenuItem.Enabled = false;
-            this.bonjourToolStripMenuItem.Image = global::ch.cyberduck.ResourcesBundle.rendezvous;
+            this.bonjourToolStripMenuItem.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
             this.bonjourToolStripMenuItem.Name = "bonjourToolStripMenuItem";
             this.bonjourToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.bonjourToolStripMenuItem.Text = "Bonjour";
@@ -1164,7 +1164,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // actionToolStripDropDownButton
             // 
             this.actionToolStripDropDownButton.DropDown = this.contextMenuStrip;
-            this.actionToolStripDropDownButton.Image = global::ch.cyberduck.ResourcesBundle.advanced;
+            this.actionToolStripDropDownButton.Image = global::Ch.Cyberduck.ResourcesBundle.advanced;
             this.actionToolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.actionToolStripDropDownButton.Name = "actionToolStripDropDownButton";
             this.actionToolStripDropDownButton.Size = new System.Drawing.Size(55, 51);
@@ -1355,7 +1355,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // infoToolStripButton
             // 
-            this.infoToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.info;
+            this.infoToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.info;
             this.infoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.infoToolStripButton.Name = "infoToolStripButton";
             this.infoToolStripButton.Size = new System.Drawing.Size(36, 51);
@@ -1364,7 +1364,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // refreshToolStripButton
             // 
-            this.refreshToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.reload;
+            this.refreshToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.reload;
             this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.refreshToolStripButton.Name = "refreshToolStripButton";
             this.refreshToolStripButton.Size = new System.Drawing.Size(50, 51);
@@ -1378,7 +1378,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // editToolStripButton
             // 
-            this.editToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.pencil;
+            this.editToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.pencil;
             this.editToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editToolStripButton.Name = "editToolStripButton";
             this.editToolStripButton.Size = new System.Drawing.Size(36, 51);
@@ -1387,7 +1387,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // openInBrowserToolStripButton
             // 
-            this.openInBrowserToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.pencil;
+            this.openInBrowserToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.pencil;
             this.openInBrowserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openInBrowserToolStripButton.Name = "openInBrowserToolStripButton";
             this.openInBrowserToolStripButton.Size = new System.Drawing.Size(40, 51);
@@ -1404,7 +1404,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // deleteToolStripButton
             // 
-            this.deleteToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.delete;
+            this.deleteToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.delete;
             this.deleteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteToolStripButton.Name = "deleteToolStripButton";
             this.deleteToolStripButton.Size = new System.Drawing.Size(44, 51);
@@ -1418,7 +1418,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // downloadToolStripButton
             // 
-            this.downloadToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.download;
+            this.downloadToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.download;
             this.downloadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.downloadToolStripButton.Name = "downloadToolStripButton";
             this.downloadToolStripButton.Size = new System.Drawing.Size(65, 51);
@@ -1427,7 +1427,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // uploadToolStripButton
             // 
-            this.uploadToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.upload;
+            this.uploadToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.upload;
             this.uploadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.uploadToolStripButton.Name = "uploadToolStripButton";
             this.uploadToolStripButton.Size = new System.Drawing.Size(49, 51);
@@ -1436,7 +1436,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // transfersToolStripButton
             // 
-            this.transfersToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.queue;
+            this.transfersToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.queue;
             this.transfersToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.transfersToolStripButton.Name = "transfersToolStripButton";
             this.transfersToolStripButton.Size = new System.Drawing.Size(59, 51);
@@ -1447,7 +1447,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.disconnectStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.disconnectStripButton.AutoSize = false;
-            this.disconnectStripButton.Image = global::ch.cyberduck.ResourcesBundle.eject;
+            this.disconnectStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.eject;
             this.disconnectStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.disconnectStripButton.Name = "disconnectStripButton";
             this.disconnectStripButton.Size = new System.Drawing.Size(70, 51);
@@ -1628,7 +1628,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.newBookmarkToolStripButton.AutoSize = false;
             this.newBookmarkToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.newBookmarkToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.add;
+            this.newBookmarkToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.add;
             this.newBookmarkToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.newBookmarkToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newBookmarkToolStripButton.Margin = new System.Windows.Forms.Padding(16, 1, 0, 2);
@@ -1640,7 +1640,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.editBookmarkToolStripButton.AutoSize = false;
             this.editBookmarkToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.editBookmarkToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.edit;
+            this.editBookmarkToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.edit;
             this.editBookmarkToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.editBookmarkToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editBookmarkToolStripButton.Name = "editBookmarkToolStripButton";
@@ -1651,7 +1651,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.deleteBookmarkToolStripButton.AutoSize = false;
             this.deleteBookmarkToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteBookmarkToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.remove;
+            this.deleteBookmarkToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.remove;
             this.deleteBookmarkToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.deleteBookmarkToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteBookmarkToolStripButton.Margin = new System.Windows.Forms.Padding(-1, 1, 0, 2);
@@ -1793,7 +1793,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bonjourCheckBox.AutoCheck = false;
             this.bonjourCheckBox.FlatAppearance.BorderSize = 0;
             this.bonjourCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bonjourCheckBox.Image = global::ch.cyberduck.ResourcesBundle.rendezvous;
+            this.bonjourCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
             this.bonjourCheckBox.Location = new System.Drawing.Point(103, 3);
             this.bonjourCheckBox.Name = "bonjourCheckBox";
             this.bonjourCheckBox.Size = new System.Drawing.Size(29, 23);
@@ -1807,7 +1807,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.historyCheckBox.AutoCheck = false;
             this.historyCheckBox.FlatAppearance.BorderSize = 0;
             this.historyCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.historyCheckBox.Image = global::ch.cyberduck.ResourcesBundle.history;
+            this.historyCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.history;
             this.historyCheckBox.Location = new System.Drawing.Point(71, 3);
             this.historyCheckBox.Name = "historyCheckBox";
             this.historyCheckBox.Size = new System.Drawing.Size(29, 23);
@@ -1821,7 +1821,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkCheckBox.AutoCheck = false;
             this.bookmarkCheckBox.FlatAppearance.BorderSize = 0;
             this.bookmarkCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bookmarkCheckBox.Image = global::ch.cyberduck.ResourcesBundle.bookmarks;
+            this.bookmarkCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.bookmarks;
             this.bookmarkCheckBox.Location = new System.Drawing.Point(39, 3);
             this.bookmarkCheckBox.Name = "bookmarkCheckBox";
             this.bookmarkCheckBox.Size = new System.Drawing.Size(29, 23);
@@ -1835,7 +1835,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserCheckBox.AutoCheck = false;
             this.browserCheckBox.FlatAppearance.BorderSize = 0;
             this.browserCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.browserCheckBox.Image = global::ch.cyberduck.ResourcesBundle.outline;
+            this.browserCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.outline;
             this.browserCheckBox.Location = new System.Drawing.Point(7, 3);
             this.browserCheckBox.Name = "browserCheckBox";
             this.browserCheckBox.Size = new System.Drawing.Size(29, 23);
@@ -1847,7 +1847,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.parentPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.parentPathButton.FlatAppearance.BorderSize = 0;
-            this.parentPathButton.Image = global::ch.cyberduck.ResourcesBundle.arrowUpBlack16;
+            this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowUpBlack16;
             this.parentPathButton.Location = new System.Drawing.Point(812, 2);
             this.parentPathButton.Name = "parentPathButton";
             this.parentPathButton.Size = new System.Drawing.Size(37, 25);
@@ -1869,7 +1869,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // historyForwardButton
             // 
             this.historyForwardButton.FlatAppearance.BorderSize = 0;
-            this.historyForwardButton.Image = global::ch.cyberduck.ResourcesBundle.arrowRightBlack16;
+            this.historyForwardButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowRightBlack16;
             this.historyForwardButton.Location = new System.Drawing.Point(191, 2);
             this.historyForwardButton.Name = "historyForwardButton";
             this.historyForwardButton.Size = new System.Drawing.Size(37, 25);
@@ -1879,7 +1879,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // historyBackButton
             // 
             this.historyBackButton.FlatAppearance.BorderSize = 0;
-            this.historyBackButton.Image = global::ch.cyberduck.ResourcesBundle.arrowLeftBlack16;
+            this.historyBackButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowLeftBlack16;
             this.historyBackButton.Location = new System.Drawing.Point(153, 2);
             this.historyBackButton.Name = "historyBackButton";
             this.historyBackButton.Size = new System.Drawing.Size(37, 25);

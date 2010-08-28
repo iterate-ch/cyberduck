@@ -92,7 +92,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // 
             // statusPictureBox
             // 
-            this.statusPictureBox.Image = global::ch.cyberduck.ResourcesBundle.statusGreen;
+            this.statusPictureBox.Image = global::Ch.Cyberduck.ResourcesBundle.statusGreen;
             this.statusPictureBox.Location = new System.Drawing.Point(51, 50);
             this.statusPictureBox.Name = "statusPictureBox";
             this.statusPictureBox.Size = new System.Drawing.Size(19, 18);
@@ -103,7 +103,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // directionPictureBox
             // 
             this.directionPictureBox.BackColor = System.Drawing.SystemColors.Control;
-            this.directionPictureBox.Image = global::ch.cyberduck.ResourcesBundle.arrowDown;
+            this.directionPictureBox.Image = global::Ch.Cyberduck.ResourcesBundle.arrowDown;
             this.directionPictureBox.Location = new System.Drawing.Point(3, 3);
             this.directionPictureBox.Name = "directionPictureBox";
             this.directionPictureBox.Size = new System.Drawing.Size(32, 32);

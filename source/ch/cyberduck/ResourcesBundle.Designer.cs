@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ch.cyberduck {
+namespace Ch.Cyberduck {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace ch.cyberduck {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ch.cyberduck.ResourcesBundle", typeof(ResourcesBundle).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ch.Cyberduck.ResourcesBundle", typeof(ResourcesBundle).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -208,19 +208,24 @@ namespace ch.cyberduck {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf290
+        ///   Looks up a localized string similar to {\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf320
         ///{\fonttbl\f0\froman\fcharset0 Times-Roman;}
         ///{\colortbl;\red255\green255\blue255;\red128\green128\blue128;}
-        ///\paperw11900\paperh16840\margl1440\margr1440\vieww15380\viewh14040\viewkind0
-        ///\pard\tqr\tx2040\tx2235\ql\qnatural\pardirnatural
+        ///\paperw11900\paperh16840\vieww17440\viewh22080\viewkind0
+        ///\pard\tx760\tx1235\ql\qnatural\pardirnatural
         ///
         ///\f0\fs24 \cf2 \
-        ///	Programming	
+        ///	Programming\
+        ///		
         ///\b \cf0 David V. Kocher\
+        ///
+        ///\b0 \cf2 		
+        ///\b \cf0 Yves Langisch\
         ///
         ///\b0 \cf2 		{\field{\*\fldinst{HYPERLINK &quot;mailto:feedback@cyberduck.ch&quot;}}{\fldrslt feedback@cyberduck.ch}}\
         ///\
-        ///	Third Party Software	{\field{\*\fldinst{HYPERLINK &quot;http://c [rest of string was truncated]&quot;;.
+        ///	Third Party Software\
+        ///		{\field{\*\fldinst{HY [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Credits {
             get {

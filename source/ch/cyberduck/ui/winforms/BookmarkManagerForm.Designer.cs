@@ -80,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.addToolStripButton.AutoSize = false;
             this.addToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.addToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.add;
+            this.addToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.add;
             this.addToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.addToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.addToolStripButton.Margin = new System.Windows.Forms.Padding(16, 1, 0, 2);
@@ -92,7 +92,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.editToolStripButton.AutoSize = false;
             this.editToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.editToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.edit;
+            this.editToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.edit;
             this.editToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.editToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editToolStripButton.Name = "editToolStripButton";
@@ -103,7 +103,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.removeToolStripButton.AutoSize = false;
             this.removeToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.removeToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.remove;
+            this.removeToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.remove;
             this.removeToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.removeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.removeToolStripButton.Margin = new System.Windows.Forms.Padding(-1, 1, 0, 2);

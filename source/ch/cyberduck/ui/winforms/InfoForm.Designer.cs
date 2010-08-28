@@ -181,7 +181,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // generalButton
             // 
-            this.generalButton.Image = global::ch.cyberduck.ResourcesBundle.info;
+            this.generalButton.Image = global::Ch.Cyberduck.ResourcesBundle.info;
             this.generalButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.generalButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.generalButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -193,7 +193,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // permissionsButton
             // 
-            this.permissionsButton.Image = global::ch.cyberduck.ResourcesBundle.permissions;
+            this.permissionsButton.Image = global::Ch.Cyberduck.ResourcesBundle.permissions;
             this.permissionsButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.permissionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.permissionsButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -205,7 +205,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // metadataButton
             // 
-            this.metadataButton.Image = global::ch.cyberduck.ResourcesBundle.pencil;
+            this.metadataButton.Image = global::Ch.Cyberduck.ResourcesBundle.pencil;
             this.metadataButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.metadataButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.metadataButton.Name = "metadataButton";
@@ -400,7 +400,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // distributionAnimation
             // 
             this.distributionAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.distributionAnimation.Image = global::ch.cyberduck.ResourcesBundle.throbber_small;
+            this.distributionAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
             this.distributionAnimation.Location = new System.Drawing.Point(-22, 42);
             this.distributionAnimation.Name = "distributionAnimation";
             this.distributionAnimation.Size = new System.Drawing.Size(30, 20);
@@ -754,7 +754,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.sizeAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.sizeAnimation.Image = global::ch.cyberduck.ResourcesBundle.throbber_small;
+            this.sizeAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
             this.sizeAnimation.Location = new System.Drawing.Point(-81, 70);
             this.sizeAnimation.Name = "sizeAnimation";
             this.sizeAnimation.Size = new System.Drawing.Size(17, 21);
@@ -862,7 +862,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // s3Animation
             // 
             this.s3Animation.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.s3Animation.Image = global::ch.cyberduck.ResourcesBundle.throbber_small;
+            this.s3Animation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
             this.s3Animation.Location = new System.Drawing.Point(-17, 13);
             this.s3Animation.Name = "s3Animation";
             this.s3Animation.Size = new System.Drawing.Size(25, 20);
@@ -1251,7 +1251,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // permissionAnimation
             // 
             this.permissionAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.permissionAnimation.Image = global::ch.cyberduck.ResourcesBundle.throbber_small;
+            this.permissionAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
             this.permissionAnimation.Location = new System.Drawing.Point(61, 18);
             this.permissionAnimation.Name = "permissionAnimation";
             this.permissionAnimation.Size = new System.Drawing.Size(1, 19);
@@ -1322,7 +1322,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.addAclButton.AutoSize = true;
             this.addAclButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.addAclButton.ContextMenuStrip = this.addAclContextMenuStrip;
-            this.addAclButton.Image = global::ch.cyberduck.ResourcesBundle.gear;
+            this.addAclButton.Image = global::Ch.Cyberduck.ResourcesBundle.gear;
             this.addAclButton.Location = new System.Drawing.Point(13, -16);
             this.addAclButton.Name = "addAclButton";
             this.addAclButton.Size = new System.Drawing.Size(38, 24);
@@ -1367,7 +1367,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // aclAnimation
             // 
             this.aclAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.aclAnimation.Image = global::ch.cyberduck.ResourcesBundle.throbber_small;
+            this.aclAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
             this.aclAnimation.Location = new System.Drawing.Point(153, -9);
             this.aclAnimation.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
             this.aclAnimation.Name = "aclAnimation";
@@ -1379,7 +1379,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // aclAnimaton
             // 
             this.aclAnimaton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.aclAnimaton.Image = global::ch.cyberduck.ResourcesBundle.throbber_small;
+            this.aclAnimaton.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
             this.aclAnimaton.Location = new System.Drawing.Point(61, 170);
             this.aclAnimaton.Name = "aclAnimaton";
             this.aclAnimaton.Size = new System.Drawing.Size(1, 19);
@@ -1448,7 +1448,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.addHeaderButton.AutoSize = true;
             this.addHeaderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.addHeaderButton.ContextMenuStrip = this.addMetadataContextMenuStrip;
-            this.addHeaderButton.Image = global::ch.cyberduck.ResourcesBundle.gear;
+            this.addHeaderButton.Image = global::Ch.Cyberduck.ResourcesBundle.gear;
             this.addHeaderButton.Location = new System.Drawing.Point(13, 337);
             this.addHeaderButton.Name = "addHeaderButton";
             this.addHeaderButton.Size = new System.Drawing.Size(38, 24);
@@ -1493,7 +1493,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // metadataAnimation
             // 
             this.metadataAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.metadataAnimation.Image = global::ch.cyberduck.ResourcesBundle.throbber_small;
+            this.metadataAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
             this.metadataAnimation.Location = new System.Drawing.Point(451, 13);
             this.metadataAnimation.Name = "metadataAnimation";
             this.metadataAnimation.Size = new System.Drawing.Size(23, 19);

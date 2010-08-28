@@ -161,7 +161,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // resumeToolStripButton
             // 
             this.resumeToolStripButton.AutoToolTip = false;
-            this.resumeToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.resume;
+            this.resumeToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.resume;
             this.resumeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.resumeToolStripButton.Name = "resumeToolStripButton";
             this.resumeToolStripButton.Size = new System.Drawing.Size(53, 51);
@@ -171,7 +171,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // reloadToolStripButton
             // 
             this.reloadToolStripButton.AutoToolTip = false;
-            this.reloadToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.reload;
+            this.reloadToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.reload;
             this.reloadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.reloadToolStripButton.Name = "reloadToolStripButton";
             this.reloadToolStripButton.Size = new System.Drawing.Size(47, 51);
@@ -181,7 +181,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // stopToolStripButton
             // 
             this.stopToolStripButton.AutoToolTip = false;
-            this.stopToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.stop;
+            this.stopToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.stop;
             this.stopToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stopToolStripButton.Name = "stopToolStripButton";
             this.stopToolStripButton.Size = new System.Drawing.Size(36, 51);
@@ -191,7 +191,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // removeToolStripButton
             // 
             this.removeToolStripButton.AutoToolTip = false;
-            this.removeToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.clean;
+            this.removeToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.clean;
             this.removeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.removeToolStripButton.Name = "removeToolStripButton";
             this.removeToolStripButton.Size = new System.Drawing.Size(54, 51);
@@ -201,7 +201,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // cleanUptoolStripButton
             // 
             this.cleanUptoolStripButton.AutoToolTip = false;
-            this.cleanUptoolStripButton.Image = global::ch.cyberduck.ResourcesBundle.cleanAll;
+            this.cleanUptoolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.cleanAll;
             this.cleanUptoolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cleanUptoolStripButton.Name = "cleanUptoolStripButton";
             this.cleanUptoolStripButton.Size = new System.Drawing.Size(59, 51);
@@ -222,7 +222,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.openToolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.openToolStripButton.AutoToolTip = false;
-            this.openToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.open;
+            this.openToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.open;
             this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripButton.Name = "openToolStripButton";
             this.openToolStripButton.Size = new System.Drawing.Size(40, 51);
@@ -232,7 +232,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // logToolStripButton
             // 
             this.logToolStripButton.AutoToolTip = false;
-            this.logToolStripButton.Image = global::ch.cyberduck.ResourcesBundle.log;
+            this.logToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.log;
             this.logToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.logToolStripButton.Name = "logToolStripButton";
             this.logToolStripButton.Size = new System.Drawing.Size(36, 51);

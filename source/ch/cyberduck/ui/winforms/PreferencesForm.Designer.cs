@@ -3238,7 +3238,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // generalButton
             // 
             this.generalButton.AutoToolTip = false;
-            this.generalButton.Image = global::ch.cyberduck.ResourcesBundle.general;
+            this.generalButton.Image = global::Ch.Cyberduck.ResourcesBundle.general;
             this.generalButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.generalButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.generalButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -3251,7 +3251,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // browserButton
             // 
             this.browserButton.AutoToolTip = false;
-            this.browserButton.Image = global::ch.cyberduck.ResourcesBundle.browser;
+            this.browserButton.Image = global::Ch.Cyberduck.ResourcesBundle.browser;
             this.browserButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.browserButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.browserButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -3264,7 +3264,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // transfersButton
             // 
             this.transfersButton.AutoToolTip = false;
-            this.transfersButton.Image = global::ch.cyberduck.ResourcesBundle.queue;
+            this.transfersButton.Image = global::Ch.Cyberduck.ResourcesBundle.queue;
             this.transfersButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.transfersButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.transfersButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -3278,7 +3278,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.editorButton.AutoToolTip = false;
             this.editorButton.Enabled = false;
-            this.editorButton.Image = global::ch.cyberduck.ResourcesBundle.pencil;
+            this.editorButton.Image = global::Ch.Cyberduck.ResourcesBundle.pencil;
             this.editorButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.editorButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editorButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -3338,7 +3338,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // bandwidthButton
             // 
             this.bandwidthButton.AutoToolTip = false;
-            this.bandwidthButton.Image = global::ch.cyberduck.ResourcesBundle.bandwidth;
+            this.bandwidthButton.Image = global::Ch.Cyberduck.ResourcesBundle.bandwidth;
             this.bandwidthButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.bandwidthButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.bandwidthButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -3350,7 +3350,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // connectionButton
             // 
-            this.connectionButton.Image = global::ch.cyberduck.ResourcesBundle.connection;
+            this.connectionButton.Image = global::Ch.Cyberduck.ResourcesBundle.connection;
             this.connectionButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.connectionButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.connectionButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -3362,7 +3362,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // updateButton
             // 
-            this.updateButton.Image = global::ch.cyberduck.ResourcesBundle.update;
+            this.updateButton.Image = global::Ch.Cyberduck.ResourcesBundle.update;
             this.updateButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.updateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.updateButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
@@ -3374,7 +3374,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // languageButton
             // 
-            this.languageButton.Image = global::ch.cyberduck.ResourcesBundle.language;
+            this.languageButton.Image = global::Ch.Cyberduck.ResourcesBundle.language;
             this.languageButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.languageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.languageButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
