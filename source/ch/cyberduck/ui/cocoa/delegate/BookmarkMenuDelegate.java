@@ -69,11 +69,11 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         if(index.intValue() == BOOKMARKS_INDEX) {
             item.setEnabled(true);
-            item.setImage(IconCache.iconNamed("history", 16));
+            item.setImage(IconCache.iconNamed("history.tiff", 16));
         }
         if(index.intValue() == BOOKMARKS_INDEX + 1) {
             item.setEnabled(true);
-            item.setImage(IconCache.iconNamed("rendezvous", 16));
+            item.setImage(IconCache.iconNamed("rendezvous.tiff", 16));
         }
         if(index.intValue() > BOOKMARKS_INDEX + 2) {
             Host h = BookmarkCollection.defaultCollection().get(index.intValue() - (BOOKMARKS_INDEX + 3));

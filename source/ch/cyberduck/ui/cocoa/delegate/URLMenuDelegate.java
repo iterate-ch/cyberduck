@@ -105,7 +105,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 item.setTitle(url.getHelp());
             }
             else {
-                item.setImage(IconCache.iconNamed("site", 16));
+                item.setImage(IconCache.iconNamed("site.tiff", 16));
                 // Dummy menu item to preview URL only
                 if(StringUtils.isNotBlank(url.getUrl())) {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(url.getUrl(), URL_FONT_ATTRIBUTES));
