@@ -369,7 +369,7 @@ public class CFPath extends CloudPath {
                         this.getName()));
 
                 final FilesObjectMetaData meta
-                        = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getName());
+                        = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey());
                 this.attributes().setMetadata(meta.getMetaData());
             }
             catch(IOException e) {
@@ -386,7 +386,7 @@ public class CFPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getName(), meta);
+                this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getKey(), meta);
                 this.attributes().clear(false, false, false, true);
             }
             catch(IOException e) {
