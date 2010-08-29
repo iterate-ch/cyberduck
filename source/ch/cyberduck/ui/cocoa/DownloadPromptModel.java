@@ -73,10 +73,10 @@ public class DownloadPromptModel extends TransferPromptModel {
         if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
             if(item.attributes().isFile()) {
                 if(item.attributes().getSize() == 0) {
-                    return ALERT_ICON;
+                    return IconCache.iconNamed("alert.tiff");
                 }
                 if(item.getLocal().attributes().getSize() > item.attributes().getSize()) {
-                    return ALERT_ICON;
+                    return IconCache.iconNamed("alert.tiff");
                 }
             }
             return null;
