@@ -44,6 +44,8 @@ public class IconCache {
     private static Logger log = Logger.getLogger(IconCache.class);
 
     /**
+     * No resizing of the cached image.
+     *
      * @param name
      * @return
      */
