@@ -20,6 +20,7 @@
 		4717BE190F3096FD00BB4496 /* dav.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE120F3096FD00BB4496 /* dav.icns */; };
 		4717BE1A0F3096FD00BB4496 /* cf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE130F3096FD00BB4496 /* cf.icns */; };
 		4717BE1C0F3096FD00BB4496 /* sftp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE150F3096FD00BB4496 /* sftp.icns */; };
+		4717DFB4122AEA49008A030C /* book.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4717DFB3122AEA49008A030C /* book.tiff */; };
 		4717E01A1146657200F095D2 /* language.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4717E0191146657200F095D2 /* language.tiff */; };
 		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
 		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
@@ -467,6 +468,7 @@
 		4717BE120F3096FD00BB4496 /* dav.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dav.icns; sourceTree = "<group>"; };
 		4717BE130F3096FD00BB4496 /* cf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = cf.icns; sourceTree = "<group>"; };
 		4717BE150F3096FD00BB4496 /* sftp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = sftp.icns; sourceTree = "<group>"; };
+		4717DFB3122AEA49008A030C /* book.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = book.tiff; sourceTree = "<group>"; };
 		4717E0191146657200F095D2 /* language.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = language.tiff; sourceTree = "<group>"; };
 		47181E840E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E850E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Info.nib; sourceTree = "<group>"; };
@@ -1768,6 +1770,7 @@
 				4741653E06C4FC3F00AC0BD2 /* addPressed.tiff */,
 				4741653F06C4FC3F00AC0BD2 /* alert.tiff */,
 				4741654406C4FC3F00AC0BD2 /* bookmarks.tiff */,
+				4717DFB3122AEA49008A030C /* book.tiff */,
 				4741654606C4FC3F00AC0BD2 /* clean.tiff */,
 				4741654706C4FC3F00AC0BD2 /* cleanAll.tiff */,
 				4741654806C4FC3F00AC0BD2 /* connect.tiff */,
@@ -2512,6 +2515,7 @@
 				476901DD120FEF4D00A43B25 /* newfolder.tiff in Resources */,
 				47C577EB121BF89C0005FDCC /* azure.icns in Resources */,
 				47C5F1C3121C39A60037247D /* refresh.tiff in Resources */,
+				4717DFB4122AEA49008A030C /* book.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

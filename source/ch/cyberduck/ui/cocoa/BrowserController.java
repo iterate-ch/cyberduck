@@ -607,7 +607,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setBonjourButton(NSButton bonjourButton) {
         this.bonjourButton = bonjourButton;
-        NSImage img = IconCache.iconNamed("rendezvous", 16);
+        NSImage img = IconCache.iconNamed("rendezvous.tiff", 16);
         img.setTemplate(false);
         this.bonjourButton.setImage(img);
         this.setRecessedBezelStyle(this.bonjourButton);
@@ -620,7 +620,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setHistoryButton(NSButton historyButton) {
         this.historyButton = historyButton;
-        NSImage img = IconCache.iconNamed("history", 16);
+        NSImage img = IconCache.iconNamed("history.tiff", 16);
         img.setTemplate(false);
         this.historyButton.setImage(img);
         this.setRecessedBezelStyle(this.historyButton);
@@ -633,7 +633,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setBookmarkButton(NSButton bookmarkButton) {
         this.bookmarkButton = bookmarkButton;
-        NSImage img = IconCache.iconNamed("bookmarks", 20, 16);
+        NSImage img = IconCache.iconNamed("bookmarks.tiff", 16);
         img.setTemplate(false);
         this.bookmarkButton.setImage(img);
         this.setRecessedBezelStyle(this.bookmarkButton);
@@ -697,7 +697,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(1);
         this.bookmarkSwitchView.setToolTip(Locale.localizedString("Bookmarks"));
-        final NSImage image = IconCache.iconNamed("bookmarks.tiff");
+        final NSImage image = IconCache.iconNamed("book.tiff");
         this.bookmarkSwitchView.setImage_forSegment(image, SWITCH_BOOKMARK_VIEW);
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
         cell.setTrackingMode(NSSegmentedCell.NSSegmentSwitchTrackingSelectAny);
