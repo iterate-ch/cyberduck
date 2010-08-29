@@ -356,13 +356,13 @@ public class ProgressController extends BundleController {
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;
         if(transfer instanceof DownloadTransfer) {
-            iconImageView.setImage(IconCache.iconNamed("arrowDown", 32));
+            iconImageView.setImage(IconCache.iconNamed("arrowDown.tiff", 32));
         }
         else if(transfer instanceof UploadTransfer) {
-            iconImageView.setImage(IconCache.iconNamed("arrowUp", 32));
+            iconImageView.setImage(IconCache.iconNamed("arrowUp.tiff", 32));
         }
         else if(transfer instanceof SyncTransfer) {
-            iconImageView.setImage(IconCache.iconNamed("sync", 32));
+            iconImageView.setImage(IconCache.iconNamed("sync.tiff", 32));
         }
     }
 
