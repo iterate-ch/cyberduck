@@ -228,7 +228,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
         this.bandwidthPopup.removeAllItems();
         this.bandwidthPopup.addItemWithTitle("");
-        this.bandwidthPopup.lastItem().setImage(IconCache.iconNamed("bandwidth", 16));
+        this.bandwidthPopup.lastItem().setImage(IconCache.iconNamed("bandwidth.tiff", 16));
         this.bandwidthPopup.addItemWithTitle(Locale.localizedString("Unlimited Bandwidth", "Transfer"));
         this.bandwidthPopup.lastItem().setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
         this.bandwidthPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -549,7 +549,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             }
         }
         // Set the standard icon
-        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth", 16));
+        this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth.tiff", 16));
     }
 
     private void reloadData() {
@@ -762,7 +762,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             item.setLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_STOP));
             item.setToolTip(Locale.localizedString(TOOLBAR_STOP));
-            item.setImage(IconCache.iconNamed("stoptransfer.tiff", 32));
+            item.setImage(IconCache.iconNamed("stop.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("stopButtonClicked:"));
             return item;
@@ -1030,12 +1030,12 @@ public class TransferController extends WindowController implements NSToolbar.De
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_RESUME,
-                TOOLBAR_RELOAD,
                 TOOLBAR_STOP,
+                TOOLBAR_RELOAD,
                 TOOLBAR_REMOVE,
-                TOOLBAR_OPEN,
-                TOOLBAR_SHOW,
                 NSToolbarItem.NSToolbarFlexibleItemIdentifier,
+                TOOLBAR_SHOW,
+                TOOLBAR_OPEN,
                 TOOLBAR_FILTER
         );
     }
