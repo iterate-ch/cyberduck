@@ -1231,10 +1231,10 @@ public class InfoController extends ToolbarWindowController {
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
-            item.setImage(IconCache.iconNamed("pencil", 32));
+            item.setImage(IconCache.iconNamed("pencil.tiff", 32));
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_ACL)) {
-            item.setImage(IconCache.iconNamed("permissions", 32));
+            item.setImage(IconCache.iconNamed("permissions.tiff", 32));
         }
         return item;
     }
