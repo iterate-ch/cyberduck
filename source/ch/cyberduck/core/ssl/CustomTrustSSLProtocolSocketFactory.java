@@ -23,9 +23,7 @@ import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -40,10 +38,18 @@ import java.security.NoSuchAlgorithmException;
 public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactory {
     private static Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
+    /**
+     * Trust settings
+     */
+    private X509TrustManager trust;
+
+    /**
+     * Shared context
+     */
     private SSLContext context;
 
-    public CustomTrustSSLProtocolSocketFactory(X509TrustManager trustManager) {
-        this.context = this.createCustomSSLContext(trustManager);
+    public CustomTrustSSLProtocolSocketFactory(X509TrustManager manager) {
+        this.trust = manager;
     }
 
     private SSLContext createCustomSSLContext(X509TrustManager trustManager) {
@@ -61,35 +67,44 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLProtocolSocketFactor
     }
 
     public SSLContext getSSLContext() {
+        if(null == context) {
+            context = this.createCustomSSLContext(trust);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug("Using SSL context:" + context);
+        }
         return context;
     }
 
     @Override
     public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort)
             throws IOException, UnknownHostException {
-
-        return context.getSocketFactory().createSocket(host, port, clientHost, clientPort);
+        SSLSocketFactory factory = this.getSSLContext().getSocketFactory();
+        return factory.createSocket(host, port, clientHost, clientPort);
     }
 
     @Override
     public Socket createSocket(String host, int port, InetAddress localAddress, int localPort, HttpConnectionParams params)
             throws IOException, UnknownHostException, ConnectTimeoutException {
-
-        return context.getSocketFactory().createSocket(host, port, localAddress, localPort);
+        SSLSocketFactory factory = this.getSSLContext().getSocketFactory();
+        return factory.createSocket(host, port, localAddress, localPort);
     }
 
     @Override
     public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
-        return context.getSocketFactory().createSocket(host, port);
+        SSLSocketFactory factory = this.getSSLContext().getSocketFactory();
+        return factory.createSocket(host, port);
     }
 
     @Override
     public Socket createSocket(Socket socket, String host, int port, boolean autoClose)
             throws IOException, UnknownHostException {
-        return context.getSocketFactory().createSocket(socket, host, port, autoClose);
+        SSLSocketFactory factory = this.getSSLContext().getSocketFactory();
+        return factory.createSocket(socket, host, port, autoClose);
     }
 
     public ServerSocket createServerSocket(int port) throws IOException {
-        return context.getServerSocketFactory().createServerSocket(port);
+        SSLServerSocketFactory factory = this.getSSLContext().getServerSocketFactory();
+        return factory.createServerSocket(port);
     }
 }
