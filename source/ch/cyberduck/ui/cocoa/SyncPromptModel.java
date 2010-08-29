@@ -82,12 +82,12 @@ public class SyncPromptModel extends TransferPromptModel {
             if(item.attributes().isFile()) {
                 if(item.exists()) {
                     if(item.attributes().getSize() == 0) {
-                        return ALERT_ICON;
+                        return IconCache.iconNamed("alert.tiff");
                     }
                 }
                 if(item.getLocal().exists()) {
                     if(item.getLocal().attributes().getSize() == 0) {
-                        return ALERT_ICON;
+                        return IconCache.iconNamed("alert.tiff");
                     }
                 }
             }
