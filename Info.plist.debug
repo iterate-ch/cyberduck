@@ -144,7 +144,7 @@
             <key>StartOnMainThread</key>
             <true/>
             <key>VMOptions</key>
-            <string>-Dfile.encoding=utf-8 -XX:+UseParallelGC -XX:+UseCompressedOops -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</string>
+            <string>-Djavax.net.debug=ssl,keygen,handshake,sslctx,session,sessioncache,keymanager,trustmanager -Dfile.encoding=utf-8 -XX:+UseParallelGC -XX:+UseCompressedOops -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <string>NO</string>
