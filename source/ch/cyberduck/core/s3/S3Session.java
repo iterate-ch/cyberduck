@@ -34,7 +34,6 @@ import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
@@ -713,7 +712,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
                 hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
                         new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(
+                                new CustomTrustSSLProtocolSocketFactory(
                                         new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
                 );
             }

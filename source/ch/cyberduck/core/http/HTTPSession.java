@@ -29,7 +29,6 @@ import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -140,7 +139,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
             // Configuration with custom socket factory using the trust manager
             configuration.setHost(host.getHostname(), host.getPort(),
                     new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            (ProtocolSocketFactory) new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
             );
             if(proxy.isHTTPSProxyEnabled()) {
                 configuration.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
