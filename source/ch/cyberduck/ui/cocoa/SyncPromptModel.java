@@ -71,10 +71,10 @@ public class SyncPromptModel extends TransferPromptModel {
         if(identifier.equals(SYNC_COLUMN)) {
             SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
             if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                return IconCache.iconNamed("arrowDown", 16);
+                return IconCache.iconNamed("arrowDown.tiff", 16);
             }
             if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                return IconCache.iconNamed("arrowUp", 16);
+                return IconCache.iconNamed("arrowUp.tiff", 16);
             }
             return null;
         }
@@ -95,7 +95,7 @@ public class SyncPromptModel extends TransferPromptModel {
         }
         if(identifier.equals(CREATE_COLUMN)) {
             if(!(item.exists() && item.getLocal().exists())) {
-                return IconCache.iconNamed("plus", 16);
+                return IconCache.iconNamed("plus.tiff", 16);
             }
             return null;
         }

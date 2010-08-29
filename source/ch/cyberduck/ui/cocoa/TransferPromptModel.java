@@ -183,8 +183,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         }
     }
 
-    protected final NSImage ALERT_ICON = IconCache.iconNamed("alert.tiff");
-
     /**
      * @param item
      * @param identifier

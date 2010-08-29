@@ -59,10 +59,10 @@ public class UploadPromptModel extends TransferPromptModel {
         if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
             if(item.attributes().isFile()) {
                 if(item.getLocal().attributes().getSize() == 0) {
-                    return ALERT_ICON;
+                    return IconCache.iconNamed("alert.tiff");
                 }
                 if(item.attributes().getSize() > item.getLocal().attributes().getSize()) {
-                    return ALERT_ICON;
+                    return IconCache.iconNamed("alert.tiff");
                 }
             }
             return null;
