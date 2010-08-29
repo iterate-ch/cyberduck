@@ -382,7 +382,7 @@ public abstract class Preferences {
         defaults.put("queue.upload.permissions.file.default", String.valueOf(644));
         defaults.put("queue.upload.permissions.folder.default", String.valueOf(755));
 
-        defaults.put("queue.upload.preserveDate", String.valueOf(true));
+        defaults.put("queue.upload.preserveDate", String.valueOf(false));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
