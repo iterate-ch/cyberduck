@@ -685,58 +685,17 @@ public abstract class NSLayoutManager extends NSObject {
      */
     public abstract void setUsesFontLeading(boolean flag);
 
-    /// <i>native declaration : :99</i>
-    public static class __lmFlags extends com.sun.jna.Structure {
-        /// Allocate a new __lmFlags struct on the heap
-        public __lmFlags() {
-        }
-
-        /// Cast data at given memory location (pointer + offset) as an existing __lmFlags struct
-        public __lmFlags(com.sun.jna.Pointer pointer, int offset) {
-            super();
-            useMemory(pointer, offset);
-            read();
-        }
-
-        /// Create an instance that shares its memory with another __lmFlags instance
-        public __lmFlags(__lmFlags struct) {
-            this(struct.getPointer(), 0);
-        }
-
-        public static class ByReference extends __lmFlags implements com.sun.jna.Structure.ByReference {
-            /// Allocate a new __lmFlags.ByRef struct on the heap
-            public ByReference() {
-            }
-
-            /// Create an instance that shares its memory with another __lmFlags instance
-            public ByReference(__lmFlags struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-
-        public static class ByValue extends __lmFlags implements com.sun.jna.Structure.ByValue {
-            /// Allocate a new __lmFlags.ByVal struct on the heap
-            public ByValue() {
-            }
-
-            /// Create an instance that shares its memory with another __lmFlags instance
-            public ByValue(__lmFlags struct) {
-                super(struct.getPointer(), 0);
-            }
-        }
-    }
-
     /**
      * Original signature : <code>NSArray* rulerMarkersForTextView(NSTextView*, NSParagraphStyle*, NSRulerView*)</code><br>
      * <i>from NSTextViewSupport native declaration : :529</i>
      */
-    public abstract com.sun.jna.Pointer rulerMarkersForTextView_paragraphStyle_ruler(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler);
+    public abstract NSArray rulerMarkersForTextView_paragraphStyle_ruler(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler);
 
     /**
      * Original signature : <code>NSView* rulerAccessoryViewForTextView(NSTextView*, NSParagraphStyle*, NSRulerView*, BOOL)</code><br>
      * <i>from NSTextViewSupport native declaration : :530</i>
      */
-    public abstract com.sun.jna.Pointer rulerAccessoryViewForTextView_paragraphStyle_ruler_enabled(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler, boolean isEnabled);
+    public abstract NSView rulerAccessoryViewForTextView_paragraphStyle_ruler_enabled(com.sun.jna.Pointer view, com.sun.jna.Pointer style, com.sun.jna.Pointer ruler, boolean isEnabled);
 
     /**
      * Original signature : <code>BOOL layoutManagerOwnsFirstResponderInWindow(NSWindow*)</code><br>
