@@ -85,13 +85,13 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(InetAddress inetAddress, int i) throws IOException {
-        throw new UnsupportedOperationException();
+    public Socket createSocket(InetAddress host, int port) throws IOException {
+        return factory.createSocket(host, port);
     }
 
     @Override
-    public Socket createSocket(InetAddress inetAddress, int i, InetAddress inetAddress1, int i1) throws IOException {
-        throw new UnsupportedOperationException();
+    public Socket createSocket(InetAddress host, int port, InetAddress localHost, int localPort) throws IOException {
+        return factory.createSocket(host, port, localHost, localPort);
     }
 
     @Override
