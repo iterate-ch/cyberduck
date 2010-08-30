@@ -1033,9 +1033,8 @@ public class TransferController extends WindowController implements NSToolbar.De
                 TOOLBAR_STOP,
                 TOOLBAR_RELOAD,
                 TOOLBAR_REMOVE,
-                NSToolbarItem.NSToolbarFlexibleItemIdentifier,
                 TOOLBAR_SHOW,
-                TOOLBAR_OPEN,
+                NSToolbarItem.NSToolbarFlexibleItemIdentifier,
                 TOOLBAR_FILTER
         );
     }
