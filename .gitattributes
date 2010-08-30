@@ -206,6 +206,7 @@ cy.lproj/Transfer.strings -text svneol=unset#text/utf-16
 /cyberduck-application.ico -text
 /cyberduck-application.png -text svneol=unset#image/png
 /cyberduck-document.icns -text svneol=unset#image/icns
+/cyberduck-document.ico -text
 da.lproj/Alert.nib/classes.nib -text
 da.lproj/Alert.nib/info.nib -text
 da.lproj/Alert.nib/keyedobjects.nib -text
