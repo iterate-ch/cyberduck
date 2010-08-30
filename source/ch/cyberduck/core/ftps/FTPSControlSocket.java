@@ -22,10 +22,12 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
 import com.enterprisedt.net.ftp.*;
 
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.Socket;
 
 /**
  * @version $Id$
@@ -33,33 +35,21 @@ import java.net.InetAddress;
 public class FTPSControlSocket extends FTPControlSocket {
 
     /**
-     *
+     * Secure data channel using TLS.
      */
     protected boolean secure;
 
     /**
      *
      */
-    private CustomTrustSSLProtocolSocketFactory socketFactory;
-
-    /**
-     *
-     */
-    private X509TrustManager trustManager;
+    private CustomTrustSSLProtocolSocketFactory factory;
 
     protected FTPSControlSocket(String encoding, FTPMessageListener listener) {
         super(encoding, listener);
     }
 
-    private CustomTrustSSLProtocolSocketFactory getSocketFactory() {
-        if(null == socketFactory) {
-            socketFactory = new CustomTrustSSLProtocolSocketFactory(trustManager);
-        }
-        return socketFactory;
-    }
-
-    public void setTrustManager(X509TrustManager trustManager) {
-        this.trustManager = trustManager;
+    public void setTrustManager(X509TrustManager trust) {
+        factory = new CustomTrustSSLProtocolSocketFactory(trust);
     }
 
     /**
@@ -68,13 +58,14 @@ public class FTPSControlSocket extends FTPControlSocket {
      * @throws IOException
      */
     protected void startHandshake() throws IOException {
+        Socket plainSocket = controlSocket;
         // This constructor can be used when tunneling SSL through a proxy or when negotiating the
         // use of SSL over an existing socket. The host and port refer to the logical peer destination.
         // This socket is configured using the socket options established for this factory.
-        this.controlSock = this.getSocketFactory().createSocket(controlSock,
-                controlSock.getInetAddress().getHostName(), controlSock.getPort(),
+        this.controlSocket = factory.createSocket(plainSocket,
+                plainSocket.getInetAddress().getHostAddress(), plainSocket.getPort(),
                 true); //close the underlying socket when this socket is closed
-
+        ((SSLSocket) this.controlSocket).startHandshake();
         this.initStreams();
     }
 
@@ -93,10 +84,10 @@ public class FTPSControlSocket extends FTPControlSocket {
 
         if(secure) {
             // use any available port
-            FTPDataSocket socket = new FTPActiveDataSocket(this.getSocketFactory().createServerSocket(0));
+            FTPDataSocket socket = new FTPActiveDataSocket(factory.createServerSocket(0));
 
             // get the local address to which the control socket is bound.
-            InetAddress localhost = controlSock.getLocalAddress();
+            InetAddress localhost = controlSocket.getLocalAddress();
 
             // send the PORT command to the server
             this.setDataPort(localhost, (short) socket.getLocalPort());
@@ -144,12 +135,12 @@ public class FTPSControlSocket extends FTPControlSocket {
                 if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
                     // Do not trust a local address; may be a misconfigured router
                     return new FTPPassiveDataSocket(
-                            this.getSocketFactory().createSocket(controlSock.getInetAddress().getHostAddress(), port)
+                            factory.createSocket(controlSocket.getInetAddress().getHostAddress(), port)
                     );
                 }
 
                 // create the socket
-                return new FTPPassiveDataSocket(this.getSocketFactory().createSocket(ipAddress, port));
+                return new FTPPassiveDataSocket(factory.createSocket(ipAddress, port));
             }
             catch(ConnectException e) {
                 // See #15353
@@ -169,7 +160,7 @@ public class FTPSControlSocket extends FTPControlSocket {
             int port = this.parseEPSVResponse(reply);
 
             return new FTPPassiveDataSocket(
-                    this.getSocketFactory().createSocket(controlSock.getInetAddress().getHostAddress(), port));
+                    factory.createSocket(controlSocket.getInetAddress().getHostAddress(), port));
         }
         return super.createDataSocketEPSV();
     }
