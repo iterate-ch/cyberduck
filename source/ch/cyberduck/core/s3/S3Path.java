@@ -967,7 +967,7 @@ public class S3Path extends CloudPath {
                         break;
                     }
                     i.rename(PathFactory.createPath(this.getSession(), renamed.getAbsolute(),
-                            renamed.getName(), i.attributes().getType()));
+                            i.getName(), i.attributes().getType()));
                 }
             }
         }
