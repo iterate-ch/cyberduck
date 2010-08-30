@@ -29,6 +29,7 @@ import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
+import javax.net.SocketFactory;
 import java.io.*;
 import java.net.*;
 import java.util.Vector;
@@ -60,7 +61,7 @@ public class FTPControlSocket {
     /**
      * The underlying socket.
      */
-    protected Socket controlSock = null;
+    protected Socket controlSocket = null;
 
     /**
      * The write that writes to the control socket
@@ -104,15 +105,15 @@ public class FTPControlSocket {
     protected void connect(final InetAddress remoteAddr, int controlPort)
             throws IOException, FTPException {
 
-        this.controlSock = new Socket(remoteAddr, controlPort);
+        this.controlSocket = new Socket(remoteAddr, controlPort);
         try {
-            this.controlSock.setKeepAlive(true);
+            this.controlSocket.setKeepAlive(true);
         }
         catch(SocketException e) {
             log.error(e.getMessage());
         }
         try {
-            this.controlSock.setSoTimeout(timeout);
+            this.controlSocket.setSoTimeout(timeout);
         }
         catch(SocketException e) {
             log.error(e.getMessage());
@@ -138,11 +139,11 @@ public class FTPControlSocket {
     protected void initStreams() throws IOException {
 
         // input stream
-        InputStream is = controlSock.getInputStream();
+        InputStream is = controlSocket.getInputStream();
         reader = new BufferedReader(new InputStreamReader(is, encoding));
 
         // output stream
-        OutputStream os = controlSock.getOutputStream();
+        OutputStream os = controlSocket.getOutputStream();
         writer = new OutputStreamWriter(os, encoding);
     }
 
@@ -152,7 +153,7 @@ public class FTPControlSocket {
      * @return remote host name
      */
     public String getRemoteHostName() {
-        InetAddress addr = controlSock.getInetAddress();
+        InetAddress addr = controlSocket.getInetAddress();
         return addr.getHostName();
     }
 
@@ -198,8 +199,8 @@ public class FTPControlSocket {
             ; //ignore
         }
         try {
-            if(controlSock != null)
-                controlSock.close();
+            if(controlSocket != null)
+                controlSocket.close();
         }
         catch(IOException e) {
             ; //ignore
@@ -254,7 +255,7 @@ public class FTPControlSocket {
         FTPDataSocket socket = new FTPActiveDataSocket(new ServerSocket(0));
 
         // get the local address to which the control socket is bound.
-        InetAddress localhost = controlSock.getLocalAddress();
+        InetAddress localhost = controlSocket.getLocalAddress();
 
         // send the PORT command to the server
         this.setDataPort(localhost, (short) socket.getLocalPort());
@@ -353,7 +354,7 @@ public class FTPControlSocket {
     protected FTPDataSocket createDataSocketPassive()
             throws IOException, FTPException {
 
-        if(controlSock.getInetAddress() instanceof Inet6Address) {
+        if(controlSocket.getInetAddress() instanceof Inet6Address) {
             // FTP Extensions for IPv6 and NATs
             return this.createDataSocketEPSV();
         }
@@ -400,9 +401,9 @@ public class FTPControlSocket {
         try {
             if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
                 // Do not trust a local address; may be a misconfigured router
-                return new FTPPassiveDataSocket(new Socket(controlSock.getInetAddress(), port));
+                return new FTPPassiveDataSocket(SocketFactory.getDefault().createSocket(controlSocket.getInetAddress(), port));
             }
-            return new FTPPassiveDataSocket(new Socket(ipAddress, port));
+            return new FTPPassiveDataSocket(SocketFactory.getDefault().createSocket(ipAddress, port));
         }
         catch (ConnectException e) {
             // See #15353
@@ -477,7 +478,7 @@ public class FTPControlSocket {
 
         int port = this.parseEPSVResponse(reply);
 
-        return new FTPPassiveDataSocket(new Socket(controlSock.getInetAddress(), port));
+        return new FTPPassiveDataSocket(SocketFactory.getDefault().createSocket(controlSocket.getInetAddress(), port));
     }
 
     /**
@@ -715,16 +716,16 @@ public class FTPControlSocket {
 
     public void interrupt()
             throws IOException {
-        if(null == controlSock) {
+        if(null == controlSocket) {
             log.warn("No control socket to interrupt");
             return;
         }
-        controlSock.close();
-        log.warn("Forced to close socket " + controlSock.toString());
+        controlSocket.close();
+        log.warn("Forced to close socket " + controlSocket.toString());
     }
 
     public boolean isConnected() {
-        if(null == controlSock) {
+        if(null == controlSocket) {
             return false;
         }
         return !(null == reader || null == writer);
