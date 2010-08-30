@@ -32,12 +32,11 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
             log.info("Switching parser implementation because "+cachedFtpFileEntryParser+" failed");
             cachedFtpFileEntryParser = null;
         }
-        for(int iterParser = 0; iterParser < ftpFileEntryParsers.length; iterParser++) {
-            FTPFileEntryParser ftpFileEntryParser = ftpFileEntryParsers[iterParser];
-            FTPFile matched = ftpFileEntryParser.parseFTPEntry(listEntry);
+        for(FTPFileEntryParser parser : ftpFileEntryParsers) {
+            FTPFile matched = parser.parseFTPEntry(listEntry);
             if(matched != null) {
-                cachedFtpFileEntryParser = ftpFileEntryParser;
-                log.info("Caching "+cachedFtpFileEntryParser+" parser implementation");
+                cachedFtpFileEntryParser = parser;
+                log.info("Caching " + cachedFtpFileEntryParser + " parser implementation");
                 return matched;
             }
         }

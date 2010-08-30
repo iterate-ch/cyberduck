@@ -44,6 +44,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
         super(regex);
     }
 
+    @Override
     public Calendar parseTimestamp(String timestampStr) throws ParseException {
         try {
             return super.parseTimestamp(timestampStr);
@@ -51,6 +52,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
         catch(ParseException e) {
             // #1813 Leap year bug. Taken from http://svn.apache.org/viewvc/commons/proper/net/branches/NET_2_0/src/main/java/org/apache/commons/net/ftp/parser/FTPTimestampParserImpl.java?pathrev=631284&view=diff&r1=631284&r2=139565&diff_format=u
             return new FTPTimestampParserImpl() {
+                @Override
                 public Calendar parseTimestamp(String timestampStr) throws ParseException {
                     Calendar working = Calendar.getInstance();
                     working.setTimeZone(this.getServerTimeZone());
@@ -82,6 +84,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
      *
      * @return the default configuration for this parser.
      */
+    @Override
     protected FTPClientConfig getDefaultConfiguration() {
         final FTPClientConfig config = new FTPClientConfig(
                 FTPClientConfig.SYST_UNIX,
