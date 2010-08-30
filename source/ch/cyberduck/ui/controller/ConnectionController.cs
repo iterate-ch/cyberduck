@@ -358,7 +358,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     // Account name configured in System Preferences
                     View.Username = member;
                     View.UsernameEnabled = false;
-                    //todo in java ist es Path.DELIMITER
                     View.Path = Path.DELIMITER + member;
                     View.PathEnabled = false;
                 }
