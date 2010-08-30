@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -46,6 +47,10 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
@@ -128,6 +133,27 @@ public abstract class HTTPSession extends Session implements SSLSession {
     }
 
     /**
+     * SSL socket factory using parameters from HTTP connection configuration.
+     */
+    protected static class SocketFactory extends CustomTrustSSLProtocolSocketFactory
+            implements ProtocolSocketFactory {
+
+        public SocketFactory(X509TrustManager manager) {
+            super(manager);
+        }
+
+        public Socket createSocket(String host, int port, InetAddress localAddress, int localPort,
+                                   org.apache.commons.httpclient.params.HttpConnectionParams params)
+                throws IOException {
+            javax.net.ssl.SSLSocketFactory factory = this.getSSLContext().getSocketFactory();
+            Socket socket = factory.createSocket(host, port, localAddress, localPort);
+            socket.setTcpNoDelay(params.getTcpNoDelay());
+            socket.setSoTimeout(params.getSoTimeout());
+            return socket;
+        }
+    }
+
+    /**
      * Create a sticky host configuration with a socket factory for the given scheme
      *
      * @return A host configuration initialized with the hostname, port and socket factory.
@@ -139,7 +165,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
             // Configuration with custom socket factory using the trust manager
             configuration.setHost(host.getHostname(), host.getPort(),
                     new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()), host.getPort())
+                            new SocketFactory(this.getTrustManager()), host.getPort())
             );
             if(proxy.isHTTPSProxyEnabled()) {
                 configuration.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
