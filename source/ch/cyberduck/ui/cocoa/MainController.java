@@ -290,12 +290,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void bugreportMenuClicked(final ID sender) {
-        this.openUrl(Preferences.instance().getProperty("website.bug"));
+        openUrl(Preferences.instance().getProperty("website.bug"));
     }
 
     @Action
     public void helpMenuClicked(final ID sender) {
-        this.openUrl(Preferences.instance().getProperty("website.help"));
+        openUrl(Preferences.instance().getProperty("website.help"));
     }
 
     @Action
@@ -315,17 +315,17 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void websiteMenuClicked(final ID sender) {
-        this.openUrl(Preferences.instance().getProperty("website.home"));
+        openUrl(Preferences.instance().getProperty("website.home"));
     }
 
     @Action
     public void forumMenuClicked(final ID sender) {
-        this.openUrl(Preferences.instance().getProperty("website.forum"));
+        openUrl(Preferences.instance().getProperty("website.forum"));
     }
 
     @Action
     public void donateMenuClicked(final ID sender) {
-        this.openUrl(Preferences.instance().getProperty("website.donate"));
+        openUrl(Preferences.instance().getProperty("website.donate"));
     }
 
     @Action
@@ -339,7 +339,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void feedbackMenuClicked(final ID sender) {
-        this.openUrl(Preferences.instance().getProperty("mail.feedback")
+        openUrl(Preferences.instance().getProperty("mail.feedback")
                 + "?subject=" + Preferences.instance().getProperty("application") + "-" + Preferences.instance().getProperty("version"));
     }
 
@@ -846,7 +846,7 @@ public class MainController extends BundleController implements NSApplication.De
 
                 public void closeDonationSheet(final NSButton sender) {
                     if(sender.tag() == SheetCallback.DEFAULT_OPTION) {
-                        this.openUrl(Preferences.instance().getProperty("website.donate"));
+                        openUrl(Preferences.instance().getProperty("website.donate"));
                     }
                     this.terminate();
                 }

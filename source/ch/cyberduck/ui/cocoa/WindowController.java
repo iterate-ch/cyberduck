@@ -267,6 +267,6 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Action
     public void helpButtonClicked(final NSButton sender) {
-        this.openUrl(Preferences.instance().getProperty("website.help"));
+        openUrl(Preferences.instance().getProperty("website.help"));
     }
 }
