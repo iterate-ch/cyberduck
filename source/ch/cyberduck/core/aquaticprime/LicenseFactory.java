@@ -93,5 +93,10 @@ public abstract class LicenseFactory extends Factory<License> {
         public String getValue(String property) {
             return null;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EMPTY_LICENSE == obj;
+        }
     };
 }
