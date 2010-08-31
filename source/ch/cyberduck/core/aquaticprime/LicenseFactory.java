@@ -103,5 +103,10 @@ public abstract class LicenseFactory extends Factory<License> {
         public boolean equals(Object obj) {
             return EMPTY_LICENSE == obj;
         }
+
+        @Override
+        public String toString() {
+            return Locale.localizedString("Not a valid donation key", "License");
+        }
     };
 }

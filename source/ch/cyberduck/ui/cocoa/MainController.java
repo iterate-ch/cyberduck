@@ -35,6 +35,7 @@ import ch.cyberduck.ui.growl.Growl;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
@@ -128,6 +129,23 @@ public class MainController extends BundleController implements NSApplication.De
         }
         BrowserController doc = newDocument();
         doc.mount(h);
+    }
+
+    @Outlet
+    private NSMenu applicationMenu;
+
+    public void setApplicationMenu(NSMenu menu) {
+        this.applicationMenu = menu;
+        String name = LicenseFactory.find().toString();
+        this.applicationMenu.insertItemWithTitle_action_keyEquivalent_atIndex(name,
+                null, "", new NSInteger(5));
+        NSDictionary KEY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+                NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
+                NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
+        );
+        this.applicationMenu.itemWithTitle(name).setAttributedTitle(
+                NSAttributedString.attributedStringWithAttributes(name, KEY_FONT_ATTRIBUTES)
+        );
     }
 
     @Outlet
@@ -396,7 +414,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final License l = LicenseFactory.create(f);
                 if(l.verify()) {
                     final NSAlert alert = NSAlert.alert(
-                            MessageFormat.format(Locale.localizedString("Registered to {0}", "License"), l.getName()),
+                            l.toString(),
                             Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                     + "\n\n"
                                     + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),

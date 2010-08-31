@@ -20,9 +20,12 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.text.MessageFormat;
 
 /**
  * A Donation Key.
@@ -56,5 +59,10 @@ public abstract class AbstractLicense implements License {
             return this.getFile().equals(((AbstractLicense) obj).getFile());
         }
         return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return MessageFormat.format(Locale.localizedString("Registered to {0}", "License"), this.getName());
     }
 }
