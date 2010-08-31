@@ -395,12 +395,8 @@ public class MainController extends BundleController implements NSApplication.De
             if("cyberducklicense".equals(f.getExtension())) {
                 final License l = LicenseFactory.create(f);
                 if(l.verify()) {
-                    String to = l.getValue("Name");
-                    if(StringUtils.isBlank(to)) {
-                        to = l.getValue("Email"); // primary key
-                    }
                     final NSAlert alert = NSAlert.alert(
-                            MessageFormat.format(Locale.localizedString("Registered to {0}", "License"), to),
+                            MessageFormat.format(Locale.localizedString("Registered to {0}", "License"), l.getName()),
                             Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
                                     + "\n\n"
                                     + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
@@ -85,13 +86,17 @@ public abstract class LicenseFactory extends Factory<License> {
         return EMPTY_LICENSE;
     }
 
-    private static final License EMPTY_LICENSE = new License() {
+    public static final License EMPTY_LICENSE = new License() {
         public boolean verify() {
             return false;
         }
 
         public String getValue(String property) {
             return null;
+        }
+
+        public String getName() {
+            return Locale.localizedString("Not a valid donation key", "License");
         }
 
         @Override

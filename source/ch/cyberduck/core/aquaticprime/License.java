@@ -20,7 +20,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface License {
 
@@ -33,4 +33,11 @@ public interface License {
      * @return The value of the given property in the license file. Null if no property with the given key.
      */
     String getValue(String property);
+
+    /**
+     * Name of the person this key is registered to.
+     *
+     * @return Email address if name is not known.
+     */
+    String getName();
 }

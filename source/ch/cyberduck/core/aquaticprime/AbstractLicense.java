@@ -21,6 +21,7 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,6 +40,14 @@ public abstract class AbstractLicense implements License {
 
     protected Local getFile() {
         return file;
+    }
+
+    public String getName() {
+        String to = this.getValue("Name");
+        if(StringUtils.isBlank(to)) {
+            to = this.getValue("Email"); // primary key
+        }
+        return to;
     }
 
     @Override
