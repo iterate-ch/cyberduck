@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 /**
  * A Donation Key.
  *
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractLicense implements License {
     private static Logger log = Logger.getLogger(AbstractLicense.class);
@@ -39,5 +39,13 @@ public abstract class AbstractLicense implements License {
 
     protected Local getFile() {
         return file;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof AbstractLicense) {
+            return this.getFile().equals(((AbstractLicense) obj).getFile());
+        }
+        return super.equals(obj);
     }
 }
