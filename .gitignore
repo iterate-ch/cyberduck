@@ -5,6 +5,7 @@ source/ch/cyberduck/[Bb]in
 source/ch/cyberduck/[Dd]ebug
 source/ch/cyberduck/[Rr]elease
 source/ch/cyberduck/obj
+source/ch/cyberduck/properties/AssemblyInfo.cs
 source/ch/cyberduck/ui/winforms/commondialog/*.aps
 source/ch/cyberduck/ui/winforms/commondialog/*.eto
 source/ch/cyberduck/ui/winforms/commondialog/*.user
