@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -126,8 +127,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window().setToolbar(toolbar);
-
         this.window().makeFirstResponder(this.quickConnectPopup);
+
+        if(LicenseFactory.find().equals(LicenseFactory.EMPTY_LICENSE)) {
+            this.addDonateWindowTitle();
+        }
 
         this.toggleBookmarks(true);
 
@@ -464,6 +468,30 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 Foundation.selector("drawerDidClose:"),
                 NSDrawer.DrawerDidCloseNotification,
                 this.logDrawer);
+    }
+
+    private NSButton donateButton;
+
+    public void setDonateButton(NSButton donateButton) {
+        this.donateButton = donateButton;
+        this.donateButton.setTitle(Locale.localizedString("Get a donation key!", "License"));
+        this.donateButton.setAction(Foundation.selector("donateMenuClicked:"));
+        this.donateButton.sizeToFit();
+    }
+
+    private void addDonateWindowTitle() {
+        NSView view = this.window().contentView().superview();
+        NSSize bounds = view.frame().size;
+        NSSize size = donateButton.frame().size;
+        donateButton.setFrame(new NSRect(
+                new NSPoint(
+                        bounds.width.intValue() - size.width.intValue() - 40,
+                        bounds.height.intValue() - size.height.intValue() + 3),
+                new NSSize(
+                        size.width.intValue(),
+                        size.height.intValue()))
+        );
+        view.addSubview(donateButton);
     }
 
     private static final int TAB_BOOKMARKS = 0;
