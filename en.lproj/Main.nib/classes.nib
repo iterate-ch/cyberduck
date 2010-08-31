@@ -127,6 +127,8 @@
 			<string>ObjC</string>
 			<key>OUTLETS</key>
 			<dict>
+				<key>applicationMenu</key>
+				<string>NSMenu</string>
 				<key>archiveMenu</key>
 				<string>NSMenu</string>
 				<key>bookmarkMenu</key>

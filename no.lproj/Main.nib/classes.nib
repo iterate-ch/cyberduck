@@ -16,6 +16,7 @@
     CLASS = CDMainController;
     LANGUAGE = ObjC;
     OUTLETS =     {
+        applicationMenu = NSMenu;
         archiveMenu = NSMenu;
         bookmarkMenu = NSMenu;
         columnMenu = NSMenu;
