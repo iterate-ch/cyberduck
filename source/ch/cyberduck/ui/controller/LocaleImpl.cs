@@ -15,11 +15,12 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using org.apache.log4j;
 using Path = System.IO.Path;
@@ -44,25 +45,25 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void ReadBundleIntoCache(string bundle)
         {
-            string dictionary = Path.Combine(_resourcesDirectory.FullName, bundle + ".strings");
             Log.debug("Caching bundle " + bundle);
-
-            if (File.Exists(dictionary))
+            Assembly asm = Assembly.GetExecutingAssembly();
+            // the dots apparently come from the relative path in the msbuild file
+            Stream stream =
+                asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language,
+                                                            bundle));
+            using (StreamReader file = new StreamReader(stream))
             {
-                using (StreamReader file = new StreamReader(dictionary))
+                Dictionary<string, string> bundleDict = new Dictionary<string, string>();
+                _cache[bundle] = bundleDict;
+                string line;
+                while ((line = file.ReadLine()) != null)
                 {
-                    Dictionary<string, string> bundleDict = new Dictionary<string, string>();
-                    _cache[bundle] = bundleDict;
-                    string line;
-                    while ((line = file.ReadLine()) != null)
+                    if (StringsRegex.IsMatch(line))
                     {
-                        if (StringsRegex.IsMatch(line))
-                        {
-                            Match match = StringsRegex.Match(line);
-                            string key = match.Groups[1].Value;
-                            string value = match.Groups[2].Value;
-                            bundleDict[key] = value;
-                        }
+                        Match match = StringsRegex.Match(line);
+                        string key = match.Groups[1].Value;
+                        string value = match.Groups[2].Value;
+                        bundleDict[key] = value;
                     }
                 }
             }

@@ -16,10 +16,14 @@
 // yves@cyberduck.ch
 // 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Properties;
 using java.util;
 using org.apache.log4j;
@@ -159,14 +163,24 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override List applicationLocales()
         {
-            List locales = new ArrayList();
-            string[] directories = Directory.GetDirectories(".", "*.lproj", SearchOption.TopDirectoryOnly);
-
-            foreach (var directory in directories)
+            Assembly asm = Assembly.GetExecutingAssembly();
+            string[] names = asm.GetManifestResourceNames();
+            // the dots apparently come from the relative path in the msbuild file
+            Regex regex = new Regex("Ch.Cyberduck..........(.*).lproj.*");
+            List<string> distinctNames = new List<string>();
+            foreach (var name in names)
             {
-                locales.add(Path.GetFileNameWithoutExtension(directory).Replace('_', '-'));
+                Match match = regex.Match(name);
+                if (match.Groups.Count > 1)
+                {
+                    string cand = match.Groups[1].Value.Replace('_', '-');
+                    if (!distinctNames.Contains(cand))
+                    {
+                        distinctNames.Add(cand);
+                    }
+                }
             }
-            return locales;
+            return Utils.ConvertToJavaList(distinctNames);
         }
 
         public object GetSpecialObject(string property)

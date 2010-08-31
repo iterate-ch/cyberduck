@@ -248,6 +248,11 @@
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    
+    <!-- add localizations -->
+    <EmbeddedResource Include="../../../*.lproj/*.strings;../../../*.lproj/*.txt"/>
+    <!-- end localizations -->
+    
     <None Include="App.config" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
