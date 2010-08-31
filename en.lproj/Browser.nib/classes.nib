@@ -94,6 +94,8 @@
 				<string>NSTabView</string>
 				<key>deleteBookmarkButton</key>
 				<string>NSButton</string>
+				<key>donateButton</key>
+				<string>NSButton</string>
 				<key>editBookmarkButton</key>
 				<string>NSButton</string>
 				<key>editMenu</key>

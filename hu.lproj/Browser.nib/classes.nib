@@ -16,6 +16,7 @@
         browserSwitchView = NSSegmentedControl;
         browserTabView = NSTabView;
         deleteBookmarkButton = NSButton;
+        donateButton = NSButton;
         editBookmarkButton = NSButton;
         editMenu = NSMenu;
         encodingPopup = NSPopUpButton;
