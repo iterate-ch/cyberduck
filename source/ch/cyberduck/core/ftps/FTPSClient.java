@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftps;
  */
 
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import org.apache.log4j.Logger;
 
@@ -26,7 +27,6 @@ import com.enterprisedt.net.ftp.FTPClient;
 import com.enterprisedt.net.ftp.FTPException;
 import com.enterprisedt.net.ftp.FTPMessageListener;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 
 /**
@@ -47,7 +47,7 @@ public class FTPSClient extends FTPClient {
         ((FTPSControlSocket) this.control).setSecureDataSocket(secure);
     }
 
-    public void setTrustManager(X509TrustManager trust) {
+    public void setTrustManager(AbstractX509TrustManager trust) {
         ((FTPSControlSocket) this.control).setTrustManager(trust);
     }
 

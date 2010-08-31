@@ -18,12 +18,12 @@ package ch.cyberduck.core.ftps;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
 import com.enterprisedt.net.ftp.*;
 
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -48,7 +48,7 @@ public class FTPSControlSocket extends FTPControlSocket {
         super(encoding, listener);
     }
 
-    public void setTrustManager(X509TrustManager trust) {
+    public void setTrustManager(AbstractX509TrustManager trust) {
         factory = new CustomTrustSSLProtocolSocketFactory(trust);
     }
 
