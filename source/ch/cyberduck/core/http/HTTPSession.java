@@ -138,7 +138,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
     protected static class SocketFactory extends CustomTrustSSLProtocolSocketFactory
             implements ProtocolSocketFactory {
 
-        public SocketFactory(X509TrustManager manager) {
+        public SocketFactory(AbstractX509TrustManager manager) {
             super(manager);
         }
 
