@@ -23,7 +23,6 @@ using System.Text.RegularExpressions;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using org.apache.log4j;
-using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -36,12 +35,6 @@ namespace Ch.Cyberduck.Ui.Controller
             new Dictionary<string, Dictionary<string, string>>();
 
         private readonly string _language = Preferences.instance().getProperty("application.language");
-        private readonly DirectoryInfo _resourcesDirectory;
-
-        public LocaleImpl()
-        {
-            _resourcesDirectory = new DirectoryInfo(Path.Combine(".", _language + ".lproj"));
-        }
 
         private void ReadBundleIntoCache(string bundle)
         {
@@ -51,6 +44,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Stream stream =
                 asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language,
                                                             bundle));
+            if (null != stream){
             using (StreamReader file = new StreamReader(stream))
             {
                 Dictionary<string, string> bundleDict = new Dictionary<string, string>();
@@ -66,6 +60,10 @@ namespace Ch.Cyberduck.Ui.Controller
                         bundleDict[key] = value;
                     }
                 }
+            }
+            } else
+            {
+                Log.error(String.Format("Bundle {0} not found", bundle));
             }
         }
 
