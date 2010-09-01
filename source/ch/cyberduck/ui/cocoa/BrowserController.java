@@ -3183,8 +3183,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     directory.children().attributes().setReadable(true);
                 }
                 // Get the directory listing in the background
-                directory.children();
-                if(directory.children().attributes().isReadable()) {
+                AttributedList<AbstractPath> children = directory.children();
+                if(children.attributes().isReadable() || !children.isEmpty()) {
                     // Update the working directory if listing is successful
                     workdir = directory;
                     // Update the current working directory
