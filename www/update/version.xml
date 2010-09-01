@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Versions>
+    <AddVersion>
+        <Version>_VERSION_</Version>
+        <Changes><![CDATA[_CHANGES_]]></Changes>
+        <InheritPrevRegistry/>
+        <Files dir="basedir">
+            <File source="_BUILDPATH_\Acknowledgments.rtf"/>
+            <File source="_BUILDPATH_\AutomaticUpdater.dll"/>
+            <File source="_BUILDPATH_\CustomOpenFileFolderDialog.dll"/>
+            <File source="_BUILDPATH_\Cyberduck.exe"/>
+            <File source="_BUILDPATH_\Cyberduck.exe.config"/>
+            <File source="_BUILDPATH_\ExceptionReporter.WinForms.dll"/>
+            <File source="_BUILDPATH_\Growl.Connector.dll"/>
+            <File source="_BUILDPATH_\Growl.CoreLibrary.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.Beans.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.Core.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.Security.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.Text.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.Util.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.API.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Parse.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Transform.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.XPath.dll"/>
+            <File source="_BUILDPATH_\IKVM.Runtime.dll"/>
+            <File source="_BUILDPATH_\ObjectListView.dll"/>
+            <File source="_BUILDPATH_\StructureMap.dll"/>
+            <File source="_BUILDPATH_\core.dll"/>
+            <File source="_BUILDPATH_\cyberduck-document.ico"/>
+        </Files>
+    </AddVersion>
+</Versions>
+            
+        

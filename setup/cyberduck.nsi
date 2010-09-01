@@ -94,7 +94,6 @@ RequestExecutionLevel admin
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "${SETUPFILE}"
-;OutFile "Cyberduck Installer.exe"
 InstallDir "$PROGRAMFILES\Cyberduck"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -201,7 +200,8 @@ Section "MainSection" SEC01
   File "${BASEDIR}\Acknowledgments.rtf"
   File "${BASEDIR}\cyberduck-document.ico"
   File /x IKVM.OpenJDK.SwingAWT.dll "${BASEDIR}\*.dll"
-  File /r "${BASEDIR}\*.lproj"
+  File "${BASEDIR}\..\update\wyUpdate.exe"
+  File "${BASEDIR}\..\update\*.wyc"
 
   Push "v4.0"
   Call GetDotNetDir

@@ -31,7 +31,7 @@
     <property name="home" value="."/>
     <property name="unittests" value="${home}/test"/>
     <property name="build" value="${home}/build"/>
-    <property name="configuration" value="Release"/>
+    <property name="configuration" value="Debug"/>
     <property name="build.deploy" value="${build}/${configuration}"/>
     <property name="build.classes" value="${build}/classes"/>
     <property name="build.unittests" value="${build}/unittests"/>
@@ -119,7 +119,7 @@
 
     <target name="revision">
         <echo message="Calculating revision..."/>
-        <exec dir="${home}" executable="svnversion" outputproperty="svn.revision">
+        <exec dir="${home}" executable="svnversion" outputproperty="svn.revision" failonerror="true">
             <arg value="."/>
         </exec>
         <property name="svn.revision" value="${svn.revision}"/>

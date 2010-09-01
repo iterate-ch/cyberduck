@@ -49,10 +49,10 @@
                 <include name="*.jnilib"/>
             </fileset>
         </copy>
-        <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false">
+        <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
             <arg line="-project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
         </exec>
-        <exec dir="${spotlight}" executable="/usr/bin/xcodebuild" spawn="false">
+        <exec dir="${spotlight}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
             <arg line="-project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
         </exec>
         <copy todir="${app.java}">
@@ -98,7 +98,7 @@
         <antcall target="tar"/>
 
         <copy todir="${build}" overwrite="true">
-            <fileset dir="${home}/www/update/">
+            <fileset dir="${www.update}">
                 <include name="changelog.rss"/>
             </fileset>
         </copy>
@@ -111,7 +111,7 @@
         <echo message="_MD5SUM_=${md5sum}"/>
 
         <echo message="Calculating DSA signature..."/>
-        <exec dir="${home}" executable="ruby" outputproperty="signature.dsa">
+        <exec dir="${home}" executable="ruby" outputproperty="signature.dsa" failonerror="true">
             <arg value="${www.update}/sign.rb"/>
             <arg value="${build}/${app.name}-${svn.revision}.tar.gz"/>
             <arg value="${www.update}/private.pem"/>
@@ -132,14 +132,14 @@
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
+        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign 'Cyberduck Code Signing Certificate' --keychain ${user.home}/Library/Keychains/codesign.keychain -v ${app.bundle}"/>
         </exec>
     </target>
 
     <target name="tar">
         <echo message="Creating tar.gz archive..."/>
-        <exec dir="${build.deploy}" executable="tar" spawn="false">
+        <exec dir="${build.deploy}" executable="tar" spawn="false" failonerror="true">
             <arg line="-czf ../${app.name}-${svn.revision}.tar.gz ${app.name}.app"/>
         </exec>
         <echo message="Calculating MD5 sum..."/>
@@ -161,7 +161,7 @@
 
     <target name="zip">
         <echo message="Creating ZIP archive..."/>
-        <exec dir="${build.deploy}" executable="zip" spawn="false">
+        <exec dir="${build.deploy}" executable="zip" spawn="false" failonerror="true">
             <arg line="-y -r ../${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip ${app.name}.app"/>
         </exec>
         <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
