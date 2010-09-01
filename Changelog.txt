@@ -4,10 +4,11 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-4.0 (Sep-01-2010) [http://trac.cyberduck.ch/milestone/4.0]
+4.0 (Sep-30-2010) [http://trac.cyberduck.ch/milestone/4.0]
+- [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
-3.6 (Aug-16-2010) [http://trac.cyberduck.ch/milestone/3.6]
+3.6 (Sep-05-2010) [http://trac.cyberduck.ch/milestone/3.6]
 - [Feature] Connecting to Google Storage (Google Storage)
 - [Feature] Edit Access Control List (#3191) (S3, Google Storage, Google Docs)
 - [Feature] Enable Bucket Versioning (#4511) (S3)
@@ -25,10 +26,10 @@ Changelog. Last modified: $Date$
 - [Feature] Unsecure connection warning when password is transmitted in plaintext
 - [Feature] Alert to change connection to TLS if server supports AUTH TLS (FTP)
 - [Feature] Edit metadata for multiple files (S3, Google Storage)
-- [Feature] Menu items to copy CDN, signed & authenticated URLs to clipboard or open in Web Browser. (S3, Cloud Files, Google Storage)
+- [Feature] Menu items to copy HTTP, CDN, signed & authenticated URLs to clipboard (#4207)
+- [Feature] Menu items to open HTTP, CDN, signed & authenticated URLs in Web Browser
 - [Feature] Move and rename files and folders (Google Docs)
 - [Feature] Update size display incrementally while calculating recursively (#3213)
-- [Feature] Menu items to copy Web & CDN URLs to clipboard (#4207)
 - [Feature] Hidden preference to change SSH options for 'Open in Terminal.app' (#4232)
 - [Feature] Batch editing of S3 metadata (Google Storage, S3) (#5105)
 - [Feature] Show number of active transfers in Dock (#3808)
