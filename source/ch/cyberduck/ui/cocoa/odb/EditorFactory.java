@@ -226,7 +226,7 @@ public class EditorFactory {
             log.debug("getApplicationName:" + bundleIdentifier);
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
             if(StringUtils.isBlank(path)) {
-                log.error("Cannot determine installation path for " + bundleIdentifier);
+                log.warn("Cannot determine installation path for " + bundleIdentifier);
                 applicationNameCache.put(bundleIdentifier, null);
                 return null;
             }
