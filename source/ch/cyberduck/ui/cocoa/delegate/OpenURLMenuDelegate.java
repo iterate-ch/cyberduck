@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.BundleController;
@@ -26,6 +28,8 @@ import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.apache.log4j.Logger;
+
+import java.util.List;
 
 
 /**
@@ -47,6 +51,11 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
     @Override
     protected String getLabel() {
         return Locale.localizedString("Open");
+    }
+
+    @Override
+    protected List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
+        return file.getHttpURLs();
     }
 
     @Action

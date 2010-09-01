@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 /**
  * @version $Id:$
@@ -77,7 +78,11 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         if(null == path) {
             return new NSInteger(1);
         }
-        return new NSInteger(path.getUrls().size() * 2);
+        return new NSInteger(this.getURLs(path).size() * 2);
+    }
+
+    protected List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
+        return file.getURLs();
     }
 
     @Override
@@ -96,7 +101,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             item.setImage(null);
         }
         else {
-            AbstractPath.DescriptiveUrl url = path.getUrls().get(index.intValue() / 2);
+            AbstractPath.DescriptiveUrl url = this.getURLs(path).get(index.intValue() / 2);
             item.setRepresentedObject(url.getUrl());
             boolean label = index.intValue() % 2 == 0;
             if(label) {

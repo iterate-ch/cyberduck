@@ -147,7 +147,7 @@ public abstract class CloudPath extends Path {
     public abstract AttributedList<Path> list();
 
     @Override
-    public List<DescriptiveUrl> getUrls() {
+    public List<DescriptiveUrl> getHttpURLs() {
         List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>(Arrays.asList(
                 new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
                         this.getHost().getProtocol().getScheme().toUpperCase())))

@@ -120,8 +120,8 @@ public class GSPath extends S3Path {
     }
 
     @Override
-    public List<DescriptiveUrl> getUrls() {
-        List<DescriptiveUrl> urls = super.getUrls();
+    public List<DescriptiveUrl> getHttpURLs() {
+        List<DescriptiveUrl> urls = super.getHttpURLs();
         DescriptiveUrl url = this.toAuthenticatedUrl();
         if(StringUtils.isNotBlank(url.getUrl())) {
             urls.add(new DescriptiveUrl(url.getUrl(),

@@ -1122,8 +1122,8 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public List<DescriptiveUrl> getUrls() {
-        List<DescriptiveUrl> urls = super.getUrls();
+    public List<DescriptiveUrl> getHttpURLs() {
+        List<DescriptiveUrl> urls = super.getHttpURLs();
         DescriptiveUrl signed = this.toSignedUrl();
         if(StringUtils.isNotBlank(signed.getUrl())) {
             urls.add(new DescriptiveUrl(signed.getUrl(),

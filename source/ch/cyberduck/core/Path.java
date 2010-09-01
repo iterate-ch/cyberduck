@@ -939,13 +939,18 @@ public abstract class Path extends AbstractPath implements Serializable {
         return new DescriptiveUrl(null, null);
     }
 
+    public List<DescriptiveUrl> getURLs() {
+        List<DescriptiveUrl> list = this.getHttpURLs();
+        list.add(0, new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
+                this.getHost().getProtocol().getScheme().toUpperCase())));
+        return list;
+    }
+
     /**
      * @return All possible URLs to the same resource.
      */
-    public List<DescriptiveUrl> getUrls() {
+    public List<DescriptiveUrl> getHttpURLs() {
         return new ArrayList<DescriptiveUrl>(Arrays.asList(
-                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
-                        this.getHost().getProtocol().getScheme().toUpperCase())),
                 new DescriptiveUrl(this.toHttpURL().getUrl(), MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")))
         );
     }
