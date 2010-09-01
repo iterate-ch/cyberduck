@@ -13,10 +13,9 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using BrightIdeasSoftware;
@@ -24,7 +23,6 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -39,10 +37,6 @@ namespace Ch.Cyberduck.Ui.Controller
     public interface IBrowserView : IBookmarkManagerView
     {
         BrowserView CurrentView { set; get; }
-        event EventHandler<ChangeBrowserViewArgs> ChangeBrowserView;
-
-        // mainly used to detect a change of displayed items to update the status label
-        event VoidHandler ItemsChanged;
 
         string WindowTitle { set; }
         string StatusLabel { set; }
@@ -50,14 +44,13 @@ namespace Ch.Cyberduck.Ui.Controller
         List<TreePathReference> SelectedPaths { get; }
         List<Host> SelectedBookmarks { get; }
         int NumberOfFiles { get; }
-        int NumberOfBookmarks { get; }        
+        int NumberOfBookmarks { get; }
 
         string QuickConnectValue { get; }
         bool HistoryBackEnabled { set; }
         bool HistoryForwardEnabled { set; }
         bool ParentPathEnabled { set; }
         string SelectedComboboxPath { get; }
-        event ValidateCommand ValidatePathsCombobox; //path history combobox
         Bitmap EditIcon { set; }
         Bitmap OpenIcon { set; }
         string SelectedEncoding { set; }
@@ -71,13 +64,33 @@ namespace Ch.Cyberduck.Ui.Controller
         bool HiddenFilesVisible { set; }
         bool LogDrawerVisible { get; set; }
 
-        void StartActivityAnimation();
-        void StopActivityAnimation();
-
         PathFilter FilenameFilter { set; }
         string SearchString { set; get; }
-        event ValidateCommand ValidateSearchField;
         List<TreePathReference> VisiblePaths { get; }
+        bool ToolbarVisible { set; get; }
+        TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
+        TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
+
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
+        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter { set; }
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter { set; }
+        AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelModifiedGetter { set; }
+
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelOwnerGetter { set; }
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelGroupGetter { set; }
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelPermissionsGetter { set; }
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelKindGetter { set; }
+
+        MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
+        event EventHandler<ChangeBrowserViewArgs> ChangeBrowserView;
+
+        // mainly used to detect a change of displayed items to update the status label
+        event VoidHandler ItemsChanged;
+        event ValidateCommand ValidatePathsCombobox; //path history combobox
+        void StartActivityAnimation();
+        void StopActivityAnimation();
+        event ValidateCommand ValidateSearchField;
 
         void StartRenaming(Path path);
         void PopulateQuickConnect(List<string> nicknames);
@@ -90,8 +103,6 @@ namespace Ch.Cyberduck.Ui.Controller
         String SynchronizeDialog(string description, Environment.SpecialFolder root, string selectedPath);
 
         event ValidateCommand ContextMenuEnabled;
-
-        #region Menu - File
 
         // Menu - File
         event EventHandler<NewBrowserEventArgs> NewBrowser;
@@ -108,12 +119,12 @@ namespace Ch.Cyberduck.Ui.Controller
         event RenamePathname RenameFile;
         event ValidateCommand ValidateRenameFile;
         event VoidHandler DuplicateFile;
-        event ValidateCommand ValidateDuplicateFile;        
+        event ValidateCommand ValidateDuplicateFile;
         event VoidHandler OpenWebUrl;
-        event ValidateCommand ValidateOpenWebUrl;        
+        event ValidateCommand ValidateOpenWebUrl;
         // todo irgendwie EditWith...
         event ValidateCommand ValidateEditWith;
-        event EditorsHandler GetEditors;        
+        event EditorsHandler GetEditors;
         event VoidHandler ShowInspector;
         event ValidateCommand ValidateShowInspector;
         event VoidHandler Download;
@@ -141,10 +152,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateExpandArchive;
         event VoidHandler Exit;
 
-        #endregion
-
-        #region Menu - Edit
-
         event VoidHandler Cut;
         event ValidateCommand ValidateCut;
         event VoidHandler Copy;
@@ -156,19 +163,11 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateSelectAll;
         event VoidHandler ShowPreferences;
 
-        #endregion
-
-        #region Menu - View
-
         event VoidHandler ToggleToolbar;
         event VoidHandler ShowHiddenFiles;
         event EventHandler<EncodingChangedArgs> EncodingChanged;
         event ValidateCommand ValidateTextEncoding;
         event VoidHandler ToggleLogDrawer;
-
-        #endregion
-        
-        #region Menu - Go
 
         event VoidHandler RefreshBrowser;
         event ValidateCommand ValidateRefresh;
@@ -191,26 +190,20 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler Disconnect;
         event ValidateCommand ValidateDisconnect;
 
-        #endregion
-
-        #region Menu - Bookmark
-
         event VoidHandler ToggleBookmarks;
         event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         event ValidateCommand ValidateConnectBookmark;
-        
-        #endregion
 
         event VoidHandler ShowBookmarkManager;
         event VoidHandler SearchFieldChanged;
-        event VoidHandler QuickConnect;        
-        
+        event VoidHandler QuickConnect;
+
         event VoidHandler BrowserDoubleClicked;
-                    
+
         event VoidHandler BrowserSelectionChanged;
         event VoidHandler PathSelectionChanged;
         event VoidHandler EditEvent;
-        
+
         event VoidHandler ShowTransfers;
         event VoidHandler ShowCertificate;
 
@@ -219,29 +212,12 @@ namespace Ch.Cyberduck.Ui.Controller
         event DropHandler Dropped;
         event DragHandler Drag;
 
-        bool ToolbarVisible { set; get; }
-
         void SetBrowserModel(IEnumerable<TreePathReference> model);
         void RefreshBrowserObject(TreePathReference path);
         void RefreshBrowserObjects(List<TreePathReference> list);
         void BrowserActiveStateChanged();
 
         // model related properties
-        TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
-        TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
-
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
-        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter { set; }
-        AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelModifiedGetter { set; }
-
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelOwnerGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelGroupGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelPermissionsGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelKindGetter { set; }
-
-        MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
 
         void AddTranscriptEntry(bool request, string entry);
         void ClearTranscript();
