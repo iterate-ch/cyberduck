@@ -29,6 +29,7 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
+using Ch.Cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -46,8 +47,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
-            bonjourCheckBox.Image = IconCache.Instance.IconForName("rendezvous", 16);
-            newFolderToolStripButton.Image = IconCache.Instance.IconForName("newfolder", 32);
+            if (!DesignMode){
+                bonjourCheckBox.Image = IconCache.Instance.IconForName("rendezvous", 16);
+                newFolderToolStripButton.Image = IconCache.Instance.IconForName("newfolder", 32);
+            }
 
             ConfigureToolbar();
 
@@ -1062,6 +1065,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) =>
                          Utils.StartProcess(MainController.StartupLanguage.Replace('-', '_') + ".lproj\\License.txt"),
                          () => true);
+            Commands.Add(new ToolStripItem[] {checkToolStripMenuItem},
+                         (sender, args) => UpdateController.Instance.ForceCheckForUpdates(false),
+                         () => true);            
         }
 
         private void ConfigureGoCommands()

@@ -238,7 +238,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.automaticUpdater = new wyDay.Controls.AutomaticUpdater();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolbarContextMenu.SuspendLayout();
@@ -248,6 +247,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -259,7 +259,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.browser)).BeginInit();
             this.viewPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.automaticUpdater)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -1773,9 +1772,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.searchTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.searchTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.searchTextBox.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.searchTextBox.Location = new System.Drawing.Point(856, 3);
+            this.searchTextBox.Location = new System.Drawing.Point(872, 4);
             this.searchTextBox.Name = "searchTextBox";
-            this.searchTextBox.Size = new System.Drawing.Size(168, 23);
+            this.searchTextBox.Size = new System.Drawing.Size(152, 21);
             this.searchTextBox.TabIndex = 14;
             this.searchTextBox.TextChanged += new System.EventHandler(this.searchTextBox_TextChanged);
             // 
@@ -1911,25 +1910,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.openFileDialog.Multiselect = true;
             this.openFileDialog.Title = "Upload";
             // 
-            // automaticUpdater
-            // 
-            this.automaticUpdater.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.automaticUpdater.BackColor = System.Drawing.SystemColors.Control;
-            this.automaticUpdater.ContainerForm = this;
-            this.automaticUpdater.GUID = "8ea666bb-b9ac-47e0-81a8-53b6060e7f8f";
-            this.automaticUpdater.Location = new System.Drawing.Point(1008, 5);
-            this.automaticUpdater.Name = "automaticUpdater";
-            this.automaticUpdater.Size = new System.Drawing.Size(16, 16);
-            this.automaticUpdater.TabIndex = 17;
-            this.automaticUpdater.ToolStripItem = this.checkToolStripMenuItem;
-            this.automaticUpdater.wyUpdateCommandline = null;
-            // 
             // BrowserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1031, 638);
-            this.Controls.Add(this.automaticUpdater);
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip1);
@@ -1952,6 +1937,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripContainer1.PerformLayout();
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.panelManagerMain.ResumeLayout(false);
             this.bookmarksPanel.ResumeLayout(false);
@@ -1962,7 +1948,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.browser)).EndInit();
             this.viewPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.automaticUpdater)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2136,7 +2121,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ComboBox pathComboBox;
         private System.Windows.Forms.Button historyForwardButton;
         private System.Windows.Forms.Button historyBackButton;
-        private SearchTextBox searchTextBox;
         private System.Windows.Forms.ToolStripMenuItem checkToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator28;
         private System.Windows.Forms.ToolStripMenuItem columnToolStripMenuItem;
@@ -2176,7 +2160,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ContextMenuStrip bonjourMenuStrip;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
         private System.Windows.Forms.ToolStripStatusLabel securityToolStripStatusLabel;
-        private wyDay.Controls.AutomaticUpdater automaticUpdater;
+        private SearchTextBox searchTextBox;
     }
 }
 
