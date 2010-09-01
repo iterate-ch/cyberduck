@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
             InitializeComponent();
 
-            searchImage.Image = IconCache.Instance.IconForName("search-inactive");
+            searchImage.Image = ResourcesBundle.search_inactive;            
 
             //Load properties
             BackColor = InactiveBackColor;
@@ -412,8 +412,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         protected override void OnTextChanged(EventArgs e)
         {
             searchImage.Image = TextEntered
-                                    ? IconCache.Instance.IconForName("search-active")
-                                    : IconCache.Instance.IconForName("search-inactive");
+                                    ? ResourcesBundle.search_active
+                                    : ResourcesBundle.search_inactive;
 
             //Start search timer
             _timer.Stop();
