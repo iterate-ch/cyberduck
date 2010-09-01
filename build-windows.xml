@@ -21,7 +21,7 @@
  *	dkocher@cyberduck.ch
  -->
 
-<project name="Cyberduck-Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
+<project name="Cyberduck for Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
 
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${env.ProgramFiles(x86)}/NSIS"/>

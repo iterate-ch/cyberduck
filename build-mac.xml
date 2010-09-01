@@ -21,7 +21,7 @@
  *	dkocher@cyberduck.ch
  -->
 
-<project name="Cyberduck-Mac" basedir=".">
+<project name="Cyberduck for Mac" basedir=".">
 
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
     <property name="app.contents" value="${app.bundle}/Contents"/>
@@ -132,7 +132,7 @@
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="true">
+        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
             <arg line="--force --sign 'Cyberduck Code Signing Certificate' --keychain ${user.home}/Library/Keychains/codesign.keychain -v ${app.bundle}"/>
         </exec>
     </target>
