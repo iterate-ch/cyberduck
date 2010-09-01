@@ -74,8 +74,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                         };
 
             FormClosing += delegate(object sender, FormClosingEventArgs args)
-                               {
-                                   if (!_releaseWhenClose)
+                               {                                   
+                                   if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
                                    {
                                        Log.debug("Cancel close event");
                                        args.Cancel = true;
